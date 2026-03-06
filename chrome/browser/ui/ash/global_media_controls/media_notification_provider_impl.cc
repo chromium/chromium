@@ -125,11 +125,6 @@ void MediaNotificationProviderImpl::OnBubbleClosing() {
   item_manager_->SetDialogDelegate(nullptr);
 }
 
-void MediaNotificationProviderImpl::SetColorTheme(
-    const media_message_center::NotificationTheme& color_theme) {
-  color_theme_ = color_theme;
-}
-
 global_media_controls::MediaItemManager*
 MediaNotificationProviderImpl::GetMediaItemManager() {
   return item_manager_.get();

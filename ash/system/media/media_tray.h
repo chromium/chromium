@@ -106,9 +106,6 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   std::u16string GetAccessibleNameForBubble() override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
 
-  // Called when theme change, set colors for media notification view.
-  void SetNotificationColorTheme();
-
   // Called when global media controls pin pref is changed.
   void OnGlobalMediaControlsPinPrefChanged();
 

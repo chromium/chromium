@@ -6,19 +6,9 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_NOTIFICATION_THEME_H_
 
 #include "base/component_export.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 
 namespace media_message_center {
-
-struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) NotificationTheme {
-  SkColor primary_text_color = 0;
-  SkColor secondary_text_color = 0;
-  SkColor enabled_icon_color = 0;
-  SkColor disabled_icon_color = 0;
-  SkColor separator_color = 0;
-  SkColor background_color = 0;
-};
 
 // Defines the color IDs for the media view.
 struct COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaColorTheme {

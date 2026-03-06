@@ -60,8 +60,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
       global_media_controls::GlobalMediaControlsEntryPoint entry_point,
       const std::string& show_devices_for_item_id) override;
   void OnBubbleClosing() override;
-  void SetColorTheme(
-      const media_message_center::NotificationTheme& color_theme) override;
   global_media_controls::MediaItemManager* GetMediaItemManager() override;
   void OnPrimaryUserSessionStarted() override;
   void AddMediaItemManagerToCastService(
@@ -130,8 +128,6 @@ class ASH_EXPORT MediaNotificationProviderImpl
       media_session_item_producer_;
   std::unique_ptr<global_media_controls::SupplementalDevicePickerProducer>
       supplemental_device_picker_producer_;
-
-  std::optional<media_message_center::NotificationTheme> color_theme_;
 
   media_message_center::MediaColorTheme media_color_theme_;
 

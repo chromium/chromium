@@ -38,8 +38,6 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
   void RemoveObserver(MediaNotificationProviderObserver* observer) override {}
   bool HasActiveNotifications() override;
   bool HasFrozenNotifications() override;
-  void SetColorTheme(
-      const media_message_center::NotificationTheme& color_theme) override {}
   std::unique_ptr<global_media_controls::MediaItemUIDeviceSelector>
   BuildDeviceSelectorView(
       const std::string& id,
