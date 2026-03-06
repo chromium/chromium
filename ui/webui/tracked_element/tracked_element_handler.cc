@@ -6,8 +6,10 @@
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/webui/tracked_element/element_highlighter_webui.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace ui {
@@ -21,12 +23,34 @@ TrackedElementHandler::TrackedElementHandler(
     : context_(context),
       web_contents_(web_contents),
       receiver_(this, std::move(receiver)) {
+  ui::ElementHighlighter::GetElementHighlighter()
+      ->MaybeRegisterBackend<ElementHighlighterWebUI>();
+
   for (const ui::ElementIdentifier& id : identifiers) {
     elements_[id] = std::make_unique<TrackedElementWebUI>(this, id, context);
   }
 }
 
 TrackedElementHandler::~TrackedElementHandler() = default;
+
+void TrackedElementHandler::SetHighlightState(
+    const std::string& identifier_name,
+    bool highlight) {
+  if (manager_remote_) {
+    manager_remote_->OnElementHighlightChanged(identifier_name, highlight);
+  }
+}
+
+void TrackedElementHandler::FlushManagerRemoteForTesting() {
+  manager_remote_.FlushForTesting();  // IN-TEST
+}
+
+void TrackedElementHandler::SetManager(
+    mojo::PendingRemote<tracked_element::mojom::TrackedElementManager>
+        manager) {
+  manager_remote_.reset();
+  manager_remote_.Bind(std::move(manager));
+}
 
 void TrackedElementHandler::TrackedElementVisibilityChanged(
     const std::string& identifier_name,
@@ -75,6 +99,16 @@ void TrackedElementHandler::TrackedElementCustomEvent(
     return;
   }
   element->CustomEvent(event_type);
+}
+
+void TrackedElementHandler::TrackedElementCanHighlightChanged(
+    const std::string& identifier_name,
+    bool can_highlight) {
+  TrackedElementWebUI* const element = GetElement(identifier_name);
+  if (!element) {
+    return;
+  }
+  element->set_can_highlight(can_highlight);
 }
 
 TrackedElementWebUI* TrackedElementHandler::GetElement(

@@ -5,6 +5,8 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/test/bind.h"
 #include "content/public/browser/content_browser_client.h"
@@ -15,10 +17,13 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_events.h"
+#include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -36,6 +41,29 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementIdentifier2);
 constexpr gfx::RectF kElementBounds{10, 20, 30, 40};
 constexpr gfx::RectF kElementBounds2{15, 25, 35, 45};
+
+class TestTrackedElementManager
+    : public tracked_element::mojom::TrackedElementManager {
+ public:
+  explicit TestTrackedElementManager(
+      mojo::PendingReceiver<tracked_element::mojom::TrackedElementManager>
+          pending_receiver) {
+    receiver_.Bind(std::move(pending_receiver));
+  }
+
+  void OnElementHighlightChanged(const std::string& native_identifier,
+                                 bool highlighted) override {
+    events_.emplace_back(native_identifier, highlighted);
+  }
+
+  std::vector<std::pair<std::string, bool>> TakeEvents() {
+    return std::move(events_);
+  }
+
+ private:
+  mojo::Receiver<tracked_element::mojom::TrackedElementManager> receiver_{this};
+  std::vector<std::pair<std::string, bool>> events_;
+};
 
 }  // namespace
 
@@ -344,6 +372,107 @@ TEST_F(TrackedElementHandlerTest, GetNativeView) {
 
   webview->SetWebContents(nullptr);
   widget->CloseNow();
+}
+
+TEST_F(TrackedElementHandlerTest, CanHighlight) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier2.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+  auto* const element1 =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element1);
+  auto* const element2 =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier2);
+  ASSERT_TRUE(element2);
+  EXPECT_FALSE(
+      ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
+          element1));
+  EXPECT_FALSE(
+      ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
+          element2));
+
+  handler_remote()->TrackedElementCanHighlightChanged(
+      kTestElementIdentifier1.GetName(), true);
+  handler_remote()->TrackedElementCanHighlightChanged(
+      kTestElementIdentifier2.GetName(), false);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  EXPECT_TRUE(ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
+      element1));
+  EXPECT_FALSE(
+      ui::ElementHighlighter::GetElementHighlighter()->CanBeHighlighted(
+          element2));
+}
+
+TEST_F(TrackedElementHandlerTest, Highlight) {
+  mojo::Remote<tracked_element::mojom::TrackedElementManager> manager_remote;
+
+  TestTrackedElementManager manager(
+      manager_remote.BindNewPipeAndPassReceiver());
+
+  handler_remote()->SetManager(manager_remote.Unbind());
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier2.GetName(), true, kElementBounds);
+  handler_remote()->TrackedElementCanHighlightChanged(
+      kTestElementIdentifier1.GetName(), true);
+  handler_remote()->TrackedElementCanHighlightChanged(
+      kTestElementIdentifier2.GetName(), false);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* element1 =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element1);
+  auto* element2 =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier2);
+  ASSERT_TRUE(element2);
+
+  // Add 2 highlights, release 1, should just have one highlight event.
+  auto hl1 =
+      ui::ElementHighlighter::GetElementHighlighter()->AddHighlight(element1);
+  ASSERT_TRUE(hl1);
+  auto hl2 =
+      ui::ElementHighlighter::GetElementHighlighter()->AddHighlight(element1);
+  ASSERT_TRUE(hl2);
+  hl1.reset();
+  handler_->FlushManagerRemoteForTesting();
+  EXPECT_THAT(
+      manager.TakeEvents(),
+      testing::ElementsAre(std::pair(kTestElementIdentifier1.GetName(), true)));
+
+  // Release the remaining highlight on element 1, and try to acquire one
+  // on element 2. The latter should return null since it's not highlightable.
+  hl2.reset();
+  auto hl3 =
+      ui::ElementHighlighter::GetElementHighlighter()->AddHighlight(element2);
+  EXPECT_FALSE(hl3);
+  handler_->FlushManagerRemoteForTesting();
+  EXPECT_THAT(manager.TakeEvents(),
+              testing::ElementsAre(
+                  std::pair(kTestElementIdentifier1.GetName(), false)));
+
+  // Now enable highlighting for element2 as well.
+  handler_remote()->TrackedElementCanHighlightChanged(
+      kTestElementIdentifier2.GetName(), true);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  // Grab and release HL on it.
+  auto hl4 =
+      ui::ElementHighlighter::GetElementHighlighter()->AddHighlight(element2);
+  ASSERT_TRUE(hl4);
+  hl4.reset();
+  handler_->FlushManagerRemoteForTesting();
+  EXPECT_THAT(manager.TakeEvents(),
+              testing::ElementsAre(
+                  std::pair(kTestElementIdentifier2.GetName(), true),
+                  std::pair(kTestElementIdentifier2.GetName(), false)));
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

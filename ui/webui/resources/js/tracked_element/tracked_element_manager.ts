@@ -125,6 +125,13 @@ export interface Options {
    * are not in the regular flow of the document but they are always visible.
    */
   fixed?: boolean;
+
+  /**
+   * If this is set, this element will be marked as supporting anchor
+   * highlighting, and the method will be invoked when the highlight state
+   * (initially false) changes.
+   */
+  onHighlightChanged?: (highlighted: boolean) => void;
 }
 
 interface TrackedElement {
@@ -135,6 +142,7 @@ interface TrackedElement {
   visible: boolean;
   bounds: RectF;
   onVisibilityChanged?: (visible: boolean, bounds: RectF) => void;
+  onHighlightChanged?: (highlighted: boolean) => void;
 }
 
 function parseOptions(options?: Options) {
@@ -176,7 +184,9 @@ export class TrackedElementManager {
   }
 
   private trackedElementHandler_: TrackedElementHandlerInterface;
-  private trackedElements_: Map<HTMLElement, TrackedElement> = new Map();
+
+  // Mapped from native ID.
+  private trackedElements_: Map<string, TrackedElement> = new Map();
   private fixedElementObserver_: IntersectionObserver;
   private resizeObserver_: ResizeObserver;
   // Observes attribute changes (style/class) on tracked elements.
@@ -188,6 +198,11 @@ export class TrackedElementManager {
   private constructor() {
     this.trackedElementHandler_ =
         TrackedElementProxyImpl.getInstance().getHandler();
+    const callbackRouter = TrackedElementProxyImpl.getInstance().callbackRouter;
+    this.trackedElementHandler_.setManager(
+        callbackRouter.$.bindNewPipeAndPassRemote());
+    callbackRouter.onElementHighlightChanged.addListener(
+        this.onElementHighlightChanged_.bind(this));
 
     this.debouncedUpdateAllBoundsCallback_ =
         debounceEnd(this.updateAllBounds_.bind(this), 50);
@@ -212,7 +227,7 @@ export class TrackedElementManager {
       for (const mutation of mutations) {
         // Style or class attribute changed on a tracked element.
         const target = mutation.target as HTMLElement;
-        if (this.trackedElements_.has(target)) {
+        if (this.getTrackedElement_(target)) {
           this.onElementVisibilityChanged_(target, computeIsVisible(target));
         }
       }
@@ -223,13 +238,13 @@ export class TrackedElementManager {
       nodes.forEach(node => {
         if (node instanceof HTMLElement) {
           // Check if the node is a tracked element.
-          if (this.trackedElements_.has(node)) {
+          if (this.getTrackedElement_(node)) {
             this.onElementVisibilityChanged_(node, computeIsVisible(node));
           }
           // Check if any descendants are tracked elements.
           node.querySelectorAll('*').forEach(descendant => {
             if (descendant instanceof HTMLElement &&
-                this.trackedElements_.has(descendant)) {
+                this.getTrackedElement_(descendant)) {
               this.onElementVisibilityChanged_(
                   descendant, computeIsVisible(descendant));
             }
@@ -253,6 +268,20 @@ export class TrackedElementManager {
     // Observe the entire document to catch detached elements being added.
     this.documentMutationObserver_.observe(
         document, {childList: true, subtree: true});
+  }
+
+  private getTrackedElement_(element: HTMLElement): TrackedElement|undefined {
+    const nativeId = element.dataset['nativeId'];
+    if (!nativeId) {
+      return undefined;
+    }
+    const maybeTrackedElement = this.trackedElements_.get(nativeId);
+    // Make sure this is what we're actually tracking and not an element with
+    // a stale data-native-id.
+    if (maybeTrackedElement?.element === element) {
+      return maybeTrackedElement;
+    }
+    return undefined;
   }
 
   reset() {
@@ -290,7 +319,7 @@ export class TrackedElementManager {
 
     // Remove tracking of the old element before registering the nativeId to a
     // new element.
-    if (this.trackedElements_.has(element)) {
+    if (this.getTrackedElement_(element)) {
       this.stopTracking(element);
     }
 
@@ -303,8 +332,9 @@ export class TrackedElementManager {
       visible: false,
       bounds: {x: 0, y: 0, width: 0, height: 0},
       onVisibilityChanged,
+      onHighlightChanged: options?.onHighlightChanged,
     };
-    this.trackedElements_.set(element, trackedElement);
+    this.trackedElements_.set(nativeId, trackedElement);
 
     if (trackedElement.fixed) {
       this.fixedElementObserver_.observe(element);
@@ -317,6 +347,11 @@ export class TrackedElementManager {
       attributes: true,
       attributeFilter: ['style', 'class'],
     });
+
+    if (trackedElement.onHighlightChanged) {
+      this.trackedElementHandler_.trackedElementCanHighlightChanged(
+          nativeId, true);
+    }
   }
 
   /**
@@ -326,11 +361,15 @@ export class TrackedElementManager {
    * @param element The element to stop tracking.
    */
   stopTracking(element: HTMLElement) {
-    const trackedElement = this.trackedElements_.get(element);
+    const trackedElement = this.getTrackedElement_(element);
     if (!trackedElement) {
       return;
     }
 
+    if (trackedElement.onHighlightChanged) {
+      this.trackedElementHandler_.trackedElementCanHighlightChanged(
+          trackedElement.nativeId, false);
+    }
     this.onElementVisibilityChanged_(element, false);
     if (trackedElement.fixed) {
       this.fixedElementObserver_.unobserve(element);
@@ -342,9 +381,9 @@ export class TrackedElementManager {
     // attributeMutationObserver_ and documentMutationObserver_ will still be
     // observing, but since the element is no longer in trackedElements_,
     // callbacks won't trigger.
-    this.trackedElements_.delete(element);
+    this.trackedElements_.delete(trackedElement.nativeId);
 
-    element.dataset['nativeId'] = '';
+    delete element.dataset['nativeId'];
   }
 
   notifyElementActivated(element: HTMLElement) {
@@ -362,7 +401,7 @@ export class TrackedElementManager {
 
   private onElementVisibilityChanged_(
       element: HTMLElement, isVisible: boolean) {
-    const trackedElement = this.trackedElements_.get(element);
+    const trackedElement = this.getTrackedElement_(element);
     assert(trackedElement);
 
     const bounds: RectF = isVisible ? this.getElementBounds_(element) :
@@ -379,7 +418,8 @@ export class TrackedElementManager {
   }
 
   private updateAllBounds_() {
-    this.trackedElements_.forEach((_, element) => {
+    this.trackedElements_.forEach((trackedElement, _) => {
+      const element = trackedElement.element;
       this.onElementVisibilityChanged_(element, computeIsVisible(element));
     });
   }
@@ -392,7 +432,7 @@ export class TrackedElementManager {
     rect.width = bounds.width;
     rect.height = bounds.height;
 
-    const trackedElement = this.trackedElements_.get(element);
+    const trackedElement = this.getTrackedElement_(element);
     if (trackedElement) {
       const padding = trackedElement.padding;
       rect.x -= padding.left;
@@ -403,4 +443,12 @@ export class TrackedElementManager {
     return rect;
   }
 
+  /* Called from browser to add/remove highlights. */
+  private onElementHighlightChanged_(nativeId: string, highlighted: boolean) {
+    const trackedElement = this.trackedElements_.get(nativeId);
+    const maybeCallback = trackedElement?.onHighlightChanged;
+    if (maybeCallback) {
+      maybeCallback(highlighted);
+    }
+  }
 }

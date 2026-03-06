@@ -4,6 +4,8 @@
 
 source_set("tracked_element") {
   sources = [
+    "element_highlighter_webui.cc",
+    "element_highlighter_webui.h",
     "tracked_element_handler.cc",
     "tracked_element_handler.h",
     "tracked_element_web_ui.cc",

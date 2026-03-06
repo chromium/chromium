@@ -157,12 +157,17 @@ class HelpBubbleHandlerBase
           handler) final;
 
   // tracked_element::mojom::TrackedElementHandler:
+  void SetManager(
+      mojo::PendingRemote<tracked_element::mojom::TrackedElementManager>
+          observer) final;
   void TrackedElementVisibilityChanged(const std::string& identifier_name,
                                        bool visible,
                                        const gfx::RectF& rect) final;
   void TrackedElementActivated(const std::string& identifier_name) final;
   void TrackedElementCustomEvent(const std::string& identifier_name,
                                  const std::string& event_name) final;
+  void TrackedElementCanHighlightChanged(const std::string& native_identifier,
+                                         bool can_highlight) final;
 
   ElementData* GetDataByName(const std::string& identifier_name,
                              ui::ElementIdentifier* found_identifier = nullptr);

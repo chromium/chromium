@@ -4,6 +4,8 @@
 
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -15,6 +17,16 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
 namespace ui {
+
+TrackedElementWebUI::HighlightHandle::HighlightHandle(
+    base::WeakPtr<TrackedElementWebUI> element)
+    : element_(std::move(element)) {}
+
+TrackedElementWebUI::HighlightHandle::~HighlightHandle() {
+  if (element_) {
+    element_->ReleaseHighlightHandle();
+  }
+}
 
 TrackedElementWebUI::TrackedElementWebUI(TrackedElementHandler* handler,
                                          ui::ElementIdentifier identifier,
@@ -50,6 +62,26 @@ gfx::Rect TrackedElementWebUI::GetScreenBounds() const {
 gfx::NativeView TrackedElementWebUI::GetNativeView() const {
   return gfx::GetViewForWindow(
       handler_->web_contents()->GetTopLevelNativeWindow());
+}
+
+scoped_refptr<TrackedElementWebUI::HighlightHandle>
+TrackedElementWebUI::GetOrMakeHighlightHandle() {
+  DCHECK(can_highlight_);
+
+  if (highlight_handle_) {
+    return highlight_handle_.get();
+  }
+  auto result = base::WrapRefCounted<HighlightHandle>(
+      new HighlightHandle(weak_ptr_factory_.GetWeakPtr()));
+  highlight_handle_ = result.get();
+  handler_->SetHighlightState(identifier().GetName(), true);
+  return result;
+}
+
+void TrackedElementWebUI::ReleaseHighlightHandle() {
+  DCHECK(highlight_handle_);
+  highlight_handle_ = nullptr;
+  handler_->SetHighlightState(identifier().GetName(), false);
 }
 
 void TrackedElementWebUI::SetVisible(bool visible, gfx::RectF bounds) {

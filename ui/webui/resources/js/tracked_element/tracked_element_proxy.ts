@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import type {TrackedElementHandlerInterface, TrackedElementHandlerRemote} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
-import {TrackedElementHandler} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
+import {TrackedElementHandler, TrackedElementManagerCallbackRouter} from '//resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 
 export interface TrackedElementProxy {
   getHandler(): TrackedElementHandlerInterface;
+  callbackRouter: TrackedElementManagerCallbackRouter;
 }
 
 /**
@@ -15,6 +16,8 @@ export interface TrackedElementProxy {
 export class TrackedElementProxyImpl implements TrackedElementProxy {
   private handler_: TrackedElementHandlerRemote =
       TrackedElementHandler.getRemote();
+  callbackRouter: TrackedElementManagerCallbackRouter =
+      new TrackedElementManagerCallbackRouter();
 
   getHandler(): TrackedElementHandlerInterface {
     return this.handler_;

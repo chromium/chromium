@@ -9,6 +9,14 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Implemented by the browser. The WebUI notifies the browser of changes to
 // tracked elements, such as their visibility and bounds.
 interface TrackedElementHandler {
+  // Sets the WebUI end of the connection; used to handle requests to update
+  // the element initiated by the browser.
+  SetManager(pending_remote<TrackedElementManager> observer);
+
+  // Indicates that the ability to highlight the given element has changed.
+  TrackedElementCanHighlightChanged(
+      string native_identifier, bool can_higlight);
+
   // Indicates that the visibility of the element that the help bubble could be
   // anchored to has changed.
   TrackedElementVisibilityChanged(string native_identifier,
@@ -31,4 +39,11 @@ interface TrackedElementHandler {
   // `custom_event_name`.
   TrackedElementCustomEvent(string native_identifier,
                             string custom_event_name);
+};
+
+// Implemented by WebUI. The browser asks WebUI to update elements in some way.
+interface TrackedElementManager {
+  // Notifies that an element should be highlighted/unhighlighted to
+  // help relate it to a bubble popup.
+  OnElementHighlightChanged(string native_identifier, bool highlighted);
 };

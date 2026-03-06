@@ -13,7 +13,7 @@ import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/he
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {HelpBubbleProxy} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
 import {HelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/help_bubble_proxy.js';
-import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
+import type {TrackedElementHandlerInterface, TrackedElementHandlerPendingReceiver, TrackedElementManagerRemote} from 'chrome://resources/mojo/ui/webui/resources/js/tracked_element/tracked_element.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -118,10 +118,16 @@ class TestTrackedElementHandler extends TestBrowserProxy implements
   visibility: Map<string, boolean> = new Map();
   constructor() {
     super([
+      'setManager',
       'trackedElementVisibilityChanged',
       'trackedElementActivated',
       'trackedElementCustomEvent',
+      'trackedElementCanHighlightChanged',
     ]);
+  }
+
+  setManager(_: TrackedElementManagerRemote) {
+    this.methodCalled('setManager');
   }
 
   trackedElementVisibilityChanged(nativeIdentifier: string, visible: boolean) {
@@ -136,6 +142,12 @@ class TestTrackedElementHandler extends TestBrowserProxy implements
 
   trackedElementCustomEvent(nativeIdentifier: string, eventName: string) {
     this.methodCalled('trackedElementCustomEvent', nativeIdentifier, eventName);
+  }
+
+  trackedElementCanHighlightChanged(
+      nativeIdentifier: string, canHighlight: boolean) {
+    this.methodCalled(
+        'trackedElementCanHighlightChanged', nativeIdentifier, canHighlight);
   }
 }
 
