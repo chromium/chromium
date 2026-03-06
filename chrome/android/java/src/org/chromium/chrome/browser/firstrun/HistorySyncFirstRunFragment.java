@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -80,9 +81,21 @@ public class HistorySyncFirstRunFragment extends Fragment
                 assumeNonNull(delegate.getProfileProviderSupplier().get()).getOriginalProfile();
         SigninManager signinManager =
                 assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+
+        // When the user stays signed out and rotates the screen on the promo fragment,
+        // #onConfigurationChanged (and subsequent lifecycle calls) of hidden fragments like History
+        // Sync are triggered. To prevent these background fragments from incorrectly advancing the
+        // pager to the NTP, we skip calling advanceToNextPage() unless this fragment is actively
+        // resumed. Note that this is a safeguard -- FirstRunActivity#setCurrentItemForPager already
+        // contains logic to handle page mismatches, but this prevents the redundant advance trigger
+        // from occurring in the first place.
+        boolean canSkipAdvanceToNextPage =
+                ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled() && !isResumed();
         if (signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null) {
-            Log.w(TAG, "No primary account set, dismissing the history sync screen.");
-            getPageDelegate().advanceToNextPage();
+            if (!canSkipAdvanceToNextPage) {
+                Log.w(TAG, "No primary account set, dismissing the history sync screen.");
+                getPageDelegate().advanceToNextPage();
+            }
             return;
         }
         mHistorySyncCoordinator =

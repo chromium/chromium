@@ -33,6 +33,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     // (TRANSITION_DELAY_MS).
     private static final int ADVANCE_TO_NEXT_PAGE_DELAY_MS = 500;
     private static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
+    private static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
 
     // To avoid redundant triggers occurring via onResume.
     private boolean mHasTriggered;
@@ -52,6 +53,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
         if (RMD_DIRECT_INVOCATION.equals(arm)) {
             triggerRoleManagerDialog();
         }
+        // Arm 2: Waits for the user to tap the CPA in the primer.
     }
 
     private void triggerRoleManagerDialog() {
@@ -95,13 +97,12 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
 
         String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
 
-        // If it's Arm 1, we return an empty FrameLayout for now and let onResume handle the dialog.
-        if (RMD_DIRECT_INVOCATION.equals(arm)) {
-            return rootView;
+        // Arm 1 (RMD_DIRECT_INVOCATION) : we return an empty FrameLayout and let onResume handle
+        // the dialog.
+        // Arm 2 (PRIMER_NO_INSTRUCTIONS): show the primer.
+        if (PRIMER_NO_INSTRUCTIONS.equals(arm)) {
+            updateView(inflater, rootView);
         }
-
-        // For Arm 2 & 3 we want to show the primer.
-        updateView(inflater, rootView);
         return rootView;
     }
 
@@ -113,7 +114,11 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
             // Remove the old view (e.g. the portrait/landscape version) that's still physically
             // inside the FrameLayout.
             rootView.removeAllViews();
-            updateView(getLayoutInflater(), rootView);
+            String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
+            // We don't call updateView for arm 1 since the fragment is just a blank page.
+            if (PRIMER_NO_INSTRUCTIONS.equals(arm)) {
+                updateView(getLayoutInflater(), rootView);
+            }
         }
     }
 
@@ -134,10 +139,8 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
         // Manually add it to the FrameLayout wrapper.
         container.addView(view);
 
-        // These are just placeholders for the primer. Will upload a follow-up CL for the actual
-        // logic.
         var pageDelegate = assumeNonNull(getPageDelegate());
-        view.getContinueButtonView().setOnClickListener(v -> pageDelegate.advanceToNextPage());
+        view.getContinueButtonView().setOnClickListener(v -> triggerRoleManagerDialog());
         view.getDismissButtonView().setOnClickListener(v -> pageDelegate.advanceToNextPage());
     }
 

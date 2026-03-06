@@ -4,16 +4,21 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,6 +73,9 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
     private FragmentScenario<CustomDefaultBrowserPromoFirstRunFragment> mScenario;
 
+    private static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
+    private static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
+
     @Before
     public void setUp() {
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockUtils);
@@ -109,7 +117,7 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
                     // Now that we set the delegate, we know it won't be null so we can set the arm
                     // to the correct value.
                     ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
-                            "rmd_direct_invocation");
+                            RMD_DIRECT_INVOCATION);
 
                     Activity activity = fragment.getActivity();
 
@@ -153,7 +161,7 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
                 fragment -> {
                     fragment.setPageDelegate(mMockDelegate);
                     ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
-                            "rmd_direct_invocation");
+                            RMD_DIRECT_INVOCATION);
 
                     Activity activity = fragment.getActivity();
 
@@ -167,6 +175,98 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
                     // This call will hit 'assert false' and throw an AssertionError.
                     fragment.onResume();
+                });
+    }
+
+    @Test
+    public void testArm2_InflatesPrimer_AndContinueTriggersRMD() {
+        // Set to arm 2.
+        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(PRIMER_NO_INSTRUCTIONS);
+
+        mScenario =
+                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+
+        mScenario.onFragment(
+                fragment -> {
+                    fragment.setPageDelegate(mMockDelegate);
+                    Activity activity = fragment.getActivity();
+
+                    // Verify UI is inflated.
+                    FrameLayout root = (FrameLayout) fragment.getView();
+                    Assert.assertNotNull("Root view should not be null.", root);
+                    Assert.assertEquals(
+                            "Should have inflated the primer view.", 1, root.getChildCount());
+
+                    // Find the Continue button from the custom view.
+                    DefaultBrowserPromoFirstRunView primerView =
+                            (DefaultBrowserPromoFirstRunView) root.getChildAt(0);
+                    View continueButton = primerView.getContinueButtonView();
+
+                    // Mock the RMD trigger to be successful.
+                    when(mMockUtils.prepareLaunchPromoIfNeeded(
+                                    activity,
+                                    mMockWindow,
+                                    mMockTracker,
+                                    DefaultBrowserPromoEntryPoint.FRE))
+                            .thenReturn(true);
+
+                    // Click the Continue button.
+                    continueButton.performClick();
+
+                    // Verify RMD was triggered.
+                    verify(mMockUtils, times(1))
+                            .prepareLaunchPromoIfNeeded(
+                                    activity,
+                                    mMockWindow,
+                                    mMockTracker,
+                                    DefaultBrowserPromoEntryPoint.FRE);
+
+                    // Verify we haven't advanced yet.
+                    verify(mMockDelegate, never()).advanceToNextPage();
+
+                    // Second onResume: Simulate the user returning from the Role Manager Dialog.
+                    fragment.onResume();
+
+                    // Verify it advanced to the next page.
+                    verify(mMockDelegate, times(1)).advanceToNextPage();
+                });
+    }
+
+    @Test
+    public void testArm2_DismissButton_AdvancesToNextPage() {
+        // Set arm to "none" so initial onCreateView doesn't call updateView (which calls
+        // getPageDelegate).
+        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting("none");
+
+        // launchInContainer runs a full lifecycle immediately.
+        mScenario =
+                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+
+        mScenario.onFragment(
+                fragment -> {
+                    fragment.setPageDelegate(mMockDelegate);
+                    // Now set the real arm since we set the mock delegate.
+                    ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
+                            PRIMER_NO_INSTRUCTIONS);
+
+                    // onConfigurationChanged calls rootView.removeAllViews() and then updateView.
+                    // By calling updateView manually, we force the fragment to actually inflate the
+                    // layout.
+                    fragment.onConfigurationChanged(fragment.getResources().getConfiguration());
+
+                    FrameLayout root = (FrameLayout) fragment.getView();
+                    DefaultBrowserPromoFirstRunView primerView =
+                            (DefaultBrowserPromoFirstRunView) root.getChildAt(0);
+                    View dismissButton = primerView.getDismissButtonView();
+
+                    // Click the Dismiss button.
+                    dismissButton.performClick();
+
+                    // Verify that we advance to the next page immediately without triggering the
+                    // RMD.
+                    verify(mMockDelegate, times(1)).advanceToNextPage();
+                    verify(mMockUtils, never())
+                            .prepareLaunchPromoIfNeeded(any(), any(), any(), anyInt());
                 });
     }
 }
