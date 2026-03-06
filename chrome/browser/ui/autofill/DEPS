@@ -1,4 +1,5 @@
 include_rules = [
+  '+components/accessibility_annotator/core',
   '+components/android_autofill',
   '+components/autofill/content',
   '+components/plus_addresses',

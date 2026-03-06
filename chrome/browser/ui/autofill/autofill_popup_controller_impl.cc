@@ -28,6 +28,9 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/accessibility_annotator/core/accessibility_query_service.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -870,8 +873,22 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
   if (suggestions_filling_product_ == FillingProduct::kAtMemory && filter) {
-    // TODO(crbug.com/481976778): Replace with real data from Query Service.
-    SetSuggestions({});
+    std::vector<Suggestion> suggestions;
+    if (ContentAutofillClient* client =
+            ContentAutofillClient::FromWebContents(web_contents_.get())) {
+      if (accessibility_annotator::AccessibilityQueryService* query_service =
+              client->GetAccessibilityQueryService()) {
+        for (const accessibility_annotator::MemorySearchResult& result :
+             query_service->Query(**filter)) {
+          Suggestion& s = suggestions.emplace_back(
+              result.value, SuggestionType::kAtMemorySearchResult);
+          s.labels = {{Suggestion::Text(result.description)}};
+          s.payload = Suggestion::AtMemoryPayload(result.value);
+          s.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+        }
+      }
+    }
+    SetSuggestions(std::move(suggestions));
   }
 
   filter_ = std::move(filter);
