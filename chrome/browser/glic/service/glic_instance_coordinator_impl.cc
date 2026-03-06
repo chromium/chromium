@@ -1026,7 +1026,8 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
 
   for (auto const& [id, instance] : instances_) {
     // Safeguard: Do not hibernate actuating or already hibernated instances.
-    if (instance->IsActuating() || instance->IsHibernated()) {
+    if (instance->IsShowing() || instance->IsActuating() ||
+        instance->IsHibernated()) {
       continue;
     }
 

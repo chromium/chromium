@@ -799,6 +799,26 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorHibernationTest,
   EXPECT_FALSE(instance5->IsHibernated());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       ShowingInstancesAreNotHibernatedOnMemoryPressure) {
+  auto* instance1 = OpenGlicForActiveTab();
+
+  CreateAndActivateTab(GURL("about:blank"));
+  auto* instance2 = OpenGlicForActiveTab();
+  EXPECT_TRUE(instance2->IsShowing());
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_TRUE(instance1->IsHibernated());
+  EXPECT_FALSE(instance2->IsHibernated());
+
+  // Fire memory pressure again to verify instance2 is not hibernated.
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_FALSE(instance2->IsHibernated());
+}
+
 class GlicInstanceCoordinatorToggleWithConversationTest
     : public GlicInstanceCoordinatorBrowserTest {
  public:
