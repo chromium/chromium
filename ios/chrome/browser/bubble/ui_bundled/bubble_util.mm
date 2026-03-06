@@ -71,8 +71,8 @@ CGFloat LeadingDistance(CGPoint anchor_point,
   } else {
     leading_distance = anchor_point.x - leading_offset;
   }
-  // Round the leading distance.
-  return round(leading_distance);
+  // Floor the leading distance.
+  return floor(leading_distance);
 }
 
 // Calculate the y-coordinate of the bubble's origin based on `anchor_point`,

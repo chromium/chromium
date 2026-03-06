@@ -511,3 +511,25 @@ TEST_F(BubbleUtilTest, FloatingArrowAlignmentOffsetTrailing) {
   EXPECT_FLOAT_EQ(container_size_.width - right_aligned_anchor_point_.x,
                   alignment_offset);
 }
+
+// Tests that for fractional anchor points, using BubbleMaxSize and BubbleFrame
+// together gives a frame that still fits in the container.
+TEST_F(BubbleUtilTest, FractionalAnchorPoint) {
+  CGPoint fractional_anchor_point = {325.66666666, 563.33333333333};
+
+  BubbleArrowDirection arrow_direction = BubbleArrowDirectionDown;
+  BubbleAlignment bubble_alignment = BubbleAlignmentTopOrLeading;
+
+  CGSize bubble_size = bubble_util::BubbleMaxSize(
+      fractional_anchor_point, bubble_alignment_offset_, arrow_direction,
+      bubble_alignment, container_size_);
+
+  CGRect bubble_frame = bubble_util::BubbleFrame(
+      fractional_anchor_point, bubble_alignment_offset_, bubble_size,
+      arrow_direction, bubble_alignment, container_size_.width,
+      false /* isRTL */);
+  EXPECT_LE(bubble_frame.origin.x + bubble_frame.size.width,
+            container_size_.width);
+  EXPECT_LE(bubble_frame.origin.y + bubble_frame.size.height,
+            container_size_.height);
+}

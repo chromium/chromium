@@ -195,9 +195,19 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 - (BubbleAlignment)bubbleAlignment {
   if (_step == GuidedTourStep::kNTP) {
     return BubbleAlignmentBottomOrTrailing;
-  } else if (_step == GuidedTourStep::kTabGridIncognito ||
-             _step == GuidedTourStep::kTabGridLongPress) {
+  } else if (_step == GuidedTourStep::kTabGridIncognito) {
     return BubbleAlignmentTopOrLeading;
+  } else if (_step == GuidedTourStep::kTabGridLongPress) {
+    UIView* anchorView = [self anchorView];
+    CGRect anchorFrameInBaseViewController =
+        [anchorView convertRect:[anchorView bounds]
+                         toView:self.baseViewController.view];
+
+    BOOL onLeftHalfOfScreen =
+        CGRectGetMidX(self.baseViewController.view.bounds) >
+        CGRectGetMidX(anchorFrameInBaseViewController);
+    return (onLeftHalfOfScreen) ? BubbleAlignmentTopOrLeading
+                                : BubbleAlignmentBottomOrTrailing;
   } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return BubbleAlignmentBottomOrTrailing;
   }
