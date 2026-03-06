@@ -7096,7 +7096,10 @@
   },
   {
     "name": "omaha-min-sdk-version-android",
-    "owners": [ "nyquist@chromium.org", "waffles@chromium.org" ],
+    "owners": [
+      "nyquist@chromium.org",
+      "sorin@chromium.org"
+    ],
     // Provides a way for changing how Chrome behaves on old and new Android SDK
     // versions. Exists in about:flags so QA can more easily test behavior.
     "expiry_milestone": -1
