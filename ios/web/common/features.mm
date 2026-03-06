@@ -101,4 +101,7 @@ BASE_FEATURE(kIOSDownloadSanitizeFilename, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableContextMenuTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNetErrorFromErrorChainKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace web::features

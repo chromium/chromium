@@ -19,6 +19,7 @@ source_set("util") {
   deps = [
     "//base",
     "//ios/net",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//net",
     "//url",
@@ -32,6 +33,7 @@ source_set("unittests") {
     "//base",
     "//base/test:test_support",
     "//ios/net",
+    "//ios/web/common:features",
     "//ios/web/test:test_constants",
     "//net",
     "//testing/gtest",

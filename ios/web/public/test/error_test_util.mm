@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/error_test_util.h"
 
+#import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,6 +18,12 @@ namespace web {
 namespace testing {
 
 NSError* CreateConnectionLostError() {
+  if (base::ios::IsRunningOnOrLater(26, 4, 0)) {
+    return CreateErrorWithUnderlyingErrorChain(
+        {{@"NSURLErrorDomain", NSURLErrorNetworkConnectionLost},
+         {@"NSPOSIXErrorDomain", 96},
+         {net::kNSErrorDomain, net::ERR_CONNECTION_CLOSED}});
+  }
   return CreateErrorWithUnderlyingErrorChain(
       {{@"NSURLErrorDomain", NSURLErrorNetworkConnectionLost},
        {@"kCFErrorDomainCFNetwork", kCFURLErrorNetworkConnectionLost},

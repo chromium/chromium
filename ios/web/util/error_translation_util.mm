@@ -7,8 +7,10 @@
 #import <CFNetwork/CFNetwork.h>
 #import <Foundation/Foundation.h>
 
+#import "base/ios/ios_util.h"
 #import "base/ios/ns_error_util.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -152,18 +154,39 @@ bool GetNetErrorFromIOSErrorCode(NSInteger ios_error_code,
 
 NSError* NetErrorFromError(NSError* error) {
   DCHECK(error);
-  NSError* underlying_error =
-      base::ios::GetFinalUnderlyingErrorFromError(error);
 
   int net_error_code = net::ERR_FAILED;
-  if ([underlying_error.domain isEqualToString:NSURLErrorDomain] ||
-      [underlying_error.domain
-          isEqualToString:static_cast<NSString*>(kCFErrorDomainCFNetwork)]) {
-    // Attempt to translate NSURL and CFNetwork error codes into their
-    // corresponding net error codes.
+  if (base::ios::IsRunningOnOrLater(26, 4, 0) &&
+      base::FeatureList::IsEnabled(
+          web::features::kNetErrorFromErrorChainKillSwitch)) {
     NSURL* url = error.userInfo[NSURLErrorFailingURLErrorKey];
-    GetNetErrorFromIOSErrorCode(underlying_error.code, &net_error_code, url);
+
+    // Iterate through the error chain to find a translatable error.
+    NSError* current_error = error;
+    while (current_error) {
+      if ([current_error.domain isEqualToString:NSURLErrorDomain] ||
+          [current_error.domain isEqualToString:static_cast<NSString*>(
+                                                    kCFErrorDomainCFNetwork)]) {
+        if (GetNetErrorFromIOSErrorCode(current_error.code, &net_error_code,
+                                        url)) {
+          break;
+        }
+      }
+      current_error = current_error.userInfo[NSUnderlyingErrorKey];
+    }
+  } else {
+    NSError* underlying_error =
+        base::ios::GetFinalUnderlyingErrorFromError(error);
+    if ([underlying_error.domain isEqualToString:NSURLErrorDomain] ||
+        [underlying_error.domain
+            isEqualToString:static_cast<NSString*>(kCFErrorDomainCFNetwork)]) {
+      // Attempt to translate NSURL and CFNetwork error codes into their
+      // corresponding net error codes.
+      NSURL* url = error.userInfo[NSURLErrorFailingURLErrorKey];
+      GetNetErrorFromIOSErrorCode(underlying_error.code, &net_error_code, url);
+    }
   }
+
   return NetErrorFromError(error, net_error_code);
 }
 
