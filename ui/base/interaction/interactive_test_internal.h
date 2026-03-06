@@ -254,11 +254,14 @@ class InteractiveTestPrivate {
   gfx::NativeWindow GetNativeWindowFor(const ui::TrackedElement* el) const;
 
   // Possibly fails or skips a sequence based on the result of an action
-  // simulation.
+  // simulation. If `defer_failure` is true, then on a result of failure, the
+  // test will not fail immediately, but rather add a deferred failure (see
+  // `ReportDeferredFailure()` for more info).
   void HandleActionResult(InteractionSequence* seq,
                           const TrackedElement* el,
                           const std::string& operation_name,
-                          ActionResult result);
+                          ActionResult result,
+                          bool defer_failure = false);
 
   // Gets the pivot element for the specified context, which must exist.
   TrackedElement* GetPivotElement(ElementContext context) const;
@@ -296,6 +299,12 @@ class InteractiveTestPrivate {
   // in RunTestSequenceImpl().
   virtual void OnSequenceComplete();
   virtual void OnSequenceAborted(const InteractionSequence::AbortedData& data);
+
+  // Reports a deferred failure. The tree for `current_context` will be added
+  // to the message. If any deferred failures are reported, the test will fail
+  // at the end.
+  void ReportDeferredFailure(std::string_view error_message,
+                             ElementContext current_context);
 
   // Sets a callback that is called if the test sequence fails instead of
   // failing the current test. Should only be called in tests that are testing
@@ -384,6 +393,9 @@ class InteractiveTestPrivate {
 
   // Used to relay events to trigger follow-up steps.
   std::map<ElementContext, std::unique_ptr<TrackedElement>> pivot_elements_;
+
+  // Failures to report at the end of a test.
+  std::vector<std::string> deferred_failures_;
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;

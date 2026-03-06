@@ -444,6 +444,12 @@ bool InteractiveTestApi::RunTestSequenceImpl(
                   }
                 }
                 impl->DebugDumpElements(context).PrintTo(oss);
+                if (!impl->deferred_failures_.empty()) {
+                  oss << "\nSome previous steps failed:";
+                  for (const auto& failure : impl->deferred_failures_) {
+                    oss << "\n" << failure;
+                  }
+                }
               }
               return oss.str();
             },

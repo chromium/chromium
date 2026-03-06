@@ -162,8 +162,10 @@ InteractiveBrowserWindowTestApi::ScreenshotWebUi(
         options.focus = ScreenshotFocusMode::kLeaveFocusWhereItIs;
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
             el, screenshot_name, baseline_cl, options);
-        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
-                                                     result);
+        const std::string desc =
+            base::StringPrintf("ScreenshotWebUi(%s)", screenshot_name);
+        test->private_test_impl().HandleActionResult(
+            seq, el, desc, result, /*defer_failure=*/!screenshot_name.empty());
       },
       base::Unretained(this), screenshot_name, baseline_cl, where));
 
@@ -190,8 +192,10 @@ InteractiveBrowserWindowTestApi::ScreenshotSurface(
         const auto result =
             InteractionTestUtilBrowser::CompareSurfaceScreenshot(
                 el, screenshot_name, baseline_cl);
-        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
-                                                     result);
+        const std::string desc =
+            base::StringPrintf("ScreenshotSurface(%s)", screenshot_name);
+        test->private_test_impl().HandleActionResult(
+            seq, el, desc, result, /*defer_failure=*/!screenshot_name.empty());
       },
       base::Unretained(this), screenshot_name, baseline_cl));
 

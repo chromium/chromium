@@ -89,6 +89,10 @@ class InteractiveBrowserWindowTestApi
   // (may be empty for tests that take only one screenshot) and `baseline_cl`,
   // which should be set to match the CL number when a screenshot should change.
   //
+  // If `screenshot_name` is set, failures will not be reported until the end of
+  // the test, to allow all screenshots to be sampled. This will not prevent the
+  // test from failing for other reasons.
+  //
   // If `clip_rect` is specified, it is the rectangle in `element`'s local
   // bounds to capture, otherwise all of `element` will be captured.
   //
@@ -554,8 +558,10 @@ InteractiveBrowserWindowTestApi::Screenshot(ElementSpecifier element,
         options.region = ui::test::internal::UnwrapArgument<T>(clip_rect);
         const auto result = InteractionTestUtilBrowser::CompareScreenshot(
             el, screenshot_name, baseline_cl, options);
-        test->private_test_impl().HandleActionResult(seq, el, "Screenshot",
-                                                     result);
+        const std::string desc =
+            base::StringPrintf("Screenshot(%s)", screenshot_name);
+        test->private_test_impl().HandleActionResult(
+            seq, el, desc, result, /*defer_failure=*/!screenshot_name.empty());
       },
       base::Unretained(this), screenshot_name, baseline_cl,
       std::forward<T>(clip_rect)));
