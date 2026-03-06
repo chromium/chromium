@@ -972,9 +972,6 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
   config.responseViewDynamicSizeEnabled =
       IsGeminiResponseViewDynamicResizingEnabled();
-  // TODO(crbug.com/489117306): Remove this property after refactor.
-  config.geminiCopresenceZeroStateWithChatHistoryEnabled =
-      IsGeminiChatPersistenceEnabled();
   config.geminiChatPersistenceEnabled = IsGeminiChatPersistenceEnabled();
 
   // Set the location permission state.

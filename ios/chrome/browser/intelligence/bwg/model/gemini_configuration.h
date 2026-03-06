@@ -109,11 +109,6 @@ class PageContext;
 // Whether to use the dynamic size for the response view in the floaty.
 @property(nonatomic, assign) BOOL responseViewDynamicSizeEnabled;
 
-// TODO(crbug.com/489117306): Remove this property after refactor.
-// Whether to show the zero state with chat history in the floaty.
-@property(nonatomic, assign)
-    BOOL geminiCopresenceZeroStateWithChatHistoryEnabled;
-
 // Whether chat persistence is enabled.
 @property(nonatomic, assign) BOOL geminiChatPersistenceEnabled;
 
