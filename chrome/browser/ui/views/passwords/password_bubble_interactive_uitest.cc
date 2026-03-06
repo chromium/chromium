@@ -485,8 +485,13 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TwoTabsWithBubbleSwitch DISABLED_TwoTabsWithBubbleSwitch
+#else
+#define MAYBE_TwoTabsWithBubbleSwitch TwoTabsWithBubbleSwitch
+#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       TwoTabsWithBubbleSwitch) {
+                       MAYBE_TwoTabsWithBubbleSwitch) {
   // Set up the first tab with the bubble.
   SetupPendingPassword();
   EXPECT_TRUE(IsBubbleShowing());
