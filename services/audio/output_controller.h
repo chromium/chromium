@@ -286,7 +286,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   void StopCloseAndClearStream();
 
   // Helper method which delivers a log string to the event handler.
-  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* fmt, ...);
+  void SendLogMessage(const std::string& message);
 
   // Log the current average power level measured by power_monitor_.
   void LogAudioPowerLevel(const char* call_name);

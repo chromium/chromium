@@ -211,6 +211,17 @@ class AudioManagerBase::DeviceLogHelper {
     *prev_snapshot = std::move(new_snapshot);
   }
 
+  std::string GetDeviceName(const std::string& device_id, bool is_input) const {
+    const AudioDeviceNames& snapshot =
+        is_input ? input_device_snapshot_ : output_device_snapshot_;
+    for (const auto& device : snapshot) {
+      if (device.unique_id == device_id) {
+        return device.device_name;
+      }
+    }
+    return std::string();
+  }
+
  private:
   std::unique_ptr<AudioLog> audio_log_;
   AudioManager::LogCallback log_callback_;
@@ -773,6 +784,37 @@ std::string AudioManagerBase::GetCommunicationsInputDeviceID() {
 
 std::string AudioManagerBase::GetCommunicationsOutputDeviceID() {
   return std::string();
+}
+
+std::string AudioManagerBase::GetDeviceNameFromCache(
+    const std::string& device_id,
+    bool is_input) {
+  // Accessing the device name cache requires strict thread safety because
+  // the snapshots inside `device_log_helper_` are updated dynamically
+  // during device enumerations. By enforcing execution on the audio thread,
+  // we avoid data races without the need for expensive thread locks.
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  std::string prefix;
+
+  // Intercept virtual device IDs to prepend a recognizable prefix for the logs.
+  if (media::AudioDeviceDescription::IsDefaultDevice(device_id)) {
+    prefix = "Default - ";
+  } else if (media::AudioDeviceDescription::IsCommunicationsDevice(device_id)) {
+    prefix = "Communications - ";
+  }
+
+  // Attempt to find the device ID directly in the cache.
+  if (device_log_helper_) {
+    std::string name = device_log_helper_->GetDeviceName(device_id, is_input);
+    if (!name.empty()) {
+      return prefix + name;  // e.g. "Default - Microphone Array"
+    }
+  }
+
+  // Fallback if the cache hasn't been populated yet (e.g., stream created
+  // before the first enumeration) or if the ID is unrecognized.
+  return prefix + "Unknown";
 }
 
 // static

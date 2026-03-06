@@ -58,6 +58,9 @@ class MockAudioManager : public AudioManager {
   void AddOutputDeviceChangeListener(AudioDeviceListener* listener) override;
   void RemoveOutputDeviceChangeListener(AudioDeviceListener* listener) override;
 
+  std::string GetDeviceNameFromCache(const std::string& device_id,
+                                     bool is_input) override;
+
   std::unique_ptr<AudioLog> CreateAudioLog(
       AudioLogFactory::AudioComponent component,
       int component_id) override;

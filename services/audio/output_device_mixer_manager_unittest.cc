@@ -110,6 +110,10 @@ class LocalMockAudioManager : public media::MockAudioManager {
               MakeAudioOutputStreamProxy,
               (const media::AudioParameters&, const std::string&),
               (override));
+  MOCK_METHOD(std::string,
+              GetDeviceNameFromCache,
+              (const std::string&, bool),
+              (override));
 };
 
 class MockListener : public audio::ReferenceOutput::Listener {
@@ -155,9 +159,9 @@ class OutputDeviceMixerManagerTest
             &audio_manager_,
             base::BindRepeating(
                 &OutputDeviceMixerManagerTest::CreateOutputDeviceMixerCalled,
-                base::Unretained(this))),
-        reference_signal_provider_(
-            output_mixer_manager_.GetReferenceSignalProvider()) {
+                base::Unretained(this))) {
+    reference_signal_provider_ =
+        output_mixer_manager_.GetReferenceSignalProvider();
     EXPECT_CALL(audio_manager_, GetOutputStreamParameters(_))
         .WillRepeatedly(Return(default_params_));
 

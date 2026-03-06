@@ -156,6 +156,9 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   std::string GetCommunicationsInputDeviceID() override;
   std::string GetCommunicationsOutputDeviceID() override;
 
+  std::string GetDeviceNameFromCache(const std::string& device_id,
+                                     bool is_input) override;
+
   virtual std::unique_ptr<AudioDebugRecordingManager>
   CreateAudioDebugRecordingManager();
   AudioDebugRecordingManager* GetAudioDebugRecordingManager() final;

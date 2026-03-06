@@ -282,7 +282,7 @@ class InputController final {
   void LogMessage(const std::string& message);
 
   // Helper method for creating internal log messages prefixed with "AIC::".
-  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
+  void SendLogMessage(const std::string& message);
 
   // Does power monitoring on supported platforms.
   // Called on the hw callback thread.

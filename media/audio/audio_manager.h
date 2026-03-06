@@ -162,6 +162,12 @@ class MEDIA_EXPORT AudioManager {
   virtual void RemoveOutputDeviceChangeListener(
       AudioDeviceListener* listener) = 0;
 
+  // Returns the device name if it is currently cached in the enumeration
+  // snapshot. Returns an empty string if the ID is not found or the cache is
+  // empty.
+  virtual std::string GetDeviceNameFromCache(const std::string& device_id,
+                                             bool is_input) = 0;
+
   // Create a new AudioLog object for tracking the behavior for one or more
   // instances of the given component.  See AudioLogFactory for more details.
   virtual std::unique_ptr<AudioLog> CreateAudioLog(
