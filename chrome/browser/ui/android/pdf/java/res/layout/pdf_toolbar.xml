@@ -84,4 +84,63 @@ found in the LICENSE file.
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/toolbar_divider"
+        android:layout_width="1dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/toolbar_text_box_bg_color"
+        app:layout_constraintStart_toEndOf="@id/page_navigation"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/zoom_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/modern_toolbar_text_box_background"
+        android:clipToOutline="true"
+        >
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/zoom_decrease_button"
+            style="@style/ToolbarButton"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_remove"
+            app:tint="@color/default_icon_color_tint_list"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+        <TextView
+            android:id="@+id/zoom_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            app:layout_constraintStart_toEndOf="@id/zoom_decrease_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/zoom_increase_button"
+            style="@style/ToolbarButton"
+            android:layout_height="match_parent"
+            android:layout_marginStart="0dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/ic_add_24dp"
+            app:tint="@color/default_icon_color_tint_list"
+            app:layout_constraintStart_toEndOf="@id/zoom_value"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </org.chromium.chrome.browser.pdf.PdfToolbar>

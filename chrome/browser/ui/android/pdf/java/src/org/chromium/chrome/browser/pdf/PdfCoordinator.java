@@ -121,6 +121,7 @@ public class PdfCoordinator implements PdfActionsDelegate {
             toolbar.setVisibility(View.VISIBLE);
             toolbar.setPageNumber(getCurrentPageString());
             toolbar.setPageCount(getPageCountString());
+            toolbar.setZoomValue(getZoomValueString());
         }
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
@@ -342,6 +343,11 @@ public class PdfCoordinator implements PdfActionsDelegate {
     private String getPageCountString() {
         // TODO(rathomas): Update the page count.
         return " / 99";
+    }
+
+    private String getZoomValueString() {
+        // TODO(rathomas): Update the zoom value.
+        return "100%";
     }
 
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {

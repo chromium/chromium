@@ -21,6 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 public class PdfToolbar extends Toolbar {
     private TextView mCurrentPage;
     private TextView mPageCount;
+    private TextView mZoomValue;
 
     public PdfToolbar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -31,6 +32,7 @@ public class PdfToolbar extends Toolbar {
         super.onFinishInflate();
         mCurrentPage = findViewById(R.id.current_page);
         mPageCount = findViewById(R.id.page_count);
+        mZoomValue = findViewById(R.id.zoom_value);
     }
 
     void setPageNumber(String pageNumber) {
@@ -39,5 +41,9 @@ public class PdfToolbar extends Toolbar {
 
     void setPageCount(String pageCount) {
         mPageCount.setText(pageCount);
+    }
+
+    void setZoomValue(String zoomValue) {
+        mZoomValue.setText(zoomValue);
     }
 }
