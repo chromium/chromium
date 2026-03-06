@@ -243,8 +243,8 @@ void BrowserContext::UpdatePrefetchServiceDelegateAcceptLanguageHeader(
 }
 
 bool BrowserContext::IsPrefetchDuplicate(
-    GURL& url,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint) {
+    const GURL& url,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   PrefetchService* prefetch_service =
       BrowserContextImpl::From(this)->GetPrefetchService();
   // `CHECK` is used here because this method should not be called unless there

@@ -487,8 +487,8 @@ base::WeakPtr<PrefetchContainer> PrefetchService::CreatePrefetchContainer(
 }
 
 bool PrefetchService::IsPrefetchDuplicate(
-    GURL& url,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_hint) {
+    const GURL& url,
+    const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint) {
   TRACE_EVENT("loading", "PrefetchService::IsPrefetchDuplicate");
   for (const auto& [key, prefetch_container] : owned_prefetches()) {
     if (IsPrefetchStale(prefetch_container->GetWeakPtr())) {

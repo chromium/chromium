@@ -239,8 +239,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // so consideration should be taken if updating the
   // underlying implementation (or its dependencies).
   bool IsPrefetchDuplicate(
-      GURL& url,
-      std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
+      const GURL& url,
+      const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint);
 
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =
