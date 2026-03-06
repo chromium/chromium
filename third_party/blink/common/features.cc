@@ -2135,6 +2135,10 @@ BASE_FEATURE(kRemoveCommitRedirectUrlsArray, base::FEATURE_ENABLED_BY_DEFAULT);
 // prerenders.
 BASE_FEATURE(kRemovePurposeHeaderForPrefetch, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows same-document available-image reuse for no-store images.
+BASE_FEATURE(kReuseNoStoreImageOnSameSrcReassignment,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRenderBlockingFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

@@ -2125,8 +2125,18 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
             "Use the existing resource due to cache-mode: 'force-cache'."};
   }
 
-  // Don't reuse resources with Cache-control: no-store.
-  if (existing_resource.HasCacheControlNoStoreHeader()) {
+  const bool is_available_image_in_fetcher =
+      type == ResourceType::kImage &&
+      &existing_resource == cached_resource_in_fetcher;
+  const bool can_reuse_no_store_image =
+      is_available_image_in_fetcher &&
+      base::FeatureList::IsEnabled(
+          features::kReuseNoStoreImageOnSameSrcReassignment);
+
+  // Respect no-store except when the kill-switchable same-document image reuse
+  // behavior is enabled.
+  if (existing_resource.HasCacheControlNoStoreHeader() &&
+      !can_reuse_no_store_image) {
     return {RevalidationPolicy::kReload,
             "Reload due to cache-control: no-store."};
   }
@@ -2165,8 +2175,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
   // List of available images logic allows images to be re-used without cache
   // validation. We restrict this only to images from memory cache which are the
   // same as the version in the current document.
-  if (type == ResourceType::kImage &&
-      &existing_resource == cached_resource_in_fetcher) {
+  if (is_available_image_in_fetcher) {
     return {RevalidationPolicy::kUse,
             "Images can be reused without cache validation."};
   }

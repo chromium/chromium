@@ -1,6 +1,6 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
-      `Tests cached resource content is discarded when cached is disabled if content size is too big for the network agent's storage`);
+      `Tests that no-store image response body remains accessible when the resource is kept alive by available-image reuse`);
 
   const resourceUrl = '/devtools/network/resources/resource.php';
   const requests = [];
@@ -32,12 +32,6 @@
   }
   testRunner.log('Requesting response body with cache enabled')
   await getResponseBodyAndDump(0);
-  await session.evaluateAsync(`
-      new Promise(resolve => {
-        image.src = "${resourceUrl}?size=400&type=image&random=1";
-        image.onload = resolve;
-      });
-  `);
   await dp.Network.setCacheDisabled({cacheDisabled: true});
   for (var i = 0; i < 3; ++i) {
     await session.evaluateAsync(`new Promise(resolve => GCController.asyncCollectAll(resolve))`);

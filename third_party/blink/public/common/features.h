@@ -1592,6 +1592,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoveCommitRedirectUrlsArray);
 // header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemovePurposeHeaderForPrefetch);
 
+// Allows same-document available-image reuse for no-store images.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kReuseNoStoreImageOnSameSrcReassignment);
+
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);
