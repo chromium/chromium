@@ -337,8 +337,7 @@ void UdpPacketSocket::DoSend() {
   while (!send_pending_ && !send_queue_.empty() && error_ == 0) {
     PendingPacket& packet = send_queue_.front();
     webrtc::ApplyPacketOptions(
-        webrtc::ArrayView<uint8_t>(packet.data->bytes(), packet.data->size()),
-        packet.options.packet_time_params,
+        packet.data->span(), packet.options.packet_time_params,
         (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
     int result = socket_->SendTo(
         packet.data.get(), packet.data->size(), packet.address,
@@ -434,7 +433,7 @@ void UdpPacketSocket::HandleReadResult(int result) {
       NOTREACHED() << "Failed to convert address received from RecvFrom().";
     }
     webrtc::ReceivedIpPacket packet(
-        webrtc::MakeArrayView(receive_buffer_->bytes(), result), address,
+        receive_buffer_->span().first(static_cast<size_t>(result)), address,
         webrtc::Timestamp::Micros(webrtc::TimeMicros()));
     NotifyPacketReceived(packet);
   } else {

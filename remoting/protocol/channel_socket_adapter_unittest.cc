@@ -20,7 +20,6 @@
 #include "remoting/protocol/p2p_datagram_socket.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/p2p/base/mock_ice_transport.h"
 #include "third_party/webrtc/rtc_base/network/received_packet.h"
 
@@ -75,9 +74,8 @@ TEST_F(TransportChannelSocketAdapterTest, Read) {
       target_->Recv(buffer.get(), kBufferSize, callback_);
   ASSERT_EQ(net::ERR_IO_PENDING, result.error());
 
-  channel_.NotifyPacketReceived(webrtc::ReceivedIpPacket(
-      webrtc::MakeArrayView(kTestData, kTestDataSize.InBytes()),
-      webrtc::SocketAddress()));
+  channel_.NotifyPacketReceived(
+      webrtc::ReceivedIpPacket(kTestData, webrtc::SocketAddress()));
   EXPECT_EQ(kTestDataSize, callback_result_);
 }
 

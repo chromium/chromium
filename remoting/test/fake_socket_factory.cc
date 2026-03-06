@@ -103,7 +103,7 @@ void FakeUdpSocket::ReceivePacket(const webrtc::SocketAddress& from,
                                   const scoped_refptr<net::IOBuffer>& data,
                                   int data_size) {
   NotifyPacketReceived(webrtc::ReceivedIpPacket(
-      webrtc::MakeArrayView(data->bytes(), data_size), from,
+      data->span().first(static_cast<size_t>(data_size)), from,
       webrtc::Timestamp::Micros(webrtc::TimeMicros())));
 }
 
@@ -128,9 +128,8 @@ int FakeUdpSocket::SendTo(const void* data,
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
   UNSAFE_TODO(memcpy(buffer->data(), data, data_size));
   base::TimeTicks now = base::TimeTicks::Now();
-  webrtc::ApplyPacketOptions(
-      webrtc::ArrayView<uint8_t>(buffer->bytes(), data_size),
-      options.packet_time_params, (now - base::TimeTicks()).InMicroseconds());
+  webrtc::ApplyPacketOptions(buffer->span(), options.packet_time_params,
+                             (now - base::TimeTicks()).InMicroseconds());
   NotifySentPacket(
       this, webrtc::SentPacketInfo(options.packet_id, webrtc::TimeMillis()));
   dispatcher_->DeliverPacket(local_address_, address, buffer, data_size);

@@ -59,9 +59,7 @@ class MessageReaderTest : public testing::Test {
 
   void AddMessage(const std::string& message) {
     std::string data = std::string(4, ' ') + message;
-    webrtc::SetBE32(webrtc::ArrayView<uint8_t>(
-                        reinterpret_cast<uint8_t*>(data.data()), data.size()),
-                    message.size());
+    webrtc::SetBE32(base::as_writable_byte_span(data), message.size());
 
     socket_.AppendInputData(data);
   }

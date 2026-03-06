@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/stream_packet_socket.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "components/webrtc/net_address_utils.h"
@@ -396,8 +397,8 @@ bool StreamPacketSocket::HandleReadResult(int result) {
     auto packet = packet_processor_->Unpack(span, &bytes_consumed);
     if (packet) {
       NotifyPacketReceived(webrtc::ReceivedIpPacket(
-          webrtc::MakeArrayView(packet->bytes(), packet->size()),
-          GetRemoteAddress(), webrtc::Timestamp::Micros(webrtc::TimeMicros())));
+          packet->span(), GetRemoteAddress(),
+          webrtc::Timestamp::Micros(webrtc::TimeMicros())));
     }
     if (!bytes_consumed) {
       break;
