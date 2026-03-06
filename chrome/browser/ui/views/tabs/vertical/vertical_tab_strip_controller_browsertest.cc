@@ -103,4 +103,41 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
   EXPECT_FALSE(tab_view1->HasFreezingVote());
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest, ShiftTabNext) {
+  AppendTab();
+
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(2, model->count());
+
+  // Tab Starts at Index 0.
+  tabs::TabInterface* tab_to_move = model->GetTabAtIndex(0);
+  EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
+
+  // Shift the tab next (0 -> 1).
+  vertical_tab_strip_controller()->ShiftTabNext(tab_to_move);
+
+  // Verify Tab is at Index 1.
+  EXPECT_EQ(1, model->GetIndexOfTab(tab_to_move));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
+                       ShiftTabPrevious) {
+  AppendTab();
+
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(2, model->count());
+
+  // Tab Starts at Index 1.
+  tabs::TabInterface* tab_to_move = model->GetTabAtIndex(1);
+  EXPECT_EQ(1, model->GetIndexOfTab(tab_to_move));
+
+  // Shift the tab previous (1 -> 0).
+  vertical_tab_strip_controller()->ShiftTabPrevious(tab_to_move);
+
+  // Verify Tab is at Index 0.
+  EXPECT_EQ(0, model->GetIndexOfTab(tab_to_move));
+}
+
+// TODO(crbug.com/490428062): Expand Test Coverage for Keyboard Commands.
+
 }  // namespace

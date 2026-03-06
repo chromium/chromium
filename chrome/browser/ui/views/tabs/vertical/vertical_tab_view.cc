@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
@@ -54,6 +55,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -312,7 +314,41 @@ bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
                                                  GetGestureDetail(event));
     return true;
   }
-  return false;
+
+  std::optional<event_utils::ReorderDirection> reorder_direction;
+  if (event.key_code() == ui::VKEY_UP) {
+    reorder_direction = event_utils::ReorderDirection::kPrevious;
+  }
+  if (event.key_code() == ui::VKEY_DOWN) {
+    reorder_direction = event_utils::ReorderDirection::kNext;
+  }
+  if (!reorder_direction) {
+    return false;
+  }
+
+  bool move_to_end = event.flags() & ui::EF_SHIFT_DOWN;
+  switch (*reorder_direction) {
+    case event_utils::ReorderDirection::kPrevious: {
+      if (move_to_end) {
+        collection_node_->GetController()->MoveTabFirst(GetTabInterface());
+      } else {
+        collection_node_->GetController()->ShiftTabPrevious(GetTabInterface());
+      }
+      break;
+    }
+    case event_utils::ReorderDirection::kNext: {
+      if (move_to_end) {
+        collection_node_->GetController()->MoveTabLast(GetTabInterface());
+      } else {
+        collection_node_->GetController()->ShiftTabNext(GetTabInterface());
+      }
+      break;
+    }
+  }
+
+  RequestFocus();
+
+  return true;
 }
 
 bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {

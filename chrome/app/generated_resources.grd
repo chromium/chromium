@@ -17067,6 +17067,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_LEFT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the left">
         Tab moved left
       </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_UP" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab up.">
+        Tab moved up
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_DOWN" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab down.">
+        Tab moved down
+      </message>
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_FIRST" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the start of the tabstrip">
         Tab moved to start of tabstrip
       </message>

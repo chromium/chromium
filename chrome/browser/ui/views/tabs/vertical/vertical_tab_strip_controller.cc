@@ -26,15 +26,18 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -92,6 +95,91 @@ void VerticalTabStripController::ShowContextMenuForNode(
   context_menu_controller_->LoadModel(std::move(model));
 
   context_menu_controller_->RunMenuAt(point, source_type, source->GetWidget());
+}
+
+void VerticalTabStripController::ShiftTabNext(
+    const tabs::TabInterface* tab_interface) {
+  ShiftTabRelative(tab_interface, 1);
+}
+
+void VerticalTabStripController::ShiftTabPrevious(
+    const tabs::TabInterface* tab_interface) {
+  ShiftTabRelative(tab_interface, -1);
+}
+
+void VerticalTabStripController::MoveTabFirst(
+    const tabs::TabInterface* tab_interface) {
+  const std::optional<int> start_index = model_->GetIndexOfTab(tab_interface);
+  if (!start_index.has_value()) {
+    return;
+  }
+
+  int target_index = 0;
+  if (!model_->IsTabPinned(start_index.value())) {
+    while (target_index < start_index && model_->IsTabPinned(target_index)) {
+      ++target_index;
+    }
+  }
+
+  if (!model_->ContainsIndex(target_index)) {
+    return;
+  }
+
+  if (target_index != start_index) {
+    model_->MoveWebContentsAt(start_index.value(), target_index,
+                              /*select_after_move=*/false);
+  }
+
+  // The tab may unintentionally land in the first group in the tab strip, so we
+  // remove the group to ensure consistent behavior. Even if the tab is already
+  // at the front, it should "move" out of its current group.
+  if (tab_interface->GetGroup().has_value()) {
+    model_->RemoveFromGroup({target_index});
+  }
+
+  browser_view_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_FIRST));
+}
+
+void VerticalTabStripController::MoveTabLast(
+    const tabs::TabInterface* tab_interface) {
+  const std::optional<int> maybe_start_index =
+      model_->GetIndexOfTab(tab_interface);
+  if (!maybe_start_index.has_value()) {
+    return;
+  }
+
+  const int start_index = maybe_start_index.value();
+
+  int target_index;
+  if (model_->IsTabPinned(start_index)) {
+    int temp_index = start_index + 1;
+    while (temp_index < model_->count() && model_->IsTabPinned(temp_index)) {
+      ++temp_index;
+    }
+    target_index = temp_index - 1;
+  } else {
+    target_index = model_->count() - 1;
+  }
+
+  if (!model_->ContainsIndex(target_index)) {
+    return;
+  }
+
+  if (target_index != start_index) {
+    model_->MoveWebContentsAt(start_index, target_index,
+                              /*select_after_move=*/false);
+  }
+
+  // The tab may unintentionally land in the last group in the tab strip, so we
+  // remove the group to ensure consistent behavior. Even if the tab is already
+  // at the back, it should "move" out of its current group.
+  if (tab_interface->GetGroup().has_value()) {
+    model_->RemoveFromGroup({target_index});
+  }
+
+  browser_view_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_LAST));
 }
 
 void VerticalTabStripController::SelectTab(
@@ -381,4 +469,103 @@ void VerticalTabStripController::RecordMetricsOnTabSelectionChange(
     base::RecordAction(
         base::UserMetricsAction("TabGroups.Shared.SwitchGroupedTab"));
   }
+}
+
+void VerticalTabStripController::ShiftTabRelative(
+    const tabs::TabInterface* tab_interface,
+    int offset) {
+  CHECK_EQ(1, std::abs(offset))
+      << "Offset must be 1 or -1 to shift tab up or down.";
+  const std::optional<int> maybe_start_index =
+      model_->GetIndexOfTab(tab_interface);
+  if (!maybe_start_index.has_value()) {
+    return;
+  }
+
+  const int start_index = maybe_start_index.value();
+  int target_index = start_index + offset;
+
+  const auto old_group = tab_interface->GetGroup();
+  if (!model_->ContainsIndex(target_index) ||
+      model_->IsTabPinned(start_index) != model_->IsTabPinned(target_index)) {
+    // Even if we've reached the boundary of where the tab could go, it may
+    // still be able to "move" out of its current group.
+    if (old_group.has_value()) {
+      AnnounceTabRemovedFromGroup(old_group.value());
+      model_->RemoveFromGroup({start_index});
+    }
+    return;
+  }
+
+  // If the tab is at a group boundary and the group is expanded, instead of
+  // actually moving the tab just change its group membership.
+  std::optional<tab_groups::TabGroupId> target_group =
+      model_->GetTabGroupForTab(target_index);
+  if (old_group != target_group) {
+    if (old_group.has_value()) {
+      AnnounceTabRemovedFromGroup(old_group.value());
+      model_->RemoveFromGroup({start_index});
+      return;
+    } else if (target_group.has_value()) {
+      // If the tab is at a group boundary and the group is collapsed, treat the
+      // collapsed group as a tab and find the next available slot for the tab
+      // to move to.
+      const TabGroup* group =
+          model_->group_model()->GetTabGroup(target_group.value());
+      if (group && group->visual_data()->is_collapsed()) {
+        int candidate_index = target_index + offset;
+        while (model_->ContainsIndex(candidate_index) &&
+               model_->GetTabGroupForTab(candidate_index) == target_group) {
+          candidate_index += offset;
+        }
+        if (model_->ContainsIndex(candidate_index)) {
+          target_index = candidate_index - offset;
+        } else {
+          target_index = offset < 0 ? 0 : model_->count() - 1;
+        }
+      } else {
+        // Read before adding the tab to the group so that the group description
+        // isn't the tab we just added.
+        AnnounceTabAddedToGroup(target_group.value());
+        model_->AddToExistingGroup({start_index}, target_group.value());
+        return;
+      }
+    }
+  }
+
+  model_->MoveWebContentsAt(start_index, target_index, false);
+  browser_view_->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16((offset > 0) ? IDS_TAB_AX_ANNOUNCE_MOVED_DOWN
+                                             : IDS_TAB_AX_ANNOUNCE_MOVED_UP));
+}
+
+void VerticalTabStripController::AnnounceTabAddedToGroup(
+    tab_groups::TabGroupId group_id) {
+  auto* group = model_->group_model()->GetTabGroup(group_id);
+  const std::u16string group_title = group->visual_data()->title();
+  const std::u16string contents_string =
+      tab_groups::GetGroupContentString(group);
+  browser_view_->GetViewAccessibility().AnnounceText(
+      group_title.empty()
+          ? l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_UNNAMED_GROUP, contents_string)
+          : l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_NAMED_GROUP, group_title,
+                contents_string));
+}
+
+void VerticalTabStripController::AnnounceTabRemovedFromGroup(
+    tab_groups::TabGroupId group_id) {
+  auto* group = model_->group_model()->GetTabGroup(group_id);
+  const std::u16string group_title = group->visual_data()->title();
+  const std::u16string contents_string =
+      tab_groups::GetGroupContentString(group);
+  browser_view_->GetViewAccessibility().AnnounceText(
+      group_title.empty()
+          ? l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_UNNAMED_GROUP,
+                contents_string)
+          : l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_NAMED_GROUP, group_title,
+                contents_string));
 }
