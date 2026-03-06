@@ -45,6 +45,9 @@ class BrowserControlsService
       bool bypass_cache,
       const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
   void StopLoad() override;
+  void Back(const std::vector<mojom::ClickDispositionFlag>& flags) override;
+  void Forward(const std::vector<mojom::ClickDispositionFlag>& flags) override;
+  void BackButtonHovered() override;
   void SplitActiveTab() override;
 
  private:

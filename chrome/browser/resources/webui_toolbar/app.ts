@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './back_forward_button.js';
 import './reload_button.js';
 import './split_tabs_button.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -37,6 +38,7 @@ export class ToolbarAppElement extends CrLitElement {
       isSplitTabsButtonEnabled_: {type: Boolean},
       isLocationBarEnabled_: {type: Boolean},
       navigationControlsState_: {type: Object},
+      isBackForwardButtonEnabled_: {type: Boolean},
     };
   }
 
@@ -46,6 +48,8 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableSplitTabsButton');
   protected accessor isLocationBarEnabled_: boolean =
       loadTimeData.getBoolean('enableLocationBar');
+  protected accessor isBackForwardButtonEnabled_: boolean =
+      loadTimeData.getBoolean('enableBackForwardButtons');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
       canShowMenu: false,
@@ -57,6 +61,11 @@ export class ToolbarAppElement extends CrLitElement {
       location: SplitTabActiveLocation.kStart,
       isPinned: false,
       isContextMenuVisible: false,
+    },
+    backForwardControlState: {
+      backButtonState: {enabled: false, visible: true},
+      forwardButtonState: {enabled: false, visible: true},
+      backButtonLeadingMargin: 0,
     },
     layoutConstantsVersion: 0,
   };

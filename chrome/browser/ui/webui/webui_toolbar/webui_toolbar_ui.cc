@@ -37,6 +37,7 @@
 #include "chrome/grit/webui_toolbar_resources_map.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -58,6 +59,10 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kStrings[] = {
       // go/keep-sorted start
+      {"backButtonAccName", IDS_ACCNAME_BACK},
+      {"backButtonTooltip", IDS_TOOLTIP_BACK},
+      {"forwardButtonAccName", IDS_ACCNAME_FORWARD},
+      {"forwardButtonTooltip", IDS_TOOLTIP_FORWARD},
       {"reloadButtonAccNameReload", IDS_ACCNAME_RELOAD},
       {"reloadButtonTooltipReload", IDS_TOOLTIP_RELOAD},
       {"reloadButtonTooltipReloadWithMenu", IDS_TOOLTIP_RELOAD_WITH_MENU},
@@ -75,6 +80,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUIReloadButtonEnabled());
   source->AddBoolean("enableLocationBar",
                      features::IsWebUILocationBarEnabled());
+  source->AddBoolean("enableBackForwardButtons",
+                     features::IsWebUIBackForwardButtonEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());

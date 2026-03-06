@@ -335,6 +335,8 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, ToolbarCycleFocusWithBookmarkBar) {
   RunToolbarCycleFocusTest(second_browser);
 }
 
+// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
+// test.
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonUpdate) {
   ToolbarButtonProvider* toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
@@ -355,6 +357,8 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonUpdate) {
   EXPECT_FALSE(back_button->GetEnabled());
 }
 
+// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
+// test.
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonHoverThenClick) {
   ToolbarButtonProvider* toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser())->toolbar();
@@ -377,6 +381,8 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonHoverThenClick) {
   EXPECT_FALSE(back_button->GetEnabled());
 }
 
+// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
+// test.
 // TODO(crbug.com/40252318): The ui test utils do not seem to adequately
 // simulate mouse hovering on Mac.
 #if BUILDFLAG(IS_MAC)
@@ -457,8 +463,11 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
   EXPECT_EQ(nullptr, extensions_container);
 }
 
-// Verifies that the identifiers for the pop-up menus are properly assigned so
-// that the menu can be located by tests when it is shown.
+// TODO(crbug.com/470038385): Include WebUI version back forward buttons in this
+// test.
+//
+// Verifies that the identifiers for the pop-up menus are properly
+// assigned so that the menu can be located by tests when it is shown.
 //
 // The back button is just one example for which the menu identifier is defined.
 IN_PROC_BROWSER_TEST_P(ToolbarViewTest, BackButtonMenu) {

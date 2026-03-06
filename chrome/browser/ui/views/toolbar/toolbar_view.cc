@@ -101,6 +101,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -439,14 +440,14 @@ void ToolbarView::Init() {
 #endif
 
   // Always add children in order from left to right, for accessibility.
-
-  back_ = AddChildView(std::make_unique<BackForwardButton>(
-      BackForwardButton::Direction::kBack,
-      base::BindRepeating(callback, browser_, IDC_BACK), browser_));
-
-  forward_ = AddChildView(std::make_unique<BackForwardButton>(
-      BackForwardButton::Direction::kForward,
-      base::BindRepeating(callback, browser_, IDC_FORWARD), browser_));
+  if (!features::IsWebUIBackForwardButtonEnabled()) {
+    back_ = AddChildView(std::make_unique<BackForwardButton>(
+        BackForwardButton::Direction::kBack,
+        base::BindRepeating(callback, browser_, IDC_BACK), browser_));
+    forward_ = AddChildView(std::make_unique<BackForwardButton>(
+        BackForwardButton::Direction::kForward,
+        base::BindRepeating(callback, browser_, IDC_FORWARD), browser_));
+  }
 
   if (features::IsWebUIToolbarEnabled()) {
     toolbar_webview_ = AddChildView(std::make_unique<WebUIToolbarWebView>(
@@ -632,7 +633,7 @@ void ToolbarView::Init() {
       base::BindRepeating(&ToolbarView::OnShowForwardButtonChanged,
                           base::Unretained(this)));
 
-  forward_->SetVisible(show_forward_button_.GetValue());
+  SetForwardButtonVisibility(show_forward_button_.GetValue());
 
   show_home_button_.Init(
       prefs::kShowHomeButton, prefs,
@@ -1028,6 +1029,13 @@ ToolbarView::GetContentSettingBubbleModelDelegate() {
 
 void ToolbarView::EnabledStateChangedForCommand(int id, bool enabled) {
   DCHECK(display_mode_ == DisplayMode::kNormal);
+
+  if ((id == IDC_BACK || id == IDC_FORWARD) &&
+      features::IsWebUIBackForwardButtonEnabled()) {
+    toolbar_webview_->SetBackForwardEnabled(id, enabled);
+    return;
+  }
+
   const std::array<views::Button*, 5> kButtons{back_, forward_, reload_, home_,
                                                avatar_};
   auto it = std::ranges::find_if(
@@ -1069,7 +1077,7 @@ gfx::Size ToolbarView::CalculatePreferredSize(
       // on some installations.
       if (layout_manager_ && location_bar_->IsVisible()) {
         const int max_height = std::max(location_bar_->PreferredSize().height(),
-                                        back_->GetPreferredSize().height()) +
+                                        GetBackForwardButtonSize().height()) +
                                layout_manager_->interior_margin().height();
         size.SetToMin({size.width(), max_height});
       }
@@ -1096,9 +1104,10 @@ gfx::Size ToolbarView::GetMinimumSize() const {
       // TODO(crbug.com/40663413): Figure out why the height reports incorrectly
       // on some installations.
       if (layout_manager_ && location_bar_->IsVisible()) {
-        const int max_height = std::max(location_bar_->MinimumSize().height(),
-                                        back_->GetMinimumSize().height()) +
-                               layout_manager_->interior_margin().height();
+        const int max_height =
+            std::max(location_bar_->MinimumSize().height(),
+                     GetBackForwardButtonSize(/*minimum_size=*/true).height()) +
+            layout_manager_->interior_margin().height();
         size.SetToMin({size.width(), max_height});
       }
       // Overflow button must be part of minimum size calculation.
@@ -1316,7 +1325,12 @@ void ToolbarView::LayoutCommon() {
   const bool extend_buttons_to_edge =
       browser_->window() &&
       (browser_->window()->IsMaximized() || browser_->window()->IsFullscreen());
-  back_->SetLeadingMargin(extend_buttons_to_edge ? interior_margin.left() : 0);
+  const int margin = extend_buttons_to_edge ? interior_margin.left() : 0;
+  if (features::IsWebUIBackForwardButtonEnabled()) {
+    toolbar_webview_->SetBackButtonLeadingMargin(margin);
+  } else {
+    back_->SetLeadingMargin(margin);
+  }
   app_menu_button_->SetTrailingMargin(
       extend_buttons_to_edge ? interior_margin.right() : 0);
 
@@ -1541,7 +1555,7 @@ void ToolbarView::LoadImages() {
 }
 
 void ToolbarView::OnShowForwardButtonChanged() {
-  forward_->SetVisible(show_forward_button_.GetValue());
+  SetForwardButtonVisibility(show_forward_button_.GetValue());
   InvalidateLayout();
 }
 
@@ -1570,6 +1584,22 @@ void ToolbarView::OnTouchUiChanged() {
     LoadImages();
     PreferredSizeChanged();
   }
+}
+
+void ToolbarView::SetForwardButtonVisibility(bool visible) {
+  if (features::IsWebUIBackForwardButtonEnabled()) {
+    toolbar_webview_->SetForwardVisible(visible);
+  } else {
+    forward_->SetVisible(visible);
+  }
+}
+
+gfx::Size ToolbarView::GetBackForwardButtonSize(bool minimum_size) const {
+  if (back_) {
+    return minimum_size ? back_->GetMinimumSize() : back_->GetPreferredSize();
+  }
+  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  return gfx::Size(size, size);
 }
 
 BEGIN_METADATA(ToolbarView)

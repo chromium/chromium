@@ -40,6 +40,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -78,6 +79,8 @@ constexpr base::TimeDelta kRecoveryRetryInterval = base::Seconds(20);
 
 constexpr char kSplitTabsSelector[] = "split-tabs-button-app";
 constexpr char kReloadButtonSelector[] = "reload-button-app";
+constexpr char kBackSelector[] = "#back";
+constexpr char kForwardSelector[] = "#forward";
 
 std::string GetButtonAppJS(const std::string& selector) {
   return base::StringPrintf(
@@ -130,6 +133,21 @@ void PinSplitTabsButton(Browser* browser, views::WebView* web_view) {
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
 
+void PinForwardButton(Browser* browser, views::WebView* web_view) {
+  browser->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+  content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
+}
+
+bool WaitForButtonEnabled(content::WebContents* web_contents,
+                          const std::string& selector) {
+  return base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents,
+                           base::StrCat({GetButtonIconJS(selector),
+                                         "?.disabled === false"}))
+        .ExtractBool();
+  });
+}
+
 // Dispatches an event to the Split Tabs Button.
 // `event_class`: The JS event class (e.g. 'MouseEvent', 'PointerEvent').
 // `type`: The event type string (e.g. 'click', 'contextmenu').
@@ -142,6 +160,24 @@ std::string DispatchEventScript(const std::string& event_class,
       "{bubbles: true, cancelable: true, view: window, %s}));",
       GetButtonIconJS(kSplitTabsSelector).c_str(), event_class.c_str(),
       type.c_str(), options.c_str());
+}
+
+// Simulates a full physical click cycle (press + release) using PointerEvents.
+// Required for back/forward buttons because they listen for 'pointerup'
+// to trigger navigation, which a standard 'element.click()' does not fire.
+std::string DispatchPointerClick(const std::string& selector,
+                                 const std::string& opts = "button: 0") {
+  const std::string el = GetButtonIconJS(selector);
+  return base::StringPrintf(
+      "%s.dispatchEvent(new PointerEvent('pointerdown', {%s}));"
+      "%s.dispatchEvent(new PointerEvent('pointerup', {%s}));",
+      el.c_str(), opts.c_str(), el.c_str(), opts.c_str());
+}
+
+bool ClickButton(content::WebContents* web_contents,
+                 const std::string& selector) {
+  return content::ExecJs(
+      web_contents, base::StrCat({GetButtonIconJS(selector), "?.click();"}));
 }
 
 class NavigationCounter : public content::WebContentsObserver {
@@ -168,7 +204,7 @@ class WebUIToolbarWebViewPixelBrowserTest : public InProcessBrowserTest {
     // All features for Webium Production should be included here.
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUISplitTabsButton,
+         features::kWebUISplitTabsButton, features::kWebUIBackForwardButton,
          features::kSkipIPCChannelPausingForNonGuests,
          features::kWebUIInProcessResourceLoadingV2,
          features::kInitialWebUISyncNavStartToCommit},
@@ -332,12 +368,41 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
             reload_node->GetData().GetStringAttribute(
                 ax::mojom::StringAttribute::kDescription));
 
+  // Verify appropriate accessibility properties for back button.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Back");
+  find_criteria.name = "Back";
+  ui::AXPlatformNodeDelegate* back_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(back_node);
+  const ui::AXNodeData& back = back_node->GetData();
+  EXPECT_EQ(ax::mojom::Role::kButton, back.role);
+  EXPECT_EQ("Back", back.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("Click to go back, hold to see history",
+            back.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+
+  // Verify appropriate accessibility properties for forward button.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Forward");
+  find_criteria.name = "Forward";
+  ui::AXPlatformNodeDelegate* forward_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(forward_node);
+  const ui::AXNodeData& forward = forward_node->GetData();
+  EXPECT_EQ(ax::mojom::Role::kButton, forward.role);
+  EXPECT_EQ("Forward",
+            forward.GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ(
+      "Click to go forward, hold to see history",
+      forward.GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+
   // Verify that setting mode to kStop is reflected in HasPopup attribute.
   webui_toolbar_view->GetReloadControl()->ChangeMode(ReloadControl::Mode::kStop,
                                                      true);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
+  find_criteria.name = "Reload";
   reload_node =
       content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
   ASSERT_TRUE(reload_node);
@@ -353,6 +418,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Reload");
+  find_criteria.name = "Reload";
   reload_node =
       content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
   ASSERT_TRUE(reload_node);
@@ -460,6 +526,214 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
     return GetCenterPixelColor(web_view, background_probe_rect) ==
            SK_ColorTRANSPARENT;
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       BackForwardButtonsVisibility) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  // Check initial state: Buttons should be visible but disabled.
+  EXPECT_TRUE(WaitForButtonVisible(web_view->GetWebContents(), kBackSelector));
+  EXPECT_EQ("true",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kBackSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kForwardSelector));
+  EXPECT_EQ("true",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kForwardSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+
+  // Navigate to enable back button.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Back");
+
+  EXPECT_TRUE(WaitForButtonVisible(web_view->GetWebContents(), kBackSelector));
+  EXPECT_EQ("false",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kBackSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+
+  // Forward button should be visible but disabled initially (no forward
+  // history).
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kForwardSelector));
+  EXPECT_EQ("true",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kForwardSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+
+  // Go back to enable forward button.
+  chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), "Forward");
+
+  // Check that forward is enabled and back is disabled.
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kForwardSelector));
+  EXPECT_EQ("false",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kForwardSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+
+  EXPECT_TRUE(WaitForButtonVisible(web_view->GetWebContents(), kBackSelector));
+  EXPECT_EQ("true",
+            content::EvalJs(web_view->GetWebContents(),
+                            base::StrCat({GetButtonIconJS(kBackSelector),
+                                          "?.disabled ? 'true' : 'false'"})));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       BackForwardButtonsNavigation) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  PinForwardButton(browser(), web_view);
+
+  // Create navigation history.
+  GURL url1("chrome://version/");
+  GURL url2("chrome://flags/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+
+  // Wait for the back button to be enabled.
+  ASSERT_TRUE(WaitForButtonEnabled(web_view->GetWebContents(), kBackSelector));
+
+  // Click Back.
+  {
+    content::TestNavigationObserver nav_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                                DispatchPointerClick(kBackSelector)));
+    nav_observer.Wait();
+    EXPECT_EQ(url1, browser()
+                        ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+  }
+
+  // Wait for the forward button to be enabled.
+  ASSERT_TRUE(
+      WaitForButtonEnabled(web_view->GetWebContents(), kForwardSelector));
+
+  // Click Forward.
+  {
+    content::TestNavigationObserver nav_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                                DispatchPointerClick(kForwardSelector)));
+    nav_observer.Wait();
+    EXPECT_EQ(url2, browser()
+                        ->tab_strip_model()
+                        ->GetActiveWebContents()
+                        ->GetLastCommittedURL());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       BackForwardButtonsModifierClick) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  PinForwardButton(browser(), web_view);
+
+  // Create navigation history.
+  GURL url1("chrome://version/");
+  GURL url2("chrome://flags/");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+
+  // Wait for the back button to be enabled.
+  ASSERT_TRUE(WaitForButtonEnabled(web_view->GetWebContents(), kBackSelector));
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+
+#if BUILDFLAG(IS_MAC)
+  // Ctrl+Click Back button.
+  // On Mac, Ctrl+Click opens a context menu and does not navigate.
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(kBackSelector, "button: 0, ctrlKey: true")));
+
+  auto* back_control = &webui_toolbar_view->back_control_;
+  back_control->menu_runner_->Cancel();
+
+  // Verify no new tab was opened.
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+  // Verify we didn't navigate away.
+  EXPECT_EQ(url2, browser()
+                      ->tab_strip_model()
+                      ->GetActiveWebContents()
+                      ->GetLastCommittedURL());
+#else
+  // Ctrl+Click Back button (New Tab).
+  content::TestNavigationObserver nav_observer(nullptr);
+  nav_observer.StartWatchingNewWebContents();
+
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(kBackSelector, "button: 0, ctrlKey: true")));
+
+  nav_observer.Wait();
+
+  // Verify new tab was opened.
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(url1, nav_observer.last_navigation_url());
+
+  // Switch back to the first tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+#endif  // BUILDFLAG(IS_MAC)
+
+  // Navigate back to enable the forward button.
+  {
+    content::TestNavigationObserver back_nav_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    back_nav_observer.Wait();
+  }
+
+  // Wait for the forward button to be enabled.
+  ASSERT_TRUE(
+      WaitForButtonEnabled(web_view->GetWebContents(), kForwardSelector));
+
+  // Shift+Click Forward button (New Window).
+  ui_test_utils::BrowserCreatedObserver new_browser_observer;
+
+  EXPECT_TRUE(content::ExecJs(
+      web_view->GetWebContents(),
+      DispatchPointerClick(kForwardSelector, "button: 0, shiftKey: true")));
+
+  Browser* new_browser = new_browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  // Wait for the navigation in the new browser's active tab.
+  content::WebContents* new_tab =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver observer(new_tab);
+  if (new_tab->GetLastCommittedURL() != url2) {
+    observer.WaitForNavigationFinished();
+  }
+
+  // Verify navigation happened in a new window/web contents.
+  EXPECT_EQ(url2, new_tab->GetLastCommittedURL());
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {
@@ -1072,9 +1346,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   auto* tab_strip_model = browser()->tab_strip_model();
   EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      DispatchEventScript("MouseEvent", "click", "detail: 1")));
+  EXPECT_TRUE(ClickButton(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Verify entered split view. This might take a moment, so need to wait.
   ASSERT_TRUE(base::test::RunUntil(
@@ -1141,9 +1413,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
   // Click the button while in split mode.
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      DispatchEventScript("MouseEvent", "click", "detail: 1")));
+  EXPECT_TRUE(ClickButton(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Verify no crash.
 }

@@ -27,6 +27,24 @@ class ToyBrowserControlsAdapter : public BrowserControlsAdapter {
          .disposition = WindowOpenDisposition::CURRENT_TAB});
   }
 
+  void Back(WindowOpenDisposition disposition) override {
+    toy_browser_->received_commands_.push_back({
+        .command_id = IDC_BACK,
+        .disposition = disposition,
+    });
+  }
+
+  void Forward(WindowOpenDisposition disposition) override {
+    toy_browser_->received_commands_.push_back({
+        .command_id = IDC_FORWARD,
+        .disposition = disposition,
+    });
+  }
+
+  void BackButtonHovered() override {
+    toy_browser_->back_button_hovered_ = true;
+  }
+
   void CreateNewSplitTab() override { toy_browser_->is_split_tab_ = true; }
 
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override {

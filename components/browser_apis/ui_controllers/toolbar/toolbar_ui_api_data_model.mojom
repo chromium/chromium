@@ -11,6 +11,13 @@ enum ContextMenuType {
   kReload = 1,
   kSplitTabsAction = 2,
   kSplitTabsContext = 3,
+  kBack = 4,
+  kForward = 5,
+};
+
+struct ButtonState {
+  bool enabled;
+  bool visible;
 };
 
 enum SplitTabActiveLocation {
@@ -37,9 +44,16 @@ struct SplitTabsControlState {
   bool is_context_menu_visible;
 };
 
+struct BackForwardControlState {
+  ButtonState back_button_state;
+  ButtonState forward_button_state;
+  int32 back_button_leading_margin;
+};
+
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
+  BackForwardControlState back_forward_control_state;
   // This is incremented every time a settings change may change the layout
   // constants.
   int32 layout_constants_version = 0;

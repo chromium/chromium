@@ -27,6 +27,7 @@ source_set("impl") {
     ":adapters",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
+    "//chrome/browser/preloading",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui/webui_toolbar/utils",

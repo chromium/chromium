@@ -13,12 +13,12 @@ import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mo
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {BrowserProxyImpl, ClickDispositionFlag, ContextMenuType} from './browser_proxy.js';
+import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy, ReloadControlState} from './browser_proxy.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
-import {getContextMenuPosition} from './toolbar_button.js';
+import {BUTTON_LEFT, BUTTON_RIGHT, getClickDispositionFlags, getContextMenuPosition} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
@@ -27,10 +27,6 @@ const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
     'reloadButtonTooltipReloadWithMenu';
 const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
 // go/keep-sorted end
-
-const BUTTON_LEFT = 0;
-const BUTTON_MIDDLE = 1;
-const BUTTON_RIGHT = 2;
 
 const LONG_PRESS_TIMER_THRESHOLD_MS = 500;
 
@@ -150,23 +146,6 @@ export class ReloadButtonAppElement extends CrLitElement {
   }
 
   /**
-   * Generate the list of `ClickDispositionFlag`s based on the `MouseEvent`.
-   */
-  private generateFlags(e: MouseEvent): ClickDispositionFlag[] {
-    const flags: ClickDispositionFlag[] = [];
-    if (e.button === BUTTON_MIDDLE) {
-      flags.push(ClickDispositionFlag.kMiddleMouseButton);
-    }
-    if (e.altKey) {
-      flags.push(ClickDispositionFlag.kAltKeyDown);
-    }
-    if (e.metaKey) {
-      flags.push(ClickDispositionFlag.kMetaKeyDown);
-    }
-    return flags;
-  }
-
-  /**
    * Handles the mouse click event.
    * - If it's from the right mouse click, it's not handled from the Javascript.
    * - If it's a single click:
@@ -211,7 +190,9 @@ export class ReloadButtonAppElement extends CrLitElement {
       // If the shift or ctrl key is pressed, we should reload with cache
       // bypassed.
       BrowserProxyImpl.getInstance().browserControlsHandler.reloadFromClick(
-          /*bypass_cache=*/ e.shiftKey || e.ctrlKey, this.generateFlags(e));
+          /*bypass_cache=*/ e.shiftKey || e.ctrlKey,
+          getClickDispositionFlags(
+              e, {ignoreCtrlKey: true, ignoreShiftKey: true}));
     }
 
     if (e.button === BUTTON_LEFT && !e.metaKey) {

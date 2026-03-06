@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
@@ -52,6 +53,10 @@ class WebUIToolbarWebView
   ~WebUIToolbarWebView() override;
 
   ReloadControl* GetReloadControl();
+
+  void SetBackButtonLeadingMargin(int margin);
+  void SetBackForwardEnabled(int command_id, bool enabled);
+  void SetForwardVisible(bool visible);
 
   // May be nullptr.
   WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
@@ -99,8 +104,11 @@ class WebUIToolbarWebView
                            CheckSplitTabsButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewSplitTabsBrowserTest,
                            CheckSplitTabsButtonSourceType);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           BackForwardButtonsModifierClick);
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
+  friend WebUIBackForwardControl;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();
@@ -130,11 +138,13 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::ReloadControlStatePtr state);
   void OnSplitTabsControlStateChanged(
       toolbar_ui_api::mojom::SplitTabsControlStatePtr state);
+  void OnBackForwardStateChanged();
 
   void OnTouchUiChanged();
   void PostPushNavigationState();
   void PushNavigationState(uint64_t state_generation);
   toolbar_ui_api::mojom::NavigationControlsState last_queued_state_;
+  toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
   uint64_t current_state_generation_ = 0;
 
   InitializationState initialization_state_ =
@@ -146,12 +156,15 @@ class WebUIToolbarWebView
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
   std::unique_ptr<WebUILocationBar> location_bar_;
+  WebUIBackForwardControl back_control_;
+  WebUIBackForwardControl forward_control_;
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;
   bool has_finished_first_non_empty_paint_ = false;
   uint32_t crash_count_ = 0;
   base::TimeTicks last_crash_time_;
   base::CallbackListSubscription touch_ui_subscription_;
+  int back_button_leading_margin_ = 0;
 
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
 };
