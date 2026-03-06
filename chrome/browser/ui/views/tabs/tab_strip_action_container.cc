@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -342,7 +343,9 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
   CHECK(glic_button_);
   if (!label.empty()) {
     glic_button_->SetNudgeLabel(std::move(label));
-    ShowTabStripNudge(glic_button_);
+    if (!glic_button_->GetIsShowingNudge()) {
+      ShowTabStripNudge(glic_button_);
+    }
   }
 }
 
@@ -836,6 +839,11 @@ void TabStripActionContainer::ExecuteHideTabStripNudge(
   if (!is_actor_nudge_mode) {
     button->SetIsShowingNudge(false);
   }
+
+  // Reset the modal UI lock immediately when hiding starts, so that subsequent
+  // show requests (e.g. from a quick selection change) aren't blocked by
+  // CanAcquireLock checks.
+  scoped_tab_strip_modal_ui_.reset();
 
   // Stop the timer since the chip might be getting hidden on user actions like
   // dismissal or click and not timeout.

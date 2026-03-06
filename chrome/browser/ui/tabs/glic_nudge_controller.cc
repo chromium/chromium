@@ -44,7 +44,7 @@ void GlicNudgeController::UpdateNudgeLabel(
   }
   // Empty nudge labels close the nudge, allow those to bypass the
   // CanAcquireLock check.
-  if (!nudge_label.empty() &&
+  if (!nudge_label.empty() && !scoped_call_to_action_lock_ &&
       !CallToActionLock::From(browser_window_interface_)->CanAcquireLock()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -93,9 +93,14 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
   }
   switch (activity) {
     case GlicNudgeActivity::kNudgeShown: {
+      // UpdateNudgeLabel can be called multiple times to update the text of an
+      // existing nudge. We run the logic below to ensure the new callback is
+      // invoked. The lock is only acquired if not already held.
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
-      scoped_call_to_action_lock_ =
-          CallToActionLock::From(browser_window_interface_)->AcquireLock();
+      if (!scoped_call_to_action_lock_) {
+        scoped_call_to_action_lock_ =
+            CallToActionLock::From(browser_window_interface_)->AcquireLock();
+      }
       break;
     }
     case GlicNudgeActivity::kNudgeClicked:
