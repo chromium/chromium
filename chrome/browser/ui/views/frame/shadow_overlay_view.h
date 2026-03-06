@@ -43,12 +43,9 @@ class ShadowOverlayView
       const views::SizeBounds& size_bounds) const override;
 
   // SidePanelAnimationCoordinator::AnimationIdObserver
-  void OnAnimationSequenceProgressed(
-      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
-      double animation_value) override;
-  void OnAnimationSequenceEnded(
-      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
-      override;
+  void OnAnimationSequenceProgressed(SidePanelAnimationId animation_id,
+                                     double animation_value) override;
+  void OnAnimationSequenceEnded(SidePanelAnimationId animation_id) override;
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;

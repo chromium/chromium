@@ -686,9 +686,8 @@ double SidePanel::GetAnimationValue() const {
   return GetAnimationValueFor(kSidePanelBoundsAnimation);
 }
 
-void SidePanel::OnAnimationSequenceProgressed(
-    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
-    double animation_value) {
+void SidePanel::OnAnimationSequenceProgressed(SidePanelAnimationId animation_id,
+                                              double animation_value) {
   if (animation_id == kSidePanelBoundsAnimation) {
     if (last_animation_values_[animation_id] != animation_value) {
       last_animation_values_[animation_id] = animation_value;
@@ -910,8 +909,7 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
 }
 
 double SidePanel::GetAnimationValueFor(
-    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
-    const {
+    SidePanelAnimationId animation_id) const {
   if (ShouldShowAnimation()) {
     return animation_coordinator_->GetAnimationValueFor(animation_id);
   } else {

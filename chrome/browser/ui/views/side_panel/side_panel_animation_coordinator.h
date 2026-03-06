@@ -51,7 +51,6 @@ class Animation;
 //    coordinator when its visibility changes, driving the animation.
 class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
  public:
-  using SidePanelAnimationId = ui::ElementIdentifier;
   using AnimationType = SidePanelAnimationType;
 
   // Represents a single animation sequence for a specific animation id.
@@ -86,12 +85,11 @@ class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
    public:
     // Called when the animation sequence for `animation_id` has progressed.
     virtual void OnAnimationSequenceProgressed(
-        const SidePanelAnimationId& animation_id,
+        SidePanelAnimationId animation_id,
         double animation_value) {}
 
     // Called when the animation sequence for `animation_id` has ended.
-    virtual void OnAnimationSequenceEnded(
-        const SidePanelAnimationId& animation_id) {}
+    virtual void OnAnimationSequenceEnded(SidePanelAnimationId animation_id) {}
   };
 
   // Used to observe changes to a particular animation type.

@@ -129,9 +129,7 @@ class SidePanel : public views::AccessiblePaneView,
   // This method is the shared implementation of Open/Close.
   void UpdateVisibility(bool should_be_open, bool animated);
 
-  double GetAnimationValueFor(
-      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id)
-      const;
+  double GetAnimationValueFor(SidePanelAnimationId animation_id) const;
 
   bool ShouldShowAnimation() const;
   void AnnounceResize();
@@ -142,9 +140,8 @@ class SidePanel : public views::AccessiblePaneView,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // SidePanelAnimationCoordinator::AnimationIdObserver
-  void OnAnimationSequenceProgressed(
-      const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
-      double animation_value) override;
+  void OnAnimationSequenceProgressed(SidePanelAnimationId animation_id,
+                                     double animation_value) override;
 
   // SidePanelAnimationCoordinator::AnimationTypeObserver:
   void OnAnimationTypeStarted(
@@ -202,8 +199,7 @@ class SidePanel : public views::AccessiblePaneView,
 
   State state_ = State::kClosed;
 
-  std::map<SidePanelAnimationCoordinator::SidePanelAnimationId, double>
-      last_animation_values_;
+  std::map<SidePanelAnimationId, double> last_animation_values_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_H_

@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 
-#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/identifier/unique_identifier.h"
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelBoundsAnimation);
+#define DEFINE_SIDE_PANEL_ANIMATION_ID(Name) \
+  DEFINE_UNIQUE_IDENTIFIER_VALUE(SidePanelAnimationId, Name)
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kShadowOverlayOpacityAnimation);
+DEFINE_SIDE_PANEL_ANIMATION_ID(kSidePanelBoundsAnimation);
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentTopBoundAnimation);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentBottomBoundAnimation);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentLeftBoundAnimation);
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kSidePanelContentWidthBoundAnimation);
+DEFINE_SIDE_PANEL_ANIMATION_ID(kShadowOverlayOpacityAnimation);
+
+DEFINE_SIDE_PANEL_ANIMATION_ID(kSidePanelContentTopBoundAnimation);
+DEFINE_SIDE_PANEL_ANIMATION_ID(kSidePanelContentBottomBoundAnimation);
+DEFINE_SIDE_PANEL_ANIMATION_ID(kSidePanelContentLeftBoundAnimation);
+DEFINE_SIDE_PANEL_ANIMATION_ID(kSidePanelContentWidthBoundAnimation);

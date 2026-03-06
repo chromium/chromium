@@ -345,7 +345,7 @@ views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
 }
 
 void ShadowOverlayView::OnAnimationSequenceProgressed(
-    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id,
+    SidePanelAnimationId animation_id,
     double animation_value) {
   CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
 
@@ -353,7 +353,7 @@ void ShadowOverlayView::OnAnimationSequenceProgressed(
 }
 
 void ShadowOverlayView::OnAnimationSequenceEnded(
-    const SidePanelAnimationCoordinator::SidePanelAnimationId& animation_id) {
+    SidePanelAnimationId animation_id) {
   // When the animation ends, set the final opacity based on whether the side
   // panel is closing or opening.
   const double ending_opacity =
