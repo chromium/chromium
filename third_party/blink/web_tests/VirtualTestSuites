@@ -2937,7 +2937,7 @@
       "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"
     ],
-    "expires": "Mar 1, 2026",
+    "expires": "Nov 1, 2026",
     "exclusive_tests": "ALL",
     "args": [
       "--enable-features=EnableSchemeBoundCookies"
