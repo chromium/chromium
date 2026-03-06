@@ -1,0 +1,54 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = []
+  public_deps = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "filter_ui_controller.cc",
+      "filter_ui_controller.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/multistep_filter/core",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/tabs",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//components/multistep_filter/core",
+    ]
+
+    deps += [
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//ui/base",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    sources += [ "filter_ui_controller_unittest.cc" ]
+    deps += [
+      ":ui",
+      "//base/test:test_support",
+      "//chrome/browser/multistep_filter/core",
+      "//chrome/browser/multistep_filter/test_utils",
+      "//chrome/test:test_support",
+      "//components/multistep_filter/core",
+      "//components/multistep_filter/core:features",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

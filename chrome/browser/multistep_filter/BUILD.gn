@@ -4,5 +4,8 @@
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//chrome/browser/multistep_filter/core:unit_tests" ]
+  deps = [
+    "//chrome/browser/multistep_filter/core:unit_tests",
+    "//chrome/browser/multistep_filter/ui:unit_tests",
+  ]
 }
