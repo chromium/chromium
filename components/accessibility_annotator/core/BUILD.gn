@@ -6,6 +6,8 @@ source_set("core") {
   sources = [
     "accessibility_annotation_service.cc",
     "accessibility_annotation_service.h",
+    "accessibility_query_service.cc",
+    "accessibility_query_service.h",
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",
@@ -13,6 +15,7 @@ source_set("core") {
 
   public_deps = [
     "//base",
+    "//components/accessibility_annotator/core/annotation_reducer",
     "//components/accessibility_annotator/core/data_models",
     "//components/keyed_service/core",
     "//url",
@@ -30,7 +33,10 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "direct_server_entity_provider_unittest.cc" ]
+  sources = [
+    "accessibility_query_service_unittest.cc",
+    "direct_server_entity_provider_unittest.cc",
+  ]
 
   deps = [
     ":core",

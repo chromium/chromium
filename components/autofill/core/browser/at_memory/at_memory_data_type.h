@@ -17,13 +17,12 @@ namespace autofill {
 // Represents the semantic type of a user's @memory query, identifying the
 // specific type of requested information, either referring to a specific
 // attribute or to a broader category (e.g. a vehicle, or vehicle's VIN).
-// This decouples the query engine from specific data sources by using a
-// variant of existing, well-defined types.
 using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
 
-// Converts an accessibility_annotator::QueryIntentType to an AtMemoryDataType.
+// Translates a query intent from the accessibility annotator to an
+// Autofill-specific data type.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    accessibility_annotator::QueryIntentType query_intent_type);
+    accessibility_annotator::QueryIntentType intent_type);
 
 }  // namespace autofill
 

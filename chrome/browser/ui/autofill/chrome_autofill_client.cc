@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/accessibility_annotator/accessibility_query_service_factory.h"
 #include "chrome/browser/autofill/account_setting_service_factory.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
@@ -557,6 +558,14 @@ AutofillPlusAddressDelegate* ChromeAutofillClient::GetPlusAddressDelegate() {
   }
   return PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
+}
+
+accessibility_annotator::AccessibilityQueryService*
+ChromeAutofillClient::GetAccessibilityQueryService() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return accessibility_annotator::AccessibilityQueryServiceFactory::
+      GetForProfile(profile);
 }
 
 PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(

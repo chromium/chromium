@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/accessibility_annotator/core/accessibility_query_service.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -202,6 +203,11 @@ class TestAutofillClientTemplate : public T {
 
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override {
     return plus_address_delegate_.get();
+  }
+
+  accessibility_annotator::AccessibilityQueryService*
+  GetAccessibilityQueryService() override {
+    return accessibility_query_service_.get();
   }
 
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() override {
@@ -634,6 +640,12 @@ class TestAutofillClientTemplate : public T {
     plus_address_delegate_ = std::move(plus_address_delegate);
   }
 
+  void set_accessibility_query_service(
+      std::unique_ptr<accessibility_annotator::AccessibilityQueryService>
+          accessibility_query_service) {
+    accessibility_query_service_ = std::move(accessibility_query_service);
+  }
+
   void set_identity_credential_delegate(
       std::unique_ptr<IdentityCredentialDelegate>
           identity_credential_delegate) {
@@ -699,6 +711,8 @@ class TestAutofillClientTemplate : public T {
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
+  std::unique_ptr<accessibility_annotator::AccessibilityQueryService>
+      accessibility_query_service_;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
   TestAddressNormalizer test_address_normalizer_;

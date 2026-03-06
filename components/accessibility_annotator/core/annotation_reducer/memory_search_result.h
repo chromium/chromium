@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
 
 #include <string>
 
-namespace autofill {
+namespace accessibility_annotator {
 
 // Represents a single search result from @memory, intended to be displayed
 // as a suggestion in the UI.
@@ -31,6 +31,6 @@ struct MemorySearchResult {
   bool operator==(const MemorySearchResult& other) const = default;
 };
 
-}  // namespace autofill
+}  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/autofill_data_retriever.h"
+#include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,6 +13,8 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -23,13 +25,15 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
 namespace {
+
+using ::accessibility_annotator::MemorySearchResult;
+using ::accessibility_annotator::QueryIntentType;
 
 // Calculates a ranking score for an entity, based on frequency and recency of
 // use.
@@ -52,7 +56,7 @@ std::optional<std::u16string> GetAutofillAiAttributeValue(
 
 // Fetches data for a specific field type from all available address profiles.
 std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
-    PersonalDataManager& personal_data_manager,
+    const PersonalDataManager& personal_data_manager,
     FieldType type) {
   std::vector<MemorySearchResult> results;
   for (const AutofillProfile* profile :
@@ -83,7 +87,7 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
 
 // Fetches full address representation from all profiles.
 std::vector<MemorySearchResult> FetchFullAddressData(
-    PersonalDataManager& personal_data_manager) {
+    const PersonalDataManager& personal_data_manager) {
   std::vector<MemorySearchResult> results;
   std::string app_locale =
       personal_data_manager.address_data_manager().app_locale();
@@ -113,7 +117,7 @@ std::vector<MemorySearchResult> FetchFullAddressData(
 
 // Fetches data from EntityDataManager (Autofill AI) for the requested entity.
 std::vector<MemorySearchResult> FetchAutofillAiEntityData(
-    EntityDataManager* entity_data_manager,
+    const EntityDataManager* entity_data_manager,
     EntityType entity_type,
     std::string_view app_locale) {
   std::vector<MemorySearchResult> results;
@@ -164,7 +168,7 @@ std::vector<MemorySearchResult> FetchAutofillAiEntityData(
 // Fetches data from EntityDataManager (Autofill AI) for the requested
 // attribute.
 std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
-    EntityDataManager* entity_data_manager,
+    const EntityDataManager* entity_data_manager,
     AttributeType attribute_type,
     std::string_view app_locale) {
   std::vector<MemorySearchResult> results;
@@ -201,7 +205,7 @@ std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
 
 // Fetches IBAN data from PersonalDataManager.
 std::vector<MemorySearchResult> FetchIbanData(
-    PersonalDataManager& personal_data_manager) {
+    const PersonalDataManager& personal_data_manager) {
   std::vector<MemorySearchResult> results;
   for (const Iban* iban :
        personal_data_manager.payments_data_manager().GetIbans()) {
@@ -221,42 +225,58 @@ std::vector<MemorySearchResult> FetchIbanData(
 
 }  // namespace
 
-AutofillDataRetriever::AutofillDataRetriever(AutofillClient& client)
-    : client_(client) {}
+AutofillDataProviderImpl::AutofillDataProviderImpl(
+    const PersonalDataManager* personal_data_manager,
+    const EntityDataManager* entity_data_manager)
+    : personal_data_manager_(personal_data_manager),
+      entity_data_manager_(entity_data_manager) {}
 
-AutofillDataRetriever::~AutofillDataRetriever() = default;
+AutofillDataProviderImpl::~AutofillDataProviderImpl() = default;
 
-std::vector<MemorySearchResult> AutofillDataRetriever::RetrieveAll(
-    AtMemoryDataType intent) {
+std::vector<MemorySearchResult> AutofillDataProviderImpl::RetrieveAll(
+    QueryIntentType type) {
+  std::optional<AtMemoryDataType> internal_type = ToAtMemoryDataType(type);
+  if (!internal_type) {
+    return {};
+  }
+  return GetAutofillData(*internal_type);
+}
+
+std::vector<MemorySearchResult> AutofillDataProviderImpl::GetAutofillData(
+    AtMemoryDataType type) {
+  if (!personal_data_manager_) {
+    return {};
+  }
   std::vector<MemorySearchResult> results = std::visit(
       absl::Overload{
           [this](FieldType field_type) -> std::vector<MemorySearchResult> {
-            PersonalDataManager& pdm = client_->GetPersonalDataManager();
             if (field_type == IBAN_VALUE) {
-              return FetchIbanData(pdm);
+              return FetchIbanData(*personal_data_manager_);
             }
             if (field_type == ADDRESS_HOME_ADDRESS) {
               std::vector<MemorySearchResult> results =
-                  FetchDataFromAddressProfiles(pdm,
+                  FetchDataFromAddressProfiles(*personal_data_manager_,
                                                ADDRESS_HOME_STREET_ADDRESS);
-              base::Extend(results, FetchFullAddressData(pdm));
+              base::Extend(results,
+                           FetchFullAddressData(*personal_data_manager_));
               return results;
             }
-            return FetchDataFromAddressProfiles(pdm, field_type);
+            return FetchDataFromAddressProfiles(*personal_data_manager_,
+                                                field_type);
           },
           [this](EntityType entity_type) -> std::vector<MemorySearchResult> {
-            return FetchAutofillAiEntityData(client_->GetEntityDataManager(),
-                                             entity_type,
-                                             client_->GetAppLocale());
+            return FetchAutofillAiEntityData(
+                entity_data_manager_, entity_type,
+                personal_data_manager_->address_data_manager().app_locale());
           },
           [this](
               AttributeType attribute_type) -> std::vector<MemorySearchResult> {
-            return FetchAutofillAiAttributeData(client_->GetEntityDataManager(),
-                                                attribute_type,
-                                                client_->GetAppLocale());
+            return FetchAutofillAiAttributeData(
+                entity_data_manager_, attribute_type,
+                personal_data_manager_->address_data_manager().app_locale());
           },
       },
-      intent);
+      type);
 
   std::ranges::sort(
       results, [](const MemorySearchResult& a, const MemorySearchResult& b) {

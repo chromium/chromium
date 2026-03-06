@@ -125,10 +125,8 @@ static_library("browser") {
   sources = [
     "at_memory/at_memory_data_type.cc",
     "at_memory/at_memory_data_type.h",
-    "at_memory/autofill_data_retriever.cc",
-    "at_memory/autofill_data_retriever.h",
-    "at_memory/memory_search_result.cc",
-    "at_memory/memory_search_result.h",
+    "at_memory/autofill_data_provider_impl.cc",
+    "at_memory/autofill_data_provider_impl.h",
     "autofill_ai_form_rationalization.cc",
     "autofill_ai_form_rationalization.h",
     "autofill_browser_util.cc",
@@ -1403,6 +1401,8 @@ static_library("test_support") {
 
   public_deps = [
     ":browser",
+    "//components/accessibility_annotator/core",
+    "//components/accessibility_annotator/core/annotation_reducer",
     "//components/autofill/core/common:test_support",
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/browser:test_support",
@@ -1518,7 +1518,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "at_memory/at_memory_data_type_unittest.cc",
-    "at_memory/autofill_data_retriever_unittest.cc",
+    "at_memory/autofill_data_provider_impl_unittest.cc",
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
     "autofill_field_unittest.cc",
@@ -1877,6 +1877,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//base/version_info",
+    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core/annotation_reducer",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",

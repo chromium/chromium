@@ -85,6 +85,10 @@ namespace version_info {
 enum class Channel;
 }
 
+namespace accessibility_annotator {
+class AccessibilityQueryService;
+}
+
 namespace autofill {
 
 class AutofillManager;
@@ -397,6 +401,11 @@ class AutofillClient {
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.
   virtual AutofillPlusAddressDelegate* GetPlusAddressDelegate();
+
+  // Returns the `AccessibilityQueryService` associated with the profile of
+  // the window of this tab.
+  virtual accessibility_annotator::AccessibilityQueryService*
+  GetAccessibilityQueryService();
 
   // Returns the `PasswordManagerDelegate` responsible to provide
   // password suggestions for the given `field_id`.

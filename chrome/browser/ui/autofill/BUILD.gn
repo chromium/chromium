@@ -179,6 +179,7 @@ source_set("impl") {
     ":autofill",
     ":autofill_ai_ui_utils_impl",
     "//chrome/browser:browser_process",
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/actor",
     "//chrome/browser/autofill",
     "//chrome/browser/autofill/actor",
