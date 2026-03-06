@@ -4,6 +4,7 @@
 
 #include "remoting/host/linux/desktop_session_factory_linux.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -15,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
@@ -61,7 +63,7 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
   ~DesktopSessionLinux() override;
 
   void OnRemoteDisplaySessionChanged(
-      const RemoteDisplaySessionManager::RemoteDisplayInfo& info);
+      const RemoteDisplaySessionManager::RemoteDisplaySession& info);
 
   // Notifies the daemon process and terminates the desktop session. Note that
   // `this` will be deleted during the call.
@@ -96,7 +98,7 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
   // will still return true, since it will be called again once the session info
   // is ready.
   bool IsSessionUsernameAllowed(
-      const RemoteDisplaySessionManager::RemoteDisplayInfo& info);
+      const RemoteDisplaySessionManager::RemoteDisplaySession& session);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -137,7 +139,7 @@ DesktopSessionFactoryLinux::DesktopSessionLinux::~DesktopSessionLinux() {
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::
     OnRemoteDisplaySessionChanged(
-        const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
+        const RemoteDisplaySessionManager::RemoteDisplaySession& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!info.session_info.has_value() || !info.user_info.has_value() ||
@@ -309,7 +311,7 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::CrashDesktopProcess(
 }
 
 bool DesktopSessionFactoryLinux::DesktopSessionLinux::IsSessionUsernameAllowed(
-    const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
+    const RemoteDisplaySessionManager::RemoteDisplaySession& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (required_username_.empty()) {
@@ -412,7 +414,7 @@ void DesktopSessionFactoryLinux::OnCreateRemoteDisplayResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result.has_value()) {
-    // No need to do anything. OnRemoteDisplaySessionChanged() will be called
+    // No need to do anything. OnRemoteDisplayChanged() will be called
     // once the session is ready.
     return;
   }
@@ -425,15 +427,55 @@ void DesktopSessionFactoryLinux::OnCreateRemoteDisplayResult(
   }
 }
 
-void DesktopSessionFactoryLinux::OnRemoteDisplaySessionChanged(
+void DesktopSessionFactoryLinux::OnRemoteDisplayChanged(
     std::string_view display_name,
     const RemoteDisplaySessionManager::RemoteDisplayInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto session = FindSession(display_name);
-  if (session) {
-    session->OnRemoteDisplaySessionChanged(info);
+  if (info.sessions.empty()) {
+    LOG(WARNING) << "Remote display " << display_name << " has no sessions.";
+    return;
   }
+
+  if (info.sessions.size() == 1) {
+    auto session = FindSession(display_name);
+    if (!session) {
+      return;
+    }
+    session->OnRemoteDisplaySessionChanged(info.sessions.begin()->second);
+    return;
+  }
+
+  // There are multiple sessions with the same display name. This usually
+  // happens during greeter->user transition. This is mostly for GRD to do the
+  // RDP handover before they terminate the greeter. CRD doesn't do RDP
+  // handover, so we just find and terminate the greeter session.
+  auto greeter_it = std::ranges::find_if(info.sessions, [](const auto& pair) {
+    return pair.second.session_info->session_class == "greeter";
+  });
+  const RemoteDisplaySessionManager::RemoteDisplaySession* session = nullptr;
+  if (greeter_it != info.sessions.end()) {
+    session = &greeter_it->second;
+    HOST_LOG << "Terminating greeter session "
+             << session->session_info->session_id
+             << "for remote display: " << display_name;
+  } else {
+    session = &info.sessions.begin()->second;
+    LOG(WARNING) << "Cannot find greeter session. Terminating the first "
+                 << session->session_info->session_class << " session "
+                 << session->session_info->session_id
+                 << " for remote display: " << display_name;
+  }
+  // We just terminate one session, since terminating multiple sessions at a
+  // time will result in multiple OnRemoteDisplayChanged() calls.
+  // OnRemoteDisplayChanged() will be called once the session is removed.
+  remote_display_session_manager_.TerminateRemoteDisplaySession(
+      *session, base::BindOnce([](base::expected<void, Loggable> result) {
+        // TODO: crbug.com/475611769 - See what to do with the callback.
+        if (!result.has_value()) {
+          LOG(ERROR) << result.error();
+        }
+      }));
 }
 
 void DesktopSessionFactoryLinux::OnRemoteDisplayTerminated(

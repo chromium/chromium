@@ -38,7 +38,7 @@ class GdmRemoteDisplayManager {
 
     // The current session ID. Note that this will be an empty string if no
     // login session has been created for the remote display yet, in which case
-    // you should wait for OnRemoteDisplaySessionChanged() to be called.
+    // you should wait for OnRemoteDisplayChanged() to be called.
     std::string session_id;
   };
 
@@ -66,7 +66,7 @@ class GdmRemoteDisplayManager {
 
     // Called when a remote display's session ID has changed, which usually
     // happens when the user logs in from the GDM greeter session.
-    virtual void OnRemoteDisplaySessionChanged(
+    virtual void OnRemoteDisplayChanged(
         const gvariant::ObjectPath& display_path,
         const RemoteDisplay& display) {}
   };
@@ -93,6 +93,12 @@ class GdmRemoteDisplayManager {
   // this does not indicate that a remote display itself has already been
   // created, which is what `Observer::OnRemoteDisplayCreated()` is used for, so
   // `callback` is mostly used in case an error has occurred.
+  // Note that GDM will create multiple RemoteDisplays for the same `remote_id`.
+  // During session handover, a new RemoteDisplay with the same `remote_id` and
+  // the login user's `session_id` will be created, and the greeter's
+  // RemoteDisplay will remain active. The caller needs to manually terminate
+  // the greeter's RemoteDisplay by terminating the login session via the
+  // systemd login API.
   void CreateRemoteDisplay(gvariant::ObjectPath remote_id, Callback callback);
 
   // TODO: crbug.com/465193343 - See if we need a RemoveRemoteDisplay() method.

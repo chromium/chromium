@@ -241,8 +241,7 @@ void GdmRemoteDisplayManager::OnRemoteDisplayPropertyChanged(
       return;
     }
     remote_display_it->second.session_id = session_id_boxed->value;
-    observer_->OnRemoteDisplaySessionChanged(display_path,
-                                             remote_display_it->second);
+    observer_->OnRemoteDisplayChanged(display_path, remote_display_it->second);
     return;
   }
 
@@ -253,8 +252,7 @@ void GdmRemoteDisplayManager::OnRemoteDisplayPropertyChanged(
                  << " (SessionId: " << remote_display_it->second.session_id
                  << ") is no longer associated with a login session.";
     remote_display_it->second.session_id = {};
-    observer_->OnRemoteDisplaySessionChanged(display_path,
-                                             remote_display_it->second);
+    observer_->OnRemoteDisplayChanged(display_path, remote_display_it->second);
   }
 }
 

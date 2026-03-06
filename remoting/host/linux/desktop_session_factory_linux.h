@@ -64,7 +64,7 @@ class DesktopSessionFactoryLinux final
                                    base::expected<void, Loggable> result);
 
   // RemoteDisplaySessionManager::Delegate implementation.
-  void OnRemoteDisplaySessionChanged(
+  void OnRemoteDisplayChanged(
       std::string_view display_name,
       const RemoteDisplaySessionManager::RemoteDisplayInfo& info) override;
   void OnRemoteDisplayTerminated(std::string_view display_name) override;
