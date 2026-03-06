@@ -132,6 +132,7 @@ TEST_F(UnexportableKeyProviderConfigTest, ForProfilePath) {
                                             kKeychainAccessGroup,
                                             kUserDataDirHash,
                                             "test_profile",
+                                            "",
                                         },
                                         "."));
 }
@@ -327,6 +328,30 @@ TEST_F(UnexportableKeyProviderConfigTest,
   EXPECT_THAT(dbsc_standard_tag, Not(StartsWith(lst_tag)));
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_prototype_tag)));
   EXPECT_THAT(lst_tag, Not(StartsWith(dbsc_standard_tag)));
+}
+
+TEST_F(UnexportableKeyProviderConfigTest,
+       ApplicationTagsAreNotPrefixesBetweenSimilarlyNamedProfiles) {
+  TestingProfile profile1(base::FilePath("/user/data/dir/profile1"));
+  TestingProfile profile11(base::FilePath("/user/data/dir/profile11"));
+
+  const std::string profile1_path_tag =
+      GetConfigForProfilePath(profile1.GetPath()).application_tag;
+  const std::string profile11_path_tag =
+      GetConfigForProfilePath(profile11.GetPath()).application_tag;
+
+  const std::string profile1_tag =
+      GetConfigForProfile(profile1).application_tag;
+  const std::string profile11_tag =
+      GetConfigForProfile(profile11).application_tag;
+
+  // The path tag of profile1 must not be a prefix for profile11's path tag.
+  // This ensures deleting profile1 doesn't delete profile11's keys.
+  EXPECT_THAT(profile11_path_tag, Not(StartsWith(profile1_path_tag)));
+
+  // The path tag of profile1 must not be a prefix for profile11's fully
+  // qualified profile tag.
+  EXPECT_THAT(profile11_tag, Not(StartsWith(profile1_path_tag)));
 }
 #endif  // BUILDFLAG(IS_MAC)
 

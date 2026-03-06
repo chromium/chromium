@@ -58,6 +58,10 @@ crypto::UnexportableKeyProvider::Config GetConfigForUserDataDir(
 // - The bundle and team identifiers to scope it to the application.
 // - A hash of the current profile's user data directory.
 // - The profile's name to uniquely identify the profile.
+//
+// NOTE: This tag will end in the separator "." following the profile name,
+// since profile names could be a prefix of other profile names. For example,
+// "Profile 1" and "Profile 10".
 crypto::UnexportableKeyProvider::Config GetConfigForProfilePath(
     const base::FilePath& profile_path);
 

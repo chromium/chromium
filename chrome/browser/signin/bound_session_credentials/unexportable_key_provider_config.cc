@@ -107,6 +107,7 @@ crypto::UnexportableKeyProvider::Config GetConfigForProfilePath(
   base::StrAppend(&config.application_tag, {
                                                ".",
                                                profile_path.BaseName().value(),
+                                               ".",
                                            });
 #endif  // BUILDFLAG(IS_MAC)
   return config;
@@ -124,7 +125,6 @@ crypto::UnexportableKeyProvider::Config GetConfigForProfile(
 
   base::StrAppend(&config.application_tag,
                   {
-                      ".",
                       HexEncodeLowerSha64(base::byte_span_from_ref(
                           time.InMillisecondsSinceUnixEpoch())),
                   });
