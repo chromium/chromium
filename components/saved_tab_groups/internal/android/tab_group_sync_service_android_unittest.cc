@@ -30,6 +30,12 @@ using testing::_;
 using testing::Eq;
 using testing::Return;
 using testing::SaveArg;
+using JTabGroupSyncService =
+    org::chromium::components::tab_group_sync::JTabGroupSyncService;
+using JLocalTabGroupId =
+    org::chromium::components::tab_group_sync::JLocalTabGroupId;
+using JSavedTabGroup =
+    org::chromium::components::tab_group_sync::JSavedTabGroup;
 
 namespace tab_groups {
 namespace {
@@ -71,10 +77,7 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
     EXPECT_CALL(tab_group_sync_service_, AddObserver(_));
     bridge_ =
         std::make_unique<TabGroupSyncServiceAndroid>(&tab_group_sync_service_);
-    auto j_service_raw = bridge_->GetJavaObject();
-    j_service_ = jni_zero::Cast<
-        org::chromium::components::tab_group_sync::JTabGroupSyncService>(
-        AttachCurrentThread(), std::move(j_service_raw));
+    j_service_ = bridge_->GetJavaObject().As<JTabGroupSyncService>();
   }
 
   void SetUpJavaTestObserver() {
@@ -88,9 +91,7 @@ class TabGroupSyncServiceAndroidTest : public testing::Test {
 
   MockTabGroupSyncService tab_group_sync_service_;
   std::unique_ptr<TabGroupSyncServiceAndroid> bridge_;
-  base::android::ScopedJavaLocalRef<
-      org::chromium::components::tab_group_sync::JTabGroupSyncService>
-      j_service_;
+  base::android::ScopedJavaLocalRef<JTabGroupSyncService> j_service_;
   base::android::ScopedJavaGlobalRef<JTabGroupSyncServiceAndroidUnitTest>
       j_test_;
   LocalTabGroupID test_tab_group_id_ = base::Token(4, 5);
@@ -140,11 +141,9 @@ TEST_F(TabGroupSyncServiceAndroidTest, SavedTabGroupConversion_NativeToJava) {
                         /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9,
                         "creator_cache_guid", "last_updater_cache_guid");
   group.AddTabLocally(tab3);
-  auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  auto j_group_converted =
-      jni_zero::Cast<org::chromium::components::tab_group_sync::JSavedTabGroup>(
-          env, std::move(j_group));
-  j_test_->testSavedTabGroupConversionNativeToJava(env, j_group_converted);
+  auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group)
+                     .As<JSavedTabGroup>();
+  j_test_->testSavedTabGroupConversionNativeToJava(env, j_group);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
@@ -343,17 +342,12 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
       .WillOnce(Return(std::nullopt));
 
   auto j_local_id_1 =
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_1);
-  auto j_local_id_1_converted = jni_zero::Cast<
-      org::chromium::components::tab_group_sync::JLocalTabGroupId>(
-      env, std::move(j_local_id_1));
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_1)
+          .As<JLocalTabGroupId>();
   auto j_local_id_2 =
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_2);
-  auto j_local_id_2_converted = jni_zero::Cast<
-      org::chromium::components::tab_group_sync::JLocalTabGroupId>(
-      env, std::move(j_local_id_2));
-  j_test_->testGetGroupByLocalId(env, j_local_id_1_converted,
-                                 j_local_id_2_converted);
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id_2)
+          .As<JLocalTabGroupId>();
+  j_test_->testGetGroupByLocalId(env, j_local_id_1, j_local_id_2);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetDeletedGroupIds) {
@@ -370,10 +364,8 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
   auto j_group_id = UuidToJavaString(env, group_id);
 
   auto j_tab_group_id =
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_);
-  auto j_tab_group_id_converted = jni_zero::Cast<
-      org::chromium::components::tab_group_sync::JLocalTabGroupId>(
-      env, std::move(j_tab_group_id));
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_)
+          .As<JLocalTabGroupId>();
 
   // Update the mapping.
   EXPECT_CALL(
@@ -381,14 +373,14 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
       UpdateLocalTabGroupMapping(Eq(group_id), Eq(test_tab_group_id_),
                                  Eq(OpeningSource::kAutoOpenedFromSync)));
   j_test_->testUpdateLocalTabGroupMapping(AttachCurrentThread(), j_group_id,
-                                          j_tab_group_id_converted);
+                                          j_tab_group_id);
 
   // Remove the mapping.
   EXPECT_CALL(tab_group_sync_service_,
               RemoveLocalTabGroupMapping(Eq(test_tab_group_id_),
                                          Eq(ClosingSource::kDeletedByUser)));
   j_test_->testRemoveLocalTabGroupMapping(AttachCurrentThread(),
-                                          j_tab_group_id_converted);
+                                          j_tab_group_id);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
@@ -397,15 +389,13 @@ TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabId) {
   auto j_tab_id = UuidToJavaString(env, tab_id);
 
   auto j_tab_group_id =
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_);
-  auto j_tab_group_id_converted = jni_zero::Cast<
-      org::chromium::components::tab_group_sync::JLocalTabGroupId>(
-      env, std::move(j_tab_group_id));
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_)
+          .As<JLocalTabGroupId>();
 
   EXPECT_CALL(tab_group_sync_service_,
               UpdateLocalTabId(Eq(test_tab_group_id_), Eq(tab_id), Eq(4)));
-  j_test_->testUpdateLocalTabId(AttachCurrentThread(), j_tab_group_id_converted,
-                                j_tab_id, 4);
+  j_test_->testUpdateLocalTabId(AttachCurrentThread(), j_tab_group_id, j_tab_id,
+                                4);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
@@ -416,26 +406,22 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabSelected) {
       base::android::ConvertUTF16ToJavaString(env, kTestTabTitle);
 
   auto j_tab_group_id =
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_);
-  auto j_tab_group_id_converted = jni_zero::Cast<
-      org::chromium::components::tab_group_sync::JLocalTabGroupId>(
-      env, std::move(j_tab_group_id));
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, test_tab_group_id_)
+          .As<JLocalTabGroupId>();
   EXPECT_CALL(
       tab_group_sync_service_,
       OnTabSelected(Eq(test_tab_group_id_), Eq(tab_id), Eq(kTestTabTitle)));
-  j_test_->testOnTabSelected(AttachCurrentThread(), j_tab_group_id_converted,
-                             tab_id, j_tab_title);
+  j_test_->testOnTabSelected(AttachCurrentThread(), j_tab_group_id, tab_id,
+                             j_tab_title);
 
   // Select a tab that isn't part of a group.
   LocalTabID non_grouped_tab_id = 6;
   EXPECT_CALL(tab_group_sync_service_,
               OnTabSelected(Eq(std::nullopt), Eq(non_grouped_tab_id),
                             Eq(kTestTabTitle)));
-  j_test_->testOnTabSelected(
-      AttachCurrentThread(),
-      ScopedJavaLocalRef<
-          org::chromium::components::tab_group_sync::JLocalTabGroupId>(),
-      non_grouped_tab_id, j_tab_title);
+  j_test_->testOnTabSelected(AttachCurrentThread(),
+                             ScopedJavaLocalRef<JLocalTabGroupId>(),
+                             non_grouped_tab_id, j_tab_title);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateArchivalStatus) {

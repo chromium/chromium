@@ -11,6 +11,8 @@
 #include "components/offline_items_collection/core/native_j_unittests_jni_headers/OfflineItemBridgeUnitTest_jni.h"
 
 using base::android::AttachCurrentThread;
+using JOfflineItem =
+    org::chromium::components::offline_items_collection::JOfflineItem;
 
 namespace offline_items_collection {
 namespace android {
@@ -35,11 +37,9 @@ class OfflineItemBridgeTest : public ::testing::Test {
 TEST_F(OfflineItemBridgeTest, CreateOfflineItem) {
   OfflineItem item;
   auto* env = AttachCurrentThread();
-  auto j_offline_item = OfflineItemBridge::CreateOfflineItem(env, item);
-  auto j_offline_item_converted = jni_zero::Cast<
-      org::chromium::components::offline_items_collection::JOfflineItem>(
-      env, std::move(j_offline_item));
-  j_test()->testCreateDefaultOfflineItem(env, j_offline_item_converted);
+  auto j_offline_item =
+      OfflineItemBridge::CreateOfflineItem(env, item).As<JOfflineItem>();
+  j_test()->testCreateDefaultOfflineItem(env, j_offline_item);
 }
 
 }  // namespace
