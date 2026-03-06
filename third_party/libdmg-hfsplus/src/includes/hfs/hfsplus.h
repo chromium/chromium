@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-
 #include "common.h"
 
 #define READ(a, b, c, d) ((*((a)->read))(a, b, c, d))
@@ -267,7 +266,6 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 #ifndef _SYS_STAT_H
 #define S_ISUID 0004000     /* set user id on execution */
 #define S_ISGID 0002000     /* set group id on execution */
-#define S_ISTXT 0001000     /* sticky bit */
 
 #define S_IRWXU 0000700     /* RWX mask for owner */
 #define S_IRUSR 0000400     /* R for owner */
@@ -284,6 +282,7 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 #define S_IWOTH 0000002     /* W for other */
 #define S_IXOTH 0000001     /* X for other */
 
+#ifndef S_IFMT
 #define S_IFMT   0170000    /* type of file mask */
 #define S_IFIFO  0010000    /* named pipe (fifo) */
 #define S_IFCHR  0020000    /* character special */
@@ -293,10 +292,14 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
 #define S_IFLNK  0120000    /* symbolic link */
 #define S_IFSOCK 0140000    /* socket */
 #define S_IFWHT  0160000    /* whiteout */
+#define S_ISTXT  0001000    /* sticky bit */
+#endif  /* ifndef S_IFMT */
 #endif  /* ifndef _SYS_STAT_H */
 #endif  /* ifndef _STAT_H_ */
 
+#ifndef UF_COMPRESSED
 #define UF_COMPRESSED 040
+#endif
 
 struct HFSPlusBSDInfo {
 	uint32_t  ownerID;
@@ -598,7 +601,16 @@ extern "C" {
 	HFSPlusCatalogRecord* getLinkTarget(HFSPlusCatalogRecord* record, HFSCatalogNodeID parentID, HFSPlusCatalogKey *key, Volume* volume);
 
 	CatalogRecordList* getFolderContents(HFSCatalogNodeID CNID, Volume* volume);
+
+	/* Identical to `getRecordFromPath2`, since `getRecordFromPath2` ignores the
+	 * `traverse` parameter. See documentation for `getRecordFromPath2` and
+	 * `getRecordFromPath3` for details. */
 	HFSPlusCatalogRecord* getRecordFromPath(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey);
+
+	/* Calls `getRecordFromPath3` with `traverse = TRUE` (ignoring the provided
+	 * value of `traverse`), `returnLink = TRUE`, `parentID = kHFSRootFolderID`,
+	 * and other parameters forwarded unchanged. See `getRecordFromPath3`
+	 * documentation for more details. */
 	HFSPlusCatalogRecord* getRecordFromPath2(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey, char traverse);
 
 	/* Finds the catalog record for the given `path` on the given `volume`,

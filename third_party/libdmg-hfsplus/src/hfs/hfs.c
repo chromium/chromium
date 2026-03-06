@@ -312,6 +312,15 @@ void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc,
 	free(record);
 }
 
+void cmd_setopenfolder(Volume* volume, int argc, char *argv[]) {
+	if (argc < 2) {
+		fprintf(stderr, "Not enough arguments: setopenfolder <path>\n");
+		exit(2);
+	}
+
+	hfs_set_openfolder(volume, argv[1]);
+}
+
 void TestByteOrder()
 {
 	short int word = 0x0001;
@@ -326,7 +335,7 @@ void usage(const char* name) {
 		fprintf(stderr, "warning: data format list truncated, needed %zu bytes\n",
 			    needed);
 	}
-	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
+	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|setopenfolder|debug> <arguments>\n", name);
 	printf("OPTIONS:\n");
 	printf("\t--symlinks, -s        <fail, traverse, clone_link>: how to handle symlinks\n");
 	printf("\t                      in the input directory in command `addall`\n");
@@ -467,6 +476,8 @@ int main(int argc, char *argv[]) {
 			} else {
 				debugBTree(volume->attrTree, FALSE);
 			}
+		} else if (strcmp(argv[2], "setopenfolder") == 0) {
+			cmd_setopenfolder(volume, argc - 2, argv + 2);
 		} else {
 			fprintf(stderr, "unrecognized verb: %s\n", argv[2]);
 			usage(bin_name);

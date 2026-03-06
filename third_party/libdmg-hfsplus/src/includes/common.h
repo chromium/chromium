@@ -30,7 +30,21 @@
 #define TRUE 1
 #define FALSE 0
 
+// Convert a field from host endianness to big-endian or big-endian to host
+// endianness. HFS+ and DMG use big-endian representations for most fields.
+// If the host is big-endian, this is a no-op.
+//
+// The argument to this macro should always be a field inside an HFS+ or DMG
+// structure, to ensure the size of the field is correct.
 #define FLIPENDIAN(x) flipEndian((unsigned char *)(&(x)), sizeof(x))
+
+// Convert a field from host endianness to little-endian or little-endian to
+// host endianness. This is less common in this library, since DMG and HFS+ use
+// big-endian representations for most fields. If the host is little-endian
+// (like x86-64 and ARM64), this is a no-op.
+//
+// The argument to this macro should always be a field inside an HFS+ or DMG
+// structure, to ensure the size of the field is correct.
 #define FLIPENDIANLE(x) flipEndianLE((unsigned char *)(&(x)), sizeof(x))
 
 #define IS_BIG_ENDIAN      0

@@ -137,3 +137,15 @@ Local modifications:
       each parameter and the apparent semantics of the function.
     * Adds comment to `getLinkTarget` explaining its behavior.
     * This patch contains only comments.
+  * patches/2026-03-05-hfs-set-openfolder.patch
+    * Adds `setopenfolder` command to `hfsplus` to configure a path to
+      automatically open in Finder when mounting the volume.
+      * This overrides the `-noautoopen` flag in `hdiutil attach` and Finder's
+      default behavior of automatically opening the root.
+      * See also: `hdiutil makehybrid`'s `-hfs-openfolder` flag.
+    * Adds comments to `getRecordFromPath`, `getRecordFromPath2`,
+      `FLIPENDIAN`, and `FLIPENDIANLE`.
+    * Improves a few error messages in hfslib.c.
+    * Adds `NULL` checks to `getRecordFromPath3`.
+    * In hfslib.c, checks return value of `updateVolume`.
+

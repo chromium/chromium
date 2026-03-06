@@ -1,20 +1,23 @@
-#include <string.h>
-#include <unistd.h>
+
 #include <dirent.h>
-#include <time.h>
-#include <sys/param.h>
-#include <sys/types.h>
-#include "common.h"
-#include "hfs/hfslib.h"
-#include "hfs/hfscompress.h"
-#include <sys/stat.h>
 #include <inttypes.h>
+#include <string.h>
+#include <sys/param.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 #ifdef WIN32
 #include <sys/utime.h>
 #define lstat stat
 #else
 #include <utime.h>
 #endif
+
+#include "common.h"
+#include "hfs/hfscompress.h"
+#include "hfs/hfslib.h"
+#include "hfs/hfsplus.h"
 
 #define BUFSIZE 1024*1024
 
@@ -210,7 +213,7 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
 		if(volume->volumeHeader->freeBlocks
 		   < ((newMapSize - volume->volumeHeader->allocationFile.logicalSize) / volume->volumeHeader->blockSize)) {
 			printf("Not enough room to allocate new allocation map blocks\n");
-			exit(0);
+			exit(1);
 		}
 
 		allocate((RawFile*) (volume->allocationFile->data), newMapSize);
@@ -222,11 +225,11 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
 
 	/* "unallocate" the new blocks */
 	for(i = ((volume->volumeHeader->totalBlocks / 8) + 1); i < newMapSize; i++) {
-		ASSERT(WRITE(volume->allocationFile, i, 1, &zero), "WRITE");
+		ASSERT(WRITE(volume->allocationFile, i, 1, &zero), "grow_hfs: couldn't unallocate new blocks");
 	}
 
 	/* grow backing store size */
-	ASSERT(WRITE(volume->image, newSize - 1, 1, &zero), "WRITE");
+	ASSERT(WRITE(volume->image, newSize - 1, 1, &zero), "grow_hfs: couldn't grow backing store size");
 
 	/* write new volume information */
 	volume->volumeHeader->totalBlocks = newBlocks;
@@ -235,7 +238,7 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
 	/* reserve last block */
 	setBlockUsed(volume, volume->volumeHeader->totalBlocks - 1, 1);
 
-	updateVolume(volume);
+	ASSERT(updateVolume(volume), "grow_hfs: couldn't update volume");
 }
 
 void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName) {
@@ -713,6 +716,27 @@ void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* nam
 			attrs = next;
 		}
 	}
+}
+
+void hfs_set_openfolder(Volume* volume, const char* path) {\
+	HFSPlusCatalogRecord* record = getRecordFromPath3(path, volume, NULL, NULL, TRUE, TRUE, kHFSRootFolderID);
+	if (record == NULL) {
+		hfs_panic("setting auto-open: No such file or directory");
+	}
+	HFSPlusCatalogFolder* folderRecord = tryCatalogRecordAsFolder(record);
+	if (folderRecord == NULL) {
+		hfs_panic("setting auto-open: Not a folder");
+	}
+
+	// `finderInfo[2]` configures auto-open; see the `finderInfo` part of
+	// https://developer.apple.com/library/archive/technotes/tn/tn1150.html#VolumeHeader
+	volume->volumeHeader->finderInfo[2] = folderRecord->folderID;
+	FLIPENDIAN(volume->volumeHeader->finderInfo[2]);
+	if (!updateVolume(volume)) {
+		hfs_panic("setting auto-open: Failed to update volume");
+	}
+
+	free(record);
 }
 
 void hfs_ls(Volume* volume, const char* path) {

@@ -66,6 +66,11 @@ extern "C" {
 
 	void hfs_untar(Volume* volume, AbstractFile* tarFile);
 	void hfs_ls(Volume* volume, const char* path);
+
+	/* Configure a path to automatically open in Finder when mounting the volume.
+	   path must be a valid path within the volume. Exits with a failure code if
+	   unsuccessful. */
+	void hfs_set_openfolder(Volume* volume, const char* path);
 	void hfs_setsilence(int s);
 #ifdef __cplusplus
 }

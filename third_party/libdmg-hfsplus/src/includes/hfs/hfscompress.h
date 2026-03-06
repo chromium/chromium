@@ -2,6 +2,7 @@
 #define HFSCOMPRESS_H
 
 #include <stdint.h>
+#include "hfsplus.h"
 #include "common.h"
 
 #define CMPFS_MAGIC 0x636D7066

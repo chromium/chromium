@@ -1,0 +1,268 @@
+diff --git a/third_party/libdmg-hfsplus/src/hfs/catalog.c b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+index c6465bd73a1bf..ea7bc849495a7 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/catalog.c
++++ b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+@@ -544,6 +544,14 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+ 
+   int exact;
+ 
++  if (volume == NULL) {
++    hfs_panic("getRecordFromPath: no Volume provided");
++  }
++
++  if (path == NULL) {
++    hfs_panic("getRecordFromPath: no Path provided");
++  }
++
+   if(path[0] == '\0' || (path[0] == '/' && path[1] == '\0')) {
+     // Special case to find the root folder. The empty path is interpreted
+     // as the root folder, even if `parentID` is not the root directory.
+diff --git a/third_party/libdmg-hfsplus/src/hfs/hfs.c b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+index 249c1445c6d18..37ed3c238bbbd 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/hfs.c
++++ b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+@@ -312,6 +312,15 @@ void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc,
+ 	free(record);
+ }
+ 
++void cmd_setopenfolder(Volume* volume, int argc, char *argv[]) {
++	if (argc < 2) {
++		fprintf(stderr, "Not enough arguments: setopenfolder <path>\n");
++		exit(2);
++	}
++
++	hfs_set_openfolder(volume, argv[1]);
++}
++
+ void TestByteOrder()
+ {
+ 	short int word = 0x0001;
+@@ -326,7 +335,7 @@ void usage(const char* name) {
+ 		fprintf(stderr, "warning: data format list truncated, needed %zu bytes\n",
+ 			    needed);
+ 	}
+-	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
++	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|setopenfolder|debug> <arguments>\n", name);
+ 	printf("OPTIONS:\n");
+ 	printf("\t--symlinks, -s        <fail, traverse, clone_link>: how to handle symlinks\n");
+ 	printf("\t                      in the input directory in command `addall`\n");
+@@ -467,6 +476,8 @@ int main(int argc, char *argv[]) {
+ 			} else {
+ 				debugBTree(volume->attrTree, FALSE);
+ 			}
++		} else if (strcmp(argv[2], "setopenfolder") == 0) {
++			cmd_setopenfolder(volume, argc - 2, argv + 2);
+ 		} else {
+ 			fprintf(stderr, "unrecognized verb: %s\n", argv[2]);
+ 			usage(bin_name);
+diff --git a/third_party/libdmg-hfsplus/src/hfs/hfslib.c b/third_party/libdmg-hfsplus/src/hfs/hfslib.c
+index 530e9a987561e..2ff5dd1b78e82 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/hfslib.c
++++ b/third_party/libdmg-hfsplus/src/hfs/hfslib.c
+@@ -1,14 +1,12 @@
+-#include <string.h>
+-#include <unistd.h>
++
+ #include <dirent.h>
+-#include <time.h>
++#include <inttypes.h>
++#include <string.h>
+ #include <sys/param.h>
+-#include <sys/types.h>
+-#include "common.h"
+-#include "hfs/hfslib.h"
+-#include "hfs/hfscompress.h"
+ #include <sys/stat.h>
+-#include <inttypes.h>
++#include <sys/types.h>
++#include <time.h>
++#include <unistd.h>
+ #ifdef WIN32
+ #include <sys/utime.h>
+ #define lstat stat
+@@ -16,6 +14,11 @@
+ #include <utime.h>
+ #endif
+ 
++#include "common.h"
++#include "hfs/hfscompress.h"
++#include "hfs/hfslib.h"
++#include "hfs/hfsplus.h"
++
+ #define BUFSIZE 1024*1024
+ 
+ static int silence = 0;
+@@ -210,7 +213,7 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
+ 		if(volume->volumeHeader->freeBlocks
+ 		   < ((newMapSize - volume->volumeHeader->allocationFile.logicalSize) / volume->volumeHeader->blockSize)) {
+ 			printf("Not enough room to allocate new allocation map blocks\n");
+-			exit(0);
++			exit(1);
+ 		}
+ 
+ 		allocate((RawFile*) (volume->allocationFile->data), newMapSize);
+@@ -222,11 +225,11 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
+ 
+ 	/* "unallocate" the new blocks */
+ 	for(i = ((volume->volumeHeader->totalBlocks / 8) + 1); i < newMapSize; i++) {
+-		ASSERT(WRITE(volume->allocationFile, i, 1, &zero), "WRITE");
++		ASSERT(WRITE(volume->allocationFile, i, 1, &zero), "grow_hfs: couldn't unallocate new blocks");
+ 	}
+ 
+ 	/* grow backing store size */
+-	ASSERT(WRITE(volume->image, newSize - 1, 1, &zero), "WRITE");
++	ASSERT(WRITE(volume->image, newSize - 1, 1, &zero), "grow_hfs: couldn't grow backing store size");
+ 
+ 	/* write new volume information */
+ 	volume->volumeHeader->totalBlocks = newBlocks;
+@@ -235,7 +238,7 @@ void grow_hfs(Volume* volume, uint64_t newSize) {
+ 	/* reserve last block */
+ 	setBlockUsed(volume, volume->volumeHeader->totalBlocks - 1, 1);
+ 
+-	updateVolume(volume);
++	ASSERT(updateVolume(volume), "grow_hfs: couldn't update volume");
+ }
+ 
+ void removeAllInFolder(HFSCatalogNodeID folderID, Volume* volume, const char* parentName) {
+@@ -715,6 +718,27 @@ void displayFileLSLine(Volume* volume, HFSPlusCatalogFile* file, const char* nam
+ 	}
+ }
+ 
++void hfs_set_openfolder(Volume* volume, const char* path) {\
++	HFSPlusCatalogRecord* record = getRecordFromPath3(path, volume, NULL, NULL, TRUE, TRUE, kHFSRootFolderID);
++	if (record == NULL) {
++		hfs_panic("setting auto-open: No such file or directory");
++	}
++	HFSPlusCatalogFolder* folderRecord = tryCatalogRecordAsFolder(record);
++	if (folderRecord == NULL) {
++		hfs_panic("setting auto-open: Not a folder");
++	}
++
++	// `finderInfo[2]` configures auto-open; see the `finderInfo` part of
++	// https://developer.apple.com/library/archive/technotes/tn/tn1150.html#VolumeHeader
++	volume->volumeHeader->finderInfo[2] = folderRecord->folderID;
++	FLIPENDIAN(volume->volumeHeader->finderInfo[2]);
++	if (!updateVolume(volume)) {
++		hfs_panic("setting auto-open: Failed to update volume");
++	}
++
++	free(record);
++}
++
+ void hfs_ls(Volume* volume, const char* path) {
+ 	HFSPlusCatalogRecord* record;
+ 	char* name;
+diff --git a/third_party/libdmg-hfsplus/src/includes/common.h b/third_party/libdmg-hfsplus/src/includes/common.h
+index 4697c32d46ef2..dfe28af475dd6 100644
+--- a/third_party/libdmg-hfsplus/src/includes/common.h
++++ b/third_party/libdmg-hfsplus/src/includes/common.h
+@@ -30,7 +30,21 @@
+ #define TRUE 1
+ #define FALSE 0
+ 
++// Convert a field from host endianness to big-endian or big-endian to host
++// endianness. HFS+ and DMG use big-endian representations for most fields.
++// If the host is big-endian, this is a no-op.
++//
++// The argument to this macro should always be a field inside an HFS+ or DMG
++// structure, to ensure the size of the field is correct.
+ #define FLIPENDIAN(x) flipEndian((unsigned char *)(&(x)), sizeof(x))
++
++// Convert a field from host endianness to little-endian or little-endian to
++// host endianness. This is less common in this library, since DMG and HFS+ use
++// big-endian representations for most fields. If the host is little-endian
++// (like x86-64 and ARM64), this is a no-op.
++//
++// The argument to this macro should always be a field inside an HFS+ or DMG
++// structure, to ensure the size of the field is correct.
+ #define FLIPENDIANLE(x) flipEndianLE((unsigned char *)(&(x)), sizeof(x))
+ 
+ #define IS_BIG_ENDIAN      0
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfscompress.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfscompress.h
+index d4437b1f63651..7b91b8d07729d 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfscompress.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfscompress.h
+@@ -2,6 +2,7 @@
+ #define HFSCOMPRESS_H
+ 
+ #include <stdint.h>
++#include "hfsplus.h"
+ #include "common.h"
+ 
+ #define CMPFS_MAGIC 0x636D7066
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
+index 725f34e51a6a8..0a9a09da09931 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfslib.h
+@@ -66,6 +66,11 @@ extern "C" {
+ 
+ 	void hfs_untar(Volume* volume, AbstractFile* tarFile);
+ 	void hfs_ls(Volume* volume, const char* path);
++
++	/* Configure a path to automatically open in Finder when mounting the volume.
++	   path must be a valid path within the volume. Exits with a failure code if
++	   unsuccessful. */
++	void hfs_set_openfolder(Volume* volume, const char* path);
+ 	void hfs_setsilence(int s);
+ #ifdef __cplusplus
+ }
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+index 628e01461f019..a3abe47075fd8 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+@@ -5,7 +5,6 @@
+ #include <stdint.h>
+ #include <stdlib.h>
+ 
+-
+ #include "common.h"
+ 
+ #define READ(a, b, c, d) ((*((a)->read))(a, b, c, d))
+@@ -267,7 +266,6 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
+ #ifndef _SYS_STAT_H
+ #define S_ISUID 0004000     /* set user id on execution */
+ #define S_ISGID 0002000     /* set group id on execution */
+-#define S_ISTXT 0001000     /* sticky bit */
+ 
+ #define S_IRWXU 0000700     /* RWX mask for owner */
+ #define S_IRUSR 0000400     /* R for owner */
+@@ -284,6 +282,7 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
+ #define S_IWOTH 0000002     /* W for other */
+ #define S_IXOTH 0000001     /* X for other */
+ 
++#ifndef S_IFMT
+ #define S_IFMT   0170000    /* type of file mask */
+ #define S_IFIFO  0010000    /* named pipe (fifo) */
+ #define S_IFCHR  0020000    /* character special */
+@@ -293,10 +292,14 @@ typedef struct ExtendedFolderInfo   ExtendedFolderInfo;
+ #define S_IFLNK  0120000    /* symbolic link */
+ #define S_IFSOCK 0140000    /* socket */
+ #define S_IFWHT  0160000    /* whiteout */
++#define S_ISTXT  0001000    /* sticky bit */
++#endif  /* ifndef S_IFMT */
+ #endif  /* ifndef _SYS_STAT_H */
+ #endif  /* ifndef _STAT_H_ */
+ 
++#ifndef UF_COMPRESSED
+ #define UF_COMPRESSED 040
++#endif
+ 
+ struct HFSPlusBSDInfo {
+ 	uint32_t  ownerID;
+@@ -598,7 +601,16 @@ extern "C" {
+ 	HFSPlusCatalogRecord* getLinkTarget(HFSPlusCatalogRecord* record, HFSCatalogNodeID parentID, HFSPlusCatalogKey *key, Volume* volume);
+ 
+ 	CatalogRecordList* getFolderContents(HFSCatalogNodeID CNID, Volume* volume);
++
++	/* Identical to `getRecordFromPath2`, since `getRecordFromPath2` ignores the
++	 * `traverse` parameter. See documentation for `getRecordFromPath2` and
++	 * `getRecordFromPath3` for details. */
+ 	HFSPlusCatalogRecord* getRecordFromPath(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey);
++
++	/* Calls `getRecordFromPath3` with `traverse = TRUE` (ignoring the provided
++	 * value of `traverse`), `returnLink = TRUE`, `parentID = kHFSRootFolderID`,
++	 * and other parameters forwarded unchanged. See `getRecordFromPath3`
++	 * documentation for more details. */
+ 	HFSPlusCatalogRecord* getRecordFromPath2(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey, char traverse);
+ 
+ 	/* Finds the catalog record for the given `path` on the given `volume`,

@@ -544,6 +544,14 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
 
   int exact;
 
+  if (volume == NULL) {
+    hfs_panic("getRecordFromPath: no Volume provided");
+  }
+
+  if (path == NULL) {
+    hfs_panic("getRecordFromPath: no Path provided");
+  }
+
   if(path[0] == '\0' || (path[0] == '/' && path[1] == '\0')) {
     // Special case to find the root folder. The empty path is interpreted
     // as the root folder, even if `parentID` is not the root directory.
