@@ -18,7 +18,6 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -27,19 +26,6 @@
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
-
-#if defined(USE_AURA)
-#include "ui/views/buildflags.h"
-
-#if BUILDFLAG(ENABLE_DESKTOP_AURA)
-#include "ui/views/test/mock_activation_controller.h"
-#endif
-
-#endif  // USE_AURA
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/views/test/mock_activation_controller.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -54,98 +40,6 @@ GlicInstanceCoordinatorImpl& GetInstanceCoordinator(GlicKeyedService& service) {
 }
 
 }  // namespace
-
-#if BUILDFLAG(IS_ANDROID)
-BrowserActivator::BrowserActivator() {
-  observation_.Observe(GlobalBrowserCollection::GetInstance());
-  if (auto* const browser =
-          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-    OnBrowserCreated(browser);
-  }
-}
-
-BrowserActivator::~BrowserActivator() = default;
-
-void BrowserActivator::SetMode(Mode mode) {
-  mode_ = mode;
-}
-
-void BrowserActivator::OnBrowserCreated(BrowserWindowInterface* browser) {
-  switch (mode_) {
-    case Mode::kSingleBrowser:
-      CHECK(!active_browser_) << "BrowserActivator::kSingleBrowser found "
-                                 "second active browser.";
-      break;
-    case Mode::kFirst:
-      if (active_browser_) {
-        return;
-      }
-      break;
-    case Mode::kManual:
-      return;
-  }
-
-  SetActivePrivate(browser);
-}
-
-void BrowserActivator::OnBrowserClosed(BrowserWindowInterface* browser) {
-  if (active_browser_.get() == browser) {
-    active_browser_ = nullptr;
-    if (mode_ == Mode::kFirst) {
-      if (auto* const replacement_browser =
-              GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
-        if (replacement_browser != browser) {
-          SetActivePrivate(replacement_browser);
-        }
-      }
-    }
-  }
-}
-
-void BrowserActivator::SetActive(BrowserWindowInterface* browser) {
-  mode_ = Mode::kManual;
-  if (!browser) {
-    active_browser_ = nullptr;
-  } else {
-    SetActivePrivate(browser);
-  }
-}
-
-void BrowserActivator::SetActivePrivate(
-    BrowserWindowInterface* browser_window_interface) {
-  CHECK(browser_window_interface);
-  active_browser_ = browser_window_interface;
-}
-
-#else  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-views::test::MockActivationController* activation_instance = nullptr;
-#endif
-
-BrowserActivator::BrowserActivator() {
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-  CHECK(!activation_instance);
-  activation_instance = new views::test::MockActivationController();
-#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-}
-
-BrowserActivator::~BrowserActivator() {
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
-  CHECK(activation_instance);
-  delete activation_instance;
-  activation_instance = nullptr;
-#endif
-}
-
-void BrowserActivator::SetMode(Mode mode) {}
-
-void BrowserActivator::SetActive(BrowserWindowInterface* browser) {
-  CHECK(browser);
-  browser->GetWindow()->Activate();
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 GlicInstanceTracker::GlicInstanceTracker(Profile* profile) {

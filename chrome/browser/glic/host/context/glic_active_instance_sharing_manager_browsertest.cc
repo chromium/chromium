@@ -46,8 +46,6 @@ class GlicActiveInstanceSharingManagerBrowserTest
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
                        DelegatesToActiveInstance) {
-  browser_activator().SetMode(BrowserActivator::Mode::kManual);
-
   // 1. Initial state: no instance, so no delegate.
   // GlicActiveInstanceSharingManager delegates to nothing if no active
   // instance. We can verify this by checking if it seems empty.
@@ -84,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   // window). Create another browser.
   Browser* browser2 = CreateBrowser(browser()->profile());
   // Helper to activate.
-  browser_activator().SetActive(browser2);
+  browser2->window()->Activate();
 
   // Now `active_instance` for the sharing manager should be null (or whatever
   // is on browser2, which is nothing yet). Note:
@@ -120,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(GlicActiveInstanceSharingManagerBrowserTest,
   }));
 
   // Switch back to browser1.
-  browser_activator().SetActive(browser());
+  browser()->window()->Activate();
 
   // Verify delegation to instance1: tab1 pinned, tab2 NOT pinned.
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -156,8 +154,6 @@ class GlicActiveInstanceSharingManagerProfileStateTest
 
 IN_PROC_BROWSER_TEST_P(GlicActiveInstanceSharingManagerProfileStateTest,
                        RespectsProfileState) {
-  browser_activator().SetMode(BrowserActivator::Mode::kManual);
-
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);

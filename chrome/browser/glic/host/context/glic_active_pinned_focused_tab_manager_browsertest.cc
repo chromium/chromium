@@ -63,8 +63,6 @@ class GlicActivePinnedFocusedTabManagerBrowserTest
 IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        TakesPinnedTabStatusIntoAccount) {
   // 1. Initial setup.
-  browser_activator().SetMode(BrowserActivator::Mode::kManual);
-
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
@@ -109,8 +107,6 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        TakesActiveTabStatusIntoAccount) {
-  browser_activator().SetMode(BrowserActivator::Mode::kManual);
-
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);
@@ -150,8 +146,6 @@ IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicActivePinnedFocusedTabManagerBrowserTest,
                        DoesNotTriggerFocusChangeOnPinChangesToInactiveTabs) {
-  browser_activator().SetMode(BrowserActivator::Mode::kManual);
-
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
   ASSERT_TRUE(service);

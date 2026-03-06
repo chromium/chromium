@@ -13,13 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/tabs/public/tab_interface.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "ui/views/widget/widget.h"
-#endif
 
 class AccountCapabilitiesTestMutator;
 class BrowserWindowInterface;
@@ -30,47 +24,6 @@ namespace glic {
 namespace prefs {
 enum class FreStatus;
 }  // namespace prefs
-
-// [Deprecated] Use views::test::MockActivationController instead.
-// Provides deterministic browser activation behavior.
-// Useful in browser tests where focus is not reliable.
-class BrowserActivator : public BrowserCollectionObserver {
- public:
-  // The different modes in which browser activation can be controlled.
-  enum class Mode {
-    // Support a single browser, crash if more than one browser is created at
-    // one time. Activates the browser when it is created. This is the default
-    // mode, to notify test authors that special consideration is necessary.
-    kSingleBrowser,
-    // Always keep the first browser active.
-    kFirst,
-    // Use SetActive() to set the active browser.
-    kManual,
-  };
-
-  BrowserActivator();
-  ~BrowserActivator() override;
-
-  // Sets the browser activation mode.
-  void SetMode(Mode mode);
-
-  // Sets the active browser. Switches to `Mode::kManual`.
-  void SetActive(BrowserWindowInterface* browser);
-
-#if BUILDFLAG(IS_ANDROID)
-  // BrowserCollectionObserver impl.
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
-
- private:
-  void SetActivePrivate(BrowserWindowInterface* browser_window_interface);
-
-  Mode mode_ = Mode::kSingleBrowser;
-  raw_ptr<BrowserWindowInterface> active_browser_;
-  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
-      observation_{this};
-#endif  // BUILDFLAG(IS_ANDROID)
-};
 
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 // Tracks a glic instance. Always tracks glic instance associated with the first

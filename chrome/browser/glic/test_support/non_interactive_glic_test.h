@@ -11,6 +11,14 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/buildflags.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#include "ui/views/test/mock_activation_controller.h"
+#endif
+#endif
+
 namespace glic {
 
 // Like InteractiveGlicTest, but expected to be used in a non-interactive
@@ -30,13 +38,13 @@ class NonInteractiveGlicTest
 
   void TearDownOnMainThread() override;
 
-  // Returns this fixture's `BrowserActivator` instance so that tests can
-  // customize how browser windows should be activated, if needed.
-  BrowserActivator& browser_activator() { return *browser_activator_; }
-
  private:
   base::test::ScopedFeatureList features_;
-  std::optional<BrowserActivator> browser_activator_;
+#if defined(TOOLKIT_VIEWS)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+  std::unique_ptr<views::test::MockActivationController> activation_controller_;
+#endif
+#endif
 };
 
 }  // namespace glic
