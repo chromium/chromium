@@ -386,6 +386,13 @@ ContextualSearchboxHandler::GetSuggestInputs() {
              : std::nullopt;
 }
 
+omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
+  if (input_state_model_) {
+    return input_state_model_->GetInputState();
+  }
+  return omnibox::InputState();
+}
+
 void ContextualSearchboxHandler::NotifySessionStarted() {
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (contextual_session_handle) {
@@ -562,8 +569,8 @@ void ContextualSearchboxHandler::ActivateMetricsFunnel(
 }
 
 void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
-  if (input_state_) {
-    std::move(callback).Run(*input_state_);
+  if (input_state_model_) {
+    std::move(callback).Run(input_state_model_->GetInputState());
   } else {
     std::move(callback).Run(std::nullopt);
   }
@@ -571,7 +578,6 @@ void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
 
 void ContextualSearchboxHandler::OnInputStateChanged(
     const contextual_search::InputState& state) {
-  input_state_ = std::make_unique<contextual_search::InputState>(state);
   if (!IsRemoteBound()) {
     return;
   }
@@ -979,10 +985,4 @@ void ContextualSearchboxHandler::OpenUrl(
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }
   contextual_session_handle->ClearSubmittedContextTokens();
-}
-
-// TODO(crbug.com/479566933): Might be better to just get this from the
-// InputStateModel rather than storing it in this handler.
-omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
-  return input_state_ ? *input_state_ : omnibox::InputState();
 }
