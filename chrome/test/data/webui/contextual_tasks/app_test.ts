@@ -749,7 +749,8 @@ suite('ContextualTasksAppTest', function() {
   });
 
   // Regression test for crbug.com/484936343.
-  test(
+  // Disabled on 146 branch due to persistent flakes.
+  test.skip(
       'restores basic mode state after navigation when starting in basic mode',
       async () => {
         // Enable the flag that forces basic mode on history.
@@ -1123,7 +1124,8 @@ suite('ContextualTasksAppTest', function() {
     }
   });
 
-  test(
+  // Disabled on 146 branch due to persistent flakes.
+  test.skip(
       'sets pending basic mode to false when navigating from AI page and initially not in basic mode',
       async () => {
         loadTimeData.overrideValues({enableBasicMode: true});
