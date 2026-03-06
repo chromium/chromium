@@ -1349,16 +1349,13 @@
   <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings." formatter_data="android_java">
     Enhanced autofill
   </message>
-  <!-- TODO(crbug.com/467563819): Translate this string. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON" desc="A title that contain a section highlighting what happens when ‘enhanced autofill’ is enabled." translateable="false" formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON" desc="A title that contain a section highlighting what happens when ‘enhanced autofill’ is enabled." formatter_data="android_java">
     When on
   </message>
-  <!-- TODO(crbug.com/467563819): Translate this string. -->
-  <message name="IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER" desc="A title that contain a section highlighting things to consider when using ‘enhanced autofill’ to improve the feature." translateable="false" formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_AI_THINGS_TO_CONSIDER" desc="A title that contain a section highlighting things to consider when using ‘enhanced autofill’ to improve the feature." formatter_data="android_java">
     Things to consider
   </message>
-  <!-- TODO(crbug.com/467563819): Translate this string. -->
-  <message name="IDS_SETTINGS_AUTOFILL_SERVICE_PROVIDER" desc="A title that contains a section that allows users to choose between Autofilling with Google or with another service profider" translateable="false" formatter_data="android_java">
+  <message name="IDS_SETTINGS_AUTOFILL_SERVICE_PROVIDER" desc="A title that contains a section that allows users to choose between Autofilling with Google or with another service profider" formatter_data="android_java">
     Autofill service provider
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title. The point of this bullet is to convey to the user the types of data that get shared with Google to support this feature. There are 2 data types: 1) 'the page’s URL' and 2) 'content', by which we mean the words, visuals, and layout of the pages the user visits. This notion that Google is considering 'page content' is new. We want to lead with 'To offer suggestions' even though it might be a bit grammatically awkward, because we want to express the need / value before explaining the data that gets shared." formatter_data="android_java">
