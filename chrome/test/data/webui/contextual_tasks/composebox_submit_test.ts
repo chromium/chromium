@@ -95,6 +95,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     mockComposeboxPageHandler = TestMock.fromClass(ComposeboxPageHandlerRemote);
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
+    mockSearchboxPageHandler.setResultFor(
+        'getInputState', Promise.resolve({state: mockInputState}));
 
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
@@ -238,6 +240,33 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     assertEquals(
         null, composebox.getMatchesElement().result,
         'Matches should be cleared');
+  });
+
+  test('ComposeboxSubmitSendsQueryBeforeAutocomplete', async () => {
+    mockTimer.install();
+    const TEST_QUERY = 'test query';
+
+    const inputElement = composebox.$.input;
+    assertTrue(
+        isVisible(inputElement), 'Composebox input element should be visible');
+
+    // User types text
+    simulateUserInput(inputElement, TEST_QUERY);
+    await composebox.updateComplete;
+
+    // User immediately presses Enter before any autocomplete results arrive
+    pressEnter(inputElement);
+
+    // Verify submitQuery is called with the typed text
+    const [query] = await mockSearchboxPageHandler.whenCalled('submitQuery');
+    assertEquals(TEST_QUERY, query);
+
+    await composebox.updateComplete;
+    await contextualTasksApp.updateComplete;
+
+    assertEquals(
+        '', inputElement.value,
+        'Input should be cleared, but input = ' + inputElement.value);
   });
 
   test('LensButtonTriggersOverlay', async () => {
