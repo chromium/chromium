@@ -313,4 +313,24 @@ TEST(ColorFunctionParserTest, CalcPreservationInLabColorSpaces) {
   TestColorParsing("lab(50 calc(25) -25)", "lab(50 calc(25) -25)");
 }
 
+TEST(ColorFunctionParserTest, RelativeColorWithRandomInContrastColor) {
+  const String test_case =
+      "rgb(from contrast-color(rgb(random(0, 255) 0 0)) r g b)";
+  CSSParserTokenStream stream(test_case);
+
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+
+  ColorFunctionParser parser;
+  CSSParserLocalContext local_context(CSSPropertyName(CSSPropertyID::kColor),
+                                      CSSPropertyID::kInvalid,
+                                      /*custom_function_name=*/g_null_atom);
+  const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
+      stream, *context, local_context, css_parsing_utils::ColorParserContext());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->IsRelativeColorValue());
+  EXPECT_TRUE(
+      To<cssvalue::CSSRelativeColorValue>(result)->HasRandomFunctions());
+}
+
 }  // namespace blink

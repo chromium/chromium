@@ -30,6 +30,8 @@ class CORE_EXPORT CSSContrastColorValue : public CSSValue {
 
   const CSSValue& Color() const { return *color_; }
 
+  bool HasRandomFunctions() const { return color_->HasRandomFunctions(); }
+
  private:
   // The color parameter value
   Member<const CSSValue> color_;
