@@ -344,4 +344,126 @@ TEST(Utf8Test, ConvertUtf16ToUtf8) {
   EXPECT_EQ(blink::unicode::kSourceExhausted, result.status);
 }
 
+TEST(Utf8Test, ConvertUtf16ToUtf8_FastPath) {
+  // Long string to trigger simdutf fast path (>= 16 chars).
+  std::vector<UChar> long_ascii_str(32, 'a');
+  std::vector<uint8_t> long_ascii_buffer(long_ascii_str.size() * 3);
+  auto result = ConvertUtf16ToUtf8(long_ascii_str, long_ascii_buffer);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(std::vector<uint8_t>(32, 'a'), result.converted);
+
+  // BMP characters
+  std::vector<UChar> bmp_str(16, 0x20AC);  // 16 '€' characters
+  std::vector<uint8_t> bmp_buffer(bmp_str.size() * 3);
+  result = ConvertUtf16ToUtf8(bmp_str, bmp_buffer);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(16u * 3u, result.converted.size());
+  std::vector<uint8_t> expected_bmp;
+  for (int i = 0; i < 16; ++i) {
+    expected_bmp.insert(expected_bmp.end(), {0xE2, 0x82, 0xAC});
+  }
+  EXPECT_EQ(expected_bmp, result.converted);
+
+  // Supplementary plane characters (surrogate pairs)
+  std::vector<UChar> supplementary_str;
+  for (int i = 0; i < 16; ++i) {
+    supplementary_str.push_back(0xD83D);
+    supplementary_str.push_back(0xDE01);
+  }
+  std::vector<uint8_t> supplementary_buffer(supplementary_str.size() * 3);
+  result = ConvertUtf16ToUtf8(supplementary_str, supplementary_buffer);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(16u * 4u, result.converted.size());
+  std::vector<uint8_t> expected_supplementary;
+  for (int i = 0; i < 16; ++i) {
+    expected_supplementary.insert(expected_supplementary.end(),
+                                  {0xF0, 0x9F, 0x98, 0x81});
+  }
+  EXPECT_EQ(expected_supplementary, result.converted);
+
+  // Mixed
+  std::vector<UChar> mixed_str(16, 'a');
+  mixed_str.push_back(0x00A2);
+  mixed_str.push_back(0xD83D);
+  mixed_str.push_back(0xDE01);
+  std::vector<uint8_t> mixed_buffer(mixed_str.size() * 3);
+  result = ConvertUtf16ToUtf8(mixed_str, mixed_buffer);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(16u + 2u + 4u, result.converted.size());
+  std::vector<uint8_t> expected_mixed(16, 'a');
+  expected_mixed.insert(expected_mixed.end(),
+                        {0xC2, 0xA2, 0xF0, 0x9F, 0x98, 0x81});
+  EXPECT_EQ(expected_mixed, result.converted);
+
+  // Target buffer too small
+  std::vector<uint8_t> small_buffer(16 + 2);
+  result = ConvertUtf16ToUtf8(mixed_str, small_buffer);
+  EXPECT_EQ(blink::unicode::kTargetExhausted, result.status);
+  EXPECT_EQ(16u + 2u, result.converted.size());
+
+  // Invalid surrogate pair (strict)
+  std::vector<UChar> invalid_str(16, 'a');
+  invalid_str.push_back(0xD83D);
+  invalid_str.push_back(' ');
+  std::vector<uint8_t> invalid_buffer(invalid_str.size() * 3);
+  result = ConvertUtf16ToUtf8(invalid_str, invalid_buffer, true);
+  EXPECT_EQ(blink::unicode::kSourceIllegal, result.status);
+  EXPECT_EQ(16u, result.converted.size());
+
+  // Invalid surrogate pair (non-strict)
+  result = ConvertUtf16ToUtf8(invalid_str, invalid_buffer, false);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(16u + 4u, result.converted.size());
+  std::vector<uint8_t> expected_converted(16, 'a');
+  expected_converted.insert(expected_converted.end(), {0xED, 0xA0, 0xBD, ' '});
+  EXPECT_EQ(expected_converted, result.converted);
+
+  // Lone high surrogate at the end of the input (strict).
+  std::vector<UChar> lone_surrogate_str(16, 'a');
+  lone_surrogate_str.push_back(0xD83D);
+  result = ConvertUtf16ToUtf8(lone_surrogate_str, invalid_buffer, true);
+  EXPECT_EQ(blink::unicode::kSourceExhausted, result.status);
+  EXPECT_EQ(16u, result.converted.size());
+
+  // Lone high surrogate at the end of the input (non-strict).
+  result = ConvertUtf16ToUtf8(lone_surrogate_str, invalid_buffer, false);
+  EXPECT_EQ(blink::unicode::kSourceExhausted, result.status);
+  EXPECT_EQ(16u, result.converted.size());
+
+  // Error at the start, addressed by slow path, and resumes fast path.
+  std::vector<UChar> error_at_start_str = {0xD83D, ' '};  // Lone high surrogate
+  for (int i = 0; i < 16; ++i) {
+    error_at_start_str.push_back('a');
+  }
+  std::vector<uint8_t> error_at_start_buffer(error_at_start_str.size() * 3);
+  result = ConvertUtf16ToUtf8(error_at_start_str, error_at_start_buffer, false);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(3u + 1u + 16u, result.converted.size());
+  std::vector<uint8_t> expected_error_at_start = {0xED, 0xA0, 0xBD, ' '};
+  for (int i = 0; i < 16; ++i) {
+    expected_error_at_start.push_back('a');
+  }
+  EXPECT_EQ(expected_error_at_start, result.converted);
+
+  // Error in the middle, addressed by slow path, and resumes fast path.
+  std::vector<UChar> error_in_middle_str(16, 'a');
+  error_in_middle_str.push_back(0xD83D);
+  error_in_middle_str.push_back(' ');
+  for (int i = 0; i < 16; ++i) {
+    error_in_middle_str.push_back('b');
+  }
+  std::vector<uint8_t> error_in_middle_buffer(error_in_middle_str.size() * 3);
+  result =
+      ConvertUtf16ToUtf8(error_in_middle_str, error_in_middle_buffer, false);
+  EXPECT_EQ(blink::unicode::kConversionOK, result.status);
+  EXPECT_EQ(16u + 3u + 1u + 16u, result.converted.size());
+  std::vector<uint8_t> expected_error_in_middle(16, 'a');
+  expected_error_in_middle.insert(expected_error_in_middle.end(),
+                                  {0xED, 0xA0, 0xBD, ' '});
+  for (int i = 0; i < 16; ++i) {
+    expected_error_in_middle.push_back('b');
+  }
+  EXPECT_EQ(expected_error_in_middle, result.converted);
+}
+
 }  // namespace blink::unicode

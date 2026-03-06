@@ -74,6 +74,10 @@ WTF_EXPORT ConversionResult<uint8_t> ConvertLatin1ToUtf8(
     base::span<const LChar> source,
     base::span<uint8_t> target);
 
+// To hit the fast path, ensure `target.size()` is at least 3x `source.size()`.
+// For example, an input of 2 UChars (4 bytes) requires a target of at least
+// 2 * 3 = 6 uint8_ts (6 bytes) to guarantee sufficient space for any
+// UTF-8 encoding.
 WTF_EXPORT ConversionResult<uint8_t> ConvertUtf16ToUtf8(
     base::span<const UChar> source,
     base::span<uint8_t> target,

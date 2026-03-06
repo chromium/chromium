@@ -233,6 +233,7 @@ component("wtf") {
     "//third_party/blink/public/common",
     "//third_party/modp_b64",
     "//third_party/rapidhash",
+    "//third_party/simdutf",
 
     # TODO(tkent): WTF should not depend on it.
     "//third_party/blink/public/common:headers",
@@ -299,6 +300,7 @@ test("wtf_perf_tests") {
   sources = [
     "testing/run_all_tests.cc",
     "text/string_simd_perf_test.cc",
+    "text/utf8_perf_test.cc",
   ]
 
   configs += [
