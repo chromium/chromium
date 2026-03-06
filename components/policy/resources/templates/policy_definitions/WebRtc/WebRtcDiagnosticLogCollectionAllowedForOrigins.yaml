@@ -25,8 +25,8 @@ schema:
   items:
     type: string
   type: array
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:147-
+- chrome_os:147-
 tags: []
 type: list
