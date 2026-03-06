@@ -333,7 +333,6 @@ cr-searchbox-icon,
 }
 
 :host([ntp-realbox-next-enabled]) :is(input, textarea)::placeholder {
-  font-size: 18px;
   color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
   font-weight: 400;
 }
