@@ -402,10 +402,14 @@ public class WebContentsImpl
         }
 
         if (mNativeWebContentsAndroid != 0) {
-            sWebContentsMap.remove(mNativeWebContentsAndroid);
-            mNativeWebContentsAndroid = 0;
-
             WebContentsImplJni.get().destroyWebContents(mNativeWebContentsAndroid);
+
+            if (mNativeWebContentsAndroid != 0) {
+                // Normally the native object would have been destroyed by clearNativePtr() being
+                // called from destroyWebContents(). However, if JNI is mocked it will not have been
+                // invoked so invoke it explicitly here.
+                clearNativePtr();
+            }
         }
     }
 
