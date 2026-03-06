@@ -10,7 +10,6 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -56,8 +55,6 @@ constexpr char kActivationsCountKey[] = "activations_count_key";
 using CacheSizeType =
     base::LRUCacheSet<content_settings::AccessDetails>::size_type;
 constexpr CacheSizeType kAccessDetailsCacheSize = 1000;
-constexpr CacheSizeType kMaximumCacheCapacity =
-    std::numeric_limits<CacheSizeType>::max();
 
 base::DictValue GetMetadata(HostContentSettingsMap* settings_map,
                             const GURL& url) {
@@ -561,11 +558,7 @@ CookieControlsController::TabObserver::TabObserver(
           web_contents),
       content::WebContentsObserver(web_contents),
       cookie_controls_(cookie_controls),
-      // When under the ReducePPMs experiment reduce the capacity of the
-      // cache and leave it practically unbounded otherwise.
-      cookie_accessed_set_(base::features::IsReducePPMsEnabled()
-                               ? kAccessDetailsCacheSize
-                               : kMaximumCacheCapacity) {
+      cookie_accessed_set_(kAccessDetailsCacheSize) {
   last_visited_url_ =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
 }
