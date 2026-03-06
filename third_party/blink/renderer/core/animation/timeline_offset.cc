@@ -98,8 +98,11 @@ std::optional<TimelineOffset> TimelineOffset::Create(
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
+  // TODO(crbug.com/490153753): CSS Typed OM currently lacks support for the
+  // random() function, preventing its use within the ViewTimeline API. Revisit
+  // once CSS Typed OM support for random() is implemented.
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForAnimations();
+      CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
       stream, *document.ElementSheet().Contents()->ParserContext(),
       local_context,
@@ -256,8 +259,11 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
   CSSParserTokenStream stream(css_text);
   stream.ConsumeWhitespace();
 
+  // TODO(crbug.com/490153753): CSS Typed OM currently lacks support for the
+  // random() function, preventing its use within the ViewTimeline API. Revisit
+  // once CSS Typed OM support for random() is implemented.
   CSSParserLocalContext local_context =
-      CSSParserLocalContext::CreateWithoutPropertyForAnimations();
+      CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
   CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(
       stream, *document->ElementSheet().Contents()->ParserContext(),
       local_context, CSSPrimitiveValue::ValueRange::kAll);

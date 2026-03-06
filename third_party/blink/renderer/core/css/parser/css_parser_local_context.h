@@ -41,14 +41,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): We used this constructor to create a local
-  // context for animations, i.e. in all css_parsing_utils::Consume* calls from
-  // files inside `third_party/blink/renderer/core/animation/`. Figure out if we
-  // actually need property context for random() in there.
-  static CSSParserLocalContext CreateWithoutPropertyForAnimations() {
-    return CSSParserLocalContext();
-  }
-
   // Should only be used for testing.
   static CSSParserLocalContext CreateWithoutPropertyForTest() {
     return CSSParserLocalContext();
