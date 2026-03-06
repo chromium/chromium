@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/live_caption/features.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
@@ -24,6 +26,28 @@
 #include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace captions {
+namespace {
+
+constexpr char kLiveOnDeviceTranslateDispatcherResult[] =
+    "Accessibility.LiveTranslate.OnDeviceTranslation.Result";
+constexpr char kLiveGoogleApiTranslateDispatcherResult[] =
+    "Accessibility.LiveTranslate.GoogleApiTranslation.Result";
+
+void OnGetTranslation(std::string_view source_language,
+                      std::string_view target_language,
+                      TranslateEventCallback callback,
+                      const TranslateEvent& translate_event) {
+  std::string_view histogram_name =
+      base::FeatureList::IsEnabled(
+          live_caption::kLiveCaptionOnDeviceTranslation)
+          ? kLiveOnDeviceTranslateDispatcherResult
+          : kLiveGoogleApiTranslateDispatcherResult;
+  base::UmaHistogramBoolean(histogram_name, translate_event.has_value());
+  std::move(callback).Run(translate_event);
+}
+
+}  // namespace
+
 LiveTranslateController::LiveTranslateController(
     PrefService* profile_prefs,
     std::unique_ptr<TranslationDispatcher> translation_dispatcher)
@@ -53,8 +77,10 @@ void LiveTranslateController::GetTranslation(const std::string& result,
                                              std::string source_language,
                                              std::string target_language,
                                              TranslateEventCallback callback) {
-  translation_dispatcher_->GetTranslation(result, source_language,
-                                          target_language, std::move(callback));
+  translation_dispatcher_->GetTranslation(
+      result, source_language, target_language,
+      base::BindOnce(OnGetTranslation, source_language, target_language,
+                     std::move(callback)));
 }
 
 void LiveTranslateController::OnLiveTranslateEnabledChanged() {

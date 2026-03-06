@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
@@ -51,6 +52,7 @@ class LiveTranslateController : public KeyedService {
   raw_ptr<PrefService> profile_prefs_;
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   const std::unique_ptr<TranslationDispatcher> translation_dispatcher_;
+  base::WeakPtrFactory<LiveTranslateController> weak_factory_{this};
 };
 
 }  // namespace captions

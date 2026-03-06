@@ -131,6 +131,7 @@ if (!is_android && !is_ios) {
       "google_api_translation_dispatcher_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
+      "live_translate_controller_unittest.cc",
       "translation_util_unittest.cc",
     ]
 
@@ -170,7 +171,6 @@ if (!is_android && !is_ios) {
         # This test verifies behavior of the controller
         # in an ash environment and requires ash dependencies.
         "live_caption_controller_unittest.cc",
-        "live_translate_controller_unittest.cc",
       ]
 
       deps += [
