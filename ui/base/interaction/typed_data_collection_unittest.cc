@@ -14,9 +14,9 @@
 
 namespace ui {
 
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntegerData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(raw_ptr<std::string>, kReferenceData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(raw_ptr<std::string>, kReferenceData);
 
 TEST(OwnedTypedDataCollectionTest, ConstructInsertDestruct) {
   OwnedTypedDataCollection coll;
@@ -110,7 +110,7 @@ TEST(OwnedTypedDataCollectionTest, ClearAndReAdd) {
 }
 
 TEST(OwnedTypedDataCollectionTest, InsertOrAssign) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::unique_ptr<int>, kPtrData);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::unique_ptr<int>, kPtrData);
 
   OwnedTypedDataCollection coll;
   coll.InsertOrAssign(kIntegerData, 2);
@@ -320,7 +320,7 @@ TEST_F(UnownedTypedDataCollectionTest, ReleaseReferences) {
 }
 
 TEST_F(UnownedTypedDataCollectionTest, ScopedDataForTesting) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(float, kFloatData);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(float, kFloatData);
   UnownedTypedDataCollection coll;
   {
     test::ScopedTypedData float_data(coll, kFloatData, 4.2f);

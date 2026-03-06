@@ -102,9 +102,10 @@ class ContextValidPrecondition : public FeaturePromoPreconditionBase {
 // Represents the requirement that an anchor element is present and visible.
 class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::optional<int>, kRotatingPromoIndex);
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ui::SafeElementReference,
-                                       kAnchorElement);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(std::optional<int>,
+                                           kRotatingPromoIndex);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ui::SafeElementReference,
+                                           kAnchorElement);
 
   AnchorElementPrecondition(const AnchorElementProvider& provider,
                             ui::ElementContext default_context,
@@ -127,8 +128,9 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
 // Wraps a FeaturePromoLifecycle to determine if a promo can be shown.
 class LifecyclePrecondition : public FeaturePromoPreconditionBase {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::unique_ptr<FeaturePromoLifecycle>,
-                                       kLifecycle);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(
+      std::unique_ptr<FeaturePromoLifecycle>,
+      kLifecycle);
   LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>, bool for_demo);
   ~LifecyclePrecondition() override;
 

@@ -86,14 +86,14 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   // Can be called any number of times with unique typed identifiers, or all
   // at once.
   template <typename... Args>
-  void InitCache(ui::TypedIdentifier<Args>... args) {
+  void InitCache(ui::TypedIdentifierOld<Args>... args) {
     (data_.Insert(std::make_unique<ui::TypedData<Args>>(args)), ...);
   }
 
   // Use this method to initialize a single piece of cached data the
   // precondition will support with an initial value constructed from `args`.
   template <typename T, typename... Args>
-  void InitCachedData(ui::TypedIdentifier<T> id, Args&&... args) {
+  void InitCachedData(ui::TypedIdentifierOld<T> id, Args&&... args) {
     data_.Emplace(id, std::forward<Args>(args)...);
   }
 
@@ -108,7 +108,7 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   // that it is available to later preconditions in the list.
   template <typename T>
   T& GetCachedDataForComputation(ui::UnownedTypedDataCollection& data,
-                                 ui::TypedIdentifier<T> id) const {
+                                 ui::TypedIdentifierOld<T> id) const {
     data.AddFrom(id.identifier(), data_);
     return data[id];
   }

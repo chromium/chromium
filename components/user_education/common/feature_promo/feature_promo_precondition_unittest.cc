@@ -29,8 +29,8 @@ constexpr char kPrecondName[] = "Precond";
 constexpr char kPrecondName2[] = "Precond2";
 constexpr char kPrecondName3[] = "Precond3";
 
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntegerData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(std::string, kStringData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringData);
 }  // namespace
 
 TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
@@ -159,7 +159,7 @@ TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
 }
 
 TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPreconditionWithData) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(int, kIntValueId);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntValueId);
   UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<FeaturePromoResult(
                              ui::UnownedTypedDataCollection&)>,
                          callback);
@@ -230,7 +230,7 @@ class TestPreconditionWithData : public CachingFeaturePromoPrecondition {
   TestPreconditionWithData(FeaturePromoPrecondition::Identifier id,
                            std::string description,
                            FeaturePromoResult initial_state,
-                           ui::TypedIdentifier<T> data_id,
+                           ui::TypedIdentifierOld<T> data_id,
                            T value)
       : CachingFeaturePromoPrecondition(id, description, initial_state),
         data_id_(data_id) {
@@ -245,7 +245,7 @@ class TestPreconditionWithData : public CachingFeaturePromoPrecondition {
   }
 
  private:
-  const ui::TypedIdentifier<T> data_id_;
+  const ui::TypedIdentifierOld<T> data_id_;
 };
 
 }  // namespace

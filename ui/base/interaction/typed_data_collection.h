@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   bool Contains(ElementIdentifier id) const;
 
   template <typename T>
-  bool Contains(TypedIdentifier<T> id) const {
+  bool Contains(TypedIdentifierOld<T> id) const {
     return Contains(id.identifier());
   }
 
@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Note that `std::assignable_from<>` does not work for fundamental types.
     requires(std::assignable_from<T&, U> ||
              (std::is_fundamental_v<T> && !std::is_const_v<T>))
-  T& InsertOrAssign(TypedIdentifier<T> id, U&& value) {
+  T& InsertOrAssign(TypedIdentifierOld<T> id, U&& value) {
     for (auto& entry : data_) {
       if (entry->identifier() == id.identifier()) {
         auto& typed = entry->AsTyped(id);
@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Constructs a new data item with `id`, in-place, using `args`. Returns the
   // newly-added data.
   template <typename T, typename... Args>
-  T& Emplace(TypedIdentifier<T> id, Args&&... args) {
+  T& Emplace(TypedIdentifierOld<T> id, Args&&... args) {
     return Insert(
         std::make_unique<TypedData<T>>(id, std::forward<Args>(args)...));
   }
@@ -121,13 +121,13 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Retrieves the value with identifier `id`, or null if not found.
 
   template <typename T>
-  T* GetIfPresent(TypedIdentifier<T> id) {
+  T* GetIfPresent(TypedIdentifierOld<T> id) {
     TypedDataBase* const found = Lookup(id.identifier());
     return found ? found->AsTyped(id).get() : nullptr;
   }
 
   template <typename T>
-  const T* GetIfPresent(TypedIdentifier<T> id) const {
+  const T* GetIfPresent(TypedIdentifierOld<T> id) const {
     TypedDataBase* const found = Lookup(id.identifier());
     return found ? found->AsTyped(id).get() : nullptr;
   }
@@ -136,14 +136,14 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // an error if not found.
 
   template <typename T>
-  T& operator[](TypedIdentifier<T> id) {
+  T& operator[](TypedIdentifierOld<T> id) {
     T* result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
   }
 
   template <typename T>
-  const T& operator[](TypedIdentifier<T> id) const {
+  const T& operator[](TypedIdentifierOld<T> id) const {
     T* result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   size_t size() const { return lookup_.size(); }
   bool contains(ElementIdentifier id) { return lookup_.contains(id); }
   template <typename T>
-  bool contains(TypedIdentifier<T> id) {
+  bool contains(TypedIdentifierOld<T> id) {
     return contains(id.identifier());
   }
 
@@ -205,7 +205,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   void AddFrom(ElementIdentifier id, OwnedTypedDataCollection& source);
 
   template <typename T>
-  void AddFrom(TypedIdentifier<T> id, OwnedTypedDataCollection& source) {
+  void AddFrom(TypedIdentifierOld<T> id, OwnedTypedDataCollection& source) {
     AddFrom(id.identifier(), source);
   }
 
@@ -215,13 +215,13 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   // Retrieves the data from the lookup if present, returns null otherwise.
 
   template <typename T>
-  T* GetIfPresent(TypedIdentifier<T> id) {
+  T* GetIfPresent(TypedIdentifierOld<T> id) {
     const auto it = lookup_.find(id.identifier());
     return it == lookup_.end() ? nullptr : it->second->AsTyped(id).get();
   }
 
   template <typename T>
-  const T* GetIfPresent(TypedIdentifier<T> id) const {
+  const T* GetIfPresent(TypedIdentifierOld<T> id) const {
     const auto it = lookup_.find(id.identifier());
     return it == lookup_.end() ? nullptr : it->second->AsTyped(id).get();
   }
@@ -229,14 +229,14 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   // Retrieves the data from the lookup; it must be present.
 
   template <typename T>
-  T& operator[](TypedIdentifier<T> id) {
+  T& operator[](TypedIdentifierOld<T> id) {
     auto* const result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
   }
 
   template <typename T>
-  const T& operator[](TypedIdentifier<T> id) const {
+  const T& operator[](TypedIdentifierOld<T> id) const {
     auto* const result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;

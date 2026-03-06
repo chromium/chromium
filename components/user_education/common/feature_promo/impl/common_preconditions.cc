@@ -125,13 +125,13 @@ FeaturePromoResult ContextValidPrecondition::CheckPrecondition(
                              : FeaturePromoResult::kAnchorNotVisible;
 }
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
-                                    std::optional<int>,
-                                    kRotatingPromoIndex);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(AnchorElementPrecondition,
+                                        std::optional<int>,
+                                        kRotatingPromoIndex);
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(AnchorElementPrecondition,
-                                    ui::SafeElementReference,
-                                    kAnchorElement);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(AnchorElementPrecondition,
+                                        ui::SafeElementReference,
+                                        kAnchorElement);
 
 AnchorElementPrecondition::AnchorElementPrecondition(
     const AnchorElementProvider& provider,
@@ -166,9 +166,9 @@ FeaturePromoResult AnchorElementPrecondition::CheckPrecondition(
                  : FeaturePromoResult::kAnchorNotVisible;
 }
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(LifecyclePrecondition,
-                                    std::unique_ptr<FeaturePromoLifecycle>,
-                                    kLifecycle);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(LifecyclePrecondition,
+                                        std::unique_ptr<FeaturePromoLifecycle>,
+                                        kLifecycle);
 
 LifecyclePrecondition::LifecyclePrecondition(
     std::unique_ptr<FeaturePromoLifecycle> lifecycle,

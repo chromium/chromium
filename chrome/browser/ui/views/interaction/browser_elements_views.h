@@ -19,8 +19,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
-DECLARE_TYPED_IDENTIFIER_VALUE(views::WebView,
-                               kActiveContentsWebViewRetrievalId);
+DECLARE_TYPED_IDENTIFIER_VALUE_OLD(views::WebView,
+                                   kActiveContentsWebViewRetrievalId);
 
 // Provides Views-specific extensions to `BrowserElements` so it can
 // provide a context, elements, and Views.
@@ -76,7 +76,7 @@ class BrowserElementsViews : public BrowserElements {
   // TearDown().
   template <typename T>
     requires std::derived_from<T, views::View>
-  void AddRetrievalCallback(ui::TypedIdentifier<T> retrieval_id,
+  void AddRetrievalCallback(ui::TypedIdentifierOld<T> retrieval_id,
                             RetrievalCallback<T> callback);
 
   // Retrieves a view using a callback registered with `retrieval_id`. Will
@@ -84,7 +84,7 @@ class BrowserElementsViews : public BrowserElements {
   // state, or the view is not present or is the wrong type.
   template <typename T>
     requires std::derived_from<T, views::View>
-  T* RetrieveView(ui::TypedIdentifier<T> retrieval_id);
+  T* RetrieveView(ui::TypedIdentifierOld<T> retrieval_id);
 
  private:
   virtual bool IsInitialized() const = 0;
@@ -105,7 +105,7 @@ T* BrowserElementsViews::GetViewAs(ui::ElementIdentifier id) {
 template <typename T>
   requires std::derived_from<T, views::View>
 void BrowserElementsViews::AddRetrievalCallback(
-    ui::TypedIdentifier<T> retrieval_id,
+    ui::TypedIdentifierOld<T> retrieval_id,
     RetrievalCallback<T> callback) {
   CHECK(IsInitialized());
   const auto result = retrieval_callbacks_.emplace(
@@ -119,7 +119,7 @@ void BrowserElementsViews::AddRetrievalCallback(
 
 template <typename T>
   requires std::derived_from<T, views::View>
-T* BrowserElementsViews::RetrieveView(ui::TypedIdentifier<T> id) {
+T* BrowserElementsViews::RetrieveView(ui::TypedIdentifierOld<T> id) {
   if (const auto it = retrieval_callbacks_.find(id.identifier());
       it != retrieval_callbacks_.end()) {
     return views::AsViewClass<T>(it->second.Run());

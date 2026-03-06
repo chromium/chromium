@@ -586,8 +586,8 @@ TEST_F(FeaturePromoQueueTest,
 
 class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(int, kIntegerValue);
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::string, kStringValue);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerValue);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringValue);
 
   FeaturePromoQueueCachedDataTest() = default;
   ~FeaturePromoQueueCachedDataTest() override = default;
@@ -597,7 +597,7 @@ class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
       FeaturePromoPrecondition::Identifier id,
       FeaturePromoResult::Failure failure,
       std::string name,
-      ui::TypedIdentifier<T> key,
+      ui::TypedIdentifierOld<T> key,
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
         kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
@@ -606,12 +606,12 @@ class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
   }
 };
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(FeaturePromoQueueCachedDataTest,
-                                    int,
-                                    kIntegerValue);
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(FeaturePromoQueueCachedDataTest,
-                                    std::string,
-                                    kStringValue);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueCachedDataTest,
+                                        int,
+                                        kIntegerValue);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueCachedDataTest,
+                                        std::string,
+                                        kStringValue);
 
 TEST_F(FeaturePromoQueueCachedDataTest, ExtractsCachedData) {
   test::MockPreconditionListProvider required_preconditions;

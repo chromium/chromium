@@ -132,7 +132,7 @@ struct NtpPromoUiTestParams {
 
 using ObserverType =
     views::test::PollingViewPropertyObserver<std::u16string, OmniboxViewViews>;
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(ObserverType, kLocationBarTextValue);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, kLocationBarTextValue);
 MATCHER_P(OptionalStringContains, text, "Optional string contains") {
   return arg.has_value() && arg.value().find(text) != std::u16string::npos;
 }

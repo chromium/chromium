@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(UNOWNED_USER_DATA) UnownedUserDataHost {
   ~UnownedUserDataHost();
 
   template <typename T>
-  using Key = ui::TypedIdentifier<T>;
+  using Key = ui::TypedIdentifierOld<T>;
   using UntypedKey = ui::ElementIdentifier;
   template <typename T>
   using PassKey = base::PassKey<ScopedUnownedUserData<T>>;

@@ -8,7 +8,10 @@ component("identifier") {
   output_name = "ui_base_identifier"
   defines = [ "IS_UI_BASE_IDENTIFIER_IMPL" ]
 
-  public = [ "unique_identifier.h" ]
+  public = [
+    "typed_identifier.h",
+    "unique_identifier.h",
+  ]
 
   deps = [ "//base" ]
 

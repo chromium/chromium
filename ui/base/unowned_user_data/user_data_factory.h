@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(UNOWNED_USER_DATA) UserDataFactory {
   virtual ~UserDataFactory();
 
   template <typename T>
-  using Key = ui::TypedIdentifier<T>;
+  using Key = ui::TypedIdentifierOld<T>;
   using UntypedKey = ui::ElementIdentifier;
 
   // Object that is held while the factory method for a specific type is

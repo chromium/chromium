@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(BrowserElementsViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserElementsViewsBrowsertest, RetrieveView) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(ToolbarView, kToolbarViewRetrievalId);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(ToolbarView, kToolbarViewRetrievalId);
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* const elements = BrowserElementsViews::From(browser());
   elements->AddRetrievalCallback(kToolbarViewRetrievalId,

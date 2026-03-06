@@ -87,11 +87,11 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) TypedDataBase {
 
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
-  TypedData<T>& AsTyped(TypedIdentifier<T> id);
+  TypedData<T>& AsTyped(TypedIdentifierOld<T> id);
 
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
-  const TypedData<T>& AsTyped(TypedIdentifier<T> id) const;
+  const TypedData<T>& AsTyped(TypedIdentifierOld<T> id) const;
 
  protected:
   TypedDataBase() = default;
@@ -117,7 +117,7 @@ class TypedData : public TypedDataBase {
 
   // The payload `data_` is constructed in place in the constructor.
   template <typename... Args>
-  explicit TypedData(TypedIdentifier<T> identifier, Args&&... args)
+  explicit TypedData(TypedIdentifierOld<T> identifier, Args&&... args)
       : TypedDataBase(identifier.identifier()),
         data_(std::forward<Args>(args)...) {}
 
@@ -132,8 +132,8 @@ class TypedData : public TypedDataBase {
   T* get() { return &data_; }
   const T* get() const { return &data_; }
 
-  TypedIdentifier<T> typed_identifier() const {
-    return TypedIdentifier<T>(identifier());
+  TypedIdentifierOld<T> typed_identifier() const {
+    return TypedIdentifierOld<T>(identifier());
   }
 
  private:
@@ -143,13 +143,13 @@ class TypedData : public TypedDataBase {
 // Template implementation.
 
 template <typename T>
-TypedData<T>& TypedDataBase::AsTyped(TypedIdentifier<T> id) {
+TypedData<T>& TypedDataBase::AsTyped(TypedIdentifierOld<T> id) {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<TypedData<T>*>(this);
 }
 
 template <typename T>
-const TypedData<T>& TypedDataBase::AsTyped(TypedIdentifier<T> id) const {
+const TypedData<T>& TypedDataBase::AsTyped(TypedIdentifierOld<T> id) const {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<const TypedData<T>*>(this);
 }

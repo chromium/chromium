@@ -64,9 +64,9 @@ class ScopedUnownedUserData {
 
 // Helper macros. See above for usage.
 
-#define DECLARE_USER_DATA(ClassName)                         \
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, kDataKey); \
-  static ClassName* Get(::ui::UnownedUserDataHost& host);    \
+#define DECLARE_USER_DATA(ClassName)                             \
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ClassName, kDataKey); \
+  static ClassName* Get(::ui::UnownedUserDataHost& host);        \
   static const ClassName* Get(const ::ui::UnownedUserDataHost& host)
 
 #define DEFINE_USER_DATA(ClassName)                                        \
@@ -76,6 +76,6 @@ class ScopedUnownedUserData {
   const ClassName* ClassName::Get(const ::ui::UnownedUserDataHost& host) { \
     return ::ui::ScopedUnownedUserData<ClassName>::Get(host);              \
   }                                                                        \
-  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(ClassName, ClassName, kDataKey)
+  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ClassName, ClassName, kDataKey)
 
 #endif  // UI_BASE_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_

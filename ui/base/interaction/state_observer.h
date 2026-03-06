@@ -112,7 +112,7 @@ class ObservationStateObserver : public StateObserver<T>, public Observer {
 };
 
 template <typename T>
-using StateIdentifier = TypedIdentifier<T>;
+using StateIdentifier = TypedIdentifierOld<T>;
 
 }  // namespace ui::test
 
@@ -134,12 +134,13 @@ using StateIdentifier = TypedIdentifier<T>;
 // identifiers.
 
 #define DECLARE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DECLARE_TYPED_IDENTIFIER_VALUE(ObserverType, Name)
+  DECLARE_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, Name)
 
 #define DEFINE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_TYPED_IDENTIFIER_VALUE(ObserverType, Name)
+  DEFINE_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, Name)
 
-#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_MACRO_TYPED_IDENTIFIER_VALUE(__FILE__, __LINE__, ObserverType, Name)
+#define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name)             \
+  DEFINE_MACRO_TYPED_IDENTIFIER_VALUE_OLD(__FILE__, __LINE__, ObserverType, \
+                                          Name)
 
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_

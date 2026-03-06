@@ -20,7 +20,7 @@ class ScopedTypedData : public TypedData<T> {
  public:
   template <typename... Args>
   ScopedTypedData(UnownedTypedDataCollection& collection,
-                  TypedIdentifier<T> id,
+                  TypedIdentifierOld<T> id,
                   Args&&... args)
       : TypedData<T>(id, std::forward<Args>(args)...), collection_(collection) {
     const auto it = collection_->lookup_.find(id.identifier());
