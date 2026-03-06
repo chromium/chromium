@@ -737,12 +737,11 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser_context_);
 
-  content::ServiceWorkerExternalRequestResult start_result =
-      service_worker_context->StartingExternalRequest(
-          service_worker_version_id, timeout_type, request_uuid);
+  service_worker_context->StartingExternalRequest(service_worker_version_id,
+                                                  timeout_type, request_uuid);
 
   service_worker_keepalives_[request_uuid] = ServiceWorkerKeepaliveData{
-      worker_id, activity_type, extra_data, timeout_type, start_result};
+      worker_id, activity_type, extra_data, timeout_type};
 
   return request_uuid;
 }
@@ -801,8 +800,6 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
   CHECK_EQ(iter->second.worker_id, worker_id);
   CHECK_EQ(iter->second.activity_type, activity_type);
   CHECK_EQ(iter->second.extra_data, extra_data);
-  content::ServiceWorkerExternalRequestResult start_result =
-      iter->second.start_result;
   service_worker_keepalives_.erase(iter);
 
   int64_t service_worker_version_id = worker_id.version_id;
@@ -813,18 +810,6 @@ void ProcessManager::DecrementServiceWorkerKeepaliveCount(
   content::ServiceWorkerExternalRequestResult finish_result =
       service_worker_context->FinishedExternalRequest(service_worker_version_id,
                                                       request_uuid);
-
-  if (start_result == content::ServiceWorkerExternalRequestResult::kOk) {
-    base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground."
-        "ProcessManagerFinishedExternalRequestResultWithSuccessfulStart",
-        finish_result);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground."
-        "ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart",
-        finish_result);
-  }
 
   // Example of when kWorkerNotRunning can happen is when the renderer process
   // is killed while handling a service worker request (e.g. because of a bad

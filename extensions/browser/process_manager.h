@@ -72,9 +72,6 @@ class ProcessManager : public KeyedService,
     std::string extra_data;
     // The timeout behavior for the given request.
     content::ServiceWorkerExternalRequestTimeoutType timeout_type;
-    // The result of trying to start an external request with the service
-    // worker layer.
-    content::ServiceWorkerExternalRequestResult start_result;
   };
   using ServiceWorkerKeepaliveDataMap =
       std::map<base::Uuid, ServiceWorkerKeepaliveData>;

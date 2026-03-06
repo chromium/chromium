@@ -4232,35 +4232,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
-<histogram
-    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithSuccessfulStart"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2026-02-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The result from the extension process manager notifying the
-    ServiceWorkerContext of a service worker-based extension that an external
-    request that started with a result of &quot;OK&quot; has finished. Emitted
-    immediately after the call to notify the ServiceWorkerContext is made as
-    part of decrementing the service worker keepalive count.
-  </summary>
-</histogram>
-
-<histogram
-    name="Extensions.ServiceWorkerBackground.ProcessManagerFinishedExternalRequestResultWithUnsuccessfulStart"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2025-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The result from the extension process manager notifying the
-    ServiceWorkerContext of a service worker-based extension that an external
-    request that started with a result of anything other than &quot;OK&quot; has
-    finished. Emitted immediately after the call to notify the
-    ServiceWorkerContext is made as part of decrementing the service worker
-    keepalive count.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
     enum="ServiceWorkerStatusCode" expires_after="2026-07-05">
   <owner>jlulejian@chromium.org</owner>
