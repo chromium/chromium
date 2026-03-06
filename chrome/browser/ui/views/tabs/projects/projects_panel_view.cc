@@ -47,16 +47,21 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
@@ -73,6 +78,9 @@ constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kShadowElevation = 2;
 constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(8, 8);
 constexpr int kListHeaderHeight = 28;
+constexpr int kCreateNewTabGroupIconSize = 20;
+constexpr gfx::Insets kCreateNewTabGroupIconMargins =
+    gfx::Insets::TLBR(0, 4, 0, 0);
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
@@ -87,6 +95,50 @@ constexpr int kThreadsActivityMenuIconSize = 16;
 static bool show_threads_for_testing_ = false;
 
 static bool disable_animations_for_testing_ = false;
+
+class ProjectsPanelNewTabGroupButton : public views::Button {
+  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::Button)
+
+ public:
+  explicit ProjectsPanelNewTabGroupButton(base::RepeatingClosure callback)
+      : views::Button(std::move(callback)) {
+    SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetInteriorMargin(projects_panel::kListItemMargins)
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+    auto* icon = AddChildView(std::make_unique<views::ImageView>());
+    icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
+    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon,
+                                                  kColorProjectsPanelButtonIcon,
+                                                  kCreateNewTabGroupIconSize));
+
+    auto* title = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
+    title->SetTextStyle(views::style::STYLE_BODY_3);
+    title->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title->SetBackgroundColor(SK_ColorTRANSPARENT);
+    title->SetProperty(views::kMarginsKey,
+                       projects_panel::kListItemTitleMargins);
+    title->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kUnbounded));
+
+    projects_panel::ConfigureInkDropForButton(this);
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP));
+  }
+  ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
+      delete;
+  ProjectsPanelNewTabGroupButton& operator=(
+      const ProjectsPanelNewTabGroupButton&) = delete;
+  ~ProjectsPanelNewTabGroupButton() override = default;
+};
+
+BEGIN_METADATA(ProjectsPanelNewTabGroupButton)
+END_METADATA
 
 // Assigns shared list title properties.
 void SetListTitleProperties(views::Label& label) {
@@ -185,10 +237,17 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   SetListTitleProperties(*groups_list_title);
   SetListTitleContainerProperties(*groups_list_title);
 
-  views::ScrollView* tab_groups_scroll_view =
+  create_new_tab_group_button_ = tab_groups_container_->AddChildView(
+      std::make_unique<ProjectsPanelNewTabGroupButton>(base::BindRepeating(
+          &ProjectsPanelView::OnCreateNewTabGroupButtonPressed,
+          base::Unretained(this))));
+  create_new_tab_group_button_->SetProperty(
+      views::kElementIdentifierKey, kProjectsPanelNewTabGroupButtonElementId);
+
+  tab_groups_scroll_view_ =
       tab_groups_container_->AddChildView(std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled));
-  tab_groups_view_ = tab_groups_scroll_view->SetContents(
+  tab_groups_view_ = tab_groups_scroll_view_->SetContents(
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get(),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupButtonPressed,
@@ -197,10 +256,11 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
                               base::Unretained(this)),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupMoved,
                               base::Unretained(this)),
-          base::BindRepeating(
-              &ProjectsPanelView::OnCreateNewTabGroupButtonPressed,
-              base::Unretained(this))));
-  SetScrollViewProperties(*tab_groups_scroll_view);
+          base::BindRepeating(&ProjectsPanelView::OnTabGroupDragUpdated,
+                              base::Unretained(this)),
+          base::BindRepeating(&ProjectsPanelView::OnTabGroupDragExited,
+                              base::Unretained(this))));
+  SetScrollViewProperties(*tab_groups_scroll_view_);
   if (disable_animations_for_testing_) {
     tab_groups_view_->disable_animations_for_testing();  // IN-TEST
   }
@@ -572,6 +632,20 @@ void ProjectsPanelView::OnThreadsActivityMenuButtonPressed() {
       GetWidget(), threads_activity_menu_button_->button_controller(),
       threads_activity_menu_button_->GetAnchorBoundsInScreen(),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
+}
+
+void ProjectsPanelView::OnTabGroupDragUpdated(const gfx::Point& location) {
+  if (tab_groups_scroll_view_) {
+    gfx::Point location_in_scroll_view = location;
+    views::View::ConvertPointToTarget(tab_groups_view_, tab_groups_scroll_view_,
+                                      &location_in_scroll_view);
+    tab_groups_drag_scroll_handler_.OnDraggedTabGroupPositionUpdated(
+        *tab_groups_scroll_view_, location_in_scroll_view);
+  }
+}
+
+void ProjectsPanelView::OnTabGroupDragExited() {
+  tab_groups_drag_scroll_handler_.StopScrolling();
 }
 
 void ProjectsPanelView::ExecuteCommand(int command_id, int event_flags) {

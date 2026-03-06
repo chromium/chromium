@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
@@ -305,6 +306,35 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
             return projects_panel_state_controller()->IsProjectsPanelVisible();
           },
           false));
+}
+
+// This test checks that clicking the "Create new tab group" button creates a
+// new tab group and closes the panel.
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CreateNewTabGroup) {
+  RunTestSequence(
+      // Verify Vertical Tabs is showing.
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      // Open the Projects Panel.
+      EnsurePresent(kVerticalTabStripProjectsButtonElementId),
+      MoveMouseTo(kVerticalTabStripProjectsButtonElementId), ClickMouse(),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kProjectsPanelViewElementId),
+      WaitForShow(kProjectsPanelNewTabGroupButtonElementId),
+      // Click the Create New Tab Group button.
+      MoveMouseTo(kProjectsPanelNewTabGroupButtonElementId),
+      ClickMouse().SetMustRemainVisible(false),
+      // Verify the panel closes.
+      WaitForHide(kProjectsPanelViewElementId),
+      // Verify a new tab group is created.
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->ListTabGroups()
+                .size();
+          },
+          1u));
 }
 
 }  // namespace base::test

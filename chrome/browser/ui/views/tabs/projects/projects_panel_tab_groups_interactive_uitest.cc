@@ -256,14 +256,3 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
       // Verify menu is shown by waiting for a menu item.
       WaitForShow(tab_groups::STGTabsMenuModel::kOpenGroup));
 }
-
-IN_PROC_BROWSER_TEST_F(ProjectsPanelTabGroupsInteractiveUiTest,
-                       CreateNewTabGroupClosesPanelFirst) {
-  RunTestSequence(WaitForShow(kVerticalTabStripTopContainerElementId),
-                  AddTabGroup(u"Test Group"), OpenProjectsPanel(),
-                  WaitForShow(kProjectsPanelNewTabGroupButtonElementId),
-                  MoveMouseTo(kProjectsPanelNewTabGroupButtonElementId),
-                  // Clicking the create new tab group button should close the
-                  // panel.
-                  ClickMouse(), WaitForHide(kProjectsPanelViewElementId));
-}

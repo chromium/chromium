@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_drag_scroll_handler.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
@@ -33,6 +34,7 @@ class ActionViewController;
 class EventMonitor;
 class MenuButton;
 class MenuRunner;
+class ScrollView;
 class ViewShadow;
 }  // namespace views
 
@@ -104,6 +106,10 @@ class ProjectsPanelView : public views::View,
   views::View* content_container_for_testing() { return content_container_; }
   views::View* threads_container_for_testing() { return threads_container_; }
   views::Separator* separator_for_testing() { return separator_; }
+  views::Button* create_new_tab_group_button_for_testing() {
+    return create_new_tab_group_button_;
+  }
+
   void set_on_close_animation_ended_callback_for_testing(
       base::OnceClosure on_close_animation_ended_callback) {
     on_close_animation_ended_callback_ =
@@ -137,17 +143,22 @@ class ProjectsPanelView : public views::View,
   void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
   void OnCreateNewTabGroupButtonPressed();
   void OnThreadButtonPressed(const std::string& thread_server_id);
+  void OnTabGroupDragUpdated(const gfx::Point& location);
+  void OnTabGroupDragExited();
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
+
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
   raw_ptr<views::View> tab_groups_container_ = nullptr;
+  raw_ptr<views::ScrollView> tab_groups_scroll_view_ = nullptr;
   raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
   raw_ptr<views::View> threads_container_ = nullptr;
   raw_ptr<ProjectsPanelRecentThreadsView> threads_view_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
   raw_ptr<views::MenuButton> threads_activity_menu_button_ = nullptr;
+  raw_ptr<views::Button> create_new_tab_group_button_ = nullptr;
 
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
@@ -176,6 +187,10 @@ class ProjectsPanelView : public views::View,
   // The default appearance of the panel is elevated, but this must be false
   // for the SetIsElevated call in the constructor to be effective.
   bool elevated_ = false;
+
+  // Handles auto-scrolling the tab groups view as a group is held near the top
+  // or bottom of the list.
+  ProjectsPanelTabGroupsDragScrollHandler tab_groups_drag_scroll_handler_;
 
   base::ScopedObservation<ProjectsPanelController,
                           ProjectsPanelController::Observer>

@@ -25,7 +25,6 @@ class OSExchangeData;
 
 namespace views {
 class ActionViewController;
-class Button;
 class Label;
 }  // namespace views
 
@@ -40,6 +39,9 @@ class ProjectsPanelTabGroupsView : public views::View,
  public:
   using TabGroupMovedCallback =
       base::RepeatingCallback<void(const base::Uuid&, int)>;
+  using DragUpdatedCallback =
+      base::RepeatingCallback<void(const gfx::Point& location)>;
+  using DragExitedCallback = base::RepeatingClosure;
 
   ProjectsPanelTabGroupsView(
       actions::ActionItem* root_action_item,
@@ -49,7 +51,8 @@ class ProjectsPanelTabGroupsView : public views::View,
       ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
           more_button_callback = base::DoNothing(),
       TabGroupMovedCallback tab_group_moved_callback = base::DoNothing(),
-      base::RepeatingClosure create_new_tab_group_callback = base::DoNothing());
+      DragUpdatedCallback drag_updated_callback = base::DoNothing(),
+      DragExitedCallback drag_exited_callback = base::DoNothing());
   ProjectsPanelTabGroupsView(const ProjectsPanelTabGroupsView&) = delete;
   ProjectsPanelTabGroupsView& operator=(const ProjectsPanelTabGroupsView&) =
       delete;
@@ -88,10 +91,6 @@ class ProjectsPanelTabGroupsView : public views::View,
 
   ProjectsPanelNoTabGroupsView* no_tab_groups_view_for_testing() {
     return no_tab_groups_view_;
-  }
-
-  views::Button* create_new_tab_group_button_for_testing() {
-    return create_new_tab_group_button_;
   }
 
   static void disable_animations_for_testing();
@@ -134,8 +133,9 @@ class ProjectsPanelTabGroupsView : public views::View,
   ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
       more_button_callback_;
   TabGroupMovedCallback tab_group_moved_callback_;
+  DragUpdatedCallback drag_updated_callback_;
+  DragExitedCallback drag_exited_callback_;
   raw_ptr<views::Label> title_ = nullptr;
-  raw_ptr<views::Button> create_new_tab_group_button_ = nullptr;
   raw_ptr<ProjectsPanelNoTabGroupsView> no_tab_groups_view_ = nullptr;
   std::vector<ProjectsPanelTabGroupsItemView*> item_views_;
 

@@ -45,53 +45,6 @@
 
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
-constexpr int kCreateNewTabGroupIconSize = 20;
-constexpr gfx::Insets kCreateNewTabGroupIconMargins =
-    gfx::Insets::TLBR(0, 4, 0, 0);
-
-class ProjectsPanelNewTabGroupButton : public views::Button {
-  METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::Button)
-
- public:
-  explicit ProjectsPanelNewTabGroupButton(base::RepeatingClosure callback)
-      : views::Button(std::move(callback)) {
-    SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetInteriorMargin(projects_panel::kListItemMargins)
-        .SetOrientation(views::LayoutOrientation::kHorizontal)
-        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-
-    auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
-    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon,
-                                                  kColorProjectsPanelButtonIcon,
-                                                  kCreateNewTabGroupIconSize));
-
-    auto* title = AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
-    title->SetTextStyle(views::style::STYLE_BODY_3);
-    title->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    title->SetBackgroundColor(SK_ColorTRANSPARENT);
-    title->SetProperty(views::kMarginsKey,
-                       projects_panel::kListItemTitleMargins);
-    title->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kScaleToMinimum,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-
-    projects_panel::ConfigureInkDropForButton(this);
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP));
-  }
-  ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
-      delete;
-  ProjectsPanelNewTabGroupButton& operator=(
-      const ProjectsPanelNewTabGroupButton&) = delete;
-  ~ProjectsPanelNewTabGroupButton() override = default;
-};
-
-BEGIN_METADATA(ProjectsPanelNewTabGroupButton)
-END_METADATA
 
 // Whether animations should be disabled.
 static bool disable_animations_for_testing_ = false;
@@ -106,18 +59,15 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
     ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
         more_button_callback,
     TabGroupMovedCallback tab_group_moved_callback,
-    base::RepeatingClosure create_new_tab_group_callback)
+    DragUpdatedCallback drag_updated_callback,
+    DragExitedCallback drag_exited_callback)
     : tab_group_button_callback_(std::move(tab_group_button_callback)),
       more_button_callback_(std::move(more_button_callback)),
-      tab_group_moved_callback_(std::move(tab_group_moved_callback)) {
+      tab_group_moved_callback_(std::move(tab_group_moved_callback)),
+      drag_updated_callback_(std::move(drag_updated_callback)),
+      drag_exited_callback_(std::move(drag_exited_callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
-
-  create_new_tab_group_button_ =
-      AddChildView(std::make_unique<ProjectsPanelNewTabGroupButton>(
-          std::move(create_new_tab_group_callback)));
-  create_new_tab_group_button_->SetProperty(
-      views::kElementIdentifierKey, kProjectsPanelNewTabGroupButtonElementId);
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelTabGroupsViewElementId);
@@ -183,6 +133,8 @@ void ProjectsPanelTabGroupsView::OnDragEntered(
 
 int ProjectsPanelTabGroupsView::OnDragUpdated(
     const ui::DropTargetEvent& event) {
+  drag_updated_callback_.Run(event.location());
+
   if (!drop_info_) {
     return static_cast<int>(ui::mojom::DragOperation::kNone);
   }
@@ -204,6 +156,7 @@ int ProjectsPanelTabGroupsView::OnDragUpdated(
 }
 
 void ProjectsPanelTabGroupsView::OnDragExited() {
+  drag_exited_callback_.Run();
   drop_info_.reset();
   SchedulePaint();
 }
