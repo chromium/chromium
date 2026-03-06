@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_INTERNAL_H_
 
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 // Functions for WTF string class implementations.
@@ -221,6 +222,34 @@ ReverseFind(base::span<const SearchCharacterType> search,
     search_hash += UNSAFE_BUFFERS(search_data[0]);
   }
   return delta;
+}
+
+template <typename StringType, typename QueryType>
+Vector<StringType> Split(const StringType& input,
+                         QueryType separator,
+                         bool allow_empty_entries) {
+  Vector<StringType> result;
+
+  using size_type = typename StringType::size_type;
+  size_type separator_length;
+  if constexpr (requires { separator.length(); }) {
+    separator_length = separator.length();
+    DCHECK(separator_length);
+  } else {
+    separator_length = 1;
+  }
+  size_type start_pos = 0;
+  size_type end_pos;
+  while ((end_pos = input.find(separator, start_pos)) != StringType::npos) {
+    if (allow_empty_entries || start_pos != end_pos) {
+      result.push_back(input.substr(start_pos, end_pos - start_pos));
+    }
+    start_pos = end_pos + separator_length;
+  }
+  if (allow_empty_entries || start_pos != input.length()) {
+    result.push_back(input.substr(start_pos));
+  }
+  return result;
 }
 
 }  // namespace blink::internal

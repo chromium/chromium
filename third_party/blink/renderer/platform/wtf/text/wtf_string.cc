@@ -57,36 +57,6 @@ namespace blink {
 
 ASSERT_SIZE(String, void*);
 
-namespace {
-
-template <typename QueryType>
-Vector<String> SplitInternal(const String& input,
-                             QueryType separator,
-                             bool allow_empty_entries) {
-  Vector<String> result;
-
-  String::size_type separator_length;
-  if constexpr (requires { separator.length(); }) {
-    separator_length = separator.length();
-  } else {
-    separator_length = 1;
-  }
-  String::size_type start_pos = 0;
-  String::size_type end_pos;
-  while ((end_pos = input.find(separator, start_pos)) != kNotFound) {
-    if (allow_empty_entries || start_pos != end_pos) {
-      result.push_back(input.substr(start_pos, end_pos - start_pos));
-    }
-    start_pos = end_pos + separator_length;
-  }
-  if (allow_empty_entries || start_pos != input.length()) {
-    result.push_back(input.substr(start_pos));
-  }
-  return result;
-}
-
-}  // namespace
-
 // Construct a string with UTF-16 data.
 String::String(base::span<const UChar> utf16_data)
     : impl_(utf16_data.data() ? StringImpl::Create(utf16_data) : nullptr) {}
@@ -327,16 +297,15 @@ String String::NumberToStringFixedWidth(double number,
 }
 
 Vector<String> String::Split(const StringView& separator) const {
-  DCHECK(!separator.empty());
-  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
+  return internal::Split(*this, separator, /* allow_empty_entries */ true);
 }
 
 Vector<String> String::Split(UChar separator) const {
-  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
+  return internal::Split(*this, separator, /* allow_empty_entries */ true);
 }
 
 Vector<String> String::SplitSkippingEmpty(UChar separator) const {
-  return SplitInternal(*this, separator, /* allow_empty_entries */ false);
+  return internal::Split(*this, separator, /* allow_empty_entries */ false);
 }
 
 std::string String::Ascii() const {
