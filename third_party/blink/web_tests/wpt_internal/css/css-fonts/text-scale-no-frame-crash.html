@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<link rel="help" href="https://crbug.com/490318095">
+<script>
+  let doc = document.implementation.createHTMLDocument("crash-doc");
+  doc.head.innerHTML = `<meta name="text-scale" content="scale">`;
+</script>
