@@ -1849,6 +1849,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfoForGrid(
   // Columns
   LayoutUnit column_top = rows.front();
   LayoutUnit column_height = rows.back() - rows.front();
+
+  if (grid->StyleRef().GetWritingMode() == WritingMode::kVerticalLr) {
+    grid_info->setValue(
+        "writingModeRoot",
+        BuildPosition(LocalToAbsolutePoint(
+            element, PhysicalOffset(grid->ContentLeft(), grid->ContentTop()),
+            scale)));
+  }
   grid_info->setValue(
       "columns",
       BuildTrackPaths(grid, containing_view, columns, column_top, column_height,

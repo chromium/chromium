@@ -72,10 +72,17 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return highlightObject.gridInfo[0].writingMode;
   }
 
+  function getWritingModeRoot(highlightObject) {
+    return highlightObject.gridInfo[0].writingModeRoot;
+  }
+
   function getGridInfo(highlightObject) {
     const info = highlightObject.gridInfo[0];
-    // Drop the writingMode property as it's the only one that differs, and we want to compare the rest.
-    return JSON.stringify(info, (key, value) => key === 'writingMode' ? undefined : value, 2)
+    // Drop writing-mode specific metadata and compare the remaining grid geometry.
+    return JSON.stringify(
+        info,
+        (key, value) => (key === 'writingMode' || key === 'writingModeRoot') ? undefined : value,
+        2);
   }
 
   const horizontalTbNode = await ElementsTestRunner.nodeWithIdPromise('horizontalTb');
@@ -84,16 +91,25 @@ import {ElementsTestRunner} from 'elements_test_runner';
   const horizontalTbInfo = getGridInfo(horizontalTbHighlight);
 
   TestRunner.addResult(`Node id #horizontalTb writing-mode: ${getWritingMode(horizontalTbHighlight)}`);
+  TestRunner.assertTrue(
+      !getWritingModeRoot(horizontalTbHighlight), '#horizontalTb writingModeRoot presence');
   TestRunner.addResult(`Grid info: ${horizontalTbInfo}`);
 
   for (const id of ['verticalRl', 'verticalLr', 'sidewaysRl', 'sidewaysLr']) {
     const node = await ElementsTestRunner.nodeWithIdPromise(id);
     const {highlight: result} = await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: node.id});
     const gridInfo = getGridInfo(result);
+    const writingModeRoot = getWritingModeRoot(result);
 
     TestRunner.addResult(`Node id #${id} writing-mode: ${getWritingMode(result)}`);
+    TestRunner.assertEquals(
+        id === 'verticalLr', Boolean(writingModeRoot), `#${id} writingModeRoot presence`);
+    if (writingModeRoot) {
+      TestRunner.assertTrue(Number.isFinite(writingModeRoot.x), `#${id} writingModeRoot.x`);
+      TestRunner.assertTrue(Number.isFinite(writingModeRoot.y), `#${id} writingModeRoot.y`);
+    }
     TestRunner.addResult(`Grid info: ${gridInfo}`);
-    TestRunner.addResult(`Should be the same as #horizontalTb: ${gridInfo === horizontalTbInfo}`)
+    TestRunner.addResult(`Should be the same as #horizontalTb: ${gridInfo === horizontalTbInfo}`);
   }
 
   TestRunner.completeTest();
