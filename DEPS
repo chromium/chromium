@@ -4751,7 +4751,7 @@ hooks = [
     'condition': 'generate_location_tags',
   },
 
-  # Configure remote exec cfg files
+  # Configure remote exec cfg files.
   {
     # Use luci_auth if on windows and using chrome-untrusted project
     'name': 'download_and_configure_reclient_cfgs',
