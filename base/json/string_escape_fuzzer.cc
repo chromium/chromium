@@ -4,29 +4,25 @@
 
 #include "base/json/string_escape.h"
 
-#include <memory>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> all_input) {
+  if (all_input.size() < 2) {
     return 0;
   }
 
-  // SAFETY: required from fuzzer.
-  auto all_input = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
-
-  const bool put_in_quotes = all_input[size - 1];
+  const bool put_in_quotes = all_input.back();
 
   // Create a copy of input buffer, as otherwise we don't catch
   // overflow that touches the last byte (which is used in put_in_quotes).
   auto input = base::HeapArray<char>::CopiedFrom(
-      base::as_chars(all_input.first(size - 1)));
+      base::as_chars(all_input.first(all_input.size() - 1)));
 
   std::string_view input_string = base::as_string_view(input.as_span());
   std::string escaped_string;

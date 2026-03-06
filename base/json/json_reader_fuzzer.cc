@@ -8,25 +8,24 @@
 #include <string_view>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace base {
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data_span) {
+  if (data_span.size() < 2) {
     return 0;
   }
 
-  // SAFETY: LibFuzzer provides a valid data/size pair.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
-
   // Create a copy of input buffer, as otherwise we don't catch
   // overflow that touches the last byte (which is used in options).
-  auto input = base::HeapArray<unsigned char>::Uninit(size - 1);
-  input.copy_from(data_span.first(size - 1u));
+  auto input = base::HeapArray<unsigned char>::CopiedFrom(
+      data_span.first(data_span.size() - 1u));
 
   std::string_view input_string = base::as_string_view(input);
 

@@ -6,10 +6,12 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   std::string decode_output;
-  std::string_view data_piece(reinterpret_cast<const char*>(data), size);
-  base::Base64Decode(data_piece, &decode_output);
+  base::Base64Decode(base::as_string_view(data), &decode_output);
   return 0;
 }

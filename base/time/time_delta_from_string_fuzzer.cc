@@ -4,15 +4,17 @@
 
 #include "base/time/time_delta_from_string.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <string_view>
 
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::string_view input(reinterpret_cast<const char*>(data), size);
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  auto input = base::as_string_view(data);
   base::TimeDeltaFromString(input);
   return 0;
 }

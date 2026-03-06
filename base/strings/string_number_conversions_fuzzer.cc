@@ -13,17 +13,21 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 template <class NumberType, class StringPieceType, class StringType>
-void CheckRoundtripsT(const uint8_t* data,
-                      const size_t size,
+void CheckRoundtripsT(base::span<const uint8_t> data,
                       StringType (*num_to_string)(NumberType),
                       bool (*string_to_num)(StringPieceType, NumberType*)) {
   // Ensure we can read a NumberType from |data|
-  if (size < sizeof(NumberType)) {
+  if (data.size() < sizeof(NumberType)) {
     return;
   }
-  const NumberType v1 = *reinterpret_cast<const NumberType*>(data);
+  NumberType v1;
+  base::byte_span_from_ref(v1).copy_from_nonoverlapping(
+      data.first<sizeof(NumberType)>());
 
   // Because we started with an arbitrary NumberType value, not an arbitrary
   // string, we expect that the function |string_to_num| (e.g. StringToInt) will
@@ -37,40 +41,36 @@ void CheckRoundtripsT(const uint8_t* data,
 }
 
 template <class NumberType>
-void CheckRoundtrips(const uint8_t* data,
-                     const size_t size,
+void CheckRoundtrips(base::span<const uint8_t> data,
                      bool (*string_to_num)(std::string_view, NumberType*)) {
   return CheckRoundtripsT<NumberType, std::string_view, std::string>(
-      data, size, &base::NumberToString, string_to_num);
+      data, &base::NumberToString, string_to_num);
 }
 
 template <class NumberType>
-void CheckRoundtrips16(const uint8_t* data,
-                       const size_t size,
+void CheckRoundtrips16(base::span<const uint8_t> data,
                        bool (*string_to_num)(std::u16string_view,
                                              NumberType*)) {
   return CheckRoundtripsT<NumberType, std::u16string_view, std::u16string>(
-      data, size, &base::NumberToString16, string_to_num);
+      data, &base::NumberToString16, string_to_num);
 }
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   // For each instantiation of NumberToString f and its corresponding StringTo*
   // function g, check that f(g(x)) = x holds for fuzzer-determined values of x.
-  CheckRoundtrips<int>(data, size, &base::StringToInt);
-  CheckRoundtrips16<int>(data, size, &base::StringToInt);
-  CheckRoundtrips<unsigned int>(data, size, &base::StringToUint);
-  CheckRoundtrips16<unsigned int>(data, size, &base::StringToUint);
-  CheckRoundtrips<int64_t>(data, size, &base::StringToInt64);
-  CheckRoundtrips16<int64_t>(data, size, &base::StringToInt64);
-  CheckRoundtrips<uint64_t>(data, size, &base::StringToUint64);
-  CheckRoundtrips16<uint64_t>(data, size, &base::StringToUint64);
-  CheckRoundtrips<size_t>(data, size, &base::StringToSizeT);
-  CheckRoundtrips16<size_t>(data, size, &base::StringToSizeT);
+  CheckRoundtrips<int>(data, &base::StringToInt);
+  CheckRoundtrips16<int>(data, &base::StringToInt);
+  CheckRoundtrips<unsigned int>(data, &base::StringToUint);
+  CheckRoundtrips16<unsigned int>(data, &base::StringToUint);
+  CheckRoundtrips<int64_t>(data, &base::StringToInt64);
+  CheckRoundtrips16<int64_t>(data, &base::StringToInt64);
+  CheckRoundtrips<uint64_t>(data, &base::StringToUint64);
+  CheckRoundtrips16<uint64_t>(data, &base::StringToUint64);
+  CheckRoundtrips<size_t>(data, &base::StringToSizeT);
+  CheckRoundtrips16<size_t>(data, &base::StringToSizeT);
 
-  std::string_view string_piece_input(reinterpret_cast<const char*>(data),
-                                      size);
-  std::string string_input(reinterpret_cast<const char*>(data), size);
+  const auto string_piece_input = base::as_string_view(data);
 
   int out_int;
   base::StringToInt(string_piece_input, &out_int);
@@ -84,9 +84,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::StringToSizeT(string_piece_input, &out_size);
 
   // Test for std::u16string_view if size is even.
-  if (size % 2 == 0) {
+  if (data.size() % 2 == 0) {
     std::u16string_view string_piece_input16(
-        reinterpret_cast<const char16_t*>(data), size / 2);
+        reinterpret_cast<const char16_t*>(data.data()), data.size() / 2);
 
     base::StringToInt(string_piece_input16, &out_int);
     base::StringToUint(string_piece_input16, &out_uint);
@@ -96,7 +96,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   double out_double;
-  base::StringToDouble(string_input, &out_double);
+  base::StringToDouble(string_piece_input, &out_double);
 
   base::HexStringToInt(string_piece_input, &out_int);
   base::HexStringToUInt(string_piece_input, &out_uint);
@@ -105,7 +105,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<uint8_t> out_bytes;
   base::HexStringToBytes(string_piece_input, &out_bytes);
 
-  base::HexEncode(data, size);
+  base::HexEncode(data);
+  base::HexEncode(string_piece_input);
 
   // Convert the numbers back to strings.
   base::NumberToString(out_int);

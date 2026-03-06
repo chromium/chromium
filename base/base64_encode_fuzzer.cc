@@ -7,9 +7,11 @@
 
 #include "base/base64.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/features.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace {
 
@@ -29,9 +31,7 @@ void EncodeDecode(base::span<const uint8_t> data) {
 }  // namespace
 
 // Encode some random data, and then decode it.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
-  // SAFETY: libfuzzer provides a valid pointer and size pair.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   EncodeDecode(data);
 
   {
