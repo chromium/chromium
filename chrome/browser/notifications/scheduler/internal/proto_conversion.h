@@ -10,7 +10,7 @@
 #include "chrome/browser/notifications/proto/notification_entry.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 
 namespace notifications {
 

@@ -34,8 +34,6 @@ source_set("lib") {
     "init_aware_scheduler.h",
     "noop_notification_schedule_service.cc",
     "noop_notification_schedule_service.h",
-    "notification_entry.cc",
-    "notification_entry.h",
     "notification_schedule_service_impl.cc",
     "notification_schedule_service_impl.h",
     "notification_scheduler.cc",

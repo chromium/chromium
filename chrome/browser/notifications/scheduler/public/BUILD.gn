@@ -21,6 +21,8 @@ source_set("public") {
     "notification_background_task_scheduler.h",
     "notification_data.cc",
     "notification_data.h",
+    "notification_entry.cc",
+    "notification_entry.h",
     "notification_params.cc",
     "notification_params.h",
     "notification_schedule_service.h",

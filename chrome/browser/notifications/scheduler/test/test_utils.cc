@@ -9,8 +9,8 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 
 namespace notifications {
 namespace test {

@@ -5,6 +5,7 @@
 #include "chrome/browser/notifications/scheduler/tips_agent_android.h"
 
 #include "chrome/browser/notifications/scheduler/notification_schedule_service_factory.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/public/tips_utils.h"
@@ -60,21 +61,7 @@ notifications::TipsNotificationsFeatureType GetFeatureType(
   }
 }
 
-void RunGetClassificationResultCallback(
-    Profile* profile,
-    const segmentation_platform::ClassificationResult& result) {
-  // If there are no suggestions then no notification will be scheduled.
-  if (result.ordered_labels.empty()) {
-    return;
-  }
-
-  const std::string& action_label = result.ordered_labels[0];
-  notifications::TipsNotificationsFeatureType feature_type =
-      GetFeatureType(action_label);
-
-  notifications::NotificationScheduleService* service =
-      NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
-
+notifications::ScheduleParams GetCurrentScheduleParams() {
   // Setup the schedule params to either be for testing with instant and delayed
   // 2 minutes notifications, or the base use case of 2-4 hours.
   // The standard priority is low to include throttling logic from the scheduler
@@ -91,6 +78,23 @@ void RunGetClassificationResultCallback(
       base::Time::Now() +
       base::Minutes(segmentation_platform::features::kStartTimeMinutes.Get()) +
       base::Minutes(segmentation_platform::features::kWindowTimeMinutes.Get());
+  return schedule_params;
+}
+
+void RunGetClassificationResultCallback(
+    Profile* profile,
+    notifications::NotificationScheduleService* service,
+    const segmentation_platform::ClassificationResult& result) {
+  // If there are no suggestions then no notification will be scheduled.
+  if (result.ordered_labels.empty()) {
+    return;
+  }
+
+  const std::string& action_label = result.ordered_labels[0];
+  notifications::TipsNotificationsFeatureType feature_type =
+      GetFeatureType(action_label);
+
+  notifications::ScheduleParams schedule_params = GetCurrentScheduleParams();
 
   notifications::NotificationData data =
       notifications::GetTipsNotificationData(feature_type);
@@ -99,23 +103,10 @@ void RunGetClassificationResultCallback(
       std::move(schedule_params)));
 }
 
-}  // namespace
-
-void TipsAgentAndroid::ShowTipsPromo(
-    notifications::TipsNotificationsFeatureType feature_type) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_TipsAgent_showTipsPromo(env, static_cast<int32_t>(feature_type));
-}
-
-static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
-                                                    Profile* profile,
-                                                    bool j_is_bottom_omnibox) {
-  if (!profile) {
-    return;
-  }
-
-  bool is_bottom_omnibox = j_is_bottom_omnibox;
-
+void ScheduleNewNotification(
+    Profile* profile,
+    bool is_bottom_omnibox,
+    notifications::NotificationScheduleService* service) {
   segmentation_platform::SegmentationPlatformService*
       segmentation_platform_service = segmentation_platform::
           SegmentationPlatformServiceFactory::GetForProfile(profile);
@@ -231,7 +222,69 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
       input_context,
-      base::BindOnce(&RunGetClassificationResultCallback, profile));
+      base::BindOnce(&RunGetClassificationResultCallback, profile,
+                     base::Unretained(service)));
+}
+
+void OnGetClientOverview(
+    Profile* profile,
+    bool is_bottom_omnibox,
+    notifications::NotificationScheduleService* service,
+    std::unique_ptr<notifications::ClientOverview> overview) {
+  int num_scheduled_notifications = overview->scheduled_notifications.size();
+
+  // If there is a scheduled notification, reschedule it.
+  if (num_scheduled_notifications > 0) {
+    // There will only ever be 1 notification scheduled at a time for tips.
+    DCHECK_EQ(num_scheduled_notifications, 1);
+
+    for (const auto& entry : overview->scheduled_notifications) {
+      notifications::NotificationData data = entry->notification_data;
+      // Use new ScheduleParams to reschedule based on the current time.
+      notifications::ScheduleParams params = GetCurrentScheduleParams();
+
+      // Wipe all pending notifications before rescheduling.
+      service->DeleteNotifications(notifications::SchedulerClientType::kTips);
+      service->Schedule(std::make_unique<notifications::NotificationParams>(
+          notifications::SchedulerClientType::kTips, std::move(data),
+          std::move(params)));
+    }
+  } else {
+    ScheduleNewNotification(profile, is_bottom_omnibox, service);
+  }
+}
+
+}  // namespace
+
+void TipsAgentAndroid::ShowTipsPromo(
+    notifications::TipsNotificationsFeatureType feature_type) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_TipsAgent_showTipsPromo(env, static_cast<int32_t>(feature_type));
+}
+
+static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
+                                                    Profile* profile,
+                                                    bool j_is_bottom_omnibox) {
+  if (!profile) {
+    return;
+  }
+
+  bool is_bottom_omnibox = j_is_bottom_omnibox;
+
+  // Check the cached pending notifications in the ClientOverview.
+  notifications::NotificationScheduleService* service =
+      NotificationScheduleServiceFactory::GetForKey(profile->GetProfileKey());
+  service->GetClientOverview(
+      notifications::SchedulerClientType::kTips,
+      base::BindOnce(
+          [](Profile* profile, bool is_bottom_omnibox,
+             notifications::NotificationScheduleService* service,
+             notifications::ClientOverview overview) {
+            OnGetClientOverview(profile, is_bottom_omnibox, service,
+                                std::make_unique<notifications::ClientOverview>(
+                                    std::move(overview)));
+          },
+          profile, is_bottom_omnibox, base::Unretained(service)));
 }
 
 static void JNI_TipsAgent_RemovePendingNotifications(JNIEnv* env,

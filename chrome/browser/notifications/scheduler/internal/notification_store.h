@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/proto/notification_entry.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
 // Forward declaration for proto conversion.

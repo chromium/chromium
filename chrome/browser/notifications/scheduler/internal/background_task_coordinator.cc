@@ -13,11 +13,11 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
 #include "chrome/browser/notifications/scheduler/public/features.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 
 namespace notifications {
 namespace {

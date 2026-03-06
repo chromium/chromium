@@ -8,12 +8,13 @@
 
 namespace notifications {
 
-ClientOverview::ClientOverview() : num_scheduled_notifications(0) {}
+ClientOverview::ClientOverview() = default;
 
-ClientOverview::ClientOverview(ImpressionDetail impression_detail,
-                               size_t num_scheduled_notifications)
-    : impression_detail(std::move(impression_detail)),
-      num_scheduled_notifications(num_scheduled_notifications) {}
+ClientOverview::ClientOverview(
+    ImpressionDetail impression_detail,
+    std::vector<const NotificationEntry*> scheduled_notifications)
+    : impression_detail(impression_detail),
+      scheduled_notifications(std::move(scheduled_notifications)) {}
 
 ClientOverview::ClientOverview(const ClientOverview& other) = default;
 
@@ -27,7 +28,7 @@ ClientOverview& ClientOverview::operator=(ClientOverview&& other) = default;
 ClientOverview::~ClientOverview() = default;
 
 bool ClientOverview::operator==(const ClientOverview& other) const {
-  return num_scheduled_notifications == other.num_scheduled_notifications &&
+  return scheduled_notifications == other.scheduled_notifications &&
          impression_detail == other.impression_detail;
 }
 

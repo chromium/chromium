@@ -9,9 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 
 using Notifications = notifications::DisplayDecider::Notifications;
 using Results = notifications::DisplayDecider::Results;

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_CLIENT_OVERVIEW_H_
 
 #include "base/functional/callback.h"
-
 #include "chrome/browser/notifications/scheduler/public/impression_detail.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 
 namespace notifications {
 
@@ -16,7 +16,7 @@ struct ClientOverview {
 
   ClientOverview();
   ClientOverview(ImpressionDetail impression_detail,
-                 size_t num_scheduled_notifications);
+                 std::vector<const NotificationEntry*> scheduled_notifications);
   ClientOverview(const ClientOverview& other);
   ClientOverview(ClientOverview&& other);
   ClientOverview& operator=(const ClientOverview& other);
@@ -28,8 +28,8 @@ struct ClientOverview {
   // Details of impression.
   ImpressionDetail impression_detail;
 
-  // The number of notifications cached in scheduler but not displayed yet.
-  size_t num_scheduled_notifications;
+  // A list of notifications cached in the scheduler but not displayed yet.
+  std::vector<const NotificationEntry*> scheduled_notifications;
 };
 
 }  // namespace notifications

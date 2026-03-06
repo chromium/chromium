@@ -35,7 +35,8 @@ public class TipsAgent {
     }
 
     /**
-     * Maybe schedule a tips notification depending on backend criteria.
+     * Maybe schedule a tips notification depending on backend criteria. If a notification is
+     * already scheduled, this will reschedule it.
      *
      * @param profile The current profile.
      * @param isBottomOmnibox Whether the omnibox is in the bottom position or not.
