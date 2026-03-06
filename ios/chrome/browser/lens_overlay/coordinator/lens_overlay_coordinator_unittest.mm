@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -98,8 +99,9 @@ class LensOverlayCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetForProfile(profile_);
 
     SceneState* mock_scene_state = OCMClassMock([SceneState class]);
-    UIWindow* window =
-        [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 520)];
+    UIWindow* window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+    window.frame = CGRectMake(0, 0, 320, 520);
     OCMStub([mock_scene_state window]).andReturn(window);
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     profile_state_.profile = profile_.get();

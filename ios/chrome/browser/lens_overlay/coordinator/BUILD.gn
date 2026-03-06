@@ -161,6 +161,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/providers/lens",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/testing:nserror_support",
