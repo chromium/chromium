@@ -661,7 +661,12 @@ void WebMediaPlayerImpl::Shutdown() {
   if (!surface_layer_for_video_enabled_ && video_layer_)
     video_layer_->StopUsingProvider();
 
+  // These hold Unretained(this), so must be destructed here.
+  watch_time_reporter_.reset();
+  video_decode_stats_reporter_.reset();
   simple_watch_timer_.Stop();
+  memory_usage_reporting_timer_.Stop();
+  background_pause_timer_.Stop();
   media_log_->OnWebMediaPlayerDestroyed();
 
   demuxer_manager_->StopAndResetClient();
