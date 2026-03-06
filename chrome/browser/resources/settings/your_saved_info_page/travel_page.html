@@ -1,4 +1,4 @@
-<style include="your-saved-info-shared">
+<style include="settings-shared your-saved-info-shared">
 
   .card {
     overflow: hidden;
@@ -18,6 +18,22 @@
         no-extension-indicator
         label="$i18n{travelOptInToggleLabel}"
         sub-label="$i18n{travelOptInToggleSubLabel}">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[extensionControlledIndicatorIsVisible_(
+            prefs.autofill.profile_enabled.extensionId)]]">
+      <div class="cr-row continuation">
+        <extension-controlled-indicator class="flex"
+            id="autofillExtensionIndicator"
+            extension-id=
+                "[[prefs.autofill.profile_enabled.extensionId]]"
+            extension-name=
+                "[[prefs.autofill.profile_enabled.controlledByName]]"
+            extension-can-be-disabled="[[
+                prefs.autofill.profile_enabled.extensionCanBeDisabled
+                ]]">
+        </extension-controlled-indicator>
+      </div>
+    </template>
   </div>
 
   <!-- Entities list card -->
