@@ -16,12 +16,16 @@
 #include "base/base64url.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -122,16 +126,22 @@ std::string DecodeDomain(KnownDomainID domain_id) {
     return kAssignedDomains[domain];
   }
 
-  char templ[] = "caBLEv2 tunnel server domain\x00\x00";
-  UNSAFE_TODO(memcpy(&templ[sizeof(templ) - 1 - sizeof(domain)], &domain,
-                     sizeof(domain)));
+  static constexpr std::string_view kPrefix = "caBLEv2 tunnel server domain";
+
+  // [28-prefix][2-byte domain][1-NUL]
+  std::array<uint8_t, 31> templ = {};
+  base::SpanWriter<uint8_t> writer(templ);
+  writer.Write(base::as_byte_span(kPrefix));
+  writer.WriteU16LittleEndian(domain);
+  // Leave one byte for NULL (`templ` was zero initialized).
+  CHECK_EQ(writer.remaining(), 1u);  // Leave one byte for NULL.
+  CHECK_EQ(templ.back(), 0);
+
   uint8_t digest[SHA256_DIGEST_LENGTH];
-  // The input should be NUL-terminated, thus the trailing NUL in |templ| is
-  // included here.
-  SHA256(reinterpret_cast<const uint8_t*>(templ), sizeof(templ), digest);
-  uint64_t result;
-  static_assert(sizeof(result) <= sizeof(digest), "");
-  UNSAFE_TODO(memcpy(&result, digest, sizeof(result)));
+  SHA256(templ.data(), templ.size(), digest);
+  static_assert(sizeof(uint64_t) <= sizeof(digest), "");
+  uint64_t result =
+      base::U64FromNativeEndian(base::span(digest).first<sizeof(uint64_t)>());
 
   static const std::string_view kBase32Chars =
       "abcdefghijklmnopqrstuvwxyz234567";
@@ -145,8 +155,13 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   }
   ret.push_back('.');
 
-  static const char kTLDs[4][5] = {"com", "org", "net", "info"};
-  ret += UNSAFE_TODO(kTLDs[tld_value]);
+  static constexpr auto kTLDs = std::to_array<std::string_view>({
+      "com",
+      "org",
+      "net",
+      "info",
+  });
+  ret += kTLDs[tld_value];
 
   return ret;
 }
@@ -202,24 +217,29 @@ std::array<uint8_t, kAdvertSize> Encrypt(
   // is a pair of 256-bit keys, concatenated.
   DCHECK(ReservedBitsAreZero(eid));
 
-  std::array<uint8_t, kAdvertSize> ret;
-  static_assert(ret.size() == AES_BLOCK_SIZE + 4);
-
+  auto [aes_key_bytes, hmac_key_bytes] = key.split_at<32>();
+  static_assert(aes_key_bytes.size() == 32u);
+  static_assert(hmac_key_bytes.size() == 32u);
   AES_KEY aes_key;
-  static_assert(key.size() == 32 + 32);
-  CHECK(AES_set_encrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
+  CHECK(AES_set_encrypt_key(aes_key_bytes.data(),
+                            /*bits=*/8 * aes_key_bytes.size(), &aes_key) == 0);
+
   static_assert(std::tuple_size_v<CableEidArray> == AES_BLOCK_SIZE,
                 "EIDs are not AES blocks");
-  AES_encrypt(/*in=*/eid.data(), /*out=*/ret.data(), &aes_key);
+
+  std::array<uint8_t, kAdvertSize> ret;
+  auto [ciphertext, mac_tag] = base::span(ret).split_at<AES_BLOCK_SIZE>();
+
+  // Encrypt directly into the first part of the result buffer.
+  AES_encrypt(/*in=*/eid.data(), /*out=*/ciphertext.data(), &aes_key);
 
   uint8_t hmac[SHA256_DIGEST_LENGTH];
   unsigned hmac_len;
-  UNSAFE_TODO(CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, ret.data(),
-                         AES_BLOCK_SIZE, hmac, &hmac_len) != nullptr));
+  CHECK(HMAC(EVP_sha256(), hmac_key_bytes.data(), hmac_key_bytes.size(),
+             ciphertext.data(), ciphertext.size(), hmac, &hmac_len) != nullptr);
   CHECK_EQ(hmac_len, sizeof(hmac));
 
-  static_assert(sizeof(hmac) >= 4, "");
-  UNSAFE_TODO(memcpy(ret.data() + AES_BLOCK_SIZE, hmac, 4));
+  mac_tag.copy_from(base::span(hmac).first<4>());
 
   return ret;
 }
@@ -234,18 +254,21 @@ std::optional<CableEidArray> Decrypt(
 
   uint8_t calculated_hmac[SHA256_DIGEST_LENGTH];
   unsigned calculated_hmac_len;
-  UNSAFE_TODO(CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, advert.data(),
-                         AES_BLOCK_SIZE, calculated_hmac,
-                         &calculated_hmac_len) != nullptr));
+  // Split the key into the AES key (32 bytes) and HMAC key (32 bytes).
+  auto [aes_key_bytes, hmac_key_bytes] = key.split_at<32>();
+  CHECK(HMAC(EVP_sha256(), hmac_key_bytes.data(), hmac_key_bytes.size(),
+             advert.data(), AES_BLOCK_SIZE, calculated_hmac,
+             &calculated_hmac_len) != nullptr);
   CHECK_EQ(calculated_hmac_len, sizeof(calculated_hmac));
-
-  if (CRYPTO_memcmp(calculated_hmac,
-                    UNSAFE_TODO(advert.data() + AES_BLOCK_SIZE), 4) != 0) {
+  static_assert(sizeof(calculated_hmac) >= 4u);
+  static_assert(base::span(advert).subspan<AES_BLOCK_SIZE>().size() == 4u);
+  if (CRYPTO_memcmp(calculated_hmac, &advert[AES_BLOCK_SIZE], 4) != 0) {
     return std::nullopt;
   }
 
   AES_KEY aes_key;
-  CHECK(AES_set_decrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
+  CHECK(AES_set_decrypt_key(aes_key_bytes.data(),
+                            /*bits=*/8 * aes_key_bytes.size(), &aes_key) == 0);
   CableEidArray plaintext;
   static_assert(plaintext.size() == AES_BLOCK_SIZE, "EIDs are not AES blocks");
   AES_decrypt(/*in=*/advert.data(), /*out=*/plaintext.data(), &aes_key);
@@ -260,10 +283,10 @@ std::optional<CableEidArray> Decrypt(
 
   uint16_t tunnel_server_domain;
   static_assert(plaintext.size() >= sizeof(tunnel_server_domain));
-  UNSAFE_TODO(
-      memcpy(&tunnel_server_domain,
-             &plaintext[plaintext.size() - sizeof(tunnel_server_domain)],
-             sizeof(tunnel_server_domain)));
+  base::span<uint8_t> tunnel_server_domain_span =
+      base::byte_span_from_ref(tunnel_server_domain);
+  tunnel_server_domain_span.copy_from(
+      base::span(plaintext).last<sizeof(tunnel_server_domain)>());
   if (!tunnelserver::ToKnownDomainID(tunnel_server_domain)) {
     return std::nullopt;
   }
@@ -277,13 +300,12 @@ CableEidArray FromComponents(const Components& components) {
   static_assert(eid.size() == 1 + kNonceSize + sizeof(components.routing_id) +
                                   sizeof(components.tunnel_server_domain));
 
-  eid[0] = 0;
-  UNSAFE_TODO(memcpy(&eid[1], components.nonce.data(), kNonceSize));
-  UNSAFE_TODO(memcpy(&eid[1 + kNonceSize], components.routing_id.data(),
-                     sizeof(components.routing_id)));
-  UNSAFE_TODO(memcpy(&eid[1 + kNonceSize + sizeof(components.routing_id)],
-                     &components.tunnel_server_domain,
-                     sizeof(components.tunnel_server_domain)));
+  auto writer = base::SpanWriter<uint8_t>(base::span<uint8_t>(eid));
+  CHECK(writer.WriteU8BigEndian(0));
+  CHECK(writer.Write(components.nonce));
+  CHECK(writer.Write(components.routing_id));
+  CHECK(writer.Write(
+      base::byte_span_from_ref(components.tunnel_server_domain.value())));
 
   return eid;
 }
@@ -295,14 +317,13 @@ Components ToComponents(const CableEidArray& eid) {
                 1 + kNonceSize + sizeof(ret.routing_id) +
                     sizeof(ret.tunnel_server_domain));
 
-  UNSAFE_TODO(memcpy(ret.nonce.data(), &eid[1], kNonceSize));
-  UNSAFE_TODO(memcpy(ret.routing_id.data(), &eid[1 + kNonceSize],
-                     sizeof(ret.routing_id)));
+  auto reader = base::SpanReader<const uint8_t>(base::span(eid));
+  CHECK(reader.Skip(1u));
+  CHECK(reader.ReadCopy(ret.nonce));
+  CHECK(reader.ReadCopy(ret.routing_id));
 
   uint16_t tunnel_server_domain;
-  UNSAFE_TODO(memcpy(&tunnel_server_domain,
-                     &eid[1 + kNonceSize + sizeof(ret.routing_id)],
-                     sizeof(tunnel_server_domain)));
+  CHECK(reader.ReadCopy(base::byte_span_from_ref(tunnel_server_domain)));
   // |eid| has been checked by |Decrypt| so the tunnel server domain must be
   // valid.
   ret.tunnel_server_domain =
@@ -459,38 +480,27 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
   std::string ret;
   ret.reserve(((in.size() + kChunkSize - 1) / kChunkSize) * kChunkDigits);
 
-  while (in.size() >= kChunkSize) {
-    uint64_t v = 0;
-    static_assert(sizeof(v) >= kChunkSize, "");
-    UNSAFE_TODO(memcpy(&v, in.data(), kChunkSize));
+  base::SpanReader reader(in);
 
-    char digits[kChunkDigits + 1];
-    static_assert(kChunkDigits == 17, "Need to change next line");
-    CHECK_LT(snprintf(digits, sizeof(digits), "%017" PRIu64, v),
-             static_cast<int>(sizeof(digits)));
-    ret += digits;
-
-    in = in.subspan<kChunkSize>();
-  }
-
-  if (in.size()) {
-    char format[16];
-    // kPartialChunkDigits is the number of digits needed to encode each length
-    // of trailing data from 6 bytes down to zero. I.e. it's 15, 13, 10, 8, 5,
-    // 3, 0 written in hex.
-    constexpr uint32_t kPartialChunkDigits = 0x0fda8530;
-    CHECK_LT(snprintf(format, sizeof(format), "%%0%d" PRIu64,
-                      15 & (kPartialChunkDigits >> (4 * in.size()))),
-             static_cast<int>(sizeof(format)));
+  while (reader.remaining() > 0) {
+    size_t n = std::min(reader.remaining(), kChunkSize);
 
     uint64_t v = 0;
-    CHECK_LE(in.size(), sizeof(v));
-    UNSAFE_TODO(memcpy(&v, in.data(), in.size()));
+    base::byte_span_from_ref(v).copy_prefix_from(*reader.Read(n));
 
-    char digits[kChunkDigits + 1];
-    UNSAFE_TODO(CHECK_LT(snprintf(digits, sizeof(digits), format, v),
-                         static_cast<int>(sizeof(digits))));
-    ret += digits;
+    // kWidths maps the number of bytes read (0 to 7) to the number of decimal
+    // digits required to represent them. A full 7-byte chunk (n = 7) requires
+    // kChunkDigits (17) digits.
+    constexpr std::array<int, kChunkSize + 1> kWidths = {0,  3,  5,  8,
+                                                         10, 13, 15, 17};
+    static_assert(std::size(kWidths) == kChunkSize + 1);
+    static_assert(kWidths[kChunkSize] == kChunkDigits);
+
+    // The "%0*" format specifier dynamically sets the zero-padding width.
+    // The first argument (kWidths[n]) replaces the '*', dictating the
+    // width, and the second argument (v) is the uint64_t value being
+    // printed.
+    base::StringAppendF(&ret, "%0*" PRIu64, kWidths[n], v);
   }
 
   return ret;
@@ -507,7 +517,7 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
       return std::nullopt;
     }
     const base::span<const uint8_t> v_bytes =
-        base::as_writable_byte_span(base::span_from_ref(v)).first(kChunkSize);
+        base::byte_span_from_ref(v).first<kChunkSize>();
     ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
 
     in = in.substr(kChunkDigits);
@@ -544,8 +554,7 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
     }
 
     const base::span<const uint8_t> v_bytes =
-        base::as_writable_byte_span(base::span_from_ref(v))
-            .first(remaining_bytes);
+        base::byte_span_from_ref(v).first(remaining_bytes);
     ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
   }
 
@@ -683,9 +692,9 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   cbor_bytes->resize(padded_size);
   const uint16_t num_padding_bytes16 =
       base::checked_cast<uint16_t>(num_padding_bytes);
-  UNSAFE_TODO(
-      memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
-             &num_padding_bytes16, sizeof(num_padding_bytes16)));
+  base::span(*cbor_bytes)
+      .subspan(padded_size - sizeof(num_padding_bytes16))
+      .copy_from(base::byte_span_from_ref(num_padding_bytes16));
 
   return *cbor_bytes;
 }
@@ -740,9 +749,8 @@ std::optional<cbor::Value> DecodePaddedCBORMap16(
   }
 
   uint16_t padding_length16;
-  UNSAFE_TODO(memcpy(&padding_length16,
-                     &input[input.size() - sizeof(padding_length16)],
-                     sizeof(padding_length16)));
+  base::byte_span_from_ref(padding_length16)
+      .copy_from(input.subspan(input.size() - sizeof(padding_length16)));
   const size_t padding_length = padding_length16;
   if (padding_length + sizeof(uint16_t) > input.size()) {
     return std::nullopt;
@@ -804,8 +812,9 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   const size_t num_zeros = padded_size - message_to_encrypt->size() - 1;
 
   std::vector<uint8_t> padded_message(padded_size, 0);
-  UNSAFE_TODO(memcpy(padded_message.data(), message_to_encrypt->data(),
-                     message_to_encrypt->size()));
+  base::span(padded_message)
+      .first(message_to_encrypt->size())
+      .copy_from(*message_to_encrypt);
   // The number of added zeros has to fit in a single byte so it has to be
   // less than 256.
   DCHECK_LT(num_zeros, 256u);
@@ -906,12 +915,13 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
   ephemeral_key_.reset(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
   const EC_GROUP* group = EC_KEY_get0_group(ephemeral_key_.get());
   CHECK(EC_KEY_generate_key(ephemeral_key_.get()));
-  uint8_t ephemeral_key_public_bytes[kP256X962Length];
-  CHECK_EQ(sizeof(ephemeral_key_public_bytes),
+  std::array<uint8_t, kP256X962Length> ephemeral_key_public_bytes;
+  CHECK_EQ(ephemeral_key_public_bytes.size(),
            EC_POINT_point2oct(
                group, EC_KEY_get0_public_key(ephemeral_key_.get()),
-               POINT_CONVERSION_UNCOMPRESSED, ephemeral_key_public_bytes,
-               sizeof(ephemeral_key_public_bytes), /*ctx=*/nullptr));
+               POINT_CONVERSION_UNCOMPRESSED, ephemeral_key_public_bytes.data(),
+               ephemeral_key_public_bytes.size(),
+               /*ctx=*/nullptr));
   noise_.MixHash(ephemeral_key_public_bytes);
   noise_.MixKey(ephemeral_key_public_bytes);
 
@@ -933,11 +943,11 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
   std::vector<uint8_t> ciphertext = noise_.EncryptAndHash({});
 
   std::vector<uint8_t> handshake_message;
-  handshake_message.reserve(sizeof(ephemeral_key_public_bytes) +
+  handshake_message.reserve(ephemeral_key_public_bytes.size() +
                             ciphertext.size());
-  handshake_message.insert(handshake_message.end(), ephemeral_key_public_bytes,
-                           UNSAFE_TODO(ephemeral_key_public_bytes +
-                                       sizeof(ephemeral_key_public_bytes)));
+  handshake_message.insert(handshake_message.end(),
+                           ephemeral_key_public_bytes.begin(),
+                           ephemeral_key_public_bytes.end());
   handshake_message.insert(handshake_message.end(), ciphertext.begin(),
                            ciphertext.end());
 
@@ -1058,12 +1068,12 @@ HandshakeResult RespondToHandshake(
     return std::nullopt;
   }
 
-  uint8_t ephemeral_key_public_bytes[kP256X962Length];
-  CHECK_EQ(sizeof(ephemeral_key_public_bytes),
+  std::array<uint8_t, kP256X962Length> ephemeral_key_public_bytes;
+  CHECK_EQ(ephemeral_key_public_bytes.size(),
            EC_POINT_point2oct(
                group, EC_KEY_get0_public_key(ephemeral_key.get()),
-               POINT_CONVERSION_UNCOMPRESSED, ephemeral_key_public_bytes,
-               sizeof(ephemeral_key_public_bytes),
+               POINT_CONVERSION_UNCOMPRESSED, ephemeral_key_public_bytes.data(),
+               ephemeral_key_public_bytes.size(),
                /*ctx=*/nullptr));
   noise.MixHash(ephemeral_key_public_bytes);
   noise.MixKey(ephemeral_key_public_bytes);
@@ -1091,9 +1101,8 @@ HandshakeResult RespondToHandshake(
   }
 
   const std::vector<uint8_t> my_ciphertext = noise.EncryptAndHash({});
-  out_response->insert(out_response->end(), ephemeral_key_public_bytes,
-                       UNSAFE_TODO(ephemeral_key_public_bytes +
-                                   sizeof(ephemeral_key_public_bytes)));
+  out_response->insert(out_response->end(), ephemeral_key_public_bytes.begin(),
+                       ephemeral_key_public_bytes.end());
   out_response->insert(out_response->end(), my_ciphertext.begin(),
                        my_ciphertext.end());
 
