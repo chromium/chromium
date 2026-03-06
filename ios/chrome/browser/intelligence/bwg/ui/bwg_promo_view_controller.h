@@ -7,18 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_view_controller_protocol.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_view_controller_protocol.h"
 
 @protocol GeminiConsentMutator;
 @protocol BWGPromoViewControllerDelegate;
 
 // BWG consent View Controller.
 @interface BWGPromoViewController
-    : UIViewController <BWGFREViewControllerProtocol>
+    : UIViewController <GeminiFREViewControllerProtocol>
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<GeminiConsentMutator> mutator;
-// The delegate for this view controller to communicate to the BWG
+// The delegate for this view controller to communicate to the Gemini
 // NavigationController.
 @property(nonatomic, weak) id<BWGPromoViewControllerDelegate> BWGPromoDelegate;
 

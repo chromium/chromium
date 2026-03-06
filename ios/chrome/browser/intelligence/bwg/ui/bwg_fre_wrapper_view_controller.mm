@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -45,8 +45,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 @implementation BWGFREWrapperViewController {
   // The BWG Promo View Controller.
   BWGPromoViewController* _promoViewController;
-  // The BWG Consent View Controller.
-  BWGConsentViewController* _consentViewController;
+  // The Gemini Consent View Controller.
+  GeminiConsentViewController* _consentViewController;
   // If YES, `_showPromo` will show the promo view. Otherwise, it will skip the
   // promo view.
   BOOL _showPromo;
@@ -58,7 +58,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   // Horizontal stack view holding the promo and consent views.
   UIStackView* _contentHorizontalStackView;
   // Currently active child view controller.
-  __weak UIViewController<BWGFREViewControllerProtocol>*
+  __weak UIViewController<GeminiFREViewControllerProtocol>*
       _currentChildViewController;
   // Stack View containing the logos.
   UIStackView* _logosStackView;
@@ -301,7 +301,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
     _promoViewController.mutator = self.mutator;
   }
 
-  _consentViewController = [[BWGConsentViewController alloc]
+  _consentViewController = [[GeminiConsentViewController alloc]
       initWithIsAccountManaged:_isAccountManaged];
   _consentViewController.mutator = self.mutator;
 }

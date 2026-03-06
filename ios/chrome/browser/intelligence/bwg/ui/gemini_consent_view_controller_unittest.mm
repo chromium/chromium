@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -54,12 +54,13 @@ constexpr CGFloat kExpectedMinimumContentHeight = 300.0;
 
 }  // namespace
 
-// Test fixture for BWGConsentViewController.
-class BWGConsentViewControllerTest : public PlatformTest {
+// Test fixture for GeminiConsentViewController.
+class GeminiConsentViewControllerTest : public PlatformTest {
  public:
-  BWGConsentViewController* CreateViewController(BOOL is_account_managed) {
-    BWGConsentViewController* controller = [[BWGConsentViewController alloc]
-        initWithIsAccountManaged:is_account_managed];
+  GeminiConsentViewController* CreateViewController(BOOL is_account_managed) {
+    GeminiConsentViewController* controller =
+        [[GeminiConsentViewController alloc]
+            initWithIsAccountManaged:is_account_managed];
     mock_mutator_ = OCMProtocolMock(@protocol(GeminiConsentMutator));
     controller.mutator = mock_mutator_;
     // Force view initialization since this view controller is never added into
@@ -80,8 +81,8 @@ class BWGConsentViewControllerTest : public PlatformTest {
 };
 
 // Tests initialization with a managed account.
-TEST_F(BWGConsentViewControllerTest, InitializationWithManagedAccount) {
-  BWGConsentViewController* view_controller = CreateViewController(YES);
+TEST_F(GeminiConsentViewControllerTest, InitializationWithManagedAccount) {
+  GeminiConsentViewController* view_controller = CreateViewController(YES);
 
   EXPECT_NE(nil, view_controller);
   EXPECT_TRUE(view_controller.view);
@@ -89,8 +90,8 @@ TEST_F(BWGConsentViewControllerTest, InitializationWithManagedAccount) {
 }
 
 // Tests initialization with a non-managed account.
-TEST_F(BWGConsentViewControllerTest, InitializationWithNonManagedAccount) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, InitializationWithNonManagedAccount) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
 
   EXPECT_NE(nil, view_controller);
   EXPECT_TRUE(view_controller.view);
@@ -99,16 +100,16 @@ TEST_F(BWGConsentViewControllerTest, InitializationWithNonManagedAccount) {
 
 // Tests that contentHeight returns a value greater than the expected minimum
 // content height.
-TEST_F(BWGConsentViewControllerTest, ContentHeightReturnsValidValue) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, ContentHeightReturnsValidValue) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
 
   CGFloat contentHeight = [view_controller contentHeight];
   EXPECT_GT(contentHeight, kExpectedMinimumContentHeight);
 }
 
 // Tests that the primary button action calls the correct mutator method.
-TEST_F(BWGConsentViewControllerTest, TestPrimaryButtonAction) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, TestPrimaryButtonAction) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
   OCMExpect([mock_mutator_ didConsentGemini]);
 
   UIButton* primaryButton =
@@ -122,8 +123,8 @@ TEST_F(BWGConsentViewControllerTest, TestPrimaryButtonAction) {
 }
 
 // Tests that the secondary button action calls the correct mutator method.
-TEST_F(BWGConsentViewControllerTest, TestSecondaryButtonAction) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, TestSecondaryButtonAction) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
   OCMExpect([mock_mutator_ didRefuseGeminiConsent]);
 
   UIButton* secondaryButton =
@@ -137,8 +138,8 @@ TEST_F(BWGConsentViewControllerTest, TestSecondaryButtonAction) {
 }
 
 // Tests that tapping the primary button records the correct metrics.
-TEST_F(BWGConsentViewControllerTest, PrimaryButtonRecordsMetrics) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, PrimaryButtonRecordsMetrics) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
 
   UIButton* primaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(
@@ -153,8 +154,8 @@ TEST_F(BWGConsentViewControllerTest, PrimaryButtonRecordsMetrics) {
 }
 
 // Tests that tapping the secondary button records the correct metrics.
-TEST_F(BWGConsentViewControllerTest, SecondaryButtonRecordsMetrics) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, SecondaryButtonRecordsMetrics) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
 
   UIButton* secondaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(
@@ -169,8 +170,8 @@ TEST_F(BWGConsentViewControllerTest, SecondaryButtonRecordsMetrics) {
 }
 
 // Tests footnote links for non-managed accounts.
-TEST_F(BWGConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
-  BWGConsentViewController* view_controller = CreateViewController(NO);
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
+  GeminiConsentViewController* view_controller = CreateViewController(NO);
 
   UITextView* footnoteView =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(
@@ -183,8 +184,8 @@ TEST_F(BWGConsentViewControllerTest, TestFootnoteLinksForNonManagedAccount) {
 }
 
 // Tests footnote links for managed accounts.
-TEST_F(BWGConsentViewControllerTest, TestFootnoteLinksForManagedAccount) {
-  BWGConsentViewController* view_controller = CreateViewController(YES);
+TEST_F(GeminiConsentViewControllerTest, TestFootnoteLinksForManagedAccount) {
+  GeminiConsentViewController* view_controller = CreateViewController(YES);
 
   UITextView* footnoteView =
       static_cast<UITextView*>(GetViewWithAccessibilityIdentifier(

@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
 
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -42,13 +42,12 @@ const CGFloat kInnerStackViewPadding = 12.0;
 const CGFloat kSpacingPrimarySecondaryButtonsIOS26 = 4.0;
 const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
 
-
 }  // namespace
 
-@interface BWGConsentViewController () <UITextViewDelegate>
+@interface GeminiConsentViewController () <UITextViewDelegate>
 @end
 
-@implementation BWGConsentViewController {
+@implementation GeminiConsentViewController {
   // Main stack view. This view itself does not scroll.
   UIStackView* _mainStackView;
   // Whether the account is managed.
@@ -78,7 +77,7 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   }
 }
 
-#pragma mark - BWGFREViewControllerProtocol
+#pragma mark - GeminiFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
   [self.view layoutIfNeeded];

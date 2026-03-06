@@ -90,7 +90,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   [super viewDidDisappear:animated];
 }
 
-#pragma mark - BWGFREViewControllerProtocol
+#pragma mark - GeminiFREViewControllerProtocol
 
 - (CGFloat)contentHeight {
   [self.view layoutIfNeeded];
