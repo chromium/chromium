@@ -144,10 +144,8 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
     return true;
   }
 
-  // TODO: joedow - Consider whether OnIncomingMessage can be modified to take a
-  // const& instead and move the copy operation there (or eliminate it).
   it->second->OnIncomingMessage(
-      std::make_unique<JingleMessage>(*message),
+      JingleMessage(*message),
       base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this)));
   return true;
 }
