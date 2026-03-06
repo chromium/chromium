@@ -27,6 +27,18 @@ enum class GlicGetContextFromTabError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicGetContextFromTabError)
 
+// LINT.IfChange(GeminiNavigationCaptureResult)
+enum class GeminiNavigationCaptureResult {
+  kSuccess = 0,
+  kInvalidUrl = 1,
+  kNonHttpsScheme = 2,
+  kCIDTooLong = 3,
+  kTargetUrlTooLong = 4,
+  kNoTargetUrl = 5,
+  kMaxValue = kNoTargetUrl,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GeminiNavigationCaptureResult)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

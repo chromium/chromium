@@ -5,10 +5,12 @@
 #include "chrome/browser/glic/glic_navigation_throttle.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -54,6 +56,20 @@ std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
   return std::make_unique<MockGlicKeyedService>(context);
 }
 
+void NavigateToURL(Browser* browser, const GURL& url) {
+  content::TestNavigationObserver observer(
+      browser->tab_strip_model()->GetActiveWebContents());
+  content::NavigationController::LoadURLParams params(url);
+  params.initiator_origin = url::Origin::Create(
+      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .LoadURLWithParams(params);
+  observer.Wait();
+}
+
 class GlicNavigationThrottleBrowserTest : public InProcessBrowserTest {
  public:
   GlicNavigationThrottleBrowserTest() {
@@ -93,6 +109,7 @@ class GlicNavigationThrottleBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
                        InterceptGlicContinueUrlFromGeminiAndOpenGlicUi) {
+  base::HistogramTester histogram_tester;
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
                                                    /*create=*/true));
@@ -107,21 +124,137 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
   GURL continue_url(features::kGlicWebContinuityUrl.Get() +
                     "?cid=123&targetUrl=" + target_url.spec());
 
-  content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  content::NavigationController::LoadURLParams params(continue_url);
-  params.initiator_origin = url::Origin::Create(
-      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
-  params.transition_type = ui::PAGE_TRANSITION_LINK;
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .LoadURLWithParams(params);
-  observer.Wait();
+  NavigateToURL(browser(), continue_url);
 
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             target_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Metrics_CIDTooLong) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(_, _, _)).Times(0);
+
+  GURL target_url("https://www.google.com/");
+  std::string long_cid(features::kGlicWebContinuityMaxCIDLength.Get() + 1, 'a');
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() + "?cid=" + long_cid +
+                    "&targetUrl=" + target_url.spec());
+
+  NavigateToURL(browser(), continue_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kCIDTooLong, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
+                       Metrics_TargetUrlTooLong) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(_, _, _)).Times(0);
+
+  std::string long_target_url(
+      features::kGlicWebContinuityMaxTargetUrlLength.Get() + 1, 'a');
+  GURL target_url("https://" + long_target_url + ".com/");
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=" + target_url.spec());
+
+  NavigateToURL(browser(), continue_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kTargetUrlTooLong, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Metrics_InvalidUrl) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(_, _, _)).Times(0);
+
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=invalidurl");
+
+  NavigateToURL(browser(), continue_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kInvalidUrl, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
+                       InterceptGlicContinueUrlFromGemini_NonHttpsTargetUrl) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(_, _, _)).Times(0);
+
+  GURL target_url("http://www.example.com/");
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=" + target_url.spec());
+
+  NavigateToURL(browser(), continue_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kNonHttpsScheme, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
+                       InterceptGlicContinueUrlFromGemini_NoTargetURL) {
+  base::HistogramTester histogram_tester;
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(_, _, _)).Times(0);
+
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() + "?cid=123");
+
+  NavigateToURL(browser(), continue_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureEnabled",
+      GeminiNavigationCaptureResult::kNoTargetUrl, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Incognito) {
+  base::HistogramTester histogram_tester;
+
+  GURL target_url("https://www.google.com/");
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=" + target_url.spec());
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  NavigateToURL(incognito_browser, continue_url);
+
+  EXPECT_EQ(
+      incognito_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
+      target_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureDisabled",
+      GeminiNavigationCaptureResult::kSuccess, 1);
 }
 
 class GlicNavigationThrottleBrowserTestWithNoFeatures
@@ -150,25 +283,19 @@ class GlicNavigationThrottleBrowserTestWithNoFeatures
 
 IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithNoFeatures,
                        InterceptGlicContinueUrlFromGemini) {
+  base::HistogramTester histogram_tester;
   GURL target_url("https://www.google.com/");
   GURL continue_url(features::kGlicWebContinuityUrl.Get() +
                     "?cid=123&targetUrl=" + target_url.spec());
 
-  content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  content::NavigationController::LoadURLParams params(continue_url);
-  params.initiator_origin = url::Origin::Create(
-      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
-  params.transition_type = ui::PAGE_TRANSITION_LINK;
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .LoadURLWithParams(params);
-  observer.Wait();
+  NavigateToURL(browser(), continue_url);
 
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             target_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.NavigationCapture.GlicWebContinuityFeatureDisabled",
+      GeminiNavigationCaptureResult::kSuccess, 1);
 }
 
 }  // namespace glic

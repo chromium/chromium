@@ -1385,6 +1385,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.NavigationCapture.{FeatureEnabledStatus}"
+    enum="GeminiNavigationCaptureResult" expires_after="2026-07-26">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the outcome of navigation capture attempts when
+    {FeatureEnabledStatus}. Logged when the NavigationThrottle evaluates a
+    redirection target. Logs the first failure reason in the order they're
+    checked.
+  </summary>
+  <token key="FeatureEnabledStatus">
+    <variant name="GlicWebContinuityFeatureDisabled"
+        summary="Web continuity is disabled or unavailable"/>
+    <variant name="GlicWebContinuityFeatureEnabled"
+        summary="Web continuity is enabled and available"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.OsEntrypoint.Settings.Shortcut" enum="BooleanEnabled"
     expires_after="2026-07-26">
   <owner>agale@chromium.org</owner>
