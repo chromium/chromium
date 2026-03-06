@@ -14,6 +14,13 @@ export function mojoTimeTicks(timeTicks: number): TimeTicks {
   return {internalValue: BigInt(Math.floor(timeTicks * 1000))};
 }
 
+/** Returns promise that resolves when lazy rendering should be started. */
+export function waitForLazyRender(): Promise<void> {
+  return new Promise<void>(resolve => {
+    requestIdleCallback(() => resolve(), {timeout: 500});
+  });
+}
+
 /** Converts a side type to a string to be used in CSS. */
 export function sideTypeToClass(sideType: SideType): string {
   switch (sideType) {
