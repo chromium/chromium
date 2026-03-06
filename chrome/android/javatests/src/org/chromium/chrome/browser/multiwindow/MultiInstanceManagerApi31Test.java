@@ -915,13 +915,13 @@ public class MultiInstanceManagerApi31Test {
                 () -> {
                     Criteria.checkThat(
                             "Active instance count is incorrect.",
-                            MultiInstanceManagerApi31.getPersistedInstanceIds(
-                                            PersistedInstanceType.ACTIVE)
+                            MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ACTIVE)
                                     .size(),
                             is(expectedActiveInstances));
                     Criteria.checkThat(
                             "Persisted instance count is incorrect.",
-                            MultiInstanceManagerApi31.getAllPersistedInstanceIds().size(),
+                            MultiWindowUtils.getPersistedInstanceIds(PersistedInstanceType.ANY)
+                                    .size(),
                             is(expectedTotalInstances));
                 });
     }

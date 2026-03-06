@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PERSISTENT_STATE_ID;
+import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
@@ -194,7 +195,12 @@ public class MultiWindowUtilsUnitTest {
     }
 
     private Activity addRunningTabbedActivity(int windowId) {
-        ChromeTabbedActivity activity = mock(ChromeTabbedActivity.class);
+        return addActivity(windowId, /* tabbedActivity= */ true);
+    }
+
+    private Activity addActivity(int windowId, boolean tabbedActivity) {
+        Activity activity =
+                tabbedActivity ? mock(ChromeTabbedActivity.class) : mock(Activity.class);
         when(mTabWindowManager.getIdForWindow(activity)).thenReturn(windowId);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
@@ -330,7 +336,7 @@ public class MultiWindowUtilsUnitTest {
                 /* profileType= */ SupportedProfileType.MIXED);
 
         // Mock that the tasks for the 2 active instances are running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+        MultiWindowUtils.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertTrue(
@@ -354,7 +360,7 @@ public class MultiWindowUtilsUnitTest {
                 /* profileType= */ SupportedProfileType.REGULAR);
 
         // Mock that the tasks for the active instance is running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
 
         assertFalse(
                 "Should return false since there is only one regular window.",
@@ -384,7 +390,7 @@ public class MultiWindowUtilsUnitTest {
                 /* profileType= */ SupportedProfileType.REGULAR);
 
         // Mock that the tasks for the 2 active instances are running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+        MultiWindowUtils.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertTrue(
@@ -409,7 +415,7 @@ public class MultiWindowUtilsUnitTest {
                 /* profileType= */ SupportedProfileType.OFF_THE_RECORD);
 
         // Mock that the task for the active instance is running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5)));
 
         assertFalse(
                 "Should return false since there is only one incognito window.",
@@ -440,7 +446,7 @@ public class MultiWindowUtilsUnitTest {
                 /* profileType= */ SupportedProfileType.OFF_THE_RECORD);
 
         // Mock that the tasks for the 2 active instances are running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+        MultiWindowUtils.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertTrue(
@@ -583,7 +589,49 @@ public class MultiWindowUtilsUnitTest {
                 mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
                         mTabModelSelector, mTabGroupModelFilter));
     }
-    ;
+
+    @Test
+    public void testGetRunningTabbedActivityCount() {
+        // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
+        Activity activity1 =
+                addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ false);
+        Activity activity2 = addActivity(/* windowId= */ INSTANCE_ID_1, /* tabbedActivity= */ true);
+        Activity activity3 = addActivity(/* windowId= */ INSTANCE_ID_2, /* tabbedActivity= */ true);
+
+        // Remove activity2, this will be considered a non-running activity subsequently.
+        ApplicationStatus.onStateChangeForTesting(activity2, ActivityState.DESTROYED);
+
+        int runningTabbedActivityCount = MultiWindowUtils.getRunningTabbedActivityCount();
+        assertEquals(
+                "There should be only 1 running ChromeTabbedActivity.",
+                1,
+                runningTabbedActivityCount);
+    }
+
+    @Test
+    public void launchIntentInMaybeClosedWindow_NewWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        Intent intent = new Intent();
+        ChromeTabbedActivity activity = mock(ChromeTabbedActivity.class);
+        MultiWindowUtils.launchIntentInMaybeClosedWindow(activity, intent, INSTANCE_ID_0);
+        verify(activity).startActivity(intent, null);
+        assertEquals(
+                INSTANCE_ID_0,
+                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
+    }
+
+    @Test
+    public void launchIntentInMaybeClosedWindow_ExistingWindow() {
+        MultiWindowTestUtils.enableMultiInstance();
+        ChromeTabbedActivity activity1 =
+                (ChromeTabbedActivity)
+                        addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+
+        Intent intent = new Intent();
+        ChromeTabbedActivity activity2 = mock(ChromeTabbedActivity.class);
+        MultiWindowUtils.launchIntentInMaybeClosedWindow(activity2, intent, INSTANCE_ID_0);
+        verify(activity1).onNewIntent(intent);
+    }
 
     @Test
     public void testGetInstanceCountWithFallback() {
@@ -608,7 +656,7 @@ public class MultiWindowUtilsUnitTest {
                 MultiWindowUtils.INVALID_TASK_ID);
 
         // Mock that the tasks for the 2 active instances are running.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+        MultiWindowUtils.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_5, TASK_ID_6)));
 
         assertEquals(

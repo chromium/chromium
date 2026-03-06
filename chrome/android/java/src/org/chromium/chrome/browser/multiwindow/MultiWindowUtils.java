@@ -86,6 +86,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -124,6 +125,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     private static @Nullable Integer sInstanceCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
+    private static @Nullable Set<Integer> sAppTaskIdsForTesting;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -540,7 +542,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (!UiUtils.isRobustWindowManagementEnabled()) {
             type = PersistedInstanceType.ANY;
         }
-        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(type);
+        Set<Integer> ids = getPersistedInstanceIds(type);
         int count = 0;
         for (Integer id : ids) {
             if (isRestorableInstance(id)
@@ -576,7 +578,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (activeOnly) {
             instanceType |= PersistedInstanceType.ACTIVE;
         }
-        Set<Integer> ids = MultiInstanceManagerApi31.getPersistedInstanceIds(instanceType);
+        Set<Integer> ids = getPersistedInstanceIds(instanceType);
         int count = 0;
         for (Integer id : ids) {
             if (isRestorableInstance(id)) {
@@ -1071,7 +1073,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             windowIdsOfRunningTabbedActivities = getWindowIdsOfRunningTabbedActivities();
         }
 
-        Set<Integer> persistedIds = MultiInstanceManagerApi31.getAllPersistedInstanceIds();
+        Set<Integer> persistedIds = getPersistedInstanceIds(PersistedInstanceType.ANY);
 
         for (int id : persistedIds) {
             if (includeRunningActivitiesOnly) {
@@ -1086,6 +1088,43 @@ public class MultiWindowUtils implements ActivityStateListener {
             }
         }
         return lastAccessedWindowId;
+    }
+
+    /**
+     * Gets instance ids filtered by one or more specified {@link PersistedInstanceType}s. To get
+     * all persisted ids irrespective of type, use {@link PersistedInstanceType.ANY}.
+     *
+     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
+     * @return A set of instance ids of the specified {@code type}.
+     */
+    /* package */ static Set<Integer> getPersistedInstanceIds(int type) {
+        Context context = ContextUtils.getApplicationContext();
+        Set<Integer> activeTaskIds = getAllAppTaskIds(context);
+
+        Set<Integer> allIds = MultiInstancePersistentStore.readAllInstanceIds();
+        if (type == PersistedInstanceType.ANY) return allIds;
+
+        Set<Integer> filteredIds = new HashSet<>();
+        boolean includeOtr = (type & PersistedInstanceType.OFF_THE_RECORD) != 0;
+        boolean includeRegular = (type & PersistedInstanceType.REGULAR) != 0;
+        boolean includeActive = (type & PersistedInstanceType.ACTIVE) != 0;
+        boolean includeInactive = (type & PersistedInstanceType.INACTIVE) != 0;
+        assert !includeActive || !includeInactive
+                : "To filter both ACTIVE and INACTIVE instance types, use"
+                        + " PersistedInstanceType.ANY.";
+        for (Integer id : allIds) {
+            int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
+
+            // Exclude ids not satisfying requirements.
+            int profileType = MultiInstancePersistentStore.readProfileType(id);
+            if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
+            if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;
+            if (includeActive && !activeTaskIds.contains(persistedTaskId)) continue;
+            if (includeInactive && activeTaskIds.contains(persistedTaskId)) continue;
+
+            filteredIds.add(id);
+        }
+        return filteredIds;
     }
 
     private static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
@@ -1173,7 +1212,17 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static void launchIntentInMaybeClosedWindow(
             Context context, Intent intent, @WindowId int windowId) {
         if (!isMultiInstanceApi31Enabled()) return;
-        MultiInstanceManagerApi31.launchIntentInUnknown(context, intent, windowId);
+
+        // TODO(https://crbug.com/415375532): Remove the need for this to be a public method, and
+        // fold all of this functionality into a shared single public method with
+        // #launchIntentInInstance.
+        if (launchIntentInInstance(intent, windowId)) return;
+
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
+        IntentUtils.safeStartActivity(context, intent);
     }
 
     /**
@@ -1215,7 +1264,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         // Emit histograms for running activity count.
         RecordHistogram.recordExactLinearHistogram(
                 HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW,
-                MultiInstanceManagerApi31.getRunningTabbedActivityCount(),
+                getRunningTabbedActivityCount(),
                 TabWindowManager.MAX_SELECTORS_1000 + 1);
 
         // Emit histograms for total instance count.
@@ -1425,6 +1474,36 @@ public class MultiWindowUtils implements ActivityStateListener {
             if (windowId == windowManager.getIdForWindow(activity)) return activity;
         }
         return null;
+    }
+
+    /* package */ static int getRunningTabbedActivityCount() {
+        int numActivities = 0;
+        List<Activity> activities = ApplicationStatus.getRunningActivities();
+        for (Activity activity : activities) {
+            if (activity instanceof ChromeTabbedActivity) numActivities++;
+        }
+        return numActivities;
+    }
+
+    /* package */ static Set<Integer> getAllAppTaskIds(Context context) {
+        if (sAppTaskIdsForTesting != null) {
+            return sAppTaskIdsForTesting;
+        }
+
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<AppTask> appTasks = activityManager.getAppTasks();
+        Set<Integer> results = new HashSet<>();
+        for (AppTask task : appTasks) {
+            ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+            if (info != null) results.add(info.taskId);
+        }
+        return results;
+    }
+
+    /* package */ static void setAppTaskIdsForTesting(Set<Integer> appTaskIds) {
+        sAppTaskIdsForTesting = appTaskIds;
+        ResettersForTesting.register(() -> sAppTaskIdsForTesting = null);
     }
 
     public static void setInstanceForTesting(MultiWindowUtils instance) {

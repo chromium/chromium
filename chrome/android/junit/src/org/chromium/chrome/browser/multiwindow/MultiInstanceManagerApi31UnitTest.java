@@ -277,7 +277,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     menuOrKeyboardActionController,
                     desktopWindowStateManagerSupplier,
                     tabReparentingDelegate);
-            setAppTaskIdsForTesting(mAppTaskIds);
+            MultiWindowUtils.setAppTaskIdsForTesting(mAppTaskIds);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -559,7 +559,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(mActivityManager);
         MultiInstanceManagerApi31 multiInstanceManager =
                 createTestMultiInstanceManager(mActivityTask59);
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(
+        MultiWindowUtils.setAppTaskIdsForTesting(
                 new HashSet<>(Arrays.asList(TASK_ID_57, TASK_ID_58, TASK_ID_59)));
         AllocatedIdInfo instanceIdInfo =
                 multiInstanceManager.allocInstanceId(
@@ -1330,24 +1330,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testGetRunningTabbedActivityCount() {
-        // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-
-        // Remove ChromeTabbedActivity |mTabbedActivityTask62|, this will be considered a
-        // non-running activity subsequently.
-        removeTaskOnRecentsScreen(mTabbedActivityTask62);
-
-        int runningTabbedActivityCount = MultiInstanceManagerApi31.getRunningTabbedActivityCount();
-        assertEquals(
-                "There should be only 1 running ChromeTabbedActivity.",
-                1,
-                runningTabbedActivityCount);
-    }
-
-    @Test
     public void testRemoveInstanceInfo() {
         int index = 1;
         MultiInstancePersistentStore.writeActiveTabUrl(index, /* url= */ "url");
@@ -1966,26 +1948,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void launchIntentInMaybeClosedWindow_NewWindow() {
-        Intent intent = new Intent();
-        MultiInstanceManagerApi31.launchIntentInUnknown(
-                mTabbedActivityTask62, intent, INSTANCE_ID_2);
-        verify(mTabbedActivityTask62).startActivity(intent, null);
-        assertEquals(
-                INSTANCE_ID_2,
-                intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, INVALID_WINDOW_ID));
-    }
-
-    @Test
-    public void launchIntentInMaybeClosedWindow_ExistingWindow() {
-        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask63, true));
-        Intent intent = new Intent();
-        MultiInstanceManagerApi31.launchIntentInUnknown(
-                mTabbedActivityTask62, intent, INSTANCE_ID_1);
-        verify(mTabbedActivityTask63).onNewIntent(intent);
-    }
-
-    @Test
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void showInstanceRestorationMessage() {
         MultiWindowUtils.setInstanceCountForTesting(3);
@@ -2115,7 +2077,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Setup AppTask's for both activities. Clear test AppTask ids that are set during the test
         // manager instantiation so that ids from the current mocked AppTasks are used.
-        MultiInstanceManagerApi31.setAppTaskIdsForTesting(null);
+        MultiWindowUtils.setAppTaskIdsForTesting(null);
         List<AppTask> appTasks =
                 setupActivityManagerAppTasks(mTabbedActivityTask62, mTabbedActivityTask63);
 

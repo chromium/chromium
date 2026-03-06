@@ -2203,6 +2203,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return mInactivityTrackerSupplier.get();
     }
 
+    @SuppressWarnings("UnsafeIntentLaunch")
     @Override
     public void initializeState() {
         // This method goes through 3 steps:
