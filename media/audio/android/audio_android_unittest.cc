@@ -242,8 +242,9 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
     EXPECT_TRUE(
         base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
     file_path = file_path.AppendASCII(file_name.c_str());
-    binary_file_ = base::OpenFile(file_path, "wb");
-    DLOG_IF(ERROR, !binary_file_) << "Failed to open binary PCM data file.";
+    binary_file_path_ = file_path;
+    // Create and truncate the file.
+    EXPECT_TRUE(base::WriteFile(binary_file_path_, base::span<uint8_t>()));
     DVLOG(0) << "Writing to file: " << file_path.value().c_str();
   }
 
@@ -260,12 +261,10 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
       }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      // TODO(henrika): use file_util:: instead.
-      UNSAFE_TODO(fwrite(chunk.data(), 1, chunk.size(), binary_file_));
+      EXPECT_TRUE(base::AppendToFile(binary_file_path_, chunk));
       buffer_->Seek(chunk.size());
       bytes_written += chunk.size();
     }
-    base::CloseFile(binary_file_);
   }
 
   // AudioInputStream::AudioInputCallback implementation.
@@ -291,7 +290,7 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   raw_ptr<base::WaitableEvent> event_;
   AudioParameters params_;
   std::unique_ptr<media::SeekableBuffer> buffer_;
-  raw_ptr<FILE> binary_file_;
+  base::FilePath binary_file_path_;
 };
 
 // Implements AudioInputCallback and AudioSourceCallback to support full
