@@ -52,7 +52,6 @@ BASE_DECLARE_FEATURE(kNativeBridgeToggleFeature);
 BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);
 BASE_DECLARE_FEATURE(kPerAppLanguage);
 BASE_DECLARE_FEATURE(kResizeCompat);
-BASE_DECLARE_FEATURE(kRtVcpuDualCore);
 BASE_DECLARE_FEATURE(kRtVcpuQuadCore);
 BASE_DECLARE_FEATURE(kSaveRawFilesOnTracing);
 BASE_DECLARE_FEATURE(kSkipDropCaches);

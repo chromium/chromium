@@ -548,11 +548,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "arc-rt-vcpu-dual-core",
-    "owners": [ "kansho@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "arc-rt-vcpu-quad-core",
     "owners": [ "kansho@chromium.org" ],
     "expiry_milestone": 100

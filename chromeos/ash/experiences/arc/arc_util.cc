@@ -243,9 +243,6 @@ bool IsArcVmRtVcpuEnabled(uint32_t cpus) {
           ash::switches::kEnableArcVmRtVcpu)) {
     return true;
   }
-  if (cpus == 2 && base::FeatureList::IsEnabled(kRtVcpuDualCore)) {
-    return true;
-  }
   if (cpus > 2 && base::FeatureList::IsEnabled(kRtVcpuQuadCore)) {
     return true;
   }

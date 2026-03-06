@@ -69,9 +69,8 @@ class ScopedArcFeature {
 
 class ScopedRtVcpuFeature {
  public:
-  ScopedRtVcpuFeature(bool dual_core_enabled, bool quad_core_enabled) {
-    feature_list.InitWithFeatureStates({{kRtVcpuDualCore, dual_core_enabled},
-                                        {kRtVcpuQuadCore, quad_core_enabled}});
+  explicit ScopedRtVcpuFeature(bool quad_core_enabled) {
+    feature_list.InitWithFeatureStates({{kRtVcpuQuadCore, quad_core_enabled}});
   }
   ~ScopedRtVcpuFeature() = default;
   ScopedRtVcpuFeature(const ScopedRtVcpuFeature&) = delete;
@@ -261,26 +260,14 @@ TEST_F(ArcUtilTest, GetArcAndroidSdkVersionAsInt) {
 
 TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
   {
-    ScopedRtVcpuFeature feature(false, false);
+    ScopedRtVcpuFeature feature(false);
     EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
     EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
     EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
   }
   {
-    ScopedRtVcpuFeature feature(true, false);
-    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
-    EXPECT_FALSE(IsArcVmRtVcpuEnabled(4));
-    EXPECT_FALSE(IsArcVmRtVcpuEnabled(8));
-  }
-  {
-    ScopedRtVcpuFeature feature(false, true);
+    ScopedRtVcpuFeature feature(true);
     EXPECT_FALSE(IsArcVmRtVcpuEnabled(2));
-    EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
-    EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
-  }
-  {
-    ScopedRtVcpuFeature feature(true, true);
-    EXPECT_TRUE(IsArcVmRtVcpuEnabled(2));
     EXPECT_TRUE(IsArcVmRtVcpuEnabled(4));
     EXPECT_TRUE(IsArcVmRtVcpuEnabled(8));
   }
