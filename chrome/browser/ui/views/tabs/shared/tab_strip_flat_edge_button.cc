@@ -71,6 +71,7 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
       kColorTabStripControlButtonInkDropRipple);
   SetIconSize(
       GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
+  SetInsets(gfx::Insets());
 }
 
 TabStripFlatEdgeButton::~TabStripFlatEdgeButton() = default;
