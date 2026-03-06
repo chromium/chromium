@@ -1780,7 +1780,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
     ASSERT_NE(original_contents, nullptr);
 
     // Close reading mode without acknowledging it.
-    controller->CloseImmersiveUI();
+    controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return handler_->ack_timed_out_for_testing(); }));
 
@@ -1790,7 +1790,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
     ASSERT_NE(new_contents, original_contents);
 
     // Close reading mode again and now acknowledge it.
-    controller->CloseImmersiveUI();
+    controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
     handler_->AckReadingModeHidden();
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return !handler_->ack_timed_out_for_testing(); }));

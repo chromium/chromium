@@ -133,16 +133,13 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void ShowImmersiveUI(ReadAnythingOpenTrigger trigger);
 
   // Closes the Immersive Reading Mode UI.
-  void CloseImmersiveUI(bool closed_by_tab_switch = false);
+  void CloseImmersiveUI(ReadAnythingCloseReason reason);
 
   // Toggles the Immersive Reading Mode UI.
   void ToggleUI(ReadAnythingOpenTrigger trigger);
 
   // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
   void TogglePresentation();
-
-  // Toggles the Reading Mode Side Panel UI.
-  void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
 
   // Returns the current presentation_state_ of the Reading Mode feature. This
   // refers to the current host of the WebUI, but does not guarantee that the
@@ -220,6 +217,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
+
+  // Closes the Reading mode side panel UI.
+  void CloseSidePanelUI(ReadAnythingCloseReason reason);
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;

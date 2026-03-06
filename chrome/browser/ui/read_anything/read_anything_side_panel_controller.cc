@@ -239,6 +239,16 @@ void ReadAnythingSidePanelController::OnEntryWillHide(
   if (reason == SidePanelEntryHideReason::kSidePanelClosed) {
     ReturnWebUIToController();
   }
+
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+
+  auto read_anything_close_reason =
+      reason == SidePanelEntryHideReason::kBackgrounded
+          ? ReadAnythingCloseReason::kTabSwitched
+          : ReadAnythingCloseReason::kClosedByUser;
+  observers_.Notify(&Observer::OnWillClose, read_anything_close_reason);
 }
 
 void ReadAnythingSidePanelController::ReturnWebUIToController() {
