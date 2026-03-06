@@ -44,7 +44,7 @@ def FetchRbeCrashReports():
           logs[0])
 
   log = logs[0]
-  print('processing %s... ' % log, end='', flush=True)
+  print('processing %s...' % log)
   commands = []
   # Siso logs auxiliary outputs in the format: path <tab> digest <tab> command
   pattern = re.compile(r'out/clang-crashreports/.*?\t[0-9a-fA-F]+/\d+\t(.*)')
@@ -66,7 +66,6 @@ def FetchRbeCrashReports():
     os.makedirs(CRASHREPORTS_DIR)
 
   for cmd in commands:
-    print('running %s... ' % cmd, end='', flush=True)
     try:
       # The command string is like: siso fetch -reapi_instance=... ...
       # We want to run it with the correctly resolved SISO_BINARY.
@@ -78,6 +77,7 @@ def FetchRbeCrashReports():
         sys.stderr.write('Expected siso command, got %s\n' % args[0])
         continue
 
+      print('running %s' % ' '.join(args))
       subprocess.check_call(args)
       print('done')
     except subprocess.CalledProcessError:
