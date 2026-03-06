@@ -4,12 +4,16 @@
 
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 
+#include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/sync/model/data_type_store_service.h"
+
+constexpr base::FilePath::CharType kAccessibilityAnnotatorDatabaseFileName[] =
+    FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase");
 
 // static
 accessibility_annotator::AccessibilityAnnotatorBackend*
@@ -44,9 +48,14 @@ AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
           accessibility_annotator::kContentAnnotator)) {
     return nullptr;
   }
-  return std::make_unique<
-      accessibility_annotator::AccessibilityAnnotatorBackend>(
-      chrome::GetChannel(), DataTypeStoreServiceFactory::GetForProfile(
-                                Profile::FromBrowserContext(context))
-                                ->GetStoreFactory());
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  auto backend =
+      std::make_unique<accessibility_annotator::AccessibilityAnnotatorBackend>(
+          chrome::GetChannel(),
+          DataTypeStoreServiceFactory::GetForProfile(profile)
+              ->GetStoreFactory(),
+          profile->GetPath().Append(kAccessibilityAnnotatorDatabaseFileName));
+  backend->Init();
+  return backend;
 }

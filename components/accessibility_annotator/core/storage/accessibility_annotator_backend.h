@@ -33,7 +33,8 @@ class AccessibilityAnnotatorBackend
  public:
   AccessibilityAnnotatorBackend(
       version_info::Channel channel,
-      syncer::RepeatingDataTypeStoreFactory data_type_store_factory);
+      syncer::RepeatingDataTypeStoreFactory data_type_store_factory,
+      const base::FilePath& db_path);
 
   ~AccessibilityAnnotatorBackend() override;
 
@@ -43,7 +44,7 @@ class AccessibilityAnnotatorBackend
 
   // Initializes the database at the given path. Must be called before any other
   // methods.
-  void Init(const base::FilePath& db_path);
+  void Init();
 
   // Returns DataTypeControllerDelegate for the accessibility annotation
   // datatype.
@@ -55,6 +56,7 @@ class AccessibilityAnnotatorBackend
   void OnAccessibilityAnnotationSyncBridgeLoaded() override;
 
  private:
+  const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
   std::unique_ptr<AccessibilityAnnotationSyncBridge>
       accessibility_annotation_sync_bridge_;

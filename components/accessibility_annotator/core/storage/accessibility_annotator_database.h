@@ -11,15 +11,19 @@
 
 namespace sql {
 class Database;
-class Statement;
 }  // namespace sql
 
 namespace accessibility_annotator {
 
 // The database manager for the AccessibilityAnnotator.
-// TODO(crbug.com/484049558): Add comment representing overall table structures.
 class AccessibilityAnnotatorDatabase {
  public:
+  // Current version number. This value is to be incremented when the database
+  // schema used by this class evolves in a non-backwards compatible way. When
+  // this number changes, all existing databases will be migrated to the new
+  // schema via the `MigrateOldVersionsAsNeeded` function.
+  static constexpr int kCurrentVersionNumber = 1;
+
   AccessibilityAnnotatorDatabase();
 
   AccessibilityAnnotatorDatabase(const AccessibilityAnnotatorDatabase&) =
@@ -34,8 +38,12 @@ class AccessibilityAnnotatorDatabase {
   bool Init(const base::FilePath& db_path);
 
  private:
-  // The error callback for the database.
-  void OnDatabaseError(int extended_error, sql::Statement* stmt);
+  // Creates the tables if they don't exist. Returns true on success.
+  bool CreateTablesIfNecessary();
+
+  // Migrates the database from the detected version to the current version.
+  // Returns true on success, false otherwise.
+  bool MigrateOldVersionsAsNeeded(int detected_user_version);
 
   std::unique_ptr<sql::Database> db_;
 };
