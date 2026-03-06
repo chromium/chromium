@@ -150,6 +150,10 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   switch (_currentGuidedTourStep.value()) {
     case GuidedTourStep::kNTP: {
+      id<GuidedTourCommands> handler =
+          HandlerForProtocol([self commandDispatcher], GuidedTourCommands);
+      [handler stepCompleted:GuidedTourStep::kNTP];
+
       [_guidedTourCoordinator stop];
       _guidedTourCoordinator = nil;
       break;
