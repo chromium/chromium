@@ -27,6 +27,10 @@ suite('ComposeboxInputPlaceholder', () => {
 
   async function setupComposeboxWithInputState(inputState: InputState) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    searchboxHandler.setResultFor(
+        'getInputState', Promise.resolve({state: inputState}));
+
     composebox = document.createElement('cr-composebox');
     composebox.ntpRealboxNextEnabled = true;
 
@@ -42,8 +46,7 @@ suite('ComposeboxInputPlaceholder', () => {
 
     // Call the callback to initialize state.
     event.detail.initializeComposeboxState(
-        '', [], ComposeboxToolMode.kUnspecified, ModelMode.kUnspecified,
-        inputState);
+        '', [], ComposeboxToolMode.kUnspecified, ModelMode.kUnspecified);
     await microtasksFinished();
   }
 

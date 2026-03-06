@@ -475,13 +475,11 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.searchboxHandler_.notifySessionStarted();
 
-    if (this.ntpRealboxNextEnabled) {
-      this.fire('composebox-initialized', {
-        initializeComposeboxState: this.initializeState_.bind(this),
-      });
-    } else {
-      this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
-    }
+    this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
+    await this.updateComplete;
+    this.fire('composebox-initialized', {
+      initializeComposeboxState: this.initializeState_.bind(this),
+    });
 
     this.setupResizeObservers_();
   }
@@ -721,8 +719,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected async initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ComposeboxToolMode = ComposeboxToolMode.kUnspecified,
-      model: ModelMode = ModelMode.kUnspecified,
-      inputState: InputState|null = null) {
+      model: ModelMode = ModelMode.kUnspecified) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -730,9 +727,6 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.showZps && files.length === 0) {
       this.queryAutocomplete_(/* clearMatches= */ false);
     }
-    this.inputState_ = inputState ?
-        inputState :
-        (await this.searchboxHandler_.getInputState()).state;
     if (files.length > 0) {
       const dataTransfer = new DataTransfer();
       for (const file of files) {
@@ -764,11 +758,12 @@ export class ComposeboxElement extends I18nMixinLit
     if (mode !== ComposeboxToolMode.kUnspecified) {
       this.handleToolClick_(mode);
     }
-    if (model !== ModelMode.kUnspecified) {
-      this.searchboxHandler_.setActiveModelMode(model);
-    } else if (this.inputState_ && this.inputState_.allowedModels.length > 0) {
-      this.searchboxHandler_.setActiveModelMode(this.inputState_.allowedModels[0]!);
+
+    if (!!this.inputState_ && model === ModelMode.kUnspecified &&
+        this.inputState_.allowedModels.length > 0) {
+      model = this.inputState_.allowedModels[0]!;
     }
+    this.searchboxHandler_.setActiveModelMode(model);
     this.updateInputPlaceholder_();
 
     await this.updateComplete;

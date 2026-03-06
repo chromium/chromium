@@ -82,7 +82,6 @@ export interface OpenComposeboxEventDetail {
   contextFiles: ContextualUpload[];
   mode: ToolMode;
   model: ModelMode;
-  inputState: InputState|null;
 }
 
 export interface SearchboxElement {
@@ -1239,7 +1238,6 @@ export class SearchboxElement extends SearchboxElementBase implements
       contextFiles: uploads,
       mode: mode,
       model: model,
-      inputState: this.inputState_,
     });
     this.setInputText('');
   }
