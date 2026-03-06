@@ -97,7 +97,6 @@ source_set("unit_tests") {
   sources = [
     "card_selection_signals_unittest.cc",
     "ephemeral_home_module_backend_unittest.cc",
-    "home_modules_card_registry_unittest.cc",
     "price_tracking_notification_promo_unittest.cc",
     "rank_fetcher_helper_unittest.cc",
     "send_tab_notification_promo_unittest.cc",
@@ -114,6 +113,7 @@ source_set("unit_tests") {
       "autofill_passwords_ephemeral_module_unittest.cc",
       "default_browser_promo_ephemeral_module_unittest.cc",
       "enhanced_safe_browsing_ephemeral_module_unittest.cc",
+      "home_modules_card_registry_ios_unittest.cc",
       "lens_ephemeral_module_unittest.cc",
       "save_passwords_ephemeral_module_unittest.cc",
     ]
@@ -124,6 +124,7 @@ source_set("unit_tests") {
       "auxiliary_search_promo_unittest.cc",
       "default_browser_promo_unittest.cc",
       "history_sync_promo_unittest.cc",
+      "home_modules_card_registry_android_unittest.cc",
       "quick_delete_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
       "tab_group_sync_promo_unittest.cc",
@@ -137,6 +138,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
+    "//components/prefs",
     "//components/prefs:test_support",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",

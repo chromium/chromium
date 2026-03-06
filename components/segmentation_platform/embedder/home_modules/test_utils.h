@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TEST_UTILS_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TEST_UTILS_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 
 namespace segmentation_platform::home_modules {
+
+class HomeModulesCardRegistry;
 
 // Helper function to create an `AllCardSignals` object for the given
 // `CardSelectionInfo` and signal values. The `CardSignalMap` is populated
@@ -26,8 +30,19 @@ std::vector<std::string> ExtractCardNames(
 
 // Helper function to retrieve all SignalKeys associated with a given CardName
 // in the CardSignalMap.
-std::vector<std::string> GetSignalKeys(const CardSignalMap& cardSignalMap,
-                                       const char* cardName);
+std::vector<std::string> GetSignalKeys(const CardSignalMap& card_signal_map,
+                                       const char* card_name);
+
+// Verifies the card is present in the registry with the correct signal keys.
+void ExpectCardRegistered(HomeModulesCardRegistry* registry,
+                          const std::string& card_name,
+                          const std::vector<std::string>& expected_keys);
+
+// Verifies the card is completely absent from the registry and signal map.
+void ExpectCardNotRegistered(
+    HomeModulesCardRegistry* registry,
+    const std::string& card_name,
+    const std::vector<std::string>& expected_absent_keys);
 
 }  // namespace segmentation_platform::home_modules
 

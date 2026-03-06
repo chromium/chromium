@@ -38,7 +38,8 @@
 *HistogramSignalHandlerTest.*
 *HistoryDelegateImplTest.*
 *HistorySyncPromoTest.*
-*HomeModulesCardRegistryTest.*
+*HomeModulesCardRegistryAndroidTest.*
+*HomeModulesCardRegistryIOSTest.*
 *InputContextAndroidTest.*
 *IntentionalUserModelTest.*
 *IosModuleRankerTest.*
