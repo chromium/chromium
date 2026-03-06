@@ -12042,20 +12042,12 @@ void Element::MapLanguageAttributeToLocale(
     } else if (IsA<HTMLBodyElement>(this)) {
       UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnBody);
     }
-    String html_language = value.GetString();
-    wtf_size_t first_separator = html_language.find('-');
-    if (first_separator != kNotFound) {
-      html_language = html_language.Left(first_separator);
-    }
-    String ui_language = DefaultLanguage();
-    first_separator = ui_language.find('-');
-    if (first_separator != kNotFound) {
-      ui_language = ui_language.Left(first_separator);
-    }
-    first_separator = ui_language.find('_');
-    if (first_separator != kNotFound) {
-      ui_language = ui_language.Left(first_separator);
-    }
+    StringView html_language(value);
+    html_language = html_language.substr(0, html_language.find('-'));
+    String ui_language_string = DefaultLanguage();
+    StringView ui_language(ui_language_string);
+    ui_language = ui_language.substr(0, ui_language.find('-'))
+                      .substr(0, ui_language.find('_'));
     if (!DeprecatedEqualIgnoringCase(html_language, ui_language)) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kLangAttributeDoesNotMatchToUILocale);
