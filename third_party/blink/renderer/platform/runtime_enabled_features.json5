@@ -1937,6 +1937,11 @@
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },
+    {
+      // crbug.com/40153320
+      name: "DateTimeLocalArabicCommaWorkaround",
+      status: "stable",
+    },
     // https://crbug.com/448174611
     {
       name: "DeclarativeCSSModules",

@@ -95,6 +95,7 @@ const UChar kHebrewPunctuationGeresh = 0x05F3;
 const UChar kHebrewPunctuationGershayim = 0x05F4;
 const UChar kArabicIndicPerMilleSign = 0x0609;
 const UChar kArabicIndicPerTenThousandSign = 0x060A;
+const UChar kArabicComma = 0x060C;
 const UChar kArabicLetterMark = 0x061C;
 const UChar kArabicPercentSign = 0x066A;
 const UChar kTibetanMarkIntersyllabicTsheg = 0x0F0B;
