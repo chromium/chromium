@@ -398,9 +398,6 @@ crbug.com/486945330 conformance/glsl/misc/shader-with-double-underscore.html [ F
 # Verification of zero-sized SVGs needs to be changed
 crbug.com/487208470 conformance/textures/misc/tex-image-svg-image-no-natural-width-and-height.html [ Failure ]
 
-# getUniformLocation validation was made more stringent
-crbug.com/487128732 conformance/uniforms/gl-get-uniform-location-errors.html [ Failure ]
-
 # Failing new ASTC offset tests on multiple Android devices
 crbug.com/487128735 [ android android-pixel-2 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/487128735 [ android android-pixel-4 passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
