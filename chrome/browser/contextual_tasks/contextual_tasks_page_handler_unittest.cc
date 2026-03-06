@@ -90,6 +90,7 @@ class MockPage : public mojom::Page {
               (override));
   MOCK_METHOD(void, LockInput, (), (override));
   MOCK_METHOD(void, UnlockInput, (), (override));
+  MOCK_METHOD(void, SetShowReopenTabs, (bool show), (override));
   MOCK_METHOD(void,
               InjectInput,
               (const std::string& title,

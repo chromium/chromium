@@ -424,6 +424,10 @@ void ContextualTasksPageHandler::OnboardingTooltipDismissed() {
       count + 1);
 }
 
+void ContextualTasksPageHandler::ReopenTabs() {
+  // TODO(crbug.com/489832161): Implement tab restoration logic.
+}
+
 void ContextualTasksPageHandler::PostMessageToWebview(
     const lens::ClientToAimMessage& message) {
   DCHECK(web_ui_controller_->GetPageRemote());

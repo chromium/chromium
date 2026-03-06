@@ -69,6 +69,7 @@ class ContextualTasksPageHandler
                              bool is_side_panel,
                              GetCommonSearchParamsCallback callback) override;
   void OnboardingTooltipDismissed() override;
+  void ReopenTabs() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:
