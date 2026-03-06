@@ -106,10 +106,9 @@ void ReadAnythingOmniboxController::OnReadingModePresenterChanged() {
 
   auto* read_anything_controller = ReadAnythingController::From(tab_);
   CHECK(read_anything_controller);
-  // If Reading mode was just closed by the user, show the omnibox entrypoint.
+  // If Reading mode was just closed, show the omnibox entrypoint.
   if (read_anything_controller->GetPresentationState() ==
-          ReadAnythingController::PresentationState::kInactive &&
-      last_close_reason_ == ReadAnythingCloseReason::kClosedByUser) {
+      ReadAnythingController::PresentationState::kInactive) {
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/true, tab_->GetBrowserWindowInterface());
   }
@@ -122,12 +121,6 @@ void ReadAnythingOmniboxController::OnDestroyed() {
     CHECK(read_anything_controller);
     read_anything_controller->RemoveObserver(this);
   }
-}
-
-void ReadAnythingOmniboxController::OnWillClose(
-    ReadAnythingCloseReason reason) {
-  CHECK(features::IsImmersiveReadAnythingEnabled());
-  last_close_reason_ = reason;
 }
 
 void ReadAnythingOmniboxController::PrimaryPageChanged(content::Page& page) {

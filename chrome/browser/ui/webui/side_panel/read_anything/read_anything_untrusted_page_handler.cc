@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -984,8 +983,7 @@ void ReadAnythingUntrustedPageHandler::CloseUI() {
   CHECK(read_anything_controller_);
   DCHECK(read_anything_controller_->GetPresentationState() ==
          ReadAnythingController::PresentationState::kInImmersiveOverlay);
-  read_anything_controller_->CloseImmersiveUI(
-      ReadAnythingCloseReason::kClosedByUser);
+  read_anything_controller_->CloseImmersiveUI();
 }
 
 void ReadAnythingUntrustedPageHandler::TogglePinState() {

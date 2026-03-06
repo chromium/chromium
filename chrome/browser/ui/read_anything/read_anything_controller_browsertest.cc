@@ -52,7 +52,6 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
   MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnTabWillDetach, (), (override));
   MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
-  MOCK_METHOD(void, OnWillClose, (ReadAnythingCloseReason reason), (override));
 };
 
 class MockReadAnythingService : public ReadAnythingService {
@@ -216,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_CALL(observer, Activate(false, testing::_)).WillOnce([&run_loop_2]() {
     run_loop_2.Quit();
   });
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   run_loop_2.Run();
 
   // 3. Show Immersive UI (second time - reuse WebUI)
@@ -249,33 +248,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_CALL(observer, Activate(false, testing::_)).WillOnce([&run_loop]() {
     run_loop.Quit();
   });
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
-  run_loop.Run();
-
-  // Cleanup
-  controller->RemoveObserver(&observer);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
-                       CloseImmersiveUI_NotifiesObserversOfCloseReason) {
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
-  ASSERT_TRUE(controller);
-
-  // Show it first
-  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
-
-  testing::NiceMock<MockReadAnythingLifecycleObserver> observer;
-  controller->AddObserver(&observer);
-
-  // Close it
-  auto reason = ReadAnythingCloseReason::kClosedByUser;
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnWillClose(reason)).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  controller->CloseImmersiveUI(reason);
+  controller->CloseImmersiveUI();
   run_loop.Run();
 
   // Cleanup
@@ -483,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInImmersiveOverlay);
 
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInactive);
 }
@@ -507,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_FALSE(overlay_view->children().empty());
 
   // Close immersive mode and confirm it's hidden
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   EXPECT_FALSE(overlay_view->GetVisible());
   EXPECT_TRUE(overlay_view->children().empty());
 }
@@ -525,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return main_contents->IsBeingVisiblyCaptured(); }));
 
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !main_contents->IsBeingVisiblyCaptured(); }));
 }
@@ -560,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
 
   // Close immersive mode
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
 
   // Get the WebUI wrapper again (should be inactive now)
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>> wrapper =
@@ -613,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
             ReadAnythingController::PresentationState::kUndefined);
 
   // Calling CloseImmersiveUI shouldn't crash or change state
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kUndefined);
 }
@@ -1053,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   EmitWebUIShowEvent();
   content::WebContents* starting_contents = GetImmersiveWebContents();
 
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   controller->RecreateWebUIWrapper();
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent();
@@ -1123,6 +1096,45 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Open Side Panel
   controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+
+  // Verify Immersive UI is closed
+  views::View* overlay_view = GetImmersiveOverlay();
+  ASSERT_TRUE(overlay_view);
+  EXPECT_FALSE(overlay_view->GetVisible());
+  EXPECT_TRUE(overlay_view->children().empty());
+
+  // Verify Side Panel is showing
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Verify the same WebUI is used in the side panel
+  EXPECT_EQ(immersive_ui_web_contents, GetSidePanelWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ToggleReadAnythingSidePanel_ClosesImmersiveUI) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Open Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return controller->has_shown_ui(); }));
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
+
+  // Get the WebUI from the immersive overlay
+  content::WebContents* immersive_ui_web_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_ui_web_contents);
+
+  // Toggle Side Panel
+  controller->ToggleReadAnythingSidePanel(SidePanelOpenTrigger::kAppMenu);
 
   // Verify Immersive UI is closed
   views::View* overlay_view = GetImmersiveOverlay();
@@ -1358,7 +1370,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_FALSE(contents_view->IsFocusable());
 
   // 3) Close Immersive UI
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   AssertOverlayVisibility(/*visible=*/false);
 
   // Main webpage is accessible again
@@ -1484,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 0);
 
-  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->CloseImmersiveUI();
   AssertOverlayVisibility(/*visible=*/false);
 
   histogram_tester.ExpectTotalCount(
@@ -1867,7 +1879,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Close IRM on active tab (Tab B)
   ReadAnythingController::From(tab_strip_model->GetActiveTab())
-      ->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+      ->CloseImmersiveUI();
 
   // Verify Tab B IRM closed
   ASSERT_FALSE(GetImmersiveOverlayForTab(1)->GetVisible());

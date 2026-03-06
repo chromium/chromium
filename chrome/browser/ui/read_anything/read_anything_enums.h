@@ -25,16 +25,6 @@ enum class ReadAnythingOpenTrigger {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
 
-enum class ReadAnythingCloseReason {
-  kClosedByUser = 0,
-  kTabSwitched = 1,
-  kPageChanged = 2,
-  kToggledPresentation = 3,
-  kRendererCrashed = 4,
-  kControllerDestroyed = 5,
-  kMaxValue = kControllerDestroyed,
-};
-
 namespace read_anything {
 
 inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(

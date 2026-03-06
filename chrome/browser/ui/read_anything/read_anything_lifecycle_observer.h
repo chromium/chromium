@@ -17,7 +17,6 @@ class ReadAnythingLifecycleObserver : public base::CheckedObserver {
   virtual void OnDestroyed() = 0;
   virtual void OnTabWillDetach() {}
   virtual void OnReadingModePresenterChanged() {}
-  virtual void OnWillClose(ReadAnythingCloseReason reason) {}
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_LIFECYCLE_OBSERVER_H_

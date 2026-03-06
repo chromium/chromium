@@ -55,7 +55,6 @@ class ReadAnythingOmniboxControllerTest
     features_.InitWithFeatures(enabled_features, disabled_features);
     distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
     non_distillable_url_ = GURL("chrome://blank");
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
     InteractiveFeaturePromoTest::SetUp();
   }
 
@@ -68,7 +67,6 @@ class ReadAnythingOmniboxControllerTest
 
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
     InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
