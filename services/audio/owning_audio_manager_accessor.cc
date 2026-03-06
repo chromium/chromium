@@ -132,6 +132,7 @@ media::AudioManager* OwningAudioManagerAccessor::GetAudioManager() {
     DCHECK(audio_manager_);
     UMA_HISTOGRAM_TIMES("Media.AudioService.AudioManagerStartupTime",
                         base::TimeTicks::Now() - creation_start_time);
+    audio_manager_->LogAudioManagerStartup();
   }
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   return audio_manager_.get();

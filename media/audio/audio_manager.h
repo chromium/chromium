@@ -186,6 +186,10 @@ class MEDIA_EXPORT AudioManager {
   // Gets the name of the audio manager (e.g., Windows, Mac, PulseAudio).
   virtual const std::string_view GetName() = 0;
 
+  // Logs a message indicating that the AudioManager was created.
+  // This is used to track process restarts.
+  virtual void LogAudioManagerStartup() = 0;
+
   // Starts or stops tracing when a peak in Audio signal amplitude is detected.
   // Does nothing if a call to stop tracing is made without first starting the
   // trace. Aborts the current trace if a call to start tracing is made without

@@ -55,6 +55,8 @@ class MockAudioManager : public AudioManager {
       const std::string& device_id,
       const LogCallback& log_callback) override;
 
+  void LogAudioManagerStartup() override {}
+
   void AddOutputDeviceChangeListener(AudioDeviceListener* listener) override;
   void RemoveOutputDeviceChangeListener(AudioDeviceListener* listener) override;
 
