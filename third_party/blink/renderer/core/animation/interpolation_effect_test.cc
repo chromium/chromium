@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -151,6 +153,30 @@ class InterpolationEffectTest : public PageTestBase {
 
     return To<InterpolableNumber>(typed_value->GetInterpolableValue())
         .Value(CSSToLengthConversionData(/*element=*/nullptr));
+  }
+
+  // Gets the transform matrix from an InvalidatableInterpolation
+  gfx::Transform GetInvalidatableTransform(Interpolation* interpolation) {
+    auto* invalidatable = To<InvalidatableInterpolation>(interpolation);
+
+    ActiveInterpolations* interpolations =
+        MakeGarbageCollected<ActiveInterpolations>();
+    interpolations->push_back(invalidatable);
+    animation_test_helpers::EnsureInterpolatedValueCached(
+        interpolations, GetDocument(), element_);
+
+    const TypedInterpolationValue* typed_value =
+        invalidatable->GetCachedValueForTesting();
+    EXPECT_NE(nullptr, typed_value);
+    if (!typed_value) {
+      return gfx::Transform();
+    }
+
+    const auto& transform_list =
+        To<InterpolableTransformList>(typed_value->GetInterpolableValue());
+    gfx::Transform result;
+    transform_list.operations().Apply(gfx::SizeF(), result);
+    return result;
   }
 
  protected:
@@ -535,6 +561,192 @@ TEST_F(InterpolationEffectTest,
   animation_test_helpers::EnsureInterpolatedValueCached(
       interpolations, GetDocument(), element_);
   EXPECT_NE(nullptr, invalidatable->GetCachedValueForTesting());
+}
+
+// Test transform accumulation with scale() over 2 keyframes.
+TEST_F(InterpolationEffectTest, IterationCompositeAccumulateTransform) {
+  Interpolation* interpolation = CreateInvalidatableInterpolation(
+      CSSPropertyID::kTransform, "scale(1)", "scale(3)");
+
+  // Iteration 0 at 0.5. scale(1) to scale(3) at 50%: scale(2).
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(interpolation, scoped_refptr<TimingFunction>(), 0,
+                             1, 0, 1);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        0, 0.5, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeScale(2),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.0. scale(1 + (3-1)*2) = scale(5).
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(interpolation, scoped_refptr<TimingFunction>(), 0,
+                             1, 0, 1);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.0, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeScale(5),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.5. scale(5) to scale(7) at 50%: scale(6).
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(interpolation, scoped_refptr<TimingFunction>(), 0,
+                             1, 0, 1);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.5, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeScale(6),
+              GetInvalidatableTransform(result.at(0)));
+  }
+}
+
+// Test transform accumulation with translateX() over 3 keyframes.
+TEST_F(InterpolationEffectTest,
+       IterationCompositeAccumulateTransformMultiKeyframe) {
+  Interpolation* first_segment = CreateMultiKeyframeInterpolation(
+      CSSPropertyID::kTransform, "translateX(0px)", "translateX(30px)",
+      "translateX(100px)", Segment::kFirst);
+  Interpolation* second_segment = CreateMultiKeyframeInterpolation(
+      CSSPropertyID::kTransform, "translateX(0px)", "translateX(30px)",
+      "translateX(100px)", Segment::kSecond);
+
+  // Iteration 0 at 0.25. First segment, 0px to 30px at 50%: 15px.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(first_segment, scoped_refptr<TimingFunction>(), 0,
+                             0.5, 0, 0.5);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        0, 0.25, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeTranslation(15, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.25. First segment, 200px to 230px at 50%: 215px.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(first_segment, scoped_refptr<TimingFunction>(), 0,
+                             0.5, 0, 0.5);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.25, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeTranslation(215, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 0 at 0.75. Second segment, 30px to 100px at 50%: 65px.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(second_segment, scoped_refptr<TimingFunction>(),
+                             0.5, 1.0, 0.5, 1.0);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        0, 0.75, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeTranslation(65, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.75. Second segment, 230px to 300px at 50%: 265px.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(second_segment, scoped_refptr<TimingFunction>(),
+                             0.5, 1.0, 0.5, 1.0);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.75, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::MakeTranslation(265, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+}
+
+// Test transform accumulation with translateX() and scale() over 3 keyframes.
+// Translate accumulates additively while scale uses one-based addition.
+TEST_F(InterpolationEffectTest,
+       IterationCompositeAccumulateTransformListMultiKeyframe) {
+  Interpolation* first_segment = CreateMultiKeyframeInterpolation(
+      CSSPropertyID::kTransform, "translateX(0px) scale(1)",
+      "translateX(4px) scale(3)", "translateX(10px) scale(5)", Segment::kFirst);
+  Interpolation* second_segment = CreateMultiKeyframeInterpolation(
+      CSSPropertyID::kTransform, "translateX(0px) scale(1)",
+      "translateX(4px) scale(3)", "translateX(10px) scale(5)",
+      Segment::kSecond);
+
+  // Iteration 0 at 0.25. First segment at 50%: translateX(2px) scale(2).
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(first_segment, scoped_refptr<TimingFunction>(), 0,
+                             0.5, 0, 0.5);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        0, 0.25, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::Affine(2, 0, 0, 2, 2, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.25. Accumulate delta translateX(10px) scale(5) twice:
+  //   translate: 0+20, 4+20 at 50% = 22. scale: 1+8, 3+8 at 50% = 10.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(first_segment, scoped_refptr<TimingFunction>(), 0,
+                             0.5, 0, 0.5);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.25, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::Affine(10, 0, 0, 10, 22, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 0 at 0.75. Second segment at 50%: translateX(7px) scale(4).
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(second_segment, scoped_refptr<TimingFunction>(),
+                             0.5, 1.0, 0.5, 1.0);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        0, 0.75, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::Affine(4, 0, 0, 4, 7, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
+
+  // Iteration 2 at 0.75. Accumulate delta twice:
+  //   translate: 4+20, 10+20 at 50% = 27. scale: 3+8, 5+8 at 50% = 12.
+  {
+    Persistent<InterpolationEffect> effect =
+        MakeGarbageCollected<InterpolationEffect>();
+    effect->AddInterpolation(second_segment, scoped_refptr<TimingFunction>(),
+                             0.5, 1.0, 0.5, 1.0);
+    HeapVector<Member<Interpolation>> result;
+    effect->GetActiveInterpolations(
+        2, 0.75, EffectModel::kIterationCompositeAccumulate,
+        TimingFunction::LimitDirection::RIGHT, result);
+    EXPECT_EQ(gfx::Transform::Affine(12, 0, 0, 12, 27, 0),
+              GetInvalidatableTransform(result.at(0)));
+  }
 }
 
 }  // namespace blink

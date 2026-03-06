@@ -35,6 +35,10 @@ class PrimitiveInterpolation : public GarbageCollected<PrimitiveInterpolation> {
                                                double fraction) const = 0;
   virtual bool IsFlip() const { return false; }
 
+  // Return the start/end values for pairwise interpolations, nullptr otherwise.
+  virtual const InterpolableValue* StartValue() const { return nullptr; }
+  virtual const InterpolableValue* EndValue() const { return nullptr; }
+
   virtual void Trace(Visitor*) const {}
 
  protected:
@@ -66,6 +70,9 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
     return MakeGarbageCollected<TypedInterpolationValue>(
         type_, start_->Clone(), non_interpolable_value_);
   }
+
+  const InterpolableValue* StartValue() const override { return start_; }
+  const InterpolableValue* EndValue() const override { return end_; }
 
   void Trace(Visitor* v) const override {
     PrimitiveInterpolation::Trace(v);
