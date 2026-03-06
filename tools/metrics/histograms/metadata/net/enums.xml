@@ -142,11 +142,10 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CanaryDomainResult">
   <int value="0" label="Unknown result"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="Positive"/>
-  <int value="3" label="Negative: NOERROR without records"/>
-  <int value="4" label="Negative: NXDOMAIN or other error"/>
-  <int value="5" label="Negative: other error"/>
+  <int value="1" label="Positive"/>
+  <int value="2" label="Negative: NOERROR without records"/>
+  <int value="3" label="Negative: NXDOMAIN or other error"/>
+  <int value="4" label="Negative: other error"/>
 </enum>
 
 <!-- LINT.ThenChange(/net/dns/canary_domain_service.h:CanaryDomainResult) -->
