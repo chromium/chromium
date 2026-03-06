@@ -15,6 +15,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
@@ -28,8 +29,6 @@ class HttpRequestHeaders;
 }
 
 namespace signin {
-
-enum class Tribool;
 
 // Profile mode flags.
 enum ProfileMode {
@@ -123,22 +122,52 @@ struct DiceResponseParams {
 
   // Parameters for the SIGNIN action.
   struct SigninInfo {
+    // Information for a single account being signed in.
+    struct SigninAccount {
+      SigninAccount();
+      SigninAccount(AccountInfo account_info,
+                    std::string authorization_code,
+                    bool no_authorization_code,
+                    std::string supported_algorithms_for_token_binding);
+      SigninAccount(const SigninAccount&);
+      ~SigninAccount();
+
+      bool IsValid() const;
+
+      // AccountInfo of the account signed in.
+      AccountInfo account_info;
+      // Authorization code to fetch a refresh token.
+      std::string authorization_code;
+      // Whether Dice response contains the 'no_authorization_code' header
+      // value. If true then LSO was unavailable for provision of auth code.
+      bool no_authorization_code = false;
+      // If the account is eligible for token binding, this string is non-empty
+      // and contains a list of supported binding algorithms separated by space.
+      std::string supported_algorithms_for_token_binding;
+    };
+
     SigninInfo();
-    SigninInfo(const SigninInfo&);
+    SigninInfo(const SigninInfo&) = delete;
+    SigninInfo& operator=(const SigninInfo&) = delete;
+    SigninInfo(SigninInfo&&);
+    SigninInfo& operator=(SigninInfo&&);
     ~SigninInfo();
 
     bool IsValid() const;
 
-    // AccountInfo of the account signed in.
-    AccountInfo account_info;
-    // Authorization code to fetch a refresh token.
-    std::string authorization_code;
-    // Whether Dice response contains the 'no_authorization_code' header value.
-    // If true then LSO was unavailable for provision of auth code.
-    bool no_authorization_code = false;
-    // If the account is eligible for token binding, this string is non-empty
-    // and contains a list of supported binding algorithms separated by space.
-    std::string supported_algorithms_for_token_binding;
+    // Returns the initiator account, or the first account if there is only one
+    // and no initiator is specified. Returns nullptr if no match is found.
+    const SigninAccount* GetInitiator() const;
+
+    void SetInitiator(const GaiaId& gaia_id);
+
+    void AddAccount(SigninAccount account);
+
+    const std::vector<SigninAccount>& accounts() const { return accounts_; }
+
+   private:
+    GaiaId initiator_id;
+    std::vector<SigninAccount> accounts_;
   };
 
   // Parameters for the SIGNOUT action.

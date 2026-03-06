@@ -73,14 +73,67 @@ bool DiceResponseParams::AccountInfo::IsValid() const {
          session_index != DiceResponseParams::AccountInfo::kInvalidSessionIndex;
 }
 
-bool DiceResponseParams::SigninInfo::IsValid() const {
+DiceResponseParams::SigninInfo::SigninAccount::SigninAccount() = default;
+DiceResponseParams::SigninInfo::SigninAccount::SigninAccount(
+    AccountInfo account_info,
+    std::string authorization_code,
+    bool no_authorization_code,
+    std::string supported_algorithms_for_token_binding)
+    : account_info(std::move(account_info)),
+      authorization_code(std::move(authorization_code)),
+      no_authorization_code(no_authorization_code),
+      supported_algorithms_for_token_binding(
+          std::move(supported_algorithms_for_token_binding)) {}
+DiceResponseParams::SigninInfo::SigninAccount::~SigninAccount() = default;
+DiceResponseParams::SigninInfo::SigninAccount::SigninAccount(
+    const SigninAccount&) = default;
+
+bool DiceResponseParams::SigninInfo::SigninAccount::IsValid() const {
   return account_info.IsValid() &&
          (!authorization_code.empty() || no_authorization_code);
 }
 
 DiceResponseParams::SigninInfo::SigninInfo() = default;
 DiceResponseParams::SigninInfo::~SigninInfo() = default;
-DiceResponseParams::SigninInfo::SigninInfo(const SigninInfo&) = default;
+DiceResponseParams::SigninInfo::SigninInfo(SigninInfo&&) = default;
+DiceResponseParams::SigninInfo& DiceResponseParams::SigninInfo::operator=(
+    SigninInfo&&) = default;
+
+void DiceResponseParams::SigninInfo::SetInitiator(const GaiaId& gaia_id) {
+  initiator_id = gaia_id;
+}
+
+const DiceResponseParams::SigninInfo::SigninAccount*
+DiceResponseParams::SigninInfo::GetInitiator() const {
+  if (initiator_id.empty()) {
+    return accounts_.size() == 1u ? &accounts_[0] : nullptr;
+  }
+
+  auto it = std::ranges::find_if(accounts_, [&](const SigninAccount& account) {
+    return account.account_info.gaia_id == initiator_id;
+  });
+  return it == accounts_.end() ? nullptr : &*it;
+}
+
+void DiceResponseParams::SigninInfo::AddAccount(SigninAccount account) {
+  // Uma histogram that records whether the authorization code was present or
+  // not.
+  if (account.IsValid()) {
+    base::UmaHistogramBoolean("Signin.DiceAuthorizationCode",
+                              !account.authorization_code.empty());
+  }
+  accounts_.push_back(std::move(account));
+}
+
+bool DiceResponseParams::SigninInfo::IsValid() const {
+  for (const auto& account : accounts_) {
+    if (!account.IsValid()) {
+      return false;
+    }
+  }
+
+  return GetInitiator() != nullptr;
+}
 
 DiceResponseParams::SignoutInfo::SignoutInfo() = default;
 DiceResponseParams::SignoutInfo::~SignoutInfo() = default;

@@ -259,16 +259,23 @@ DiceResponseHandler::~DiceResponseHandler() = default;
 void DiceResponseHandler::ProcessDiceHeader(
     const signin::DiceResponseParams& dice_params,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
+  if (!dice_params.IsValid()) {
+    return;
+  }
+
   CHECK(delegate);
   switch (dice_params.user_intention) {
     case signin::DiceAction::SIGNIN: {
+      const signin::DiceResponseParams::SigninInfo::SigninAccount* initiator =
+          dice_params.signin_info->GetInitiator();
+      CHECK(initiator);
       const signin::DiceResponseParams::AccountInfo& info =
-          dice_params.signin_info->account_info;
-      ProcessDiceSigninHeader(
-          info.gaia_id, info.email, dice_params.signin_info->authorization_code,
-          dice_params.signin_info->no_authorization_code,
-          dice_params.signin_info->supported_algorithms_for_token_binding,
-          std::move(delegate));
+          initiator->account_info;
+      ProcessDiceSigninHeader(info.gaia_id, info.email,
+                              initiator->authorization_code,
+                              initiator->no_authorization_code,
+                              initiator->supported_algorithms_for_token_binding,
+                              std::move(delegate));
       return;
     }
     case signin::DiceAction::ENABLE_SYNC: {

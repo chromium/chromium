@@ -542,56 +542,60 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderRequestDriveSignedIn) {
   }
 }
 
-TEST_F(SigninHeaderHelperTest, DiceResponseParamsIsValid) {
-  {
-    // NONE action is invalid.
-    DiceResponseParams params;
-    params.user_intention = DiceAction::NONE;
-    EXPECT_FALSE(params.IsValid());
-  }
+TEST(DiceResponseParamsTest, IsValid) {
+  DiceResponseParams params;
+  EXPECT_FALSE(params.IsValid());  // NONE is not valid.
 
-  {
-    // SIGNIN action.
-    DiceResponseParams params;
-    params.user_intention = DiceAction::SIGNIN;
-    params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
-    // Missing account info.
-    EXPECT_FALSE(params.IsValid());
-    params.signin_info->account_info =
-        DiceResponseParams::AccountInfo(GaiaId("id"), "email", 1);
-    // Missing auth code.
-    EXPECT_FALSE(params.IsValid());
-    params.signin_info->authorization_code = "code";
-    EXPECT_TRUE(params.IsValid());
-    // No auth code is also valid if no_authorization_code is true.
-    params.signin_info->authorization_code.clear();
-    params.signin_info->no_authorization_code = true;
-    EXPECT_TRUE(params.IsValid());
-  }
+  // SIGNIN
+  params.user_intention = DiceAction::SIGNIN;
+  EXPECT_FALSE(params.IsValid());  // Missing signin_info.
 
-  {
-    // SIGNOUT action.
-    DiceResponseParams params;
-    params.user_intention = DiceAction::SIGNOUT;
-    params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();
-    // Empty account infos is invalid.
-    EXPECT_FALSE(params.IsValid());
-    params.signout_info->account_infos.emplace_back(GaiaId("id"), "email", 1);
-    EXPECT_TRUE(params.IsValid());
-  }
+  params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+  EXPECT_FALSE(params.IsValid());  // Empty accounts.
 
-  {
-    // ENABLE_SYNC action.
-    DiceResponseParams params;
-    params.user_intention = DiceAction::ENABLE_SYNC;
-    params.enable_sync_info =
-        std::make_unique<DiceResponseParams::EnableSyncInfo>();
-    // Missing account info.
-    EXPECT_FALSE(params.IsValid());
-    params.enable_sync_info->account_info =
-        DiceResponseParams::AccountInfo(GaiaId("id"), "email", 1);
-    EXPECT_TRUE(params.IsValid());
-  }
+  params.signin_info->AddAccount(
+      {{GaiaId("id"), "email", 0}, "code", false, "binding"});
+  EXPECT_TRUE(params.IsValid());
+
+  params.signin_info->SetInitiator(GaiaId("unknown"));
+  EXPECT_FALSE(params.IsValid());  // Initiator not in accounts.
+
+  params.signin_info->SetInitiator(GaiaId("id"));
+  EXPECT_TRUE(params.IsValid());
+
+  params.signin_info->SetInitiator(GaiaId());
+  params.signin_info->AddAccount(
+      {{GaiaId("id2"), "email2", 0}, "code2", false, "binding2"});
+  EXPECT_FALSE(params.IsValid());  // Multiple accounts, no initiator.
+
+  params.signin_info->SetInitiator(GaiaId("id2"));
+  EXPECT_TRUE(params.IsValid());
+
+  // SIGNOUT
+  params = DiceResponseParams();
+  params.user_intention = DiceAction::SIGNOUT;
+  EXPECT_FALSE(params.IsValid());  // Missing signout_info.
+
+  params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();
+  EXPECT_FALSE(params.IsValid());  // Empty account_infos.
+
+  DiceResponseParams::AccountInfo info;
+  params.signout_info->account_infos.push_back(info);
+  EXPECT_TRUE(params.IsValid());  // Individual fields not checked for SIGNOUT.
+
+  // ENABLE_SYNC
+  params = DiceResponseParams();
+  params.user_intention = DiceAction::ENABLE_SYNC;
+  EXPECT_FALSE(params.IsValid());  // Missing enable_sync_info.
+
+  params.enable_sync_info =
+      std::make_unique<DiceResponseParams::EnableSyncInfo>();
+  EXPECT_FALSE(params.IsValid());  // Invalid account info.
+
+  params.enable_sync_info->account_info.gaia_id = GaiaId("id");
+  params.enable_sync_info->account_info.email = "email";
+  params.enable_sync_info->account_info.session_index = 0;
+  EXPECT_TRUE(params.IsValid());
 }
 
 TEST_F(SigninHeaderHelperTest, TestDiceInvalidResponseParams) {
@@ -621,12 +625,14 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
             kSupportedTokenBindingAlgorithms));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
-    EXPECT_EQ(kEmail, params.signin_info->account_info.email);
-    EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
-    EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+    const auto* account = params.signin_info->GetInitiator();
+    ASSERT_TRUE(account);
+    EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
+    EXPECT_EQ(kEmail, account->account_info.email);
+    EXPECT_EQ(kSessionIndex, account->account_info.session_index);
+    EXPECT_EQ(kAuthorizationCode, account->authorization_code);
     EXPECT_EQ(kSupportedTokenBindingAlgorithms,
-              params.signin_info->supported_algorithms_for_token_binding);
+              account->supported_algorithms_for_token_binding);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
                                         1);
   }
@@ -694,11 +700,13 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
                            kGaiaID.ToString(), kEmail, kSessionIndex));
     EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
     ASSERT_TRUE(params.signin_info);
-    EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
-    EXPECT_EQ(kEmail, params.signin_info->account_info.email);
-    EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
-    EXPECT_TRUE(params.signin_info->authorization_code.empty());
-    EXPECT_TRUE(params.signin_info->no_authorization_code);
+    const auto* account = params.signin_info->GetInitiator();
+    ASSERT_TRUE(account);
+    EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
+    EXPECT_EQ(kEmail, account->account_info.email);
+    EXPECT_EQ(kSessionIndex, account->account_info.session_index);
+    EXPECT_TRUE(account->authorization_code.empty());
+    EXPECT_TRUE(account->no_authorization_code);
     histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false,
                                         1);
   }
@@ -748,8 +756,9 @@ TEST_F(SigninHeaderHelperTest,
       kGaiaID.ToString(), kEmail, kSessionIndex, kAuthorizationCode));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
   ASSERT_TRUE(params.signin_info);
-  EXPECT_TRUE(
-      params.signin_info->supported_algorithms_for_token_binding.empty());
+  ASSERT_EQ(1u, params.signin_info->accounts().size());
+  EXPECT_TRUE(params.signin_info->GetInitiator()
+                  ->supported_algorithms_for_token_binding.empty());
 }
 
 // Mainly tests that whitespace characters in the middle of a header don't break
@@ -768,12 +777,47 @@ TEST_F(SigninHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
       kEmail, kAuthorizationCode));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
   ASSERT_TRUE(params.signin_info);
-  EXPECT_EQ(kGaiaID, params.signin_info->account_info.gaia_id);
-  EXPECT_EQ(kEmail, params.signin_info->account_info.email);
-  EXPECT_EQ(kSessionIndex, params.signin_info->account_info.session_index);
-  EXPECT_EQ(kAuthorizationCode, params.signin_info->authorization_code);
+  const auto* account = params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
+  EXPECT_EQ(kEmail, account->account_info.email);
+  EXPECT_EQ(kSessionIndex, account->account_info.session_index);
+  EXPECT_EQ(kAuthorizationCode, account->authorization_code);
   EXPECT_EQ(kSupportedTokenBindingAlgorithms,
-            params.signin_info->supported_algorithms_for_token_binding);
+            account->supported_algorithms_for_token_binding);
+}
+
+TEST(SigninInfoTest, SigninInfoGetInitiator) {
+  DiceResponseParams::SigninInfo signin_info;
+
+  // No accounts: returns nullptr.
+  EXPECT_EQ(nullptr, signin_info.GetInitiator());
+
+  DiceResponseParams::SigninInfo::SigninAccount account1;
+  account1.account_info.gaia_id = GaiaId("id1");
+  signin_info.AddAccount(account1);
+
+  // One account, no initiator: returns the account.
+  EXPECT_EQ(&signin_info.accounts()[0], signin_info.GetInitiator());
+
+  DiceResponseParams::SigninInfo::SigninAccount account2;
+  account2.account_info.gaia_id = GaiaId("id2");
+  signin_info.AddAccount(account2);
+
+  // Multiple accounts, no initiator: returns nullptr.
+  EXPECT_EQ(nullptr, signin_info.GetInitiator());
+
+  // Set initiator to account 2.
+  signin_info.SetInitiator(GaiaId("id2"));
+  EXPECT_EQ(&signin_info.accounts()[1], signin_info.GetInitiator());
+
+  // Set initiator to account 1.
+  signin_info.SetInitiator(GaiaId("id1"));
+  EXPECT_EQ(&signin_info.accounts()[0], signin_info.GetInitiator());
+
+  // Set initiator to unknown account: returns nullptr.
+  signin_info.SetInitiator(GaiaId("unknown"));
+  EXPECT_EQ(nullptr, signin_info.GetInitiator());
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

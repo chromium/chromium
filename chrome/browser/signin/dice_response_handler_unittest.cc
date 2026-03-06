@@ -217,10 +217,8 @@ class DiceResponseHandlerTest : public testing::Test,
       case DiceAction::SIGNIN:
         dice_params.signin_info =
             std::make_unique<DiceResponseParams::SigninInfo>();
-        dice_params.signin_info->account_info = account_info;
-        dice_params.signin_info->authorization_code = kAuthorizationCode;
-        dice_params.signin_info->supported_algorithms_for_token_binding =
-            kEligibleForTokenBinding;
+        dice_params.signin_info->AddAccount({account_info, kAuthorizationCode,
+                                             false, kEligibleForTokenBinding});
         break;
       case DiceAction::ENABLE_SYNC:
         dice_params.enable_sync_info =
@@ -409,7 +407,9 @@ void DiceResponseHandlerTest::RunSignoutTest(
 
 TEST_F(DiceResponseHandlerTest, Signin) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto* account = dice_params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  const auto& account_info = account->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -454,12 +454,13 @@ TEST_F(DiceResponseHandlerTest, Signin) {
 TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
   EnableRegistrationTokenHelperFactory();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto* account = dice_params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  const auto& account_info = account->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  const std::string authorization_code =
-      dice_params.signin_info->authorization_code;
+  const std::string authorization_code = account->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code},
                                        base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
@@ -496,9 +497,14 @@ TEST_F(DiceResponseHandlerTest, SigninWithBoundToken) {
 // for token binding.
 TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
   EnableRegistrationTokenHelperFactory();
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params.signin_info->supported_algorithms_for_token_binding.clear();
-  const auto& account_info = dice_params.signin_info->account_info;
+  DiceResponseParams dice_params;
+  dice_params.user_intention = DiceAction::SIGNIN;
+  dice_params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params.signin_info->AddAccount({GetDiceResponseParamsAccountInfo(kEmail),
+                                       kAuthorizationCode, false,
+                                       std::string()});
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -529,7 +535,8 @@ TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
   EnableRegistrationTokenHelperFactory();
   identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -560,12 +567,13 @@ TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
 TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
   EnableRegistrationTokenHelperFactory();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto* account = dice_params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  const auto& account_info = account->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  const std::string authorization_code =
-      dice_params.signin_info->authorization_code;
+  const std::string authorization_code = account->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code},
                                        base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
@@ -607,11 +615,12 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
           .Build("other@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto* account = dice_params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  const auto& account_info = account->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
-  const std::string authorization_code =
-      dice_params.signin_info->authorization_code;
+  const std::string authorization_code = account->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code}, kWrappedKey);
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -647,7 +656,8 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   ExpectRegistrationTokenHelperCreated(
-      {dice_params.signin_info->authorization_code}, kWrappedKey);
+      {dice_params.signin_info->GetInitiator()->authorization_code},
+      kWrappedKey);
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
@@ -658,7 +668,7 @@ TEST_F(DiceResponseHandlerTest, NewBindingKeyOtherTokenIsNotBound) {
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   ExpectRegistrationTokenHelperCreated(
-      {dice_params.signin_info->authorization_code},
+      {dice_params.signin_info->GetInitiator()->authorization_code},
       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -667,19 +677,23 @@ TEST_F(DiceResponseHandlerTest, NewBindingKeyOtherTokenIsNotBound) {
 TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   EnableRegistrationTokenHelperFactory();
   auto account_id = [&](const DiceResponseParams& dice_params) {
-    const auto& account_info = dice_params.signin_info->account_info;
+    const auto& account_info =
+        dice_params.signin_info->GetInitiator()->account_info;
     return identity_manager()->PickAccountIdForAccount(account_info.gaia_id,
                                                        account_info.email);
   };
   auto authorization_code = [&](const DiceResponseParams& dice_params) {
-    return dice_params.signin_info->authorization_code;
+    return dice_params.signin_info->GetInitiator()->authorization_code;
   };
 
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
-  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_2.signin_info->account_info =
-      GetDiceResponseParamsAccountInfo("other@email.com");
-  dice_params_2.signin_info->authorization_code = "other_authorization_code";
+  DiceResponseParams dice_params_2;
+  dice_params_2.user_intention = DiceAction::SIGNIN;
+  dice_params_2.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_2.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo("other@email.com"),
+       "other_authorization_code", false, kEligibleForTokenBinding});
   ExpectRegistrationTokenHelperCreated(
       {authorization_code(dice_params_1), authorization_code(dice_params_2)},
       base::ToVector(kAcceptableAlgorithms));
@@ -730,18 +744,17 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
 TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
   EnableRegistrationTokenHelperFactory();
   auto authorization_code = [&](const DiceResponseParams& dice_params) {
-    return dice_params.signin_info->authorization_code;
+    return dice_params.signin_info->GetInitiator()->authorization_code;
   };
 
   DiceResponseParams eligible_dice_params_ = MakeDiceParams(DiceAction::SIGNIN);
-  DiceResponseParams ineligible_dice_params =
-      MakeDiceParams(DiceAction::SIGNIN);
-  ineligible_dice_params.signin_info->account_info =
-      GetDiceResponseParamsAccountInfo("other@email.com");
-  ineligible_dice_params.signin_info->authorization_code =
-      "other_authorization_code";
-  ineligible_dice_params.signin_info->supported_algorithms_for_token_binding
-      .clear();
+  DiceResponseParams ineligible_dice_params;
+  ineligible_dice_params.user_intention = DiceAction::SIGNIN;
+  ineligible_dice_params.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  ineligible_dice_params.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo("other@email.com"),
+       "other_authorization_code", false, std::string()});
   ExpectRegistrationTokenHelperCreated(
       {authorization_code(eligible_dice_params_)},
       base::ToVector(kAcceptableAlgorithms));
@@ -773,12 +786,13 @@ TEST_F(DiceResponseHandlerTest,
        NewRegistrationTokenHelperCreatedForConsecutiveFetchers) {
   EnableRegistrationTokenHelperFactory();
   auto account_id = [&](const DiceResponseParams& dice_params) {
-    const auto& account_info = dice_params.signin_info->account_info;
+    const auto& account_info =
+        dice_params.signin_info->GetInitiator()->account_info;
     return identity_manager()->PickAccountIdForAccount(account_info.gaia_id,
                                                        account_info.email);
   };
   auto authorization_code = [&](const DiceResponseParams& dice_params) {
-    return dice_params.signin_info->authorization_code;
+    return dice_params.signin_info->GetInitiator()->authorization_code;
   };
 
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
@@ -809,10 +823,13 @@ TEST_F(DiceResponseHandlerTest,
 
   // Next request should create a new RegistrationTokenHelper with a new binding
   // key as none of the existing tokens are bound.
-  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_2.signin_info->account_info =
-      GetDiceResponseParamsAccountInfo("other@email.com");
-  dice_params_2.signin_info->authorization_code = "other_authorization_code";
+  DiceResponseParams dice_params_2;
+  dice_params_2.user_intention = DiceAction::SIGNIN;
+  dice_params_2.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_2.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo("other@email.com"),
+       "other_authorization_code", false, kEligibleForTokenBinding});
   ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_2)},
                                        base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
@@ -822,12 +839,13 @@ TEST_F(DiceResponseHandlerTest,
 TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
   EnableRegistrationTokenHelperFactory();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto* account = dice_params.signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+  const auto& account_info = account->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
-  const std::string authorization_code =
-      dice_params.signin_info->authorization_code;
+  const std::string authorization_code = account->authorization_code;
   ExpectRegistrationTokenHelperCreated({authorization_code},
                                        base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
@@ -860,9 +878,11 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.
 TEST_F(DiceResponseHandlerTest, SupportOAuthOutageInDice) {
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params.signin_info->authorization_code.clear();
-  dice_params.signin_info->no_authorization_code = true;
+  DiceResponseParams dice_params;
+  dice_params.user_intention = DiceAction::SIGNIN;
+  dice_params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params.signin_info->AddAccount({GetDiceResponseParamsAccountInfo(kEmail),
+                                       std::string(), true, std::string()});
   dice_response_handler_->ProcessDiceHeader(
       dice_params, std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that the reconcilor was blocked and not unblocked before timeout.
@@ -880,9 +900,13 @@ TEST_F(DiceResponseHandlerTest, SupportOAuthOutageInDice) {
 TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
   ASSERT_GT(kLockAccountReconcilorTimeoutHours, 3);
   // Create params for the first header with no authorization code.
-  DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_1.signin_info->authorization_code.clear();
-  dice_params_1.signin_info->no_authorization_code = true;
+  DiceResponseParams dice_params_1;
+  dice_params_1.user_intention = DiceAction::SIGNIN;
+  dice_params_1.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_1.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo(kEmail), std::string(), true,
+       std::string()});
   dice_response_handler_->ProcessDiceHeader(
       dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that the reconcilor was blocked and not unblocked before timeout.
@@ -892,9 +916,13 @@ TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
   task_environment_.FastForwardBy(
       base::Hours(kLockAccountReconcilorTimeoutHours / 2));
   // Create params for the second header with no authorization code.
-  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_2.signin_info->authorization_code.clear();
-  dice_params_2.signin_info->no_authorization_code = true;
+  DiceResponseParams dice_params_2;
+  dice_params_2.user_intention = DiceAction::SIGNIN;
+  dice_params_2.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_2.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo(kEmail), std::string(), true,
+       std::string()});
   dice_response_handler_->ProcessDiceHeader(
       dice_params_2, std::make_unique<TestProcessDiceHeaderDelegate>(this));
   task_environment_.FastForwardBy(
@@ -914,14 +942,19 @@ TEST_F(DiceResponseHandlerTest, CheckTimersDuringOutageinDice) {
 // on valid headers after getting a no_authorization_code header.
 TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
   // Create params for the header with no authorization code.
-  DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_1.signin_info->authorization_code.clear();
-  dice_params_1.signin_info->no_authorization_code = true;
+  DiceResponseParams dice_params_1;
+  dice_params_1.user_intention = DiceAction::SIGNIN;
+  dice_params_1.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_1.signin_info->AddAccount(
+      {GetDiceResponseParamsAccountInfo(kEmail), std::string(), true,
+       std::string()});
   dice_response_handler_->ProcessDiceHeader(
       dice_params_1, std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Create params for the valid header with an authorization code.
   DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info_2 = dice_params_2.signin_info->account_info;
+  const auto& account_info_2 =
+      dice_params_2.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id_2 = identity_manager()->PickAccountIdForAccount(
       account_info_2.gaia_id, account_info_2.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id_2));
@@ -960,12 +993,20 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
 // Checks that a SIGNIN action triggers a token exchange request when the
 // account is in authentication error.
 TEST_F(DiceResponseHandlerTest, Reauth) {
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_params.signin_info->account_info.email,
-      signin::ConsentLevel::kSignin);
-  dice_params.signin_info->account_info.gaia_id = account_info.gaia;
-  CoreAccountId account_id = account_info.account_id;
+  DiceResponseParams::AccountInfo account_info =
+      GetDiceResponseParamsAccountInfo(kEmail);
+  AccountInfo primary_account_info =
+      identity_test_env_.MakePrimaryAccountAvailable(
+          account_info.email, signin::ConsentLevel::kSignin);
+  account_info.gaia_id = primary_account_info.gaia;
+
+  DiceResponseParams dice_params;
+  dice_params.user_intention = DiceAction::SIGNIN;
+  dice_params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params.signin_info->AddAccount(
+      {account_info, kAuthorizationCode, false, kEligibleForTokenBinding});
+  CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
+      account_info.gaia_id, account_info.email);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
@@ -997,7 +1038,8 @@ TEST_F(DiceResponseHandlerTest, Reauth) {
 // Checks that a GaiaAuthFetcher failure is handled correctly.
 TEST_F(DiceResponseHandlerTest, SigninFailure) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1024,7 +1066,8 @@ TEST_F(DiceResponseHandlerTest, SigninFailure) {
 // request is already in flight.
 TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1053,11 +1096,19 @@ TEST_F(DiceResponseHandlerTest, SigninRepeatedWithSameAccount) {
 // Checks that two SIGNIN requests can happen concurrently.
 TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info_1 = dice_params_1.signin_info->account_info;
-  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  dice_params_2.signin_info->account_info.email = "other_email";
-  dice_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
-  const auto& account_info_2 = dice_params_2.signin_info->account_info;
+  const auto& account_info_1 =
+      dice_params_1.signin_info->GetInitiator()->account_info;
+  DiceResponseParams dice_params_2;
+  dice_params_2.user_intention = DiceAction::SIGNIN;
+  dice_params_2.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  dice_params_2.signin_info->AddAccount(
+      {{GaiaId("other_gaia_id"), "other_email", 0},
+       kAuthorizationCode,
+       false,
+       kEligibleForTokenBinding});
+  const auto& account_info_2 =
+      dice_params_2.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(
       account_info_1.gaia_id, account_info_1.email);
   CoreAccountId account_id_2 = identity_manager()->PickAccountIdForAccount(
@@ -1105,7 +1156,8 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
 TEST_F(DiceResponseHandlerTest,
        SigninEnableSyncDiceHeaderAfterRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1141,7 +1193,8 @@ TEST_F(DiceResponseHandlerTest,
 TEST_F(DiceResponseHandlerTest,
        SigninEnableSyncDiceHeaderBeforeRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1200,7 +1253,8 @@ TEST_F(DiceResponseHandlerTest,
 
 TEST_F(DiceResponseHandlerTest, Timeout) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1227,7 +1281,8 @@ TEST_F(DiceResponseHandlerTest, Timeout) {
 // the timeout expires. Tests the scenario from https://crbug.com/1290214
 TEST_F(DiceResponseHandlerTest, DeleteBeforeTimeout) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  const auto& account_info = dice_params.signin_info->account_info;
+  const auto& account_info =
+      dice_params.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account_info.gaia_id, account_info.email);
   ASSERT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
@@ -1358,11 +1413,19 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
   // User starts signin in the web with two accounts.
   DiceResponseParams signout_params_1 = MakeDiceParams(DiceAction::SIGNOUT);
   DiceResponseParams signin_params_1 = MakeDiceParams(DiceAction::SIGNIN);
-  DiceResponseParams signin_params_2 = MakeDiceParams(DiceAction::SIGNIN);
-  signin_params_2.signin_info->account_info.email = "other_email";
-  signin_params_2.signin_info->account_info.gaia_id = GaiaId("other_gaia_id");
-  const auto& signin_account_info_1 = signin_params_1.signin_info->account_info;
-  const auto& signin_account_info_2 = signin_params_2.signin_info->account_info;
+  DiceResponseParams signin_params_2;
+  signin_params_2.user_intention = DiceAction::SIGNIN;
+  signin_params_2.signin_info =
+      std::make_unique<DiceResponseParams::SigninInfo>();
+  signin_params_2.signin_info->AddAccount(
+      {{GaiaId("other_gaia_id"), "other_email", 0},
+       kAuthorizationCode,
+       false,
+       kEligibleForTokenBinding});
+  const auto& signin_account_info_1 =
+      signin_params_1.signin_info->GetInitiator()->account_info;
+  const auto& signin_account_info_2 =
+      signin_params_2.signin_info->GetInitiator()->account_info;
   CoreAccountId account_id_1 = identity_manager()->PickAccountIdForAccount(
       signin_account_info_1.gaia_id, signin_account_info_1.email);
   CoreAccountId account_id_2 = identity_manager()->PickAccountIdForAccount(

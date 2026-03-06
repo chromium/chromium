@@ -65,13 +65,45 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
   DiceResponseParams params;
   ResponseHeaderDictionary header_dictionary =
       ParseAccountConsistencyResponseHeader(header_value);
-  if (header_dictionary.count(kSigninActionAttrName) != 1u) {
+  auto action_it = header_dictionary.find(kSigninActionAttrName);
+  if (action_it == header_dictionary.end()) {
     return params;
   }
 
-  DiceResponseParams::AccountInfo* info = nullptr;
-  switch (GetDiceActionFromHeader(
-      header_dictionary.find(kSigninActionAttrName)->second)) {
+  DiceResponseParams::AccountInfo account_info;
+  std::string authorization_code;
+  bool no_authorization_code = false;
+  std::string supported_algorithms_for_token_binding;
+
+  ResponseHeaderDictionary::const_iterator it = header_dictionary.begin();
+  for (; it != header_dictionary.end(); ++it) {
+    const std::string key_name(it->first);
+    const std::string value(it->second);
+    if (key_name == kSigninActionAttrName) {
+      // Do nothing, handled separately below.
+    } else if (key_name == kSigninIdAttrName) {
+      account_info.gaia_id = GaiaId(value);
+    } else if (key_name == kSigninEmailAttrName) {
+      account_info.email = value;
+    } else if (key_name == kSigninAuthUserAttrName) {
+      bool parse_success =
+          base::StringToInt(value, &account_info.session_index);
+      if (!parse_success) {
+        account_info.session_index =
+            DiceResponseParams::AccountInfo::kInvalidSessionIndex;
+      }
+    } else if (key_name == kSigninAuthorizationCodeAttrName) {
+      authorization_code = value;
+    } else if (key_name == kSigninNoAuthorizationCodeAttrName) {
+      no_authorization_code = true;
+    } else if (key_name == kSigninEligibleForTokenBindingAttrName) {
+      supported_algorithms_for_token_binding = value;
+    } else {
+      DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
+    }
+  }
+
+  switch (GetDiceActionFromHeader(action_it->second)) {
     case DiceAction::NONE:
     case DiceAction::SIGNOUT:
       DLOG(WARNING) << "Only SIGNIN and ENABLE_SYNC are supported through "
@@ -80,62 +112,28 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     case DiceAction::SIGNIN:
       params.user_intention = DiceAction::SIGNIN;
       params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
-      info = &params.signin_info->account_info;
+      params.signin_info->AddAccount(
+          {std::move(account_info), std::move(authorization_code),
+           no_authorization_code,
+           std::move(supported_algorithms_for_token_binding)});
       break;
     case DiceAction::ENABLE_SYNC:
       params.user_intention = DiceAction::ENABLE_SYNC;
       params.enable_sync_info =
           std::make_unique<DiceResponseParams::EnableSyncInfo>();
-      info = &params.enable_sync_info->account_info;
-      break;
-  }
-
-  ResponseHeaderDictionary::const_iterator it = header_dictionary.begin();
-  for (; it != header_dictionary.end(); ++it) {
-    const std::string key_name(it->first);
-    const std::string value(it->second);
-    if (key_name == kSigninActionAttrName) {
-      // Do nothing, this was already parsed.
-    } else if (key_name == kSigninIdAttrName) {
-      info->gaia_id = GaiaId(value);
-    } else if (key_name == kSigninEmailAttrName) {
-      info->email = value;
-    } else if (key_name == kSigninAuthUserAttrName) {
-      bool parse_success = base::StringToInt(value, &info->session_index);
-      if (!parse_success) {
-        info->session_index =
-            DiceResponseParams::AccountInfo::kInvalidSessionIndex;
-      }
-    } else if (key_name == kSigninAuthorizationCodeAttrName) {
-      if (params.signin_info) {
-        params.signin_info->authorization_code = value;
-      } else {
+      params.enable_sync_info->account_info = std::move(account_info);
+      if (!authorization_code.empty()) {
         DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
       }
-    } else if (key_name == kSigninNoAuthorizationCodeAttrName) {
-      if (params.signin_info) {
-        params.signin_info->no_authorization_code = true;
-      } else {
+      if (no_authorization_code) {
         DLOG(WARNING)
             << "No authorization code header expected only with SIGNIN action";
       }
-    } else if (key_name == kSigninEligibleForTokenBindingAttrName) {
-      if (params.signin_info) {
-        params.signin_info->supported_algorithms_for_token_binding = value;
-      } else {
+      if (!supported_algorithms_for_token_binding.empty()) {
         DLOG(WARNING) << "Eligible for token binding attribute expected only "
                          "with SIGNIN action";
       }
-    } else {
-      DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
-    }
-  }
-
-  if (params.signin_info && params.signin_info->IsValid()) {
-    // Uma histogram that records whether the authorization code was present or
-    // not.
-    base::UmaHistogramBoolean("Signin.DiceAuthorizationCode",
-                              !params.signin_info->authorization_code.empty());
+      break;
   }
 
   return params;
