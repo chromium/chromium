@@ -119,6 +119,7 @@ def optimize_js(primary_script,
           node_modules.PathToTerser(),
           rollup_processed_file,
           '--mangle',
+          '--source-map',
           '--output',
           js_out_file,
       ])

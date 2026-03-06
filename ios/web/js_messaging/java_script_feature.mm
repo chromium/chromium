@@ -192,7 +192,9 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   if (origin_filter_ != OriginFilter::kPublic) {
     script = MakeScriptPrivate(GetOriginList(origin_filter_), script);
   }
-  return script;
+
+  return [NSString
+      stringWithFormat:@"//# sourceURL=%@.js\n%@", injection_token_, script];
 }
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
