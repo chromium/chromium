@@ -1,0 +1,22 @@
+<!--
+@WAIT-FOR:Done
+-->
+
+<body>
+  <img id='image' src="pipe.jpg" alt="pipe">
+  Some Text
+  <button id='button1'>Button</button1>
+  <button id='button2'>Button</button2>
+</body>
+
+<script>
+  var selection = window.getSelection();
+  var selectionRange = document.createRange();
+  var image = document.getElementById('image')
+  var button2 = document.getElementById('button2')
+  selectionRange.setStartBefore(image);
+  selectionRange.setEndBefore(button2);
+  selection.removeAllRanges();
+  selection.addRange(selectionRange);
+  document.body.appendChild(document.createTextNode("Done"));
+</script>

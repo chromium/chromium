@@ -5162,6 +5162,8 @@ data/accessibility/html/node-changed-crash-in-editable-text-expected-fuchsia.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-mac.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-uia-win.txt
 data/accessibility/html/node-changed-crash-in-editable-text-expected-win.txt
+data/accessibility/html/non-text-selection-expected-android-external.txt
+data/accessibility/html/non-text-selection.html
 data/accessibility/html/noscript-expected-android.txt
 data/accessibility/html/noscript-expected-auralinux.txt
 data/accessibility/html/noscript-expected-fuchsia.txt

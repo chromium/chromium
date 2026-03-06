@@ -190,7 +190,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                          int32_t id,
                          const base::android::JavaRef<jstring>& value);
   void SetSelection(JNIEnv* env, int32_t id, int32_t start, int32_t end);
-  void SetExtendedSelection(JNIEnv* env,
+  bool SetExtendedSelection(JNIEnv* env,
                             int32_t id,
                             int32_t start_node_id,
                             int32_t start_node_offset,
@@ -430,6 +430,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
   void HandleHover(int32_t unique_id);
   void HandleNavigate(int32_t root_id);
+  void HandleInitialLoadComplete(int32_t root_id);
   void UpdateMaxNodesInCache();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
   void ValidateA11yCacheForExperiment();

@@ -228,6 +228,9 @@ public class WebContentsAccessibilityTest {
      */
     /* @Before */
     protected void setupTestWithHTML(String html) {
+        // To prevent flakes, suppress window content change events from page load.
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFramework();
@@ -237,6 +240,9 @@ public class WebContentsAccessibilityTest {
     /* @Before */
     protected void setupTestWithHTMLForFormControlsMode(
             String html, boolean includeEventMaskByDefault) {
+        // To prevent flakes, suppress window content change events from page load.
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForFormControlsMode(includeEventMaskByDefault);
@@ -245,6 +251,9 @@ public class WebContentsAccessibilityTest {
 
     /* @Before */
     protected void setupTestWithHTMLForBasicMode(String html, boolean includeEventMaskByDefault) {
+        // To prevent flakes, suppress window content change events from page load.
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForBasicMode(includeEventMaskByDefault);
@@ -254,6 +263,9 @@ public class WebContentsAccessibilityTest {
     /* @Before */
     protected void setupTestWithHTMLForCompleteMode(
             String html, boolean includeEventMaskByDefault) {
+        // To prevent flakes, suppress window content change events from page load.
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFrameworkForCompleteMode(includeEventMaskByDefault);

@@ -2426,6 +2426,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_nonTextSelection() {
+        performHtmlTest("non-text-selection.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_object() {
         performHtmlTest("object.html");
     }

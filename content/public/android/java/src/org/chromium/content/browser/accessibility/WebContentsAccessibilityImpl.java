@@ -201,6 +201,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private final AccessibilityNodeInfoBuilder mAccessibilityNodeInfoBuilder;
     private boolean mHasFinishedLatestAccessibilitySnapshot;
     private boolean mPendingSetSequentialFocus;
+    private boolean mDidSendAnyEvent;
+    private int mPendingLoadCompleteId = View.NO_ID;
+    private static boolean sSuppressLoadCompleteEventForTesting;
 
     // Observer for WebContents, used to update state when |this| is shown/hidden.
     private @Nullable WebContentsObserver mWebContentsObserver;
@@ -644,6 +647,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;
     }
 
+    public static void suppressLoadCompleteEventForTesting() {
+        sSuppressLoadCompleteEventForTesting = true;
+    }
+
     public void setThrottleDelayForTesting(Map<Integer, Integer> eventThrottleDelays) {
         mEventDispatcher.setEventThrottleDelays(eventThrottleDelays);
     }
@@ -682,6 +689,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     public boolean hasFinishedLatestAccessibilitySnapshotForTesting() {
         return mHasFinishedLatestAccessibilitySnapshot;
+    }
+
+    public boolean setExtendedSelectionForTesting( // IN-TEST
+            int id, int startNodeId, int startNodeOffset, int endNodeId, int endNodeOffset) {
+        return WebContentsAccessibilityImplJni.get()
+                .setExtendedSelection(
+                        mNativeObj, id, startNodeId, startNodeOffset, endNodeId, endNodeOffset);
     }
 
     @CalledByNative
@@ -1612,7 +1626,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 return true;
             }
 
-            WebContentsAccessibilityImplJni.get()
+            return WebContentsAccessibilityImplJni.get()
                     .setExtendedSelection(
                             mNativeObj,
                             virtualViewId,
@@ -1620,7 +1634,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             /* startNodeOffset= */ selectionStart.second,
                             /* endNodeId= */ selectionEnd.first,
                             /* endNodeOffset= */ selectionEnd.second);
-            return true;
         } else {
             // This should never be hit, so do the equivalent of NOTREACHED;
             assert false : "AccessibilityNodeProvider called performAction with unexpected action.";
@@ -1733,6 +1746,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!mShouldFocusOnPageLoad) return;
         if (mAccessibilityFocusId != View.NO_ID) {
             moveAccessibilityFocusToId(mAccessibilityFocusId);
+        }
+
+        if (mPendingLoadCompleteId != View.NO_ID) {
+            handleInitialLoadComplete(mPendingLoadCompleteId);
+            mPendingLoadCompleteId = View.NO_ID;
         }
     }
 
@@ -2058,6 +2076,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     private void sendAccessibilityEvent(int virtualViewId, int eventType) {
+        mDidSendAnyEvent = true;
+
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
         // since there's no web-specific information to attach.
         if (virtualViewId == View.NO_ID) {
@@ -2234,6 +2254,19 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleInitialLoadComplete(int rootId) {
+        if (mDidSendAnyEvent || sSuppressLoadCompleteEventForTesting) return;
+
+        if (!isNativeInitialized() || !mNotifyFrameInfoInitializedCalled) {
+            mPendingLoadCompleteId = rootId;
+        }
+
+        if (rootId != View.NO_ID) {
+            handleContentChanged(rootId, true);
+        }
+    }
+
+    @CalledByNative
     private void handleFocusChanged(int id, boolean isRootOrFrameRoot) {
         // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and
         // we should avoid moving accessibility focus when the page loads, but more
@@ -2369,6 +2402,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mCurrentRootId = newRootId;
         // Invalidate the host, since its child is now gone.
         sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
+        mDidSendAnyEvent = false;
     }
 
     @CalledByNative
@@ -2525,6 +2559,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (mTracker != null) mTracker.addEvent(event, subtype);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
+                mDidSendAnyEvent = true;
             } catch (IllegalStateException ignored) {
                 // During boot-up of some content shell tests, events will erroneously be sent even
                 // though the AccessibilityManager is not enabled, resulting in a crash.
@@ -2799,7 +2834,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         void setSelection(long nativeWebContentsAccessibilityAndroid, int id, int start, int end);
 
-        void setExtendedSelection(
+        boolean setExtendedSelection(
                 long nativeWebContentsAccessibilityAndroid,
                 int id,
                 int startNodeId,
