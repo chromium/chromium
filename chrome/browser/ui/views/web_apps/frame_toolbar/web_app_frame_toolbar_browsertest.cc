@@ -2588,8 +2588,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 }
 
-// TODO(crbug.com/459532445): Flaky on Linux Wayland.
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+// TODO(crbug.com/459532445): Flaky on Linux Wayland and mac.
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
 #define MAYBE_FullscreenAndRestoreWindowWithApi \
   DISABLED_FullscreenAndRestoreWindowWithApi
 #else
