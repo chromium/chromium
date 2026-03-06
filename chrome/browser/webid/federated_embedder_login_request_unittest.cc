@@ -56,7 +56,7 @@ TEST_F(FederatedEmbedderLoginRequestTest, Timeout) {
   url::Origin idp_origin = url::Origin::Create(idp_url);
   std::string account_id = "account_id123";
   base::MockCallback<
-      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
       mock_callback;
 
   FederatedEmbedderLoginRequest::Set(web_contents(), idp_origin, account_id,
@@ -74,10 +74,10 @@ TEST_F(FederatedEmbedderLoginRequestTest, TimeoutAfterSecondSet) {
   url::Origin idp_origin = url::Origin::Create(idp_url);
   std::string account_id = "account_id123";
   base::MockCallback<
-      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
       mock_callback1;
   base::MockCallback<
-      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
       mock_callback2;
 
   FederatedEmbedderLoginRequest::Set(web_contents(), idp_origin, account_id,
@@ -98,12 +98,12 @@ TEST_F(FederatedEmbedderLoginRequestTest, TimeoutAfterSecondSet) {
   EXPECT_EQ(FederatedEmbedderLoginRequest::Get(web_contents()), nullptr);
 }
 
-TEST_F(FederatedEmbedderLoginRequestTest, NoTimeoutIfCallbackRun) {
+TEST_F(FederatedEmbedderLoginRequestTest, ContinuationIsTerminal) {
   GURL idp_url("https://idp.example");
   url::Origin idp_origin = url::Origin::Create(idp_url);
   std::string account_id = "account_id123";
   base::MockCallback<
-      base::RepeatingCallback<void(content::webid::FederatedLoginResult)>>
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>>
       mock_callback;
 
   FederatedEmbedderLoginRequest::Set(web_contents(), idp_origin, account_id,
@@ -118,14 +118,8 @@ TEST_F(FederatedEmbedderLoginRequestTest, NoTimeoutIfCallbackRun) {
       content::webid::FederatedLoginResult::kContinuation);
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
-  EXPECT_CALL(mock_callback, Run).Times(0);
-  task_environment()->FastForwardBy(base::Seconds(30));
-  EXPECT_NE(FederatedEmbedderLoginRequest::Get(web_contents()), nullptr);
-
-  EXPECT_CALL(mock_callback,
-              Run(content::webid::FederatedLoginResult::kSuccess));
-  request->OnFederatedResultReceived(
-      content::webid::FederatedLoginResult::kSuccess);
+  // Request should be unset after kContinuation.
+  EXPECT_EQ(FederatedEmbedderLoginRequest::Get(web_contents()), nullptr);
 }
 
 TEST_F(FederatedEmbedderLoginRequestTest, OpenerCheck) {

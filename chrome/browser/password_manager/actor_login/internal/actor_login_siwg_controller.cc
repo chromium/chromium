@@ -98,9 +98,8 @@ void ActorLoginSiwgController::StartFederatedLogin(
   source->SetEmbedderLoginRequest(
       credential.federation_detail->idp_origin,
       credential.federation_detail->account_id,
-      base::BindRepeating(
-          &ActorLoginSiwgController::OnFederatedLoginResultReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ActorLoginSiwgController::OnFederatedLoginResultReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // There may be an existing FedCM dialog; if so, select an account in that
   // dialog instead of clicking the signin button.

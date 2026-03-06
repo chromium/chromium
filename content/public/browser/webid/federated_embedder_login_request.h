@@ -31,7 +31,7 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
       WebContents* web_contents,
       const url::Origin& idp_origin,
       const std::string& account_id,
-      base::RepeatingCallback<void(FederatedLoginResult)> callback);
+      base::OnceCallback<void(FederatedLoginResult)> callback);
   FederatedEmbedderLoginRequest(const FederatedEmbedderLoginRequest&) = delete;
   FederatedEmbedderLoginRequest& operator=(
       const FederatedEmbedderLoginRequest&) = delete;
@@ -47,7 +47,7 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
   static void Set(WebContents* web_contents,
                   const url::Origin& idp_origin,
                   const std::string& account_id,
-                  base::RepeatingCallback<void(FederatedLoginResult)> callback);
+                  base::OnceCallback<void(FederatedLoginResult)> callback);
 
   // Retrieves the embedder login request for the given WebContents. Checks the
   // opener chain if not found in the given WebContents.
@@ -61,10 +61,9 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
 
   url::Origin idp_origin_;
   std::string account_id_;
-  base::RepeatingCallback<void(FederatedLoginResult)>
+  base::OnceCallback<void(FederatedLoginResult)>
       on_federated_result_received_callback_;
   base::OneShotTimer timeout_timer_;
-  bool has_run_callback_ = false;
 };
 
 }  // namespace content::webid

@@ -47,7 +47,7 @@ class CONTENT_EXPORT IdentityCredentialSourceImpl
   void SetEmbedderLoginRequest(
       const url::Origin& idp_origin,
       const std::string& account_id,
-      base::RepeatingCallback<void(FederatedLoginResult)> callback) override;
+      base::OnceCallback<void(FederatedLoginResult)> callback) override;
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> network_manager);

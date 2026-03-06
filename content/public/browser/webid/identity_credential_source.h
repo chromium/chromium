@@ -63,7 +63,7 @@ class CONTENT_EXPORT IdentityCredentialSource {
   virtual void SetEmbedderLoginRequest(
       const url::Origin& idp_origin,
       const std::string& account_id,
-      base::RepeatingCallback<void(FederatedLoginResult)> callback) = 0;
+      base::OnceCallback<void(FederatedLoginResult)> callback) = 0;
 
   // Returns the a data source for embedder initiated login.
   static IdentityCredentialSource* FromPage(Page& page);

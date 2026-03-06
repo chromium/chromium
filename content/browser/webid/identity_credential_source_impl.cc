@@ -167,7 +167,7 @@ bool IdentityCredentialSourceImpl::SelectAccount(
 void IdentityCredentialSourceImpl::SetEmbedderLoginRequest(
     const url::Origin& idp_origin,
     const std::string& account_id,
-    base::RepeatingCallback<void(FederatedLoginResult)> callback) {
+    base::OnceCallback<void(FederatedLoginResult)> callback) {
   FederatedEmbedderLoginRequest::Set(
       WebContents::FromRenderFrameHost(&render_frame_host()), idp_origin,
       account_id, std::move(callback));

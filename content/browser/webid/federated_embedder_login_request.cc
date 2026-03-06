@@ -22,7 +22,7 @@ FederatedEmbedderLoginRequest::FederatedEmbedderLoginRequest(
     WebContents* web_contents,
     const url::Origin& idp_origin,
     const std::string& account_id,
-    base::RepeatingCallback<void(FederatedLoginResult)> callback)
+    base::OnceCallback<void(FederatedLoginResult)> callback)
     : WebContentsUserData<FederatedEmbedderLoginRequest>(*web_contents),
       idp_origin_(idp_origin),
       account_id_(account_id),
@@ -36,22 +36,13 @@ FederatedEmbedderLoginRequest::~FederatedEmbedderLoginRequest() = default;
 
 void FederatedEmbedderLoginRequest::OnFederatedResultReceived(
     FederatedLoginResult result) {
-  // No need to check `has_run_callback` here since currently we may receive a
-  // result for continuation and later a final result.
-  // TODO(crbug.com/482015907): This will change, as we want continuation to be
-  // a terminal state. Then the callback will be a OnceCallback.
-  has_run_callback_ = true;
-  on_federated_result_received_callback_.Run(result);
-  if (result != FederatedLoginResult::kContinuation) {
-    Unset();
-  }
+  std::move(on_federated_result_received_callback_).Run(result);
+  Unset();
 }
 
 void FederatedEmbedderLoginRequest::OnTimeout() {
-  if (has_run_callback_) {
-    return;
-  }
-  on_federated_result_received_callback_.Run(FederatedLoginResult::kTimeout);
+  std::move(on_federated_result_received_callback_)
+      .Run(FederatedLoginResult::kTimeout);
   Unset();
 }
 
@@ -60,7 +51,7 @@ void FederatedEmbedderLoginRequest::Set(
     WebContents* web_contents,
     const url::Origin& idp_origin,
     const std::string& account_id,
-    base::RepeatingCallback<void(FederatedLoginResult)> callback) {
+    base::OnceCallback<void(FederatedLoginResult)> callback) {
   web_contents->SetUserData(
       FederatedEmbedderLoginRequest::UserDataKey(),
       std::make_unique<FederatedEmbedderLoginRequest>(

@@ -45,13 +45,12 @@ class MockIdentityCredentialSource
               SelectAccount,
               (const url::Origin&, const std::string&),
               (override));
-  MOCK_METHOD(
-      void,
-      SetEmbedderLoginRequest,
-      (const url::Origin&,
-       const std::string&,
-       base::RepeatingCallback<void(content::webid::FederatedLoginResult)>),
-      (override));
+  MOCK_METHOD(void,
+              SetEmbedderLoginRequest,
+              (const url::Origin&,
+               const std::string&,
+               base::OnceCallback<void(content::webid::FederatedLoginResult)>),
+              (override));
   MOCK_METHOD(bool, HasPendingRequest, (), (override));
 };
 
