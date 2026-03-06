@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -71,8 +72,9 @@ TEST_F(NamedGuideTest, TestGuideOnAncestor) {
 TEST_F(NamedGuideTest, TestConstrainedView) {
   GuideName* test_guide = @"NamedGuideTest";
 
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, 100, 100);
   UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [window addSubview:view];
   [view addSubview:[[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 100)]];
@@ -97,8 +99,9 @@ TEST_F(NamedGuideTest, TestConstrainedView) {
 TEST_F(NamedGuideTest, TestConstrainedFrame) {
   GuideName* test_guide = @"NamedGuideTest";
 
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, 200, 200);
   UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [window addSubview:view];
 
@@ -127,8 +130,9 @@ TEST_F(NamedGuideTest, TestConstrainedFrame) {
 // nullify other properties.
 TEST_F(NamedGuideTest, TestConstrainedViewFrameMutex) {
   GuideName* test_guide = @"NamedGuideTest";
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, 100, 100);
   UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [window addSubview:view];
   UIView* childView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 100)];
@@ -156,8 +160,9 @@ TEST_F(NamedGuideTest, TestConstrainedViewFrameMutex) {
 TEST_F(NamedGuideTest, TestRemoveConstrainedView) {
   GuideName* test_guide = @"NamedGuideTest";
 
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, 100, 100);
   UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   [window addSubview:view];
   UIView* subview = [[UIView alloc] initWithFrame:view.bounds];

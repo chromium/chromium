@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
