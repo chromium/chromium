@@ -12,8 +12,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education::test {
 
@@ -23,7 +23,7 @@ struct TestPreconditionListProvider::PreconditionData {
   void operator=(const PreconditionData&) = delete;
   ~PreconditionData() = default;
 
-  FeaturePromoPrecondition::Identifier identifier;
+  FeaturePromoPrecondition::PreconditionIdentifier identifier;
   std::string description;
   FeaturePromoResult default_result = FeaturePromoResult::Success();
   std::map<const base::Feature*, FeaturePromoResult> overrides;
@@ -38,13 +38,15 @@ class TestPreconditionListProvider::TestPrecondition
   ~TestPrecondition() override = default;
 
   // FeaturePromoPrecondition:
-  Identifier GetIdentifier() const override { return data_->identifier; }
+  PreconditionIdentifier GetIdentifier() const override {
+    return data_->identifier;
+  }
   const std::string& GetDescription() const override {
     return data_->description;
   }
 
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection&) const override {
+      UnownedTypedDataCollection&) const override {
     const auto* result =
         base::FindOrNull(data_->overrides, &iph_feature_.get());
     return result ? *result : data_->default_result;
@@ -71,7 +73,7 @@ void TestPreconditionListProvider::ClearExpectedPromoForFutureQueries() {
 }
 
 void TestPreconditionListProvider::Add(
-    FeaturePromoPrecondition::Identifier identifier,
+    FeaturePromoPrecondition::PreconditionIdentifier identifier,
     std::string description,
     FeaturePromoResult default_result) {
   auto data = std::make_unique<PreconditionData>();
@@ -82,7 +84,7 @@ void TestPreconditionListProvider::Add(
 }
 
 void TestPreconditionListProvider::SetDefault(
-    FeaturePromoPrecondition::Identifier id,
+    FeaturePromoPrecondition::PreconditionIdentifier id,
     FeaturePromoResult default_result) {
   bool found = false;
   for (const auto& entry : data_) {
@@ -97,7 +99,7 @@ void TestPreconditionListProvider::SetDefault(
 
 void TestPreconditionListProvider::SetForFeature(
     const base::Feature& iph_feature,
-    FeaturePromoPrecondition::Identifier id,
+    FeaturePromoPrecondition::PreconditionIdentifier id,
     FeaturePromoResult result) {
   bool found = false;
   for (auto& entry : data_) {

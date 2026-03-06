@@ -98,8 +98,9 @@ void BrowserFeaturePromoController::AddPreconditionProviders(
           // The rest of the preconditions are shared. This helper adds a
           // shared condition if it's not excluded by the promo specification.
           auto maybe_add_shared_precondition =
-              [&spec, &preconditions, &browser_context](
-                  user_education::FeaturePromoPrecondition::Identifier id) {
+              [&spec, &preconditions,
+               &browser_context](user_education::FeaturePromoPrecondition::
+                                     PreconditionIdentifier id) {
                 if (!spec.is_exempt_from(id)) {
                   preconditions.AddPrecondition(
                       browser_context->GetSharedPrecondition(id));

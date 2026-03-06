@@ -594,8 +594,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // allowlisting; use sparingly. Note that only certain preconditions may be
   // exempted; attempting to exempt other preconditions will have no effect.
   FeaturePromoSpecification& AddPreconditionExemption(
-      FeaturePromoPrecondition::Identifier exempt_precondition);
-  bool is_exempt_from(FeaturePromoPrecondition::Identifier precondition) const {
+      FeaturePromoPrecondition::PreconditionIdentifier exempt_precondition);
+  bool is_exempt_from(
+      FeaturePromoPrecondition::PreconditionIdentifier precondition) const {
     return exempt_preconditions_.contains(precondition);
   }
 
@@ -733,7 +734,8 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   AdditionalConditions additional_conditions_;
 
   // Preconditions this promo is exempt from. Requires explicit allowlisting.
-  std::set<FeaturePromoPrecondition::Identifier> exempt_preconditions_;
+  std::set<FeaturePromoPrecondition::PreconditionIdentifier>
+      exempt_preconditions_;
 
   // For rotating promos, maintain a list of sub-promos.
   RotatingPromos rotating_promos_;

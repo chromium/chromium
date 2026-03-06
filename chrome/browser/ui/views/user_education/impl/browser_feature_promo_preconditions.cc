@@ -61,7 +61,7 @@ WindowActivePrecondition::WindowActivePrecondition()
 WindowActivePrecondition::~WindowActivePrecondition() = default;
 
 user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection& data) const {
+    user_education::UnownedTypedDataCollection& data) const {
   if (user_education::FeaturePromoControllerImpl::
           active_window_check_blocked()) {
     return user_education::FeaturePromoResult::Success();
@@ -102,7 +102,7 @@ ContentNotFullscreenPrecondition::~ContentNotFullscreenPrecondition() = default;
 
 user_education::FeaturePromoResult
 ContentNotFullscreenPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection& data) const {
+    user_education::UnownedTypedDataCollection& data) const {
   auto* const fullscreen_controller = browser_->GetFeatures()
                                           .exclusive_access_manager()
                                           ->fullscreen_controller();
@@ -122,7 +122,7 @@ OmniboxNotOpenPrecondition::~OmniboxNotOpenPrecondition() = default;
 
 user_education::FeaturePromoResult
 OmniboxNotOpenPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   return browser_view_->GetLocationBar()->GetOmniboxController()->IsPopupOpen()
              ? user_education::FeaturePromoResult::kBlockedByUi
              : user_education::FeaturePromoResult::Success();
@@ -137,7 +137,7 @@ ToolbarNotCollapsedPrecondition::~ToolbarNotCollapsedPrecondition() = default;
 
 user_education::FeaturePromoResult
 ToolbarNotCollapsedPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   if (const auto* const controller =
           browser_view_->toolbar()->toolbar_controller()) {
     if (controller->InOverflowMode()) {
@@ -156,7 +156,7 @@ BrowserNotClosingPrecondition::~BrowserNotClosingPrecondition() = default;
 
 user_education::FeaturePromoResult
 BrowserNotClosingPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   if (browser_view_->browser()->capabilities()->IsAttemptingToCloseBrowser() ||
       browser_view_->GetWidget()->IsClosed()) {
     return user_education::FeaturePromoResult::kBlockedByContext;
@@ -174,7 +174,7 @@ NoCriticalNoticeShowingPrecondition::~NoCriticalNoticeShowingPrecondition() =
 
 user_education::FeaturePromoResult
 NoCriticalNoticeShowingPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   // Turn off IPH while a required privacy interstitial is visible or pending.
   auto* const privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(browser_view_->GetProfile());
@@ -231,7 +231,7 @@ void UserNotActivePrecondition::OnEvent(const ui::Event& event) {
 }
 
 user_education::FeaturePromoResult UserNotActivePrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   // Only do check if min idle time is nonzero and positive; otherwise this is a
   // no-op. Explicitly verify this in case of non-monotonic clock weirdness.
   const auto min_idle_time =
@@ -266,7 +266,7 @@ EnterprisePolicyNotBlockingPrecondition::
 
 user_education::FeaturePromoResult
 EnterprisePolicyNotBlockingPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   return DoesEnterprisePolicyBlockPromotions()
              ? user_education::FeaturePromoResult::kBlockedByContext
              : user_education::FeaturePromoResult::Success();
@@ -283,7 +283,7 @@ ActorNotActuatingActiveTabPrecondition::
 
 user_education::FeaturePromoResult
 ActorNotActuatingActiveTabPrecondition::CheckPrecondition(
-    ui::UnownedTypedDataCollection&) const {
+    user_education::UnownedTypedDataCollection&) const {
   auto* tab = browser_window_interface_->GetActiveTabInterface();
   if (!tab) {
     return user_education::FeaturePromoResult::Success();

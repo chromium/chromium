@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_INTERACTION_TYPED_DATA_H_
-#define UI_BASE_INTERACTION_TYPED_DATA_H_
+#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_H_
+#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_H_
 
 #include <concepts>
 
@@ -12,64 +12,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/is_instantiation.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
 
 // `TypedData<T>` (along with the classes in typed_data_collection.h) allow
 // storing of collections of arbitrary data which can be retrieved via
-// `TypedIdentifier<T>`.
-//
-// Example:
-// ```
-//   DECLARE_TYPED_IDENTIFIER_VALUE(int, kIntegerProperty);
-//   DECLARE_TYPED_IDENTIFIER_VALUE(std::string, kStringProperty);
-//
-//   // ...
-//
-//   OwnedTypedDataCollection collection;
-//   collection.Emplace(kIntegerProperty, 3);
-//   collection.Emplace(kStringProperty, "foo");
-//
-//   LOG(INFO) << "Integer property: "
-//             << collection[kIntegerProperty]
-//             << " String property: "
-//             << collection[kStringProperty];
-// ```
-//
-// This code would output the following:
-// ```
-//  Integer property: 3 String property: foo
-// ```
-//
-// You can also add typed data in an owned collection or which is owned by some
-// other class or scope to an unowned collection for easy lookup:
-//
-// ```
-//   OwnedTypedDataCollection collection;
-//   collection.Emplace(kIntegerProperty, 2);
-//
-//   TypedData string_data(kStringProperty, "bar");
-//
-//   UnownedTypedDataCollection lookup;
-//   lookup.AddAll(collection);
-//   lookup.Add(string_data);
-//
-//   LOG(INFO) << "Integer property: "
-//             << lookup[kIntegerProperty]
-//             << " String property: "
-//             << lookup[kStringProperty];
-// ```
-//
-// This code would output the following:
-// ```
-//  Integer property: 2 String property: bar
-// ```
+// `TypedIdentifier`.
 //
 // The only restriction on unowned collections is that they must be destroyed
 // before the data they reference, or ReleaseAllReferences() must be called.
 // This avoids UAF violations with raw_ptr/raw_ref.
 
-namespace ui {
+namespace user_education {
 
 template <typename T>
 class TypedData;
@@ -77,29 +30,31 @@ class TypedData;
 // Base class for typed data that can be stored in a typed data collection and
 // looked up by `TypedIdentifier<T>`. This base class does not actually contain
 // the data, but allows for polymorphism.
-class COMPONENT_EXPORT(UI_BASE_INTERACTION) TypedDataBase {
+class TypedDataBase {
  public:
-  using Identifier = ElementIdentifier;
+  DECLARE_UNIQUE_IDENTIFIER_TYPE(UntypedIdentifier);
 
   virtual ~TypedDataBase() = default;
 
-  Identifier identifier() const { return identifier_; }
+  UntypedIdentifier identifier() const { return identifier_; }
 
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
-  TypedData<T>& AsTyped(TypedIdentifierOld<T> id);
+  TypedData<T>& AsTyped(ui::TypedIdentifier<UntypedIdentifier, T> id);
 
   // Retrieves this object as a typed object. The identifier must match.
   template <typename T>
-  const TypedData<T>& AsTyped(TypedIdentifierOld<T> id) const;
+  const TypedData<T>& AsTyped(
+      ui::TypedIdentifier<UntypedIdentifier, T> id) const;
 
  protected:
   TypedDataBase() = default;
-  explicit TypedDataBase(Identifier identifier) : identifier_(identifier) {}
+  explicit TypedDataBase(UntypedIdentifier identifier)
+      : identifier_(identifier) {}
   TypedDataBase(TypedDataBase&& other) noexcept = default;
 
  private:
-  const Identifier identifier_;
+  const UntypedIdentifier identifier_;
 };
 
 // Represents typed data that can be put into collections and retrieved via
@@ -117,7 +72,8 @@ class TypedData : public TypedDataBase {
 
   // The payload `data_` is constructed in place in the constructor.
   template <typename... Args>
-  explicit TypedData(TypedIdentifierOld<T> identifier, Args&&... args)
+  explicit TypedData(ui::TypedIdentifier<UntypedIdentifier, T> identifier,
+                     Args&&... args)
       : TypedDataBase(identifier.identifier()),
         data_(std::forward<Args>(args)...) {}
 
@@ -132,8 +88,8 @@ class TypedData : public TypedDataBase {
   T* get() { return &data_; }
   const T* get() const { return &data_; }
 
-  TypedIdentifierOld<T> typed_identifier() const {
-    return TypedIdentifierOld<T>(identifier());
+  ui::TypedIdentifier<UntypedIdentifier, T> typed_identifier() const {
+    return ui::TypedIdentifier<UntypedIdentifier, T>(identifier());
   }
 
  private:
@@ -143,17 +99,19 @@ class TypedData : public TypedDataBase {
 // Template implementation.
 
 template <typename T>
-TypedData<T>& TypedDataBase::AsTyped(TypedIdentifierOld<T> id) {
+TypedData<T>& TypedDataBase::AsTyped(
+    ui::TypedIdentifier<UntypedIdentifier, T> id) {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<TypedData<T>*>(this);
 }
 
 template <typename T>
-const TypedData<T>& TypedDataBase::AsTyped(TypedIdentifierOld<T> id) const {
+const TypedData<T>& TypedDataBase::AsTyped(
+    ui::TypedIdentifier<UntypedIdentifier, T> id) const {
   CHECK_EQ(id.identifier(), identifier_);
   return *static_cast<const TypedData<T>*>(this);
 }
 
-}  // namespace ui
+}  // namespace user_education
 
-#endif  // UI_BASE_INTERACTION_TYPED_DATA_H_
+#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_H_

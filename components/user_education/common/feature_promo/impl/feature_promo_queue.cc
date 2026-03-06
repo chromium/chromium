@@ -11,8 +11,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "components/user_education/common/user_education_context.h"
-#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education::internal {
 
@@ -68,7 +68,7 @@ FeaturePromoResult FeaturePromoQueue::CanQueue(
     const UserEducationContextPtr& context) const {
   auto required = required_preconditions_provider_->GetPreconditions(
       spec, promo_params, context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   return required.CheckPreconditions(data).result();
 }
 
@@ -78,7 +78,7 @@ FeaturePromoResult FeaturePromoQueue::CanShow(
     const UserEducationContextPtr& context) const {
   auto required = required_preconditions_provider_->GetPreconditions(
       spec, promo_params, context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   auto result = required.CheckPreconditions(data).result();
   if (!result) {
     return result;
@@ -96,7 +96,7 @@ void FeaturePromoQueue::TryToQueue(const FeaturePromoSpecification& spec,
                                    UserEducationContextPtr promo_context) {
   auto required = required_preconditions_provider_->GetPreconditions(
       spec, promo_params, promo_context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   const auto required_check_result = required.CheckPreconditions(data);
   if (!required_check_result) {
     SendFailureReport(std::move(promo_params.show_promo_result_callback),
@@ -181,7 +181,7 @@ FeaturePromoQueue::ComputedDataMap
 FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
   ComputedDataMap data;
   for (auto it = queued_promos_.begin(); it != queued_promos_.end();) {
-    ui::UnownedTypedDataCollection temp;
+    UnownedTypedDataCollection temp;
     const auto check_result =
         it->required_preconditions.CheckPreconditions(temp);
     if (!check_result) {

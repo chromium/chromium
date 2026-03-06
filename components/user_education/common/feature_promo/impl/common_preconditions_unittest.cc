@@ -15,6 +15,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/feature_promo/impl/scoped_typed_data.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "components/user_education/test/mock_anchor_element_provider.h"
 #include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
@@ -24,15 +26,13 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/scoped_typed_data.h"
-#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education {
 
 namespace {
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
 using TestLifecycleData =
-    ui::test::ScopedTypedData<std::unique_ptr<FeaturePromoLifecycle>>;
+    test::ScopedTypedData<std::unique_ptr<FeaturePromoLifecycle>>;
 constexpr ui::ElementContext kTestContext =
     ui::ElementContext::CreateFakeContextForTesting(1);
 }
@@ -40,7 +40,7 @@ constexpr ui::ElementContext kTestContext =
 TEST(CommonPreconditionsTest,
      FeatureEngagementTrackerInitializedPreconditionFailsNoTracker) {
   FeatureEngagementTrackerInitializedPrecondition precond(nullptr);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(FeaturePromoResult::kError, precond.CheckPrecondition(data));
 }
 
@@ -73,7 +73,7 @@ TEST(
         std::move(callback).Run(true);
       });
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
 }
 
@@ -88,7 +88,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   EXPECT_CALL(tracker, IsInitialized).WillRepeatedly(testing::Return(true));
   MeetsFeatureEngagementCriteriaPrecondition precond(kTestFeature, tracker);
 
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
 
   const EventList kPassingEventList{
       {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 0},
@@ -127,7 +127,7 @@ TEST(CommonPreconditionsTest, ContextValidPrecondition) {
   // Must be valid on construction.
   EXPECT_CALL(*context, IsValid).WillOnce(testing::Return(true));
   ContextValidPrecondition precond(context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
 
   // Try with valid context.
   EXPECT_CALL(*context, IsValid).WillOnce(testing::Return(true));
@@ -147,7 +147,7 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   AnchorElementPrecondition precond(provider, kTestContext, false);
 
   test::TestUserEducationStorageService storage_service;
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   TestLifecycleData lifecycle_data(
       data, LifecyclePrecondition::kLifecycle,
       std::make_unique<FeaturePromoLifecycle>(
@@ -188,9 +188,9 @@ TEST(CommonPreconditionsTest,
   test::MockAnchorElementProvider provider;
   AnchorElementPrecondition precond(provider, kTestContext, false);
 
-  ui::OwnedTypedDataCollection coll;
+  OwnedTypedDataCollection coll;
   test::TestUserEducationStorageService storage_service;
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   TestLifecycleData lifecycle_data(
       cd, LifecyclePrecondition::kLifecycle,
       std::make_unique<FeaturePromoLifecycle>(
@@ -216,9 +216,9 @@ TEST(CommonPreconditionsTest,
   test::MockAnchorElementProvider provider;
   AnchorElementPrecondition precond(provider, kTestContext, false);
 
-  ui::OwnedTypedDataCollection coll;
+  OwnedTypedDataCollection coll;
   test::TestUserEducationStorageService storage_service;
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   TestLifecycleData lifecycle_data(
       cd, LifecyclePrecondition::kLifecycle,
       std::make_unique<FeaturePromoLifecycle>(
@@ -248,7 +248,7 @@ TEST(CommonPreconditionsTest, LifecyclePrecondition) {
       FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
 
   LifecyclePrecondition precond(std::move(lifecycle_ptr), /*for_demo=*/false);
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(cd));
 
   FeaturePromoData data;
@@ -270,7 +270,7 @@ TEST(CommonPreconditionsTest, LifecyclePreconditionForDemo) {
       FeaturePromoLifecycle::PromoSubtype::kNormal, 0);
 
   LifecyclePrecondition precond(std::move(lifecycle_ptr), /*for_demo=*/true);
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(cd));
 
   FeaturePromoData data;
@@ -303,7 +303,7 @@ TEST(CommonPreconditionsTest, SessionPolicyPreconditionSucceeds) {
 
   SessionPolicyPrecondition precond(&session_policy, priority_info,
                                     get_current.Get());
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(cd));
 }
 
@@ -328,7 +328,7 @@ TEST(CommonPreconditionsTest, SessionPolicyPreconditionFails) {
 
   SessionPolicyPrecondition precond(&session_policy, priority_info,
                                     get_current.Get());
-  ui::UnownedTypedDataCollection cd;
+  UnownedTypedDataCollection cd;
   EXPECT_EQ(FeaturePromoResult::kBlockedByCooldown,
             precond.CheckPrecondition(cd));
 }

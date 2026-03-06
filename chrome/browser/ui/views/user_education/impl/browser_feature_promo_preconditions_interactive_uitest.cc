@@ -41,6 +41,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
+#include "components/user_education/common/feature_promo/impl/scoped_typed_data.h"
+#include "components/user_education/common/feature_promo/impl/typed_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/webui/chrome_urls/pref_names.h"
@@ -49,8 +51,6 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/scoped_typed_data.h"
-#include "ui/base/interaction/typed_data.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
@@ -89,9 +89,10 @@ class BrowserFeaturePromoPreconditionsUiTest : public InteractiveBrowserTest {
         expected);
   }
 
-  ui::UnownedTypedDataCollection data_;
-  ui::test::ScopedTypedData<ui::SafeElementReference> anchor_element_data_{
-      data_, user_education::AnchorElementPrecondition::kAnchorElement};
+  user_education::UnownedTypedDataCollection data_;
+  user_education::test::ScopedTypedData<ui::SafeElementReference>
+      anchor_element_data_{
+          data_, user_education::AnchorElementPrecondition::kAnchorElement};
 };
 
 using WindowActivePreconditionUiTest = BrowserFeaturePromoPreconditionsUiTest;

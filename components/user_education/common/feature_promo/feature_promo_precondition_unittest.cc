@@ -6,12 +6,12 @@
 
 #include "base/test/gtest_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/scoped_typed_data.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/scoped_typed_data.h"
-#include "ui/base/interaction/typed_data_collection.h"
-#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -29,14 +29,20 @@ constexpr char kPrecondName[] = "Precond";
 constexpr char kPrecondName2[] = "Precond2";
 constexpr char kPrecondName3[] = "Precond3";
 
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(
+    FeaturePromoPrecondition::CachedDataIdentifier,
+    int,
+    kIntegerData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(
+    FeaturePromoPrecondition::CachedDataIdentifier,
+    std::string,
+    kStringData);
 }  // namespace
 
 TEST(FeaturePromoPreconditionTest, SetAndGetCachedData) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   precond1.InitCache(kIntegerData);
   precond1.InitCachedData(kStringData, "foo");
   EXPECT_EQ(0, precond1.GetCachedDataForComputation(data, kIntegerData));
@@ -56,7 +62,7 @@ TEST(FeaturePromoPreconditionTest, SetAndGetCachedDataDifferentPreconditions) {
                                            kPrecondFailure);
   CachingFeaturePromoPrecondition precond2(kTestId2, kPrecondName2,
                                            kPrecondFailure2);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   precond1.InitCache(kIntegerData);
   precond2.InitCachedData(kStringData, "foo");
   EXPECT_EQ(0, precond1.GetCachedDataForComputation(data, kIntegerData));
@@ -74,7 +80,7 @@ TEST(FeaturePromoPreconditionTest, SetAndGetCachedDataDifferentPreconditions) {
 TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfDataNotPresent) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data, kIntegerData));
 }
 
@@ -82,18 +88,18 @@ TEST(FeaturePromoPreconditionTest, GetCachedDataCrashesIfCacheCollision) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
   precond1.InitCache(kIntegerData);
-  ui::UnownedTypedDataCollection data;
-  ui::test::ScopedTypedData<int> kOtherData(data, kIntegerData, 1);
+  UnownedTypedDataCollection data;
+  test::ScopedTypedData<int> kOtherData(data, kIntegerData, 1);
   EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data, kIntegerData));
 }
 
 TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  ui::OwnedTypedDataCollection coll;
+  OwnedTypedDataCollection coll;
 
   // This should still be valid until `coll` is deleted.
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   precond1.InitCache(kIntegerData, kStringData);
   precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
   precond1.GetCachedDataForComputation(data, kStringData) = "3";
@@ -110,23 +116,23 @@ TEST(FeaturePromoPreconditionTest, ExtractCachedData) {
 TEST(FeaturePromoPreconditionTest, GetAfterExtractCachedDataFails) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  ui::OwnedTypedDataCollection coll;
+  OwnedTypedDataCollection coll;
 
   // This should still be valid until `coll` is deleted.
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   precond1.InitCache(kIntegerData, kStringData);
   precond1.GetCachedDataForComputation(data, kIntegerData) = 2;
   precond1.GetCachedDataForComputation(data, kStringData) = "3";
 
   precond1.ExtractCachedData(coll);
-  ui::UnownedTypedDataCollection data2;
+  UnownedTypedDataCollection data2;
   EXPECT_CHECK_DEATH(precond1.GetCachedDataForComputation(data2, kIntegerData));
 }
 
 TEST(FeaturePromoPreconditionTest, CachingFeaturePromoPrecondition) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(kTestId, precond1.GetIdentifier());
   EXPECT_EQ(kPrecondFailure, precond1.CheckPrecondition(data));
   EXPECT_EQ(kPrecondName, precond1.GetDescription());
@@ -149,7 +155,7 @@ TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
   EXPECT_EQ(kTestId, precond.GetIdentifier());
   EXPECT_EQ(kPrecondName, precond.GetDescription());
 
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_CALL(callback, Run)
       .WillOnce(testing::Return(FeaturePromoResult::Success()));
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
@@ -159,19 +165,20 @@ TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPrecondition) {
 }
 
 TEST(FeaturePromoPreconditionTest, CallbackFeaturePromoPreconditionWithData) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntValueId);
-  UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<FeaturePromoResult(
-                             ui::UnownedTypedDataCollection&)>,
-                         callback);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(
+      FeaturePromoPrecondition::CachedDataIdentifier, int, kIntValueId);
+  UNCALLED_MOCK_CALLBACK(
+      base::RepeatingCallback<FeaturePromoResult(UnownedTypedDataCollection&)>,
+      callback);
   CallbackFeaturePromoPrecondition precond(kTestId, kPrecondName,
                                            callback.Get());
-  ui::UnownedTypedDataCollection data;
-  ui::test::ScopedTypedData<int> int_data(data, kIntValueId, 1);
+  UnownedTypedDataCollection data;
+  test::ScopedTypedData<int> int_data(data, kIntValueId, 1);
   EXPECT_EQ(kTestId, precond.GetIdentifier());
   EXPECT_EQ(kPrecondName, precond.GetDescription());
 
   EXPECT_CALL(callback, Run)
-      .WillOnce([kIntValueId](ui::UnownedTypedDataCollection& data) {
+      .WillOnce([kIntValueId](UnownedTypedDataCollection& data) {
         EXPECT_EQ(1, data[kIntValueId]);
         return FeaturePromoResult::Success();
       });
@@ -185,7 +192,7 @@ TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPrecondition) {
   CachingFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                            kPrecondFailure);
   ForwardingFeaturePromoPrecondition precond2(precond1);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(kTestId, precond2.GetIdentifier());
   EXPECT_EQ(kPrecondFailure, precond2.CheckPrecondition(data));
   EXPECT_EQ(kPrecondName, precond2.GetDescription());
@@ -197,13 +204,13 @@ TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPrecondition) {
 }
 
 TEST(FeaturePromoPreconditionTest, ForwardingFeaturePromoPreconditionWithData) {
-  UNCALLED_MOCK_CALLBACK(base::RepeatingCallback<FeaturePromoResult(
-                             ui::UnownedTypedDataCollection&)>,
-                         callback);
+  UNCALLED_MOCK_CALLBACK(
+      base::RepeatingCallback<FeaturePromoResult(UnownedTypedDataCollection&)>,
+      callback);
   CallbackFeaturePromoPrecondition precond1(kTestId, kPrecondName,
                                             callback.Get());
   ForwardingFeaturePromoPrecondition precond2(precond1);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(kTestId, precond2.GetIdentifier());
   EXPECT_EQ(kPrecondName, precond2.GetDescription());
   EXPECT_CALL(callback, Run(testing::Ref(data)))
@@ -215,7 +222,7 @@ namespace {
 
 std::unique_ptr<FeaturePromoPrecondition> MakeTestPrecondition(
     CachingFeaturePromoPrecondition*& ptr_out,
-    FeaturePromoPrecondition::Identifier identifier,
+    FeaturePromoPrecondition::PreconditionIdentifier identifier,
     std::string description) {
   CHECK_EQ(nullptr, ptr_out);
   auto result = std::make_unique<CachingFeaturePromoPrecondition>(
@@ -227,11 +234,13 @@ std::unique_ptr<FeaturePromoPrecondition> MakeTestPrecondition(
 template <typename T>
 class TestPreconditionWithData : public CachingFeaturePromoPrecondition {
  public:
-  TestPreconditionWithData(FeaturePromoPrecondition::Identifier id,
-                           std::string description,
-                           FeaturePromoResult initial_state,
-                           ui::TypedIdentifierOld<T> data_id,
-                           T value)
+  TestPreconditionWithData(
+      FeaturePromoPrecondition::PreconditionIdentifier id,
+      std::string description,
+      FeaturePromoResult initial_state,
+      ui::TypedIdentifier<FeaturePromoPrecondition::CachedDataIdentifier, T>
+          data_id,
+      T value)
       : CachingFeaturePromoPrecondition(id, description, initial_state),
         data_id_(data_id) {
     InitCachedData(data_id, value);
@@ -239,13 +248,14 @@ class TestPreconditionWithData : public CachingFeaturePromoPrecondition {
   ~TestPreconditionWithData() override = default;
 
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override {
+      UnownedTypedDataCollection& data) const override {
     GetCachedDataForComputation(data, data_id_);
     return CachingFeaturePromoPrecondition::CheckPrecondition(data);
   }
 
  private:
-  const ui::TypedIdentifierOld<T> data_id_;
+  const ui::TypedIdentifier<FeaturePromoPrecondition::CachedDataIdentifier, T>
+      data_id_;
 };
 
 }  // namespace
@@ -257,7 +267,7 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_ComputesData) {
       kTestId2, kPrecondName2, FeaturePromoResult::Success(), kStringData, "3");
 
   FeaturePromoPreconditionList list(std::move(precond1), std::move(precond2));
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   list.CheckPreconditions(data);
 
   EXPECT_EQ(2, data[kIntegerData]);
@@ -275,7 +285,7 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList) {
       MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions(data));
 
@@ -329,7 +339,7 @@ TEST(FeaturePromoPreconditionTest,
   list.AddPrecondition(MakeTestPrecondition(precond3, kTestId3, kPrecondName3));
 
   // true, true, true
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions(data));
 
@@ -384,7 +394,7 @@ TEST(FeaturePromoPreconditionTest, FeaturePromoPreconditionList_AppendAll) {
   list.AppendAll(std::move(temp));
 
   // true, true, true
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   EXPECT_EQ(CheckResult(FeaturePromoResult::Success(), {}),
             list.CheckPreconditions(data));
 
@@ -435,7 +445,7 @@ TEST(FeaturePromoPreconditionTest,
   precond2->InitCachedData(kStringData, "3");
 
   FeaturePromoPreconditionList list(std::move(precond1), std::move(precond2));
-  ui::OwnedTypedDataCollection coll;
+  OwnedTypedDataCollection coll;
   list.ExtractCachedData(coll);
 
   EXPECT_EQ(2, coll[kIntegerData]);

@@ -22,6 +22,7 @@
 #include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -99,8 +100,7 @@ class FeaturePromoQueueTest : public testing::Test {
   static void RemoveTimedOutPromos(FeaturePromoQueue& queue) {
     FeaturePromoQueue::ComputedDataMap data;
     for (const auto& promo : queue.queued_promos_) {
-      data.emplace(&promo.params.feature.get(),
-                   ui::UnownedTypedDataCollection());
+      data.emplace(&promo.params.feature.get(), UnownedTypedDataCollection());
     }
     queue.RemoveTimedOutPromos(data);
   }
@@ -113,8 +113,7 @@ class FeaturePromoQueueTest : public testing::Test {
       FeaturePromoQueue& queue) {
     FeaturePromoQueue::ComputedDataMap data;
     for (const auto& promo : queue.queued_promos_) {
-      data.emplace(&promo.params.feature.get(),
-                   ui::UnownedTypedDataCollection());
+      data.emplace(&promo.params.feature.get(), UnownedTypedDataCollection());
     }
     return queue.IdentifyNextEligiblePromo(data);
   }
@@ -586,18 +585,19 @@ TEST_F(FeaturePromoQueueTest,
 
 class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerValue);
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringValue);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(int, kIntegerValue);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(std::string, kStringValue);
 
   FeaturePromoQueueCachedDataTest() = default;
   ~FeaturePromoQueueCachedDataTest() override = default;
 
   template <typename T, typename U>
   static std::unique_ptr<CachingFeaturePromoPrecondition> CreatePrecondition(
-      FeaturePromoPrecondition::Identifier id,
+      FeaturePromoPrecondition::PreconditionIdentifier id,
       FeaturePromoResult::Failure failure,
       std::string name,
-      ui::TypedIdentifierOld<T> key,
+      ui::TypedIdentifier<FeaturePromoPrecondition::CachedDataIdentifier, T>
+          key,
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
         kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
@@ -606,12 +606,12 @@ class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
   }
 };
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueCachedDataTest,
-                                        int,
-                                        kIntegerValue);
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueCachedDataTest,
-                                        std::string,
-                                        kStringValue);
+DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(FeaturePromoQueueCachedDataTest,
+                                            int,
+                                            kIntegerValue);
+DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(FeaturePromoQueueCachedDataTest,
+                                            std::string,
+                                            kStringValue);
 
 TEST_F(FeaturePromoQueueCachedDataTest, ExtractsCachedData) {
   test::MockPreconditionListProvider required_preconditions;

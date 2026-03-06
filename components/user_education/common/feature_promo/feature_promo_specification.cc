@@ -585,7 +585,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetAdditionalConditions(
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::AddPreconditionExemption(
-    FeaturePromoPrecondition::Identifier exempt_precondition) {
+    FeaturePromoPrecondition::PreconditionIdentifier exempt_precondition) {
   CHECK(IsAllowedPreconditionExemption(*feature_));
   exempt_preconditions_.insert(exempt_precondition);
   return *this;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_INTERACTION_TYPED_DATA_COLLECTION_H_
-#define UI_BASE_INTERACTION_TYPED_DATA_COLLECTION_H_
+#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_COLLECTION_H_
+#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_COLLECTION_H_
 
 #include <concepts>
 #include <map>
@@ -12,13 +12,11 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/component_export.h"
 #include "base/memory/raw_ref.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_data.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "components/user_education/common/feature_promo/impl/typed_data.h"
+#include "ui/base/identifier/typed_identifier.h"
 
-namespace ui {
+namespace user_education {
 
 namespace test {
 template <typename T>
@@ -36,8 +34,10 @@ class ScopedTypedData;
 // collection.
 //
 // See usage documentation in typed_data.h for more information.
-class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
+class OwnedTypedDataCollection final {
  public:
+  using UntypedIdentifier = TypedDataBase::UntypedIdentifier;
+
   OwnedTypedDataCollection();
   OwnedTypedDataCollection(OwnedTypedDataCollection&&) noexcept;
   OwnedTypedDataCollection& operator=(OwnedTypedDataCollection&&) noexcept;
@@ -54,10 +54,10 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
 
   // Determines if data with untyped identifier `id` is present.
 
-  bool Contains(ElementIdentifier id) const;
+  bool Contains(UntypedIdentifier id) const;
 
   template <typename T>
-  bool Contains(TypedIdentifierOld<T> id) const {
+  bool Contains(ui::TypedIdentifier<UntypedIdentifier, T> id) const {
     return Contains(id.identifier());
   }
 
@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Note that `std::assignable_from<>` does not work for fundamental types.
     requires(std::assignable_from<T&, U> ||
              (std::is_fundamental_v<T> && !std::is_const_v<T>))
-  T& InsertOrAssign(TypedIdentifierOld<T> id, U&& value) {
+  T& InsertOrAssign(ui::TypedIdentifier<UntypedIdentifier, T> id, U&& value) {
     for (auto& entry : data_) {
       if (entry->identifier() == id.identifier()) {
         auto& typed = entry->AsTyped(id);
@@ -113,7 +113,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Constructs a new data item with `id`, in-place, using `args`. Returns the
   // newly-added data.
   template <typename T, typename... Args>
-  T& Emplace(TypedIdentifierOld<T> id, Args&&... args) {
+  T& Emplace(ui::TypedIdentifier<UntypedIdentifier, T> id, Args&&... args) {
     return Insert(
         std::make_unique<TypedData<T>>(id, std::forward<Args>(args)...));
   }
@@ -121,13 +121,13 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // Retrieves the value with identifier `id`, or null if not found.
 
   template <typename T>
-  T* GetIfPresent(TypedIdentifierOld<T> id) {
+  T* GetIfPresent(ui::TypedIdentifier<UntypedIdentifier, T> id) {
     TypedDataBase* const found = Lookup(id.identifier());
     return found ? found->AsTyped(id).get() : nullptr;
   }
 
   template <typename T>
-  const T* GetIfPresent(TypedIdentifierOld<T> id) const {
+  const T* GetIfPresent(ui::TypedIdentifier<UntypedIdentifier, T> id) const {
     TypedDataBase* const found = Lookup(id.identifier());
     return found ? found->AsTyped(id).get() : nullptr;
   }
@@ -136,14 +136,14 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
   // an error if not found.
 
   template <typename T>
-  T& operator[](TypedIdentifierOld<T> id) {
+  T& operator[](ui::TypedIdentifier<UntypedIdentifier, T> id) {
     T* result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
   }
 
   template <typename T>
-  const T& operator[](TypedIdentifierOld<T> id) const {
+  const T& operator[](ui::TypedIdentifier<UntypedIdentifier, T> id) const {
     T* result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
@@ -152,8 +152,8 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
  private:
   friend class UnownedTypedDataCollection;
 
-  TypedDataBase* Lookup(ElementIdentifier id);
-  const TypedDataBase* Lookup(ElementIdentifier id) const;
+  TypedDataBase* Lookup(UntypedIdentifier id);
+  const TypedDataBase* Lookup(UntypedIdentifier id) const;
 
   std::vector<std::unique_ptr<TypedDataBase>> data_;
 };
@@ -171,8 +171,10 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) OwnedTypedDataCollection final {
 // `test::ScopedTypedData`.
 //
 // See usage documentation in typed_data.h for more information.
-class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
+class UnownedTypedDataCollection {
  public:
+  using UntypedIdentifier = TypedDataBase::UntypedIdentifier;
+
   UnownedTypedDataCollection();
   UnownedTypedDataCollection(UnownedTypedDataCollection&&) noexcept;
   UnownedTypedDataCollection& operator=(UnownedTypedDataCollection&&) noexcept;
@@ -181,9 +183,9 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
 
   bool empty() const { return lookup_.empty(); }
   size_t size() const { return lookup_.size(); }
-  bool contains(ElementIdentifier id) { return lookup_.contains(id); }
+  bool contains(UntypedIdentifier id) { return lookup_.contains(id); }
   template <typename T>
-  bool contains(TypedIdentifierOld<T> id) {
+  bool contains(ui::TypedIdentifier<UntypedIdentifier, T> id) {
     return contains(id.identifier());
   }
 
@@ -202,10 +204,11 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   // must be no duplicate ids. Adding a reference that already exists in the
   // collection is a no-op.
 
-  void AddFrom(ElementIdentifier id, OwnedTypedDataCollection& source);
+  void AddFrom(UntypedIdentifier id, OwnedTypedDataCollection& source);
 
   template <typename T>
-  void AddFrom(TypedIdentifierOld<T> id, OwnedTypedDataCollection& source) {
+  void AddFrom(ui::TypedIdentifier<UntypedIdentifier, T> id,
+               OwnedTypedDataCollection& source) {
     AddFrom(id.identifier(), source);
   }
 
@@ -215,13 +218,13 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   // Retrieves the data from the lookup if present, returns null otherwise.
 
   template <typename T>
-  T* GetIfPresent(TypedIdentifierOld<T> id) {
+  T* GetIfPresent(ui::TypedIdentifier<UntypedIdentifier, T> id) {
     const auto it = lookup_.find(id.identifier());
     return it == lookup_.end() ? nullptr : it->second->AsTyped(id).get();
   }
 
   template <typename T>
-  const T* GetIfPresent(TypedIdentifierOld<T> id) const {
+  const T* GetIfPresent(ui::TypedIdentifier<UntypedIdentifier, T> id) const {
     const auto it = lookup_.find(id.identifier());
     return it == lookup_.end() ? nullptr : it->second->AsTyped(id).get();
   }
@@ -229,14 +232,14 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   // Retrieves the data from the lookup; it must be present.
 
   template <typename T>
-  T& operator[](TypedIdentifierOld<T> id) {
+  T& operator[](ui::TypedIdentifier<UntypedIdentifier, T> id) {
     auto* const result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
   }
 
   template <typename T>
-  const T& operator[](TypedIdentifierOld<T> id) const {
+  const T& operator[](ui::TypedIdentifier<UntypedIdentifier, T> id) const {
     auto* const result = GetIfPresent(id);
     CHECK(result) << "Expected collection to contain element " << id;
     return *result;
@@ -246,11 +249,11 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) UnownedTypedDataCollection {
   template <typename T>
   friend class test::ScopedTypedData;
 
-  void AddImpl(ElementIdentifier id, TypedDataBase& data);
+  void AddImpl(UntypedIdentifier id, TypedDataBase& data);
 
-  std::map<ElementIdentifier, raw_ref<TypedDataBase>> lookup_;
+  std::map<UntypedIdentifier, raw_ref<TypedDataBase>> lookup_;
 };
 
-}  // namespace ui
+}  // namespace user_education
 
-#endif  // UI_BASE_INTERACTION_TYPED_DATA_COLLECTION_H_
+#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_TYPED_DATA_COLLECTION_H_

@@ -31,7 +31,7 @@ class ProfilePickerOpenPrecondition
 
   // user_education::FeaturePromoPreconditionBase:
   user_education::FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override {
+      user_education::UnownedTypedDataCollection& data) const override {
     return ProfilePicker::IsOpen()
                ? user_education::FeaturePromoResult::Success()
                : user_education::FeaturePromoResult::kBlockedByUi;

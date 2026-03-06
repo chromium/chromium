@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_INTERACTION_SCOPED_TYPED_DATA_H_
-#define UI_BASE_INTERACTION_SCOPED_TYPED_DATA_H_
+#ifndef COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_SCOPED_TYPED_DATA_H_
+#define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_SCOPED_TYPED_DATA_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "ui/base/interaction/typed_data.h"
-#include "ui/base/interaction/typed_data_collection.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "components/user_education/common/feature_promo/impl/typed_data.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
+#include "ui/base/identifier/typed_identifier.h"
 
-namespace ui::test {
+namespace user_education::test {
 
 // Replaces the data in an `UnownedTypedDataCollection` with this value as long
 // as it is in scope, then restores the original typed data (if there was any).
@@ -20,7 +20,7 @@ class ScopedTypedData : public TypedData<T> {
  public:
   template <typename... Args>
   ScopedTypedData(UnownedTypedDataCollection& collection,
-                  TypedIdentifierOld<T> id,
+                  ui::TypedIdentifier<TypedDataBase::UntypedIdentifier, T> id,
                   Args&&... args)
       : TypedData<T>(id, std::forward<Args>(args)...), collection_(collection) {
     const auto it = collection_->lookup_.find(id.identifier());
@@ -44,6 +44,6 @@ class ScopedTypedData : public TypedData<T> {
   raw_ptr<TypedDataBase> old_value_ = nullptr;
 };
 
-}  // namespace ui::test
+}  // namespace user_education::test
 
-#endif  // UI_BASE_INTERACTION_SCOPED_TYPED_DATA_H_
+#endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_IMPL_SCOPED_TYPED_DATA_H_

@@ -43,7 +43,8 @@ class BrowserUserEducationContext
 
   using PreconditionPtr =
       std::unique_ptr<user_education::FeaturePromoPrecondition>;
-  using PreconditionId = user_education::FeaturePromoPrecondition::Identifier;
+  using PreconditionId =
+      user_education::FeaturePromoPrecondition::PreconditionIdentifier;
 
   // A number of preconditions are shared across all promos in the same context.
   // This returns the shared precondition with identifier `id`.

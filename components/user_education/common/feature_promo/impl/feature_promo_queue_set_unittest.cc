@@ -34,7 +34,7 @@ namespace user_education::internal {
 
 namespace {
 
-using PrecondId = FeaturePromoPrecondition::Identifier;
+using PrecondId = FeaturePromoPrecondition::PreconditionIdentifier;
 using ResultCallback = FeaturePromoController::ShowPromoResultCallback;
 using Priority = FeaturePromoPriorityProvider::PromoPriority;
 using PromoType = FeaturePromoSpecification::PromoType;
@@ -696,18 +696,19 @@ TEST_F(FeaturePromoQueueSetTest, CanShowBlocked) {
 
 class FeaturePromoQueueSetCachedDataTest : public FeaturePromoQueueSetTest {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerValue);
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringValue);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(int, kIntegerValue);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(std::string, kStringValue);
 
   FeaturePromoQueueSetCachedDataTest() = default;
   ~FeaturePromoQueueSetCachedDataTest() override = default;
 
   template <typename T, typename U>
   static std::unique_ptr<CachingFeaturePromoPrecondition> CreatePrecondition(
-      PrecondId id,
+      FeaturePromoPrecondition::PreconditionIdentifier id,
       FeaturePromoResult::Failure failure,
       std::string name,
-      ui::TypedIdentifierOld<T> key,
+      ui::TypedIdentifier<FeaturePromoPrecondition::CachedDataIdentifier, T>
+          key,
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
         kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
@@ -716,12 +717,12 @@ class FeaturePromoQueueSetCachedDataTest : public FeaturePromoQueueSetTest {
   }
 };
 
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueSetCachedDataTest,
-                                        int,
-                                        kIntegerValue);
-DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(FeaturePromoQueueSetCachedDataTest,
-                                        std::string,
-                                        kStringValue);
+DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(FeaturePromoQueueSetCachedDataTest,
+                                            int,
+                                            kIntegerValue);
+DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(FeaturePromoQueueSetCachedDataTest,
+                                            std::string,
+                                            kStringValue);
 
 TEST_F(FeaturePromoQueueSetCachedDataTest, ExtractsCachedData) {
   test::MockPreconditionListProvider high_priority_required_preconditions;

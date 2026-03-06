@@ -13,10 +13,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_data.h"
-#include "ui/base/interaction/typed_data_collection.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "components/user_education/common/feature_promo/impl/typed_data.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
+#include "ui/base/identifier/typed_identifier.h"
+#include "ui/base/identifier/unique_identifier.h"
 
 namespace user_education {
 
@@ -29,7 +29,8 @@ class FeaturePromoQueueSetCachedDataTest;
 // from this class.
 class FeaturePromoPrecondition {
  public:
-  using Identifier = ui::ElementIdentifier;
+  DECLARE_UNIQUE_IDENTIFIER_TYPE(PreconditionIdentifier);
+  using CachedDataIdentifier = UnownedTypedDataCollection::UntypedIdentifier;
 
   // Boilerplate; this class is not copyable.
   FeaturePromoPrecondition(const FeaturePromoPrecondition&) = delete;
@@ -37,7 +38,7 @@ class FeaturePromoPrecondition {
   virtual ~FeaturePromoPrecondition() = default;
 
   // Returns a unique identifier for different types of preconditions.
-  virtual Identifier GetIdentifier() const = 0;
+  virtual PreconditionIdentifier GetIdentifier() const = 0;
 
   // Gets a description of the precondition.
   virtual const std::string& GetDescription() const = 0;
@@ -50,13 +51,13 @@ class FeaturePromoPrecondition {
   // dependent; a precondition cannot retrieve data computed by another
   // precondition that is evaluated after it.
   virtual FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const = 0;
+      UnownedTypedDataCollection& data) const = 0;
 
   // Extracts any cached data from this precondition and adds it to `to_add_to`;
   // future calls to this object may fail. Cached data likely reflects the most
   // recent time `IsAllowed()` was called, and therefore that method should
   // always be called first.
-  virtual void ExtractCachedData(ui::OwnedTypedDataCollection& to_add_to) {}
+  virtual void ExtractCachedData(OwnedTypedDataCollection& to_add_to) {}
 
  protected:
   FeaturePromoPrecondition() = default;
@@ -66,18 +67,16 @@ class FeaturePromoPrecondition {
 // and description, along with optional cached data.
 class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
  public:
-  using Identifier = ui::ElementIdentifier;
-
   // Boilerplate; this class is not copyable.
   ~FeaturePromoPreconditionBase() override;
 
   // FeaturePromoPrecondition:
-  Identifier GetIdentifier() const override;
+  PreconditionIdentifier GetIdentifier() const override;
   const std::string& GetDescription() const override;
-  void ExtractCachedData(ui::OwnedTypedDataCollection& to_add_to) override;
+  void ExtractCachedData(OwnedTypedDataCollection& to_add_to) override;
 
  protected:
-  FeaturePromoPreconditionBase(Identifier identifier,
+  FeaturePromoPreconditionBase(PreconditionIdentifier identifier,
                                std::string description);
 
   // Use this method to initialize the various types of data the precondition
@@ -86,14 +85,15 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   // Can be called any number of times with unique typed identifiers, or all
   // at once.
   template <typename... Args>
-  void InitCache(ui::TypedIdentifierOld<Args>... args) {
-    (data_.Insert(std::make_unique<ui::TypedData<Args>>(args)), ...);
+  void InitCache(ui::TypedIdentifier<CachedDataIdentifier, Args>... args) {
+    (data_.Insert(std::make_unique<TypedData<Args>>(args)), ...);
   }
 
   // Use this method to initialize a single piece of cached data the
   // precondition will support with an initial value constructed from `args`.
   template <typename T, typename... Args>
-  void InitCachedData(ui::TypedIdentifierOld<T> id, Args&&... args) {
+  void InitCachedData(ui::TypedIdentifier<CachedDataIdentifier, T> id,
+                      Args&&... args) {
     data_.Emplace(id, std::forward<Args>(args)...);
   }
 
@@ -107,8 +107,9 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   // A readonly reference to the cached data is also stored in `data` to ensure
   // that it is available to later preconditions in the list.
   template <typename T>
-  T& GetCachedDataForComputation(ui::UnownedTypedDataCollection& data,
-                                 ui::TypedIdentifierOld<T> id) const {
+  T& GetCachedDataForComputation(
+      UnownedTypedDataCollection& data,
+      ui::TypedIdentifier<CachedDataIdentifier, T> id) const {
     data.AddFrom(id.identifier(), data_);
     return data[id];
   }
@@ -129,25 +130,25 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
   friend internal::FeaturePromoQueueCachedDataTest;
   friend internal::FeaturePromoQueueSetCachedDataTest;
 
-  const Identifier identifier_;
+  const PreconditionIdentifier identifier_;
   const std::string description_;
 
   // Mutable so that data can be cached during retrieval.
-  mutable ui::OwnedTypedDataCollection data_;
+  mutable OwnedTypedDataCollection data_;
 };
 
 // Represents a precondition that returns a cached value that is updated as it
 // changes in realtime.
 class CachingFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
  public:
-  CachingFeaturePromoPrecondition(Identifier identifier,
+  CachingFeaturePromoPrecondition(PreconditionIdentifier identifier,
                                   std::string description,
                                   FeaturePromoResult initial_state);
   ~CachingFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection&) const override;
+      UnownedTypedDataCollection&) const override;
 
   // See `set_is_allowed`.
   void set_check_result_for_testing(FeaturePromoResult check_result) {
@@ -170,18 +171,18 @@ class CallbackFeaturePromoPrecondition : public FeaturePromoPreconditionBase {
  public:
   using SimpleCallback = base::RepeatingCallback<FeaturePromoResult()>;
   using CallbackWithData = base::RepeatingCallback<FeaturePromoResult(
-      ui::UnownedTypedDataCollection& data)>;
-  CallbackFeaturePromoPrecondition(Identifier identifier,
+      UnownedTypedDataCollection& data)>;
+  CallbackFeaturePromoPrecondition(PreconditionIdentifier identifier,
                                    std::string description,
                                    SimpleCallback check_result_callback);
-  CallbackFeaturePromoPrecondition(Identifier identifier,
+  CallbackFeaturePromoPrecondition(PreconditionIdentifier identifier,
                                    std::string description,
                                    CallbackWithData check_result_callback);
   ~CallbackFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const CallbackWithData check_result_callback_;
@@ -196,10 +197,10 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
   ~ForwardingFeaturePromoPrecondition() override;
 
   // FeaturePromoPrecondition:
-  Identifier GetIdentifier() const override;
+  PreconditionIdentifier GetIdentifier() const override;
   const std::string& GetDescription() const override;
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  protected:
   // Can be called by derived classes to clear out references and avoid UAF.
@@ -212,7 +213,7 @@ class ForwardingFeaturePromoPrecondition : public FeaturePromoPrecondition {
   raw_ptr<const FeaturePromoPrecondition> source_ = nullptr;
 
   // Preserves the identifier even after a call to `Invalidate()`.
-  const ui::ElementIdentifier cached_identifier_;
+  const PreconditionIdentifier cached_identifier_;
 
   // Preserves the description even after a call to `Invalidate()`.
   const std::string cached_description_;
@@ -232,8 +233,9 @@ class FeaturePromoPreconditionList {
   class CheckResult {
    public:
     CheckResult() = default;
-    CheckResult(FeaturePromoResult result,
-                FeaturePromoPrecondition::Identifier failed_precondition)
+    CheckResult(
+        FeaturePromoResult result,
+        FeaturePromoPrecondition::PreconditionIdentifier failed_precondition)
         : result_(result), failed_precondition_(failed_precondition) {}
     CheckResult(const CheckResult&) = default;
     CheckResult& operator=(const CheckResult&) = default;
@@ -243,7 +245,8 @@ class FeaturePromoPreconditionList {
     std::optional<FeaturePromoResult::Failure> failure() const {
       return result_.failure();
     }
-    FeaturePromoPrecondition::Identifier failed_precondition() const {
+    FeaturePromoPrecondition::PreconditionIdentifier failed_precondition()
+        const {
       return failed_precondition_;
     }
     explicit operator bool() const { return result_; }
@@ -254,7 +257,7 @@ class FeaturePromoPreconditionList {
     // The result of checking the list; success if no preconditions failed.
     FeaturePromoResult result_;
     // The identifier of the precondition that failed, or a null if none did.
-    FeaturePromoPrecondition::Identifier failed_precondition_;
+    FeaturePromoPrecondition::PreconditionIdentifier failed_precondition_;
   };
 
   template <typename... Args>
@@ -279,10 +282,10 @@ class FeaturePromoPreconditionList {
   //
   // Computed values will be read from/stored in `computed_data`.
   CheckResult CheckPreconditions(
-      ui::UnownedTypedDataCollection& computed_data) const;
+      UnownedTypedDataCollection& computed_data) const;
 
   // Extracts cached data from all preconditions into `to_add_to`.
-  void ExtractCachedData(ui::OwnedTypedDataCollection& to_add_to);
+  void ExtractCachedData(OwnedTypedDataCollection& to_add_to);
 
  private:
   ListType preconditions_;
@@ -294,11 +297,25 @@ class FeaturePromoPreconditionList {
 // Use these instead of the element identifier ones in case the implementation
 // of the precondition IDs changes.
 #define DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(IdentifierName) \
-  DECLARE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)
+  DECLARE_UNIQUE_IDENTIFIER_VALUE(                                          \
+      ::user_education::FeaturePromoPrecondition::PreconditionIdentifier,   \
+      IdentifierName)
 #define DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(IdentifierName) \
   DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)
-#define DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE( \
-    IdentifierName)                                               \
-  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, IdentifierName)
+#define DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(         \
+    IdentifierName)                                                       \
+  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(                             \
+      __FILE__, __LINE__,                                                 \
+      ::user_education::FeaturePromoPrecondition::PreconditionIdentifier, \
+      IdentifierName)
+
+#define DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(Type, Name)              \
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(                                       \
+      ::user_education::FeaturePromoPrecondition::CachedDataIdentifier, Type, \
+      Name)
+#define DEFINE_CLASS_PROMO_PRECONDITION_CACHED_DATA(Class, Type, Name)         \
+  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(                                         \
+      Class, ::user_education::FeaturePromoPrecondition::CachedDataIdentifier, \
+      Type, Name)
 
 #endif  // COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_PRECONDITION_H_

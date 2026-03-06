@@ -42,19 +42,19 @@ class TestPreconditionListProvider : public PreconditionListProvider {
 
   // Adds a precondition with the specified parameters and default allowed
   // state.
-  void Add(FeaturePromoPrecondition::Identifier identifier,
+  void Add(FeaturePromoPrecondition::PreconditionIdentifier identifier,
            std::string description,
            FeaturePromoResult initial_result);
 
   // Sets the default `result` for a particular `id` which has already been
   // added.
-  void SetDefault(FeaturePromoPrecondition::Identifier id,
+  void SetDefault(FeaturePromoPrecondition::PreconditionIdentifier id,
                   FeaturePromoResult result);
 
   // Sets the specific `result` for a particular `id` for `iph_feature` only.
   // This overrides the default value.
   void SetForFeature(const base::Feature& iph_feature,
-                     FeaturePromoPrecondition::Identifier id,
+                     FeaturePromoPrecondition::PreconditionIdentifier id,
                      FeaturePromoResult result);
 
   // PreconditionListProvider:

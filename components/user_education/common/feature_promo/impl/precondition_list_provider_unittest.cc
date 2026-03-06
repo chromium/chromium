@@ -16,12 +16,12 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education {
 
@@ -65,7 +65,7 @@ TEST(PreconditionListProviderTest,
   // Check that the composing provider calls the inner provider and returns the
   // correct result.
   inner.SetExpectedPromoForNextQuery(spec, context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   auto result =
       provider.GetPreconditions(spec, params, context).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.result());
@@ -74,7 +74,7 @@ TEST(PreconditionListProviderTest,
   // Modify the inner provider so all its preconditions pass and try again.
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec, context);
-  ui::UnownedTypedDataCollection data2;
+  UnownedTypedDataCollection data2;
   result = provider.GetPreconditions(spec, params, context)
                .CheckPreconditions(data2);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());
@@ -107,7 +107,7 @@ TEST(PreconditionListProviderTest,
   // correct results.
   inner.SetExpectedPromoForNextQuery(spec, context);
   inner2.SetExpectedPromoForNextQuery(spec, context);
-  ui::UnownedTypedDataCollection data;
+  UnownedTypedDataCollection data;
   auto result =
       provider.GetPreconditions(spec, params, context).CheckPreconditions(data);
   EXPECT_EQ(kFailure2, result.failure());
@@ -118,7 +118,7 @@ TEST(PreconditionListProviderTest,
   inner.SetDefault(kPrecond2, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec, context);
   inner2.SetExpectedPromoForNextQuery(spec, context);
-  ui::UnownedTypedDataCollection data2;
+  UnownedTypedDataCollection data2;
   result = provider.GetPreconditions(spec, params, context)
                .CheckPreconditions(data2);
   EXPECT_EQ(kFailure3, result.failure());
@@ -128,7 +128,7 @@ TEST(PreconditionListProviderTest,
   inner2.SetDefault(kPrecond3, FeaturePromoResult::Success());
   inner.SetExpectedPromoForNextQuery(spec, context);
   inner2.SetExpectedPromoForNextQuery(spec, context);
-  ui::UnownedTypedDataCollection data3;
+  UnownedTypedDataCollection data3;
   result = provider.GetPreconditions(spec, params, context)
                .CheckPreconditions(data3);
   EXPECT_EQ(FeaturePromoResult::Success(), result.result());

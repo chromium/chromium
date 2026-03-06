@@ -2,21 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/interaction/typed_data_collection.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "components/user_education/common/feature_promo/impl/scoped_typed_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/scoped_typed_data.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
 
-namespace ui {
+namespace user_education {
 
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(int, kIntegerData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::string, kStringData);
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(raw_ptr<std::string>, kReferenceData);
+using UntypedIdentifier = TypedDataBase::UntypedIdentifier;
+
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(UntypedIdentifier, int, kIntegerData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(UntypedIdentifier,
+                                    std::string,
+                                    kStringData);
+DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(UntypedIdentifier,
+                                    raw_ptr<std::string>,
+                                    kReferenceData);
 
 TEST(OwnedTypedDataCollectionTest, ConstructInsertDestruct) {
   OwnedTypedDataCollection coll;
@@ -110,7 +116,8 @@ TEST(OwnedTypedDataCollectionTest, ClearAndReAdd) {
 }
 
 TEST(OwnedTypedDataCollectionTest, InsertOrAssign) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(std::unique_ptr<int>, kPtrData);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(UntypedIdentifier, std::unique_ptr<int>,
+                                      kPtrData);
 
   OwnedTypedDataCollection coll;
   coll.InsertOrAssign(kIntegerData, 2);
@@ -320,7 +327,8 @@ TEST_F(UnownedTypedDataCollectionTest, ReleaseReferences) {
 }
 
 TEST_F(UnownedTypedDataCollectionTest, ScopedDataForTesting) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(float, kFloatData);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(
+      UnownedTypedDataCollection::UntypedIdentifier, float, kFloatData);
   UnownedTypedDataCollection coll;
   {
     test::ScopedTypedData float_data(coll, kFloatData, 4.2f);
@@ -376,4 +384,4 @@ TEST_F(UnownedTypedDataCollectionTest, LookupFails) {
   EXPECT_CHECK_DEATH(coll[kStringData]);
 }
 
-}  // namespace ui
+}  // namespace user_education

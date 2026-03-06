@@ -15,9 +15,9 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
-#include "ui/base/interaction/typed_data_collection.h"
 
 namespace user_education::internal {
 
@@ -59,7 +59,7 @@ struct EligibleFeaturePromo {
   // These are guaranteed to be current as of the promo being popped from the
   // queue, since all preconditions will have to be evaluated before a promo can
   // be returned by any of the `UpdateAnd...()` methods.
-  ui::OwnedTypedDataCollection cached_data;
+  OwnedTypedDataCollection cached_data;
 };
 
 // Represents a queue of promos to be shown at a particular priority.
@@ -144,7 +144,7 @@ class FeaturePromoQueue {
 
   using Queue = std::list<internal::QueuedFeaturePromo>;
   using ComputedDataMap =
-      std::map<const base::Feature*, ui::UnownedTypedDataCollection>;
+      std::map<const base::Feature*, UnownedTypedDataCollection>;
 
   // Posts the failure report to result_callback if it is valid.
   static void SendFailureReport(

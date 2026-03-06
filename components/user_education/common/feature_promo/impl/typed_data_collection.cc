@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/interaction/typed_data_collection.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
-#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
 
-namespace ui {
+namespace user_education {
 
 OwnedTypedDataCollection::OwnedTypedDataCollection() = default;
 
@@ -43,12 +43,12 @@ void OwnedTypedDataCollection::Append(OwnedTypedDataCollection other) {
   other.data_.clear();
 }
 
-bool OwnedTypedDataCollection::Contains(ElementIdentifier id) const {
+bool OwnedTypedDataCollection::Contains(UntypedIdentifier id) const {
   return Lookup(id) != nullptr;
 }
 
 const TypedDataBase* OwnedTypedDataCollection::Lookup(
-    ElementIdentifier id) const {
+    UntypedIdentifier id) const {
   for (auto& entry : data_) {
     if (entry->identifier() == id) {
       return entry.get();
@@ -57,7 +57,7 @@ const TypedDataBase* OwnedTypedDataCollection::Lookup(
   return nullptr;
 }
 
-TypedDataBase* OwnedTypedDataCollection::Lookup(ElementIdentifier id) {
+TypedDataBase* OwnedTypedDataCollection::Lookup(UntypedIdentifier id) {
   // Share logic with the const version of this call.
   return const_cast<TypedDataBase*>(
       const_cast<const OwnedTypedDataCollection*>(this)->Lookup(id));
@@ -75,7 +75,7 @@ UnownedTypedDataCollection::UnownedTypedDataCollection(
   AddAll(source);
 }
 
-void UnownedTypedDataCollection::AddFrom(ElementIdentifier id,
+void UnownedTypedDataCollection::AddFrom(UntypedIdentifier id,
                                          OwnedTypedDataCollection& source) {
   bool found = false;
   for (auto& entry : source.data_) {
@@ -94,11 +94,11 @@ void UnownedTypedDataCollection::AddAll(OwnedTypedDataCollection& source) {
   }
 }
 
-void UnownedTypedDataCollection::AddImpl(ElementIdentifier id,
+void UnownedTypedDataCollection::AddImpl(UntypedIdentifier id,
                                          TypedDataBase& data) {
   const auto result = lookup_.emplace(id, data);
   CHECK(result.second || &result.first->second.get() == &data)
       << "Duplicate value in collection: " << id;
 }
 
-}  // namespace ui
+}  // namespace user_education

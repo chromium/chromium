@@ -14,11 +14,11 @@
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/feature_promo/impl/typed_data_collection.h"
 #include "components/user_education/common/user_education_context.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/typed_data_collection.h"
-#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education {
 
@@ -77,7 +77,7 @@ class MeetsFeatureEngagementCriteriaPrecondition
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -93,7 +93,7 @@ class ContextValidPrecondition : public FeaturePromoPreconditionBase {
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const UserEducationContextPtr context_;
@@ -102,10 +102,10 @@ class ContextValidPrecondition : public FeaturePromoPreconditionBase {
 // Represents the requirement that an anchor element is present and visible.
 class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(std::optional<int>,
-                                           kRotatingPromoIndex);
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ui::SafeElementReference,
-                                           kAnchorElement);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(std::optional<int>,
+                                               kRotatingPromoIndex);
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(ui::SafeElementReference,
+                                               kAnchorElement);
 
   AnchorElementPrecondition(const AnchorElementProvider& provider,
                             ui::ElementContext default_context,
@@ -114,7 +114,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
@@ -128,7 +128,7 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
 // Wraps a FeaturePromoLifecycle to determine if a promo can be shown.
 class LifecyclePrecondition : public FeaturePromoPreconditionBase {
  public:
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(
+  DECLARE_CLASS_PROMO_PRECONDITION_CACHED_DATA(
       std::unique_ptr<FeaturePromoLifecycle>,
       kLifecycle);
   LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>, bool for_demo);
@@ -136,7 +136,7 @@ class LifecyclePrecondition : public FeaturePromoPreconditionBase {
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const bool for_demo_;
@@ -156,7 +156,7 @@ class SessionPolicyPrecondition : public FeaturePromoPreconditionBase {
 
   // FeaturePromoPrecondition:
   FeaturePromoResult CheckPrecondition(
-      ui::UnownedTypedDataCollection& data) const override;
+      UnownedTypedDataCollection& data) const override;
 
  private:
   const raw_ref<FeaturePromoSessionPolicy> session_policy_;
