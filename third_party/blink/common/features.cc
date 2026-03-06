@@ -2159,6 +2159,11 @@ BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
 BASE_FEATURE(kResamplingInputEvents, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResamplingScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kScrollPredictorMaxResampleTime,
+                   &kResamplingScrollEvents,
+                   "max_resample_time",
+                   base::Milliseconds(20));
 
 BASE_FEATURE(kRestrictLinkHeaderOnSubresource,
              base::FEATURE_DISABLED_BY_DEFAULT);

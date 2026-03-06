@@ -210,17 +210,18 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
 bool ScrollPredictor::HasPrediction(base::TimeTicks frame_time,
                                     base::TimeDelta frame_interval) const {
   // If the last real user event is too old, stop generating synthetic events
-  // to avoid creating "phantom" scroll motion. We use MaxResampleTime() as
-  // the timeout, which is 20ms.
+  // to avoid creating "phantom" scroll motion.
   base::TimeTicks prediction_time = frame_time;
   if (base::FeatureList::IsEnabled(
           blink::features::kScrollPredictorRefinedHasPrediction)) {
     prediction_time += ResampleLatency(frame_interval);
   }
 
+  base::TimeDelta max_resample_time =
+      blink::features::kScrollPredictorMaxResampleTime.Get();
+
   if (!last_prediction_update_timestamp_.is_null() &&
-      prediction_time - last_prediction_update_timestamp_ >
-          synthetic_predictor_->MaxResampleTime()) {
+      prediction_time - last_prediction_update_timestamp_ > max_resample_time) {
     return false;
   }
 
@@ -339,9 +340,9 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
   bool used_synthetic_delta = false;
 
   // For resampling, we don't want to predict too far away because the result
-  // will likely be inaccurate in that case. We cut off the prediction to the
-  // maximum available for the current predictor
-  prediction_delta = std::min(prediction_delta, predictor->MaxResampleTime());
+  // will likely be inaccurate in that case.
+  prediction_delta = std::min(
+      prediction_delta, blink::features::kScrollPredictorMaxResampleTime.Get());
 
   base::TimeTicks prediction_time =
       gesture_event->TimeStamp() + prediction_delta;
