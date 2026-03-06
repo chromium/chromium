@@ -2779,6 +2779,7 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/webrtc/RTCPeerConnection-onicecandidateerror.https.html [ Skip Timeout ]
 crbug.com/490130403 external/wpt/html-ruby-extensions/html-ruby-005.html [ Failure ]
 crbug.com/490130403 external/wpt/html-ruby-extensions/html-ruby-006.html [ Failure ]
 crbug.com/490130403 external/wpt/html-ruby-extensions/html-ruby-007.html [ Failure ]
