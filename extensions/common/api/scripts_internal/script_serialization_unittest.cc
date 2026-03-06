@@ -34,7 +34,7 @@ SerializedUserScript SerializedScriptFromJson(std::string_view json) {
 // defaults are properly set.
 TEST(ScriptSerializationUnitTest, ParseMinimalScript) {
   // A set of the minimal required properties, according to
-  // scripts_internal.idl.
+  // scripts_internal.webidl.
   constexpr char kMinimalScriptJson[] =
       R"({
            "id": "_dc_minimal_script",
