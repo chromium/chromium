@@ -11050,7 +11050,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> (1 Tab)} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> (# Tabs)}}
         </message>
         <message name="IDS_TAB_GROUPS_UNNAMED_GROUP_HOVER_CARD_HEADER" desc="In Title Case: Title of the hover card for an open unnamed tab group when hovering over the tab group header in the tab strip.">
-            {NUM_TABS, plural, =1 {(1 Tab)} other {(# Tabs)}}
+            {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
         <message name="IDS_TAB_GROUPS_HOVER_CARD_FOOTER" desc="In Title Case: The number of tabs in the tab group that are not shown on the hover card, when hovering over the tab group header.">
             +<ph name="NUM">$1<ex>2</ex></ph> More
@@ -11064,7 +11064,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> (1 tab)} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> (# tabs)}}
         </message>
         <message name="IDS_TAB_GROUPS_UNNAMED_GROUP_HOVER_CARD_HEADER" desc="Title of the hover card for an open unnamed tab group when hovering over the tab group header in the tab strip.">
-            {NUM_TABS, plural, =1 {(1 tab)} other {(# tabs)}}
+            {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
         </message>
         <message name="IDS_TAB_GROUPS_HOVER_CARD_FOOTER" desc="The number of tabs in the tab group that are not shown on the hover card, when hovering over the tab group header.">
             +<ph name="NUM">$1<ex>2</ex></ph> more
