@@ -27,7 +27,6 @@ public class CustomSiteSearchCoordinator {
     private final CustomSiteSearchMediator mMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    private final AddSearchEngineDialogCoordinator mAddSearchEngineDialogCoordinator;
     private final SiteSearchDialogCoordinator mSiteSearchDialogCoordinator;
 
     public CustomSiteSearchCoordinator(
@@ -44,12 +43,6 @@ public class CustomSiteSearchCoordinator {
                         profile,
                         this::openAddSearchEngineDialog,
                         this::openEditSearchEngineDialog);
-
-        mAddSearchEngineDialogCoordinator =
-                new AddSearchEngineDialogCoordinator(
-                        context,
-                        modalDialogManager,
-                        TemplateUrlServiceFactory.getForProfile(profile));
 
         mSiteSearchDialogCoordinator =
                 new SiteSearchDialogCoordinator(
@@ -68,7 +61,6 @@ public class CustomSiteSearchCoordinator {
     }
 
     public void destroy() {
-        mAddSearchEngineDialogCoordinator.dismiss();
         mSiteSearchDialogCoordinator.dismiss();
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
@@ -77,7 +69,7 @@ public class CustomSiteSearchCoordinator {
     }
 
     private void openAddSearchEngineDialog() {
-        mAddSearchEngineDialogCoordinator.show();
+        mSiteSearchDialogCoordinator.showAddDialog();
     }
 
     private void openEditSearchEngineDialog(TemplateUrl templateUrl) {
