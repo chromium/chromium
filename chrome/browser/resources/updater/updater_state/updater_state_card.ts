@@ -36,7 +36,7 @@ export class UpdaterStateCardElement extends CrLitElement {
 
   static override get properties() {
     return {
-      scope: {type: Object},
+      scope: {type: String},
       version: {type: String},
       inactiveVersions: {type: Array},
       lastChecked: {type: Object},

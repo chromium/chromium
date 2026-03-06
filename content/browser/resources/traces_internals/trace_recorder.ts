@@ -61,7 +61,7 @@ export class TraceRecorderElement extends CrLitElement {
     return {
       toastMessage: {type: String},
       bufferSizeMb: {type: Number},
-      bufferFillPolicy: {type: Object},
+      bufferFillPolicy: {type: Number},
       tracingState: {type: String},
       trackEventCategories: {type: Array},
       trackEventTags: {type: Array},

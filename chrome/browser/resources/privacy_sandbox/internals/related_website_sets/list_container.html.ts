@@ -11,7 +11,7 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
 <div class="header">
   <h2 class="flex page-title">All sets</h2>
   <cr-button id="expandCollapseButton"
-      @click="${this.onClick_}" ?hidden="${this.errorMessage}">
+      @click="${this.onClick_}" ?hidden="${!!this.errorMessage}">
     ${this.expandCollapseButtonText_()}
   </cr-button>
 </div>
@@ -20,13 +20,13 @@ export function getHtml(this: RelatedWebsiteSetsListContainerElement) {
   ${this.getDisplayedError()}
 </div>
 <div id="descriptionLabel" class="cr-secondary-text"
-    ?hidden="${this.errorMessage}">
+    ?hidden="${!!this.errorMessage}">
   <p>RWS explanation string.
     <a href="https://developers.google.com/privacy-sandbox/3pcd/related-website-sets" target="_blank" rel="noopener noreferrer">Learn more.</a>
   </p>
 </div>
 <div id="related-website-sets" class="card" role="list"
-    ?hidden="${this.errorMessage}">
+    ?hidden="${!!this.errorMessage}">
   ${this.filteredItems.map(item => html`
     <related-website-sets-list-item id="${item.primarySite}"
         .primarySite="${item.primarySite}"

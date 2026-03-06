@@ -61,8 +61,9 @@ export class PageFaviconElement extends CrLitElement {
       /**
        * The URL of the representative image for the page. Not every page has
        * this defined, in which case we fallback to the favicon.
+       * Mojo Url type is type mapped to a TS string.
        */
-      imageUrl_: {type: Object},
+      imageUrl_: {type: String},
 
       isImageCover_: {
         type: Boolean,

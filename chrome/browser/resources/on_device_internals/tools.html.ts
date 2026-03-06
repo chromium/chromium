@@ -76,7 +76,7 @@ export function getHtml(this: ToolsElement) {
 <div class="multimodal-buttons" >
   <div class="image-buttons" ?hidden="${!this.imagesEnabled_()}">
     <div class="image-error">${this.imageError_}</div>
-    <div ?hidden="${this.imageFile_}">
+    <div ?hidden="${!!this.imageFile_}">
       <cr-button class="floating-button"
           ?disabled="${!this.canUploadFile_()}"
           @click="${this.onAddImageClick_}">
@@ -94,7 +94,7 @@ export function getHtml(this: ToolsElement) {
   </div>
   <div class="audio-buttons" ?hidden="${!this.audioEnabled_()}">
     <div class="audio-error">${this.audioError_}</div>
-    <div ?hidden="${this.audioFile_}">
+    <div ?hidden="${!!this.audioFile_}">
       <cr-button class="floating-button"
           ?disabled="${!this.canUploadFile_()}"
           @click="${this.onAddAudioClick_}">

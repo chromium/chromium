@@ -11,7 +11,7 @@ export function getHtml(this: ExtensionsItemListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">
-  <managed-footnote ?hidden="${this.filter}"></managed-footnote>
+  <managed-footnote ?hidden="${!!this.filter}"></managed-footnote>
   <div id="content-wrapper" .style="--max-columns: ${this.maxColumns_};">
     ${this.showSafetyCheckReviewPanel_ ? html`
       <div class="items-container panel">

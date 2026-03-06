@@ -24,7 +24,7 @@ export function getHtml(this: WallpaperSearchElement) {
       </cr-button>
     </div>
   ` : ''}
-  <div class="content" id="wallpaperSearch" ?hidden="${this.errorState_}"
+  <div class="content" id="wallpaperSearch" ?hidden="${!!this.errorState_}"
       tabindex="-1">
     <div role="application">
       <customize-chrome-combobox id="descriptorComboboxA"
