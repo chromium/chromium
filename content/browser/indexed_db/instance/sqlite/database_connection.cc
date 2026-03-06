@@ -1279,6 +1279,13 @@ void DatabaseConnection::PerformIdleMaintenance() {
     db_->TrimMemory();
     return;
   }
+
+  // Open statements would block checkpointing.
+  for (const auto& [_, statement_holder] : cursor_statements_) {
+    const auto& [statement, store_id] = statement_holder;
+    BackingStoreCursorImpl::InvalidateStatement(*statement);
+  }
+
   db_->CheckpointDatabase(/*truncate=*/false);
 }
 
