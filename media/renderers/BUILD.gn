@@ -30,8 +30,6 @@ source_set("renderers") {
     "video_frame_rgba_to_yuva_converter.h",
     "video_frame_shared_image_cache.cc",
     "video_frame_shared_image_cache.h",
-    "video_frame_yuv_converter.cc",
-    "video_frame_yuv_converter.h",
     "video_overlay_factory.cc",
     "video_overlay_factory.h",
     "video_renderer_impl.cc",
