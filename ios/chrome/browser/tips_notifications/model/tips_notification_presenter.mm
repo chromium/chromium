@@ -240,8 +240,8 @@ void TipsNotificationPresenter::ShowLensOverlayPromo() {
 }
 
 void TipsNotificationPresenter::ShowTabGroupsPromo() {
-  // TODO (crbug.com/482042349): Present the Tab Groups promo once it is
-  // created.
+  [HandlerForProtocol(browser_->GetCommandDispatcher(),
+                      BrowserCoordinatorCommands) showTabGroupsPromo];
 }
 
 void TipsNotificationPresenter::ShowPriceTrackingPromo() {

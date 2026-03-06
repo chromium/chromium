@@ -141,6 +141,9 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     case desktop_to_mobile_promos::PromoType::kPriceTracking:
       ShowPriceTrackingPromo(browser);
       break;
+    case desktop_to_mobile_promos::PromoType::kTabGroups:
+      ShowTabGroupsPromo(browser);
+      break;
     default:
       // If the promo type is unknown, clear the pref to avoid re-triggering.
       profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);

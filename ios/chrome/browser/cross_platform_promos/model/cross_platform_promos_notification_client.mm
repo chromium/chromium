@@ -147,7 +147,7 @@ void CrossPlatformPromosNotificationClient::ShowPromo(
       cross_platform_service->ShowLensPromo(browser);
       break;
     case desktop_to_mobile_promos::PromoType::kTabGroups:
-      // TODO (crbug.com/479493988): Create the Tab Groups iOS promo.
+      cross_platform_service->ShowTabGroupsPromo(browser);
       break;
     case desktop_to_mobile_promos::PromoType::kPriceTracking:
       cross_platform_service->ShowPriceTrackingPromo(browser);

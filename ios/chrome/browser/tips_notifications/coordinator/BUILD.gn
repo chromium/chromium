@@ -12,6 +12,8 @@ source_set("coordinator") {
     "price_tracking_promo_coordinator.mm",
     "search_what_you_see_promo_coordinator.h",
     "search_what_you_see_promo_coordinator.mm",
+    "tab_groups_promo_coordinator.h",
+    "tab_groups_promo_coordinator.mm",
   ]
 
   deps = [
@@ -25,6 +27,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/tips_notifications/ui:lens_promo",
     "//ios/chrome/browser/tips_notifications/ui:price_tracking_promo",
     "//ios/chrome/browser/tips_notifications/ui:search_what_you_see_promo",
+    "//ios/chrome/browser/tips_notifications/ui:tab_groups_promo",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
   ]

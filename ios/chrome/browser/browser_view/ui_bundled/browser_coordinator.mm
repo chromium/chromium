@@ -333,6 +333,7 @@
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/price_tracking_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
+#import "ios/chrome/browser/tips_notifications/coordinator/tab_groups_promo_coordinator.h"
 #import "ios/chrome/browser/toolbar/coordinator/toolbar_coordinator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
@@ -754,6 +755,7 @@ const char kChromeAppStoreUrl[] =
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
   PriceTrackingPromoCoordinator* _priceTrackingPromoCoordinator;
+  TabGroupsPromoCoordinator* _tabGroupsPromoCoordinator;
   AutoDeletionCoordinator* _autoDeletionCoordinator;
   TrustedVaultReauthenticationCoordinator*
       _trustedVaultReauthenticationCoordinator;
@@ -1805,6 +1807,7 @@ const char kChromeAppStoreUrl[] =
   [self stopTrustedVaultReauthentication];
   [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissSearchWhatYouSeePromo];
+  [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
   [self dismissDockingPromo];
   [self hideWelcomeBackPromo];
@@ -2732,6 +2735,19 @@ const char kChromeAppStoreUrl[] =
   _priceTrackingPromoCoordinator = nil;
 }
 
+- (void)showTabGroupsPromo {
+  [_tabGroupsPromoCoordinator stop];
+  _tabGroupsPromoCoordinator = [[TabGroupsPromoCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [_tabGroupsPromoCoordinator start];
+}
+
+- (void)dismissTabGroupsPromo {
+  [_tabGroupsPromoCoordinator stop];
+  _tabGroupsPromoCoordinator = nil;
+}
+
 - (void)showNotificationsOptInFromAccessPoint:
             (NotificationOptInAccessPoint)accessPoint
                            baseViewController:
@@ -2942,6 +2958,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissAutoDeletionActionSheet];
   [self dismissSearchWhatYouSeePromo];
   [self dismissPriceTrackingPromo];
+  [self dismissTabGroupsPromo];
   [self dismissNotificationsOptIn];
   [self hideWelcomeBackPromo];
 

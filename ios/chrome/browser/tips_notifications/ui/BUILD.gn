@@ -93,3 +93,18 @@ source_set("price_tracking_promo") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("tab_groups_promo") {
+  sources = [
+    "tab_groups_promo_view_controller.h",
+    "tab_groups_promo_view_controller.mm",
+  ]
+  public_deps = [ ":shared" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
