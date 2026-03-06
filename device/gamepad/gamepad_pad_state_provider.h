@@ -49,37 +49,37 @@ struct PadState {
   ~PadState();
 
   // Index of the slot occupied by this gamepad.
-  int pad_index = 0;
+  int pad_index;
 
   // Which data fetcher provided this gamepad's data.
-  GamepadSource source = GamepadSource::kNone;
+  GamepadSource source;
   // Data fetcher-specific identifier for this gamepad.
-  int source_id = 0;
+  int source_id;
 
   // Indicates whether this gamepad is actively receiving input. |is_active| is
   // initialized to false on each polling cycle and must is set to true when new
   // data is received.
-  bool is_active = false;
+  bool is_active;
 
   // True if the gamepad is newly connected but notifications have not yet been
   // sent.
-  bool is_newly_active = false;
+  bool is_newly_active;
 
   // Set by the data fetcher to indicate that one-time initialization for this
   // gamepad has been completed.
-  bool is_initialized = false;
+  bool is_initialized;
 
   // Set by the data fetcher to indicate whether this gamepad's ids are
   // recognized as a specific gamepad. It is then used to prioritize recognized
   // gamepads when finding an empty slot for any new gamepads when activated.
-  bool is_recognized = false;
+  bool is_recognized;
 
   // Gamepad data, unmapped.
   Gamepad data;
 
   // Functions to map from device data to standard layout, if available. May
   // be null if no mapping is available or needed.
-  GamepadStandardMappingFunction mapper = nullptr;
+  GamepadStandardMappingFunction mapper;
 
   // Sanitization masks
   // axis_mask and button_mask are bitfields that represent the reset state of
@@ -90,13 +90,13 @@ struct PadState {
   static_assert(Gamepad::kAxesLengthCap <=
                     std::numeric_limits<uint32_t>::digits,
                 "axis_mask is not large enough");
-  uint32_t axis_mask = 0;
+  uint32_t axis_mask;
 
   // If we ever increase the max button count this will need to be updated.
   static_assert(Gamepad::kButtonsLengthCap <=
                     std::numeric_limits<uint32_t>::digits,
                 "button_mask is not large enough");
-  uint32_t button_mask = 0;
+  uint32_t button_mask;
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadPadStateProvider {

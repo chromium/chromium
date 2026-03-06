@@ -85,7 +85,7 @@ PadState* GamepadPadStateProvider::GetConnectedPadState(uint32_t pad_index) {
 }
 
 void GamepadPadStateProvider::ClearPadState(PadState& state) {
-  state = PadState();
+  UNSAFE_TODO(memset(&state, 0, sizeof(PadState)));
 }
 
 void GamepadPadStateProvider::InitializeDataFetcher(
@@ -100,7 +100,7 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   DCHECK(pad);
 
   if (!pad_state->data.connected) {
-    *pad = Gamepad();
+    UNSAFE_TODO(memset(pad, 0, sizeof(Gamepad)));
     return;
   }
 
