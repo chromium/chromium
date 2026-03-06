@@ -16,6 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/types/pass_key.h"
+#include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -549,8 +551,10 @@ ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
   const auto [it, added] = element_data_.try_emplace(key, this, id, context);
   // This might be the first time we've referenced this identifier, so make
   // sure it's registered.
-  if (added)
-    ElementIdentifier::RegisterKnownIdentifier(id);
+  if (added) {
+    internal::UniqueIdentifier::RegisterKnownIdentifier(
+        id.GetIdentifier(base::PassKey<ElementTracker>()));
+  }
   return &it->second;
 }
 

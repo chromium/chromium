@@ -1056,6 +1056,7 @@ test("ui_base_unittests") {
     "//ui/base/clipboard:file_info",
     "//ui/base/cursor:unittests",
     "//ui/base/data_transfer_policy:unittests",
+    "//ui/base/identifier:unit_tests",
     "//ui/base/interaction:unit_tests",
     "//ui/base/metadata:metadata_tests",
     "//ui/base/prediction",

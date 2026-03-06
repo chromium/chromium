@@ -12,79 +12,10 @@
 
 namespace ui {
 
-std::string ElementIdentifier::GetName() const {
-  if (!handle_)
-    return std::string();
-  RegisterKnownIdentifier(*this);
-  return handle_->name;
-}
-
-intptr_t ElementIdentifier::GetRawValue() const {
-  if (!handle_)
-    return 0;
-  RegisterKnownIdentifier(*this);
-  return reinterpret_cast<intptr_t>(handle_);
-}
-
-// static
-ElementIdentifier ElementIdentifier::FromRawValue(intptr_t value) {
-  if (!value)
-    return ElementIdentifier();
-  const auto* impl =
-      reinterpret_cast<const internal::ElementIdentifierImpl*>(value);
-  CHECK(GetKnownIdentifiers().contains(impl));
-  return ElementIdentifier(impl);
-}
-
-// static
-ElementIdentifier ElementIdentifier::FromName(const char* name) {
-  for (const auto* impl : GetKnownIdentifiers()) {
-    if (std::string_view(impl->name) == name) {
-      return ElementIdentifier(impl);
-    }
-  }
-  return ElementIdentifier();
-}
-
-// static
-void ElementIdentifier::RegisterKnownIdentifier(
-    ElementIdentifier element_identifier) {
-  CHECK(element_identifier);
-
-#if DCHECK_IS_ON()
-  // Enforce uniqueness in DCHECK builds.
-  const ElementIdentifier existing = FromName(element_identifier.handle_->name);
-  DCHECK(!existing || existing == element_identifier)
-      << "Duplicate identifier: " << element_identifier.handle_->name;
-#endif
-
-  GetKnownIdentifiers().insert(element_identifier.handle_);
-}
-
-// static
-ElementIdentifier::KnownIdentifiers& ElementIdentifier::GetKnownIdentifiers() {
-  static base::NoDestructor<KnownIdentifiers> known_identifiers;
-  return *known_identifiers.get();
-}
-
-COMPONENT_EXPORT(UI_BASE_INTERACTION)
-void PrintTo(ElementIdentifier element_identifier, std::ostream* os) {
-  *os << "ElementIdentifier " << element_identifier.GetName();
-}
-
-COMPONENT_EXPORT(UI_BASE_INTERACTION)
 void PrintTo(ElementContext element_context, std::ostream* os) {
   *os << "ElementContext " << static_cast<const void*>(element_context);
 }
 
-COMPONENT_EXPORT(UI_BASE_INTERACTION)
-std::ostream& operator<<(std::ostream& os,
-                         ElementIdentifier element_identifier) {
-  PrintTo(element_identifier, &os);
-  return os;
-}
-
-COMPONENT_EXPORT(UI_BASE_INTERACTION)
 std::ostream& operator<<(std::ostream& os, ElementContext element_context) {
   PrintTo(element_context, &os);
   return os;

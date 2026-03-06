@@ -22,6 +22,8 @@ component("interaction") {
     "typed_identifier.h",
   ]
 
+  public_deps = [ "//ui/base/identifier" ]
+
   deps = [
     "//base",
     "//ui/gfx:native_ui_types",
@@ -78,6 +80,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/identifier",
   ]
 
   deps = [
@@ -92,7 +95,6 @@ source_set("unit_tests") {
 
   sources = [
     "element_highlighter_unittest.cc",
-    "element_identifier_unittest.cc",
     "element_tracker_unittest.cc",
     "framework_specific_implementation_unittest.cc",
     "framework_specific_registration_list_unittest.cc",

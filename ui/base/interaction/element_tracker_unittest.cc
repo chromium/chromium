@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -1037,7 +1038,9 @@ TEST(SafeElementReferenceTest, CopyOperator) {
 
 class ElementTrackerIdentifierTest : public testing::Test {
  public:
-  void SetUp() override { ElementIdentifier::GetKnownIdentifiers().clear(); }
+  void SetUp() override {
+    internal::UniqueIdentifier::ClearKnownIdentifiersForTesting();
+  }
 };
 
 TEST_F(ElementTrackerIdentifierTest, ShowElementRegistersIdentifier) {

@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest, FocusReloadButton) {
   RunTestSequence(
       WaitForShow(kWebUIToolbarElementIdentifier),
       WithView(kWebUIToolbarElementIdentifier,
-               [kInstrumentedWebViewId](WebUIToolbarWebView* parent) {
+               [](WebUIToolbarWebView* parent) {
                  parent->GetWebViewForTesting()->SetProperty(
                      views::kElementIdentifierKey, kInstrumentedWebViewId);
                }),

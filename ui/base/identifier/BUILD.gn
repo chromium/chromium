@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+component("identifier") {
+  output_name = "ui_base_identifier"
+  defines = [ "IS_UI_BASE_IDENTIFIER_IMPL" ]
+
+  public = [ "unique_identifier.h" ]
+
+  deps = [ "//base" ]
+
+  sources = [ "unique_identifier.cc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "unique_identifier_unittest.cc" ]
+
+  deps = [
+    ":identifier",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

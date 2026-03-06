@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutIntegrationMultiProfileInteractiveUiTest,
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
-      base::BindLambdaForTesting([kProfilePickerViewId] {
+      base::BindLambdaForTesting([] {
         ProfilePicker::GetViewForTesting()->SetProperty(
             views::kElementIdentifierKey, kProfilePickerViewId);
       }));
