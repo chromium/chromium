@@ -19066,98 +19066,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Input overlay strings -->
     <if expr="is_chromeos">
-      <message name="IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA" desc="Generic feature name during alpha phase, to be displayed in educational and settigns UI.">
-        Game controls
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE_ALPHA" desc="Feature title via Educational menu.">
-        Game controls now available
-      </message>
-      <message name="IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA" desc="Text tied to the close button on Settings menu, readable via Chromevox.">
-        Close game controls
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON" desc="Button to access Input Overlay's settings menu.">
-        Game Control
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_GAME_CONTROL" desc="Toggle to enable input overlay feature for arc games.">
-        Game Control
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_KEY_MAPPING" desc="Text shown next to the customize button to engage in modifying key bindings for games.">
-        Key mapping
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_CUSTOMIZE_BUTTON" desc="Text displayed to engage in key binding edition.">
-        Customize
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_EDIT_BUTTON" desc="Text displayed to engage in key binding edition.">
-        Edit
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY" desc="Text shown next to the toggle to enable/disable the display overlay to the user.">
-        Show hint overlay
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING" desc="Text tied to the key-mapping toggle on Settings UI.">
-        Show key mapping
-      </message>
-      <message name="IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK" desc="Entry point to send feedback regarding input-overlay.">
-        Send feedback
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MENU_KEYBOARD_KEY" desc="Entry point to bind action to keyboard key.">
-        Keyboard key
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MENU_LEFT_MOUSE_CLICK" desc="Entry point to bind action to left mouse click.">
-        Left mouse click
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MENU_RIGHT_MOUSE_CLICK" desc="Entry point to bind action to right mouse click.">
-        Right mouse click
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MENU_RESET" desc="Entry point to reset the action binding to original binding.">
-        Reset
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_RESET" desc="Restore key-bindings to a preset status.">
-        Reset to defaults
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_SAVE" desc="Apply and store the newly set key-bindings.">
-        Save
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_MODE_CANCEL" desc="Discard all the newly assigned key-bindings in this session.">
-        Cancel
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_TITLE" desc="Educational dialog's title, this is a friendly name for the feature.">
-        Game Control
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION" desc="Text on the educational dialog describing the funcionality introduced by this feature.">
-        You’ve been invited to try out keyboard control for this game.
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_DESCRIPTION_ALPHA" desc="Text shown on the educational dialog during alpha relase.">
-        Play using your Chromebook keyboard. You can customize keys to specific actions.
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON" desc="Educational dialog's accept button text.">
-        Got it
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDUCATIONAL_BETA" desc="Label marking the feature as 'Beta', this has to be removed after the feature is fully approved.">
-        Beta
-      </message>
-      <message name="IDS_INPUT_OVERLAY_RELEASE_ALPHA" desc="Label marking the feature as 'Alpha', this will be removed after feature fully launches.">
-        Alpha
-      </message>
-      <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE" desc="Label displayed next to the Settings UI's entry point so the user is aware.">
-        Click here to customize controls
-      </message>
-      <message name="IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA" desc="Label displayed next to Settings UI's entry point during alpha phase.">
-        Click to customize your game controls
-      </message>
-      <message name="IDS_INPUT_OVERLAY_CLOSE_MENU" desc="Accessibility name tied to the close button.">
-        Close menu
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS" desc="Text presented via a toltip so the user knows how to interact and edit key-bindigs.">
-        Click on any key with your mouse, then press a keyboard key to customize
-      </message>
       <message name="IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING" desc="Text presented via a toltip so the user is aware of an incomplete key-binding.">
         Key is missing. Press a keyboard key to customize
       </message>
       <message name="IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS" desc="Text informing the user about keys not available for binding.">
         The following keys aren’t supported: Tab, Shift, Control, Escape, Caps lock, Volume
-      </message>
-      <message name="IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY" desc="Text informing the user on how to proceed while having a focused key.">
-        Press a keyboard key to customize
       </message>
     </if>
 
