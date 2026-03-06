@@ -5640,6 +5640,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
         // Child iframes always receive a token during creation, so verify
         // we are in a child iframe.
         CHECK(parent_);
+        last_sandbox_origin_token_for_testing_ = *sandbox_origin_token;
         new_frame_origin = content::SandboxedOpaqueOriginCreator::
             CreateOriginForSandboxedFrame(
                 base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token,
@@ -5653,6 +5654,7 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
         CHECK(!parent_);
         sandbox_origin_token_ = std::make_unique<base::UnguessableToken>(
             base::UnguessableToken::Create());
+        last_sandbox_origin_token_for_testing_ = *sandbox_origin_token_;
         new_frame_origin = content::SandboxedOpaqueOriginCreator::
             CreateOriginForSandboxedFrame(
                 base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token_,

@@ -2414,6 +2414,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return std::move(sandbox_origin_token_);
   }
 
+  // Returns the sandbox origin token that was last consumed by
+  // `SetOriginDependentStateOfNewFrame()`, for verification in tests.
+  const std::optional<base::UnguessableToken>&
+  last_sandbox_origin_token_for_testing() const {
+    return last_sandbox_origin_token_for_testing_;
+  }
+
   // Re-creates loader factories and pushes them to |RenderFrame|.
   // Used in case we need to add or remove intercepting proxies to the
   // running renderer, or in case of Network Service connection errors.
@@ -5628,6 +5635,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // for main frames (popups). For iframes, the token is consumed immediately
   // in `SetOriginDependentStateOfNewFrame()` and does not need to be stored.
   std::unique_ptr<base::UnguessableToken> sandbox_origin_token_;
+
+  // Stores the sandbox origin token value after it is consumed by
+  // `SetOriginDependentStateOfNewFrame()`, for use in tests to verify the
+  // pre-commit opaque origin was derived from the expected token.
+  std::optional<base::UnguessableToken> last_sandbox_origin_token_for_testing_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.
