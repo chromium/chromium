@@ -673,7 +673,7 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
 
 TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDesktopGlowUp);
+  feature_list.InitAndEnableFeature(features::kTabStripDeclutter);
 
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget =

@@ -8991,6 +8991,7 @@ from previous Chrome versions.
   <int value="-1858614075" label="IsolateSandboxedIframes:enabled"/>
   <int value="-1858284725" label="TabGroupsFeedback:enabled"/>
   <int value="-1856902397" label="LoadingWithMojo:enabled"/>
+  <int value="-1856813766" label="TabStripDeclutter:enabled"/>
   <int value="-1856118202" label="AdvancedDocumentScanAPI:disabled"/>
   <int value="-1856080892" label="UseAdHocSigningForWebAppShims:disabled"/>
   <int value="-1855876994"
@@ -9069,7 +9070,6 @@ from previous Chrome versions.
   <int value="-1834521056"
       label="AutofillEnableUserAvatarInSaveCardFooter:disabled"/>
   <int value="-1834475132" label="IgnoreSyncEncryptionKeysLongMissing:enabled"/>
-  <int value="-1834235087" label="DesktopGlowUp:disabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
   <int value="-1832878034" label="OpenDownloadDialog:enabled"/>
@@ -13248,6 +13248,7 @@ from previous Chrome versions.
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>
   <int value="-406475702"
       label="webview-disable-apps-package-names-allowlist-component"/>
+  <int value="-406379958" label="TabStripDeclutter:disabled"/>
   <int value="-405380243" label="enable-encryption-migration"/>
   <int value="-405321262" label="cast-streaming-force-disable-hardware-vp8"/>
   <int value="-404496301" label="DownloadRange:disabled"/>
@@ -16175,7 +16176,6 @@ from previous Chrome versions.
   <int value="596056149" label="BiometricAuthIdentityCheck:enabled"/>
   <int value="596106994" label="CustomFeedbackUi:enabled"/>
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
-  <int value="597732580" label="DesktopGlowUp:enabled"/>
   <int value="597848250" label="SensitiveContentWhileSwitchingTabs:enabled"/>
   <int value="598312195" label="DestroySystemProfiles:disabled"/>
   <int value="598741917" label="BottomBrowserControlsRefactor:disabled"/>

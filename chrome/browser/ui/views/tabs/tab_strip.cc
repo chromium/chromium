@@ -1274,7 +1274,7 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
     drag_context_->TabWasAdded();
   }
 
-  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
       old_tab_count < TabStyle::kTabStripDeclutterMinTabsForSeparatorHide &&
       GetTabCount() >= TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
     tab_container_->SchedulePaint();
@@ -1339,7 +1339,7 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
     observer_->OnTabRemoved(model_index);
   }
 
-  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
       old_tab_count >= TabStyle::kTabStripDeclutterMinTabsForSeparatorHide &&
       GetTabCount() < TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
     tab_container_->SchedulePaint();

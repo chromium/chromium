@@ -30,7 +30,7 @@ BASE_DECLARE_FEATURE(kDseIntegrity);
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
 
-BASE_DECLARE_FEATURE(kDesktopGlowUp);
+BASE_DECLARE_FEATURE(kTabStripDeclutter);
 BASE_DECLARE_FEATURE(kGlassToolbar);
 
 BASE_DECLARE_FEATURE(kDetachedTabs);

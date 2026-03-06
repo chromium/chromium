@@ -205,7 +205,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   void OnViewFocused(views::View* observed_view) override {
     controller_->UpdateHoverCard(
         tab_, TabSlotController::HoverCardUpdateType::kFocus);
-    if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
       tab_->InvalidateLayout();
     }
   }
@@ -216,7 +216,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
       controller_->UpdateHoverCard(
           nullptr, TabSlotController::HoverCardUpdateType::kFocus);
     }
-    if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
       tab_->InvalidateLayout();
     }
   }
@@ -783,7 +783,7 @@ void Tab::OnFocus() {
   controller_->TabKeyboardFocusChangedTo(tab_handle_.Get());
   controller_->UpdateHoverCard(this,
                                TabSlotController::HoverCardUpdateType::kFocus);
-  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
     InvalidateLayout();
   }
 }
@@ -797,7 +797,7 @@ void Tab::OnBlur() {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);
   }
-  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp)) {
+  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
     InvalidateLayout();
   }
 }
@@ -1187,7 +1187,7 @@ void Tab::UpdateIconVisibility() {
     }
 
     const bool is_decluttered =
-        base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+        base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
         controller_->GetTabCount() >=
             TabStyle::kTabStripDeclutterMinTabsForCloseHide;
     showing_close_button_ =

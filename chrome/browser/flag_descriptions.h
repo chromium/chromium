@@ -524,9 +524,9 @@ inline constexpr char kDesktopUAOnConnectedDisplayDescription[] =
     "When enabled, this feature will request a desktop user agent on external "
     "displays.";
 
-inline constexpr char kDesktopGlowUpName[] = "Desktop Glow Up";
-inline constexpr char kDesktopGlowUpDescription[] =
-    "Enables the Glow Up feature on Desktop.";
+inline constexpr char kTabStripDeclutterName[] = "Tab Strip Declutter";
+inline constexpr char kTabStripDeclutterDescription[] =
+    "Enables the Tab Strip Declutter feature on Desktop.";
 
 inline constexpr char kDetachedTabsName[] = "Detached Tabs";
 inline constexpr char kDetachedTabsDescription[] =
