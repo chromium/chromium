@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace tabs {
@@ -30,7 +32,8 @@ class Label;
 // The view for the tab group header. It displays the tab group
 // title, editor icon and the collapsed/expand icon.
 class VerticalTabGroupHeaderView : public views::FlexLayoutView,
-                                   public views::ContextMenuController {
+                                   public views::ContextMenuController,
+                                   public views::FocusChangeListener {
   METADATA_HEADER(VerticalTabGroupHeaderView, views::FlexLayoutView)
 
  public:
@@ -67,6 +70,16 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  void OnFocus() override;
+  void OnBlur() override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override;
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
 
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(
@@ -117,6 +130,8 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
+
+  base::WeakPtrFactory<VerticalTabGroupHeaderView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_
