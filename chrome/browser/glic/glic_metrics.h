@@ -395,6 +395,10 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
                                   GlicSharingManager* sharing_manager);
   void ClearControllers();
 
+  // Records user preferences for the profile. Called when the GlicKeyedService
+  // for each profile is created.
+  void RecordGlicProfilePreferences();
+
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
 
   // Sets the input mode of the web client. Should be called when the panel is

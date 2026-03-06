@@ -1708,6 +1708,30 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="PanelEvent"/>
 </histogram>
 
+<histogram name="Glic.Preferences.{Preference}" enum="BooleanEnabled"
+    expires_after="2026-06-03">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded when the GlicKeyedService for a profile is created. Recorded once
+    per profile initialization. This logs whether the setting to {Preference} is
+    enabled.
+  </summary>
+  <token key="Preference">
+    <variant name="ActuationOnWeb" summary="let Chrome auto-browse"/>
+    <variant name="DefaultTabContextEnabled"
+        summary="share the current tab by default"/>
+    <variant name="GeolocationEnabled" summary="use precise location"/>
+    <variant name="KeepSidepanelOpenOnNewTabsEnabled"
+        summary="keep the side panel open when opening a new tab"/>
+    <variant name="LauncherEnabled"
+        summary="show Gemini in the system tray and turn on the keyboard
+                 shortcut"/>
+    <variant name="MicrophoneEnabled" summary="use the microphone"/>
+    <variant name="PinnedToTabstrip" summary="show Glic in tab the strip"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Prewarming.ChecksResult"
     enum="GlicPrewarmingChecksResult" expires_after="2026-07-26">
   <owner>dullweber@chromium.org</owner>

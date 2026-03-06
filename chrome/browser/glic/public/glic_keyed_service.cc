@@ -236,6 +236,7 @@ GlicKeyedService::GlicKeyedService(
   // TODO(crbug.com/450026474): Consider not constructing this metrics
   // instance for multi-instance
   metrics_->ClearControllers();
+  metrics_->RecordGlicProfilePreferences();
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   if (UseDefaultWindowController()) {

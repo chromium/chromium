@@ -338,6 +338,33 @@ GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)
 
 GlicMetrics::~GlicMetrics() = default;
 
+void GlicMetrics::RecordGlicProfilePreferences() {
+  PrefService* profile_prefs = profile_->GetPrefs();
+  PrefService* local_state = g_browser_process->local_state();
+
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.PinnedToTabstrip",
+      profile_prefs->GetBoolean(prefs::kGlicPinnedToTabstrip));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.LauncherEnabled",
+      local_state->GetBoolean(prefs::kGlicLauncherEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.KeepSidepanelOpenOnNewTabsEnabled",
+      profile_prefs->GetBoolean(prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.GeolocationEnabled",
+      profile_prefs->GetBoolean(prefs::kGlicGeolocationEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.MicrophoneEnabled",
+      profile_prefs->GetBoolean(prefs::kGlicMicrophoneEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.DefaultTabContextEnabled",
+      profile_prefs->GetBoolean(prefs::kGlicDefaultTabContextEnabled));
+  base::UmaHistogramBoolean(
+      "Glic.Preferences.ActuationOnWeb",
+      profile_prefs->GetBoolean(prefs::kGlicUserEnabledActuationOnWeb));
+}
+
 void GlicMetrics::OnTrustFirstOnboardingShown() {
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
   base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));

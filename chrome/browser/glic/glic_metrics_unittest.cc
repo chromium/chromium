@@ -263,6 +263,87 @@ class GlicMetricsTest : public GlicMetricsTestBase {
   raw_ptr<MockDelegate> delegate_ = nullptr;
 };
 
+TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
+  // Set up preferences to true.
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
+                                    true);
+
+  metrics()->RecordGlicProfilePreferences();
+
+  // Only true should be recorded.
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.PinnedToTabstrip",
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.LauncherEnabled",
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Preferences.KeepSidepanelOpenOnNewTabsEnabled", true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.GeolocationEnabled",
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample("Glic.Preferences.MicrophoneEnabled",
+                                        true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Preferences.DefaultTabContextEnabled", true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Glic.Preferences.ActuationOnWeb", true, 1);
+
+  // Set up preferences to false.
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, false);
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicGeolocationEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
+                                    false);
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
+                                    false);
+
+  metrics()->RecordGlicProfilePreferences();
+
+  // Both true and false should be recorded once.
+  histogram_tester().ExpectBucketCount("Glic.Preferences.PinnedToTabstrip",
+                                       true, 1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.PinnedToTabstrip",
+                                       false, 1);
+
+  histogram_tester().ExpectBucketCount("Glic.Preferences.LauncherEnabled", true,
+                                       1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.LauncherEnabled",
+                                       false, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.KeepSidepanelOpenOnNewTabsEnabled", true, 1);
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.KeepSidepanelOpenOnNewTabsEnabled", false, 1);
+
+  histogram_tester().ExpectBucketCount("Glic.Preferences.GeolocationEnabled",
+                                       true, 1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.GeolocationEnabled",
+                                       false, 1);
+
+  histogram_tester().ExpectBucketCount("Glic.Preferences.MicrophoneEnabled",
+                                       true, 1);
+  histogram_tester().ExpectBucketCount("Glic.Preferences.MicrophoneEnabled",
+                                       false, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.DefaultTabContextEnabled", true, 1);
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.DefaultTabContextEnabled", false, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.ActuationOnWeb", true, 1);
+  histogram_tester().ExpectBucketCount(
+      "Glic.Preferences.ActuationOnWeb", false, 1);
+}
+
 TEST_F(GlicMetricsTest, Basic) {
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics()->OnResponseStarted();
