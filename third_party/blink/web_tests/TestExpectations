@@ -5749,7 +5749,6 @@ crbug.com/1027434 external/wpt/html/browsers/origin/cross-origin-objects/cross-o
 crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Pass Timeout ]
 
 # Temporary SkiaRenderer regressions
-crbug.com/1029941 [ Linux ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
 crbug.com/1029941 [ Linux ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
 crbug.com/1029941 [ Win ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 
