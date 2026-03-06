@@ -202,6 +202,14 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/403851785): Remove when the feature is verified to be stable
   // on desktop Android.
   feature_overrides.EnableFeature(media::kContextMenuPictureInPictureAndroid);
+
+  // Enable Media Engagement bypass and preload for desktop Android.
+  // TODO(crbug.com/490450572): Re-evaluate if we want to enable these features
+  // for all Android form factors after analysis.
+  feature_overrides.EnableFeature(
+      media::kMediaEngagementBypassAutoplayPolicies);
+  feature_overrides.EnableFeature(media::kPreloadMediaEngagementData);
+
   // Disables the enhanced pip transition and uses the default animation.
   // TODO(crbug.com/440384447): Remove when enhanced pip transition is fixed.
   feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
