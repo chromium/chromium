@@ -5,6 +5,7 @@
 package org.chromium.printing;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
@@ -35,7 +36,11 @@ public class PrintManagerDelegateImpl implements PrintManagerDelegate {
             PrintDocumentAdapter documentAdapter,
             @Nullable PrintAttributes attributes) {
         dumpJobStatesForDebug();
-        mPrintManager.print(printJobName, documentAdapter, attributes);
+        try {
+            mPrintManager.print(printJobName, documentAdapter, attributes);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Printing failed.", e);
+        }
     }
 
     private void dumpJobStatesForDebug() {
