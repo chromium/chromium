@@ -4,7 +4,6 @@
 
 #include "extensions/browser/service_worker/service_worker_state.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
@@ -179,15 +178,9 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     return;
   }
 
-  if (renderer_state() != RendererState::kNotActive) {
-    // The worker is already active (via `DidInitialize` or `DidStart`). This
-    // is unexpected. We compare tokens to rule out the possibility that the
-    // notification are for a different worker instances.
-    blink::ServiceWorkerToken preexisting_token = *worker_id_->start_token;
-    blink::ServiceWorkerToken new_token = *worker_id.start_token;
-    if (preexisting_token != new_token) {
-      base::debug::DumpWithoutCrashing();
-    }
+  if (renderer_state() == RendererState::kActive) {
+    // We already received `RendererDidStartServiceWorkerContext` and know that
+    // this worker instance is already active.
     return;
   }
 
