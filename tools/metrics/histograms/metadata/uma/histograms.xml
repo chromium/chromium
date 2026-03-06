@@ -365,6 +365,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.FileMetricsProvider.PreviousSessionHistogramsCount"
+    units="histograms" expires_after="2027-02-28">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the number of histograms recovered from a previous session through
+    FileMetricsProvider::ProvideIndependentMetrics.
+  </summary>
+</histogram>
+
+<histogram name="UMA.FileMetricsProvider.PreviousSessionMetricsRecovered"
+    enum="Boolean" expires_after="2027-02-28">
+  <owner>mthiesse@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records whether recovering records from a previous session succeeded in
+    FileMetricsProvider::ProvideIndependentMetrics.
+  </summary>
+</histogram>
+
 <histogram name="UMA.FileMetricsProvider.{Source}.MergedHistogramsCount"
     units="histograms" expires_after="2027-02-28">
   <owner>lucnguyen@google.com</owner>

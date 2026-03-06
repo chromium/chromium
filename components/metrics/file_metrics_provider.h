@@ -289,7 +289,8 @@ class FileMetricsProvider : public MetricsProvider,
 
   // Records all histograms from a given source via a snapshot-manager. Only the
   // histograms that have |required_flags| will be recorded.
-  static void RecordHistogramSnapshotsFromSource(
+  // Returns the number of histograms reported.
+  static int RecordHistogramSnapshotsFromSource(
       base::HistogramSnapshotManager* snapshot_manager,
       SourceInfo* source,
       base::HistogramBase::Flags required_flags);

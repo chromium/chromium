@@ -724,7 +724,7 @@ size_t FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
 }
 
 // static
-void FileMetricsProvider::RecordHistogramSnapshotsFromSource(
+int FileMetricsProvider::RecordHistogramSnapshotsFromSource(
     base::HistogramSnapshotManager* snapshot_manager,
     SourceInfo* source,
     base::HistogramBase::Flags required_flags) {
@@ -747,6 +747,7 @@ void FileMetricsProvider::RecordHistogramSnapshotsFromSource(
   source->read_complete = true;
   DVLOG(1) << "Reported " << histogram_count << " histograms from "
            << source->path.value();
+  return histogram_count;
 }
 
 FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
@@ -831,9 +832,13 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
   if (PersistentSystemProfile::GetSystemProfile(
           *source->allocator->memory_allocator(), system_profile_proto)) {
     system_profile_proto->mutable_stability()->set_from_previous_run(true);
-    RecordHistogramSnapshotsFromSource(
+    int histograms_recorded = RecordHistogramSnapshotsFromSource(
         snapshot_manager, source,
         /*required_flags=*/base::HistogramBase::kUmaTargetedHistogramFlag);
+
+    UMA_HISTOGRAM_COUNTS_1M(
+        "UMA.FileMetricsProvider.PreviousSessionHistogramsCount",
+        histograms_recorded);
 
     // NOTE: If you are adding anything here, consider also changing
     // MetricsStateMetricsProvider::ProvidePreviousSessionData().
@@ -853,9 +858,13 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
     // callback that runs on the main thread.
     std::move(serialize_log_callback).Run();
 
+    UMA_HISTOGRAM_BOOLEAN(
+        "UMA.FileMetricsProvider.PreviousSessionMetricsRecovered", true);
     return true;
   }
 
+  UMA_HISTOGRAM_BOOLEAN(
+      "UMA.FileMetricsProvider.PreviousSessionMetricsRecovered", false);
   return false;
 }
 
