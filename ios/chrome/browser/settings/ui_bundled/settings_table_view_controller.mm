@@ -276,7 +276,7 @@ struct EnhancedSafeBrowsingActivePromoData
   PasswordsCoordinator* _passwordsCoordinator;
 
   // Feature engagement tracker for the signin IPH.
-  raw_ptr<feature_engagement::Tracker, DanglingUntriaged>
+  raw_ptr<feature_engagement::Tracker>
       _featureEngagementTracker;
   // Presenter for the signin IPH.
   BubbleViewControllerPresenter* _bubblePresenter;
@@ -2275,6 +2275,7 @@ struct EnhancedSafeBrowsingActivePromoData
   // Clear C++ ivars.
   _voiceLocaleCode.Destroy();
   _passwordCheckManager.reset();
+  _featureEngagementTracker = nullptr;
   _browser = nullptr;
   _profile = nullptr;
 

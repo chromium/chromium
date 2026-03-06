@@ -714,7 +714,7 @@ const char kChromeAppStoreUrl[] =
   DockingPromoCoordinator* _dockingPromoCoordinator;
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
-  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged>
+  raw_ptr<UrlLoadingNotifierBrowserAgent>
       _urlLoadingNotifierBrowserAgent;
   id<OmniboxCommands> _omniboxCommandsHandler;
   LayoutGuideCenter* _layoutGuideCenter;
@@ -1499,6 +1499,7 @@ const char kChromeAppStoreUrl[] =
   _layoutGuideCenter = nil;
   _webNavigationBrowserAgent = nil;
   _urlLoadingBrowserAgent = nil;
+  _urlLoadingNotifierBrowserAgent = nullptr;
 }
 
 // Starts child coordinators.
