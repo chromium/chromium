@@ -1265,6 +1265,18 @@ void WebContentsAccessibilityAndroid::ClearNodeInfoCacheForGivenId(
                                                                  unique_id);
 }
 
+// TODO(crbug.com/485227837): Remove experiment's methods
+void WebContentsAccessibilityAndroid::ValidateA11yCacheForExperiment() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_WebContentsAccessibilityImpl_validateAccessibilityFakeCacheForExperiment(
+      env, obj);
+}
+
 std::u16string
 WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
     int32_t unique_id) {
@@ -1299,7 +1311,8 @@ int32_t WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
   return ui::kAXAndroidInvalidViewId;
 }
 
-size_t WebContentsAccessibilityAndroid::GetAccessibilityTreeSizeForTesting(
+// TODO(crbug.com/485227837): Remove experiment's methods
+size_t WebContentsAccessibilityAndroid::GetAccessibilityTreeSizeForExperiment(
     JNIEnv* env) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
@@ -2975,6 +2988,13 @@ WebContentsAccessibilityAndroid::GetChildIdsForTesting(JNIEnv* env,
     child_ids.push_back(android_node.GetUniqueId());
   }
   return base::android::ToJavaIntArray(env, child_ids);
+}
+
+// TODO(crbug.com/485227837): Rename experiment's methods
+ScopedJavaLocalRef<jintArray>
+WebContentsAccessibilityAndroid::GetChildIdsForExperiment(JNIEnv* env,
+                                                          int32_t unique_id) {
+  return GetChildIdsForTesting(env, unique_id);
 }
 
 jint WebContentsAccessibilityAndroid::GetParentIdForTesting(  // IN-TEST

@@ -6,7 +6,6 @@ package org.chromium.content.browser.accessibility;
 
 import android.os.Build;
 import android.os.Parcel;
-import android.util.SparseArray;
 
 import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -17,7 +16,9 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fake cache for {@link AccessibilityNodeInfoCompat} objects. This is used to simulate the
@@ -26,8 +27,9 @@ import java.util.List;
 @JNINamespace("content")
 @NullMarked
 public class FakeAndroidCache {
-    private final SparseArray<CachedNodeState> mCache = new SparseArray<>();
+    private final Map<Integer, CachedNodeState> mCache = new HashMap<>();
     private final WebContentsAccessibilityImpl mWebContentsAccessibilityImpl;
+    @Nullable private final AccessibilityHistogramRecorder mHistogramRecorder;
     // Only for testing
     private int mStaleNodeCount;
 
@@ -37,6 +39,18 @@ public class FakeAndroidCache {
                     "FakeAndroidCache is only available on Android Tiramisu and above.");
         }
         mWebContentsAccessibilityImpl = webContentsAccessibilityImpl;
+        mHistogramRecorder = null;
+    }
+
+    public FakeAndroidCache(
+            WebContentsAccessibilityImpl webContentsAccessibilityImpl,
+            AccessibilityHistogramRecorder histogramRecorder) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            throw new UnsupportedOperationException(
+                    "FakeAndroidCache is only available on Android Tiramisu and above.");
+        }
+        mWebContentsAccessibilityImpl = webContentsAccessibilityImpl;
+        mHistogramRecorder = histogramRecorder;
     }
 
     private static class CachedNodeState {
@@ -56,9 +70,17 @@ public class FakeAndroidCache {
 
     // Validate accessibility node info throughout the fake android cache.
     public void validateAccessibility() {
-        for (int i = 0; i < mCache.size(); i++) {
-            int virtualViewId = mCache.keyAt(i);
-            CachedNodeState cachedState = mCache.valueAt(i);
+        if (mHistogramRecorder != null) {
+            // We must first calculate the total number of nodes.
+            mHistogramRecorder.setTotalNodesCount(
+                    mWebContentsAccessibilityImpl.getAccessibilityTreeSizeForExperiment());
+            // Then the total number of nodes in the fake cache.
+            mHistogramRecorder.setTotalFakeCacheNodesCount(mCache.size());
+        }
+
+        for (Map.Entry<Integer, CachedNodeState> entry : mCache.entrySet()) {
+            int virtualViewId = entry.getKey();
+            CachedNodeState cachedState = entry.getValue();
             // Build a completely fresh node for comparison.
             AccessibilityNodeInfoCompat freshInfo =
                     mWebContentsAccessibilityImpl.buildFreshAccessibilityNodeInfo(virtualViewId);
@@ -73,15 +95,22 @@ public class FakeAndroidCache {
                     .getUniqueId()
                     .equals(
                             String.valueOf(
-                                    mWebContentsAccessibilityImpl.getCurrentRootIdForTesting()))) {
+                                    mWebContentsAccessibilityImpl
+                                            .getCurrentRootIdForExperiment()))) {
                 continue;
             }
 
             Parcel freshInfoParcel = Parcel.obtain();
             freshInfo.unwrap().writeToParcel(freshInfoParcel, 0);
             if (!Arrays.equals(freshInfoParcel.marshall(), cachedState.mNodeInfoParcelData)) {
+                if (mHistogramRecorder != null) {
+                    mHistogramRecorder.incrementStaleNodeOnFakeCache();
+                }
                 mStaleNodeCount++;
             }
+        }
+        if (mHistogramRecorder != null) {
+            mHistogramRecorder.recordFakeCacheHistograms();
         }
     }
 
@@ -94,7 +123,7 @@ public class FakeAndroidCache {
         if (nodeInfo == null) {
             return;
         }
-        int[] childIds = mWebContentsAccessibilityImpl.getChildIdsForTesting(virtualViewId);
+        int[] childIds = mWebContentsAccessibilityImpl.getChildIdsForExperiment(virtualViewId);
         List<Integer> childIdList = new ArrayList<>(childIds != null ? childIds.length : 0);
         if (childIds != null) {
             for (int id : childIds) {
@@ -102,10 +131,16 @@ public class FakeAndroidCache {
             }
         }
         mCache.put(virtualViewId, new CachedNodeState(nodeInfo, childIdList));
+        if (mHistogramRecorder != null) {
+            mHistogramRecorder.reportNodeAddedToFakeCache(virtualViewId);
+        }
     }
 
     // Clear the entire fake cache.
     private void clear() {
+        if (mHistogramRecorder != null) {
+            mCache.keySet().forEach(mHistogramRecorder::reportNodeRemovedFromFakeCache);
+        }
         mCache.clear();
     }
 
@@ -119,6 +154,9 @@ public class FakeAndroidCache {
         CachedNodeState cachedNodeState = mCache.get(virtualViewId);
         if (cachedNodeState != null) {
             mCache.remove(virtualViewId);
+            if (mHistogramRecorder != null) {
+                mHistogramRecorder.reportNodeRemovedFromFakeCache(virtualViewId);
+            }
             if (recursive) {
                 for (int childId : cachedNodeState.mChildIds) {
                     clearNode(childId, true);

@@ -51,6 +51,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_CREATE_ACCESSIBILITY_NODE_INFO_TOTAL_TIME;
+import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_FAKE_CACHE_PERCENTAGE_STALE_NODES;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_BUNDLE;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_INLINE_TEXT_BOXES_COUNT;
 import static org.chromium.content.browser.accessibility.AccessibilityHistogramRecorder.ACCESSIBILITY_TIME_UNTIL_FIRST_ACCESSIBILITY_FOCUS;
@@ -134,6 +135,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
@@ -201,6 +203,8 @@ public class WebContentsAccessibilityTest {
             "AccessibilityNodeInfo object does not have Bundle extra containing image data.";
     private static final String FOCUSING_ERROR =
             "Expected focus to be on a different node than it is.";
+    private static final String WINDOW_CONTENT_CHANGED_EVENT_ERROR =
+            "Did not receive enough WindowContentChanged events.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
@@ -466,6 +470,64 @@ public class WebContentsAccessibilityTest {
         // Verify number of events processed
         int eventCount = mTestData.getTypeWindowContentChangedCount();
         Assert.assertTrue(lowThresholdError(eventCount), eventCount > UNSUPPRESSED_EXPECTED_COUNT);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @EnableFeatures(ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
+    public void testStaleNode_LabeledBy() throws Throwable {
+        // HTML from description.
+        String html =
+                "<html><body> <span id=\"label1\">Add Item</span>  <div"
+                    + " id=\"info_panel_1\">Status:OK</div>  <div id=\"info_panel_2\">Items:"
+                    + " 5</div>  <div id=\"info_panel_3\">Ready</div>  <div id=\"button1\""
+                    + " role=\"button\" aria-labelledby=\"label1\"></div>  <button"
+                    + " id=\"trigger\"onclick=\"update()\"></button>  <script>  function update() {"
+                    + "    document.getElementById('label1').textContent = 'Remove Item';   "
+                    + " document.getElementById('info_panel_1').textContent = 'Status: Done';   "
+                    + " document.getElementById('info_panel_2').textContent = 'Items: 6';   "
+                    + " document.getElementById('info_panel_3').textContent = 'Processing...'; }  "
+                    + " </script></body></html>";
+        setupTestWithHTML(html);
+
+        // To avoid targeting root node
+        mActivityTestRule.mWcax.setMaxContentChangedEventsToFireForTesting(10);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(ACCESSIBILITY_FAKE_CACHE_PERCENTAGE_STALE_NODES, 0)
+                        .build();
+
+        int label1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "label1");
+        int infoPanel1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "info_panel_1");
+        int infoPanel2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "info_panel_2");
+        int infoPanel3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "info_panel_3");
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button1");
+        int triggerVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "trigger");
+
+        mNodeInfo = createAccessibilityNodeInfo(buttonVvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        performActionOnUiThread(triggerVvid, ACTION_CLICK, null);
+
+        // Poll until all events have been confirmed as received
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    // we expect to receive 5 events (1 for each node, even for button because of
+                    // its dependency to the label)
+                    return mTestData.getTypeWindowContentChangedCount() == 5;
+                },
+                WINDOW_CONTENT_CHANGED_EVENT_ERROR);
+
+        // Signal end of test to trigger validation.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Record histograms.
+        mActivityTestRule.mWcax.forceRecordFakeCacheHistogramsForTesting();
+
+        // Assert histogram was recorded.
+        histogramWatcher.assertExpected();
     }
 
     /** Test that UMA histograms are recorded for AX Mode Complete. */
@@ -3799,7 +3861,7 @@ public class WebContentsAccessibilityTest {
         // Get the total size of the accessibility tree.
         long treeSize =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> mActivityTestRule.mWcax.getAccessibilityTreeSizeForTesting());
+                        () -> mActivityTestRule.mWcax.getAccessibilityTreeSizeForExperiment());
         // 28 nodes in the iframe + 5 node in the main frame = 33 nodes.
         Assert.assertTrue(
                 "Tree size should be greater than 15, but was " + treeSize, treeSize == 33L);

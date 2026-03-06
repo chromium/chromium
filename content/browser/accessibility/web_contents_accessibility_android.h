@@ -153,7 +153,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   // Tree methods.
   int32_t GetRootId(JNIEnv* env);
-  size_t GetAccessibilityTreeSizeForTesting(JNIEnv* env);
+  size_t GetAccessibilityTreeSizeForExperiment(JNIEnv* env);
   bool IsNodeValid(JNIEnv* env, int32_t id);
 
   void HitTest(JNIEnv* env, int32_t x, int32_t y);
@@ -432,12 +432,17 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleNavigate(int32_t root_id);
   void UpdateMaxNodesInCache();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
+  void ValidateA11yCacheForExperiment();
   void HandleEndOfTestSignal();
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
   base::android::ScopedJavaLocalRef<jintArray> GetChildIdsForTesting(
+      JNIEnv* env,
+      int32_t unique_id);
+
+  base::android::ScopedJavaLocalRef<jintArray> GetChildIdsForExperiment(
       JNIEnv* env,
       int32_t unique_id);
 

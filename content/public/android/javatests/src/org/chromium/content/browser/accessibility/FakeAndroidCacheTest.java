@@ -37,9 +37,9 @@ public class FakeAndroidCacheTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(mWebContentsAccessibility.getChildIdsForTesting(Mockito.anyInt()))
+        Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(Mockito.anyInt()))
                 .thenReturn(new int[] {});
-        Mockito.when(mWebContentsAccessibility.getCurrentRootIdForTesting()).thenReturn(-1);
+        Mockito.when(mWebContentsAccessibility.getCurrentRootIdForExperiment()).thenReturn(-1);
         Mockito.when(mWebContentsAccessibility.buildFreshAccessibilityNodeInfo(Mockito.anyInt()))
                 .thenReturn(null);
         mFakeAndroidCache = new FakeAndroidCache(mWebContentsAccessibility);
@@ -89,7 +89,7 @@ public class FakeAndroidCacheTest {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
                 fillEmptyAccessibilityNodeInfoCompat("testNode1", String.valueOf(mFirstNodeId));
-        Mockito.when(mWebContentsAccessibility.getChildIdsForTesting(mFirstNodeId))
+        Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(mFirstNodeId))
                 .thenReturn(new int[] {mSecondNodeId});
         mFakeAndroidCache.addNode(mFirstNodeId, testNode1);
 
@@ -116,7 +116,7 @@ public class FakeAndroidCacheTest {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
                 fillEmptyAccessibilityNodeInfoCompat("testNode1", String.valueOf(mFirstNodeId));
-        Mockito.when(mWebContentsAccessibility.getChildIdsForTesting(mFirstNodeId))
+        Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(mFirstNodeId))
                 .thenReturn(new int[] {mSecondNodeId});
         mFakeAndroidCache.addNode(mFirstNodeId, testNode1);
 
@@ -143,13 +143,13 @@ public class FakeAndroidCacheTest {
         // Create a test node and add it to the cache.
         AccessibilityNodeInfoCompat testNode1 =
                 fillEmptyAccessibilityNodeInfoCompat("testNode1", String.valueOf(mFirstNodeId));
-        Mockito.when(mWebContentsAccessibility.getChildIdsForTesting(mFirstNodeId))
+        Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(mFirstNodeId))
                 .thenReturn(new int[] {mSecondNodeId});
         mFakeAndroidCache.addNode(mFirstNodeId, testNode1);
 
         AccessibilityNodeInfoCompat testNode2 =
                 fillEmptyAccessibilityNodeInfoCompat("testNode2", String.valueOf(mSecondNodeId));
-        Mockito.when(mWebContentsAccessibility.getChildIdsForTesting(mSecondNodeId))
+        Mockito.when(mWebContentsAccessibility.getChildIdsForExperiment(mSecondNodeId))
                 .thenReturn(new int[] {mThirdNodeId, mFourthNodeId});
         mFakeAndroidCache.addNode(mSecondNodeId, testNode2);
 

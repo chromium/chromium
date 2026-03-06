@@ -170,6 +170,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(
       ui::AXNode* node) override;
 
+  void OnAccessibilityEventsProcessedForExperiment();
+
  private:
   // AXTreeObserver overrides.
   void OnAtomicUpdateStarting(
