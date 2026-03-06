@@ -691,12 +691,14 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
   auto schema = std::make_unique<JSONObject>();
 
   auto one_of = std::make_unique<JSONArray>();
+  auto enum_array = std::make_unique<JSONArray>();
   for (HTMLOptionElement& option : element.GetOptionList()) {
     auto option_object = std::make_unique<JSONObject>();
     option_object->SetString("type", "string");
     option_object->SetString("const", option.value());
     option_object->SetString("title", option.textContent());
     one_of->PushObject(std::move(option_object));
+    enum_array->PushString(option.value());
   }
 
   if (element.IsMultiple()) {
@@ -704,11 +706,13 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     auto items_schema = std::make_unique<JSONObject>();
     items_schema->SetString("type", "string");
     items_schema->SetArray("oneOf", std::move(one_of));
+    items_schema->SetArray("enum", std::move(enum_array));
     schema->SetObject("items", std::move(items_schema));
     schema->SetBoolean("uniqueItems", true);
   } else {
     schema->SetString("type", "string");
     schema->SetArray("oneOf", std::move(one_of));
+    schema->SetArray("enum", std::move(enum_array));
   }
 
   AddTitle(element, *schema);
@@ -771,8 +775,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   // Restrict each item in the list to one of the checkbox values.
   auto items_schema = std::make_unique<JSONObject>();
   items_schema->SetString("type", "string");
-  items_schema->SetArray("oneOf",
-                         ComputeOneOfArray(controls_for_name, required));
+  std::unique_ptr<JSONArray> enum_array;
+  items_schema->SetArray(
+      "oneOf", ComputeOneOfArray(controls_for_name, enum_array, required));
+  items_schema->SetArray("enum", std::move(enum_array));
   // Each checkbox value must at most appear *once* in the input.
 
   schema->SetObject("items", std::move(items_schema));
@@ -792,7 +798,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
 
-  schema->SetArray("oneOf", ComputeOneOfArray(controls_for_name, required));
+  std::unique_ptr<JSONArray> enum_array;
+  schema->SetArray("oneOf",
+                   ComputeOneOfArray(controls_for_name, enum_array, required));
+  schema->SetArray("enum", std::move(enum_array));
   // Add title/description from the first control for now.
   AddTitleAndDescriptionFromToolAttributesOnly(*controls_for_name.front(),
                                                *schema);
@@ -801,8 +810,10 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
 
 std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
     const ControlVector& controls_for_name,
+    std::unique_ptr<JSONArray>& enum_array,
     bool& required) {
   auto one_of = std::make_unique<JSONArray>();
+  enum_array = std::make_unique<JSONArray>();
   for (ListedElement* control : controls_for_name) {
     HTMLInputElement& input = To<HTMLInputElement>(control->ToHTMLElement());
     auto one_of_schema = std::make_unique<JSONObject>();
@@ -812,6 +823,7 @@ std::unique_ptr<JSONArray> FormMCPSchema::ComputeOneOfArray(
       one_of_schema->SetString("title", title);
     }
     one_of->PushObject(std::move(one_of_schema));
+    enum_array->PushString(input.Value());
     required |= input.IsRequired();
   }
   return one_of;

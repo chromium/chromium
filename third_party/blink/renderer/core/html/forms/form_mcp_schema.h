@@ -101,12 +101,18 @@ class CORE_EXPORT FormMCPSchema {
   // of the specified controls, suitable for assignment to a 'oneOf' field.
   //
   // The return value of this function will be an array of objects
-  // on the form { "const": "X", "title": "..." }.
+  // on the form { "const": "X", "title": "..." }. In addition to that,
+  // `enum_array` will be set to an array holding just the values directly,
+  // e.g. [ "X", ... ].
+  // TODO(andruud): Emitting the enum is redundant, but helps the agent
+  // figure out how to generate the input data. Long term, we should probably
+  // try to drop `enum_array`.
   //
   // The argument to 'required' will be set if at least one of the controls
   // are required.
   std::unique_ptr<JSONArray> ComputeOneOfArray(
       const ControlVector& controls_for_name,
+      std::unique_ptr<JSONArray>& enum_array,
       bool& required);
 
   bool ValidateParameterData(const String& name, const JSONValue&);

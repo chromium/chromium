@@ -831,6 +831,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_ImplicitLabelText) {
              { "type": "string", "const": "Option 2", "title": "This is option 2" },
              { "type": "string", "const": "Option 3", "title": "This is option 3" }
            ],
+           "enum": ["Option 1", "Option 2", "Option 3"],
            "description": "LABEL"
          }
       },
@@ -867,7 +868,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
              { "type": "string", "const": "Option 1", "title": "This is option 1" },
              { "type": "string", "const": "Option 2", "title": "This is option 2" },
              { "type": "string", "const": "Option 3", "title": "This is option 3" }
-           ]
+           ],
+           "enum": ["Option 1", "Option 2", "Option 3"]
          }
       },
       "required": ["select"]
@@ -900,6 +902,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
            "oneOf": [
              { "type": "string", "const": "Option 1", "title": "This is option 1" }
            ],
+           "enum": ["Option 1"],
            "title": "Possible Options"
          }
       },
@@ -938,7 +941,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Multiple) {
                { "type": "string", "const": "Option 1", "title": "This is option 1" },
                { "type": "string", "const": "Option 2", "title": "This is option 2" },
                { "type": "string", "const": "Option 3", "title": "This is option 3" }
-             ]
+             ],
+             "enum": ["Option 1", "Option 2", "Option 3"]
            },
            "uniqueItems": true
          }
@@ -1256,7 +1260,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
               { "type": "string", "const": "apple", "title": "Apple" },
               { "type": "string", "const": "melon", "title": "Melon" },
               { "type": "string", "const": "grape", "title": "Grape" }
-            ]
+             ],
+             "enum": ["apple", "melon", "grape"]
           },
           "uniqueItems": true
         }
@@ -1308,7 +1313,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
               { "type": "string", "const": "apple" },
               { "type": "string", "const": "melon" },
               { "type": "string", "const": "grape" }
-            ]
+             ],
+             "enum": ["apple", "melon", "grape"]
           },
           "uniqueItems": true,
           "title": "TITLE",
@@ -2369,7 +2375,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio) {
                "const": "l",
                "title": "Large"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          }
       },
       "required": []
@@ -2415,7 +2422,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
                "type": "string",
                "const": "l"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          },
          "item": {
            "type": "string",
@@ -2432,7 +2440,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
                "type": "string",
                "const": "hat"
              }
-           ]
+           ],
+           "enum": ["hoodie", "shirt", "hat"]
          }
       },
       "required": []
@@ -2510,7 +2519,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
                "type": "string",
                "const": "l"
              }
-           ]
+           ],
+           "enum": ["s", "m", "l"]
          }
       },
       "required": ["size"]
@@ -2556,6 +2566,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
                "const": "l"
              }
            ],
+           "enum": ["s", "m", "l"],
            "description": "DESC"
          }
       },
@@ -2602,6 +2613,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamTitle) {
                "const": "l"
              }
            ],
+           "enum": ["s", "m", "l"],
            "title": "TITLE"
          }
       },
