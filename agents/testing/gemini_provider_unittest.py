@@ -313,10 +313,10 @@ class GetGeminiCliArgumentsUnittest(fake_filesystem_unittest.TestCase):
         self.addCleanup(get_sandbox_image_tag_patcher.stop)
 
         gemini_helpers_patcher = unittest.mock.patch(
-            'gemini_provider.gemini_helpers.get_gemini_executable')
+            'gemini_provider.gemini_helpers.get_gemini_command')
         self.mock_gemini_helpers = gemini_helpers_patcher.start()
         self.addCleanup(gemini_helpers_patcher.stop)
-        self.mock_gemini_helpers.return_value = 'gemini'
+        self.mock_gemini_helpers.return_value = ['gemini']
 
         load_templates_patcher = unittest.mock.patch(
             'gemini_provider._load_templates')

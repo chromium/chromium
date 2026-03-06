@@ -44,8 +44,7 @@ class AutoFixer:
         Returns:
             CompletedProcess object containing the execution result.
         """
-        gemini_exe = gemini_helpers.get_gemini_executable()
-        cmd = [gemini_exe]
+        cmd = gemini_helpers.get_gemini_command()
         if extra_args:
             cmd.extend(extra_args)
 

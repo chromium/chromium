@@ -342,9 +342,12 @@ def _get_gemini_cli_arguments(
     node_bin = provider_vars.get('node_bin')
     if node_bin:
         command.append(node_bin)
-    gemini_cli_bin = provider_vars.get('gemini_cli_bin',
-                                       gemini_helpers.get_gemini_executable())
-    command.extend([gemini_cli_bin, '-y', '--model', MODEL])
+    gemini_cli_bin = provider_vars.get('gemini_cli_bin')
+    if gemini_cli_bin:
+        command.append(gemini_cli_bin)
+    else:
+        command = gemini_helpers.get_gemini_command()
+    command.extend(['-y', '--model', MODEL])
 
     sandbox_flags = []
     if provider_vars.get('sandbox', False):

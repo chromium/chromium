@@ -33,20 +33,20 @@ class GetGeminiExecutableUnittest(unittest.TestCase):
         """Tests that the gemini executable is found in the PATH."""
         self.mock_which.return_value = '/usr/bin/gemini'
         self.assertEqual(gemini_helpers.get_gemini_executable(),
-                         '/usr/bin/gemini')
+                         ['/usr/bin/gemini'])
 
     def test_get_gemini_executable_from_fallback(self):
         """Tests finding the gemini executable in the fallback path."""
         self.mock_which.return_value = None
         self.mock_exists.return_value = True
         self.assertEqual(gemini_helpers.get_gemini_executable(),
-                         '/google/bin/releases/gemini-cli/tools/gemini')
+                         ['/google/bin/releases/gemini-cli/tools/gemini'])
 
     def test_get_gemini_executable_not_found(self):
         """Tests the default gemini command is returned when not found."""
         self.mock_which.return_value = None
         self.mock_exists.return_value = False
-        self.assertEqual(gemini_helpers.get_gemini_executable(), 'gemini')
+        self.assertEqual(gemini_helpers.get_gemini_executable(), ['gemini'])
 
     def test_get_gemini_executable_from_alias(self):
         """Tests that the gemini executable is found from a shell alias."""

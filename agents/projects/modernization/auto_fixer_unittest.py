@@ -24,15 +24,15 @@ class AutoFixerUnittest(unittest.TestCase):
         self.mock_run_patcher = unittest.mock.patch('subprocess.run')
         self.mock_run = self.mock_run_patcher.start()
 
-        self.mock_get_exe_patcher = unittest.mock.patch(
-            'agents.common.gemini_helpers.get_gemini_executable')
-        self.mock_get_exe = self.mock_get_exe_patcher.start()
-        self.mock_get_exe.return_value = '/path/to/gemini'
+        self.mock_get_cmd_patcher = unittest.mock.patch(
+            'agents.common.gemini_helpers.get_gemini_command')
+        self.mock_get_cmd = self.mock_get_cmd_patcher.start()
+        self.mock_get_cmd.return_value = ['/path/to/gemini']
 
         self.verify_cmd = ['run_tests']
 
         self.addCleanup(self.mock_run_patcher.stop)
-        self.addCleanup(self.mock_get_exe_patcher.stop)
+        self.addCleanup(self.mock_get_cmd_patcher.stop)
 
     def test_fix_success_no_verification(self):
         """Test that fix calls gemini with -y and returns SUCCESS without
