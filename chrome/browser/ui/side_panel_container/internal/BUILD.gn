@@ -13,18 +13,29 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorImpl.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureContent.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureImpl.java",
   ]
 
   deps = [
     ":java_resources",
+    "//base:supplier_java",
     "//base:tasks_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
+    "//chrome/browser/android/content:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_ui/public:java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.side_panel_container"
@@ -36,7 +47,10 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorIntegrationTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorIntegrationTest.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureIntegrationTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",

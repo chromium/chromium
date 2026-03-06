@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.ui.side_panel_container.dev;
 
-import android.app.Activity;
-
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Factory for creating a {@link SidePanelDevFeature}. */
 @NullMarked
@@ -18,11 +19,14 @@ public final class SidePanelDevFeatureFactory {
 
     @Nullable
     public static SidePanelDevFeature create(
-            Activity parentActivity, SidePanelContainerCoordinator sidePanelContainerCoordinator) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            SidePanelContainerCoordinator sidePanelContainerCoordinator,
+            WindowAndroid windowAndroid) {
         if (!ChromeFeatureList.sEnableAndroidSidePanelDevFeature.isEnabled()) {
             return null;
         }
 
-        return new SidePanelDevFeatureImpl(parentActivity, sidePanelContainerCoordinator);
+        return new SidePanelDevFeatureImpl(
+                profileSupplier, sidePanelContainerCoordinator, windowAndroid);
     }
 }

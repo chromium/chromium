@@ -1875,7 +1875,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =
-                    SidePanelDevFeatureFactory.create(mActivity, mSidePanelContainerCoordinator);
+                    SidePanelDevFeatureFactory.create(
+                            mProfileSupplier, mSidePanelContainerCoordinator, mWindowAndroid);
         }
 
         mCompositorViewHolderSupplier.get().setSideUiStateProvider(mSideUiCoordinator);
@@ -1910,6 +1911,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public @Nullable SidePanelContainerCoordinator getSidePanelContainerCoordinatorForTesting() {
         return mSidePanelContainerCoordinator;
+    }
+
+    public @Nullable SidePanelDevFeature getSidePanelDevFeatureForTesting() {
+        return mSidePanelDevFeature;
     }
 
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */
