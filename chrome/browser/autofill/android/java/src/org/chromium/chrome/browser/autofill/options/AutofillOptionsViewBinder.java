@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
@@ -98,6 +99,13 @@ class AutofillOptionsViewBinder {
             Preference serviceProviderTitlePreference = view.getAutofillServiceProviderCategory();
             if (serviceProviderTitlePreference != null) {
                 serviceProviderTitlePreference.setVisible(visible);
+            }
+        } else if (key == AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE) {
+            Preference reauthTogglePreference = view.getAutofillAiAuthenticationSwitch();
+            if (reauthTogglePreference != null) {
+                reauthTogglePreference.setVisible(
+                        model.get(AUTOFILL_AI_VISIBLE)
+                                && model.get(AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE));
             }
         } else {
             assert false : "Unhandled property: " + key;

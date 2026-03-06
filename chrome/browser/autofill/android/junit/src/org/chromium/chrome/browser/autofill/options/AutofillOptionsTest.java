@@ -89,7 +89,10 @@ import org.chromium.ui.text.SpanApplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_THIRD_PARTY_MODE_RESTORED_ON_START})
-@DisableFeatures({ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA})
+@DisableFeatures({
+    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+    ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+})
 public class AutofillOptionsTest {
     private static final String SKIP_ALL_CHECKS_PARAM_VALUE = "skip_all_checks";
     private static final String ONLY_SKIP_AWG_CHECK_PARAM_VALUE = "only_skip_awg_check";
@@ -393,6 +396,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
     public void suppliesTitle() {
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
 
@@ -502,7 +506,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiFeatureVisibleWhenFeatureEnabled() {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
@@ -512,7 +519,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiToggleEnabledWhenEligible() {
         doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
 
@@ -524,7 +534,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiToggleDisabledWhenNotEligible() {
         doReturn(false).when(mMockEntityDataManager).isEligibleToAutofillAi();
 
@@ -536,7 +549,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiToggleSetsOptInStatus() {
         doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
         doReturn(false).when(mMockEntityDataManager).getAutofillAiOptInStatus();
@@ -562,7 +578,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiToggleResetsOnFailure() {
         doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
         doReturn(false).when(mMockEntityDataManager).getAutofillAiOptInStatus();
@@ -617,7 +636,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiReauthToggleInitialValue() {
         doReturn(true)
                 .when(mPrefs)
@@ -642,7 +664,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiReauthToggleSuccessful() {
         doReturn(false)
                 .when(mPrefs)
@@ -677,7 +702,10 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
+        ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
+    })
     public void testAutofillAiReauthToggleFailed() {
         doReturn(true)
                 .when(mPrefs)
@@ -709,6 +737,28 @@ public class AutofillOptionsTest {
                         eq(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA), anyBoolean());
         // Switch should be reset to ON.
         assertTrue(mFragment.getAutofillAiAuthenticationSwitch().isChecked());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
+    public void testAutofillAiReauthToggleHiddenWhenFeatureDisabled() {
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+        assertTrue(mFragment.getAutofillAiCategory().isVisible());
+        assertFalse(mFragment.getAutofillAiAuthenticationSwitch().isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
+    public void testAutofillAiReauthToggleHiddenWhenAutofillAiFeatureDisabled() {
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+        assertFalse(mFragment.getAutofillAiCategory().isVisible());
+        assertFalse(mFragment.getAutofillAiAuthenticationSwitch().isVisible());
     }
 
     private ModalDialogManager assertModalNotUsed() {

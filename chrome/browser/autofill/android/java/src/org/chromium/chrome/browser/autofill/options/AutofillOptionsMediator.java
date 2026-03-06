@@ -136,6 +136,9 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_VISIBLE, isAutofillAiVisible(referrer));
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE, isEligibleToAutofillAi());
+        mModel.set(
+                AutofillOptionsProperties.AUTOFILL_AI_REAUTH_TOGGLE_VISIBLE,
+                isAutofillAiReauthToggleVisible(referrer));
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON, isAutofillAiReauthOn());
         RecordHistogram.recordEnumeratedHistogram(
@@ -182,6 +185,14 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
         // LINT.IfChange(AutofillEnabledCheckMediator)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.ThenChange(AutofillEnabledCheckFragment)
+    }
+
+    private static boolean isAutofillAiReauthEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED);
+    }
+
+    private boolean isAutofillAiReauthToggleVisible(int referrer) {
+        return isAutofillAiVisible(referrer) && isAutofillAiReauthEnabled();
     }
 
     private boolean isEligibleToAutofillAi() {

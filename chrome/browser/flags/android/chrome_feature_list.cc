@@ -114,6 +114,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 // go/keep-sorted start
     &autofill::features::kAndroidAutofillSupportForHttpAuth,
     &autofill::features::kAutofillAiCreateEntityDataManager,
+    &autofill::features::kAutofillAiReauthRequired,
     &autofill::features::kAutofillAiWithDataSchema,
     &autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp,
     &autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty,

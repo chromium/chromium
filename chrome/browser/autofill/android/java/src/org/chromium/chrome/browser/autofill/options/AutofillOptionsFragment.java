@@ -214,6 +214,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         // LINT.ThenChange(:AddAddAddressButtonMediator)
     }
 
+    static boolean isAutofillAiReauthEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED);
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
@@ -229,6 +233,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY));
+                    } else if (!isAutofillAiReauthEnabled()) {
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                     }
                 }
             };
