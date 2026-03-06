@@ -2,5 +2,6 @@ include_rules = [
   # keep-sorted start
   "+components/safe_browsing/core/common/features.h",
   "+ios/components/security_interstitials/https_only_mode/feature.h"
+  "+ios/web/common/crw_web_view_content_view.h",
   # keep-sorted end
 ]

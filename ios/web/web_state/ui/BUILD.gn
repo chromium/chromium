@@ -71,6 +71,7 @@ source_set("ui") {
     "crw_web_controller_container_view.mm",
     "crw_web_request_controller.h",
     "crw_web_request_controller.mm",
+    "crw_web_view_content_view.h",
     "crw_web_view_proxy_impl.h",
     "crw_web_view_proxy_impl.mm",
     "crw_web_view_scroll_view_delegate_proxy.h",
