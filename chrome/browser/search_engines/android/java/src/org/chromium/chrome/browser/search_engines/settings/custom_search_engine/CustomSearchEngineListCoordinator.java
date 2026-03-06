@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
+import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -33,7 +34,7 @@ public class CustomSearchEngineListCoordinator {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final EditSearchEngineDialogCoordinator mEditSearchEngineDialogCoordinator;
+    private final SiteSearchDialogCoordinator mSiteSearchDialogCoordinator;
 
     public CustomSearchEngineListCoordinator(
             Context context,
@@ -42,8 +43,8 @@ public class CustomSearchEngineListCoordinator {
             ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mEditSearchEngineDialogCoordinator =
-                new EditSearchEngineDialogCoordinator(
+        mSiteSearchDialogCoordinator =
+                new SiteSearchDialogCoordinator(
                         mContext,
                         mModalDialogManager,
                         TemplateUrlServiceFactory.getForProfile(profile));
@@ -75,7 +76,7 @@ public class CustomSearchEngineListCoordinator {
     }
 
     public void destroy() {
-        mEditSearchEngineDialogCoordinator.dismiss();
+        mSiteSearchDialogCoordinator.dismiss();
         mModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
         mMediator.destroy();
@@ -83,6 +84,6 @@ public class CustomSearchEngineListCoordinator {
     }
 
     private void openEditDialog(TemplateUrl templateUrl) {
-        mEditSearchEngineDialogCoordinator.show(templateUrl);
+        mSiteSearchDialogCoordinator.showEditDialog(templateUrl);
     }
 }
