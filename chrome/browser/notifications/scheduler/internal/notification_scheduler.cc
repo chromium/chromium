@@ -171,6 +171,10 @@ class DisplayHelper {
     context_->display_agent()->ShowNotification(
         std::move(updated_notification_data), std::move(system_data));
 
+    auto* client = context_->client_registrar()->GetClient(entry->type);
+    DCHECK(client);
+    client->OnShowNotification(std::move(updated_notification_data));
+
     MaybeFinish(entry->guid, true /*shown*/);
   }
 

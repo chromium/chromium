@@ -22,6 +22,7 @@ class MockNotificationSchedulerClient : public NotificationSchedulerClient {
   MOCK_METHOD2(BeforeShowNotification,
                void(std::unique_ptr<NotificationData>,
                     NotificationDataCallback));
+  MOCK_METHOD1(OnShowNotification, void(std::unique_ptr<NotificationData>));
   MOCK_METHOD2(OnSchedulerInitialized, void(bool, std::set<std::string>));
   MOCK_METHOD1(OnUserAction, void(const UserActionData&));
   MOCK_METHOD1(GetThrottleConfig, void(ThrottleConfigCallback));

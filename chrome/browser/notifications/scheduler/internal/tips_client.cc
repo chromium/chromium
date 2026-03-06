@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/notifications/scheduler/internal/stats.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
@@ -42,6 +43,11 @@ void TipsClient::BeforeShowNotification(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   std::move(callback).Run(std::move(notification_data));
+}
+
+void TipsClient::OnShowNotification(
+    std::unique_ptr<NotificationData> notification_data) {
+  NOTIMPLEMENTED();
 }
 
 void TipsClient::OnSchedulerInitialized(bool success,

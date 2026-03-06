@@ -31,6 +31,8 @@ class TipsClient : public NotificationSchedulerClient {
   void BeforeShowNotification(
       std::unique_ptr<NotificationData> notification_data,
       NotificationDataCallback callback) override;
+  void OnShowNotification(
+      std::unique_ptr<NotificationData> notification_data) override;
   void OnSchedulerInitialized(bool success,
                               std::set<std::string> guids) override;
   void OnUserAction(const UserActionData& action_data) override;

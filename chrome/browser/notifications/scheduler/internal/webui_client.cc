@@ -20,6 +20,11 @@ void WebUIClient::BeforeShowNotification(
   std::move(callback).Run(std::move(notification_data));
 }
 
+void WebUIClient::OnShowNotification(
+    std::unique_ptr<NotificationData> notification_data) {
+  NOTIMPLEMENTED();
+}
+
 void WebUIClient::OnSchedulerInitialized(bool success,
                                          std::set<std::string> guids) {
   NOTIMPLEMENTED();

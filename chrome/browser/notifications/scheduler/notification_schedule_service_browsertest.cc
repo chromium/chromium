@@ -59,6 +59,9 @@ class TestClient : public NotificationSchedulerClient {
     std::move(callback).Run(std::move(notification_data));
   }
 
+  void OnShowNotification(
+      std::unique_ptr<NotificationData> notification_data) override {}
+
   void OnSchedulerInitialized(bool success,
                               std::set<std::string> guids) override {
     DCHECK(success);
