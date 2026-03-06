@@ -29,6 +29,15 @@ template("eslint_ts") {
     inputs = [
       config_base,
       tsconfig,
+      "//ui/webui/resources/tools/eslint/inline_event_handler.js",
+      "//ui/webui/resources/tools/eslint/lit_property_accessor.js",
+      "//ui/webui/resources/tools/eslint/lit_element_invalid_interface.js",
+      "//ui/webui/resources/tools/eslint/lit_element_structure.js",
+      "//ui/webui/resources/tools/eslint/lit_element_template_structure.js",
+      "//ui/webui/resources/tools/eslint/polymer_property_class_member.js",
+      "//ui/webui/resources/tools/eslint/polymer_property_declare.js",
+      "//ui/webui/resources/tools/eslint/query_utils.js",
+      "//ui/webui/resources/tools/eslint/web_component_missing_deps.js",
       "//ui/webui/resources/tools/webui_eslint_plugin.js",
     ]
     outputs = [ "$target_gen_dir/eslint.config.mjs" ]

@@ -4,12 +4,24 @@
 
 webui_sources = set([
     'bundle_js.py',
-    'eslint_ts.py',
     'generate_code_cache.py',
     'generate_grd.py',
     'minify_js.py',
     'rollup_plugin.mjs',
     'stylelint.py',
+
+    # eslint_ts() sources.
+    'eslint_ts.py',
+    'eslint/inline_event_handler.js',
+    'eslint/lit_element_invalid_interface.js',
+    'eslint/lit_element_structure.js',
+    'eslint/lit_element_template_structure.js',
+    'eslint/lit_property_accessor.js',
+    'eslint/polymer_property_class_member.js',
+    'eslint/polymer_property_declare.js',
+    'eslint/query_utils.js',
+    'eslint/web_component_missing_deps.js',
+    'webui_eslint_plugin.js',
 ])
 
 webui_tests = set([

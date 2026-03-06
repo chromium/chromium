@@ -1,0 +1,63 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import assert from 'node:assert';
+
+import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
+
+// NOTE: Using `\u002F` instead of a forward slash, to workaround for
+// https://github.com/eslint/eslint/issues/16555,
+// https://eslint.org/docs/latest/extend/selectors#known-issues
+// where forward slashes are not properly escaped in regular expressions
+// appearing in AST selectors.
+export const POLYMER_IMPORT_REGEX = [
+  'resources',
+  'polymer',
+  'v3_0',
+  'polymer',
+  'polymer_bundled.min.js$',
+].join('\\u002F');
+
+export const LIT_IMPORT_REGEX =
+    ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
+
+export const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
+    'CallExpression[callee.name=/Mixin(Lit)?$/][arguments.0.name="CrLitElement"]';
+
+export function isCrLitElementSubclass(node, programNode) {
+  assert.ok(node.type === 'ClassDeclaration');
+
+  if (!node.superClass) {
+    return false;
+  }
+
+  if (node.superClass.type === 'Identifier') {
+    if (node.superClass.name === 'CrLitElement') {
+      // Case1: 'MyElement extends CrLitElement {...}'
+      return true;
+    }
+
+    // Case2:
+    // const MyElementBase = SomeMixin(CrLitElement);
+    // MyElement extends MyElementBase {...}'
+    const baseClassSelector = esquery.parse(
+        `Program > VariableDeclaration > VariableDeclarator[id.name="${
+            node.superClass.name}"] ${CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR}`);
+    const matchingNodes = esquery.match(programNode, baseClassSelector);
+    return matchingNodes.length > 0;
+  }
+
+  if (node.superClass.type === 'CallExpression') {
+    // Case3: 'MyElement extends SomeMixin(SomeOtherMixin(CrLitElement)) {...}'
+    const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
+    const matchingNodes = esquery.match(node.superClass, selector);
+    return matchingNodes.length > 0;
+  }
+
+  return false;
+}
+
+export function dashCaseToCamelCase(string) {
+  return string.replace(/-([a-z])/g, group => group[1].toUpperCase());
+}
