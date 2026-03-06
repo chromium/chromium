@@ -175,7 +175,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // `ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader()` to use
   // `skip_service_worker` flag.
   if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          browser_context, tentative_resource_request.url)) {
+          browser_context, context_->wrapper()->storage_partition(),
+          tentative_resource_request.url)) {
     const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
     // If the navigation is from reloading, do not inject the service worker
     // registration.

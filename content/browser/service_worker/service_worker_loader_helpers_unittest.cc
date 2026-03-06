@@ -4,8 +4,10 @@
 
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/test_render_view_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_content_browser_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -328,7 +330,7 @@ TEST(ServiceWorkerLoaderHelpersTest, PathRestriction_ServiceWorkerAllowed) {
 }
 
 class ServiceWorkerLoaderHelpersSyntheticResponseTest
-    : public testing::Test,
+    : public RenderViewHostTestHarness,
       public testing::WithParamInterface<bool> {
  public:
   ServiceWorkerLoaderHelpersSyntheticResponseTest() = default;
@@ -339,10 +341,15 @@ class ServiceWorkerLoaderHelpersSyntheticResponseTest
   ~ServiceWorkerLoaderHelpersSyntheticResponseTest() override = default;
 
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
     browser_client_ = std::make_unique<SyntheticResponseTestBrowserClient>(
         IsAllowedInContentBrowserClient());
-    browser_context_ = std::make_unique<TestBrowserContext>();
     SetBrowserClientForTesting(browser_client_.get());
+  }
+
+  void TearDown() override {
+    RenderViewHostTestHarness::TearDown();
+    SetBrowserClientForTesting(nullptr);
   }
 
  protected:
@@ -352,9 +359,15 @@ class ServiceWorkerLoaderHelpersSyntheticResponseTest
       const std::string& denied_url_params = "") {
     return service_worker_loader_helpers::
         IsEligibleForSyntheticResponseForTesting(
-            browser_context_.get(), client_url, allowed_url, denied_url_params);
+            browser_context(), GetTestStoragePartitionImpl(), client_url,
+            allowed_url, denied_url_params);
   }
   bool IsAllowedInContentBrowserClient() { return GetParam(); }
+
+  StoragePartitionImpl* GetTestStoragePartitionImpl() {
+    StoragePartition* partition = browser_context()->GetDefaultStoragePartition();
+    return static_cast<StoragePartitionImpl*>(partition);
+  }
 
  private:
   class SyntheticResponseTestBrowserClient : public TestContentBrowserClient {
@@ -372,8 +385,6 @@ class ServiceWorkerLoaderHelpersSyntheticResponseTest
     bool is_allowed_ = false;
   };
 
-  BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
-  std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<SyntheticResponseTestBrowserClient> browser_client_;
 };
 
@@ -475,6 +486,14 @@ TEST_P(ServiceWorkerLoaderHelpersSyntheticResponseTest,
   // Denied string is in the value of "q". This should be allowed.
   EXPECT_TRUE(IsEligibleForSyntheticResponse(
       GURL("https://example.com/search?q=foo"), kAllowedUrl, kDeniedUrlParams));
+}
+
+TEST_P(ServiceWorkerLoaderHelpersSyntheticResponseTest,
+       IsEligibleForSyntheticResponse_Guest) {
+  // Set the storage partition to be guest e.g. <webview>.
+  GetTestStoragePartitionImpl()->set_is_guest();
+  EXPECT_FALSE(IsEligibleForSyntheticResponse(GURL("http://example.com/"),
+                                              "http://example.com/"));
 }
 
 }  // namespace service_worker_loader_helpers

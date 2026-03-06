@@ -1040,7 +1040,8 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     scoped_refptr<ServiceWorkerVersion> version) {
   if (!service_worker_client_ || !resource_request_.is_outermost_main_frame ||
       !service_worker_loader_helpers::IsEligibleForSyntheticResponse(
-          context_wrapper->browser_context(), resource_request_.url)) {
+          context_wrapper->browser_context(),
+          context_wrapper->storage_partition(), resource_request_.url)) {
     return false;
   }
   const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;

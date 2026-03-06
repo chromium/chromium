@@ -19,9 +19,12 @@
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_synthetic_response_manager.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
@@ -412,18 +415,20 @@ const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
 }
 
 bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
+                                    StoragePartitionImpl* storage_partition,
                                     const GURL& client_url) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kServiceWorkerSyntheticResponse)) {
     return false;
   }
   return IsEligibleForSyntheticResponseInternal(
-      browser_context, client_url, GetSyntheticResponseAllowedUrl(),
-      GetSyntheticResponseDeniedUrlParams());
+      browser_context, storage_partition, client_url,
+      GetSyntheticResponseAllowedUrl(), GetSyntheticResponseDeniedUrlParams());
 }
 
 bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
     BrowserContext* browser_context,
+    StoragePartitionImpl* storage_partition,
     const GURL& client_url,
     const std::string& allowed_url,
     const std::string& denied_url_params) {
@@ -431,15 +436,21 @@ bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
       denied_url_params, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   return IsEligibleForSyntheticResponseInternal(
-      browser_context, client_url, allowed_url,
+      browser_context, storage_partition, client_url, allowed_url,
       base::flat_set<std::string>(params.begin(), params.end()));
 }
 
 bool IsEligibleForSyntheticResponseInternal(
     BrowserContext* browser_context,
+    StoragePartitionImpl* storage_partition,
     const GURL& client_url,
     const std::string& allowed_url,
     const base::flat_set<std::string>& denied_url_params) {
+  // If this StoragePartition is for guests (e.g., for a <webview>
+  // tag). We don't enable it because the embedder may intercept the request.
+  if (storage_partition && storage_partition->is_guest()) {
+    return false;
+  }
   // If `client_url` should be either 1) allowed by the browser content
   // client, or 2) listed in the allowlist.
   if ((browser_context &&

@@ -244,6 +244,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
             handle_->service_worker_client()->key()) ||
         service_worker_loader_helpers::IsEligibleForSyntheticResponse(
             handle_->context_wrapper()->browser_context(),
+            handle_->context_wrapper()->storage_partition(),
             tentative_resource_request.url));
 
   // Create and start the handler for this request. It will invoke the loader
