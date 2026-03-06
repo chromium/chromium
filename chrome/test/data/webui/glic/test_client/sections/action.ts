@@ -19,6 +19,17 @@ function credentialTypeAsString(credType: CredentialType): string {
   }
 }
 
+function setIcon(imgElem: HTMLImageElement, getter?: () => Promise<Blob>) {
+  URL.revokeObjectURL(imgElem.src);
+  if (getter) {
+    getter().then((imageBlob) => {
+      imgElem.src = URL.createObjectURL(imageBlob);
+    });
+  } else {
+    imgElem.src = '';
+  }
+}
+
 function convertUint8ArrayToBase64(uint8Array: Uint8Array): string {
   let binaryString = '';
   for (let i = 0; i < uint8Array.length; i++) {
@@ -129,15 +140,11 @@ function updateSelectedCredentialDetails() {
   $.selectedCredentialSource.innerText = selectedCredential.sourceSiteOrApp;
   $.selectedCredentialRequestOrigin.innerText =
       selectedCredential.requestOrigin!;
-  if (selectedCredential.getIcon) {
-    selectedCredential.getIcon().then((imageBlob) => {
-      $.selectedCredentialIcon.src = URL.createObjectURL(imageBlob);
-    });
-  } else {
-    $.selectedCredentialIcon.src = '';
-  }
+  setIcon($.selectedCredentialIcon, selectedCredential.getIcon);
   $.selectedCredentialType.innerText =
       credentialTypeAsString(selectedCredential.type!);
+  setIcon(
+      $.selectedCredentialAccountPicture, selectedCredential.getAccountPicture);
 }
 
 function showCredentialPicker(request: SelectCredentialDialogRequest) {

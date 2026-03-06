@@ -135,6 +135,7 @@ export interface PageElementTypes {
   selectedCredentialRequestOrigin: HTMLSpanElement;
   selectedCredentialIcon: HTMLImageElement;
   selectedCredentialType: HTMLSpanElement;
+  selectedCredentialAccountPicture: HTMLImageElement;
   actionProtoEncodedText: HTMLInputElement;
   actionStatus: HTMLSpanElement;
   autofillSuggestionsDialogSection: HTMLElement;
