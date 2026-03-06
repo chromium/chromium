@@ -238,7 +238,7 @@ bool AUHALStream::Open() {
     DCHECK(audio_unit_);
     DCHECK(audio_unit_->is_valid());
 #if BUILDFLAG(IS_MAC)
-    hardware_latency_ = core_audio_mac::GetHardwareLatency(
+    hardware_latency_ = CoreAudioUtilMac::GetHardwareLatency(
         audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
         params_.sample_rate(), /*is_input=*/false);
 #else

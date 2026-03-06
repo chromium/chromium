@@ -282,9 +282,9 @@ bool MuteLocalPlaybackLoopback(const std::string& device_id) {
 API_AVAILABLE(macos(14.2))
 CatapAudioInputStream::AudioDeviceIds GetDefaultOutputDeviceIds() {
   CatapAudioInputStream::AudioDeviceIds device_ids;
-  device_ids.id = core_audio_mac::GetDefaultDevice(/*input=*/false);
+  device_ids.id = CoreAudioUtilMac().GetDefaultDevice(/*input=*/false);
   if (device_ids.id) {
-    device_ids.uid = core_audio_mac::GetDeviceUniqueID(*device_ids.id);
+    device_ids.uid = CoreAudioUtilMac().GetDeviceUniqueID(*device_ids.id);
   }
   return device_ids;
 }

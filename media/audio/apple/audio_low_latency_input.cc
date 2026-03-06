@@ -154,8 +154,8 @@ AUAudioInputStream::AUAudioInputStream(
         __FUNCTION__,
         "Can't apply voice processing, echo cancellation not supported");
   } else {
-    const bool got_default_device =
-        AudioManagerMac::GetDefaultOutputDevice(&output_device_id_for_aec_);
+    const bool got_default_device = AudioManagerMac::GetDefaultOutputDevice(
+        &output_device_id_for_aec_, log_callback_);
     if (got_default_device) {
       use_voice_processing_ = true;
       LogMessageEverywhere(
@@ -245,7 +245,7 @@ AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
 
     // The hardware latency is fixed and will not change during the call.
 #if BUILDFLAG(IS_MAC)
-  hardware_latency_ = core_audio_mac::GetHardwareLatency(
+  hardware_latency_ = CoreAudioUtilMac::GetHardwareLatency(
       audio_unit_, input_device_id_, kAudioDevicePropertyScopeInput,
       format_.mSampleRate, /*is_input=*/true);
 #else
@@ -871,7 +871,7 @@ void AUAudioInputStream::SetOutputDeviceForAec(
     return;
   }
 
-  if (core_audio_mac::GetDeviceTransportType(audio_device_id) !=
+  if (CoreAudioUtilMac(log_callback_).GetDeviceTransportType(audio_device_id) !=
       kAudioDeviceTransportTypeAggregate) {
     output_device_id_for_aec_ = audio_device_id;
   } else {
@@ -930,7 +930,7 @@ bool AUAudioInputStream::IsEchoCancellationSupported(
   }
 
   std::optional<uint32_t> device_transport_type =
-      core_audio_mac::GetDeviceTransportType(audio_device_id);
+      CoreAudioUtilMac().GetDeviceTransportType(audio_device_id);
   if (!device_transport_type) {
     VLOG(1) << "Failed to get device transport type for device 0x" << std::hex
             << audio_device_id;

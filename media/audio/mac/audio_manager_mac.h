@@ -33,6 +33,7 @@ namespace media {
 
 class AUAudioInputStream;
 class AUHALStream;
+class CoreAudioUtilMac;
 
 // Mac OS X implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
@@ -121,7 +122,9 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
       AudioStreamBasicDescription* input_format) override;
 
   static bool GetDefaultInputDevice(AudioDeviceID* input_device);
-  static bool GetDefaultOutputDevice(AudioDeviceID* output_device);
+  static bool GetDefaultOutputDevice(
+      AudioDeviceID* output_device,
+      const LogCallback& log_callback = LogCallback());
   static AudioDeviceID GetAudioDeviceIdByUId(bool is_input,
                                              const std::string& device_id);
 
@@ -222,6 +225,8 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   static int GetNumberOfChannelsForDevice(AudioDeviceID device_id);
 
   std::string GetDefaultDeviceID(bool is_input);
+
+  std::unique_ptr<CoreAudioUtilMac> core_audio_mac_;
 
   std::unique_ptr<AudioDeviceListenerMac> output_device_listener_;
 
