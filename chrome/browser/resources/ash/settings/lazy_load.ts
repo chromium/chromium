@@ -17,6 +17,7 @@
 import '/strings.m.js';
 /** Subpages */
 import './crostini_page/bruschetta_subpage.js';
+import './crostini_page/crostini_arc_adb.js';
 import './crostini_page/crostini_export_import.js';
 import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_shared_usb_devices.js';
@@ -118,6 +119,7 @@ export {MediaDevicesProxy} from './common/media_devices_proxy.js';
  */
 export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
 export {BruschettaSubpageElement} from './crostini_page/bruschetta_subpage.js';
+export {SettingsCrostiniArcAdbElement} from './crostini_page/crostini_arc_adb.js';
 export type {CrostiniBrowserProxy, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortSetting} from './crostini_page/crostini_browser_proxy.js';
 export {CrostiniBrowserProxyImpl, CrostiniPortProtocol, VmType} from './crostini_page/crostini_browser_proxy.js';
 export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_disk_resize_dialog.js';
