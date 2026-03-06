@@ -109,6 +109,10 @@ public class ExtensionInstallDialogBridgeTest {
                 "Negative button text does not match.",
                 CANCEL_BUTTON_LABEL,
                 dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        Assert.assertEquals(
+                "Button styles do not match.",
+                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE,
+                dialogModel.get(ModalDialogProperties.BUTTON_STYLES));
 
         Assert.assertNull(
                 "Custom view should be null when there are not permissions.",

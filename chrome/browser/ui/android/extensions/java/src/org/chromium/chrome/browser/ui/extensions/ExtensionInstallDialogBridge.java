@@ -98,7 +98,10 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                 .with(ModalDialogProperties.TITLE, title)
                 .with(ModalDialogProperties.TITLE_ICON, iconDrawable)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, acceptButtonLabel)
-                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel);
+                .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel)
+                .with(
+                        ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
 
         if (mContentView != null) {
             mPropertyModelBuilder
