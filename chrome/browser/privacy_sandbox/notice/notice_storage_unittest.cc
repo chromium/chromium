@@ -4,8 +4,12 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -132,33 +136,45 @@ TEST_F(PrivacySandboxNoticeStorageTest, NoticePathNotFound) {
   EXPECT_FALSE(actual.has_value());
 }
 
-const auto kStartupTestValues =
-    std::vector<std::tuple<std::vector<Event>, std::optional<Event>>>{
-        {{}, std::nullopt},
-        {{kShown}, kShown},
-        {{kShown, kClosed}, kClosed},
-        {{kShown, kSettings, kShown, kOptIn}, kOptIn},
-        {{kShown, kOptOut}, kOptOut},
-        {{kShown, kAck}, kAck},
-        {{kShown, kSettings}, kSettings}};
+struct StartupTestParam {
+  base::raw_span<const Event> events;
+  std::optional<Event> expected;
+};
+
+constexpr auto kStartupShownOnly = std::to_array<Event>({kShown});
+constexpr auto kStartupClosed = std::to_array<Event>({kShown, kClosed});
+constexpr auto kStartupOptIn =
+    std::to_array<Event>({kShown, kSettings, kShown, kOptIn});
+constexpr auto kStartupOptOut = std::to_array<Event>({kShown, kOptOut});
+constexpr auto kStartupAck = std::to_array<Event>({kShown, kAck});
+constexpr auto kStartupSettings = std::to_array<Event>({kShown, kSettings});
+
+constexpr auto kStartupTestValues = std::to_array<StartupTestParam>({
+    {.events = base::raw_span<const Event>(), .expected = std::nullopt},
+    {.events = kStartupShownOnly, .expected = kShown},
+    {.events = kStartupClosed, .expected = kClosed},
+    {.events = kStartupOptIn, .expected = kOptIn},
+    {.events = kStartupOptOut, .expected = kOptOut},
+    {.events = kStartupAck, .expected = kAck},
+    {.events = kStartupSettings, .expected = kSettings},
+});
 
 class PrivacySandboxNoticeStorageStartupTest
     : public PrivacySandboxNoticeStorageTest,
-      public testing::WithParamInterface<
-          std::tuple<std::vector<Event>, std::optional<Event>>> {};
+      public testing::WithParamInterface<StartupTestParam> {};
 
 TEST_P(PrivacySandboxNoticeStorageStartupTest, StartupStateEmitsSuccessfully) {
-  auto [events, expected] = GetParam();
-  for (auto event : events) {
+  const auto& param = GetParam();
+  for (auto event : param.events) {
     notice_storage()->RecordEvent(notice_1(), event);
     AdvanceMs(10);
   }
 
   notice_storage()->RecordStartupHistograms();
-  if (expected) {
+  if (param.expected) {
     histogram_tester_.ExpectBucketCount(
         "PrivacySandbox.Notice.Startup.LastRecordedEvent.Notice1StorageName",
-        *expected, 1);
+        *param.expected, 1);
   } else {
     const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
     EXPECT_THAT(histograms,

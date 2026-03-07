@@ -4,11 +4,13 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
+#include <array>
 #include <tuple>
 
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -135,13 +137,17 @@ using privacy_sandbox_test_util::TestInput;
 using privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::TestState;
 
-const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
-const char kTrackingProtectionStateHistogram[] =
+constexpr char kFirstPartySetsStateHistogram[] =
+    "Settings.FirstPartySets.State";
+constexpr char kTrackingProtectionStateHistogram[] =
     "Settings.TrackingProtection.Enabled";
-const char kDefaultProfileUsername[] = "user@gmail.com";
-const char kTestEmail[] = "test@test.com";
+constexpr char kDefaultProfileUsername[] = "user@gmail.com";
+constexpr char kTestEmail[] = "test@test.com";
 
-const base::Version kRelatedWebsiteSetsVersion("1.2.3");
+const base::Version& GetRelatedWebsiteSetsVersion() {
+  static const base::NoDestructor<base::Version> kVersion("1.2.3");
+  return *kVersion;
+}
 
 constexpr int kTestTaxonomyVersion = 1;
 
@@ -1335,7 +1341,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kRelatedWebsiteSetsVersion,
+      GetRelatedWebsiteSetsVersion(),
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
@@ -1373,7 +1379,7 @@ TEST_F(
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kRelatedWebsiteSetsVersion,
+      GetRelatedWebsiteSetsVersion(),
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
@@ -1412,7 +1418,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kRelatedWebsiteSetsVersion,
+      GetRelatedWebsiteSetsVersion(),
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
@@ -1493,7 +1499,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kRelatedWebsiteSetsVersion,
+      GetRelatedWebsiteSetsVersion(),
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
@@ -1603,7 +1609,7 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
   net::SchemefulSite youtube_site(youtube_gurl);
 
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kRelatedWebsiteSetsVersion,
+      GetRelatedWebsiteSetsVersion(),
       {
           {youtube_primary_site,
            {net::FirstPartySetEntry(youtube_primary_site,
@@ -2273,14 +2279,14 @@ TEST_P(PrivacySandboxNoticeServiceInteractionTest,
   testing::Mock::VerifyAndClearExpectations(mock_notice_service());
 }
 
-const std::vector<SurfaceMapping> kSurfaceMappings = {
+constexpr auto kSurfaceMappings = std::to_array<SurfaceMapping>({
     {.input_surface = SurfaceType::kDesktop,
      .expected_notice_surface = NoticeSurfaceType::kDesktopNewTab},
     {.input_surface = SurfaceType::kBrApp,
      .expected_notice_surface = NoticeSurfaceType::kClankBrApp},
     {.input_surface = SurfaceType::kAGACCT,
      .expected_notice_surface = NoticeSurfaceType::kClankCustomTab},
-};
+});
 
 base::test::FeatureRefAndParams ConsentFeature() {
   return {
@@ -2300,68 +2306,70 @@ base::test::FeatureRefAndParams RestrictedNoticeFeature() {
             "true"}}};
 }
 
-const std::vector<NoticeActionData> kNoticeActionDataList = {
-    // --- Shown Actions ---
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kConsentShown,
-     .expected_notice = Notice::kTopicsConsentNotice,
-     .expected_event = NoticeEvent::kShown},
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kNoticeShown,
-     .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
-     .expected_event = NoticeEvent::kShown},
-    {.feature_flag = NoticeFeature(),
-     .action_occurred = PromptAction::kNoticeShown,
-     .expected_notice = Notice::kThreeAdsApisNotice,
-     .expected_event = NoticeEvent::kShown},
-    {.feature_flag = RestrictedNoticeFeature(),
-     .action_occurred = PromptAction::kRestrictedNoticeShown,
-     .expected_notice = Notice::kMeasurementNotice,
-     .expected_event = NoticeEvent::kShown},
+auto GetNoticeActionDataList() {
+  return std::to_array<NoticeActionData>({
+      // --- Shown Actions ---
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kConsentShown,
+       .expected_notice = Notice::kTopicsConsentNotice,
+       .expected_event = NoticeEvent::kShown},
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kNoticeShown,
+       .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
+       .expected_event = NoticeEvent::kShown},
+      {.feature_flag = NoticeFeature(),
+       .action_occurred = PromptAction::kNoticeShown,
+       .expected_notice = Notice::kThreeAdsApisNotice,
+       .expected_event = NoticeEvent::kShown},
+      {.feature_flag = RestrictedNoticeFeature(),
+       .action_occurred = PromptAction::kRestrictedNoticeShown,
+       .expected_notice = Notice::kMeasurementNotice,
+       .expected_event = NoticeEvent::kShown},
 
-    // --- Consent Actions ---
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kConsentAccepted,
-     .expected_notice = Notice::kTopicsConsentNotice,
-     .expected_event = NoticeEvent::kOptIn},
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kConsentDeclined,
-     .expected_notice = Notice::kTopicsConsentNotice,
-     .expected_event = NoticeEvent::kOptOut},
+      // --- Consent Actions ---
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kConsentAccepted,
+       .expected_notice = Notice::kTopicsConsentNotice,
+       .expected_event = NoticeEvent::kOptIn},
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kConsentDeclined,
+       .expected_notice = Notice::kTopicsConsentNotice,
+       .expected_event = NoticeEvent::kOptOut},
 
-    // --- Ack Actions ---
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kNoticeAcknowledge,
-     .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
-     .expected_event = NoticeEvent::kAck},
-    {.feature_flag = NoticeFeature(),
-     .action_occurred = PromptAction::kNoticeAcknowledge,
-     .expected_notice = Notice::kThreeAdsApisNotice,
-     .expected_event = NoticeEvent::kAck},
-    {.feature_flag = RestrictedNoticeFeature(),
-     .action_occurred = PromptAction::kRestrictedNoticeAcknowledge,
-     .expected_notice = Notice::kMeasurementNotice,
-     .expected_event = NoticeEvent::kAck},
+      // --- Ack Actions ---
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kNoticeAcknowledge,
+       .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
+       .expected_event = NoticeEvent::kAck},
+      {.feature_flag = NoticeFeature(),
+       .action_occurred = PromptAction::kNoticeAcknowledge,
+       .expected_notice = Notice::kThreeAdsApisNotice,
+       .expected_event = NoticeEvent::kAck},
+      {.feature_flag = RestrictedNoticeFeature(),
+       .action_occurred = PromptAction::kRestrictedNoticeAcknowledge,
+       .expected_notice = Notice::kMeasurementNotice,
+       .expected_event = NoticeEvent::kAck},
 
-    // --- Settings Actions ---
-    {.feature_flag = ConsentFeature(),
-     .action_occurred = PromptAction::kNoticeOpenSettings,
-     .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
-     .expected_event = NoticeEvent::kSettings},
-    {.feature_flag = NoticeFeature(),
-     .action_occurred = PromptAction::kNoticeOpenSettings,
-     .expected_notice = Notice::kThreeAdsApisNotice,
-     .expected_event = NoticeEvent::kSettings},
-    {.feature_flag = RestrictedNoticeFeature(),
-     .action_occurred = PromptAction::kRestrictedNoticeOpenSettings,
-     .expected_notice = Notice::kMeasurementNotice,
-     .expected_event = NoticeEvent::kSettings},
-};
+      // --- Settings Actions ---
+      {.feature_flag = ConsentFeature(),
+       .action_occurred = PromptAction::kNoticeOpenSettings,
+       .expected_notice = Notice::kProtectedAudienceMeasurementNotice,
+       .expected_event = NoticeEvent::kSettings},
+      {.feature_flag = NoticeFeature(),
+       .action_occurred = PromptAction::kNoticeOpenSettings,
+       .expected_notice = Notice::kThreeAdsApisNotice,
+       .expected_event = NoticeEvent::kSettings},
+      {.feature_flag = RestrictedNoticeFeature(),
+       .action_occurred = PromptAction::kRestrictedNoticeOpenSettings,
+       .expected_notice = Notice::kMeasurementNotice,
+       .expected_event = NoticeEvent::kSettings},
+  });
+}
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeServiceInteractionTest,
                          PrivacySandboxNoticeServiceInteractionTest,
                          Combine(ValuesIn(kSurfaceMappings),
-                                 ValuesIn(kNoticeActionDataList)));
+                                 ValuesIn(GetNoticeActionDataList())));
 
 class PrivacySandboxServiceM1RestrictedNoticeTest
     : public PrivacySandboxServiceTest {

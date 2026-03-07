@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -185,26 +186,27 @@ TEST_P(PrivacySandboxNoticeModelResultCallbackTest, UpdateTargetApiResults) {
   Mock::VerifyAndClearExpectations(&callback_2);
 }
 
-std::vector<NoticeResultCallbackTestParam> notice_result_test_params = {
-    // Notice
-    {&Make<Notice>, kAck, kOutcomeTrue},
-    {&Make<Notice>, kSettings, kOutcomeTrue},
-    {&Make<Notice>, kShown, kNotFulfillment},
-    {&Make<Notice>, kClosed, kUnexpected},
-    {&Make<Notice>, kOptIn, kUnexpected},
-    {&Make<Notice>, kOptOut, kUnexpected},
-    // Consent
-    {&Make<Consent>, kOptIn, kOutcomeTrue},
-    {&Make<Consent>, kOptOut, kOutcomeFalse},
-    {&Make<Consent>, kShown, kNotFulfillment},
-    {&Make<Consent>, kAck, kUnexpected},
-    {&Make<Consent>, kSettings, kUnexpected},
-    {&Make<Consent>, kClosed, kUnexpected},
-};
+constexpr auto kNoticeResultTestParams =
+    std::to_array<NoticeResultCallbackTestParam>({
+        // Notice
+        {&Make<Notice>, kAck, kOutcomeTrue},
+        {&Make<Notice>, kSettings, kOutcomeTrue},
+        {&Make<Notice>, kShown, kNotFulfillment},
+        {&Make<Notice>, kClosed, kUnexpected},
+        {&Make<Notice>, kOptIn, kUnexpected},
+        {&Make<Notice>, kOptOut, kUnexpected},
+        // Consent
+        {&Make<Consent>, kOptIn, kOutcomeTrue},
+        {&Make<Consent>, kOptOut, kOutcomeFalse},
+        {&Make<Consent>, kShown, kNotFulfillment},
+        {&Make<Consent>, kAck, kUnexpected},
+        {&Make<Consent>, kSettings, kUnexpected},
+        {&Make<Consent>, kClosed, kUnexpected},
+    });
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxNoticeModelResultCallbackTest,
                          PrivacySandboxNoticeModelResultCallbackTest,
-                         testing::ValuesIn(notice_result_test_params));
+                         testing::ValuesIn(kNoticeResultTestParams));
 
 //-----------------------------------------------------------------------------
 // Notice / Consent Fulfillment Tests

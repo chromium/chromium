@@ -264,10 +264,6 @@ source_set("service_impl_unittest") {
       "//chromeos/components/kiosk:test_support",
     ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("settings_delegate_unittest") {
@@ -290,10 +286,6 @@ source_set("settings_delegate_unittest") {
     "//content/public/common",
     "//content/test:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("utils_unittest") {
