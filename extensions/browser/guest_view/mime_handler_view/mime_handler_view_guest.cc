@@ -212,6 +212,7 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
   if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
     web_contents()->SyncRendererPrefs();
+    web_contents()->SetIgnoreZoomGestures(!is_full_page_plugin());
   }
 }
 
@@ -301,19 +302,6 @@ bool MimeHandlerViewGuest::HandleContextMenu(
             content::WebContents::FromRenderFrameHost(&render_frame_host));
 
   return delegate_ && delegate_->HandleContextMenu(render_frame_host, params);
-}
-
-bool MimeHandlerViewGuest::PreHandleGestureEvent(
-    WebContents* source,
-    const blink::WebGestureEvent& event) {
-  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
-    // If we're an embedded plugin we drop pinch-gestures to avoid zooming the
-    // guest.
-    return !is_full_page_plugin();
-  }
-  return false;
 }
 
 content::JavaScriptDialogManager*

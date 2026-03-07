@@ -821,13 +821,6 @@ bool WebViewGuest::HandleKeyboardEvent(
   return GuestViewBase::HandleKeyboardEvent(source, event);
 }
 
-bool WebViewGuest::PreHandleGestureEvent(WebContents* source,
-                                         const blink::WebGestureEvent& event) {
-  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
-  return !allow_scaling_ && GuestViewBase::PreHandleGestureEvent(source, event);
-}
-
 void WebViewGuest::LoadAbort(bool is_top_level,
                              const GURL& url,
                              net::Error error_code) {

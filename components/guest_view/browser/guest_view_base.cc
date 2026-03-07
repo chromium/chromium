@@ -995,17 +995,6 @@ bool GuestViewBase::ShouldFocusPageAfterCrash(content::WebContents* source) {
   return false;
 }
 
-bool GuestViewBase::PreHandleGestureEvent(WebContents* source,
-                                          const blink::WebGestureEvent& event) {
-  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-  // Pinch events which cause a scale change should not be routed to a guest.
-  // We still allow synthetic wheel events for touchpad pinch to go to the page.
-  DCHECK(!blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-         (event.SourceDevice() == blink::WebGestureDevice::kTouchpad &&
-          event.NeedsWheelEvent()));
-  return false;
-}
-
 void GuestViewBase::UpdatePreferredSize(WebContents* target_web_contents,
                                         const gfx::Size& pref_size) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
