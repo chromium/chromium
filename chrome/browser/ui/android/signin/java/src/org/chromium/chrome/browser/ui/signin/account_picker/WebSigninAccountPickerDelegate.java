@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Fl
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -20,16 +21,35 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
-/** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
+/**
+ * Implementation of {@link AccountPickerDelegate} for the web-signin flow.
+ *
+ * <p>TODO(crbug.com/469772349): Remove {@link AccountPickerDelegate} in preference of {@link
+ * BottomSheetSigninAndHistorySyncCoordinator.Delegate} to handle sign-in callbacks.
+ * go/activityless-signin
+ */
 @NullMarked
-public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
-    private final Tab mCurrentTab;
-    private final Profile mProfile;
+public class WebSigninAccountPickerDelegate
+        implements AccountPickerDelegate, BottomSheetSigninAndHistorySyncCoordinator.Delegate {
+
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
-    private final GURL mContinueUrl;
     private @Nullable WebSigninBridge mWebSigninBridge;
+    // TODO(crbug.com/469772349): Remove deprecated constructor fields after activityless-signin
+    // launch.
+    private final @Nullable Profile mProfile;
+    private final @Nullable Tab mCurrentTab;
+    private final @Nullable GURL mContinueUrl;
+
+    /** Constructor for the activity-less sign-in flow. */
+    public WebSigninAccountPickerDelegate(WebSigninBridge.Factory webSigninBridgeFactory) {
+        mWebSigninBridgeFactory = webSigninBridgeFactory;
+        mProfile = null;
+        mCurrentTab = null;
+        mContinueUrl = null;
+    }
 
     /**
+     * @deprecated Prefer {@link #WebSigninAccountPickerDelegate(WebSigninBridge.Factory)}.
      * @param currentTab The current tab where the account picker bottom sheet is displayed.
      * @param webSigninBridgeFactory A {@link WebSigninBridge.Factory} to create {@link
      *     WebSigninBridge} instances.
@@ -68,6 +88,9 @@ public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     @Override
     public void onSignInComplete(
             CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller) {
+        assert mProfile != null;
+        assert mCurrentTab != null;
+        assert mContinueUrl != null;
         // Destroy WebSigninBridge in case it is still alive to avoid interference with the new
         // sign-in.
         destroyWebSigninBridge();

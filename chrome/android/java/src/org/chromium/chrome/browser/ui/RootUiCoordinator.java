@@ -144,6 +144,8 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.qrcode.QrCodeDialog;
 import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.Tab;
@@ -190,6 +192,9 @@ import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.TransitiveTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.accessibility.PageZoomBarCoordinator;
@@ -224,6 +229,8 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -274,6 +281,9 @@ public class RootUiCoordinator
 
     protected final SettableMonotonicObservableSupplier<ContextualSearchManager>
             mContextualSearchManagerSupplier = ObservableSuppliers.createMonotonic();
+
+    private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
+            mWebSigninAndHistorySyncCoordinatorSupplier = ObservableSuppliers.createMonotonic();
 
     protected final SettableMonotonicObservableSupplier<ReadAloudController>
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
@@ -944,6 +954,13 @@ public class RootUiCoordinator
             contextualSearchManager.destroy();
         }
 
+        BottomSheetSigninAndHistorySyncCoordinator signinAndHistorySyncCoordinator =
+                mWebSigninAndHistorySyncCoordinatorSupplier.get();
+        mWebSigninAndHistorySyncCoordinatorSupplier.destroy();
+        if (signinAndHistorySyncCoordinator != null) {
+            signinAndHistorySyncCoordinator.destroy();
+        }
+
         if (mEdgeToEdgeController != null) {
             mEdgeToEdgeController.destroy();
             mEdgeToEdgeController = null;
@@ -1000,6 +1017,8 @@ public class RootUiCoordinator
                 userDataHost, mDeviceLockActivityLauncherSupplier);
         ContextualSearchManagerSupplier.attach(userDataHost, mContextualSearchManagerSupplier);
         ReadAloudControllerSupplier.attach(userDataHost, mReadAloudControllerSupplier);
+        WebSigninAndHistorySyncCoordinatorSupplier.attach(
+                userDataHost, mWebSigninAndHistorySyncCoordinatorSupplier);
     }
 
     private void destroyUnownedUserDataSuppliers() {
@@ -1008,6 +1027,8 @@ public class RootUiCoordinator
         DeviceLockActivityLauncherSupplier.destroy(mDeviceLockActivityLauncherSupplier);
         ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
         ReadAloudControllerSupplier.destroy(mReadAloudControllerSupplier);
+        WebSigninAndHistorySyncCoordinatorSupplier.destroy(
+                mWebSigninAndHistorySyncCoordinatorSupplier);
     }
 
     @Override
@@ -1336,6 +1357,10 @@ public class RootUiCoordinator
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
 
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            initBottomSheetSigninAndHistorySyncController(originalProfile);
+        }
+
         // Setup IncognitoReauthController as early as possible, to show the re-auth screen.
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
             initIncognitoReauthController(originalProfile);
@@ -1438,6 +1463,26 @@ public class RootUiCoordinator
                         mMessageDispatcher);
         mMessageDispatcher.setDelegate(mMessageQueueMediator);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
+    }
+
+    private void initBottomSheetSigninAndHistorySyncController(Profile profile) {
+        // SigninAndHistorySyncActivityLauncher requires a OneshotSupplier<Profile>.
+        // A local supplier is created here to wrap the provided profile and satisfy the API.
+        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        profileSupplier.set(profile);
+        mWebSigninAndHistorySyncCoordinatorSupplier.set(
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                mWindowAndroid,
+                                mActivity,
+                                mActivityResultTracker,
+                                new WebSigninAccountPickerDelegate(new WebSigninBridge.Factory()),
+                                mDeviceLockActivityLauncherSupplier.get(),
+                                profileSupplier,
+                                this::getBottomSheetController,
+                                mModalDialogManagerSupplier.get(),
+                                mSnackbarManagerSupplier.get(),
+                                SigninAccessPoint.WEB_SIGNIN));
     }
 
     private void initIncognitoReauthController(Profile profile) {

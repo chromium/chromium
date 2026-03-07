@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -82,12 +84,16 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -300,10 +306,38 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
 
     @Test
     @MediumTest
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
     public void testInitProfileDependantFeatures_callsInitDefaultSearchEngine() {
         mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
 
         verify(mGoogleBottomBarCoordinator).initDefaultSearchEngine(mProfile);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testInitProfileDependantFeatures_WebSigninAndHistorySyncCoordinatorSupplier() {
+        SigninAndHistorySyncActivityLauncher launcherMock =
+                Mockito.mock(SigninAndHistorySyncActivityLauncher.class);
+        BottomSheetSigninAndHistorySyncCoordinator coordinatorMock =
+                Mockito.mock(BottomSheetSigninAndHistorySyncCoordinator.class);
+        when(launcherMock.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                        any(), any(), any(), any(), any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(coordinatorMock);
+        SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(launcherMock);
+
+        mBaseCustomTabRootUiCoordinator.initProfileDependentFeatures(mProfile);
+
+        Assert.assertEquals(
+                "Coordinator retrieved from supplier should match the one created by the launcher",
+                coordinatorMock,
+                WebSigninAndHistorySyncCoordinatorSupplier.getValueOrNullFrom(mWindowAndroid));
     }
 
     @Test

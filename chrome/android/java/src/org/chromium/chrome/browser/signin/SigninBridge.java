@@ -31,12 +31,18 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -297,8 +303,7 @@ final class SigninBridge {
         if (context == null) {
             return;
         }
-        // TODO(b/41493784): Update this when the new sign-in flow will be used for the web signin
-        // entry point.
+
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 context.getString(
@@ -310,6 +315,27 @@ final class SigninBridge {
                         .setDismissButtonString(
                                 context.getString(R.string.signin_account_picker_dismiss_button))
                         .build();
+
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            BottomSheetSigninAndHistorySyncConfig.Builder builder =
+                    new BottomSheetSigninAndHistorySyncConfig.Builder(
+                            strings,
+                            NoAccountSigninMode.BOTTOM_SHEET,
+                            WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            HistorySyncConfig.OptInMode.NONE,
+                            context.getString(R.string.history_sync_title),
+                            context.getString(R.string.history_sync_subtitle));
+            if (selectedAccountId != null) {
+                builder.selectedCoreAccountId(selectedAccountId);
+            }
+            BottomSheetSigninAndHistorySyncConfig config = builder.build();
+            BottomSheetSigninAndHistorySyncCoordinator coordinator =
+                    assertNonNull(
+                            WebSigninAndHistorySyncCoordinatorSupplier.getValueOrNullFrom(
+                                    windowAndroid));
+            coordinator.startSigninFlow(config);
+            return;
+        }
 
         factory.create(
                 windowAndroid,
