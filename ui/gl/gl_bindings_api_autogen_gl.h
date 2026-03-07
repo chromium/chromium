@@ -367,6 +367,7 @@ void glEnableFn(GLenum cap) override;
 void glEnableiOESFn(GLenum target, GLuint index) override;
 void glEnableVertexAttribArrayFn(GLuint index) override;
 void glEndPixelLocalStorageANGLEFn(GLsizei n, const GLenum* storeops) override;
+void glEndPixelLocalStorageImplicitANGLEFn() override;
 void glEndQueryFn(GLenum target) override;
 void glEndTilingQCOMFn(GLbitfield preserveMask) override;
 void glEndTransformFeedbackFn(void) override;

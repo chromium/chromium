@@ -371,6 +371,8 @@
   GLES2_GET_FUN(FramebufferPixelLocalClearValueuivANGLE)
 #define glBeginPixelLocalStorageANGLE GLES2_GET_FUN(BeginPixelLocalStorageANGLE)
 #define glEndPixelLocalStorageANGLE GLES2_GET_FUN(EndPixelLocalStorageANGLE)
+#define glEndPixelLocalStorageImplicitANGLE \
+  GLES2_GET_FUN(EndPixelLocalStorageImplicitANGLE)
 #define glPixelLocalStorageBarrierANGLE \
   GLES2_GET_FUN(PixelLocalStorageBarrierANGLE)
 #define glFramebufferPixelLocalStorageInterruptANGLE \

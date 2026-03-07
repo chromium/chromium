@@ -301,8 +301,8 @@ typedef void(GL_APIENTRYP PFNGLPROVOKINGVERTEXANGLEPROC)(GLenum provokeMode);
 #define GL_STORE_OP_STORE_ANGLE 0x96E6
 #endif
 
-#ifndef GL_PIXEL_LOCAL_FORMAT_ANGLE
-#define GL_PIXEL_LOCAL_FORMAT_ANGLE 0x96E7
+#ifndef GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE
+#define GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE 0x96E7
 #endif
 
 #ifndef GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE
@@ -358,6 +358,7 @@ GL_APICALL void GL_APIENTRY
 glBeginPixelLocalStorageANGLE(GLsizei n, const GLenum loadops[]);
 GL_APICALL void GL_APIENTRY
 glEndPixelLocalStorageANGLE(GLsizei n, const GLenum storeops[]);
+GL_APICALL void GL_APIENTRY glEndPixelLocalStorageImplicitANGLE(void);
 GL_APICALL void GL_APIENTRY glPixelLocalStorageBarrierANGLE(void);
 GL_APICALL void GL_APIENTRY glFramebufferPixelLocalStorageInterruptANGLE(void);
 GL_APICALL void GL_APIENTRY glFramebufferPixelLocalStorageRestoreANGLE(void);

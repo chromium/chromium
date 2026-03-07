@@ -333,6 +333,7 @@ MOCK_METHOD2(EnableiOES, void(GLenum target, GLuint index));
 MOCK_METHOD1(EnableVertexAttribArray, void(GLuint index));
 MOCK_METHOD2(EndPixelLocalStorageANGLE,
              void(GLsizei n, const GLenum* storeops));
+MOCK_METHOD0(EndPixelLocalStorageImplicitANGLE, void());
 MOCK_METHOD1(EndQuery, void(GLenum target));
 MOCK_METHOD1(EndTilingQCOM, void(GLbitfield preserveMask));
 MOCK_METHOD0(EndTransformFeedback, void());

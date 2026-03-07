@@ -871,6 +871,12 @@ void DriverGL::InitializeDynamicBindings(GLGetProcAddressProc get_proc_address,
             get_proc_address("glEndPixelLocalStorageANGLE"));
   }
 
+  if (ext.b_GL_ANGLE_shader_pixel_local_storage) {
+    fn.glEndPixelLocalStorageImplicitANGLEFn =
+        reinterpret_cast<glEndPixelLocalStorageImplicitANGLEProc>(
+            get_proc_address("glEndPixelLocalStorageImplicitANGLE"));
+  }
+
   if (ver->IsAtLeastGLES(3u, 0u)) {
     fn.glEndQueryFn =
         reinterpret_cast<glEndQueryProc>(get_proc_address("glEndQuery"));
@@ -2750,6 +2756,10 @@ void GLApiBase::glEnableVertexAttribArrayFn(GLuint index) {
 void GLApiBase::glEndPixelLocalStorageANGLEFn(GLsizei n,
                                               const GLenum* storeops) {
   driver_->fn.glEndPixelLocalStorageANGLEFn(n, storeops);
+}
+
+void GLApiBase::glEndPixelLocalStorageImplicitANGLEFn() {
+  driver_->fn.glEndPixelLocalStorageImplicitANGLEFn();
 }
 
 void GLApiBase::glEndQueryFn(GLenum target) {
@@ -5549,6 +5559,12 @@ void TraceGLApi::glEndPixelLocalStorageANGLEFn(GLsizei n,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "TraceGLAPI::glEndPixelLocalStorageANGLE");
   gl_api_->glEndPixelLocalStorageANGLEFn(n, storeops);
+}
+
+void TraceGLApi::glEndPixelLocalStorageImplicitANGLEFn() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "TraceGLAPI::glEndPixelLocalStorageImplicitANGLE");
+  gl_api_->glEndPixelLocalStorageImplicitANGLEFn();
 }
 
 void TraceGLApi::glEndQueryFn(GLenum target) {
@@ -8917,6 +8933,11 @@ void LogGLApi::glEndPixelLocalStorageANGLEFn(GLsizei n,
                  << "(" << n << ", " << static_cast<const void*>(storeops)
                  << ")");
   gl_api_->glEndPixelLocalStorageANGLEFn(n, storeops);
+}
+
+void LogGLApi::glEndPixelLocalStorageImplicitANGLEFn() {
+  GL_SERVICE_LOG("glEndPixelLocalStorageImplicitANGLE" << "(" << ")");
+  gl_api_->glEndPixelLocalStorageImplicitANGLEFn();
 }
 
 void LogGLApi::glEndQueryFn(GLenum target) {
@@ -12542,6 +12563,10 @@ void NoContextGLApi::glEnableVertexAttribArrayFn(GLuint index) {
 void NoContextGLApi::glEndPixelLocalStorageANGLEFn(GLsizei n,
                                                    const GLenum* storeops) {
   NoContextHelper("glEndPixelLocalStorageANGLE");
+}
+
+void NoContextGLApi::glEndPixelLocalStorageImplicitANGLEFn() {
+  NoContextHelper("glEndPixelLocalStorageImplicitANGLE");
 }
 
 void NoContextGLApi::glEndQueryFn(GLenum target) {

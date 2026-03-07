@@ -3690,6 +3690,14 @@ void GLES2Implementation::EndPixelLocalStorageANGLE(GLsizei count,
   CheckGLError();
 }
 
+void GLES2Implementation::EndPixelLocalStorageImplicitANGLE() {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix()
+                     << "] glEndPixelLocalStorageImplicitANGLE(" << ")");
+  helper_->EndPixelLocalStorageImplicitANGLE();
+  CheckGLError();
+}
+
 void GLES2Implementation::PixelLocalStorageBarrierANGLE() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glPixelLocalStorageBarrierANGLE("

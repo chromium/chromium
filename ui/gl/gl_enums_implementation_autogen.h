@@ -7001,7 +7001,7 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x96E7,
-        "GL_PIXEL_LOCAL_FORMAT_ANGLE",
+        "GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE",
     },
     {
         0x96E8,

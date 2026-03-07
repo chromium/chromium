@@ -427,6 +427,7 @@ typedef void(GL_BINDING_CALL* glEnableVertexAttribArrayProc)(GLuint index);
 typedef void(GL_BINDING_CALL* glEndPixelLocalStorageANGLEProc)(
     GLsizei n,
     const GLenum* storeops);
+typedef void(GL_BINDING_CALL* glEndPixelLocalStorageImplicitANGLEProc)();
 typedef void(GL_BINDING_CALL* glEndQueryProc)(GLenum target);
 typedef void(GL_BINDING_CALL* glEndTilingQCOMProc)(GLbitfield preserveMask);
 typedef void(GL_BINDING_CALL* glEndTransformFeedbackProc)(void);
@@ -1746,6 +1747,7 @@ struct ProcsGL {
   glEnableiOESProc glEnableiOESFn;
   glEnableVertexAttribArrayProc glEnableVertexAttribArrayFn;
   glEndPixelLocalStorageANGLEProc glEndPixelLocalStorageANGLEFn;
+  glEndPixelLocalStorageImplicitANGLEProc glEndPixelLocalStorageImplicitANGLEFn;
   glEndQueryProc glEndQueryFn;
   glEndTilingQCOMProc glEndTilingQCOMFn;
   glEndTransformFeedbackProc glEndTransformFeedbackFn;
@@ -2431,6 +2433,7 @@ class GL_EXPORT GLApi {
   virtual void glEnableVertexAttribArrayFn(GLuint index) = 0;
   virtual void glEndPixelLocalStorageANGLEFn(GLsizei n,
                                              const GLenum* storeops) = 0;
+  virtual void glEndPixelLocalStorageImplicitANGLEFn() = 0;
   virtual void glEndQueryFn(GLenum target) = 0;
   virtual void glEndTilingQCOMFn(GLbitfield preserveMask) = 0;
   virtual void glEndTransformFeedbackFn(void) = 0;
@@ -3589,6 +3592,8 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glEnableVertexAttribArrayFn
 #define glEndPixelLocalStorageANGLE \
   ::gl::g_current_gl_context->glEndPixelLocalStorageANGLEFn
+#define glEndPixelLocalStorageImplicitANGLE \
+  ::gl::g_current_gl_context->glEndPixelLocalStorageImplicitANGLEFn
 #define glEndQuery ::gl::g_current_gl_context->glEndQueryFn
 #define glEndTilingQCOM ::gl::g_current_gl_context->glEndTilingQCOMFn
 #define glEndTransformFeedback \

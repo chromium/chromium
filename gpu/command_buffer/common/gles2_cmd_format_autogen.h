@@ -15728,6 +15728,33 @@ static_assert(
 static_assert(offsetof(EndPixelLocalStorageANGLEImmediate, count) == 4,
               "offset of EndPixelLocalStorageANGLEImmediate count should be 4");
 
+struct EndPixelLocalStorageImplicitANGLE {
+  typedef EndPixelLocalStorageImplicitANGLE ValueType;
+  static const CommandId kCmdId = kEndPixelLocalStorageImplicitANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init() { SetHeader(); }
+
+  void* Set(void* cmd) {
+    static_cast<ValueType*>(cmd)->Init();
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+};
+
+static_assert(sizeof(EndPixelLocalStorageImplicitANGLE) == 4,
+              "size of EndPixelLocalStorageImplicitANGLE should be 4");
+static_assert(offsetof(EndPixelLocalStorageImplicitANGLE, header) == 0,
+              "offset of EndPixelLocalStorageImplicitANGLE header should be 0");
+
 struct PixelLocalStorageBarrierANGLE {
   typedef PixelLocalStorageBarrierANGLE ValueType;
   static const CommandId kCmdId = kPixelLocalStorageBarrierANGLE;

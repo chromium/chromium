@@ -4905,6 +4905,24 @@ GLES2DecoderPassthroughImpl::HandleEndPixelLocalStorageANGLEImmediate(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderPassthroughImpl::HandleEndPixelLocalStorageImplicitANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
+    return error::kUnknownCommand;
+  }
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  error::Error error = DoEndPixelLocalStorageImplicitANGLE();
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandlePixelLocalStorageBarrierANGLE(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

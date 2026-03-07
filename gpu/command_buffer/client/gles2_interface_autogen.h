@@ -891,6 +891,7 @@ virtual void BeginPixelLocalStorageANGLE(GLsizei count,
                                          const GLenum* loadops) = 0;
 virtual void EndPixelLocalStorageANGLE(GLsizei count,
                                        const GLenum* storeops) = 0;
+virtual void EndPixelLocalStorageImplicitANGLE() = 0;
 virtual void PixelLocalStorageBarrierANGLE() = 0;
 virtual void FramebufferPixelLocalStorageInterruptANGLE() = 0;
 virtual void FramebufferPixelLocalStorageRestoreANGLE() = 0;

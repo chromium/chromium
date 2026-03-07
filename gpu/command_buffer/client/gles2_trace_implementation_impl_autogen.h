@@ -2449,6 +2449,12 @@ void GLES2TraceImplementation::EndPixelLocalStorageANGLE(
   gl_->EndPixelLocalStorageANGLE(count, storeops);
 }
 
+void GLES2TraceImplementation::EndPixelLocalStorageImplicitANGLE() {
+  TRACE_EVENT_BINARY_EFFICIENT0(
+      "gpu", "GLES2Trace::EndPixelLocalStorageImplicitANGLE");
+  gl_->EndPixelLocalStorageImplicitANGLE();
+}
+
 void GLES2TraceImplementation::PixelLocalStorageBarrierANGLE() {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",
                                 "GLES2Trace::PixelLocalStorageBarrierANGLE");

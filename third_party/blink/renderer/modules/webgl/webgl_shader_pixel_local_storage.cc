@@ -257,7 +257,7 @@ WebGLShaderPixelLocalStorage::getFramebufferPixelLocalStorageParameterWEBGL(
   }
   gpu::gles2::GLES2Interface* gl = context->ContextGL();
   switch (pname) {
-    case GL_PIXEL_LOCAL_FORMAT_ANGLE: {
+    case GL_PIXEL_LOCAL_INTERNAL_FORMAT_ANGLE: {
       GLint value{};
       gl->GetFramebufferPixelLocalStorageParameterivANGLE(plane, pname, &value);
       return WebGLAny(script_state, static_cast<GLenum>(value));

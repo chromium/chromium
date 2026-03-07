@@ -14,7 +14,7 @@
     const unsigned long LOAD_OP_CLEAR_WEBGL = 0x96E4;
     const unsigned long LOAD_OP_LOAD_WEBGL = 0x96E5;
     const unsigned long STORE_OP_STORE_WEBGL = 0x96E6;
-    const unsigned long PIXEL_LOCAL_FORMAT_WEBGL = 0x96E7;
+    const unsigned long PIXEL_LOCAL_INTERNAL_FORMAT_WEBGL = 0x96E7;
     const unsigned long PIXEL_LOCAL_TEXTURE_NAME_WEBGL = 0x96E8;
     const unsigned long PIXEL_LOCAL_TEXTURE_LEVEL_WEBGL = 0x96E9;
     const unsigned long PIXEL_LOCAL_TEXTURE_LAYER_WEBGL = 0x96EA;

@@ -463,6 +463,7 @@ static void GL_BINDING_CALL Mock_glEnableVertexAttribArray(GLuint index);
 static void GL_BINDING_CALL Mock_glEnableiOES(GLenum target, GLuint index);
 static void GL_BINDING_CALL
 Mock_glEndPixelLocalStorageANGLE(GLsizei n, const GLenum* storeops);
+static void GL_BINDING_CALL Mock_glEndPixelLocalStorageImplicitANGLE();
 static void GL_BINDING_CALL Mock_glEndQuery(GLenum target);
 static void GL_BINDING_CALL Mock_glEndQueryEXT(GLenum target);
 static void GL_BINDING_CALL Mock_glEndTilingQCOM(GLbitfield preserveMask);

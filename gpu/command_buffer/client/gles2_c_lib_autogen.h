@@ -1689,6 +1689,9 @@ void GL_APIENTRY GLES2EndPixelLocalStorageANGLE(GLsizei count,
                                                 const GLenum* storeops) {
   gles2::GetGLContext()->EndPixelLocalStorageANGLE(count, storeops);
 }
+void GL_APIENTRY GLES2EndPixelLocalStorageImplicitANGLE() {
+  gles2::GetGLContext()->EndPixelLocalStorageImplicitANGLE();
+}
 void GL_APIENTRY GLES2PixelLocalStorageBarrierANGLE() {
   gles2::GetGLContext()->PixelLocalStorageBarrierANGLE();
 }
@@ -3061,6 +3064,11 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glEndPixelLocalStorageANGLE",
         reinterpret_cast<GLES2FunctionPointer>(glEndPixelLocalStorageANGLE),
+    },
+    {
+        "glEndPixelLocalStorageImplicitANGLE",
+        reinterpret_cast<GLES2FunctionPointer>(
+            glEndPixelLocalStorageImplicitANGLE),
     },
     {
         "glPixelLocalStorageBarrierANGLE",

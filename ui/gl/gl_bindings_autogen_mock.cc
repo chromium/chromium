@@ -1061,6 +1061,12 @@ MockGLInterface::Mock_glEndPixelLocalStorageANGLE(GLsizei n,
   interface_->EndPixelLocalStorageANGLE(n, storeops);
 }
 
+void GL_BINDING_CALL
+MockGLInterface::Mock_glEndPixelLocalStorageImplicitANGLE() {
+  MakeGlMockFunctionUnique("glEndPixelLocalStorageImplicitANGLE");
+  interface_->EndPixelLocalStorageImplicitANGLE();
+}
+
 void GL_BINDING_CALL MockGLInterface::Mock_glEndQuery(GLenum target) {
   MakeGlMockFunctionUnique("glEndQuery");
   interface_->EndQuery(target);
@@ -4003,6 +4009,10 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glEndPixelLocalStorageANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glEndPixelLocalStorageANGLE);
+  if (strcmp(name, "glEndPixelLocalStorageImplicitANGLE") == 0) {
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_glEndPixelLocalStorageImplicitANGLE);
+  }
   if (strcmp(name, "glEndQuery") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glEndQuery);
   if (strcmp(name, "glEndQueryEXT") == 0)

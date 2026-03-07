@@ -5256,6 +5256,17 @@ TEST_F(GLES2FormatTest, EndPixelLocalStorageANGLEImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(GLES2FormatTest, EndPixelLocalStorageImplicitANGLE) {
+  cmds::EndPixelLocalStorageImplicitANGLE& cmd =
+      *GetBufferAs<cmds::EndPixelLocalStorageImplicitANGLE>();
+  void* next_cmd = cmd.Set(&cmd);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::EndPixelLocalStorageImplicitANGLE::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(GLES2FormatTest, PixelLocalStorageBarrierANGLE) {
   cmds::PixelLocalStorageBarrierANGLE& cmd =
       *GetBufferAs<cmds::PixelLocalStorageBarrierANGLE>();

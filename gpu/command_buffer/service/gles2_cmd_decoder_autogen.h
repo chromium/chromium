@@ -5596,7 +5596,21 @@ error::Error GLES2DecoderImpl::HandleEndPixelLocalStorageANGLEImmediate(
   if (storeops == nullptr) {
     return error::kOutOfBounds;
   }
-  DoBeginPixelLocalStorageANGLE(count, storeops);
+  DoEndPixelLocalStorageANGLE(count, storeops);
+  return error::kNoError;
+}
+
+error::Error GLES2DecoderImpl::HandleEndPixelLocalStorageImplicitANGLE(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
+    return error::kUnknownCommand;
+  }
+  if (!features().angle_shader_pixel_local_storage) {
+    return error::kUnknownCommand;
+  }
+
+  DoEndPixelLocalStorageImplicitANGLE();
   return error::kNoError;
 }
 

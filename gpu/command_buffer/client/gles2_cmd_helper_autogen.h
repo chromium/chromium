@@ -3191,6 +3191,14 @@ void EndPixelLocalStorageANGLEImmediate(GLsizei count, const GLenum* storeops) {
   }
 }
 
+void EndPixelLocalStorageImplicitANGLE() {
+  gles2::cmds::EndPixelLocalStorageImplicitANGLE* c =
+      GetCmdSpace<gles2::cmds::EndPixelLocalStorageImplicitANGLE>();
+  if (c) {
+    c->Init();
+  }
+}
+
 void PixelLocalStorageBarrierANGLE() {
   gles2::cmds::PixelLocalStorageBarrierANGLE* c =
       GetCmdSpace<gles2::cmds::PixelLocalStorageBarrierANGLE>();
