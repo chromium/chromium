@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/views/chrome_views_export.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace ui {
 class Event;
@@ -34,7 +35,9 @@ enum class ReorderDirection {
 // command, returns the direction of the reorder. If the event does not
 // correspond to a reorder, returns nullopt.
 CHROME_VIEWS_EXPORT std::optional<ReorderDirection>
-GetReorderCommandForKeyboardEvent(const ui::KeyEvent& event);
+GetReorderCommandForKeyboardEvent(const ui::KeyEvent& event,
+                                  views::LayoutOrientation orientation =
+                                      views::LayoutOrientation::kHorizontal);
 
 }  // namespace event_utils
 

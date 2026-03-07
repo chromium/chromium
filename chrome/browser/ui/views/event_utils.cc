@@ -7,7 +7,9 @@
 #include "base/i18n/rtl.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/layout/layout_types.h"
 
 namespace event_utils {
 
@@ -17,7 +19,8 @@ bool IsPossibleDispositionEvent(const ui::Event& event) {
 }
 
 std::optional<ReorderDirection> GetReorderCommandForKeyboardEvent(
-    const ui::KeyEvent& event) {
+    const ui::KeyEvent& event,
+    views::LayoutOrientation orientation) {
   constexpr int kModifierFlag =
 #if BUILDFLAG(IS_MAC)
       ui::EF_COMMAND_DOWN;
@@ -29,15 +32,26 @@ std::optional<ReorderDirection> GetReorderCommandForKeyboardEvent(
     return std::nullopt;
   }
 
-  const bool is_right = event.key_code() == ui::VKEY_RIGHT;
-  const bool is_left = event.key_code() == ui::VKEY_LEFT;
-  if (!is_left && !is_right) {
-    return std::nullopt;
-  }
+  if (orientation == views::LayoutOrientation::kHorizontal) {
+    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
+    const bool is_left = event.key_code() == ui::VKEY_LEFT;
+    if (!is_left && !is_right) {
+      return std::nullopt;
+    }
 
-  const bool is_rtl = base::i18n::IsRTL();
-  const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
-  return is_next ? ReorderDirection::kNext : ReorderDirection::kPrevious;
+    const bool is_rtl = base::i18n::IsRTL();
+    const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
+    return is_next ? ReorderDirection::kNext : ReorderDirection::kPrevious;
+  } else {
+    switch (event.key_code()) {
+      case ui::VKEY_UP:
+        return ReorderDirection::kPrevious;
+      case ui::VKEY_DOWN:
+        return ReorderDirection::kNext;
+      default:
+        return std::nullopt;
+    }
+  }
 }
 
 }  // namespace event_utils

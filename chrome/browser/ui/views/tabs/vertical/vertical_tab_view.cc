@@ -70,6 +70,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -315,13 +316,9 @@ bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
     return true;
   }
 
-  std::optional<event_utils::ReorderDirection> reorder_direction;
-  if (event.key_code() == ui::VKEY_UP) {
-    reorder_direction = event_utils::ReorderDirection::kPrevious;
-  }
-  if (event.key_code() == ui::VKEY_DOWN) {
-    reorder_direction = event_utils::ReorderDirection::kNext;
-  }
+  std::optional<event_utils::ReorderDirection> reorder_direction =
+      event_utils::GetReorderCommandForKeyboardEvent(
+          event, views::LayoutOrientation::kVertical);
   if (!reorder_direction) {
     return false;
   }
