@@ -102,6 +102,15 @@ public class WebSigninAccountPickerDelegate
                         createWebSigninBridgeCallback(mCurrentTab, mContinueUrl, controller));
     }
 
+    /**
+     * Implements {@link AccountPickerDelegate} and {@link
+     * BottomSheetSigninAndHistorySyncCoordinator.Delegate}.
+     */
+    @Override
+    public @FlowVariant String getSigninFlowVariant() {
+        return FlowVariant.WEB;
+    }
+
     private Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(
             Tab tab, GURL continueUrl, AccountPickerDelegate.SigninStateController controller) {
         return (result) -> {
@@ -136,10 +145,5 @@ public class WebSigninAccountPickerDelegate
             mWebSigninBridge.destroy();
             mWebSigninBridge = null;
         }
-    }
-
-    @Override
-    public @FlowVariant String getSigninFlowVariant() {
-        return FlowVariant.WEB;
     }
 }

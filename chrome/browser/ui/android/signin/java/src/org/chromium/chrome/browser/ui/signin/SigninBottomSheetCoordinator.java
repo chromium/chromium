@@ -14,6 +14,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -41,6 +42,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final SigninManager mSigninManager;
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final @Nullable CoreAccountId mSelectedCoreAccountId;
+    private final @FlowVariant String mSigninFlowVariant;
 
     private @Nullable SigninBottomSheetUiCoordinator mSigninUiCoordinator;
 
@@ -94,7 +96,8 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
             @AccountPickerLaunchMode int accountPickerLaunchMode,
             boolean isSeamlessSigninFlow,
             @SigninAccessPoint int signinAccessPoint,
-            @Nullable CoreAccountId selectedAccountId) {
+            @Nullable CoreAccountId selectedAccountId,
+            @FlowVariant String signinFlowVariant) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mDelegate = delegate;
@@ -102,6 +105,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSigninManager = signinManager;
         mSigninAccessPoint = signinAccessPoint;
         mSelectedCoreAccountId = selectedAccountId;
+        mSigninFlowVariant = signinFlowVariant;
 
         if (isSeamlessSigninFlow) {
             assert mSelectedCoreAccountId != null
@@ -177,6 +181,11 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     @Override
     public void onSignInCancel() {
         mDelegate.onSignInCancel();
+    }
+
+    @Override
+    public @FlowVariant String getSigninFlowVariant() {
+        return mSigninFlowVariant;
     }
 
     public void destroy() {

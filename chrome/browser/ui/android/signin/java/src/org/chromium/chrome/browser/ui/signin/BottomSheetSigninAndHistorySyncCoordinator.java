@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
@@ -140,6 +141,11 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
          * out and history sync has been optionally opted out.
          */
         default void onSigninUndone() {}
+
+        /** Returns the sign-in flow variant for logging purposes. */
+        default @FlowVariant String getSigninFlowVariant() {
+            return FlowVariant.OTHER;
+        }
     }
 
     /**
@@ -605,7 +611,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         accountPickerMode,
                         mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN,
                         mSigninAccessPoint,
-                        mConfig.selectedCoreAccountId);
+                        mConfig.selectedCoreAccountId,
+                        mDelegate.getSigninFlowVariant());
         mDidShowSigninStep = true;
     }
 

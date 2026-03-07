@@ -55,6 +55,7 @@ public interface AccountPickerDelegate {
      */
     default void onSignInCancel() {}
 
+    /** Returns the sign-in flow variant for logging purposes. */
     default @FlowVariant String getSigninFlowVariant() {
         return FlowVariant.OTHER;
     }

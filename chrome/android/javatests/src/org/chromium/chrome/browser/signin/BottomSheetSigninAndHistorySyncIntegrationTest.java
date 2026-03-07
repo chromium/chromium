@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -186,6 +187,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         })
                 .when(mDeviceLockActivityLauncher)
                 .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
+
+        when(mDelegate.getSigninFlowVariant()).thenReturn(FlowVariant.OTHER);
     }
 
     @After
@@ -1362,6 +1365,36 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         onViewWaiting(withId(R.id.history_sync_footer))
                 .check(matches(withText(containsString(expectedEmail))));
         acceptHistorySyncAndVerifyFlowCompletion(/* hasSignedIn= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testWebSigninFlowLogging() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mDelegate.getSigninFlowVariant()).thenReturn(FlowVariant.WEB);
+        mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
+
+        HistogramWatcher signinHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Signin.SignIn.Started", mSigninAccessPoint)
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Web.ManagementStatusLoaded")
+                        .expectAnyRecord("Signin.SignIn.Timestamps.Web.SigninCompleted")
+                        .build();
+
+        launchSigninFlow(
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.NONE,
+                TestAccounts.ACCOUNT1.getId());
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
+        signinHistogramWatcher.assertExpected();
     }
 
     private void launchSeamlessSigninAndVerifySignedIn(
