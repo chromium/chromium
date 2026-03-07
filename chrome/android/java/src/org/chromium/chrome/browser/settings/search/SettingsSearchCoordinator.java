@@ -408,6 +408,7 @@ public class SettingsSearchCoordinator
                                 if (mUseMultiColumn) return;
 
                                 showUiInSingleColumn(searchBox, /* show= */ false);
+                                disableBackgroundTalkbackNavigation();
                             }
 
                             @Override
@@ -425,6 +426,7 @@ public class SettingsSearchCoordinator
                                     exitSearchState(/* clearFragment= */ false);
                                 }
                                 showUiInSingleColumn(searchBox, /* show= */ true);
+                                disableBackgroundTalkbackNavigation();
                             }
                         });
         var fm = getSettingsFragmentManager();
@@ -440,29 +442,28 @@ public class SettingsSearchCoordinator
                 },
                 false);
 
-        // Prevent TalkBack from navigating to background fragments.
-        fm.addOnBackStackChangedListener(
-                () -> {
-                    // Search fragments (EmptyFragment, SearchResultsPreferenceFragment) are added
-                    // to (as opposed to replaces) the existing Fragment, which makes the existing
-                    // one still technically "active" and "visible" in the view hierarchy, which is
-                    // why TalkBack navigates through it. In such case, disable navigation on the
-                    // existing fragments. MainSettings in multi-column mode is always enabled.
-                    List<Fragment> fragments = fm.getFragments();
-                    Fragment top = fragments.get(fragments.size() - 1);
-                    boolean showingSearchFragment =
-                            top.getClass() == EmptyFragment.class
-                                    || top.getClass() == SearchResultsPreferenceFragment.class;
-                    for (int i = 0; i <= fragments.size() - 2; i++) {
-                        Fragment f = fragments.get(i);
-                        if (f == null || f.getView() == null) continue;
-                        boolean enable =
-                                !showingSearchFragment
-                                        || (mUseMultiColumn && f.getClass() == MainSettings.class);
-                        enableTalkbackNavigation(f.getView(), enable);
-                    }
-                });
+        fm.addOnBackStackChangedListener(this::disableBackgroundTalkbackNavigation);
         adjustTalkbackTraversalOrder(searchBox);
+    }
+
+    // Prevent TalkBack from navigating background fragments.
+    private void disableBackgroundTalkbackNavigation() {
+        // When a new Fragment is added to (as opposed to replaces) the existing Fragment, it makes
+        // the existing one still technically "active" and "visible" in the view hierarchy, which is
+        // why TalkBack navigates through it. Same applies when the detail pane slides in and sits
+        // on top of the header pane - MainSettings in the header pane remains active, therefore
+        // talkback would navigate through it. Navigation on all the invisible (e.g. background)
+        // fragments should be disabled.
+        // Note that MainSettings in multi-column mode, or single-column mode with the detail pane
+        // out of the screen, should be enabled since it is visible.
+        List<Fragment> fragments = getSettingsFragmentManager().getFragments();
+        boolean isHeaderPaneVisible = isShowingMainSettings();
+        for (int i = 0; i <= fragments.size() - 2; i++) {
+            Fragment f = fragments.get(i);
+            if (f == null || f.getView() == null) continue;
+            boolean enable = (f.getClass() == MainSettings.class) && isHeaderPaneVisible;
+            enableTalkbackNavigation(f.getView(), enable);
+        }
     }
 
     private static void enableTalkbackNavigation(View view, boolean enable) {
@@ -1041,6 +1042,7 @@ public class SettingsSearchCoordinator
         assert mMultiColumnSettings != null : "Should be used for multi-column fragment only";
         if (mMultiColumnSettings == null) return;
 
+        disableBackgroundTalkbackNavigation();
         View searchBox = mActivity.findViewById(R.id.search_box);
         UiUtils.removeViewFromParent(searchBox);
         View query = mActivity.findViewById(R.id.search_query_container);
