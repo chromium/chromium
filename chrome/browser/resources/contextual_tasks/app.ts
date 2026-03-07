@@ -349,14 +349,17 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isInBasicMode_ = false;
       }),
       callbackRouter.injectInput.addListener(
-          (title: string, thumbnail: string, fileToken: UnguessableToken) => {
+          (title: string, thumbnail: string, fileToken: UnguessableToken,
+           supportsUnimodal: boolean) => {
             this.composebox_?.injectInput(
                 title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
-                fileToken);
+                fileToken, supportsUnimodal);
           }),
       callbackRouter.injectInputWithIcon.addListener(
-          (title: string, iconId: IconType, fileToken: UnguessableToken) => {
-            this.composebox_?.injectInputWithIcon(title, iconId, fileToken);
+          (title: string, iconId: IconType, fileToken: UnguessableToken,
+           supportsUnimodal: boolean) => {
+            this.composebox_?.injectInputWithIcon(
+                title, iconId, fileToken, supportsUnimodal);
           }),
       callbackRouter.removeInjectedInput.addListener(
           (fileToken: UnguessableToken) => {

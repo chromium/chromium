@@ -485,17 +485,18 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     }
   }
 
-  injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
-    // TODO: Get supportsUnimodal from the input.
+  injectInput(
+      title: string, thumbnail: string, fileToken: UnguessableToken,
+      supportsUnimodal: boolean) {
     this.$.composebox.injectInput(
-        title, thumbnail, fileToken, /*supportsUnimodal=*/ false);
+        title, thumbnail, fileToken, supportsUnimodal);
   }
 
   injectInputWithIcon(
-      title: string, iconId: IconType, fileToken: UnguessableToken) {
-    // TODO: Get supportsUnimodal from the input.
+      title: string, iconId: IconType, fileToken: UnguessableToken,
+      supportsUnimodal: boolean) {
     this.$.composebox.injectInput(
-        title, '', fileToken, /*supportsUnimodal=*/ false,
+        title, '', fileToken, supportsUnimodal,
         ICON_TYPE_TO_NAME[iconId as number] ?? 'unspecified');
   }
 
