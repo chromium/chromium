@@ -95,7 +95,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
-      maybeShowOverlayHintText: {
+      isOverlayOpenForAimVisualSearch: {
         type: Boolean,
         reflect: true,
       },
@@ -138,7 +138,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   accessor isZeroState: boolean = false;
   accessor isSidePanel: boolean = false;
   accessor isLensOverlayShowing: boolean = false;
-  accessor maybeShowOverlayHintText: boolean = false;
+  accessor isOverlayOpenForAimVisualSearch: boolean = false;
   accessor inputEnabled: boolean = true;
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
@@ -316,7 +316,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected getInputPlaceholder_() {
-    return this.maybeShowOverlayHintText && !this.$.composebox.hasFiles() ?
+    return this.isOverlayOpenForAimVisualSearch &&
+            !this.$.composebox.hasFiles() ?
         loadTimeData.getString('composeboxHintTextLensOverlay') :
         '';
   }

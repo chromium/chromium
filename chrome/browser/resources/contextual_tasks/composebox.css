@@ -277,7 +277,7 @@
   transition: ease-out 100ms;
 }
 
-:host([is-lens-overlay-showing]) #composebox::part(lens-icon) {
+:host([is-overlay-open-for-aim-visual-search]) #composebox::part(lens-icon) {
   background-color: var(--color-composebox-lens-active-background);
   border-radius: 50%;
 }

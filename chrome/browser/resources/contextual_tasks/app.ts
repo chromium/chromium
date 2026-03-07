@@ -175,7 +175,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       },
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
-      maybeShowOverlayHintText_: {type: Boolean},
+      isOverlayOpenForAimVisualSearch_: {type: Boolean},
       isGhostLoaderVisible_: {type: Boolean, reflect: true},
       isErrorDialogVisible_: {type: Boolean},
       enableNativeZeroStateSuggestions_: {
@@ -220,7 +220,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableBasicModeZOrder');
   protected accessor isAiPage_: boolean = true;
   protected accessor isLensOverlayShowing_: boolean = false;
-  protected accessor maybeShowOverlayHintText_: boolean = false;
+  protected accessor isOverlayOpenForAimVisualSearch_: boolean = false;
   // Indicates if in tab mode. Most start in a tab.
   protected accessor isShownInTab_: boolean = true;
   protected accessor darkMode_: boolean = loadTimeData.getBoolean('darkMode');
@@ -379,9 +379,11 @@ export class ContextualTasksAppElement extends CrLitElement {
         }
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
-          (isOverlayShowing: boolean, maybeShowOverlayHintText: boolean) => {
+          (isOverlayShowing: boolean,
+           isOverlayOpenForAimVisualSearch: boolean) => {
             this.isLensOverlayShowing_ = isOverlayShowing;
-            this.maybeShowOverlayHintText_ = maybeShowOverlayHintText;
+            this.isOverlayOpenForAimVisualSearch_ =
+                isOverlayOpenForAimVisualSearch;
           }),
       callbackRouter.showErrorPage.addListener(() => {
         this.isErrorPageVisible_ = true;

@@ -53,7 +53,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .isZeroState="${this.isZeroState_}"
           .isSidePanel="${!this.isShownInTab_}"
           .isLensOverlayShowing="${this.isLensOverlayShowing_}"
-          .maybeShowOverlayHintText="${this.maybeShowOverlayHintText_}"
+          .isOverlayOpenForAimVisualSearch="${this.isOverlayOpenForAimVisualSearch_}"
           .enableNativeZeroStateSuggestions=
               "${this.enableNativeZeroStateSuggestions_}"
           .inputEnabled="${!this.isInputLocked_}">

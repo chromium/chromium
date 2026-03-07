@@ -869,7 +869,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const innerComposebox = contextualComposebox.$.composebox;
 
     // Set overlay hint text to true.
-    contextualComposebox.maybeShowOverlayHintText = true;
+    contextualComposebox.isOverlayOpenForAimVisualSearch = true;
 
     // Add an image file.
     const token = {high: 0n, low: 1n} as any;

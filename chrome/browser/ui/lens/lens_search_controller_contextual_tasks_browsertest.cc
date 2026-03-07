@@ -31,6 +31,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 
@@ -157,15 +158,31 @@ class ContextualTasksLensInteractionBrowserTestBase
     return controller && controller->IsPanelOpenForContextualTask();
   }
 
-  bool IsContextualTasksErrorPageOpen() {
+  content::WebContents* GetContextualTasksWebContents() {
     auto* contextual_tasks_coordinator =
         contextual_tasks::ContextualTasksSidePanelCoordinator::From(
             GetBrowserWindowInterface());
     if (!contextual_tasks_coordinator ||
         !contextual_tasks_coordinator->IsPanelOpenForContextualTask()) {
-      return false;
+      return nullptr;
     }
-    auto* contents = contextual_tasks_coordinator->GetActiveWebContents();
+    return contextual_tasks_coordinator->GetActiveWebContents();
+  }
+
+  content::WebContents* GetContextualTasksInnerWebContents() {
+    auto* panel_contents = GetContextualTasksWebContents();
+    if (!panel_contents) {
+      return nullptr;
+    }
+    auto inner_contents = panel_contents->GetInnerWebContents();
+    if (inner_contents.empty()) {
+      return nullptr;
+    }
+    return inner_contents[0];
+  }
+
+  bool IsContextualTasksErrorPageOpen() {
+    auto* contents = GetContextualTasksWebContents();
     if (!contents || !contents->GetWebUI()) {
       return false;
     }
@@ -287,6 +304,128 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
 
   // Verify Overlay state is STILL showing.
   EXPECT_TRUE(controller->IsShowingUI());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
+                       SubsequentRegionSelectionLoadsNewResult) {
+  // Wait for the page to be painted to prevent flakiness when screenshotting.
+  WaitForPaint();
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  // Open Lens Overlay via App Menu.
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+
+  // Wait for the screenshot to be captured and overlay to be shown.
+  WaitForOverlayToOpen(controller);
+  ASSERT_TRUE(controller->IsShowingUI());
+
+  // Simulate a region selection which calls IssueLensRegionRequest.
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.5, 0.5, 0.1, 0.1);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
+      region->Clone(), /*is_click=*/false);
+  SignalFileUploadSuccess(controller);
+
+  // Wait for the side panel to open and the inner WebContents to be created.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetContextualTasksInnerWebContents() != nullptr; }));
+  content::WebContents* inner_contents = GetContextualTasksInnerWebContents();
+
+  // Wait for the first navigation to finish (it will abort because
+  // www.google.com is not resolvable in the test environment).
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
+
+  // Create a navigation observer for the second region request
+  content::TestNavigationObserver second_search_observer(inner_contents);
+
+  // Issue the second region request
+  controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
+      region->Clone(), /*is_click=*/false);
+
+  // Wait for the second navigation to finish
+  second_search_observer.Wait();
+
+  // Check that the second navigation was attempted
+  EXPECT_TRUE(
+      base::StartsWith(second_search_observer.last_navigation_url().spec(),
+                       "https://www.google.com/search"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksLensInteractionBrowserTest,
+    SubsequentRegionSelectionFromComposeboxAddsVisualSelection) {
+  // Wait for the page to be painted to prevent flakiness when screenshotting.
+  WaitForPaint();
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+
+  // Open Lens Overlay via App Menu.
+  controller->OpenLensOverlay(lens::LensOverlayInvocationSource::kAppMenu);
+
+  // Wait for the screenshot to be captured and overlay to be shown.
+  WaitForOverlayToOpen(controller);
+  ASSERT_TRUE(controller->IsShowingUI());
+
+  // Simulate a region selection which calls IssueLensRegionRequest.
+  auto region = lens::mojom::CenterRotatedBox::New();
+  region->box = gfx::RectF(0.5, 0.5, 0.1, 0.1);
+  region->coordinate_type =
+      lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
+  controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
+      region->Clone(), /*is_click=*/false);
+  SignalFileUploadSuccess(controller);
+
+  // Wait for the side panel to open and the inner WebContents to be created.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetContextualTasksInnerWebContents() != nullptr; }));
+  content::WebContents* inner_contents = GetContextualTasksInnerWebContents();
+
+  // Wait for the first navigation to finish (it will abort because
+  // www.google.com is not resolvable in the test environment).
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !inner_contents->IsLoading(); }));
+
+  // Simulate a click on the Lens icon in the composebox.
+  content::WebContents* panel_contents = GetContextualTasksWebContents();
+  EXPECT_TRUE(content::ExecJs(
+      panel_contents,
+      "document.querySelector('contextual-tasks-app').shadowRoot."
+      "querySelector('contextual-tasks-composebox').shadowRoot."
+      "querySelector('cr-composebox').shadowRoot."
+      "querySelector('#lensIcon').click()"));
+
+  // Wait for the invocation source to be updated to ContextualTasksComposebox.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return controller->invocation_source() ==
+           lens::LensOverlayInvocationSource::kContextualTasksComposebox;
+  }));
+
+  // Issue the second region request
+  controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
+      region->Clone(), /*is_click=*/false);
+
+  // Wait for the visual selection to be added to the composebox.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               panel_contents,
+               "document.querySelector('contextual-tasks-app').shadowRoot."
+               "querySelector('contextual-tasks-composebox').shadowRoot."
+               "querySelector('cr-composebox').hasFiles()")
+        .ExtractBool();
+  }));
+
+  // Verify that the inner contents did not navigate again. It should be the
+  // same state as before the second region selection.
+  EXPECT_FALSE(inner_contents->IsLoading());
+  // The invocation source should remain ContextualTasksComposebox.
+  EXPECT_EQ(controller->invocation_source(),
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,

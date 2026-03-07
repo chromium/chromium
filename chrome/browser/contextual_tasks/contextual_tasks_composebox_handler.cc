@@ -1030,9 +1030,26 @@ void ContextualTasksComposeboxHandler::ClearFiles(
 void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
   if (auto* controller = GetLensSearchController()) {
     if (controller->IsShowingUI()) {
-      controller->CloseLensAsync(lens::LensOverlayDismissalSource::
-                                     kContextualTasksComposeboxLensButtonClick);
-      return;
+      if (controller->invocation_source() ==
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+        controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::
+                kContextualTasksComposeboxLensButtonClick);
+        return;
+      } else {
+        // If the overlay is showing from a different invocation source, clear
+        // the selection and start fresh for a follow-up.
+        if (controller->lens_overlay_controller()) {
+          controller->lens_overlay_controller()->ClearAllSelections();
+        }
+        // Set the invocation source to contextual tasks so that any follow-up
+        // queries are associated with the contextual tasks session via the
+        // query flow router and thumbnails are added appropriately to the
+        // composebox. This will work as if the overlay was opened from the
+        // contextual tasks composebox in the first place.
+        controller->SetInvocationSource(
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+      }
     }
     controller->SetThumbnailCreatedCallback(base::BindRepeating(
         &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,

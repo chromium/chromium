@@ -1884,7 +1884,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
-                       ComposeboxLensButtonTogglesOverlay) {
+                       ComposeboxLensButtonClearsThenTogglesOverlay) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
@@ -1915,14 +1915,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
                               kContextualTasksSidePanelWebViewElementId),
       WaitForWebContentsReady(kSidePanelWebContentsId),
 
-      // 2. Click the Lens button in the side panel to close the overlay.
+      // 2. Click the Lens button in the side panel to clear the overlay.
       WaitForStateChange(kSidePanelWebContentsId, lens_button_exists),
       ClickElement(kSidePanelWebContentsId, kPathToLensButton),
-      WaitForHide(kOverlayId),
 
-      // 3. Click the Lens button again to re-open the overlay.
+      // 3. Click the Lens button again to close the overlay.
+      EnsurePresent(kOverlayId),
       ClickElement(kSidePanelWebContentsId, kPathToLensButton),
-      WaitForShow(LensOverlayController::kOverlayId));
+      WaitForHide(LensOverlayController::kOverlayId));
 }
 
 class TabScopedContextualTasksLensOverlayControllerInteractiveUiTest

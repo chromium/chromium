@@ -229,6 +229,9 @@ void LensSearchController::OpenLensOverlay(
   if (IsOff()) {
     // Setup all state necessary for this Lens session.
     StartLensSession(invocation_source);
+  } else {
+    // Update the invocation source if the session is already active.
+    invocation_source_ = invocation_source;
   }
 
   should_show_csb_ = should_show_csb;
@@ -636,6 +639,16 @@ lens::LensOverlayGen204Controller* LensSearchController::gen204_controller() {
 std::optional<lens::LensOverlayInvocationSource>
 LensSearchController::invocation_source() {
   return invocation_source_;
+}
+
+void LensSearchController::SetInvocationSource(
+    lens::LensOverlayInvocationSource invocation_source) {
+  invocation_source_ = invocation_source;
+
+  // Inform the UI of the state change with the new invocation source.
+  if (results_panel_router_ && results_panel_router_->IsEntryShowing()) {
+    results_panel_router_->OnOverlayShown();
+  }
 }
 
 std::unique_ptr<LensOverlayController>
