@@ -27,8 +27,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -67,11 +67,14 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull("Tab state should not be null", tabState);
+                    assertEquals("Tab ID should match", tab.getId(), tabState.tabId);
                     assertEquals(
-                            "URL should match", tab.getUrl().getSpec(), tabState.url.getSpec());
+                            "URL should match",
+                            tab.getUrl().getSpec(),
+                            tabState.tabState.url.getSpec());
                 });
     }
 
@@ -93,11 +96,14 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull("Tab state should not be null", tabState);
+                    assertEquals("Tab ID should match", tab.getId(), tabState.tabId);
                     assertEquals(
-                            "URL should match", tab.getUrl().getSpec(), tabState.url.getSpec());
+                            "URL should match",
+                            tab.getUrl().getSpec(),
+                            tabState.tabState.url.getSpec());
                 });
     }
 
@@ -114,10 +120,12 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
-                    assertEquals("URL should match", "about:blank", tabState.url.getSpec());
+                    assertEquals(tab.getId(), tabState.tabId);
+                    assertEquals(
+                            "URL should match", "about:blank", tabState.tabState.url.getSpec());
                 });
 
         String newUrl = "chrome://version/";
@@ -129,10 +137,11 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
-                    assertEquals(newUrl, tabState.url.getSpec());
+                    assertEquals(newTab.getId(), tabState.tabId);
+                    assertEquals(newUrl, tabState.tabState.url.getSpec());
                 });
     }
 
@@ -150,7 +159,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActiveTabCache.clearActiveTab(false);
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNull(tabState);
                 });
@@ -222,17 +231,19 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Restoration should work because it is a regular tab.
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
-                    assertEquals(tab.getUrl().getSpec(), tabState.url.getSpec());
+                    assertEquals(tab.getId(), tabState.tabId);
+                    assertEquals(tab.getUrl().getSpec(), tabState.tabState.url.getSpec());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Restoration should still work even with a cipher factory.
-                    TabState tabState = mActiveTabCache.restoreActiveTab(false);
+                    LoadedTabState tabState = mActiveTabCache.restoreActiveTab(false);
                     assertNotNull(tabState);
+                    assertEquals(tab.getId(), tabState.tabId);
                 });
     }
 
@@ -280,20 +291,22 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
-                    assertEquals("about:blank", tabState.url.getSpec());
+                    assertEquals(tab1.getId(), tabState.tabId);
+                    assertEquals("about:blank", tabState.tabState.url.getSpec());
                 });
         clearActiveTabAndWait(/* incognito= */ false);
 
         page.selectTabFast(tab2, RegularNewTabPageStation::newBuilder);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
-                    assertEquals(getOriginalNativeNtpUrl(), tabState.url.getSpec());
+                    assertEquals(tab2.getId(), tabState.tabId);
+                    assertEquals(getOriginalNativeNtpUrl(), tabState.tabState.url.getSpec());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -331,20 +344,22 @@ public class ActiveTabCacheTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull(tabState);
-                    assertEquals(aboutBlankUrl, tabState.url.getSpec());
+                    assertEquals(tab1.getId(), tabState.tabId);
+                    assertEquals(aboutBlankUrl, tabState.tabState.url.getSpec());
                 });
         clearActiveTabAndWait(/* incognito= */ true);
 
         ntp = page.selectTabFast(tab2, IncognitoNewTabPageStation::newBuilder);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabState tabState =
+                    LoadedTabState tabState =
                             mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull(tabState);
-                    assertEquals(getOriginalNativeNtpUrl(), tabState.url.getSpec());
+                    assertEquals(tab2.getId(), tabState.tabId);
+                    assertEquals(getOriginalNativeNtpUrl(), tabState.tabState.url.getSpec());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(

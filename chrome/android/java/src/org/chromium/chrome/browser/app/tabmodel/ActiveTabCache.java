@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
+import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.chrome.browser.tabpersistence.TabStateFileManager.FLATBUFFER_PREFIX;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -16,7 +18,9 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -100,6 +104,7 @@ public class ActiveTabCache {
             return;
         }
 
+        getSharedPreferences().edit().putInt(fileName, tab.getId()).apply();
         TabStateFileManager.saveStateInternal(file, tabState, isOffTheRecord, mCipherFactory);
     }
 
@@ -109,7 +114,7 @@ public class ActiveTabCache {
      *
      * @param isOffTheRecord Whether to restore the incognito active tab.
      */
-    public @Nullable TabState restoreActiveTab(boolean isOffTheRecord) {
+    public @Nullable LoadedTabState restoreActiveTab(boolean isOffTheRecord) {
         assertOnUiThread();
         assert !isOffTheRecord || mCipherFactory != null;
 
@@ -117,7 +122,14 @@ public class ActiveTabCache {
         File file = new File(getOrCreateCacheDirectory(), fileName);
         if (!file.exists()) return null;
 
-        return TabStateFileManager.restoreTabStateInternal(file, isOffTheRecord, mCipherFactory);
+        @TabId int tabId = getSharedPreferences().getInt(fileName, INVALID_TAB_ID);
+        if (tabId == INVALID_TAB_ID) return null;
+
+        TabState tabState =
+                TabStateFileManager.restoreTabStateInternal(file, isOffTheRecord, mCipherFactory);
+        if (tabState == null) return null;
+
+        return new LoadedTabState(tabId, tabState);
     }
 
     public void startTracking(boolean incognito) {
@@ -143,7 +155,7 @@ public class ActiveTabCache {
      */
     public void clearActiveTab(boolean incognito) {
         String fileName = incognito ? mIncognitoTabFileName : mRegularTabFileName;
-        deleteFile(fileName);
+        deleteFileAndPref(fileName);
     }
 
     /** Clears all active tab cache for the current window. */
@@ -161,8 +173,8 @@ public class ActiveTabCache {
         String regularFileName = getFileName(windowTag, false);
         String incognitoFileName = getFileName(windowTag, true);
 
-        deleteFile(regularFileName);
-        deleteFile(incognitoFileName);
+        deleteFileAndPref(regularFileName);
+        deleteFileAndPref(incognitoFileName);
     }
 
     /** Clears all active tab cache global state. */
@@ -184,6 +196,7 @@ public class ActiveTabCache {
             }
         }
         sActiveTabDirectory = null;
+        getSharedPreferences().edit().clear().apply();
     }
 
     private static File getOrCreateCacheDirectory() {
@@ -208,12 +221,13 @@ public class ActiveTabCache {
         return FLATBUFFER_PREFIX + windowTag + suffix;
     }
 
-    private static void deleteFile(String fileName) {
+    private static void deleteFileAndPref(String fileName) {
         assertOnUiThread();
         File file = new File(getCacheDirectory(), fileName);
         if (file.exists() && !file.delete()) {
             Log.e(TAG, "Failed to delete cache file: " + file);
         }
+        getSharedPreferences().edit().remove(fileName).apply();
     }
 
     private void onActiveTabChanged(boolean isModelOtr, @Nullable Tab tab) {
@@ -228,5 +242,10 @@ public class ActiveTabCache {
 
     private Callback<@Nullable Tab> getActiveTabChangedCallback(boolean incognito) {
         return incognito ? mOnIncognitoActiveTabChanged : mOnRegularActiveTabChanged;
+    }
+
+    private static SharedPreferences getSharedPreferences() {
+        return ContextUtils.getApplicationContext()
+                .getSharedPreferences(CACHE_DIR_NAME, Context.MODE_PRIVATE);
     }
 }
