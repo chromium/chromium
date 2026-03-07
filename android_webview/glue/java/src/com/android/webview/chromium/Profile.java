@@ -153,11 +153,6 @@ public class Profile {
     }
 
     @UiThread
-    public void clearPrefetch(String url, PrefetchOperationCallback resultCallback) {
-        // TODO(334016945): do the actual implementation
-    }
-
-    @UiThread
     public void cancelPrefetch(int prefetchKey) {
         mBrowserContext.getPrefetchManager().cancelPrefetch(prefetchKey);
     }

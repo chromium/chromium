@@ -446,7 +446,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_BACK_FORWARD_CACHE_ENABLED = 107;
         int PREFETCH_URL = 108;
         int PREFETCH_URL_WITH_PARAMS = 109;
-        int CLEAR_PREFETCH = 110;
+        @Deprecated int CLEAR_PREFETCH = 110;
         int CANCEL_PREFETCH = 111;
         int SET_DEFAULT_TRAFFICSTATS_TAG = 112;
         int SET_DEFAULT_TRAFFICSTATS_UID = 113;

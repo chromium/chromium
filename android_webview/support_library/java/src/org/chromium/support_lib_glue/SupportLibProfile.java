@@ -167,8 +167,8 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
             String url,
             Executor callbackExecutor,
             /* PrefetchOperationCallback */ InvocationHandler callback) {
-        recordApiCall(ApiCall.CLEAR_PREFETCH);
-        mProfileImpl.clearPrefetch(url, createOperationCallback(callback));
+        // Keeping this around so we don't break the Boundary Interface.
+        // The method itself is deprecated.
     }
 
     @Override
