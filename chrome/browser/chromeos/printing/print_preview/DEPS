@@ -21,3 +21,12 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "print_view_manager_cros_browsertest\\.cc": [
+    "+ash/webui/print_preview_cros/url_constants.h",
+    "+chrome/browser/ash/browser_delegate/browser_controller.h",
+    "+chrome/browser/ash/browser_delegate/browser_delegate.h",
+    "+chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h",
+  ],
+}

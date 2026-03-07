@@ -59,6 +59,7 @@ class PrintPreviewDialogControllerCros
       base::UnguessableToken token,
       ::printing::mojom::RequestPrintPreviewParams params);
 
+  void ClosePrintPreviewDialog(base::UnguessableToken token);
   void RemovePrintPreviewDialog(base::UnguessableToken token);
 
   // printing::print_preview::PrintPreviewCrosDialogObserver:
