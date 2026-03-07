@@ -245,12 +245,12 @@ class AppContainerTest : public ::testing::Test {
 
 }  // namespace
 
-SBOX_TESTS_COMMAND int AppContainerEvent_Open(int argc, wchar_t** argv) {
-  if (argc != 1)
+SBOX_TEST_COMMAND(AppContainerEventOpenCommand) {
+  if (args.empty()) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-
+  }
   base::win::ScopedHandle event_open(
-      ::OpenEvent(EVENT_ALL_ACCESS, false, argv[0]));
+      ::OpenEvent(EVENT_ALL_ACCESS, false, args[0].c_str()));
   DWORD error_open = ::GetLastError();
 
   if (event_open.is_valid()) {
@@ -271,12 +271,10 @@ TEST(LowBoxTest, DenyOpenEventForLowBox) {
       ::CreateEvent(nullptr, false, false, kAppContainerSid));
   ASSERT_TRUE(event.is_valid());
 
-  TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
-  EXPECT_EQ(SBOX_ALL_OK,
-            runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
-  std::wstring test_str = L"AppContainerEvent_Open ";
-  test_str += kAppContainerSid;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(test_str.c_str()));
+  AppContainerEventOpenCommandTestRunner runner(
+      JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetConfig()->SetLowBox(kAppContainerSid));
+  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(kAppContainerSid));
 }
 
 TEST_F(AppContainerTest, CheckIncompatibleOptions) {
@@ -439,29 +437,31 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
   CheckLpacToken(scoped_process_info_.process_handle());
 }
 
-SBOX_TESTS_COMMAND int LoadDLL(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(LoadDLL) {
   // Library here doesn't matter as long as it's in the output directory: re-use
   // one from another sbox test.
   base::ScopedNativeLibrary test_dll(
       base::FilePath(FILE_PATH_LITERAL("sbox_integration_test_win_proc.exe")));
-  if (test_dll.is_valid())
+  if (test_dll.is_valid()) {
     return SBOX_TEST_SUCCEEDED;
+  }
   return SBOX_TEST_FAILED;
 }
 
-SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
-  if (base::IsCurrentProcessInAppContainer())
+SBOX_TEST_COMMAND(CheckIsAppContainer) {
+  if (base::IsCurrentProcessInAppContainer()) {
     return SBOX_TEST_SUCCEEDED;
+  }
   return SBOX_TEST_FAILED;
 }
 
 TEST(AppContainerLaunchTest, CheckLPACACE) {
   if (!features::IsAppContainerSandboxSupported())
     return;
-  TestRunner runner;
+  LoadDLLTestRunner runner;
   AddNetworkAppContainerPolicy(runner.GetPolicy());
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"LoadDLL"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 
   AppContainerBase::Delete(GetAppContainerProfileName());
 }
@@ -469,21 +469,21 @@ TEST(AppContainerLaunchTest, CheckLPACACE) {
 TEST(AppContainerLaunchTest, IsAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
-  TestRunner runner;
+  CheckIsAppContainerTestRunner runner;
   AddNetworkAppContainerPolicy(runner.GetPolicy());
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckIsAppContainer"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 
   AppContainerBase::Delete(GetAppContainerProfileName());
 }
 
 TEST(AppContainerLaunchTest, IsNotAppContainer) {
-  TestRunner runner;
+  CheckIsAppContainerTestRunner runner;
 
-  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(L"CheckIsAppContainer"));
+  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest());
 }
 
-SBOX_TESTS_COMMAND int CreateTempFileInAppContainer(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(CreateTempFileInAppContainer) {
   if (!base::IsCurrentProcessInAppContainer()) {
     return SBOX_TEST_FIRST_ERROR;
   }
@@ -498,16 +498,14 @@ TEST(AppContainerLaunchTest, CreateTempFile) {
   if (!features::IsAppContainerSandboxSupported()) {
     return;
   }
-  TestRunner runner;
+  CreateTempFileInAppContainerTestRunner runner;
   std::wstring package_name = GenerateRandomPackageName();
-  ASSERT_EQ(
-      SBOX_ALL_OK,
-      runner.GetPolicy()->GetConfig()->AddAppContainerProfile(package_name));
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetTokenLevel(
-                             USER_UNPROTECTED, USER_UNPROTECTED));
+  ASSERT_EQ(SBOX_ALL_OK,
+            runner.GetConfig()->AddAppContainerProfile(package_name));
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetConfig()->SetTokenLevel(USER_UNPROTECTED,
+                                                           USER_UNPROTECTED));
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"CreateTempFileInAppContainer"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
   EXPECT_TRUE(AppContainerBase::Delete(package_name));
 }
 
