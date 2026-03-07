@@ -217,6 +217,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
           <ph name="LIST_ITEM" />Iyong employer o paaralan
           <ph name="LIST_ITEM" />Internet service provider mo
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Nag-isyung bansa</translation>
 <translation id="1337692097987160377">Ibahagi ang tab na ito</translation>
 <translation id="1339601241726513588">Domain ng pagpapatala:</translation>
 <translation id="1340482604681802745">Address sa pag-pick up</translation>
@@ -2479,6 +2480,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para maghanap</translation>
 <translation id="4930153903256238152">Malaking kapasidad</translation>
 <translation id="4930714375720679147">I-on</translation>
+<translation id="4931347573573430180">Petsa nang inisyu</translation>
 <translation id="4932035752129140860">Ipinapadala sa Google Cloud o mga third party para sa pagsusuri ang text na na-paste o na-attach mo. Halimbawa, puwedeng i-scan ang mga ito para sa sensitibong data at puwede itong i-store batay sa mga patakaran ng kumpanya at posibleng nakikita ito ng iyong administrator.</translation>
 <translation id="4932733599132424254">Petsa</translation>
 <translation id="4933788293078559286">Magbayad gamit ang Pix</translation>
@@ -3111,6 +3113,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5950901984834744590">Mga Razor at Pang-ahit</translation>
 <translation id="5951495562196540101">Hindi maka-enroll gamit ang account ng consumer (may available na naka-package na lisensya).</translation>
 <translation id="5952076224478208938">Manufacturer</translation>
+<translation id="5952196777020238475">Numero ng Lisensya</translation>
 <translation id="5953516610448771166">Hindi available ang Instant Caption para sa media na ito. Para kumuha ng mga caption, i-block ang <ph name="CONTENT_SETTINGS" /> para sa site na ito.</translation>
 <translation id="5960795367348889467">Pag-verify</translation>
 <translation id="5963413905009737549">Seksyon</translation>
@@ -4615,6 +4618,7 @@ Mga karagdagang detalye:
 <translation id="8288320283441806607">Para magamit ang feature na ito, i-on ang Mas Pahusayin ang Mga Paghahanap at Pag-browse</translation>
 <translation id="8288807391153049143">Ipakita ang certificate</translation>
 <translation id="8289355894181816810">Makipag-ugnay sa administrator ng iyong network kung hindi ka sigurado kung ano ang ibig sabihin nito.</translation>
+<translation id="8291367150570302588">ID card</translation>
 <translation id="829335040383910391">tunog</translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
 <translation id="8297545700510100061">Ginagamit ang cookies at iba pang data ng site para tandaan ka, halimbawa para i-sign in ka o i-personalize ang mga ad. Para mapamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="SETTINGS" />.</translation>

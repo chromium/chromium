@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 sivusto (lisää synkronoiduilla laitteilla)}other{# sivustoa (lisää synkronoiduilla laitteilla)}}</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2876369937070532032">Lähettää joidenkin avattujen sivujen URL-osoitteet Googlelle, kun turvallisuutesi on vaarassa</translation>
+<translation id="2877733045396505765">Tämä poistaa valitut tiedot, jotka on tallennettu tälle laitteelle ja Google-tilillesi (<ph name="USER_EMAIL" />).</translation>
 <translation id="2883151425485251736">Katso ja muokkaa aiheita, jotka olet piilottanut tililtäsi</translation>
 <translation id="288655811176831528">Sulje välilehti</translation>
 <translation id="2888631381369839306">Hintaseurantailmoitukset ovat päällä</translation>
@@ -1878,6 +1879,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="775755486779745798">Täytä vanhenemiskuukausi automaattisesti: <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Violetti teema</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
+<translation id="7763878244904387570">Tämä poistaa valitut tiedot, jotka on tallennettu tälle laitteelle.</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
 <translation id="7772948288262733182">Tervetuloa takaisin</translation>

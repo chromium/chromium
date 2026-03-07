@@ -1842,6 +1842,7 @@
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="3928806096717999469">सम्पादन गर्नुहोस्, नयाँ विन्डो खुल्छ</translation>
 <translation id="3930260846839546333">ह्यान्डब्याग तथा पर्सहरू</translation>
+<translation id="393417216277380082">मोसन तथा लाइट सेन्सरहरू</translation>
 <translation id="3937834511546249636">रक्षा उद्योग</translation>
 <translation id="3939773374150895049">CVC को सट्टामा WebAuthn प्रयोग गर्ने हो?</translation>
 <translation id="3941630233824954464">अनिवार्य रूपमा पुनः प्रमाणीकरण गर्नु पर्ने सुविधा अन गर्नुहोस्</translation>
@@ -2530,6 +2531,7 @@
 <translation id="5018802455907704660">१६ x २० इन्च</translation>
 <translation id="5019198164206649151">खराब स्थितिमा भण्डार ब्याकिङ गर्दै</translation>
 <translation id="5019293549442035120">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता <ph name="USER_EMAIL" /> मा सेभ गरिने छ।</translation>
+<translation id="5019819206251569004">मोसन र लाइट सेन्सरहरू</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> नीति तय गरिएको छ। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ले "एक्स्टेन्सनहरू" पेजमा "विकासकर्ता" मोडको उपलब्धता नियन्त्रण गर्ने छैन।</translation>
 <translation id="5021500396464456616">यो लिंक पठाउने व्यक्तिलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="5021557570875267742">Chrome मार्फत मूल्य ट्र्याक गर्नुहोस्</translation>
@@ -2573,6 +2575,7 @@
 <translation id="5093232627742069661">जेड फोल्ड</translation>
 <translation id="5093417502834168387">साइन इन गर्ने क्रममा समस्या आयो? अर्को तरिका अपनाई हेर्नुहोस्</translation>
 <translation id="5094747076828555589">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई Chromium ले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
+<translation id="5096066272198024688">तपाईंको जानकारी सेभ गरिँदै छ...</translation>
 <translation id="5097099694988056070">CPU/RAM को प्रयोग जस्ता यन्त्रसम्बन्धी तथ्याङ्क</translation>
 <translation id="5097468150760963273">२७ x ३९ इन्च</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3779,6 +3782,7 @@
 <translation id="7003278537452757231">रग तथा कार्पेटहरू</translation>
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
 <translation id="7004499039102548441">हालका ट्याबहरू</translation>
+<translation id="700483187606163535">तपाईंको जानकारी <ph name="ACCOUNT" /> को <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मा सेभ गरिन्छ। तपाईं फारामहरू अझ छिटो भर्न Google का विभिन्न सेवाहरूमा यो जानकारी प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="7006930604109697472">जे भए पनि पठाउनुहोस्</translation>
 <translation id="7009364359744329733">यो कार्ड हाल उपलब्ध छैन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7010658264061801199">खाना तथा पेय पदार्थ</translation>

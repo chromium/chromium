@@ -217,6 +217,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
           <ph name="LIST_ITEM" />Twojego pracodawcy lub Twojej szkoły;
           <ph name="LIST_ITEM" />dostawcy usług internetowych.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Kraj wydający dokument</translation>
 <translation id="1337692097987160377">Udostępnij tę kartę</translation>
 <translation id="1339601241726513588">Domena rejestracji:</translation>
 <translation id="1340482604681802745">Adres odbioru</translation>
@@ -2479,6 +2480,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a następnie Enter, by wyszukać.</translation>
 <translation id="4930153903256238152">Duża pojemność</translation>
 <translation id="4930714375720679147">Włącz</translation>
+<translation id="4931347573573430180">Data wystawienia</translation>
 <translation id="4932035752129140860">Wklejony lub dołączony tekst jest wysyłany do Google Cloud lub innych firm w celu przeanalizowania. Może zostać na przykład przeskanowany pod kątem danych wrażliwych, a także może być przechowywany zgodnie z zasadami firmy i widoczny dla administratora.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Zapłać przez Pix</translation>
@@ -3111,6 +3113,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5950901984834744590">Maszynki do golenia</translation>
 <translation id="5951495562196540101">Nie można zarejestrować się przy użyciu konta klienta (w pakiecie dostępna jest licencja).</translation>
 <translation id="5952076224478208938">Marka</translation>
+<translation id="5952196777020238475">Numer licencji</translation>
 <translation id="5953516610448771166">Dla tej treści multimedialnej napisy na żywo nie są dostępne. Aby wyświetlać napisy, zablokuj w tej witrynie <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5960795367348889467">Weryfikacja</translation>
 <translation id="5963413905009737549">Sekcja</translation>
@@ -4615,6 +4618,7 @@ Dodatkowe informacje:
 <translation id="8288320283441806607">Aby korzystać z tej funkcji, włącz opcję Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8288807391153049143">Pokaż certyfikat</translation>
 <translation id="8289355894181816810">Jeśli nie masz pewności, co to oznacza, skontaktuj się z administratorem sieci.</translation>
+<translation id="8291367150570302588">Dowód tożsamości</translation>
 <translation id="829335040383910391">dźwięk</translation>
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8297545700510100061">Dzięki plikom cookie oraz innym danym witryn możemy Cię zapamiętać i na przykład ułatwić Ci logowanie lub personalizować reklamy. Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="SETTINGS" />.</translation>

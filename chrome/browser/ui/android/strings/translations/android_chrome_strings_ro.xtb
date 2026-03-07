@@ -746,6 +746,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Folosit pe acest site</translation>
 <translation id="4214315110991671325">Dacă permiți cookie-uri, Chrome le va folosi probabil pentru preîncărcare.</translation>
+<translation id="421517251707893998">Atinge ca să fixezi comanda rapidă.</translation>
 <translation id="4216511743389425832">Ascultă pagina</translation>
 <translation id="4225725533026049334">Urmărești</translation>
 <translation id="4225895483398857530">Comanda rapidă spre bara de instrumente</translation>
@@ -1325,6 +1326,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6508722015517270189">repornește Chrome;</translation>
 <translation id="6513924416597632811">Copiază linkul spre pagina cu rezultatele căutării pentru: <ph name="SEARCH_QUERY" />. Sursă: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Confirmați</translation>
+<translation id="6521218807522232085">Creează, salvează și gestionează parolele ca să te poți conecta cu ușurință.</translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="652948702951888897">Istoricul Chrome</translation>
 <translation id="6532866250404780454">Site-urile pe care le vizitezi în Chrome nu se vor afișa. Toate temporizatoarele site-urilor vor fi șterse.</translation>
@@ -1373,6 +1375,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6684262542644248484">Conectează-te la un site</translation>
 <translation id="6684809838922667136">Contribuie la îmbunătățirea Chrome</translation>
 <translation id="6689436252814043643">Modul de lectură nu este disponibil</translation>
+<translation id="669971068476817798">Atinge ca să salvezi.</translation>
 <translation id="6700279777779583398">Opțiunile au fost salvate</translation>
 <translation id="670498945988402717">A rulat ieri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
@@ -1482,6 +1485,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7054588988317389591">Vrei să generezi descrieri ale imaginilor?</translation>
 <translation id="7057969023583258980">Deschide istoricul Chrome complet</translation>
 <translation id="7063006564040364415">Nu s-a putut stabili conexiunea cu serverul de sincronizare.</translation>
+<translation id="7063106218165698546">Personalizează grupul de file și apasă ca să finalizezi</translation>
 <translation id="7071521146534760487">Gestionează contul</translation>
 <translation id="707155805709242880">Alege elementele de sincronizat de mai jos</translation>
 <translation id="7077143737582773186">Card SD</translation>

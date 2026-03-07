@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Datoteke koje ova web-lokacija može pregledavati ili uređivati</translation>
 <translation id="1073417869336441572">Recite nam zašto ste dopustili kolačiće trećih strana i pomognite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite svoje dojmove<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete zatražiti prikaz verzije web-lokacija za računala</translation>
+<translation id="1109482864356262001">Značajke kojima su potrebni senzori kretanja ili svjetlosni senzori neće raditi</translation>
 <translation id="1126523729897810826">Dovršite predložene radnje u nastavku da biste iskoristili sve prednosti Chromea</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću pokazivača za tekst kad je tipkovnica povezana</translation>
 <translation id="1148624853678088576">Spremni ste!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Kartice na novoj kartici preglednika</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2253414712144136228">Ukloni <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="227763434929139750">Nemoj web-lokacijama dopustiti upotrebu senzora kretanja ili svjetlosnih senzora</translation>
 <translation id="228293613124499805">Većina web-lokacija koje posjećujete vjerojatno sprema podatke na vaš uređaj, često radi poboljšanja vašeg doživljaja spremanjem vaših preferencija ili podataka koje dijelite s tim web-lokacijama. Preporučujemo da ta postavka ostane uključena.</translation>
 <translation id="2289270750774289114">Prikaži upit kad web-lokacija želi tražiti Bluetooth uređaje u blizini (preporučeno)</translation>
 <translation id="2315043854645842844">Operativni sustav ne podržava odabir klijentskog certifikata.</translation>
@@ -298,6 +300,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3922092564198021702">Otvorite Postavke na telefonu</translation>
 <translation id="3924858949939391676">Prikaži veze nakon uključivanja načina za čitanje</translation>
 <translation id="3933121352599513978">Sažmite neželjene zahtjeve (preporučeno)</translation>
+<translation id="393417216277380082">Senzori kretanja i svjetlosni senzori</translation>
 <translation id="3934905113567851655">Spojite prste za promjenu veličine</translation>
 <translation id="3955321697524543127">Ne dopuštaj web-lokacijama povezivanje s USB uređajima</translation>
 <translation id="3965467402665811906">Web-lokacije mogu tražiti dopuštenje za upotrebu podataka koje su spremile o vama</translation>
@@ -369,6 +372,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="4672315773691449562">Dodirnite stavku Aplikacija preglednika, a zatim Chrome</translation>
 <translation id="4676059169848868271">Da bi aplikacija <ph name="APP_NAME" /> mogla koristiti praćenje pokreta ruku, uključite praćenje pokreta ruku i u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Upravljajte karticama</translation>
+<translation id="4722332387043141878">Web-lokacije obično upotrebljavaju senzore kretanja i svjetlosne senzore uređaja za značajke poput virtualne stvarnosti ili praćenja kondicije</translation>
 <translation id="4755971844837804407">Kad je ta postavka uključena, web-lokacije mogu vam prikazati bilo koji oglas. Kad je ta postavka isključena, web-lokacije ne mogu prikazivati ometajuće ili obmanjujuće oglase.</translation>
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite sigurno pregledavanje</translation>
@@ -513,6 +517,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6205314730813004066">Zaštita privatnosti u online oglašavanju</translation>
 <translation id="6207207788774442484">Izbriši podatke i poništi dopuštenja</translation>
+<translation id="6211409961905616543">Web-lokacije mogu upotrebljavati senzore kretanja i svjetlosne senzore</translation>
 <translation id="6218508144653756827">Ljubičastocrvena tema</translation>
 <translation id="6231752747840485235">Želite li deinstalirati aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Dodirnite Aplikacija preglednika &gt; Chrome</translation>
@@ -757,6 +762,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8801657293260363985">V8 je Chromeov alat za JavaScript i WebAssembly koji se upotrebljava za poboljšanje izvedbe web-lokacija</translation>
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
 <translation id="8805385115381080995">Pregledavanje je brže jer je manja vjerojatnost da će web-lokacija tražiti da potvrdite da ste stvarna osoba</translation>
+<translation id="881644524232657178">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati senzore kretanja i svjetlosne senzore uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati senzore.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Pokušajte privremeno dopustiti kolačiće trećih strana, što znači da će biti manje zaštite pregledavanja, ali će značajke web-lokacije vjerojatnije funkcionirati prema očekivanjima.</translation>
 <translation id="8889294078294184559">Tijekom vašeg daljnjeg pregledavanja web-lokacije mogu provjeriti u Chromeu i od prethodne web-lokacije koju ste posjetili dobiti potvrdu da ste vjerojatno stvarna osoba</translation>

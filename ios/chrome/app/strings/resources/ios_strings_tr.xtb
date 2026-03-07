@@ -335,7 +335,7 @@
 <translation id="2164946989711475905">Oturum açın</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
 <translation id="2180338296831857171">Adresleri sil</translation>
-<translation id="218350106843433823">Şifreleri ve geçiş anahtarlarını otomatik doldurun</translation>
+<translation id="218350106843433823">Şifreleri ve geçiş anahtarlarını otomatik doldur</translation>
 <translation id="2184272387334793084">Yer işaretlerinize, şifrelerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın.</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873"><ph name="BEGIN_BOLD" />İndirilenlere Kaydet<ph name="END_BOLD" />'e dokunun</translation>
@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (senkronize edilmiş cihazlarda daha fazla)}other{# site (senkronize edilmiş cihazlarda daha fazla)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Güvenliğiniz risk altında olduğunda ziyaret ettiğiniz bazı sayfaların URL'lerini Google'a gönderir</translation>
+<translation id="2877733045396505765">Bu cihazda ve <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı seçili bilgiler silinir.</translation>
 <translation id="2883151425485251736">Hesabınızda gizlediğiniz konuları görüp düzenleyin</translation>
 <translation id="288655811176831528">Sekmeyi Kapat</translation>
 <translation id="2888631381369839306">Fiyat takibi bildirimleri etkinleştirildi</translation>
@@ -1346,7 +1347,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5857770089550859117">Senkronizasyonu başlatmak için parola gerekiyor.</translation>
 <translation id="5859715514067755465">İleri</translation>
 <translation id="5860491529813859533">Etkinleştir</translation>
-<translation id="5868644772996939262">Şifreleri ve geçiş anahtarlarını otomatik doldurun</translation>
+<translation id="5868644772996939262">Şifreleri ve geçiş anahtarlarını otomatik doldur</translation>
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5873179562631407582">Açık sekmelerden birine dokunup basılı tutun</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
@@ -1878,6 +1879,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="775755486779745798">Son kullanma tarihinin ay kısmını (<ph name="MONTH" />) otomatik doldur</translation>
 <translation id="7758789811447313947">Mor tema</translation>
 <translation id="7759809451544302770">İsteğe bağlı</translation>
+<translation id="7763878244904387570">Bu cihazda kayıtlı seçili bilgiler silinir.</translation>
 <translation id="7765158879357617694">Taşı</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772948288262733182">Tekrar hoş geldiniz</translation>
@@ -1947,7 +1949,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="797874245254030665">Şifrelerinize ve geçiş anahtarlarınıza tüm uygulamalardan erişin</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="798299424881500862">Turuncu tema</translation>
-<translation id="7987685713885608670">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin.</translation>
+<translation id="7987685713885608670">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>
 <translation id="798991908416757345">Sekme grupları kullanılamıyor</translation>
 <translation id="7993170188789685695">Bu bildirimi kapatmak için iki kez dokunun.</translation>
 <translation id="7996239959906074962">Kur…</translation>

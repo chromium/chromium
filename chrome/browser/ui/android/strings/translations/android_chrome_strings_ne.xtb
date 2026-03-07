@@ -746,6 +746,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • तपाईंले यो साइटमा प्रयोग गर्नुभएको</translation>
 <translation id="4214315110991671325">तपाईंले कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो भने Chrome ले पेजहरू प्रिलोड गरेर राख्ने प्रयोजनका लागि ती कुकी प्रयोग गर्न सक्छ।</translation>
+<translation id="421517251707893998">"यो सर्टकट पिन गर्नुहोस्" मा ट्याप गर्नुहोस्</translation>
 <translation id="4216511743389425832">यो पेजमा भएको टेक्स्ट सुन्नुहोस्</translation>
 <translation id="4225725533026049334">फलो गरिएका</translation>
 <translation id="4225895483398857530">टुलबारको सर्टकट</translation>
@@ -1324,6 +1325,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="6513924416597632811">निम्न किवर्डको खोज परिणाम देखिने पेजको लिंक कपी गर्नुहोस्: <ph name="SEARCH_QUERY" />। स्रोत: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
+<translation id="6521218807522232085">तपाईं सजिलै साइन इन गर्न सक्नुहोस् भन्नाका लागि पासवर्ड बनाउनुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
 <translation id="652948702951888897">Chrome को इतिहास</translation>
 <translation id="6532866250404780454">तपाईंले Chrome मार्फत हेर्नुभएका साइटहरू देखिने छैनन्। साइटका सबै टाइमरहरू मेटाइने छन्।</translation>
@@ -1372,6 +1374,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6684262542644248484">कुनै वेबसाइटमा साइन इन गर्नुहोस्</translation>
 <translation id="6684809838922667136">Chrome मा सुधार गर्नुहोस्</translation>
 <translation id="6689436252814043643">रिडिङ मोड उपलब्ध छैन</translation>
+<translation id="669971068476817798">सेभ गर्नुहोस् मा ट्याप गर्नुहोस्।</translation>
 <translation id="6700279777779583398">तपाईंका छनौटहरू सेभ गरिएका छन्</translation>
 <translation id="670498945988402717">हिजो जाँच गरिएको</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
@@ -1481,6 +1484,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
 <translation id="7057969023583258980">Chrome को पूरा ब्राउजिङ हिस्ट्री खोल्नुहोस्</translation>
 <translation id="7063006564040364415">समक्रमण सर्भरमा जडान गर्न सकेन।</translation>
+<translation id="7063106218165698546">ट्याब समूह कस्टमाइज गर्नुहोस् र "सम्पन्न भयो" मा क्लिक गर्नुहोस्</translation>
 <translation id="7071521146534760487">खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="707155805709242880">तल सिंक गरिनु पर्ने कुराहरू चयन गर्नुहोस्</translation>
 <translation id="7077143737582773186">SD कार्ड</translation>

@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Faili ambazo tovuti hii inaweza kuona au kubadilisha</translation>
 <translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
+<translation id="1109482864356262001">Vipengele vinavyohitaji vitambuzi vya mwendo au mwangaza havitafanya kazi</translation>
 <translation id="1126523729897810826">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome</translation>
 <translation id="113098737392899175">Sogeza kwenye kurasa ukitumia kiteuzi cha maandishi wakati umeunganisha kibodi</translation>
 <translation id="1148624853678088576">Uko tayari kutumia!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Kadi za ukurasa wa kichupo kipya</translation>
 <translation id="2241634353105152135">Mara moja tu</translation>
 <translation id="2253414712144136228">Ondoa <ph name="NAME_OF_LIST_ITEM" /></translation>
+<translation id="227763434929139750">Usiruhusu tovuti zitumie vitambuzi vya mwendo au mwangaza</translation>
 <translation id="228293613124499805">Mara nyingi henda tovuti nyingi unazotembelea zikahifadhi data kwenye kifaa chako kwa ajili ya kuboresha hali yako ya utumiaji kwa kuhifadhi mapendeleo au taarifa unazoshiriki na tovuti. Tunapendekeza mipangilio hii isalie ikiwa imewashwa.</translation>
 <translation id="2289270750774289114">Niulize wakati tovuti inataka kugundua vifaa vya Bluetooth vilivyo karibu (inapendekezwa)</translation>
 <translation id="2315043854645842844">Uchaguzi wa cheti cha sehemu ya seva teja hautumiwi na mfumo wa uendeshaji.</translation>
@@ -298,6 +300,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3922092564198021702">Kwenye simu yako, fungua Mipangilio</translation>
 <translation id="3924858949939391676">Onyesha viungo baada ya kuwasha Hali ya Kusoma</translation>
 <translation id="3933121352599513978">Kunja maombi yasiyotakikana (inapendekezwa)</translation>
+<translation id="393417216277380082">Vitambuzi vya mwendo na mwangaza</translation>
 <translation id="3934905113567851655">Bana ili ubadilishe ukubwa</translation>
 <translation id="3955321697524543127">Usiruhusu tovuti ziunganishe kwenye vifaa vya USB</translation>
 <translation id="3965467402665811906">Tovuti zinaweza kuomba zitumie taarifa ambazo zimehifadhi kukuhusu</translation>
@@ -369,6 +372,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="4672315773691449562">Gusa programu ya Kivinjari kisha uguse Chrome</translation>
 <translation id="4676059169848868271">Ili uruhusu <ph name="APP_NAME" /> itumie ufuatiliaji wa mijongeo ya mikono, washa pia mipangilio ya ufuatiliaji wa mijongeo ya mikono kwenye <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Kudhibiti kadi zako</translation>
+<translation id="4722332387043141878">Tovuti hutumia vitambuzi vya mwendo na mwangaza vya kifaa chako kwa vipengele kama vile uhalisia pepe au ufuatiliaji wa siha</translation>
 <translation id="4755971844837804407">Kikiwashwa, tovuti zinaweza kukuonyesha tangazo lolote. Kikizimwa, tovuti haziwezi kuonyesha matangazo ya kupotosha au yanayokatiza matumizi.</translation>
 <translation id="4779083564647765204">Kuza</translation>
 <translation id="4807122856660838973">Washa kipengele cha Kuvinjari kwa Usalama</translation>
@@ -513,6 +517,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="6196640612572343990">Zuia vidakuzi vya tovuti nyingine</translation>
 <translation id="6205314730813004066">Faragha ya matangazo</translation>
 <translation id="6207207788774442484">Futa data na uweke upya ruhusa</translation>
+<translation id="6211409961905616543">Tovuti zinaweza kutumia vitambuzi vya mwendo na mwangaza</translation>
 <translation id="6218508144653756827">Mandhari ya rangi ya fushia</translation>
 <translation id="6231752747840485235">Ungependa kuondoa '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Gusa programu ya Kivinjari &gt; Chrome</translation>
@@ -757,6 +762,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="8801657293260363985">V8 ni mtambo wa JavaScript na WebAssembly wa Chrome unaotumika kuboresha utendaji wa tovuti</translation>
 <translation id="8803526663383843427">Ukiwa umekiwasha</translation>
 <translation id="8805385115381080995">Mchakato wa kuvinjari hufanyika kwa haraka kwa sababu kuna uwezekano mdogo wa tovuti kukuuliza uthibitishe kuwa wewe ni mtu halisi</translation>
+<translation id="881644524232657178">Ukiwasha, tovuti zinaweza kutumia vitambuzi vya mwendo na mwangaza vya kifaa chako. Ukizima, tovuti haziwezi kutumia vitambuzi.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Jaribu kuruhusu kwa muda vidakuzi vya washirika wengine, hatua hii inamaanisha kuwa ulinzi wa kuvinjari utapungua lakini vipengele vya tovuti vina uwezekano mkubwa wa kufanya kazi inavyotarajiwa.</translation>
 <translation id="8889294078294184559">Kadiri unavyoendelea kuvinjari, tovuti zinaweza kukagua kwenye Chrome na kuthibitisha kupitia tovuti uliyotembelea awali kwamba unaweza kuwa mtu halisi</translation>

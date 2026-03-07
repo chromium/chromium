@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}other{# trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}}</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
+<translation id="2877733045396505765">Thao tác này sẽ xoá thông tin đã chọn được lưu trên thiết bị này và trong Tài khoản Google <ph name="USER_EMAIL" /> của bạn.</translation>
 <translation id="2883151425485251736">Xem và sửa những chủ đề bạn đã ẩn khỏi tài khoản</translation>
 <translation id="288655811176831528">Đóng thẻ</translation>
 <translation id="2888631381369839306">Đã bật thông báo của tính năng theo dõi giá</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798">Tự động điền tháng hết hạn là <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
+<translation id="7763878244904387570">Thao tác này sẽ xoá thông tin đã chọn được lưu trên thiết bị này.</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772948288262733182">Chào mừng bạn quay lại</translation>

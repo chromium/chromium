@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{เว็บไซต์ 1 รายการ (ดูเพิ่มเติมในอุปกรณ์ที่ซิงค์)}other{เว็บไซต์ # รายการ (ดูเพิ่มเติมในอุปกรณ์ที่ซิงค์)}}</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
+<translation id="2877733045396505765">การดำเนินการนี้จะลบข้อมูลที่เลือกซึ่งบันทึกไว้ในอุปกรณ์นี้และในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
 <translation id="2888631381369839306">เปิดการแจ้งเตือนการติดตามราคาแล้ว</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798">ป้อนเดือนที่หมดอายุเป็น <ph name="MONTH" /> โดยอัตโนมัติ</translation>
 <translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
+<translation id="7763878244904387570">การดำเนินการนี้จะลบข้อมูลที่เลือกซึ่งบันทึกไว้ในอุปกรณ์นี้</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772948288262733182">ยินดีต้อนรับกลับมาอีกครั้ง</translation>

@@ -551,7 +551,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveedores de cable y satélite</translation>
 <translation id="1870473978371099486">Servicios de tutoría particulares</translation>
-<translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
+<translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1871739799120352748">Precio alto</translation>
 <translation id="1874224422119691492">En <ph name="SETTINGS" /> puedes elegir si usar el bloqueo de pantalla para rellenar contraseñas</translation>
@@ -1845,6 +1845,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3927932062596804919">Denegar</translation>
 <translation id="3928806096717999469">Editar (se abre en una ventana nueva)</translation>
 <translation id="3930260846839546333">Bolsos y carteras</translation>
+<translation id="393417216277380082">Sensores de luz y de movimiento</translation>
 <translation id="3937834511546249636">Industria de defensa</translation>
 <translation id="3939773374150895049">¿Usar WebAuthn en lugar de CVC?</translation>
 <translation id="3941630233824954464">Habilitar reautenticación obligatoria</translation>
@@ -1939,7 +1940,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no son compatibles con la misma versión de protocolo SSL o de cifrado.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
-<translation id="4079302484614802869">Se ha configurado el proxy para que use una URL de secuencia de comandos .pac, en lugar de servidores proxy fijos.</translation>
+<translation id="4079302484614802869">Se ha configurado el proxy para que use una URL de script .pac, en lugar de servidores proxy fijos.</translation>
 <translation id="4080668349181235831">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página que visitas se comparten con Google. Consulta más información sobre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">desplazarse por pestañas compartidas y ampliarlas</translation>
 <translation id="4082333119419111506">Papel (preimpreso)</translation>
@@ -2532,6 +2533,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5018802455907704660">16x20 pulgadas</translation>
 <translation id="5019198164206649151">El almacén secundario está en mal estado.</translation>
 <translation id="5019293549442035120">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu cuenta de Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019819206251569004">sensores de luz y de movimiento</translation>
 <translation id="5019952743397118625">Se ha definido la política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlará la disponibilidad del modo Desarrollador en la página de extensiones.</translation>
 <translation id="5021500396464456616">Ponte en contacto con la persona que te ha enviado este enlace</translation>
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
@@ -2575,6 +2577,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5093232627742069661">Plegado en Z</translation>
 <translation id="5093417502834168387">¿No puedes iniciar sesión? Prueba otra manera.</translation>
 <translation id="5094747076828555589">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chromium no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
+<translation id="5096066272198024688">Guardando tu información...</translation>
 <translation id="5097099694988056070">Estadísticas del dispositivo, como uso de CPU y RAM</translation>
 <translation id="5097468150760963273">27x39 pulgadas</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3125,7 +3128,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5983602399618208855">Puedes encontrar el archivo en la carpeta de la cámara</translation>
 <translation id="5984570616552610254">Humedad de la cámara</translation>
 <translation id="598637245381783098">No se ha podido abrir la aplicación de pago</translation>
-<translation id="5989320800837274978">No se han especificado servidores proxy fijos ni una URL de secuencia de comandos .pac.</translation>
+<translation id="5989320800837274978">No se han especificado servidores proxy fijos ni una URL de script .pac.</translation>
 <translation id="5989917734461988169">Puedes usar direcciones guardadas en los productos de Google. Esto no cambiará tu dirección de casa actual. Se guardará en tu cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Plegado en Z asimétrico</translation>
 <translation id="5992805036496113940">Ver información utilizada para mostrarte anuncios</translation>
@@ -3764,7 +3767,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6971439137020188025">Crea una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6972867931824045907">Para usar el portapapeles, concede acceso a Chrome en <ph name="LINK" />.</translation>
-<translation id="6973656660372572881">Se especifican tanto servidores proxy fijos como una URL de secuencia de comandos .pac.</translation>
+<translation id="6973656660372572881">Se especifican tanto servidores proxy fijos como una URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 pulgadas</translation>
 <translation id="6978121630131642226">Buscadores</translation>
 <translation id="6978236010531171013">Compartir igualmente</translation>
@@ -3781,6 +3784,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="7003278537452757231">Alfombras y moquetas</translation>
 <translation id="7003322000677139268">Piezas y accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
+<translation id="700483187606163535">La información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />. Puedes usarla en diferentes productos de Google para rellenar formularios más rápido.</translation>
 <translation id="7006930604109697472">Enviar de todos modos</translation>
 <translation id="7009364359744329733">La tarjeta no está disponible en estos momentos. Inténtalo de nuevo más tarde.</translation>
 <translation id="7010658264061801199">Comida y bebida</translation>

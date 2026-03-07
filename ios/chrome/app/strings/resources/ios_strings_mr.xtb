@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{१ साइट (सिंक केलेल्या डिव्‍हाइसवर आणखी)}other{# साइट (सिंक केलेल्या डिव्‍हाइसवर आणखी)}}</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">तुमची सुरक्षा धोक्यात असते तेव्हा, तुम्ही भेट दिलेल्या काही पेजचे URL Google ला पाठवते</translation>
+<translation id="2877733045396505765">यामुळे या डिव्हाइसवर आणि तुमच्या Google खाते <ph name="USER_EMAIL" /> मध्ये सेव्ह केलेली निवडक माहिती हटवली जाते.</translation>
 <translation id="2883151425485251736">तुम्ही तुमच्या खात्यामधून लपवलेले विषय पहा आणि ते संपादित करा</translation>
 <translation id="288655811176831528">टॅब बंद करा</translation>
 <translation id="2888631381369839306">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन सुरू केली आहेत</translation>
@@ -1879,6 +1880,7 @@
 <translation id="775755486779745798">एक्स्पायरीचा महिना <ph name="MONTH" /> ऑटोफिल करा</translation>
 <translation id="7758789811447313947">व्हायलेट थीम</translation>
 <translation id="7759809451544302770">पर्यायी</translation>
+<translation id="7763878244904387570">यामुळे या डिव्हाइसवर सेव्ह केलेली निवडक माहिती हटवली जाते.</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="7772948288262733182">तुमचे पुन्हा स्वागत आहे</translation>

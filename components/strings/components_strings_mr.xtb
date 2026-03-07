@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />तुमचा एम्पलॉयर किंवा शाळा
           <ph name="LIST_ITEM" />तुमचा इंटरनेट सेवा पुरवठादार
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">जारी करणारा देश</translation>
 <translation id="1337692097987160377">हा टॅब शेअर करा</translation>
 <translation id="1339601241726513588">नावनोंदणी डोमेन:</translation>
 <translation id="1340482604681802745">घेण्याचा पत्ता</translation>
@@ -2478,6 +2479,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, शोधण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="4930153903256238152">जास्त क्षमता</translation>
 <translation id="4930714375720679147">सुरू करा</translation>
+<translation id="4931347573573430180">जारी केल्याची तारीख</translation>
 <translation id="4932035752129140860">तुम्ही पेस्ट किंवा अटॅच केलेला मजकूर विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवला जातो. उदाहरणार्थ, तो संवेदनशील डेटासाठी स्कॅन केला जाऊ शकतो आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केला जाऊ शकतो व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतो.</translation>
 <translation id="4932733599132424254">तारीख</translation>
 <translation id="4933788293078559286">Pix वापरून पेमेंट करा</translation>
@@ -3110,6 +3112,7 @@
 <translation id="5950901984834744590">रेझर आणि शेव्हर</translation>
 <translation id="5951495562196540101">उपभोक्ता खात्याने नोंदणी करू शकत नाही (पॅकेज केलेला परवाना उपलब्ध).</translation>
 <translation id="5952076224478208938">तयार करा</translation>
+<translation id="5952196777020238475">परवाना क्रमांक</translation>
 <translation id="5953516610448771166">या मीडियासाठी लाइव्ह कॅप्शन उपलब्ध नाही. कॅप्शन मिळवण्यासाठी, या साइटकरिता <ph name="CONTENT_SETTINGS" /> ब्लॉक करा.</translation>
 <translation id="5960795367348889467">पडताळणी</translation>
 <translation id="5963413905009737549">विभाग</translation>
@@ -4615,6 +4618,7 @@
 <translation id="8288320283441806607">हे वैशिष्ट्य वापरण्यासाठी, शोधा आणि ब्राउझिंगमध्ये सुधारणा करा सुरू करा</translation>
 <translation id="8288807391153049143">सर्टिफिकेट दाखवा</translation>
 <translation id="8289355894181816810">याचा निश्चित अर्थ तुम्हाला माहिती नसल्यास तुमच्या नेटवर्क अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="8291367150570302588">ओळखपत्र</translation>
 <translation id="829335040383910391">आवाज</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297545700510100061">कुकी आणि इतर साइट डेटा तुम्हाला लक्षात ठेवण्यासाठी वापरला जातो, उदाहरणार्थ, तुम्हाला साइन इन करण्याकरिता किंवा जाहिराती पर्सनलाइझ करण्याकरिता. सर्व साइटसाठी कुकी व्यवस्थापित करण्याकरिता, <ph name="SETTINGS" /> पहा.</translation>

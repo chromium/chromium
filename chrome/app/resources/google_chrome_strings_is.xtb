@@ -155,6 +155,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="259935314519650377">Ekki tókst að vista uppsetningarforrit sem var sótt í skyndiminni. Villa: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Kerfi</translation>
+<translation id="263447411082773721">Haltu aðgangsorðunum þínum, bókamerkjum og ferli fullkomlega samstilltum á milli tækja. Fáðu greiðan aðgang að eiginleikunum sem þú þekkir og elskar með því að uppfæra sjálfgefna vafrann þinn í Chrome. Chrome verður festur við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome athugar reglulega hvort vafrinn þinn sé með öruggustu stillingarnar. Við látum þig vita ef þú þarft að yfirfara eitthvað.</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
@@ -233,6 +234,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3327226547491422998">Chrome getur síðan spurt hvort þú viljir nota vistuðu upplýsingarnar til að fylla út eyðublöð sjálfkrafa síðar</translation>
 <translation id="3352986031709923790">efsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, efst <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome hjálpari</translation>
+<translation id="3373752068427117404">Sumir eiginleikar og viðbætur Chrome eru með flýtileiðir. Þú getur valið að kveikja aftur á þeim.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3380249972812870825">Ýttu á <ph name="GLOBAL_HOTKEY" /> til að opna Gemini í Chrome</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
@@ -698,6 +700,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Smelltu á <ph name="BUTTON_LABEL" /> hér fyrir neðan
 2. Smelltu á <ph name="BUTTON_2" /> í Windows-stillingunum Smelltu á <ph name="BUTTON_3" /> í Windows-tilkynningunni til að festa Chrome við forritastikuna þína til að auðvelda aðgang</translation>
+<translation id="8074398340364918139">Til að leita að tilteknum eiginleika eða viðbót Chrome skaltu slá inn flýtileiðina í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>
 <translation id="8113883687556086139">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -706,6 +709,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8129812357326543296">Um &amp;Google Chrome</translation>
 <translation id="813913629614996137">Frumstillir...</translation>
 <translation id="8162006532256575008">Nota Chrome án reiknings</translation>
+<translation id="8172231188687329735">Sæktu Chrome-forritið til að vista aðgangsorð á ferðinni</translation>
 <translation id="8177472873527554730">Ekki tókst að finna efni á síðu</translation>
 <translation id="8221491193165283816">Þú lokar yfirleitt á tilkynningar. Ef þú vilt leyfa þessu vefsvæði að birta þér tilkynningar skaltu smella hér.</translation>
 <translation id="8253851811470049684">Opnaðu tengla í Chrome úr hvaða forriti sem er og hafðu vafrann aðgengilegan á forritastikunni</translation>
@@ -733,6 +737,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 
 Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyðir einhverjum. Ef þú skráir þig út núna verður óvistuðum bókamerkjum eytt.</translation>
 <translation id="8433638294851456451">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
+<translation id="8458117863387545390">Sæktu Chrome í símann þinn</translation>
 <translation id="8496177819998570653">Google-aðgangsorðastjórnun</translation>
 <translation id="8498858610309223613">Sérstök öryggisuppfærsla fyrir Google Chrome var tekin í notkun. Endurræstu núna og við opnum flipana þína aftur.</translation>
 <translation id="8516431725144212809">Mat Chrome á áhugasviðum þínum</translation>

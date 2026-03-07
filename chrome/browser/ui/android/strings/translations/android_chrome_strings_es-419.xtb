@@ -746,6 +746,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4198423547019359126">No hay ubicaciones de descarga disponibles</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • La usaste en este sitio</translation>
 <translation id="4214315110991671325">Si permites las cookies, Chrome puede usarlas para la precarga.</translation>
+<translation id="421517251707893998">Presiona fijar este acceso directo</translation>
 <translation id="4216511743389425832">Escuchar esta página</translation>
 <translation id="4225725533026049334">Siguiendo</translation>
 <translation id="4225895483398857530">Acceso directo a la barra de herramientas</translation>
@@ -1325,6 +1326,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6508722015517270189">Reiniciar Chrome</translation>
 <translation id="6513924416597632811">Copiar el vínculo a la página de resultados de búsqueda para: <ph name="SEARCH_QUERY" />. Fuente: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verificar</translation>
+<translation id="6521218807522232085">Crea, guarda y administra tus contraseñas para acceder fácilmente</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532866250404780454">No se mostrarán los sitios que visites en Chrome. Se borrarán todos los temporizadores.</translation>
@@ -1373,6 +1375,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6684262542644248484">Accede a un sitio web.</translation>
 <translation id="6684809838922667136">Mejora Chrome</translation>
 <translation id="6689436252814043643">El Modo de lectura no está disponible</translation>
+<translation id="669971068476817798">Presiona guardar</translation>
 <translation id="6700279777779583398">Se guardaron las selecciones</translation>
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1482,6 +1485,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7054588988317389591">¿Deseas obtener la descripción de las imágenes?</translation>
 <translation id="7057969023583258980">Abrir el historial de Chrome completo</translation>
 <translation id="7063006564040364415">No se pudo establecer conexión con el servidor de sincronización.</translation>
+<translation id="7063106218165698546">Personaliza el grupo de pestañas y presiona listo</translation>
 <translation id="7071521146534760487">Administrar cuenta</translation>
 <translation id="707155805709242880">Elige lo que quieres sincronizar a continuación</translation>
 <translation id="7077143737582773186">Tarjeta SD</translation>

@@ -12694,21 +12694,6 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
 <translation id="9051019223077908578">Configurar a lista de apps e extensões instalados na tela de login</translation>
 <translation id="9053841574218808519">Sempre executar plug-ins que não estão desatualizados</translation>
 <translation id="9055866143096316150">Rebaixar solicitações de wake lock da tela para solicitações de wake lock do sistema</translation>
-<translation id="9056262797461453462">Se a política <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da web com URLs proibidos não serão carregadas. Os admins podem especificar a lista de padrões de URL a serem bloqueados. Se a política não for definida, nenhum URL será bloqueado no navegador. Até 1.000 exceções podem ser definidas na política <ph name="URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Observação: esta política não se aplica a URLs JavaScript na página que tenham dados carregados de modo dinâmico. Se você bloqueou example.com/abc, ainda é possível carregar example.com usando XMLHTTPRequest. Além disso, esta política não impede que as páginas da web atualizem o URL mostrado na omnibox para um bloqueado usando a API History do JavaScript.
-
-A partir do <ph name="PRODUCT_NAME" /> versão 73, é possível bloquear URLs javascript://*. No entanto, isso só afeta o JavaScript inserido na barra de endereço ou, por exemplo, os bookmarklets.
-
-A partir do <ph name="PRODUCT_NAME" /> versão 92, esta política também se torna compatível com o modo headless.
-
-Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser ignorado em alguns casos. Em vez de bloquear determinados URLs internos, confira se há políticas mais específicas disponíveis. Por exemplo:
-
-— Em vez de bloquear chrome://settings/certificates, use a política <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-— Em vez de bloquear chrome-untrusted://crosh, use a política <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-— Em vez de bloquear devtools://*, use uma das políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ou <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="9057159618445405645">Usar o comportamento padrão do navegador Chrome</translation>
 <translation id="9061455386353325110">Especifica se os usuários podem permitir que o <ph name="PRODUCT_NAME" /> use a IA generativa para entender melhor os formulários e ajudar a preencher mais campos.
 

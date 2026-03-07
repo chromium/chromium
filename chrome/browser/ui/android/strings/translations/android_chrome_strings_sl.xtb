@@ -746,6 +746,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Uporabljeno na tem spletnem mestu</translation>
 <translation id="4214315110991671325">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje.</translation>
+<translation id="421517251707893998">Dotaknite se »Pripni to bližnjico«</translation>
 <translation id="4216511743389425832">Poslušanje te strani</translation>
 <translation id="4225725533026049334">Spremljano</translation>
 <translation id="4225895483398857530">Bližnjica do orodne vrstice</translation>
@@ -1325,6 +1326,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6508722015517270189">Znova zaženite Chrome</translation>
 <translation id="6513924416597632811">Kopiranje povezave do strani z rezultati iskanja za: <ph name="SEARCH_QUERY" />. Vir: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Preveri</translation>
+<translation id="6521218807522232085">Ustvarite, shranite in upravljajte gesla, da se boste lahko preprosto prijavili</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="652948702951888897">Zgodovina v Chromu</translation>
 <translation id="6532866250404780454">Spletna mesta, ki jih obiščete v Chromu, ne bodo prikazana. Vsi merilniki časa spletnih mest bodo izbrisani.</translation>
@@ -1373,6 +1375,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6684262542644248484">Prijavite se na spletnem mestu</translation>
 <translation id="6684809838922667136">Izboljšajte Chrome</translation>
 <translation id="6689436252814043643">Način za branje ni na voljo</translation>
+<translation id="669971068476817798">Dotaknite se »Shrani«</translation>
 <translation id="6700279777779583398">Izbrane možnosti so shranjene</translation>
 <translation id="670498945988402717">Preverjeno včeraj</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
@@ -1482,6 +1485,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7054588988317389591">Želite pridobiti opise slik?</translation>
 <translation id="7057969023583258980">Odpiranje celotne zgodovine v Chromu</translation>
 <translation id="7063006564040364415">Povezave s strežnikom za sinhronizacijo ni bilo mogoče vzpostaviti.</translation>
+<translation id="7063106218165698546">Prilagodite skupino zavihkov in kliknite »Končano«</translation>
 <translation id="7071521146534760487">Upravljanje računa</translation>
 <translation id="707155805709242880">Spodaj izberite, kaj želite sinhronizirati.</translation>
 <translation id="7077143737582773186">SD kartica</translation>

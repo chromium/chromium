@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Сте користеле на сајтов</translation>
 <translation id="4214315110991671325">Ако ги дозволите колачињата, Chrome може да ги користи за вчитување однапред.</translation>
+<translation id="421517251707893998">Допрете „Закачи ја кратенкава“</translation>
 <translation id="4216511743389425832">Слушајте ја страницава</translation>
 <translation id="4225725533026049334">Се следи</translation>
 <translation id="4225895483398857530">Кратенка за алатникот</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Рестартирајте го Chrome</translation>
 <translation id="6513924416597632811">Копирајте го линкот до страницата со резултати од пребарување за: <ph name="SEARCH_QUERY" />. Извор: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Потврди</translation>
+<translation id="6521218807522232085">Создавајте лозинки, зачувувајте ги и управувајте со нив за да може лесно да се најавувате</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
 <translation id="6532866250404780454">Сајтовите што ги посетувате во Chrome нема да се прикажуваат. Сите тајмери за сајтови ќе се избришат.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Најавете се на вебсајт</translation>
 <translation id="6684809838922667136">Подобрете го Chrome</translation>
 <translation id="6689436252814043643">„Режимот за читање“ е недостапен</translation>
+<translation id="669971068476817798">Допрете „Зачувај“</translation>
 <translation id="6700279777779583398">Изборот е зачуван</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7057969023583258980">Отвори ја целата историја на Chrome</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
+<translation id="7063106218165698546">Приспособете ја групата картички и изберете „Готово“</translation>
 <translation id="7071521146534760487">Управувајте со сметката</translation>
 <translation id="707155805709242880">Одберете што да се синхронизира подолу</translation>
 <translation id="7077143737582773186">SD-картичка</translation>

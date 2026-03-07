@@ -217,6 +217,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
           <ph name="LIST_ITEM" />poslodavca ili školu
           <ph name="LIST_ITEM" />internet provajdera
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Zemlja izdavanja</translation>
 <translation id="1337692097987160377">Deli ovu karticu</translation>
 <translation id="1339601241726513588">Domen upisnice:</translation>
 <translation id="1340482604681802745">Adresa preuzimanja</translation>
@@ -2479,6 +2480,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pretražili</translation>
 <translation id="4930153903256238152">Veliki kapacitet</translation>
 <translation id="4930714375720679147">Uključi</translation>
+<translation id="4931347573573430180">Datum izdavanja</translation>
 <translation id="4932035752129140860">Tekst koji nalepite ili priložite se šalje u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skeniran u potrazi za osetljivim podacima i može da se čuva na osnovu smernica preduzeća i može da bude vidljiv administratoru.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Platite pomoću Pix-a</translation>
@@ -3111,6 +3113,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5950901984834744590">Žileti i brijači</translation>
 <translation id="5951495562196540101">Registracija korisničkog naloga nije uspela (dostupna je licenca paketa).</translation>
 <translation id="5952076224478208938">Proizvođač</translation>
+<translation id="5952196777020238475">Broj dozvole</translation>
 <translation id="5953516610448771166">Titl uživo nije dostupan za ovaj medijski sadržaj. Da biste omogućili titl, blokirajte <ph name="CONTENT_SETTINGS" /> za ovaj sajt.</translation>
 <translation id="5960795367348889467">Verifikacija</translation>
 <translation id="5963413905009737549">Odeljak</translation>
@@ -4614,6 +4617,7 @@ Dodatni detalji:
 <translation id="8288320283441806607">Da biste koristili ovu funkciju, uključite Poboljšaj pretrage i pregledanje</translation>
 <translation id="8288807391153049143">Prikaži sertifikat</translation>
 <translation id="8289355894181816810">Kontaktirajte administratora mreže ako niste sigurni šta to znači.</translation>
+<translation id="8291367150570302588">Lična karta</translation>
 <translation id="829335040383910391">zvuk</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="SETTINGS" />.</translation>

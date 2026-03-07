@@ -1845,6 +1845,7 @@
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="3928806096717999469">Изменете, се отвора во нов прозорец</translation>
 <translation id="3930260846839546333">Рачни торби и чанти</translation>
+<translation id="393417216277380082">Сензори за движење и светлина</translation>
 <translation id="3937834511546249636">Одбранбена индустрија</translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
 <translation id="3941630233824954464">Овозможете задолжителна повторна автентикација</translation>
@@ -2532,6 +2533,7 @@
 <translation id="5018802455907704660">16 x 20 инчи</translation>
 <translation id="5019198164206649151">Продавницата за резервни копии е во лоша состојба</translation>
 <translation id="5019293549442035120">Може да ги користите зачуваните адреси на производите на Google. Адресава ќе се зачува на вашата сметка на Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">сензори за движење и светлина</translation>
 <translation id="5019952743397118625">Правилото за <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е поставено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> нема да ја контролира достапноста на „Режим на програмер“ на страницата со екстензии.</translation>
 <translation id="5021500396464456616">Контактирајте со лицето што ви го испратило линков</translation>
 <translation id="5021557570875267742">Следете ги цените со Chrome</translation>
@@ -2575,6 +2577,7 @@
 <translation id="5093232627742069661">Z-превиткување</translation>
 <translation id="5093417502834168387">Се соочувате со проблем при најавувањето? Обидете се на друг начин</translation>
 <translation id="5094747076828555589">Серверот не може да докаже дека е <ph name="DOMAIN" />; Chromium не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
+<translation id="5096066272198024688">Се зачувуваат вашите податоци…</translation>
 <translation id="5097099694988056070">Статистички податоци за уредот, како на пример, користење CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 инчи</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@
 <translation id="7003278537452757231">Килими и теписи</translation>
 <translation id="7003322000677139268">Делови и додатоци за возила</translation>
 <translation id="7004499039102548441">Неодамнешни картички</translation>
+<translation id="700483187606163535">Вашите податоци за <ph name="ACCOUNT" /> ќе се зачуваат во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />. Може да ги користите во производите на Google за побрзо да пополнувате формулари.</translation>
 <translation id="7006930604109697472">Сепак испрати</translation>
 <translation id="7009364359744329733">Картичкава не е достапна во моментов. Обидете се повторно подоцна.</translation>
 <translation id="7010658264061801199">Храна и пијалаци</translation>

@@ -1844,6 +1844,7 @@
 <translation id="3927932062596804919">Тыйым салу</translation>
 <translation id="3928806096717999469">Өңдеу түймесі. Жаңа терезені ашады</translation>
 <translation id="3930260846839546333">Қол сөмкелері және әмияндар</translation>
+<translation id="393417216277380082">Қозғалыс және жарық датчиктері</translation>
 <translation id="3937834511546249636">Қорғаныс саласы</translation>
 <translation id="3939773374150895049">CVC орнына WebAuthn қолданасыз ба?</translation>
 <translation id="3941630233824954464">Міндетті қайта аутентификациялауды қосу</translation>
@@ -2531,6 +2532,7 @@
 <translation id="5018802455907704660">16 x 20 дюйм</translation>
 <translation id="5019198164206649151">Қоймадағы деректер бүлінген</translation>
 <translation id="5019293549442035120">Google өнімдерінде сақталған мекенжайларды пайдалана аласыз. Бұл мекенжай Google аккаунтыңызда (<ph name="USER_EMAIL" />) сақталады.</translation>
+<translation id="5019819206251569004">қозғалыс және жарық датчиктері</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> саясаты орнатылған. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> кеңейтімдер бетінде әзірлеуші режимінің қолжетімділігін басқарады.</translation>
 <translation id="5021500396464456616">Бұл сілтемені жіберген адамға хабарласыңыз.</translation>
 <translation id="5021557570875267742">Chrome браузерімен бағаларды қадағалау</translation>
@@ -2574,6 +2576,7 @@
 <translation id="5093232627742069661">Z тәрізді бүктеу</translation>
 <translation id="5093417502834168387">Аккаунтқа кіру кезінде қиындық туындады ма? Басқа жолмен кіріп көріңіз.</translation>
 <translation id="5094747076828555589">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chromium сенім артпайды. Бұған қате конфигурация немесе қаскүнемнің байланысты тоқтатуы себеп болуы мүмкін.</translation>
+<translation id="5096066272198024688">Ақпаратыңыз сақталып жатыр...</translation>
 <translation id="5097099694988056070">CPU/RAM пайдалануы сияқты құрылғы статистикасы</translation>
 <translation id="5097468150760963273">27 x 39 дюйм</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3783,7 @@
 <translation id="7003278537452757231">Төсемелер және кілемдер</translation>
 <translation id="7003322000677139268">Көлік бөлшектері мен аксессуарлары</translation>
 <translation id="7004499039102548441">Соңғы қойындылар</translation>
+<translation id="700483187606163535">Ақпаратыңыз <ph name="ACCOUNT" /> аккаунтына арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметіне сақталады. Оны Google қызметтерінде пайдаланып, үлгілерді жылдамырақ толтыруға болады.</translation>
 <translation id="7006930604109697472">Бәрібір жіберу</translation>
 <translation id="7009364359744329733">Қазір бұл карта қолжетімсіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="7010658264061801199">Тамақ пен сусын</translation>

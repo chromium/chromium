@@ -1845,6 +1845,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3927932062596804919">Ne dovoli</translation>
 <translation id="3928806096717999469">Uredi, odpre novo okno</translation>
 <translation id="3930260846839546333">Denarnice in torbice</translation>
+<translation id="393417216277380082">Tipala gibanja in svetlobe</translation>
 <translation id="3937834511546249636">Obrambna industrija</translation>
 <translation id="3939773374150895049">Želite namesto kode CVC uporabiti WebAuthn?</translation>
 <translation id="3941630233824954464">Omogočanje obveznega vnovičnega preverjanja pristnosti</translation>
@@ -2532,6 +2533,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5018802455907704660">16 x 20 palcev</translation>
 <translation id="5019198164206649151">Neprimerno stanje rezervne shrambe</translation>
 <translation id="5019293549442035120">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">tipala gibanja in svetlobe</translation>
 <translation id="5019952743397118625">Pravilnik <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> je nastavljen. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ne bo nadziral razpoložljivosti razvijalskega načina na strani z razširitvami.</translation>
 <translation id="5021500396464456616">Obrnite se na osebo, ki je poslala to povezavo</translation>
 <translation id="5021557570875267742">Spremljanje cen v Chromu</translation>
@@ -2575,6 +2577,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5093232627742069661">Cikcakasto prepogibanje</translation>
 <translation id="5093417502834168387">Imate težave pri prijavi? Poskusite drugače.</translation>
 <translation id="5094747076828555589">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chromium ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="5096066272198024688">Shranjevanje podatkov …</translation>
 <translation id="5097099694988056070">Statistični podatki naprave, kot je uporaba CPE-ja/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 palcev</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7003278537452757231">Preproge</translation>
 <translation id="7003322000677139268">Nadomestni deli in dodatna oprema za vozila</translation>
 <translation id="7004499039102548441">Nedavni zavihki</translation>
+<translation id="700483187606163535">Vaši podatki so shranjeni v aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />. Uporabljate jih lahko v Googlovih izdelkih za hitrejše izpolnjevanje obrazcev.</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7009364359744329733">Ta kartica trenutno ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="7010658264061801199">Hrana in pijača</translation>

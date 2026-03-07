@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
+<translation id="1109482864356262001">Veçoritë që kanë nevojë për sensorët e lëvizjes ose të dritës nuk do të funksionojnë</translation>
 <translation id="1126523729897810826">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome</translation>
 <translation id="113098737392899175">Navigo te faqet me një kursor teksti kur lidhet një tastierë</translation>
 <translation id="1148624853678088576">Je gati!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Kartat në faqen e skedës së re</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> - Hiq</translation>
+<translation id="227763434929139750">Mos lejo që sajtet të përdorin sensorët e lëvizjes ose të dritës</translation>
 <translation id="228293613124499805">Shumica e sajteve që viziton ka mundësi që të ruajnë të dhëna në pajisjen tënde, shpesh për të përmirësuar përvojën tënde duke ruajtur preferencat e tua ose informacionet që ti ndan me sajtin. Ne rekomandojmë që ta mbash të aktivizuar këtë cilësim.</translation>
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
@@ -298,6 +300,7 @@
 <translation id="3922092564198021702">Në telefon, hap "Cilësimet"</translation>
 <translation id="3924858949939391676">Shfaq lidhjet pasi të jetë aktivizuar "Modaliteti i leximit"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
+<translation id="393417216277380082">Sensorët e lëvizjes dhe të dritës</translation>
 <translation id="3934905113567851655">Afro gishtat për të ndryshuar përmasat</translation>
 <translation id="3955321697524543127">Mos lejo që sajtet të lidhen me pajisjet me USB</translation>
 <translation id="3965467402665811906">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
@@ -369,6 +372,7 @@
 <translation id="4672315773691449562">Trokit tek "Aplikacioni i shfletuesit" dhe më pas trokit te Chrome</translation>
 <translation id="4676059169848868271">Për të lejuar që <ph name="APP_NAME" /> të përdorë gjurmimin e duarve, aktivizo gjithashtu gjurmimin e duarve te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Menaxho kartat e tua</translation>
+<translation id="4722332387043141878">Sajtet përdorin zakonisht sensorët e lëvizjes dhe të dritës të pajisjes për veçoritë si realiteti virtual ose monitorimi i fitnesit</translation>
 <translation id="4755971844837804407">Kur cilësimi është aktiv, sajtet mund të të shfaqin çdo reklamë. Kur cilësimi është joaktiv, sajtet nuk mund të shfaqin reklama ndërhyrëse ose mashtruese.</translation>
 <translation id="4779083564647765204">Zmadho</translation>
 <translation id="4807122856660838973">Aktivizo "Shfletimin e sigurt"</translation>
@@ -513,6 +517,7 @@
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6207207788774442484">Fshi të dhënat dhe rivendos lejet</translation>
+<translation id="6211409961905616543">Sajtet mund të përdorin sensorët e lëvizjes dhe të dritës</translation>
 <translation id="6218508144653756827">Tema vjollcë e ndezur</translation>
 <translation id="6231752747840485235">Të çinstalohet "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Trokit tek Aplikacioni i shfletuesit &gt; Chrome</translation>
@@ -757,6 +762,7 @@
 <translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8803526663383843427">Kur është e aktive</translation>
 <translation id="8805385115381080995">Shfletimi është më i shpejtë pasi një sajt ka më pak gjasa që të të kërkojë të verifikosh që je një person real</translation>
+<translation id="881644524232657178">Kur cilësimi është aktiv, sajtet mund të përdorin sensorët e lëvizjes dhe të dritës të pajisjes. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin sensorët.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8889294078294184559">Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>

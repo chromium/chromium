@@ -1845,6 +1845,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3927932062596804919">Afvis</translation>
 <translation id="3928806096717999469">Rediger (åbnes i et nyt vindue)</translation>
 <translation id="3930260846839546333">Håndtasker</translation>
+<translation id="393417216277380082">Bevægelses- og lyssensorer</translation>
 <translation id="3937834511546249636">Forsvarsindustri</translation>
 <translation id="3939773374150895049">Vil du bruge WebAuthn i stedet for CVC?</translation>
 <translation id="3941630233824954464">Aktivér obligatorisk fornyet godkendelse</translation>
@@ -2532,6 +2533,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5018802455907704660">16 x 20 tommer</translation>
 <translation id="5019198164206649151">Sikkerhedskopien er fejlbehæftet</translation>
 <translation id="5019293549442035120">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse gemmes på din Google-konto, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">bevægelses- og lyssensorer</translation>
 <translation id="5019952743397118625">Politikken <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er konfigureret. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> styrer ikke tilgængeligheden af udviklertilstand på siden med udvidelser.</translation>
 <translation id="5021500396464456616">Kontakt den person, der har sendt dette link</translation>
 <translation id="5021557570875267742">Hold øje med priser ved hjælp af Chrome</translation>
@@ -2575,6 +2577,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5093232627742069661">Z-fals</translation>
 <translation id="5093417502834168387">Har du problemer med at logge ind? Prøv en anden metode</translation>
 <translation id="5094747076828555589">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chromium ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
+<translation id="5096066272198024688">Dine oplysninger gemmes…</translation>
 <translation id="5097099694988056070">Enhedsstatistik som f.eks. CPU/RAM-forbrug</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7003278537452757231">Tæpper</translation>
 <translation id="7003322000677139268">Dele og tilbehør til køretøjer</translation>
 <translation id="7004499039102548441">Seneste faner</translation>
+<translation id="700483187606163535">Dine oplysninger gemmes i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. Du kan bruge oplysningerne i Google-produkter til hurtigere at udfylde formularer.</translation>
 <translation id="7006930604109697472">Send alligevel</translation>
 <translation id="7009364359744329733">Dette kort er ikke tilgængeligt lige nu. Prøv igen senere.</translation>
 <translation id="7010658264061801199">Mad og drikke</translation>

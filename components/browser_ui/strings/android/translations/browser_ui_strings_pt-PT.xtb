@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Ficheiros que este site pode ver ou editar</translation>
 <translation id="1073417869336441572">Ajude-nos a melhorar o Chrome ao dizer-nos o motivo pelo qual permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pode pedir para ver a versão para computador dos sites</translation>
+<translation id="1109482864356262001">As funcionalidades que precisam de sensores de movimento ou de luz não funcionam</translation>
 <translation id="1126523729897810826">Conclua as ações sugeridas abaixo para tirar o máximo partido do Chrome</translation>
 <translation id="113098737392899175">Navegar pelas páginas com um cursor de texto quando tiver um teclado ligado</translation>
 <translation id="1148624853678088576">Está tudo pronto!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Cartões da página Novo separador</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Remover</translation>
+<translation id="227763434929139750">Não permitir que os sites usem sensores de movimento ou de luz</translation>
 <translation id="228293613124499805">É provável que a maioria dos sites que visita guarde dados no seu dispositivo, muitas vezes para melhorar a sua experiência ao guardar as suas preferências ou informações que partilha com o site. Recomendamos que mantenha esta definição ativada.</translation>
 <translation id="2289270750774289114">Perguntar quando um site quer detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">O sistema operativo não suporta a seleção do certificado do lado do cliente.</translation>
@@ -298,6 +300,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3922092564198021702">No telemóvel, abra as Definições</translation>
 <translation id="3924858949939391676">Mostrar links assim que o Modo de leitura estiver ativado</translation>
 <translation id="3933121352599513978">Reduzir pedidos indesejados (recomendado)</translation>
+<translation id="393417216277380082">Sensores de movimento e de luz</translation>
 <translation id="3934905113567851655">Junte/afaste os dedos para redimensionar</translation>
 <translation id="3955321697524543127">Não permitir que os sites estabeleçam ligação a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar as informações guardadas sobre si</translation>
@@ -369,6 +372,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4672315773691449562">Toque na app de navegador e, de seguida, toque no Chrome</translation>
 <translation id="4676059169848868271">Para permitir que a app <ph name="APP_NAME" /> use a monitorização das mãos, ative esta autorização nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Faça a gestão dos cartões</translation>
+<translation id="4722332387043141878">Normalmente, os sites usam os sensores de movimentos e luz do seu dispositivo para funcionalidades como realidade virtual ou monitorização de fitness</translation>
 <translation id="4755971844837804407">Quando esta opção está ativada, os sites podem mostrar-lhe qualquer anúncio. Quando esta opção está desativada, os sites não podem mostrar anúncios intrusivos ou enganadores.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Ative a Navegação Segura</translation>
@@ -513,6 +517,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade dos anúncios</translation>
 <translation id="6207207788774442484">Eliminar dados e repor autorizações</translation>
+<translation id="6211409961905616543">Os sites podem usar sensores de movimento e de luz</translation>
 <translation id="6218508144653756827">Tema fúcsia</translation>
 <translation id="6231752747840485235">Quer desinstalar a app "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Toque em App de navegador &gt; Chrome</translation>
@@ -757,6 +762,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8801657293260363985">O V8 é o motor JavaScript e WebAssembly do Chrome usado para melhorar o desempenho do site</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8805385115381080995">A navegação é mais rápida porque é menos provável que um site lhe peça para validar que é uma pessoa real</translation>
+<translation id="881644524232657178">Quando esta opção está ativada, os sites podem usar os sensores de movimentos e luz do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Experimente permitir temporariamente os cookies de terceiros, o que significa uma menor proteção da navegação, mas é mais provável que as funcionalidades do site funcionem conforme esperado.</translation>
 <translation id="8889294078294184559">À medida que navega, os sites podem verificar com o Chrome e validar com um site anterior que tenha visitado que provavelmente é uma pessoa real</translation>

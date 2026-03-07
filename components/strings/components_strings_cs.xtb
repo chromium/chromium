@@ -1841,6 +1841,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3927932062596804919">Odmítnout</translation>
 <translation id="3928806096717999469">Upravit, otevře nové okno</translation>
 <translation id="3930260846839546333">Kabelky a peněženky</translation>
+<translation id="393417216277380082">Senzory pohybu a světla</translation>
 <translation id="3937834511546249636">Obranný průmysl</translation>
 <translation id="3939773374150895049">Použít WebAuthn namísto CVC?</translation>
 <translation id="3941630233824954464">Povolit povinné opětovné ověření</translation>
@@ -2528,6 +2529,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5018802455907704660">16 × 20″</translation>
 <translation id="5019198164206649151">Záložní úložiště je ve špatném stavu</translation>
 <translation id="5019293549442035120">Uložené adresy můžete používat ve službách Google. Tato adresa bude uložena ve vašem účtu Google <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">senzory pohybu a světla</translation>
 <translation id="5019952743397118625">Je nastavena zásada <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nebude kontrolovat dostupnost režimu pro vývojáře na stránce rozšíření.</translation>
 <translation id="5021500396464456616">Kontaktujte osobu, která poslala tento odkaz</translation>
 <translation id="5021557570875267742">Sledování cen v prohlížeči Chrome</translation>
@@ -2571,6 +2573,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5093232627742069661">Přeložení do Z</translation>
 <translation id="5093417502834168387">Máte s přihlášením problémy? Zkuste to jinak</translation>
 <translation id="5094747076828555589">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chromium jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="5096066272198024688">Ukládání vašich údajů…</translation>
 <translation id="5097099694988056070">Statistiky zařízení, například využití CPU/RAM</translation>
 <translation id="5097468150760963273">27 × 39 palců</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3776,6 +3779,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7003278537452757231">Předložky a koberce</translation>
 <translation id="7003322000677139268">Náhradní díly a doplňky pro vozidla</translation>
 <translation id="7004499039102548441">Nedávno použité karty</translation>
+<translation id="700483187606163535">Vaše informace se ukládají do služby <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> účtu <ph name="ACCOUNT" />. Můžete je používat k rychlejšímu vyplňování formulářů ve všech službách Google.</translation>
 <translation id="7006930604109697472">Přesto odeslat</translation>
 <translation id="7009364359744329733">Tato karta aktuálně není k dispozici. Zkuste to znovu později.</translation>
 <translation id="7010658264061801199">Jídlo a pití</translation>

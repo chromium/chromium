@@ -747,6 +747,7 @@
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
 <translation id="4209029522667123437">‫<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • لقد استخدمت هذا الحساب على هذا الموقع الإلكتروني</translation>
 <translation id="4214315110991671325">‏إذا سمحت بملفات تعريف الارتباط، قد يستخدمها Chrome للتحميل المُسبق.</translation>
+<translation id="421517251707893998">انقر على "تثبيت هذا الاختصار"</translation>
 <translation id="4216511743389425832">الاستماع إلى هذه الصفحة</translation>
 <translation id="4225725533026049334">تتم متابعته حاليًا</translation>
 <translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
@@ -1326,6 +1327,7 @@
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
 <translation id="6513924416597632811">يؤدي النقر على الزرّ إلى نسخ رابط صفحة نتائج البحث عن "<ph name="SEARCH_QUERY" />". المصدر: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">تحقق</translation>
+<translation id="6521218807522232085">يمكنك إنشاء كلمات المرور وحفظها وإدارتها لتسجيل الدخول بسهولة</translation>
 <translation id="6527303717912515753">مشاركة</translation>
 <translation id="652948702951888897">‏سجل Chrome</translation>
 <translation id="6532866250404780454">‏لن يتم عرض المواقع الإلكترونية التي تزورها في Chrome. سيتم حذف جميع موقِّتات الموقع الإلكتروني.</translation>
@@ -1374,6 +1376,7 @@
 <translation id="6684262542644248484">تسجيل الدخول إلى موقع إلكتروني</translation>
 <translation id="6684809838922667136">‏تحسين أداء متصفِّح Chrome</translation>
 <translation id="6689436252814043643">"وضع القراءة" غير متاح</translation>
+<translation id="669971068476817798">انقر على "حفظ"</translation>
 <translation id="6700279777779583398">تم حفظ الخيارات</translation>
 <translation id="670498945988402717">تمّ إجراء عملية التحقُّق أمس.</translation>
 <translation id="6710213216561001401">السابق</translation>
@@ -1483,6 +1486,7 @@
 <translation id="7054588988317389591">هل تريد عرض أوصاف الصور؟</translation>
 <translation id="7057969023583258980">‏فتح سجلّ Chrome بالكامل</translation>
 <translation id="7063006564040364415">تعذر الاتصال بخادم المزامنة.</translation>
+<translation id="7063106218165698546">خصِّص مجموعة علامات التبويب وانقر على "تم"</translation>
 <translation id="7071521146534760487">إدارة الحساب</translation>
 <translation id="707155805709242880">اختَر ما تريد مزامنته أدناه</translation>
 <translation id="7077143737582773186">‏بطاقة SD</translation>

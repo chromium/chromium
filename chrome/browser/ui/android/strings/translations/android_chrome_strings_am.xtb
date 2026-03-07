@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • በዚህ ጣቢያ ላይ ተጠቅመዋል</translation>
 <translation id="4214315110991671325">ኩኪዎችን ከፈቀዱ Chrome ለቅድሚያ መጫን ሊጠቀምባቸው ይችላል።</translation>
+<translation id="421517251707893998">ይህን አቋራጭ ሰካ የሚለውን መታ ያድርጉ</translation>
 <translation id="4216511743389425832">ይህን ገጽ ያዳምጡት</translation>
 <translation id="4225725533026049334">የምከተላቸው</translation>
 <translation id="4225895483398857530">የመሣሪያ አሞሌ አቋራጭ</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Chromeን ዳግም ያስጀምሩት</translation>
 <translation id="6513924416597632811">የፍለጋ ውጤቶች ገጽ አገናኝን ለሚከተለው ይቅዱ፦ <ph name="SEARCH_QUERY" />። ምንጭ፦ <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">አረጋግጥ</translation>
+<translation id="6521218807522232085">በቀላሉ መግባት እንዲችሉ የይለፍ ቃላትዎን ይፍጠሩ፣ ያስቀምጡ እና ያስተዳድሩ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="652948702951888897">የChrome ታሪክ</translation>
 <translation id="6532866250404780454">በChrome ውስጥ የሚጎበኟቸው ጣቢያዎች አይታዩም። ሁሉም ሰዓት ቆጣሪዎች ይሰረዛሉ።</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">ወደ ድር ጣቢያ ይግቡ</translation>
 <translation id="6684809838922667136">Chromeን የተሻለ ያድርጉት</translation>
 <translation id="6689436252814043643">የንባብ ሁነታ አይገኝም</translation>
+<translation id="669971068476817798">አስቀምጥ ላይ መታ ያድርጉ</translation>
 <translation id="6700279777779583398">ምርጫዎች ተቀምጠዋል</translation>
 <translation id="670498945988402717">ትላንትና ተፈትሿል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
 <translation id="7057969023583258980">ሙሉ የChrome ታሪክን ይክፈቱ</translation>
 <translation id="7063006564040364415">ከማመሳሰያ አገልጋዩ ጋር መገናኘት አልተቻለም።</translation>
+<translation id="7063106218165698546">የትር ቡድንን ያብጁ እና ተከናውኗልን ይጫኑ</translation>
 <translation id="7071521146534760487">መለያን አቀናብር</translation>
 <translation id="707155805709242880">ከዚህ በታች ምን እንደሚመሳሰል ይምረጡ</translation>
 <translation id="7077143737582773186">ኤስዲ ካርድ</translation>

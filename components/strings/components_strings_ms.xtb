@@ -217,6 +217,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
           <ph name="LIST_ITEM" />Majikan atau institusi pengajian anda
           <ph name="LIST_ITEM" />Penyedia perkhidmatan Internet anda
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Negara pengeluar</translation>
 <translation id="1337692097987160377">Kongsi tab ini</translation>
 <translation id="1339601241726513588">Domain pendaftaran:</translation>
 <translation id="1340482604681802745">Alamat pengambilan</translation>
@@ -2480,6 +2481,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mencari</translation>
 <translation id="4930153903256238152">Kapasiti besar</translation>
 <translation id="4930714375720679147">Hidupkan</translation>
+<translation id="4931347573573430180">Tarikh dikeluarkan</translation>
 <translation id="4932035752129140860">Teks yang anda tampal atau lampirkan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, teks tersebut mungkin diimbas untuk mencari data sensitif dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
 <translation id="4933788293078559286">Bayar dengan Pix</translation>
@@ -3112,6 +3114,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5950901984834744590">Pisau Cukur &amp; Pencukur</translation>
 <translation id="5951495562196540101">Tidak dapat mendaftar dengan akaun pengguna (lesen berpakej tersedia).</translation>
 <translation id="5952076224478208938">Buatan</translation>
+<translation id="5952196777020238475">Nombor Lesen</translation>
 <translation id="5953516610448771166">Sari Kata Langsung tidak tersedia untuk media ini. Untuk mendapatkan sari kata, sekat <ph name="CONTENT_SETTINGS" /> untuk laman ini.</translation>
 <translation id="5960795367348889467">Pengesahan</translation>
 <translation id="5963413905009737549">Bahagian</translation>
@@ -4616,6 +4619,7 @@ Butiran tambahan:
 <translation id="8288320283441806607">Untuk menggunakan ciri ini, hidupkan Jadikan Carian dan Penyemakan Imbas Lebih Baik</translation>
 <translation id="8288807391153049143">Tunjukkan sijil</translation>
 <translation id="8289355894181816810">Hubungi pentadbir rangkaian anda jika anda tidak pasti apa yang dimaksudkan ini.</translation>
+<translation id="8291367150570302588">Kad ID</translation>
 <translation id="829335040383910391">bunyi</translation>
 <translation id="8294431847097064396">Sumber</translation>
 <translation id="8297545700510100061">Kuki dan data laman lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua laman, lihat <ph name="SETTINGS" />.</translation>

@@ -746,6 +746,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Použili jste na tomhle webu</translation>
 <translation id="4214315110991671325">Pokud máte povolené soubory cookie, může je Chrome používat k předběžnému načítání.</translation>
+<translation id="421517251707893998">Klepněte na Připnout tuto zkratku</translation>
 <translation id="4216511743389425832">Poslechnout si tuto stránku</translation>
 <translation id="4225725533026049334">Sledováno</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
@@ -1325,6 +1326,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6513924416597632811">Zkopírovat odkaz na stránku s výsledky vyhledávání pro dotaz <ph name="SEARCH_QUERY" />. Zdroj: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Ověřit</translation>
+<translation id="6521218807522232085">Vytvářejte, ukládejte a spravujte svá hesla, ať se můžete snadno přihlašovat</translation>
 <translation id="6527303717912515753">Sdílet</translation>
 <translation id="652948702951888897">Historie Chromu</translation>
 <translation id="6532866250404780454">Weby navštívené v Chromu se nebudou zobrazovat. Všechny časovače webů budou smazány.</translation>
@@ -1373,6 +1375,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6684262542644248484">Přihlaste se na web</translation>
 <translation id="6684809838922667136">Vylepšujeme Chrome</translation>
 <translation id="6689436252814043643">Režim čtení není k dispozici</translation>
+<translation id="669971068476817798">Klepněte na Uložit</translation>
 <translation id="6700279777779583398">Vybrané možnosti byly uloženy</translation>
 <translation id="670498945988402717">Zkontrolováno včera</translation>
 <translation id="6710213216561001401">Předchozí</translation>
@@ -1482,6 +1485,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7054588988317389591">Zobrazovat popisy obrázků?</translation>
 <translation id="7057969023583258980">Otevřít úplnou historii Chromu</translation>
 <translation id="7063006564040364415">K synchronizačnímu serveru se nelze připojit.</translation>
+<translation id="7063106218165698546">Přizpůsobte si skupinu karet a klikněte na Hotovo</translation>
 <translation id="7071521146534760487">Spravovat účet</translation>
 <translation id="707155805709242880">Níže zvolte typy dat, která chcete synchronizovat</translation>
 <translation id="7077143737582773186">SD karta</translation>

@@ -1845,6 +1845,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3927932062596804919">Keela</translation>
 <translation id="3928806096717999469">Muutmine. Avab uue akna.</translation>
 <translation id="3930260846839546333">Käekotid</translation>
+<translation id="393417216277380082">Liikumis- ja valgusandurid</translation>
 <translation id="3937834511546249636">Kaitsetööstus</translation>
 <translation id="3939773374150895049">Kas kasutada CVC asemel WebAuthn-autentimist?</translation>
 <translation id="3941630233824954464">Luba kohustuslik taasautentimine</translation>
@@ -2532,6 +2533,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5018802455907704660">16 × 20 tolli</translation>
 <translation id="5019198164206649151">Varusalves esineb probleeme</translation>
 <translation id="5019293549442035120">Salvestatud aadresse saate kasutada kõigis Google'i teenustes. See aadress salvestatakse teie Google'i kontole (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019819206251569004">liikumis- ja valgusandurid</translation>
 <translation id="5019952743397118625">Reegel <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> on määratud. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ei juhi arendajarežiimi saadavust laienduste lehel.</translation>
 <translation id="5021500396464456616">Võtke ühendust inimesega, kes selle lingi saatis</translation>
 <translation id="5021557570875267742">Hindade jälgimine Chrome'iga</translation>
@@ -2575,6 +2577,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5093232627742069661">Z-kujuliselt volditud</translation>
 <translation id="5093417502834168387">Kas sisselogimisega on probleeme? Proovige mõnda muud võimalust</translation>
 <translation id="5094747076828555589">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, Chromium ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
+<translation id="5096066272198024688">Teie teabe salvestamine…</translation>
 <translation id="5097099694988056070">Seadme statistika, näiteks protsessori/muutmälu kasutus</translation>
 <translation id="5097468150760963273">27 × 39 tolli</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="7003278537452757231">Põrandakatted ja vaibad</translation>
 <translation id="7003322000677139268">Sõidukite osad ja tarvikud</translation>
 <translation id="7004499039102548441">Hiljutised vahelehed</translation>
+<translation id="700483187606163535">Teie teave salvestatakse rakenduses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontole <ph name="ACCOUNT" />. Saate seda kasutada Google'i teenustes vormide kiiremini täitmiseks.</translation>
 <translation id="7006930604109697472">Saada ikkagi</translation>
 <translation id="7009364359744329733">See kaart pole praegu saadaval. Proovige hiljem uuesti.</translation>
 <translation id="7010658264061801199">Söök ja jook</translation>

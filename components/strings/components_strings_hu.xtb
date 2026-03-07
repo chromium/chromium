@@ -1843,6 +1843,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3927932062596804919">Megtagadás</translation>
 <translation id="3928806096717999469">Szerkesztés, új ablakban nyílik meg</translation>
 <translation id="3930260846839546333">Kézitáskák és pénztárcák</translation>
+<translation id="393417216277380082">Mozgás- és fényérzékelők</translation>
 <translation id="3937834511546249636">Védelmi ipar</translation>
 <translation id="3939773374150895049">A WebAuthn szolgáltatást szeretné használni a CVC helyett?</translation>
 <translation id="3941630233824954464">Kötelező újbóli hitelesítés engedélyezése</translation>
@@ -2529,6 +2530,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5018802455907704660">16 × 20 hüvelyk</translation>
 <translation id="5019198164206649151">A háttértároló állapota nem megfelelő</translation>
 <translation id="5019293549442035120">A mentett címeket használhatja a Google-termékben. Ezt a címet az Ön Google-fiókjába (<ph name="USER_EMAIL" />) menti a rendszer.</translation>
+<translation id="5019819206251569004">mozgás- és fényérzékelők</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> házirend beállítva. A(z) <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nem szabályozza a fejlesztői mód bővítmények oldalán való rendelkezésre állását.</translation>
 <translation id="5021500396464456616">Lépjen kapcsolatba a linket küldő személlyel</translation>
 <translation id="5021557570875267742">Árak nyomon követése a Chrome segítségével</translation>
@@ -2572,6 +2574,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5093232627742069661">Z-hajtás</translation>
 <translation id="5093417502834168387">Gond van a bejelentkezéssel? Próbálkozás máshogy</translation>
 <translation id="5094747076828555589">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chromium szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
+<translation id="5096066272198024688">Adatok mentése…</translation>
 <translation id="5097099694988056070">Eszközstatisztikák, például processzor- és memóriahasználat</translation>
 <translation id="5097468150760963273">27 × 39 hüvelyk</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3778,6 +3781,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7003278537452757231">Szőnyegek</translation>
 <translation id="7003322000677139268">Járműalkatrészek és kiegészítők</translation>
 <translation id="7004499039102548441">Nemrég megnyitott lapok</translation>
+<translation id="700483187606163535">Az adatokat a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> szolgáltatásba menti a rendszer a következő fiókhoz: <ph name="ACCOUNT" />. A Google-termékekben használhatja őket az űrlapok gyorsabb kitöltéséhez.</translation>
 <translation id="7006930604109697472">Küldés mégis</translation>
 <translation id="7009364359744329733">Ez a kártya jelenleg nem áll rendelkezésre. Próbálja újra később.</translation>
 <translation id="7010658264061801199">Étel-ital</translation>

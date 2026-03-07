@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">କୌଣସି ଡାଉନ୍‍‍‍ଲୋଡ୍ ହୋଇଥିବା ଲୋକେସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ଆପଣ ଏହି ସାଇଟରେ ବ୍ୟବହାର କରିଛନ୍ତି</translation>
 <translation id="4214315110991671325">ଯଦି ଆପଣ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତି, ତେବେ Chrome ସେଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରିବା ପାଇଁ ବ୍ୟବହାର କରିପାରେ।</translation>
+<translation id="421517251707893998">'ଏହି ସର୍ଟକଟକୁ ପିନ କରନ୍ତୁ'ରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="4216511743389425832">ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ</translation>
 <translation id="4225725533026049334">ଫଲୋ କରୁଛନ୍ତି</translation>
 <translation id="4225895483398857530">ଟୁଲବାର୍ ସର୍ଟକଟ୍</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Chrome ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="6513924416597632811">ଏହା ପାଇଁ ସର୍ଚ୍ଚ ଫଳାଫଳ ପୃଷ୍ଠାକୁ ଲିଙ୍କ କପି କରନ୍ତୁ: <ph name="SEARCH_QUERY" />। ସୋର୍ସ: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="6521218807522232085">ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ତିଆରି କରି ସେଭ କରନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସହଜରେ ସାଇନ ଇନ କରିପାରିବେ</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="652948702951888897">Chrome ଇତିବୃତ୍ତି</translation>
 <translation id="6532866250404780454">Chromeରେ ଆପଣ ଯେଉଁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଯାଆନ୍ତି ସେଗୁଡ଼ିକ ଦେଖାଇବ ନାହିଁ। ସମସ୍ତ ସାଇଟ୍‍ ଟାଇମର୍‌ ଡିଲିଟ୍‍ କରାଯିବ।</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">ଏକ ୱେବସାଇଟରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6684809838922667136">Chromeକୁ ଆହୁରି ଉନ୍ନତ କରନ୍ତୁ</translation>
 <translation id="6689436252814043643">ରିଡିଂ ମୋଡ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="669971068476817798">'ସେଭ କରନ୍ତୁ'ରେ ଟାପ କରନ୍ତୁ</translation>
 <translation id="6700279777779583398">ପସନ୍ଦକୁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="670498945988402717">ଗତକାଲି ଯାଞ୍ଚ କରାଯାଇଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">ଛବିର ବର୍ଣ୍ଣନା ପାଇବାକୁ ଚାହାଁନ୍ତି କି?</translation>
 <translation id="7057969023583258980">ସମ୍ପୂର୍ଣ୍ଣ Chrome ଇତିହାସ ଖୋଲନ୍ତୁ</translation>
 <translation id="7063006564040364415">ସିଙ୍କ ସର୍ଭର ସହ ସଂଯୋଗ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
+<translation id="7063106218165698546">ଟାବ ଗ୍ରୁପକୁ କଷ୍ଟମାଇଜ କରି ହୋଇଗଲାରେ ହିଟ କରନ୍ତୁ</translation>
 <translation id="7071521146534760487">ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="707155805709242880">କଣ ସିଙ୍କ୍ କରିବେ ତାହା ତଳେ ବାଛନ୍ତୁ</translation>
 <translation id="7077143737582773186">SD କାର୍ଡ</translation>

@@ -746,6 +746,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Bạn đã dùng trên trang web này</translation>
 <translation id="4214315110991671325">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này để tải trước.</translation>
+<translation id="421517251707893998">Nhấn vào ghim lối tắt này</translation>
 <translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4225725533026049334">Đang theo dõi</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
@@ -1325,6 +1326,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6508722015517270189">Khởi động lại Chrome</translation>
 <translation id="6513924416597632811">Sao chép đường liên kết đến trang kết quả tìm kiếm cho: <ph name="SEARCH_QUERY" />. Nguồn: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Xác minh</translation>
+<translation id="6521218807522232085">Tạo, lưu và quản lý mật khẩu để dễ dàng đăng nhập</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="652948702951888897">Nhật ký duyệt web trên Chrome</translation>
 <translation id="6532866250404780454">Các trang web bạn truy cập trên Chrome sẽ không hiển thị. Tất cả lịch hẹn giờ trên trang web sẽ bị xóa.</translation>
@@ -1373,6 +1375,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6684262542644248484">Đăng nhập vào một trang web</translation>
 <translation id="6684809838922667136">Cải thiện Chrome</translation>
 <translation id="6689436252814043643">Không dùng được chế độ đọc</translation>
+<translation id="669971068476817798">Nhấn vào lưu</translation>
 <translation id="6700279777779583398">Đã lưu lựa chọn</translation>
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
@@ -1482,6 +1485,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7054588988317389591">Tải nội dung mô tả hình ảnh?</translation>
 <translation id="7057969023583258980">Mở toàn bộ nhật ký duyệt web trên Chrome</translation>
 <translation id="7063006564040364415">Không thể kết nối với máy chủ đồng bộ hóa.</translation>
+<translation id="7063106218165698546">Tuỳ chỉnh nhóm thẻ rồi nhấn vào xong</translation>
 <translation id="7071521146534760487">Quản lý tài khoản</translation>
 <translation id="707155805709242880">Chọn loại dữ liệu sẽ đồng bộ hóa ở bên dưới</translation>
 <translation id="7077143737582773186">Thẻ SD</translation>

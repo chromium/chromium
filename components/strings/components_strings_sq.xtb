@@ -1845,6 +1845,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3927932062596804919">Refuzo</translation>
 <translation id="3928806096717999469">Modifiko, hapet në një dritare të re</translation>
 <translation id="3930260846839546333">Çanta dore dhe çanta grash</translation>
+<translation id="393417216277380082">Sensorët e lëvizjes dhe të dritës</translation>
 <translation id="3937834511546249636">Industria e mbrojtjes</translation>
 <translation id="3939773374150895049">Të përdoret WebAuthn në vend të CVC?</translation>
 <translation id="3941630233824954464">Aktivizo rivërtetimin e detyrueshëm</translation>
@@ -2532,6 +2533,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5018802455907704660">16 x 20 inç</translation>
 <translation id="5019198164206649151">Mbështetja e ruajtjes është në gjendje të keqe</translation>
 <translation id="5019293549442035120">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë do të ruhet në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">sensorët e lëvizjes dhe të dritës</translation>
 <translation id="5019952743397118625">Politika <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> është caktuar. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nuk do të kontrollojë disponueshmërinë e modalitetit "si zhvillues" në faqen e shtesave.</translation>
 <translation id="5021500396464456616">Kontakto me personin që e dërgoi këtë lidhje</translation>
 <translation id="5021557570875267742">Monitoro çmimet me Chrome</translation>
@@ -2575,6 +2577,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5093232627742069661">Palosje Z</translation>
 <translation id="5093417502834168387">Ke probleme me identifikimin? Provo një mënyrë tjetër</translation>
 <translation id="5094747076828555589">Ky server nuk mundi të dëshmonte se kjo është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga Chromium. Kjo mund të shkaktohet nga keqkonfigurimi ose një sulmues që po kap lidhjen tënde.</translation>
+<translation id="5096066272198024688">Informacionet e tua po ruhen</translation>
 <translation id="5097099694988056070">Statistikat e pajisjes si p.sh. përdorimin e njësisë CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 inç</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3783,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7003278537452757231">Sixhade dhe tapete</translation>
 <translation id="7003322000677139268">Pjesë dhe aksesorë për automjete</translation>
 <translation id="7004499039102548441">Skedat e fundit</translation>
+<translation id="700483187606163535">Informacionet e tua ruhen te <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> për <ph name="ACCOUNT" />. Mund t'i përdorësh ato nëpër produktet e Google për t'i plotësuar më shpejt formularët.</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
 <translation id="7009364359744329733">Kjo kartë nuk ofrohet për momentin. Provo përsëri më vonë.</translation>
 <translation id="7010658264061801199">Ushqime dhe pije</translation>

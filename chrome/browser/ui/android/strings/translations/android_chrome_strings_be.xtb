@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Вы выкарыстоўвалі на гэтым сайце</translation>
 <translation id="4214315110991671325">Калі вы дазволіце прымяняць файлы cookie, Chrome зможа выкарыстоўваць іх для перадзагрузкі.</translation>
+<translation id="421517251707893998">Націсніце "Замацаваць гэты ярлык".</translation>
 <translation id="4216511743389425832">Агучыць гэту старонку</translation>
 <translation id="4225725533026049334">Вы падпісаны</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Перазапусціце Chrome</translation>
 <translation id="6513924416597632811">Скапіраваць спасылку на старонку з вынікамі пошуку па запыце: <ph name="SEARCH_QUERY" />. Крыніца: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Спраўдзіць</translation>
+<translation id="6521218807522232085">Стварайце паролі, захоўвайце іх і кіруйце імі, каб лёгка ўваходзіць ва ўліковыя запісы</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
 <translation id="6532866250404780454">Не будуць паказвацца сайты, наведаныя вамі ў Chrome. Усе таймеры сайтаў будуць выдалены.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Увайдзіце на сайт.</translation>
 <translation id="6684809838922667136">Зрабіце браўзер Chrome лепшым</translation>
 <translation id="6689436252814043643">Рэжым чытання недаступны</translation>
+<translation id="669971068476817798">Націсніце "Захаваць".</translation>
 <translation id="6700279777779583398">Выбраныя вамі налады захаваны</translation>
 <translation id="670498945988402717">Праверка праводзілася ўчора</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Атрымліваць апісанні відарысаў?</translation>
 <translation id="7057969023583258980">Адкрыць усю гісторыю Chrome</translation>
 <translation id="7063006564040364415">Не ўдалося падключыцца да сервера сінхранізацыі.</translation>
+<translation id="7063106218165698546">Наладзьце групу ўкладак і націсніце "Гатова".</translation>
 <translation id="7071521146534760487">Кіраваць уліковым запісам</translation>
 <translation id="707155805709242880">Выберыце, што сінхранізаваць</translation>
 <translation id="7077143737582773186">SD-карта</translation>

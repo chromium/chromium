@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (plus sur les appareils synchronisés)}one{# site (plus sur les appareils synchronisés)}other{# sites (plus sur les appareils synchronisés)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoyer à Google les URL des pages que vous consultez présentant un risque pour votre sécurité</translation>
+<translation id="2877733045396505765">Les informations sélectionnées qui sont enregistrées sur cet appareil et dans votre compte Google <ph name="USER_EMAIL" /> seront supprimées.</translation>
 <translation id="2883151425485251736">Affichez et modifiez les thèmes masqués dans votre compte</translation>
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
@@ -1305,7 +1306,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
-<translation id="5724590854763964497">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsque des onglets sont partagés, leur contenu et leur URL sont envoyés à Google, mais ne sont pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez modifier ce paramètre à tout moment.</translation>
+<translation id="5724590854763964497">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsqu'un onglet est partagé, son contenu et son URL sont envoyés à Google mais ne sont pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5728700505257787410">Désolé, problème lors de la connexion à votre compte.</translation>
@@ -1878,6 +1879,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="775755486779745798">Saisir automatiquement le mois d'expiration <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Thème mauve</translation>
 <translation id="7759809451544302770">Facultatif</translation>
+<translation id="7763878244904387570">Les informations sélectionnées qui sont enregistrées sur cet appareil seront supprimées.</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmez la phrase secrète</translation>
 <translation id="7772948288262733182">Heureux de vous retrouver</translation>
@@ -2144,7 +2146,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8660600697590740984">Image Lens copiée</translation>
 <translation id="866266761389616183">Aïe aïe aïe</translation>
 <translation id="8663764600409216912">Vos mots de passe semblent difficiles à deviner</translation>
-<translation id="8664992138761940052">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsque des onglets sont partagés, leur contenu et leur URL sont envoyés à Google. Vous pouvez modifier ce paramètre à tout moment.</translation>
+<translation id="8664992138761940052">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsqu'un  onglet est partagé, son contenu et son URL sont envoyés à Google. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8672642291731179042">Traduire les pages</translation>
 <translation id="8672733398999596205">Tout activer</translation>

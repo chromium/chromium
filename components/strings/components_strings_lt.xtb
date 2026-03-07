@@ -217,6 +217,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
           <ph name="LIST_ITEM" />darbdavys arba mokykla;
           <ph name="LIST_ITEM" />interneto paslaugų teikėjas.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Dokumentą išdavusi valstybė</translation>
 <translation id="1337692097987160377">Bendrinti šį skirtuką</translation>
 <translation id="1339601241726513588">Registracijos domenas:</translation>
 <translation id="1340482604681802745">Paėmimo adresas</translation>
@@ -2480,6 +2481,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, norėdami ieškoti paspauskite skirtuką, tada – „Enter“</translation>
 <translation id="4930153903256238152">Didelė talpa</translation>
 <translation id="4930714375720679147">Įjungti</translation>
+<translation id="4931347573573430180">Išleidimo data</translation>
 <translation id="4932035752129140860">Tekstas, kurį įklijuojate ar pridedate, siunčiamas „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, jis gali būti nuskaitytas tikrinant, ar jame nėra neskelbtinų duomenų, ir saugomas atsižvelgiant į įmonės politiką bei matomas administratoriui.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Mokėkite naudodami „Pix“</translation>
@@ -3112,6 +3114,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5950901984834744590">Skustuvai ir skutimosi priemonės</translation>
 <translation id="5951495562196540101">Nepavyko prisiregistruoti su kliento paskyra (galima įsigyti licencijos paketą).</translation>
 <translation id="5952076224478208938">Gamintojas</translation>
+<translation id="5952196777020238475">Vairuotojo pažymėjimo numeris</translation>
 <translation id="5953516610448771166">Subtitrų realiuoju laiku funkcija šioje medijoje nepasiekiama. Jei norite gauti subtitrų, užblokuokite šios svetainės <ph name="CONTENT_SETTINGS" />.</translation>
 <translation id="5960795367348889467">Patvirtinimas</translation>
 <translation id="5963413905009737549">Skiltis</translation>
@@ -4616,6 +4619,7 @@ Papildoma išsami informacija:
 <translation id="8288320283441806607">Jei norite naudoti šią funkciją, įjunkite funkciją „Tobulinti paieškas ir naršymą“</translation>
 <translation id="8288807391153049143">Rodyti sertifikatą</translation>
 <translation id="8289355894181816810">Jei nesate tikri, ką tai reiškia, susisiekite su tinklo administratoriumi.</translation>
+<translation id="8291367150570302588">Asmens tapatybės kortelė</translation>
 <translation id="829335040383910391">garsas</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
 <translation id="8297545700510100061">Slapukai ir kiti svetainės duomenys naudojami siekiant jus prisiminti, pvz., prisijungiant ar suasmeninant skelbimus. Norėdami tvarkyti visų svetainių slapukus, žr. skiltį „<ph name="SETTINGS" />“.</translation>

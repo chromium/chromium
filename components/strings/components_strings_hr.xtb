@@ -1844,6 +1844,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="3928806096717999469">Uredi, otvara novi prozor</translation>
 <translation id="3930260846839546333">Ručne torbice</translation>
+<translation id="393417216277380082">Senzori kretanja i svjetlosni senzori</translation>
 <translation id="3937834511546249636">Obrambena industrija</translation>
 <translation id="3939773374150895049">Želite li koristiti WebAuthn umjesto CVC-a?</translation>
 <translation id="3941630233824954464">Omogući obaveznu ponovnu autentifikaciju</translation>
@@ -2531,6 +2532,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5018802455907704660">16 x 20 in</translation>
 <translation id="5019198164206649151">Sigurnosno pohranjivanje u neispravnom je stanju</translation>
 <translation id="5019293549442035120">Spremljene adrese možete koristiti na Googleovim proizvodima. Ta će se adresa spremiti na vaš Google račun, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">senzori kretanja i svjetlosni senzori</translation>
 <translation id="5019952743397118625">Postavljeno je pravilo <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> neće upravljati dostupnošću načina rada razvojnog programera na stranici proširenja.</translation>
 <translation id="5021500396464456616">Obratite se osobi koja vam je poslala vezu</translation>
 <translation id="5021557570875267742">Praćenje cijena pomoću Chromea</translation>
@@ -2574,6 +2576,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5093232627742069661">Cik-cak presavijanje</translation>
 <translation id="5093417502834168387">Imate li probleme s prijavom? Pokušajte na neki drugi način</translation>
 <translation id="5094747076828555589">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chromium smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
+<translation id="5096066272198024688">Spremanje podataka...</translation>
 <translation id="5097099694988056070">Statistika uređaja kao što je upotreba procesora/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 inča</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3783,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="7003278537452757231">Otirači i sagovi</translation>
 <translation id="7003322000677139268">Rezervni automobilski dijelovi i oprema</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="700483187606163535">Vaši se podaci spremaju na uslugu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za račun <ph name="ACCOUNT" />. Možete ih upotrebljavati na Googleovim proizvodima za brže popunjavanje obrazaca.</translation>
 <translation id="7006930604109697472">Svejedno pošalji</translation>
 <translation id="7009364359744329733">Ova kartica trenutačno nije dostupna. Pokušajte ponovno kasnije.</translation>
 <translation id="7010658264061801199">Hrana i piće</translation>

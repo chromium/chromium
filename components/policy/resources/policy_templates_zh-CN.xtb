@@ -12057,6 +12057,19 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果未设置此政策，则“键盘焦点突出显示”最初会处于停用状态，但用户可以随时启用该功能。</translation>
+<translation id="9037098514292099199">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。
+
+此政策仅会将某个扩展程序 ID 或某个更新网址映射至其对应的特定设置。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。
+
+此政策可以覆盖旧版政策中针对各扩展程序的配置。
+
+请注意，来自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的任何按 ID 配置的扩展程序设置都只会从 <ph name="DEFAULT_SCOPE" /> 默认设置继承“installation_mode”和“update_url”。它不会继承任何其他属性。对于更新网址，相应配置会应用于具有在扩展程序清单 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy) 中注明的确切更新网址的扩展程序。如果“override_update_url” flag 设为 true，系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址安装并更新扩展程序。如果“update_url”是 Chrome 应用商店网址，“override_update_url” flag 会被忽略。
+
+只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、已加入 <ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
+
+注意：此政策仅适用于支持扩展程序的平台。</translation>
 <translation id="9038839118379817310">启用 Wi-Fi</translation>
 <translation id="9039822628127365650">设置此政策后，它将指定多久之后用户将自动退出，同时终止会话。用户可以通过系统任务栏中显示的倒数定时器来了解剩余的时间。
 
@@ -12079,21 +12092,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9051019223077908578">配置会在登录屏幕上安装的应用和扩展程序的列表</translation>
 <translation id="9053841574218808519">始终运行未过时的插件</translation>
 <translation id="9055866143096316150">将屏幕唤醒锁定请求降级为系统唤醒锁定请求</translation>
-<translation id="9056262797461453462">通过设置 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。管理员可以列出要屏蔽的网址格式。如果未设置此政策，浏览器将不会屏蔽任何网址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定义 1,000 个例外网址。了解如何设置网址格式 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
-
-注意：此政策不适用于在页面内通过 JavaScript 动态加载数据的网址。如果您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载该网页。另外，此政策不会阻止网页使用 JavaScript History API 将多功能框中显示的网址更新为已屏蔽的网址。
-
-从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏或小书签等处输入的 JavaScript 网址。
-
-从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-注意：屏蔽内部 chrome://* 网址和 chrome-untrusted://* 网址可能会导致意外错误，在某些情况下也可能会被规避。与其屏蔽某些内部网址，不如查看是否有更具体的政策可供使用。例如：
-
-- 使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />，而非屏蔽 chrome://settings/certificates。
-
-- 使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />，而非屏蔽 chrome-trusted://crosh。
-
-- 使用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 或 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策之一，而非屏蔽 devtools://*。</translation>
 <translation id="9057159618445405645">使用默认的 Chrome 浏览器行为</translation>
 <translation id="9061455386353325110">指定用户能否让 <ph name="PRODUCT_NAME" /> 使用生成式 AI 更好地了解表单并帮助他们填写更多字段。
 

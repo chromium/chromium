@@ -746,6 +746,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Du har brukt kontoen på dette nettstedet</translation>
 <translation id="4214315110991671325">Hvis du tillater informasjonskapsler, kan Chrome bruke dem ved forhåndslasting.</translation>
+<translation id="421517251707893998">Trykk på Fest denne snarveien</translation>
 <translation id="4216511743389425832">Lytt til denne siden</translation>
 <translation id="4225725533026049334">Følger</translation>
 <translation id="4225895483398857530">Verktøylinje-snarvei</translation>
@@ -1325,6 +1326,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6508722015517270189">Start Chrome på nytt</translation>
 <translation id="6513924416597632811">Kopier linken til søkeresultatsiden for <ph name="SEARCH_QUERY" />. Kilde: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Bekreft</translation>
+<translation id="6521218807522232085">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="652948702951888897">Chrome-logg</translation>
 <translation id="6532866250404780454">Nettsteder du besøker i Chrome, vises ikke. Alle tidtakere for nettsteder blir slettet.</translation>
@@ -1373,6 +1375,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6684262542644248484">Logg på et nettsted</translation>
 <translation id="6684809838922667136">Gjør Chrome bedre</translation>
 <translation id="6689436252814043643">Lesemodus er ikke tilgjengelig</translation>
+<translation id="669971068476817798">Trykk på Lagre</translation>
 <translation id="6700279777779583398">Valgene er lagret</translation>
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
@@ -1482,6 +1485,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7054588988317389591">Vil du ha bildebeskrivelser?</translation>
 <translation id="7057969023583258980">Åpne hele Chrome-loggen</translation>
 <translation id="7063006564040364415">Kunne ikke koble til synkroniseringstjeneren.</translation>
+<translation id="7063106218165698546">Tilpass fanegruppen, og trykk på Ferdig</translation>
 <translation id="7071521146534760487">Administrer kontoen</translation>
 <translation id="707155805709242880">Velg hva som skal synkroniseres, nedenfor</translation>
 <translation id="7077143737582773186">SD-kort</translation>

@@ -1845,6 +1845,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="3928806096717999469">Uređivanje, otvara se u novom prozoru</translation>
 <translation id="3930260846839546333">Tašne i torbice</translation>
+<translation id="393417216277380082">Senzori kretanja i svjetlosti</translation>
 <translation id="3937834511546249636">Odbrambena industrija</translation>
 <translation id="3939773374150895049">Koristiti mrežnu provjeru autentičnosti umjesto CVC-a?</translation>
 <translation id="3941630233824954464">Omogućite obaveznu ponovnu autentifikaciju</translation>
@@ -2532,6 +2533,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5018802455907704660">16 x 20 in</translation>
 <translation id="5019198164206649151">Pohrana za sigurnosnu kopiju je u lošem stanju</translation>
 <translation id="5019293549442035120">Možete koristiti sačuvane adrese na Googleovim proizvodima. Adresa će se sačuvati na Google računu <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">senzori kretanja i svjetlosti</translation>
 <translation id="5019952743397118625">Postavljeno je pravilo "<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />". <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> neće upravljati dostupnošću načina rada za programere na stranici s ekstenzijama.</translation>
 <translation id="5021500396464456616">Kontaktirajte pošiljaoca ovog linka</translation>
 <translation id="5021557570875267742">Pratite cijene uz Chrome</translation>
@@ -2575,6 +2577,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5093232627742069661">Z-presavijanje</translation>
 <translation id="5093417502834168387">Imate li poteškoće s prijavom? Pokušajte na drugi način</translation>
 <translation id="5094747076828555589">Ovaj server ne može dokazati da pripada domeni <ph name="DOMAIN" />; Chromium ne vjeruje njegovoj sigurnosnoj potvrdi. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
+<translation id="5096066272198024688">Pohranjivanje informacija…</translation>
 <translation id="5097099694988056070">Statistika uređaja kao što je iskorištenost CPU-a/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="7003278537452757231">Staze i tepisi</translation>
 <translation id="7003322000677139268">Dijelovi i dodatna oprema za vozila</translation>
 <translation id="7004499039102548441">Nedavne kartice</translation>
+<translation id="700483187606163535">Informacije se pohranjuju u aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />. Možete ih koristiti na Googleovim proizvodima da brže popunjavate obrasce.</translation>
 <translation id="7006930604109697472">Svejedno pošalji</translation>
 <translation id="7009364359744329733">Kartica trenutno nije dostupna. Pokušajte ponovo kasnije.</translation>
 <translation id="7010658264061801199">Hrana i piće</translation>

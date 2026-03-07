@@ -1845,6 +1845,7 @@
 <translation id="3927932062596804919">अस्वीकार करें</translation>
 <translation id="3928806096717999469">बदलाव करें. यह लिंक नई विंडो में खुलेगा</translation>
 <translation id="3930260846839546333">हैंडबैग और पर्स</translation>
+<translation id="393417216277380082">मोशन और लाइट सेंसर</translation>
 <translation id="3937834511546249636">डिफ़ेंस इंडस्ट्री</translation>
 <translation id="3939773374150895049">क्या आप कार्ड वेरीफ़िकेशन कोड (सीवीसी) के बजाय WebAuthn का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="3941630233824954464">फिर से पुष्टि करने की ज़रूरी प्रक्रिया चालू करें</translation>
@@ -2532,6 +2533,7 @@
 <translation id="5018802455907704660">16 x 20 इंच</translation>
 <translation id="5019198164206649151">बैकिंग संग्रह खराब स्थिति में है</translation>
 <translation id="5019293549442035120">सेव किए गए पतों का इस्तेमाल, Google के सभी प्रॉडक्ट के लिए किया जा सकता है. यह पता, आपके Google खाते <ph name="USER_EMAIL" /> में सेव किया जाएगा.</translation>
+<translation id="5019819206251569004">मोशन और लाइट सेंसर</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> नीति सेट है. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, एक्सटेंशन पेज पर डेवलपर मोड की उपलब्धता को कंट्रोल नहीं करेगी.</translation>
 <translation id="5021500396464456616">जिस व्यक्ति ने यह लिंक भेजा है उससे संपर्क करें</translation>
 <translation id="5021557570875267742">Chrome की मदद से कीमतों को ट्रैक करें</translation>
@@ -2575,6 +2577,7 @@
 <translation id="5093232627742069661">ज़ी-फ़ोल्ड</translation>
 <translation id="5093417502834168387">साइन इन करने में समस्या आ रही है? कोई दूसरा तरीका आज़माएं</translation>
 <translation id="5094747076828555589">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र Chromium द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
+<translation id="5096066272198024688">आपकी जानकारी सेव की जा रही है...</translation>
 <translation id="5097099694988056070">डिवाइस के आंकड़े जैसे कि सीपीयू (CPU)/RAM का इस्तेमाल</translation>
 <translation id="5097468150760963273">27 x 39 इंच</translation>
 <translation id="5097501891273180634">ए2</translation>
@@ -3781,6 +3784,7 @@
 <translation id="7003278537452757231">दरी और कालीन</translation>
 <translation id="7003322000677139268">वाहनों के पुर्ज़े और ऐक्सेसरी</translation>
 <translation id="7004499039102548441">हाल के टैब</translation>
+<translation id="700483187606163535"><ph name="ACCOUNT" /> के लिए आपकी जानकारी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है. इसका इस्तेमाल, Google की सभी सेवाओं में फ़ॉर्म तेज़ी से भरने के लिए किया जा सकता है.</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7009364359744329733">फ़िलहाल, यह कार्ड उपलब्ध नहीं है. कृपया फिर से कोशिश करें.</translation>
 <translation id="7010658264061801199">खाने-पीने की चीज़ें</translation>

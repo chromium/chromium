@@ -1843,6 +1843,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3927932062596804919">Ablehnen</translation>
 <translation id="3928806096717999469">Bearbeiten, öffnet ein neues Fenster</translation>
 <translation id="3930260846839546333">Handtaschen und Geldbörsen</translation>
+<translation id="393417216277380082">Bewegungs- und Lichtsensoren</translation>
 <translation id="3937834511546249636">Verteidigungsindustrie</translation>
 <translation id="3939773374150895049">WebAuthn anstelle des CVCs verwenden?</translation>
 <translation id="3941630233824954464">Obligatorische erneute Authentifizierung aktivieren</translation>
@@ -2530,6 +2531,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5018802455907704660">16 × 20 Zoll</translation>
 <translation id="5019198164206649151">Sicherungsspeicher ist fehlerhaft.</translation>
 <translation id="5019293549442035120">Du kannst gespeicherte Adressen in verschiedenen Google-Produkten verwenden. Diese Adresse wird in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert.</translation>
+<translation id="5019819206251569004">Bewegungs- und Lichtsensoren</translation>
 <translation id="5019952743397118625">Die Richtlinie „<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />“ ist festgelegt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> steuert nicht die Verfügbarkeit des Entwicklermodus auf der Seite „Erweiterungen“.</translation>
 <translation id="5021500396464456616">Kontaktiere die Person, die diesen Link gesendet hat</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
@@ -2573,6 +2575,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5093232627742069661">Z-Faltung</translation>
 <translation id="5093417502834168387">Anmeldeprobleme? Andere Option wählen</translation>
 <translation id="5094747076828555589">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chromium als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
+<translation id="5096066272198024688">Informationen werden gespeichert…</translation>
 <translation id="5097099694988056070">Gerätestatistiken, z. B. CPU/RAM-Nutzung</translation>
 <translation id="5097468150760963273">27 x 39 Zoll</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3779,6 +3782,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7003278537452757231">Vorleger und Teppiche</translation>
 <translation id="7003322000677139268">Ersatz- und Zubehörteile für Kraftfahrzeuge</translation>
 <translation id="7004499039102548441">Zuletzt geöffnete Tabs</translation>
+<translation id="700483187606163535">Deine Informationen für <ph name="ACCOUNT" /> werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert. Du kannst sie in allen Google-Produkten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="7006930604109697472">Trotzdem senden</translation>
 <translation id="7009364359744329733">Diese Karte ist momentan nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="7010658264061801199">Essen und Trinken</translation>

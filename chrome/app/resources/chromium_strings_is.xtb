@@ -10,6 +10,7 @@
 
 Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingum verða ekki vistaðar.</translation>
 <translation id="1083934481477628225">Foreldri þitt hefur slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chromium</translation>
+<translation id="1090946077924227754">Til að leita að tilteknum eiginleika eða viðbót Chromium skaltu slá flýtileiðina inn í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="1104942323762546749">Chromium vill flytja út aðgangsorðin þín. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="112640046208448578">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar myndaleit er skjámynd af síðunni send til þjónsins. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium er sjálfgefni vafrinn þinn</translation>
@@ -27,6 +28,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1262876892872089030">Meðan þessi flipi var óvirkur var losað um minni til að gera Chromium hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
 <translation id="1265577313130862557">Chromium lokaði á þetta niðurhal vegna þess að skráin er hættuleg</translation>
 <translation id="126567311906253476">Þegar þú skráir þig inn í Google-þjónustu á borð við Gmail eða YouTube með <ph name="USER_EMAIL" /> geturðu skráð þig sjálfkrafa inn í Chromium með sama reikningi</translation>
+<translation id="1287534462498555020">Fáðu Chromium í símann þinn</translation>
 <translation id="1290883685122687410">Villa við uppsetningu: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Settu upp nýja Chromium prófílinn þinn</translation>
 <translation id="132092532143527429">Prófaðu með Gemini í Chromium</translation>
@@ -378,11 +380,11 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5174969993834422967">Þú lokar yfirleitt á tilkynningar. Smelltu á tilkynningatáknið í hægra horni veffangastikunnar til að leyfa vefsvæðinu að senda þér tilkynningar.</translation>
 <translation id="5174983315706567306">Ekki nægilegt diskpláss.</translation>
 <translation id="5187123684706427865">Chromium-reikningur þarfnast endurauðkenningar</translation>
-<translation id="5219681158518957165">Notaðu ráðlagðar vafrastillingar</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5231355151045086930">Skrá út af Chromium</translation>
 <translation id="5234764350956374838">Hunsa</translation>
 <translation id="5254739261293693943">Spyrja út í þetta vídeó</translation>
+<translation id="5276305953263010518">Sæktu Chromium-forritið til að vista aðgangsorð á ferðinni</translation>
 <translation id="5277894862589591112">Endurræstu Chromium til að breytingarnar taki gildi</translation>
 <translation id="5286907366254680517">Greint</translation>
 <translation id="5289287148052354622">Sækja Chromium-forritið</translation>
@@ -695,6 +697,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8522801943730206384">Chromium getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="8548787790260785208">Fáðu viðvörun ef Chromium finnur eitt aðgangsorðanna þinna í almennu öryggisbroti</translation>
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Sumir eiginleikar og viðbætur Chromium eru með flýtileiðir. Þú getur valið að kveikja aftur á þeim.</translation>
 <translation id="8556420416730706394">Þú getur fest myndaleit til að hafa greiðan aðgang að henni: Smelltu á hnappinn „Festa“ efst í hliðarglugganum</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8568283329061645092">Chromium getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google reikningnum þínum</translation>
@@ -730,6 +733,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8988036198400390003">Stjórna Chromium-prófílum</translation>
 <translation id="9019929317751753759">Til að gera Chromium öruggara höfum við slökkt á eftirfarandi viðbót sem ekki er á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
 <translation id="904366664621834601">Chromium lokaði á þetta niðurhal vegna þess að safnskráin getur innihaldið aðrar skrár sem geta falið spilliforrit</translation>
+<translation id="9053882453960391422">Haltu aðgangsorðunum þínum, bókamerkjum og ferli fullkomlega samstilltum á milli tækja. Fáðu greiðan aðgang að eiginleikunum sem þú þekkir og elskar með því að uppfæra sjálfgefna vafrann þinn í Chromium. Chromium verður festur við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="9062666675513499497">Skráðu þig inn í Chromium þegar þú skráir þig inn í aðrar Google-þjónustur</translation>
 <translation id="9078733879136747090">Chromium var lokað sjálfkrafa</translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>

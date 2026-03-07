@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2371084566192454134">Flipar og flipahópar</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_ONE" /> flipa.}one{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}other{Minnka flipahópinn „<ph name="TITLE_OF_GROUP" />“ sem inniheldur <ph name="TABS_COUNT_MANY" /> flipa.}}</translation>
+<translation id="2476179388576975626">Mynd í mynd</translation>
 <translation id="2498435670446402865">Endurnefna flipahóp</translation>
 <translation id="2536366509642644298">Flipahóparnir „<ph name="TAB_GROUP_NAME_1" />“ og „<ph name="TAB_GROUP_NAME_2" />“ eru ekki tiltækir lengur</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Draga saman <ph name="TABS_COUNT_ONE" /> flipa.}one{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>

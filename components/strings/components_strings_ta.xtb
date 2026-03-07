@@ -1841,6 +1841,7 @@
 <translation id="3927932062596804919">மறு</translation>
 <translation id="3928806096717999469">மாற்றலாம், புதிய சாளரத்தைத் திறக்கும்</translation>
 <translation id="3930260846839546333">கைப்பைகள் &amp; பர்ஸ்கள்</translation>
+<translation id="393417216277380082">மோஷன் மற்றும் லைட் சென்சார்கள்</translation>
 <translation id="3937834511546249636">பாதுகாப்புத் துறை</translation>
 <translation id="3939773374150895049">CVCக்கு பதிலாக WebAuthnனைப் பயன்படுத்தவா?</translation>
 <translation id="3941630233824954464">கட்டாய மறு அடையாளச் சரிபார்ப்பை இயக்கும்</translation>
@@ -2528,6 +2529,7 @@
 <translation id="5018802455907704660">16 x 20 இன்ச்</translation>
 <translation id="5019198164206649151">தவறான நிலையில் மீட்பு சேமிப்பு உள்ளது</translation>
 <translation id="5019293549442035120">சேமிக்கப்படும் முகவரிகளை Google தயாரிப்புகள் முழுவதிலும் பயன்படுத்தலாம். இந்த முகவரி உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) சேமிக்கப்படும்.</translation>
+<translation id="5019819206251569004">மோஷன் மற்றும் லைட் சென்சார்கள்</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> கொள்கை அமைக்கப்பட்டுள்ளது. நீட்டிப்புகள் பக்கத்தில் டெவெலப்பர் பயன்முறை கிடைக்கும் நிலையை <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> கட்டுப்படுத்தாது.</translation>
 <translation id="5021500396464456616">இந்த இணைப்பை அனுப்பியவரைத் தொடர்புகொள்ளவும்</translation>
 <translation id="5021557570875267742">Chrome மூலம் விலைகளைக் கண்காணித்தல்</translation>
@@ -2571,6 +2573,7 @@
 <translation id="5093232627742069661">Z-ஃபோல்டு</translation>
 <translation id="5093417502834168387">உள்நுழைவதில் சிக்கலா? வேறு வழியில் முயலுங்கள்</translation>
 <translation id="5094747076828555589">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழை Chromium நம்பவில்லை. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
+<translation id="5096066272198024688">உங்கள் தகவல்களைச் சேமிக்கிறது...</translation>
 <translation id="5097099694988056070">CPU/RAM உபயோகம் போன்ற சாதனப் புள்ளிவிவரங்கள்</translation>
 <translation id="5097468150760963273">27 x 39 இன்ச்</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3776,6 +3779,7 @@
 <translation id="7003278537452757231">தரைவிரிப்புகள் &amp; கம்பளங்கள்</translation>
 <translation id="7003322000677139268">வாகன உதிரிபாகங்கள் மற்றும் துணைக்கருவிகள்</translation>
 <translation id="7004499039102548441">சமீபத்திய தாவல்கள்</translation>
+<translation id="700483187606163535">உங்கள் தகவல் <ph name="ACCOUNT" /> கணக்கின் <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் சேமிக்கப்படும். படிவங்களை விரைவாக நிரப்ப Google தயாரிப்புகள் அனைத்திலும் இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="7006930604109697472">பரவாயில்லை அனுப்பு</translation>
 <translation id="7009364359744329733">இந்தக் கார்டைத் தற்போது பயன்படுத்த முடியாது. பிறகு முயலவும்.</translation>
 <translation id="7010658264061801199">உணவு மற்றும் பானம்</translation>

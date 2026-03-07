@@ -21,7 +21,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="100881991356161927">サイト名</translation>
-<translation id="1009663062402466586">ゲーム操作キーをご利用いただけるようになりました</translation>
 <translation id="1010136228650201057">ユーザーデータの暗号化</translation>
 <translation id="1010225406377140704">送信者に連絡して新しいリンクをリクエストしてください</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{ページが応答しません}other{ページが応答しません}}</translation>
@@ -266,7 +265,6 @@
 <translation id="1168704243733734901">最近の AI テーマ <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">前のページについて Google に質問する</translation>
 <translation id="116896278675803795">選択したコンテンツに合わせて言語を自動的に変更する</translation>
-<translation id="1169266963600477608">ゲーム操作キー</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> には機密データまたは危険なデータが含まれています。管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> が HID デバイスへの接続を要求しています</translation>
 <translation id="1172750555846831341">短辺とじ</translation>
@@ -1194,7 +1192,6 @@
 <translation id="1795438342141780114">カーソルを中央にリセットする</translation>
 <translation id="1796460466266263589">Gemini を引き続き使用するには、本人確認を行ってください</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
-<translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
 <translation id="1798726622311813209">クレジット カードとデビットカード</translation>
 <translation id="1799852120691957794">前回のセッションからウィンドウを復元できません</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
@@ -1222,7 +1219,6 @@
 <translation id="1813828404076816564">共有タブグループ機能に関するフィードバックを送信するには、フィードバック ボタンを選択します</translation>
 <translation id="18139523105317219">EDI パーティ名</translation>
 <translation id="1815083418640426271">プレーン テキストとして貼り付ける</translation>
-<translation id="1815097521077272760">このゲームのキーボード コントロールをお試しください。</translation>
 <translation id="181577467034453336">他 <ph name="NUMBER_OF_VIEWS" /> 件...</translation>
 <translation id="1816036116994822943">キーボードのスキャン速度</translation>
 <translation id="1817871734039893258">Microsoft ファイル回復</translation>
@@ -1420,7 +1416,6 @@
 <translation id="1941553344801134989">バージョン: <ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">お使いのアカウントを Microsoft OneDrive に自動的に接続するよう管理者によって設定されていますが、エラーが発生しました。</translation>
 <translation id="194174710521904357">このサイトにサードパーティ Cookie の使用を一時的に許可しました。これによりブラウジングの保護の強度は低下しますが、サイトが適切に機能する可能性が高くなります。</translation>
-<translation id="1941995177877935582">キーのマッピングを表示</translation>
 <translation id="1942128823046546853">すべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
 <translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1944535645109964458">利用可能なパスキーがありません</translation>
@@ -1908,7 +1903,6 @@
 <translation id="2278668501808246459">コンテナ マネージャーを起動しています</translation>
 <translation id="2280486287150724112">右余白</translation>
 <translation id="228059581448666199">マウスを左クリックする</translation>
-<translation id="2281863813036651454">左マウスクリック</translation>
 <translation id="2282146716419988068">GPU プロセス</translation>
 <translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2283599456633275070">旅行</translation>
@@ -3732,7 +3726,6 @@
 <translation id="3512465804715993309">アダプティブ ハイライト表示</translation>
 <translation id="3513019849832307207">参加して開く</translation>
 <translation id="3513563267917474897">色相スライダー <ph name="MIN_VALUE" />～<ph name="MAX_VALUE" /></translation>
-<translation id="3514335087372914653">ゲームの管理</translation>
 <translation id="3514647716686280777">標準のセキュリティ機能で保護します。危険なウェブサイト、ダウンロード、拡張機能からの保護を強化するには、Chrome の設定でセーフ ブラウジング保護強化機能をオンにしてください。</translation>
 <translation id="3514681096978190000">このアーカイブ ファイルには、マルウェアが潜んでいる可能性がある別のファイルが含まれています</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
@@ -4767,7 +4760,6 @@
 <translation id="4193575319002689239">カードを表示</translation>
 <translation id="419427585139779713">音節単位で入力</translation>
 <translation id="4195001808989442226">Steam for Chromebook（ベータ版）を開けません</translation>
-<translation id="4195378859392041564">カスタマイズするには、マウスで任意のキーをクリックしてから、キーボードのキーを押してください</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
@@ -4813,7 +4805,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
 <translation id="4231053948789591973">キャストは現在一時停止しています。いつでも画面のキャストを再開または停止できます。</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="4231141543165771749">ゲーム操作キーを閉じる</translation>
 <translation id="4231231258999726714">Steam for Chromebook を設定しています</translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4232376164796433044">パスワードと自動入力</translation>
@@ -4861,7 +4852,6 @@
 <translation id="4258348331913189841">ファイル システム</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{グループを保持}other{グループを保持}}</translation>
 <translation id="4259388776256904261">しばらくお待ちください</translation>
-<translation id="4260699894265914672">カスタマイズするには、キーボードのキーを押してください</translation>
 <translation id="4261429981378979799">拡張機能の権限</translation>
 <translation id="4262004481148703251">警告を閉じる</translation>
 <translation id="4263223596040212967">キーボード レイアウトを確認してから、もう一度お試しください。</translation>
@@ -5397,7 +5387,6 @@
 <translation id="4628762811416793313">Linux コンテナの設定を完了できませんでした。もう一度お試しください。</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> のプロフィールを開く</translation>
 <translation id="4629803160911640220">信頼済み</translation>
-<translation id="4631572301265416783">最近のチャット</translation>
 <translation id="4631637535315947773">最近使用していないため、よくアクセスするサイトのショートカットを削除しました</translation>
 <translation id="4631955550884380853">音声フォーカス</translation>
 <translation id="4632655012900268062">カードをカスタマイズする</translation>
@@ -5824,7 +5813,6 @@
 <translation id="491779113051926205">ChromeOS トラフィック カウンタ</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> が拡張機能「<ph name="EXTENSION_NAME" />」との通信をリクエストしています</translation>
 <translation id="4918086044614829423">同意する</translation>
-<translation id="4918134162946436591">ヒントをオーバーレイ表示する</translation>
 <translation id="4918762404810341788">コピーして開く</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>
 <translation id="4921348630401250116">テキスト読み上げ</translation>
@@ -6181,6 +6169,7 @@
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> の Google パスワード マネージャー</translation>
 <translation id="5181551096188687373">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
+<translation id="5182671122927417841">拡張機能を無効にする</translation>
 <translation id="5183344263225877832">HID デバイスの権限をすべてリセットしますか？</translation>
 <translation id="5184063094292164363">JavaScript コンソール(&amp;J)</translation>
 <translation id="5184209580557088469">このユーザー名のチケットはすでに設定されています</translation>
@@ -6716,7 +6705,6 @@
 <translation id="5551573675707792127">キーボードとテキスト入力</translation>
 <translation id="5551753770140674714">データは同期パスフレーズで暗号化されています。暗号化の対象に Google Pay のお支払い方法と住所は含まれません。</translation>
 <translation id="5553089923092577885">証明書ポリシーのマッピング</translation>
-<translation id="5554240068773209752">コントロールをカスタマイズするにはここをクリックしてください</translation>
 <translation id="5554403733534868102">今後アップデートを待つ必要はありません</translation>
 <translation id="5554489410841842733">このアイコンは、ページで拡張機能が使用できる場合に表示されます。</translation>
 <translation id="5554720593229208774">メール認証局</translation>
@@ -7478,7 +7466,6 @@
 <translation id="6078752646384677957">マイクと音声のレベルを確認してください。</translation>
 <translation id="608029822688206592">ネットワークが見つかりません。SIM を挿入してもう一度お試しください。</translation>
 <translation id="6080689532560039067">システムの時刻の確認</translation>
-<translation id="6082877069782862752">キーのマッピング</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
 <translation id="6086350918562605938">システムあたりのアップデータ</translation>
@@ -7964,7 +7951,6 @@
 <translation id="641899100123938294">新しいデバイスをスキャンする</translation>
 <translation id="6419524191360800346">Debian 11（Bullseye）にアップグレードできます</translation>
 <translation id="6419546358665792306">パッケージ化されていない拡張機能を読み込む</translation>
-<translation id="6422467884169339421">最近のチャット</translation>
 <translation id="6423685703035190381">スマートフォンで価格トラッキングのアラートを受け取る</translation>
 <translation id="642469772702851743">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は所有者によってロックされています。</translation>
 <translation id="6425556984042222041">テキスト読み上げの速度</translation>
@@ -8723,6 +8709,7 @@
 <translation id="6935286146439255109">用紙トレイが見つかりません</translation>
 <translation id="6938386202199793006">保存済みのプリンタは 1 件です。</translation>
 <translation id="6938606182859551396">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で受信するには、スマートフォンの画面の指示に沿って、Google Play 開発者サービスへの通知アクセスを許可してください。</translation>
+<translation id="6941514251635934269">このドキュメントについて質問する</translation>
 <translation id="694168622559714949">デフォルトの言語は管理者が設定しており、変更できません。</translation>
 <translation id="6941937518557314510">証明書で <ph name="HOST_NAME" /> の認証を受けるには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="6943060957016121200">インスタント テザリングを有効にする</translation>
@@ -8821,7 +8808,6 @@
 <translation id="7003339318920871147">ウェブ データベース</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 件のファイル}other{{COUNT} 件のファイル}}</translation>
 <translation id="7003644704445046755">高品質の <ph name="LANGUAGE" /> 音声ファイルをダウンロードしました</translation>
-<translation id="7003705861991657723">アルファ版</translation>
 <translation id="7003723821785740825">デバイスのロックをすばやく解除する方法を設定できます</translation>
 <translation id="7003844668372540529">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />）</translation>
 <translation id="7004402701596653846">サイトに MIDI の使用が許可されています</translation>
@@ -9618,7 +9604,6 @@
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> の同期</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7561759921596375678">音量をオンにする</translation>
-<translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="7563576896417108627"><ph name="APP_NAME" /> をカスタマイズして制御します。アップデートが利用可能です。</translation>
 <translation id="756445078718366910">ブラウザ ウィンドウを開く</translation>
 <translation id="7564847347806291057">プロセスを終了</translation>
@@ -9936,7 +9921,6 @@
 <translation id="7769709635093101687">一時停止のキーボード ショートカット</translation>
 <translation id="7769748505895274502">最近閉じたタブを折りたたむ</translation>
 <translation id="7770072242481632881">サイドパネル セレクタ</translation>
-<translation id="7770450735129978837">右マウスクリック</translation>
 <translation id="7770612696274572992">他のデバイスから画像がコピーされました</translation>
 <translation id="7770827449915784217">ファームウェアは最新の状態です</translation>
 <translation id="7771452384635174008">レイアウト</translation>
@@ -10115,7 +10099,6 @@
 <translation id="7900950034255258543">デバイスを安全に使用できるようにするため、組織ではオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認することができます。</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7901728443188947649">画像を作成</translation>
-<translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
 <translation id="7903481341948453971">パスワードの入力時に画面ロックを使用する</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">カタカナ</translation>
@@ -11008,6 +10991,7 @@
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8482077254400484047">ここでアクティブでないタブのデザインを管理します</translation>
+<translation id="8482446859919078896">これらについて質問する</translation>
 <translation id="8486666913807228950">理由: 反転ルール <ph name="REVERT_RULE" /> が「次で強制的に開く」のリストに含まれています。</translation>
 <translation id="8487678622945914333">拡大</translation>
 <translation id="8487699605742506766">アクセス ポイント</translation>

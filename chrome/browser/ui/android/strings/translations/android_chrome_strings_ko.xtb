@@ -746,6 +746,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 이 사이트에서 사용</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
+<translation id="421517251707893998">이 바로가기 고정을 탭합니다.</translation>
 <translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
 <translation id="4225725533026049334">팔로우 중</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
@@ -1325,6 +1326,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6508722015517270189">Chrome 다시 시작하기</translation>
 <translation id="6513924416597632811"><ph name="SEARCH_QUERY" />에 대한 검색 결과 페이지 링크를 복사합니다. 출처: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">확인</translation>
+<translation id="6521218807522232085">쉽게 로그인할 수 있도록 비밀번호를 만들고, 저장하고, 관리하세요</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6532866250404780454">Chrome에서 방문한 사이트가 표시되지 않습니다. 모든 사이트 타이머가 삭제됩니다.</translation>
@@ -1373,6 +1375,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6684262542644248484">웹사이트에 로그인합니다.</translation>
 <translation id="6684809838922667136">Chrome 개선에 참여</translation>
 <translation id="6689436252814043643">읽기 모드를 사용할 수 없습니다.</translation>
+<translation id="669971068476817798">저장을 탭합니다.</translation>
 <translation id="6700279777779583398">선택사항 저장됨</translation>
 <translation id="670498945988402717">어제 확인됨</translation>
 <translation id="6710213216561001401">이전</translation>
@@ -1482,6 +1485,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7054588988317389591">이미지 설명을 표시하시겠습니까?</translation>
 <translation id="7057969023583258980">전체 Chrome 방문 기록 열기</translation>
 <translation id="7063006564040364415">동기화 서버에 연결할 수 없습니다.</translation>
+<translation id="7063106218165698546">탭 그룹을 맞춤설정하고 완료를 탭합니다.</translation>
 <translation id="7071521146534760487">계정 관리</translation>
 <translation id="707155805709242880">아래에서 동기화할 대상을 선택하세요.</translation>
 <translation id="7077143737582773186">SD 카드</translation>

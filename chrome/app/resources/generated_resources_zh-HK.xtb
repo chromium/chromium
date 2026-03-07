@@ -21,7 +21,6 @@
 <translation id="1008261151167010035">「<ph name="BRAND" />」會記住您的登入方式，並盡可能自動登入。停用此功能後，系統每次都會詢問您是否要登入。</translation>
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="100881991356161927">網站名稱</translation>
-<translation id="1009663062402466586">您現可使用遊戲控制項</translation>
 <translation id="1010136228650201057">使用者資料加密</translation>
 <translation id="1010225406377140704">聯絡發送者索取新連結</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{網頁沒有回應}other{網頁沒有回應}}</translation>
@@ -266,7 +265,6 @@
 <translation id="1168704243733734901">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係<ph name="STYLE" />，情境係<ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">問 Google 有關上一個頁面的問題</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
-<translation id="1169266963600477608">遊戲控制項</translation>
 <translation id="1169435433292653700">「<ph name="FILE_NAME" />」含有敏感或危險的內容。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> 要求連接 HID 裝置</translation>
 <translation id="1172750555846831341">短邊翻頁</translation>
@@ -1203,7 +1201,6 @@
 <translation id="1795438342141780114">將游標重設為至螢幕中央</translation>
 <translation id="1796460466266263589">驗證身分以繼續使用 Gemini</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
-<translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1798726622311813209">信用卡和扣帳卡</translation>
 <translation id="1799852120691957794">無法從上一個工作階段還原視窗</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
@@ -1231,7 +1228,6 @@
 <translation id="1813828404076816564">選取意見反映按鈕，就共用分頁群組功能提供意見</translation>
 <translation id="18139523105317219">EDI 合作對象名稱</translation>
 <translation id="1815083418640426271">以純文字貼上</translation>
-<translation id="1815097521077272760">您已獲邀試用此遊戲的鍵盤控制功能。</translation>
 <translation id="181577467034453336">還有 <ph name="NUMBER_OF_VIEWS" /> 個畫面…</translation>
 <translation id="1816036116994822943">鍵盤掃瞄速度</translation>
 <translation id="1817871734039893258">Microsoft 檔案復原</translation>
@@ -1434,7 +1430,6 @@
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">管理員已將你的帳戶設定為自動連線至 Microsoft OneDrive，但發生問題。</translation>
 <translation id="194174710521904357">你已暫時允許此網站使用第三方 Cookie。換言之，瀏覽保護程度會降低，但網站功能正常運作的機率會提高。</translation>
-<translation id="1941995177877935582">顯示對應鍵</translation>
 <translation id="1942128823046546853">讀取及變更您在所有網站上的所有資料</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1944535645109964458">沒有密鑰</translation>
@@ -1926,7 +1921,6 @@
 <translation id="2278668501808246459">正在啟動容器管理員</translation>
 <translation id="2280486287150724112">右邊界</translation>
 <translation id="228059581448666199">按一下滑鼠左鍵</translation>
-<translation id="2281863813036651454">點擊滑鼠左鍵</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
 <translation id="228293613124499805">您瀏覽的大多數網站可能會在裝置上儲存資料，通常是透過儲存您的偏好設定或您與網站分享的資料，從而改善使用體驗。建議您將此設定保持開啟。</translation>
 <translation id="2283599456633275070">旅遊</translation>
@@ -3750,7 +3744,6 @@
 <translation id="3512465804715993309">自動調節突顯內容</translation>
 <translation id="3513019849832307207">加入並開啟</translation>
 <translation id="3513563267917474897">色調滑桿由 <ph name="MIN_VALUE" /> 至 <ph name="MAX_VALUE" /></translation>
-<translation id="3514335087372914653">遊戲控制項</translation>
 <translation id="3514647716686280777">您正受標準安全保護功能保護。如要進一步防範危險網站、下載檔案及擴充程式，請在 Chrome 設定中啟用「強化安全瀏覽」功能。</translation>
 <translation id="3514681096978190000">此封存檔案包含其他可能隱藏惡意軟件的檔案</translation>
 <translation id="3515983984924808886">再次輕觸安全密鑰即可確認重設。此安全密鑰上儲存的所有資料 (包括 PIN) 將被刪除。</translation>
@@ -4784,7 +4777,6 @@
 <translation id="4193575319002689239">顯示資訊卡</translation>
 <translation id="419427585139779713">每次輸入一個音節</translation>
 <translation id="4195001808989442226">無法開啟 Chromebook 版 Steam (Beta 版本)</translation>
-<translation id="4195378859392041564">用滑鼠按一下任何按鍵，然後按下鍵盤按鍵即可自訂</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">開啟上次瀏覽的內容</translation>
 <translation id="4198268995694216131">其他網站</translation>
@@ -4830,7 +4822,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允許這個擴充程式}other{不允許部分擴充程式}}</translation>
 <translation id="4231053948789591973">投放已暫停。您可以隨時繼續或停止投放螢幕畫面。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4231231258999726714">正在設定 Chromebook 版 Steam</translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
 <translation id="4232376164796433044">密碼和自動填入</translation>
@@ -4878,7 +4869,6 @@
 <translation id="4258348331913189841">檔案系統</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留群組}other{保留群組}}</translation>
 <translation id="4259388776256904261">請稍候片刻</translation>
-<translation id="4260699894265914672">按下鍵盤按鍵即可自訂</translation>
 <translation id="4261429981378979799">擴充程式權限</translation>
 <translation id="4262004481148703251">關閉警告</translation>
 <translation id="4263223596040212967">請檢查您的鍵盤版面配置，然後再試一次。</translation>
@@ -5415,7 +5405,6 @@
 <translation id="4628762811416793313">未完成 Linux 容器設定。請再試一次。</translation>
 <translation id="4629521233550547305">開啟 <ph name="PROFILE_NAME" /> 設定檔</translation>
 <translation id="4629803160911640220">可信任</translation>
-<translation id="4631572301265416783">最近的即時通訊</translation>
 <translation id="4631637535315947773">由於你最近沒有使用，系統已移除最常瀏覽網站的捷徑</translation>
 <translation id="4631955550884380853">集中收音</translation>
 <translation id="4632655012900268062">自訂資訊卡</translation>
@@ -5842,7 +5831,6 @@
 <translation id="491779113051926205">ChromeOS 流量計數器</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 想與「<ph name="EXTENSION_NAME" />」擴充功能保持通訊</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4918134162946436591">重疊顯示提示</translation>
 <translation id="4918762404810341788">複製並開啟</translation>
 <translation id="4918844574251943176">已複製圖片</translation>
 <translation id="4921348630401250116">文字轉語音</translation>
@@ -6200,6 +6188,7 @@
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5181172023548002891">儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」</translation>
 <translation id="5181551096188687373">此密碼只會儲存至此裝置。如要在其他裝置上使用此書籤，請將書籤儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
+<translation id="5182671122927417841">停用擴充功能</translation>
 <translation id="5183344263225877832">要重設所有 HID 裝置權限嗎？</translation>
 <translation id="5184063094292164363">JavaScript 控制器(&amp;J)</translation>
 <translation id="5184209580557088469">已有票證使用此使用者名稱</translation>
@@ -6737,7 +6726,6 @@
 <translation id="5551573675707792127">鍵盤和文字輸入</translation>
 <translation id="5551753770140674714">系統已使用你的同步密碼短語加密資料。Google Pay 的付款方法和地址不會包括在內。</translation>
 <translation id="5553089923092577885">憑證政策對應關聯</translation>
-<translation id="5554240068773209752">按一下這裡以自訂控制項</translation>
 <translation id="5554403733534868102">以後不需要等待更新</translation>
 <translation id="5554489410841842733">當擴充功能適用於目前網頁時，即會顯示此圖示。</translation>
 <translation id="5554720593229208774">電郵憑證授權單位</translation>
@@ -7496,7 +7484,6 @@
 <translation id="6078752646384677957">請檢查麥克風和音訊音量。</translation>
 <translation id="608029822688206592">找不到網絡。請插入 SIM 卡，然後再試一次。</translation>
 <translation id="6080689532560039067">請檢查您的系統時間</translation>
-<translation id="6082877069782862752">對應鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名嘅群組</translation>
 <translation id="6086004606538989567">您已驗證的帳戶無權存取此裝置。</translation>
 <translation id="6086350918562605938">按系統安裝的更新程式</translation>
@@ -7982,7 +7969,6 @@
 <translation id="641899100123938294">掃瞄新裝置</translation>
 <translation id="6419524191360800346">可以升級至 Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">載入已解除壓縮的擴充程式</translation>
-<translation id="6422467884169339421">最近的即時通訊</translation>
 <translation id="6423685703035190381">在手機上接收價格追蹤通知</translation>
 <translation id="642469772702851743">這部裝置 (序號：<ph name="SERIAL_NUMBER" />) 已被其擁有者上鎖。</translation>
 <translation id="6425556984042222041">「文字轉語音」語速</translation>
@@ -8743,6 +8729,7 @@
 <translation id="6935286146439255109">找不到紙匣</translation>
 <translation id="6938386202199793006">你有 1 部儲存咗嘅打印機。</translation>
 <translation id="6938606182859551396">如要透過 <ph name="DEVICE_TYPE" /> 接收手機的通知，請按照手機上的指示，向 Google Play 服務授予通知存取權。</translation>
+<translation id="6941514251635934269">提出有關此文件的問題</translation>
 <translation id="694168622559714949">管理員設定的預設語言不可變更。</translation>
 <translation id="6941937518557314510">登入 <ph name="TOKEN_NAME" /> 即可使用您的憑證為 <ph name="HOST_NAME" /> 進行驗證。</translation>
 <translation id="6943060957016121200">啟用「即時網絡共享」</translation>
@@ -8841,7 +8828,6 @@
 <translation id="7003339318920871147">網絡數據庫</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>
 <translation id="7003644704445046755">已下載高品質<ph name="LANGUAGE" />語音檔案</translation>
-<translation id="7003705861991657723">Alpha 版本</translation>
 <translation id="7003723821785740825">設定快速解鎖裝置的方式</translation>
 <translation id="7003844668372540529">來自 <ph name="VENDOR_NAME" /> 的不明產品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">網站可以使用 MIDI 裝置</translation>
@@ -9637,7 +9623,6 @@
 <translation id="7560756177962144929">同步處理 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561759921596375678">開啟音量</translation>
-<translation id="7561982940498449837">關閉選單</translation>
 <translation id="7563576896417108627">自訂和控制 <ph name="APP_NAME" /> (有可用的更新)。</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
@@ -9954,7 +9939,6 @@
 <translation id="7769709635093101687">用於暫停的鍵盤快速鍵</translation>
 <translation id="7769748505895274502">收合最近關閉的分頁</translation>
 <translation id="7770072242481632881">側面板選取器</translation>
-<translation id="7770450735129978837">點擊滑鼠右鍵</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>
 <translation id="7770827449915784217">韌體已是最新版本</translation>
 <translation id="7771452384635174008">版面配置</translation>
@@ -10133,7 +10117,6 @@
 <translation id="7900950034255258543">為確保可安全使用此裝置，機構可以查看裝置作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901728443188947649">製作圖片</translation>
-<translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903481341948453971">使用螢幕鎖定功能填入密碼</translation>
 <translation id="7903925330883316394">程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">片假名</translation>
@@ -11026,6 +11009,7 @@
 <translation id="8480869669560681089">來自 <ph name="VENDOR_NAME" /> 的不明裝置</translation>
 <translation id="8481187309597259238">確認 USB 權限</translation>
 <translation id="8482077254400484047">在此管理閒置分頁的外觀</translation>
+<translation id="8482446859919078896">提出有關這些項目的問題</translation>
 <translation id="8486666913807228950">原因：在「強制開啟方式」清單中找到反轉規則 <ph name="REVERT_RULE" />。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8487699605742506766">熱點</translation>

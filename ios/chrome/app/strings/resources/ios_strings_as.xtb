@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{১ টা ছাইট (ছিংক কৰা ডিভাইচত অধিক)}one{# টা ছাইট (ছিংক কৰা ডিভাইচত অধিক)}other{# টা ছাইট (ছিংক কৰা ডিভাইচত অধিক)}}</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2876369937070532032">আপোনাৰ সুৰক্ষা বিপদাপন্ন হ'লে আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ Googleলৈ পঠিয়ায়</translation>
+<translation id="2877733045396505765">এইটোৱে এই ডিভাইচটোত আৰু আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ হৈ থকা বাছনি কৰা হোৱা তথ্যখিনি মচে।</translation>
 <translation id="2883151425485251736">আপুনি আপোনাৰ একাউণ্টৰ পৰা লুকুৱাই ৰখা বিষয়বস্তু চাওক আৰু সম্পাদনা কৰক</translation>
 <translation id="288655811176831528">টেব বন্ধ কৰক</translation>
 <translation id="2888631381369839306">মূল্য ট্ৰেকিঙৰ জাননী অন কৰা হ’ল</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798">ম্যাদ উকলাৰ মাহ <ph name="MONTH" /> স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="7758789811447313947">বেঙুনীয়া থীম</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
+<translation id="7763878244904387570">এইটোৱে এই ডিভাইচটোত ছেভ হৈ থকা বাছনি কৰা হোৱা তথ্যখিনি মচে।</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
 <translation id="7772948288262733182">পুনৰ স্বাগতম</translation>

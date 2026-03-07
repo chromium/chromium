@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Bu saytın görə və ya redaktə edə biləcəyi fayllar</translation>
 <translation id="1073417869336441572">Üçüncü tərəf kukilərinə icazə vermə səbəbinizi bildirərək Chrome-u təkmilləşdirməyə kömək edin. <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saytların masaüstü versiyasına baxmağı istəyə bilərsiniz</translation>
+<translation id="1109482864356262001">Hərəkət və ya işıq sensoru tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1126523729897810826">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilən əməliyyatları tamamlayın</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
 <translation id="1148624853678088576">Tam hazırsınız!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Yeni tab səhifə kartları</translation>
 <translation id="2241634353105152135">Sadəcə bir dəfə</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Silin</translation>
+<translation id="227763434929139750">Saytlara hərəkət və ya işıq sensorlarından istifadə etmək icazəsi verməyin</translation>
 <translation id="228293613124499805">Ziyarət etdiyiniz əksər saytlar adətən təcrübənizi təkmilləşdirmək üçün tərcihlərinizi və ya saytla paylaşdığınız məlumatı yadda saxlayır. Bu ayarı aktiv saxlamağı tövsiyə edirik.</translation>
 <translation id="2289270750774289114">Sayt yaxınlıqdakı Bluetooth cihazlarını kəşf etmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="2315043854645842844">Müştəri sayt sertifikatı seçimi əməliyyat sistemi tərəfindən dəstəklənmir.</translation>
@@ -298,6 +300,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3922092564198021702">Telefonda Ayarları açın</translation>
 <translation id="3924858949939391676">Oxu rejimi aktiv olduqdan sonra keçidləri göstərin</translation>
 <translation id="3933121352599513978">Lazımsız sorğuları yığcamlaşdırın (tövsiyə edilir)</translation>
+<translation id="393417216277380082">Hərəkət və işıq sensorları</translation>
 <translation id="3934905113567851655">Ölçüsünü dəyişdirmək üçün barmaqlarınızı birləşdirin</translation>
 <translation id="3955321697524543127">Saytlara USB cihazlarına qoşulmaq icazəsi verməyin</translation>
 <translation id="3965467402665811906">Saytlar haqqınızda yadda saxlanılan məlumatdan istifadə etmək istəyə bilər</translation>
@@ -369,6 +372,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4672315773691449562">Brauzer tətbiqinə, sonra Chrome-a toxunun</translation>
 <translation id="4676059169848868271"><ph name="APP_NAME" /> tətbiqinə əl izləmədən istifadə etmək imkanı vermək üçün <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> əl izləməni də yandırın.</translation>
 <translation id="4688045258817337666">Kartlarınızı idarə edin</translation>
+<translation id="4722332387043141878">Saytlar adətən virtual reallıq və ya fitnes izləmə kimi xüsusiyyətlər üçün cihazınızın hərəkət və işıq sensorlarından istifadə edir</translation>
 <translation id="4755971844837804407">Aktiv ediləndə saytlar istənilən reklamı göstərə bilər. Deaktiv ediləndə saytlar bezdirici və ya aldadıcı reklam göstərə bilməz.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Təhlükəsiz baxışı aktiv edin</translation>
@@ -513,6 +517,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="6196640612572343990">Üçüncü tərəf kukiləri blok edin</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6207207788774442484">Datanı silin və icazələri sıfırlayın</translation>
+<translation id="6211409961905616543">Saytlar hərəkət və işıq sensorlarından istifadə edə bilər</translation>
 <translation id="6218508144653756827">Fuşya tema</translation>
 <translation id="6231752747840485235">"<ph name="APP_NAME" />" sistemdən silinsin?</translation>
 <translation id="6234351944623978659">Brauzer tətbiqi &gt; Chrome seçiminə toxunun</translation>
@@ -757,6 +762,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8801657293260363985">V8 Chrome-un sayt performansını yaxşılaşdırmaq üçün istifadə edilən JavaScript və WebAssembly mexanizmidir</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8805385115381080995">Saytın real insan olduğunuzu təsdiqləmək ehtimalı az olduğuna görə daha sürətlə baxmaq olur</translation>
+<translation id="881644524232657178">Aktiv edildikdə saytlar cihazın hərəkət və işıq sensorlarından istifadə edə bilər. Deaktiv edildikdə saytlar sensorlardan istifadə edə bilməz.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Üçüncü tərəf kukilərinə müvəqqəti icazə verin. Axtarış zamanı qoruma az olsa da, funksiyaların gözlənilən kimi işləmə ehtimalı yüksəkdir.</translation>
 <translation id="8889294078294184559">Baxmağa davam etdikcə saytlar Chrome ilə yoxlanış apara və daxil olduğunuz əvvəlki sayt ilə real insan olduğunuzu təsdiqləyə bilər</translation>

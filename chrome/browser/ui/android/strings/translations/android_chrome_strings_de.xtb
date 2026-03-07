@@ -746,6 +746,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Von dir auf dieser Website verwendet</translation>
 <translation id="4214315110991671325">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden.</translation>
+<translation id="421517251707893998">Tippe auf „Diese Verknüpfung anpinnen“</translation>
 <translation id="4216511743389425832">Diese Seite anhören</translation>
 <translation id="4225725533026049334">Folge ich</translation>
 <translation id="4225895483398857530">Verknüpfung in Symbolleiste</translation>
@@ -1325,6 +1326,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6508722015517270189">Chrome neu starten</translation>
 <translation id="6513924416597632811">Link zur Suchergebnisseite für „<ph name="SEARCH_QUERY" />“ kopieren. Quelle: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Bestätigen</translation>
+<translation id="6521218807522232085">Du kannst Passwörter erstellen, speichern und verwalten, um dich ganz einfach anzumelden</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="652948702951888897">Chrome-Verlauf</translation>
 <translation id="6532866250404780454">In Chrome aufgerufene Websites werden nicht angezeigt. Alle Timer für Websites werden gelöscht.</translation>
@@ -1373,6 +1375,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6684262542644248484">Melde dich auf einer Website an</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>
 <translation id="6689436252814043643">Lesemodus ist nicht verfügbar</translation>
+<translation id="669971068476817798">Tippe auf „Speichern“</translation>
 <translation id="6700279777779583398">Einstellungen gespeichert</translation>
 <translation id="670498945988402717">Gestern geprüft</translation>
 <translation id="6710213216561001401">Zurück</translation>
@@ -1482,6 +1485,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7054588988317389591">Bildbeschreibungen abrufen?</translation>
 <translation id="7057969023583258980">Vollständigen Chrome-Verlauf öffnen</translation>
 <translation id="7063006564040364415">Verbindung zum Synchronisierungsserver konnte nicht hergestellt werden.</translation>
+<translation id="7063106218165698546">Passe die Tabgruppe an und wähle „Fertig“ aus</translation>
 <translation id="7071521146534760487">Konto verwalten</translation>
 <translation id="707155805709242880">Wähle unten aus, was synchronisiert werden soll</translation>
 <translation id="7077143737582773186">SD-Karte</translation>

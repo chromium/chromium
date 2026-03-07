@@ -1841,6 +1841,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3927932062596804919">Rədd edin</translation>
 <translation id="3928806096717999469">Redaktə edin, yeni pəncərə açır</translation>
 <translation id="3930260846839546333">Çanta və pul kisələri</translation>
+<translation id="393417216277380082">Hərəkət və işıq sensorları</translation>
 <translation id="3937834511546249636">Müdafiə Sənayesi</translation>
 <translation id="3939773374150895049">CVC əvəzinə WebAuthn istifadə edilsin?</translation>
 <translation id="3941630233824954464">Məcburi təkrar identifikasiyanı aktivləşdirin</translation>
@@ -2528,6 +2529,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5018802455907704660">16 x 20 düym</translation>
 <translation id="5019198164206649151">Yedəkləmə yaddaşı it günündədir</translation>
 <translation id="5019293549442035120">Google məhsullarında saxlanmış ünvanları istifadə edə bilərsiniz. Ünvan Google Hesabında (<ph name="USER_EMAIL" />) saxlanacaq.</translation>
+<translation id="5019819206251569004">hərəkət və işıq sensorları</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> siyasəti ayarlandı. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> artırmalar səhifəsində developer rejiminin əlçatanlığını idarə etməyəcək.</translation>
 <translation id="5021500396464456616">Bu keçidi göndərən şəxslə əlaqə saxlayın</translation>
 <translation id="5021557570875267742">Chrome ilə qiymətləri izləyin</translation>
@@ -2571,6 +2573,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5093232627742069661">Z-qatlama</translation>
 <translation id="5093417502834168387">Daxil olmaqda çətinlik çəkirsiniz? Başqa yolu sınayın</translation>
 <translation id="5094747076828555589">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun güvənlik sertifikatı Chromium tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçü tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
+<translation id="5096066272198024688">Məlumatınız yadda saxlanılır...</translation>
 <translation id="5097099694988056070">CPU/RAM istifadəsi kimi cihaz statistikası</translation>
 <translation id="5097468150760963273">27 x 39 düym</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3777,6 +3780,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7003278537452757231">Kilim və xalçalar</translation>
 <translation id="7003322000677139268">Ehtiyat Hissələri və Aksesuarlar</translation>
 <translation id="7004499039102548441">Son Tablar</translation>
+<translation id="700483187606163535">Məlumatlarınız <ph name="ACCOUNT" /> üçün burada saxlanılır: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />. Formaları daha sürətli doldurmaq üçün onu Google məhsullarında istifadə edə bilərsiniz.</translation>
 <translation id="7006930604109697472">İstənilən halda göndərin</translation>
 <translation id="7009364359744329733">Bu kart hazırda əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="7010658264061801199">Qida və İçki</translation>

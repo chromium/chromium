@@ -1056,6 +1056,7 @@ Cette règle constitue une solution temporaire au cas où des entreprises rencon
       Si cette règle n'est pas configurée, les réglages de l'utilisateur concernant l'écran ou les fonctionnalités de réglage automatique de la luminosité ne sont pas affectés.
 
       Remarque : La valeur de cette règle doit être comprise entre 0 et 100 %.</translation>
+<translation id="1732435945666510577">Désactiver la journalisation de l'activité DOM des extensions</translation>
 <translation id="1733092875104864334">Ne pas autoriser la collecte des journaux texte WebRTC à partir des services Google</translation>
 <translation id="1733768596873041559">Rediriger vers l'IdP SAML par défaut (pour les versions antérieures à <ph name="PRODUCT_NAME" /> 99, la confirmation de l'utilisateur est requise)</translation>
 <translation id="1736032188431871940">Bloquer l'accès à une liste d'URL en mode navigation privée.</translation>
@@ -1900,6 +1901,7 @@ La taille de police est indiquée en points.</translation>
 <translation id="2290270645214705008">Si cette règle est désactivée, le service hôte d'accès à distance ne peut pas être démarré ni configuré pour accepter les connexions entrantes.  Cette règle ne concerne pas les cas d'assistance à distance.
 
           Elle n'a aucune incidence non plus si elle est activée, si elle n'est pas configurée ou si elle est vide.</translation>
+<translation id="2291341836547307786">Activer la journalisation de l'activité DOM des extensions</translation>
 <translation id="2292482441027364457">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
 
 Spécifiez les applis Chrome par leur ID (par exemple, pjkljhegncpnkpknbcohdijeoejaedia), les applis Android par leur nom de package (par exemple, com.google.android.gm), les applis Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple, https://google.com/maps), les applis Web système par leur nom snake case (par exemple, <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />)
@@ -2164,6 +2166,51 @@ Si cette règle n'est pas configurée, la valeur par défaut est <ph name="POLIC
 <translation id="2489558694350871332">Autoriser l'appareil à exécuter des machines virtuelles</translation>
 <translation id="2492240920793040106">Activer les rapports sur les informations système et du contenu de pages afin d'améliorer la navigation sécurisée</translation>
 <translation id="2496180316473517155">Historique de navigation</translation>
+<translation id="2496898792336137342">Configure les règles qui sélectionnent le proxy que le navigateur utilise en fonction de l'URL de destination et de conditions réseau spécifiques.
+
+Cette règle est prioritaire sur la règle <ph name="PROXY_SETTINGS_POLICY_NAME" />, l'API d'extension <ph name="PROXY_SETTINGS_EXTENSION_API" /> et les paramètres utilisateur définis manuellement. Si aucune de ces règles ne correspond, le navigateur utilise les paramètres définis dans <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Le navigateur évalue les entrées de la liste <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> de manière séquentielle. Une règle n'est appliquée que si tous les critères suivants sont remplis :
+
+* Correspondance : au moins un format d'URL dans <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> correspond.
+
+  * Exclusion : aucun format d'URL dans <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> ne correspond.
+
+  * Conditions : si <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> est spécifié, toutes les conditions listées doivent être remplies. Si cette valeur n'est pas définie, cette exigence est ignorée.
+
+Les formats d'URL pour les correspondances sont décrits sur https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Le champ <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> définit une liste de basculement. La première entrée accessible est utilisée. Les entrées non valides sont ignorées. Vous pouvez utiliser des chaînes de style PAC ou des spécificateurs de type URL :
+
+Chaînes de style PAC :
+
+  * DIRECT
+
+  * PROXY host:port
+
+  * HTTPS host:port
+
+  * SOCKS4 host:port
+
+  * SOCKS5 host:port
+
+Spécificateurs de type URL :
+
+  * http://host:port
+
+  * https://host:port
+
+  * socks4://host:port
+
+  * socks5://host:port
+
+La condition <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> vérifie si un <ph name="PROXY_OVERRIDE_RULES_HOST" /> renvoie une adresse IP.
+
+* Accepte les noms d'hôte (par exemple, example.com) ou les chaînes de type URI (par exemple, https://example.com:123). L'utilisation d'un schéma sécurisé (https) peut déclencher une requête d'enregistrement HTTPS (voir RFC 9460).
+
+* Définissez la valeur sur "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" pour que la condition soit remplie si la résolution aboutit, ou sur "<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />" pour que la condition soit remplie si la résolution échoue.
+
+L'application de cette règle sur les appareils gérés est influencée par la règle <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> au niveau de la machine sur les plates-formes où elle est acceptée. Par défaut, elle empêche l'utilisation des règles de remplacement configurées par des utilisateurs non affiliés.</translation>
 <translation id="2497751676088107779">Script utilisateur</translation>
 <translation id="249798396824949930"> Détermine si le navigateur peut ou non détecter le champ d'application obligatoire des règles sur <ph name="MAC_OS_NAME" />.
 
@@ -6468,6 +6515,7 @@ Sur les plates-formes de bureau, le téléchargement du modèle peut également 
 <translation id="5309944663104291505">Ne pas autoriser les applis Web isolées installées d'office et les applis kiosque à utiliser l'API Device Attributes</translation>
 <translation id="5311275381462687162">Rétablir l'ancien comportement <ph name="ATTRIBUTE_SAMESITE_NAME" /> pour tous les cookies</translation>
 <translation id="5312253627576569499">Pourcentage d'adaptation du délai d'assombrissement de l'écran en cas d'activité de l'utilisateur lors de la réduction de la luminosité ou peu de temps après la désactivation de l'écran.</translation>
+<translation id="5313663675323027439">Contrôler la journalisation de l'activité DOM des extensions</translation>
 <translation id="5316856058059940708">Désactiver le grand curseur</translation>
 <translation id="5318185076587284965">Autoriser l'hôte d'accès à distance à utiliser des serveurs de relais</translation>
 <translation id="5321624917465764266">Si cette règle est activée ou n'est pas configurée, les historiques de navigation et de téléchargements peuvent être supprimés dans Chrome, sans que les utilisateurs puissent modifier ce paramètre.
@@ -9737,6 +9785,14 @@ Si elle est définie sur "False", l'ancien comportement est activé.</translatio
       Si cette règle est activée ou n'est pas configurée, les appareils enregistrés communiquent la liste des interfaces réseau, avec leur type et leur adresse matérielle.
 
       Si elle est désactivée, les appareils enregistrés ne communiquent pas l'interface réseau.</translation>
+<translation id="7387190801932161230">Détermine si la journalisation de l'activité DOM des extensions est activée pour les utilisateurs de la version Enterprise.
+
+Si cette règle est activée, la télémétrie est activée pour l'activité DOM des extensions. Cela inclut la surveillance de l'injection de code et de l'accès aux données sensibles par les extensions.
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> collecte et transmet des signaux concernant les interactions des extensions avec les pages Web au service de télémétrie des extensions pour l'audit de sécurité.
+Si cette règle est désactivée ou n'est pas configurée, ces signaux ne sont pas collectés ou transmis pour les utilisateurs de la version Enterprise.
+
+Les valeurs réelles des données sensibles (comme les cookies ou les valeurs d'entrée) ne sont PAS collectées. Seul le fait qu'elles ont été consultées est enregistré.</translation>
 <translation id="7389872682701720082">Si vous activez ce paramètre, les plug-ins non obsolètes sont toujours exécutés.
 
       Si ce paramètre est désactivé ou n'est pas configuré, les utilisateurs doivent donner leur permission pour l'exécution des plug-ins qui nécessitent une autorisation. Ceux-ci présentent un risque de sécurité.</translation>
@@ -12157,6 +12213,19 @@ Remarque : Pour le moment, seule la première entrée est prise en compte. Les 
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, la mise en surbrillance au clavier est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="9037098514292099199">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions.
+
+Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
+
+Cette règle peut remplacer la configuration par extension des anciennes règles.
+
+Notez que tout paramètre d'extension par ID provenant de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> n'héritera que de "installation_mode" et "update_url" à partir des valeurs par défaut de <ph name="DEFAULT_SCOPE" />. Il n'héritera d'aucune autre propriété. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
+
+Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les extensions.</translation>
 <translation id="9038839118379817310">Activer le Wi-Fi</translation>
 <translation id="9039822628127365650">Lorsque cette règle est configurée, elle indique au bout de combien de temps un utilisateur est automatiquement déconnecté, ce qui met fin à la session. Un compte à rebours, qui s'affiche dans la barre d'état système, informe l'utilisateur du temps qu'il lui reste.
 
@@ -12180,21 +12249,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut, par déf
 <translation id="9051019223077908578">Configurer la liste des applications et des extensions installées sur l'écran de connexion</translation>
 <translation id="9053841574218808519">Toujours exécuter les plug-ins non obsolètes</translation>
 <translation id="9055866143096316150">Rétrograder les demandes de wakelocks forçant l'activation de l'écran en demandes de wakelocks système</translation>
-<translation id="9056262797461453462">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.
-
-À partir de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse ou, par exemple, les favoris intelligents.
-
-À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.
-
-Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné dans certains cas. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Par exemple :
-
-– Au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
-
-– Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
-
-– Au lieu de bloquer devtools://*, utilisez l'une des règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ou <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="9057159618445405645">Utiliser le comportement par défaut du navigateur Chrome</translation>
 <translation id="9061455386353325110">Indique si les utilisateurs peuvent autoriser <ph name="PRODUCT_NAME" /> à utiliser l'IA générative pour mieux comprendre les formulaires et les aider à remplir plus de champs.
 

@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">ডাউনলোড করার জন্য লোকেশন উপলভ্য নেই</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • এই সাইটে আপনি ব্যবহার করেছেন</translation>
 <translation id="4214315110991671325">আপনি কুকি ব্যবহার করার অনুমতি দিলে, প্রিলোড করার জন্য Chrome সেটি ব্যবহার করতে পারে।</translation>
+<translation id="421517251707893998">'এই শর্টকাট পিন করুন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="4216511743389425832">এই পৃষ্ঠার কন্টেন্ট শুনুন</translation>
 <translation id="4225725533026049334">ফলো করছেন</translation>
 <translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Chrome পুনরায় চালু করুন</translation>
 <translation id="6513924416597632811">এর জন্য সার্চ ফলাফল পৃষ্ঠায় লিঙ্ক কপি করুন: <ph name="SEARCH_QUERY" />. সোর্স: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">যাচাই করুন</translation>
+<translation id="6521218807522232085">সহজেই সাইন-ইন করতে আপনার পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="652948702951888897">Chrome ইতিহাস</translation>
 <translation id="6532866250404780454">আপনি কোন কোন সাইটে গেছেন তা Chrome-এ দেখা যাবে না। সমস্ত সাইটের টাইমার মুছে দেওয়া হবে।</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">ওয়েবসাইটে সাইন-ইন করুন</translation>
 <translation id="6684809838922667136">Chrome-এর ব্যবহার উন্নত করুন</translation>
 <translation id="6689436252814043643">রিডিং মোড উপলভ্য নেই</translation>
+<translation id="669971068476817798">সেভ করুন বিকল্পে ট্যাপ করুন।</translation>
 <translation id="6700279777779583398">পছন্দ সেভ করা হয়েছে</translation>
 <translation id="670498945988402717">গতকাল চেক করা হয়েছে</translation>
 <translation id="6710213216561001401">আগের</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">ছবির বিবরণ পেতে চান?</translation>
 <translation id="7057969023583258980">সম্পূর্ণ Chrome ইতিহাস খুলুন</translation>
 <translation id="7063006564040364415">সিঙ্ক সার্ভারে সংযোগ করতে পারেনি৷</translation>
+<translation id="7063106218165698546">ট্যাব গ্রুপ কাস্টমাইজ করে 'হয়ে গেছে' বিকল্পে ক্লিক করুন</translation>
 <translation id="7071521146534760487">অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="707155805709242880">নিচের থেকে কী সিঙ্ক করবেন, বেছে নিন</translation>
 <translation id="7077143737582773186">এসডি কার্ড</translation>

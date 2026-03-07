@@ -212,6 +212,7 @@
 <translation id="1330449323196174374">ఎడమవైపు గేట్‌ ఫోల్డ్</translation>
 <translation id="1333745675627230582">Chrome Dino గేమ్‌ను ఆడండి</translation>
 <translation id="1333989956347591814">మీ యాక్టివిటీ వీటికి లేదా వీరికి <ph name="BEGIN_EMPHASIS" />ఇప్పటికీ కనిపించవచ్చు<ph name="END_EMPHASIS" />: <ph name="BEGIN_LIST" /> <ph name="LIST_ITEM" />మీరు తెరిచే వెబ్‌సైట్‌లు<ph name="LIST_ITEM" />మీరు ఉద్యోగం చేస్తోన్న సంస్థ లేదా స్కూల్ అడ్మిన్<ph name="LIST_ITEM" />మీ ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్<ph name="END_LIST" /></translation>
+<translation id="133753543318803399">జారీ చేసిన దేశం</translation>
 <translation id="1337692097987160377">ఈ ట్యాబ్‌ను షేర్ చేయి</translation>
 <translation id="1339601241726513588">నమోదిత డొమైన్:</translation>
 <translation id="1340482604681802745">పికప్ అడ్రస్‌</translation>
@@ -2474,6 +2475,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, వెతకడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4930153903256238152">ఎక్కువ సామర్థ్యం</translation>
 <translation id="4930714375720679147">ఆన్ చేయి</translation>
+<translation id="4931347573573430180">జారీ చేసిన తేదీ</translation>
 <translation id="4932035752129140860">మీరు పేస్ట్ చేసిన లేదా జోడించిన టెక్స్ట్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడుతుంది. ఉదాహరణకు, అది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4933788293078559286">Pixతో పేమెంట్ చేయండి</translation>
@@ -3106,6 +3108,7 @@
 <translation id="5950901984834744590">రేజర్‌లు &amp; షేవర్‌లు</translation>
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
 <translation id="5952076224478208938">తయారీదారు</translation>
+<translation id="5952196777020238475">లైసెన్స్ నంబర్</translation>
 <translation id="5953516610448771166">ఈ మీడియాకు లైవ్ క్యాప్షన్ అందుబాటులో లేదు. క్యాప్షన్‌లను పొందడానికి, ఈ సైట్ <ph name="CONTENT_SETTINGS" />ను బ్లాక్ చేయండి.</translation>
 <translation id="5960795367348889467">వెరిఫికేషన్</translation>
 <translation id="5963413905009737549">విభాగం</translation>
@@ -4610,6 +4613,7 @@
 <translation id="8288320283441806607">ఈ ఫీచర్‌ను ఉపయోగించడానికి, సెర్చ్‌లు, బ్రౌజింగ్‌ను మెరుగ్గా చేయండి'ని ఆన్ చేయండి</translation>
 <translation id="8288807391153049143">సర్టిఫికేట్‌ను చూపు</translation>
 <translation id="8289355894181816810">మీకు దీని గురించి ఖచ్చితంగా తెలియకుంటే మీ నెట్‌వర్క్ నిర్వాహకుని సంప్రదించండి.</translation>
+<translation id="8291367150570302588">ID కార్డ్</translation>
 <translation id="829335040383910391">సౌండ్</translation>
 <translation id="8294431847097064396">సోర్స్</translation>
 <translation id="8297545700510100061">మీ సందర్శన సమాచారాన్ని గుర్తుంచుకోవడానికి కుక్కీలు, ఇతర సైట్ డేటా ఉపయోగించబడతాయి, ఉదాహరణకు, సైన్ ఇన్ చేయడానికి మిమ్మల్ని అనుమతించడం లేదా మీకు వ్యక్తిగతీకరించిన యాడ్‌లను చూపడం. అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="SETTINGS" />‌ను చూడండి.</translation>

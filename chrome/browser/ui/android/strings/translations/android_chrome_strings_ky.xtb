@@ -746,6 +746,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4198423547019359126">Жүктөп алуу үчүн жеткиликтүү орун жок</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Бул сайтта колдондуңуз</translation>
 <translation id="4214315110991671325">Cookie файлдарына уруксат берсеңиз, Chrome аларды алдын ала жүктөө үчүн колдонушу мүмкүн.</translation>
+<translation id="421517251707893998">"Бул ыкчам баскычты кадап коюу" баскычын таптаңыз</translation>
 <translation id="4216511743389425832">Бул баракты угуу</translation>
 <translation id="4225725533026049334">Жазылгансыз</translation>
 <translation id="4225895483398857530">Куралдар тилкесинин ыкчам баскычы</translation>
@@ -1325,6 +1326,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6508722015517270189">Chrome’ду өчүрүп-күйгүзүңүз</translation>
 <translation id="6513924416597632811"><ph name="SEARCH_QUERY" /> боюнча табылган нерселердин бетине шилтемени көчүрүңүз. Булагы: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Текшерүү</translation>
+<translation id="6521218807522232085">Оңой кирүү үчүн сырсөздөрдү түзүп, сактап жана тескеңиз</translation>
 <translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="652948702951888897">Chrome таржымалы</translation>
 <translation id="6532866250404780454">Chrome'до кирген сайттарыңыз көрүнбөйт. Бардык сайттардагы таймерлер өчүрүлөт.</translation>
@@ -1373,6 +1375,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6684262542644248484">Вебсайтка өтүңүз</translation>
 <translation id="6684809838922667136">Chrome'ду жакшыртууга жардам бериңиз</translation>
 <translation id="6689436252814043643">Окуу режими жеткиликсиз</translation>
+<translation id="669971068476817798">"Сактоо" баскычын таптап коюңуз.</translation>
 <translation id="6700279777779583398">Тандоолор сакталды</translation>
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
@@ -1482,6 +1485,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7054588988317389591">Сүрөттүн сүрөттөмөлөрүн аласызбы?</translation>
 <translation id="7057969023583258980">Chrome´до көрүлгөн вебсайттардын толук тизмесин ачуу</translation>
 <translation id="7063006564040364415">Шайкештештирүү серверине туташкан жок.</translation>
+<translation id="7063106218165698546">Өтмөктөр тобун тууралап, "Бүттү" баскычын басыңыз</translation>
 <translation id="7071521146534760487">Аккаунтту башкаруу</translation>
 <translation id="707155805709242880">Төмөндө шайкештириле турган нерселерди тандаңыз</translation>
 <translation id="7077143737582773186">SD-карта</translation>

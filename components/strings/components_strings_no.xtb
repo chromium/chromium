@@ -1845,6 +1845,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3927932062596804919">Ikke tillat</translation>
 <translation id="3928806096717999469">Rediger, åpner et nytt vindu</translation>
 <translation id="3930260846839546333">Vesker og håndvesker</translation>
+<translation id="393417216277380082">Bevegelses- og lyssensorer</translation>
 <translation id="3937834511546249636">Forsvarsindustri</translation>
 <translation id="3939773374150895049">Vil du bruke WebAuthn i stedet for CVC?</translation>
 <translation id="3941630233824954464">Slå på obligatorisk gjenautentisering</translation>
@@ -2532,6 +2533,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5018802455907704660">16 x 20 tommer</translation>
 <translation id="5019198164206649151">Ugyldig funksjonalitet for sikkerhetskopiering</translation>
 <translation id="5019293549442035120">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">bevegelses- og lyssensorer</translation>
 <translation id="5019952743397118625">Regelen <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er angitt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> kontrollerer ikke tilgjengeligheten av utviklermodus på utvidelsessiden.</translation>
 <translation id="5021500396464456616">Kontakt personen som sendte denne linken</translation>
 <translation id="5021557570875267742">Spor priser med Chrome</translation>
@@ -2575,6 +2577,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5093232627742069661">Z-fals</translation>
 <translation id="5093417502834168387">Har du problemer med innlogging? Prøv en annen måte</translation>
 <translation id="5094747076828555589">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chromium. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
+<translation id="5096066272198024688">Lagrer informasjonen din ...</translation>
 <translation id="5097099694988056070">enhetsstatistikk, som prosessor- og minnebruk</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7003278537452757231">Ryer og tepper</translation>
 <translation id="7003322000677139268">Bildeler og tilbehør</translation>
 <translation id="7004499039102548441">Nylige faner</translation>
+<translation id="700483187606163535">Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. Du kan bruke den på tvers av alle Google-produkter for å fylle ut skjemaer raskere.</translation>
 <translation id="7006930604109697472">Send likevel</translation>
 <translation id="7009364359744329733">Dette kortet er ikke tilgjengelig akkurat nå. Prøv igjen senere.</translation>
 <translation id="7010658264061801199">Mat og drikke</translation>

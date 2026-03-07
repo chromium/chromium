@@ -747,6 +747,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Har använts på den här webbplatsen</translation>
 <translation id="4214315110991671325">Om du tillåter cookies kan Chrome använda dem för att läsa in innehåll i förväg.</translation>
+<translation id="421517251707893998">Tryck på Fäst den här genvägen</translation>
 <translation id="4216511743389425832">Lyssna på sidan</translation>
 <translation id="4225725533026049334">Följer</translation>
 <translation id="4225895483398857530">Genväg i verktygsfältet</translation>
@@ -1326,6 +1327,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6508722015517270189">Starta om Chrome</translation>
 <translation id="6513924416597632811">Kopiera länken till sökresultatsidan för: <ph name="SEARCH_QUERY" />. Källa: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verifiera</translation>
+<translation id="6521218807522232085">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6532866250404780454">Webbplatser som du besöker i Chrome visas inte. Alla timer för webbplatser raderas.</translation>
@@ -1374,6 +1376,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6684262542644248484">Logga in på en webbplats</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
 <translation id="6689436252814043643">Läsläget är inte tillgängligt</translation>
+<translation id="669971068476817798">Tryck på Spara</translation>
 <translation id="6700279777779583398">Dina val har sparats</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
@@ -1483,6 +1486,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7054588988317389591">Vill du få bildbeskrivningar?</translation>
 <translation id="7057969023583258980">Öppna hela Chrome-historiken</translation>
 <translation id="7063006564040364415">Det gick inte att ansluta till synkroniseringsservern.</translation>
+<translation id="7063106218165698546">Anpassa flikgruppen och tryck på Klar</translation>
 <translation id="7071521146534760487">Hantera konto</translation>
 <translation id="707155805709242880">Välj vad som ska synkroniseras nedan</translation>
 <translation id="7077143737582773186">SD-kort</translation>

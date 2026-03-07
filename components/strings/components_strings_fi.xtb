@@ -217,6 +217,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
           <ph name="LIST_ITEM" />työnantajallesi tai oppilaitoksellesi
           <ph name="LIST_ITEM" />internetpalveluntarjoajallesi.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Myöntämismaa</translation>
 <translation id="1337692097987160377">Jaa tämä välilehti</translation>
 <translation id="1339601241726513588">Käyttöönoton verkkotunnus:</translation>
 <translation id="1340482604681802745">Nouto-osoite</translation>
@@ -2480,6 +2481,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tee haku painamalla ensin sarkainta ja sitten Enter</translation>
 <translation id="4930153903256238152">Suuri kapasiteetti</translation>
 <translation id="4930714375720679147">Ota käyttöön</translation>
+<translation id="4931347573573430180">Myöntämispäivä</translation>
 <translation id="4932035752129140860">Liittämäsi teksti lähetetään Google Cloudiin tai kolmansille osapuolille analysoitavaksi. Ne voidaan esimerkiksi skannata arkaluontoisten tietojen varalta, tallentaa yrityksen käytäntöjen mukaisesti ja ne voivat näkyä järjestelmänvalvojalle.</translation>
 <translation id="4932733599132424254">Päiväys</translation>
 <translation id="4933788293078559286">Maksa Pixin avulla</translation>
@@ -3112,6 +3114,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5950901984834744590">Terät ja parranajo</translation>
 <translation id="5951495562196540101">Liittyminen kuluttajatilillä ei onnistu (pakettilisenssi saatavilla).</translation>
 <translation id="5952076224478208938">Merkki</translation>
+<translation id="5952196777020238475">Ajokortin numero</translation>
 <translation id="5953516610448771166">Livetekstitys ei ole saatavilla tälle medialle. Jos haluat tekstityksiä, estä <ph name="CONTENT_SETTINGS" /> tällä sivustolla.</translation>
 <translation id="5960795367348889467">Todennus</translation>
 <translation id="5963413905009737549">Osio</translation>
@@ -4616,6 +4619,7 @@ Lisätietoja:
 <translation id="8288320283441806607">Jos haluat käyttää tätä ominaisuutta, laita Paranna hakuja ja selausta ‑asetus päälle</translation>
 <translation id="8288807391153049143">Näytä varmenne</translation>
 <translation id="8289355894181816810">Ota yhteyttä verkon ylläpitäjään, jos et tiedä, mitä tämä tarkoittaa.</translation>
+<translation id="8291367150570302588">Henkilötodistus</translation>
 <translation id="829335040383910391">ääni</translation>
 <translation id="8294431847097064396">Lähde</translation>
 <translation id="8297545700510100061">Evästeillä ja muulla sivustodatalla tunnistetaan sinut, jotta voit esimerkiksi kirjautua sisään tai nähdä personoituja mainoksia. Jos haluat ylläpitää kaikkien sivustojen evästeitä, katso <ph name="SETTINGS" />.</translation>

@@ -217,6 +217,7 @@
 <ph name="LIST_ITEM" />работодателя ви или учебното ви заведение;
 <ph name="LIST_ITEM" />доставчика ви на интернет услуги.
 <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Държава на издаване</translation>
 <translation id="1337692097987160377">Споделяне на този раздел</translation>
 <translation id="1339601241726513588">Домейн за записване:</translation>
 <translation id="1340482604681802745">Адрес за вземане</translation>
@@ -1845,6 +1846,7 @@
 <translation id="3927932062596804919">Отказ</translation>
 <translation id="3928806096717999469">Редактиране, отваря се в нов прозорец</translation>
 <translation id="3930260846839546333">Ръчни чанти и портмонета</translation>
+<translation id="393417216277380082">Сензори за движение и светлина</translation>
 <translation id="3937834511546249636">Отбранителна промишленост</translation>
 <translation id="3939773374150895049">Искате ли да използвате WebAuthn вместо код за проверка?</translation>
 <translation id="3941630233824954464">Активиране на задължителното повторно удостоверяване</translation>
@@ -2478,6 +2480,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да търсите</translation>
 <translation id="4930153903256238152">Голяма вместимост</translation>
 <translation id="4930714375720679147">Включване</translation>
+<translation id="4931347573573430180">Дата на издаване</translation>
 <translation id="4932035752129140860">Поставеният или прикаченият от вас текст се изпраща до Google Cloud или до трети страни за анализ. Възможно е например текстът да бъде сканиран за чувствителни данни, да се съхранява въз основа на правилата на компанията и да бъде видим за администратора ви.</translation>
 <translation id="4932733599132424254">Дата</translation>
 <translation id="4933788293078559286">Плащане с Pix</translation>
@@ -2532,6 +2535,7 @@
 <translation id="5018802455907704660">16 x 20 инча</translation>
 <translation id="5019198164206649151">Допълнителното хранилище е в лошо състояние</translation>
 <translation id="5019293549442035120">Можете да използвате запазените адреси в различни продукти на Google. Този адрес ще бъде запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019819206251569004">сензори за движение и светлина</translation>
 <translation id="5019952743397118625">Правилото <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> е зададено. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> няма да контролира наличността на режима за програмисти на страницата с разширения.</translation>
 <translation id="5021500396464456616">Свържете се с човека, изпратил тази връзка</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
@@ -2575,6 +2579,7 @@
 <translation id="5093232627742069661">Z-образно сгъване</translation>
 <translation id="5093417502834168387">Имате проблеми с влизането в профила? Изпробвайте друг начин</translation>
 <translation id="5094747076828555589">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; Chromium няма доверие на сертификата му за сигурност. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
+<translation id="5096066272198024688">Информацията ви се запазва...</translation>
 <translation id="5097099694988056070">Статистически данни за устройството, например за използването на процесора/RAM паметта</translation>
 <translation id="5097468150760963273">27 x 39 инча</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3108,6 +3113,7 @@
 <translation id="5950901984834744590">Бръсначи и самобръсначки</translation>
 <translation id="5951495562196540101">Не е възможно регистриране с профил на потребител (налице е лиценз в пакет).</translation>
 <translation id="5952076224478208938">Марка</translation>
+<translation id="5952196777020238475">Номер на лиценза</translation>
 <translation id="5953516610448771166">Функцията „Надписи на живо“ не е налице за този медиен формат. За да получите надписи, блокирайте <ph name="CONTENT_SETTINGS" /> за този сайт.</translation>
 <translation id="5960795367348889467">Потвърждаване</translation>
 <translation id="5963413905009737549">Секция</translation>
@@ -3781,6 +3787,7 @@
 <translation id="7003278537452757231">Килими и мокети</translation>
 <translation id="7003322000677139268">Части и аксесоари за превозни средства</translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
+<translation id="700483187606163535">Данните ви се запазват в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /> Можете да използвате услугата в продуктите на Google с цел по-бързо попълване на формуляри.</translation>
 <translation id="7006930604109697472">Изпращане въпреки това</translation>
 <translation id="7009364359744329733">В момента няма достъп до тази карта. Опитайте отново по-късно.</translation>
 <translation id="7010658264061801199">Храна и напитки</translation>
@@ -4611,6 +4618,7 @@
 <translation id="8288320283441806607">За да използвате тази функция, включете „Подобряване на търсенията и сърфирането“</translation>
 <translation id="8288807391153049143">Показване на сертификата</translation>
 <translation id="8289355894181816810">Свържете се със системния си администратор, ако не сте сигурни какво означава това.</translation>
+<translation id="8291367150570302588">Документ за самоличност</translation>
 <translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Източник</translation>
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>

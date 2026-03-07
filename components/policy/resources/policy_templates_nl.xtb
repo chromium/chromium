@@ -1057,6 +1057,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Als je het beleid niet instelt, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
 
       Opmerking: Geef de beleidswaarden op in procenten, minimaal 0 en maximaal 100.</translation>
+<translation id="1732435945666510577">Logboekregistratie van DOM-activiteit van extensies uitzetten</translation>
 <translation id="1733092875104864334">Verzamelen van WebRTC-tekstlogboeken van Google-services niet toestaan</translation>
 <translation id="1733768596873041559">Standaard omleiden naar SAML IdP (voorafgaand aan <ph name="PRODUCT_NAME" /> 99 is gebruikersbevestiging vereist)</translation>
 <translation id="1736032188431871940">Toegang blokkeren tot een lijst met URL's in de incognitomodus.</translation>
@@ -1899,6 +1900,7 @@ De lettergrootte wordt aangegeven in punten.</translation>
 <translation id="2290270645214705008">Als dit beleid niet is toegepast, kan de hostservice voor externe toegang niet worden gestart of ingesteld om inkomende verbindingen te accepteren.  Dit beleid heeft geen effect op scenario's voor support op afstand.
 
           Dit beleid is niet geldig als het is ingesteld op Enabled (Aangezet), leeg wordt gelaten of niet wordt ingesteld.</translation>
+<translation id="2291341836547307786">Logboekregistratie van DOM-activiteit van extensies aanzetten</translation>
 <translation id="2292482441027364457">Als je het beleid instelt, bepaal je welke app-ID's <ph name="PRODUCT_OS_NAME" /> toont als vastgezette apps in de Launcher-balk. Deze kunnen niet worden gewijzigd door gebruikers.
 
 Geef Chrome-apps op basis van ID aan, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps; systeemweb-apps op basis van hun naam in snake_case, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />;
@@ -2162,6 +2164,51 @@ Als je het beleid niet instelt, is <ph name="POLICY_VALUE_VISIBLE" /> de standaa
 <translation id="2489558694350871332">Het apparaat toestaan virtuele machines uit te voeren</translation>
 <translation id="2492240920793040106">Rapportage van systeemgegevens en paginacontent aanzetten om Safe Browsing te helpen verbeteren</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
+<translation id="2496898792336137342">Hiermee stel je regels in die selecteren welke proxy de browser gebruikt op basis van de bestemmings-URL en specifieke netwerkvoorwaarden.
+
+Dit beleid heeft voorrang op het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" />, de extensie-API <ph name="PROXY_SETTINGS_EXTENSION_API" /> en handmatige gebruikersinstellingen. Als er geen regels in dit beleid overeenkomen, valt de browser terug op de instellingen die zijn gedefinieerd in <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+De browser evalueert de items in de lijst <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> op volgorde. Een regel wordt alleen toegepast als aan alle volgende criteria wordt voldaan:
+
+* Overeenkomst: er is een overeenkomst met minstens één URL-patroon in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+
+  * Uitsluiten: geen van de URL-patronen in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> komt overeen.
+
+  * Voorwaarden: als <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> is ingevoerd, moet aan alle vermelde voorwaarden worden voldaan. Als je dit niet instelt, wordt deze vereiste genegeerd.
+
+URL-patronen voor overeenkomende items worden beschreven op https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Het veld <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> definieert een failoverlijst. De eerste bereikbare vermelding wordt gebruikt. Ongeldige vermeldingen worden genegeerd. Je kunt tekenreeksen in PAC-stijl of URL-achtige aanduidingen gebruiken:
+
+Tekenreeksen in PAC-stijl:
+
+  * DIRECT
+
+  * PROXY host:poort
+
+  * HTTPS host:poort
+
+  * SOCKS4 host:poort
+
+  * SOCKS5 host:poort
+
+URL-achtige aanduidingen:
+
+  * http://host:poort
+
+  * https://host:poort
+
+  * socks4://host:poort
+
+  * socks5://host:poort
+
+De voorwaarde <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> controleert of een <ph name="PROXY_OVERRIDE_RULES_HOST" /> wordt omgezet in een IP-adres.
+
+* Ondersteunt hostnamen (bijv. example.com) of tekenreeksen in URI-stijl (bijv. https://example.com:123). Als je een beveiligd schema (https) gebruikt, kan dit een verzoek voor een HTTPS-record activeren (zie RFC 9460).
+
+* Stel in op <ph name="PROXY_OVERRIDE_RULES_RESOLVED" /> om aan de voorwaarde te voldoen als de omzetting is geslaagd of op <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" /> om aan de voorwaarde te voldoen als de omzetting is mislukt.
+
+De toepassing van dit beleid op beheerde apparaten wordt beïnvloed door het beleid <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> op machineniveau op de platforms waarop het wordt ondersteund. Standaard wordt het gebruik van overschrijvingsregels die zijn ingesteld door niet-aangesloten gebruikers voorkomen.</translation>
 <translation id="2497751676088107779">Gebruikersscript</translation>
 <translation id="249798396824949930"> Hiermee bepaal je of de browser het verplichte beleidsbereik op <ph name="MAC_OS_NAME" /> wel of niet kan waarnemen.
 
@@ -6438,6 +6485,7 @@ Op desktopplatforms kan het downloaden van modellen ook worden uitgezet door <ph
 <translation id="5309944663104291505">Niet toestaan dat afgedwongen geïnstalleerde geïsoleerde web-apps en kiosk-apps de Device Attributes API gebruiken</translation>
 <translation id="5311275381462687162">Instelling voor standaardgedrag voor verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="5312253627576569499">Het percentage waarmee de dimvertraging van het scherm wordt geschaald wanneer er gebruikersactiviteit wordt waargenomen terwijl het scherm is gedimd of kort nadat het scherm is uitgegaan</translation>
+<translation id="5313663675323027439">Logboekregistratie van DOM-activiteit van extensies beheren</translation>
 <translation id="5316856058059940708">Grote cursor uitzetten</translation>
 <translation id="5318185076587284965">Relayservers laten gebruiken door de host voor externe toegang</translation>
 <translation id="5321624917465764266">Als je het beleid toepast of niet instelt, kunnen de browser- en downloadgeschiedenis in Chrome worden verwijderd. Gebruikers kunnen deze instelling niet wijzigen.
@@ -9690,6 +9738,14 @@ Als je dit beleid instelt op Onwaar, wordt het oude gedrag toegepast.</translati
       Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
+<translation id="7387190801932161230">Bepaal of logboekregistratie van DOM-activiteit van extensies aanstaat voor zakelijke gebruikers.
+
+Als je het beleid toepast, wordt telemetrie voor DOM-activiteit van extensies aangezet. Dit omvat de controle van code-injectie en toegang tot gevoelige gegevens door extensies.
+
+Als je dit beleid toepast, verzamelt en verstuurt <ph name="PRODUCT_NAME" /> signalen over interacties van extensies met webpagina's naar de Extension Telemetry Service voor beveiligingscontrole.
+Als je dit beleid niet toepast of niet instelt, worden deze signalen niet verzameld of verzonden voor zakelijke gebruikers.
+
+De werkelijke waarden van gevoelige gegevens (zoals cookies of invoerwaarden) worden NIET verzameld, alleen het feit dat ze zijn geopend.</translation>
 <translation id="7389872682701720082">Als je deze instelling aanzet, worden plug-ins altijd uitgevoerd als ze niet verouderd zijn.
 
       Als deze instelling is uitgezet of niet is ingesteld, wordt gebruikers om toestemming gevraagd voordat plug-ins worden uitgevoerd waarvoor toestemming is vereist. Dit zijn de plug-ins die een beveiligingsrisico kunnen vormen.</translation>
@@ -12106,6 +12162,19 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie voor markeren via toetsenbordfocus in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+<translation id="9037098514292099199">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels.
+
+Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
+
+Dit beleid kan de configuratie per extensie uit oudere beleidsregels overschrijven.
+
+Instellingen voor extensies per ID van <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> nemen alleen de standaardinstellingen voor <ph name="DEFAULT_SCOPE" /> over voor installation_mode en update_url. De property neemt geen andere property's over. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de flag override_update_url is ingesteld op Waar, wordt de extensie geïnstalleerd en aangepast met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
+
+In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="9038839118379817310">Wifi aanzetten</translation>
 <translation id="9039822628127365650">Als dit beleid is ingesteld, geeft het de periode op waarna een gebruiker automatisch wordt uitgelogd en de sessie wordt beëindigd. De gebruiker wordt geïnformeerd over de resterende tijd door een afteltimer die in het systeemvak wordt getoond.
 
@@ -12129,21 +12198,6 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken st
 <translation id="9051019223077908578">De lijst met geïnstalleerde apps en extensies configureren op het inlogscherm</translation>
 <translation id="9053841574218808519">Plug-ins die niet verouderd zijn, altijd uitvoeren</translation>
 <translation id="9055866143096316150">Wake lock-verzoeken voor het scherm verlagen naar wake lock-verzoeken voor het systeem</translation>
-<translation id="9056262797461453462">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen aangeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
-
-Vanaf versie 73 van <ph name="PRODUCT_NAME" /> kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript dat in de adresbalk wordt ingevoerd of voor bijvoorbeeld bookmarklets.
-
-Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de modus zonder interface.
-
-Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Bijvoorbeeld:
-
-- Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren.
-
-- Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.
-
-- Gebruik een van de beleidsregels <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> of <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> in plaats van devtools://* te blokkeren.</translation>
 <translation id="9057159618445405645">Het standaardgedrag van de Chrome-browser gebruiken</translation>
 <translation id="9061455386353325110">Hiermee bepaal je of gebruikers <ph name="PRODUCT_NAME" /> generatieve AI kunnen laten gebruiken om formulieren beter te begrijpen en meer velden te laten invullen.
 

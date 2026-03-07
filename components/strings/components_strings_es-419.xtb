@@ -1846,6 +1846,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3927932062596804919">Rechazar</translation>
 <translation id="3928806096717999469">Editar, abre una ventana nueva</translation>
 <translation id="3930260846839546333">Bolsos y carteras</translation>
+<translation id="393417216277380082">Sensores de movimiento y de luz</translation>
 <translation id="3937834511546249636">Industria de defensa</translation>
 <translation id="3939773374150895049">¿Deseas usar WebAuthn en lugar de CVC?</translation>
 <translation id="3941630233824954464">Habilitar la reautenticación obligatoria</translation>
@@ -2533,6 +2534,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5018802455907704660">40.6 × 50.8 cm (16 × 20 in)</translation>
 <translation id="5019198164206649151">La memoria auxiliar se encuentra en mal estado.</translation>
 <translation id="5019293549442035120">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu Cuenta de Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">sensores de movimiento y de luz</translation>
 <translation id="5019952743397118625">La política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> está establecida. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> no controlará la disponibilidad del modo de desarrollador en la página de extensiones.</translation>
 <translation id="5021500396464456616">Comunícate con la persona que envió este vínculo</translation>
 <translation id="5021557570875267742">Haz un seguimiento de los precios con Chrome</translation>
@@ -2576,6 +2578,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5093232627742069661">Plegado en Z</translation>
 <translation id="5093417502834168387">¿Problemas para acceder? Prueba otro método</translation>
 <translation id="5094747076828555589">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; Chromium no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
+<translation id="5096066272198024688">Guardando tu información…</translation>
 <translation id="5097099694988056070">Estadísticas del dispositivo, como el uso de CPU/RAM</translation>
 <translation id="5097468150760963273">68.58 × 99.06 cm</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3782,6 +3785,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="7003278537452757231">Cubrepisos y alfombras</translation>
 <translation id="7003322000677139268">Piezas y accesorios para vehículos</translation>
 <translation id="7004499039102548441">Pestañas recientes</translation>
+<translation id="700483187606163535">Tu información se guarda en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />. Puedes usarlo en todos los productos de Google para completar formularios más rápido.</translation>
 <translation id="7006930604109697472">Enviar de todas formas</translation>
 <translation id="7009364359744329733">Esta tarjeta no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7010658264061801199">Comidas y bebidas</translation>

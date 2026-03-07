@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{Eitt vefsvæði (fleiri í samstilltum tækjum)}one{# vefsvæði (fleiri í samstilltum tækjum)}other{# vefsvæði (fleiri í samstilltum tækjum)}}</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2876369937070532032">Sendir vefslóð sumra síðna sem þú skoðar til Google, þegar öryggi þitt er í hættu</translation>
+<translation id="2877733045396505765">Þetta eyðir völdum upplýsingum sem eru vistaðar í þessu tæki og á Google-reikningnum þínum <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Skoðaðu og breyttu umfjöllunarefnum sem þú hefur falið á reikningnum þínum</translation>
 <translation id="288655811176831528">Loka flipa</translation>
 <translation id="2888631381369839306">Kveikt er á tilkynningum fyrir verðrakningu</translation>
@@ -1878,6 +1879,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="775755486779745798">Fylla lokamánuðinn „<ph name="MONTH" />“ sjálfkrafa út</translation>
 <translation id="7758789811447313947">Fjólublátt þema</translation>
 <translation id="7759809451544302770">Valfrjálst</translation>
+<translation id="7763878244904387570">Þetta eyðir völdum upplýsingum sem eru vistaðar í þessu tæki.</translation>
 <translation id="7765158879357617694">Færa</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7772948288262733182">Velkomin(n) aftur</translation>

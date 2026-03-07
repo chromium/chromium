@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />послодавца или школу
           <ph name="LIST_ITEM" />интернет провајдера
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Земља издавања</translation>
 <translation id="1337692097987160377">Дели ову картицу</translation>
 <translation id="1339601241726513588">Домен уписнице:</translation>
 <translation id="1340482604681802745">Адреса преузимања</translation>
@@ -2479,6 +2480,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте претражили</translation>
 <translation id="4930153903256238152">Велики капацитет</translation>
 <translation id="4930714375720679147">Укључи</translation>
+<translation id="4931347573573430180">Датум издавања</translation>
 <translation id="4932035752129140860">Текст који налепите или приложите се шаље у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима и може да се чува на основу смерница предузећа и може да буде видљив администратору.</translation>
 <translation id="4932733599132424254">Датум</translation>
 <translation id="4933788293078559286">Платите помоћу Pix-а</translation>
@@ -3111,6 +3113,7 @@
 <translation id="5950901984834744590">Жилети и бријачи</translation>
 <translation id="5951495562196540101">Регистрација корисничког налога није успела (доступна је лиценца пакета).</translation>
 <translation id="5952076224478208938">Произвођач</translation>
+<translation id="5952196777020238475">Број дозволе</translation>
 <translation id="5953516610448771166">Титл уживо није доступан за овај медијски садржај. Да бисте омогућили титл, блокирајте <ph name="CONTENT_SETTINGS" /> за овај сајт.</translation>
 <translation id="5960795367348889467">Верификација</translation>
 <translation id="5963413905009737549">Одељак</translation>
@@ -4614,6 +4617,7 @@
 <translation id="8288320283441806607">Да бисте користили ову функцију, укључите Побољшај претраге и прегледање</translation>
 <translation id="8288807391153049143">Прикажи сертификат</translation>
 <translation id="8289355894181816810">Контактирајте администратора мреже ако нисте сигурни шта то значи.</translation>
+<translation id="8291367150570302588">Лична карта</translation>
 <translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297545700510100061">Колачићи и други подаци о сајтовима се користе да бисте били запамћени, на пример, ради пријављивања или персонализовања огласа. Да бисте управљали колачићима за све сајтове, погледајте <ph name="SETTINGS" />.</translation>

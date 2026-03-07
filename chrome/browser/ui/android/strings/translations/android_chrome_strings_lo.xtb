@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">ບໍ່ມີບ່ອນບັນທຶກການດາວໂຫຼດທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ທ່ານໃຊ້ໃນເວັບໄຊນີ້</translation>
 <translation id="4214315110991671325">ຫາກທ່ານອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ໄດ້, Chrome ອາດໃຊ້ພວກມັນສຳລັບການໂຫຼດກ່ອນລ່ວງໜ້າ.</translation>
+<translation id="421517251707893998">ແຕະປັກໝຸດທາງລັດນີ້</translation>
 <translation id="4216511743389425832">ຟັງໜ້ານີ້</translation>
 <translation id="4225725533026049334">ກຳລັງຕິດຕາມ</translation>
 <translation id="4225895483398857530">ທາງລັດແຖບ​ເຄື່ອງ​ມື</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">ປິດເປີດ Chrome ຄືນໃໝ່</translation>
 <translation id="6513924416597632811">ສຳເນົາລິ້ງໄປຫາໜ້າຜົນການຊອກຫາສຳລັບ: <ph name="SEARCH_QUERY" />. ແຫຼ່ງທີ່ມາ: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ກວດສອບ</translation>
+<translation id="6521218807522232085">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="652948702951888897">ປະຫວັດ Chrome</translation>
 <translation id="6532866250404780454">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໃນ Chrome ຈະບໍ່ສະແດງ. ລະບົບຈະລຶບໂມງນັບຖອຍຫຼັງຂອງເວັບໄຊທັງໝົດ.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">ເຂົ້າສູ່ລະບົບເວັບໄຊ</translation>
 <translation id="6684809838922667136">ເຮັດໃຫ້ Chrome ດີຂຶ້ນ</translation>
 <translation id="6689436252814043643">ໂໝດການອ່ານບໍ່ມີໃຫ້</translation>
+<translation id="669971068476817798">ແຕະບັນທຶກ</translation>
 <translation id="6700279777779583398">ບັນທຶກຕົວເລືອກແລ້ວ</translation>
 <translation id="670498945988402717">ກວດແລ້ວມື້ວານນີ້</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">ຮັບຄຳອະທິບາຍຮູບບໍ?</translation>
 <translation id="7057969023583258980">ເປີດປະຫວັດ Chrome ແບບເຕັມ</translation>
 <translation id="7063006564040364415">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຊີບເວີຊິງຄ໌ໄດ້​.</translation>
+<translation id="7063106218165698546">ປັບແຕ່ງກຸ່ມແຖບ ແລ້ວຄລິກແລ້ວໆ</translation>
 <translation id="7071521146534760487">ຈັດການບັນຊີ</translation>
 <translation id="707155805709242880">ເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນຢູ່ຂ້າງລຸ່ມ</translation>
 <translation id="7077143737582773186">SD ກາດ</translation>

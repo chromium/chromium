@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Faili, ko šī vietne drīkst skatīt vai rediģēt</translation>
 <translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Varat pieprasīt skatīt vietņu datora versiju.</translation>
+<translation id="1109482864356262001">Funkcijas, kurām nepieciešama piekļuve kustību vai gaismas sensoriem, nedarbosies.</translation>
 <translation id="1126523729897810826">Lai pilnvērtīgi izmantotu pārlūku Chrome, veiciet tālāk ieteiktās darbības.</translation>
 <translation id="113098737392899175">Pārvietošanās lapās, izmantojot teksta kursoru, kad ir pievienota tastatūra</translation>
 <translation id="1148624853678088576">Gatavs!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Kartītes jaunas cilnes lapā</translation>
 <translation id="2241634353105152135">Tikai vienreiz</translation>
 <translation id="2253414712144136228">Noņemt vienumu “<ph name="NAME_OF_LIST_ITEM" />”</translation>
+<translation id="227763434929139750">Neļaut vietnēm izmantot kustību vai gaismas sensorus</translation>
 <translation id="228293613124499805">Lielākā daļa apmeklēto vietņu, iespējams, saglabā datus jūsu ierīcē. Bieži vien jūsu preferences vai ar vietni kopīgotā informācija tiek saglabāta, lai uzlabotu jums pieejamās lietošanas iespējas. Šo iestatījumu ieteicams atstāt ieslēgtu.</translation>
 <translation id="2289270750774289114">Vaicāt, ja vietne vēlas redzēt tuvumā esošās Bluetooth ierīces (ieteicams)</translation>
 <translation id="2315043854645842844">Operētājsistēma neatbalsta klienta puses sertifikāta atlasi.</translation>
@@ -298,6 +300,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3922092564198021702">Tālrunī atveriet sadaļu Iestatījumi.</translation>
 <translation id="3924858949939391676">Rādīt saites, kad ir ieslēgts lasīšanas režīms</translation>
 <translation id="3933121352599513978">Sakļaut nevēlamos pieprasījumus (ieteicams)</translation>
+<translation id="393417216277380082">Kustību un gaismas sensori</translation>
 <translation id="3934905113567851655">Savelciet, lai mainītu lielumu</translation>
 <translation id="3955321697524543127">Neatļaut vietnēm veidot savienojumu ar USB ierīcēm</translation>
 <translation id="3965467402665811906">Vietnes drīkst pieprasīt atļauju izmantot par jums saglabāto informāciju.</translation>
@@ -369,6 +372,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4672315773691449562">Pieskarieties vienumam “Pārlūka lietotne” un pēc tam — vienumam “Chrome”.</translation>
 <translation id="4676059169848868271">Lai ļautu lietotnei <ph name="APP_NAME" /> izmantot roku kustību izsekošanu, ieslēdziet roku kustību izsekošanu arī <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Karšu pārvaldība</translation>
+<translation id="4722332387043141878">Parasti vietnēs ierīces kustību un gaismas sensori tiek izmantoti, lai nodrošinātu noteiktas funkcijas, piemēram, virtuālo realitāti vai fitnesa aktivitāšu uzskaiti.</translation>
 <translation id="4755971844837804407">Kad šis slēdzis ir ieslēgts, vietnēs var tikt rādītas jebkādas reklāmas. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt traucējošas vai maldinošas reklāmas.</translation>
 <translation id="4779083564647765204">Tālummaiņa</translation>
 <translation id="4807122856660838973">Ieslēdziet drošu pārlūkošanu</translation>
@@ -513,6 +517,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
 <translation id="6207207788774442484">Dzēst datus un atiestatīt atļaujas</translation>
+<translation id="6211409961905616543">Vietnes var izmantot kustību un gaismas sensorus</translation>
 <translation id="6218508144653756827">Fuksīnsarkans motīvs</translation>
 <translation id="6231752747840485235">Vai atinstalēt lietotni <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Pieskarieties vienumam Pārlūka lietotne &gt; Chrome.</translation>
@@ -757,6 +762,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="8801657293260363985">V8 ir Chrome JavaScript un WebAssembly programma, kas tiek izmantota vietnes veiktspējas uzlabošanai</translation>
 <translation id="8803526663383843427">Ja ieslēgta</translation>
 <translation id="8805385115381080995">Pārlūkošana ir ātrāka, jo vietnē, visticamāk, netiks lūgts apstiprināt, ka esat īsts cilvēks</translation>
+<translation id="881644524232657178">Kad šis slēdzis ir ieslēgts, vietnes var izmantot ierīces kustību un gaismas sensorus. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot sensorus.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
 <translation id="8889294078294184559">Kad turpināsiet pārlūkošanu, vietnes var pieprasīt šo informāciju pārlūkam Chrome un saņemt apstiprinājumu no iepriekš apmeklētās vietnes, ka, visticamāk, esat īsts cilvēks.</translation>

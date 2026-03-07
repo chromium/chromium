@@ -21,7 +21,6 @@
 <translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100881991356161927">网站名称</translation>
-<translation id="1009663062402466586">游戏控件现已可供使用</translation>
 <translation id="1010136228650201057">用户数据加密</translation>
 <translation id="1010225406377140704">请联系发送者获取新的链接</translation>
 <translation id="1010833424573920260">{NUM_PAGES,plural, =1{1 个页面无响应}other{多个页面无响应}}</translation>
@@ -266,7 +265,6 @@
 <translation id="1168704243733734901">近期创建的<ph name="SUBJECT" /> AI 主题 <ph name="INDEX" />，样式是<ph name="STYLE" />，情感基调是<ph name="MOOD" />。</translation>
 <translation id="1168799042879144934">向 Google 询问与上一个页面有关的问题</translation>
 <translation id="116896278675803795">自动更改语言以匹配所选内容</translation>
-<translation id="1169266963600477608">游戏控件</translation>
 <translation id="1169435433292653700"><ph name="FILE_NAME" /> 包含敏感或危险数据。您的管理员说：“<ph name="CUSTOM_MESSAGE" />”</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> 想连接到 HID 设备</translation>
 <translation id="1172750555846831341">短边翻转</translation>
@@ -1190,7 +1188,6 @@
 <translation id="1795438342141780114">将光标重置为居中</translation>
 <translation id="1796460466266263589">若要继续使用 Gemini，请验证身份</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
-<translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1798726622311813209">信用卡和借记卡</translation>
 <translation id="1799852120691957794">无法恢复上一次会话中的窗口</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
@@ -1218,7 +1215,6 @@
 <translation id="1813828404076816564">选择“反馈”按钮即可就“共享标签页分组”功能提供反馈</translation>
 <translation id="18139523105317219">EDI 参与方名称</translation>
 <translation id="1815083418640426271">粘贴为纯文本</translation>
-<translation id="1815097521077272760">您已受邀试用此游戏的键盘控件。</translation>
 <translation id="181577467034453336">另外还有 <ph name="NUMBER_OF_VIEWS" /> 个…</translation>
 <translation id="1816036116994822943">键盘扫描速度</translation>
 <translation id="1817871734039893258">Microsoft 文件恢复</translation>
@@ -1417,7 +1413,6 @@
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941685451584875710">管理员已将您的账号配置为自动连接到 Microsoft OneDrive，但出了点问题。</translation>
 <translation id="194174710521904357">您已暂时允许此网站使用第三方 Cookie，这样浏览保护会降低，但网站功能更可能正常运行。</translation>
-<translation id="1941995177877935582">显示按键映射</translation>
 <translation id="1942128823046546853">读取和更改您在所有网站上的所有数据</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
 <translation id="1944535645109964458">没有可用的通行密钥</translation>
@@ -1906,7 +1901,6 @@
 <translation id="2278668501808246459">正在启动容器管理器</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
 <translation id="228059581448666199">左键点击鼠标</translation>
-<translation id="2281863813036651454">用鼠标左键点击</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
 <translation id="2283599456633275070">旅游</translation>
@@ -3730,7 +3724,6 @@
 <translation id="3512465804715993309">自动调节选中内容</translation>
 <translation id="3513019849832307207">加入并打开</translation>
 <translation id="3513563267917474897">色调滑块从 <ph name="MIN_VALUE" /> 移动到 <ph name="MAX_VALUE" /></translation>
-<translation id="3514335087372914653">游戏控制</translation>
 <translation id="3514647716686280777">Chrome 正在为您提供标准安全保护。为了进一步防范危险的网站、下载内容和扩展程序，请在 Chrome 设置中开启“增强型安全浏览”功能。</translation>
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
@@ -4766,7 +4759,6 @@
 <translation id="4193575319002689239">显示卡片</translation>
 <translation id="419427585139779713">一次输入 1 个音节</translation>
 <translation id="4195001808989442226">无法打开 Steam for Chromebook（Beta 版）</translation>
-<translation id="4195378859392041564">使用鼠标点击任意按键，然后按一个键盘按键即可自定义</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4198268995694216131">更多网站</translation>
@@ -4812,7 +4804,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="4231141543165771749">关闭游戏控制器</translation>
 <translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4232376164796433044">密码和自动填充</translation>
@@ -4860,7 +4851,6 @@
 <translation id="4258348331913189841">文件系统</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留分组}other{保留分组}}</translation>
 <translation id="4259388776256904261">该过程可能需要一点时间</translation>
-<translation id="4260699894265914672">按一个键盘按键即可自定义</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
 <translation id="4262004481148703251">忽略警告</translation>
 <translation id="4263223596040212967">请检查键盘布局，然后重试。</translation>
@@ -5397,7 +5387,6 @@
 <translation id="4628762811416793313">未完成 Linux 容器设置。请重试。</translation>
 <translation id="4629521233550547305">打开“<ph name="PROFILE_NAME" />”个人资料</translation>
 <translation id="4629803160911640220">可信</translation>
-<translation id="4631572301265416783">最近聊天记录</translation>
 <translation id="4631637535315947773">与您最常访问的网站对应的快捷方式已被移除，因为您近期未使用它们</translation>
 <translation id="4631955550884380853">集中收音</translation>
 <translation id="4632655012900268062">自定义卡片</translation>
@@ -5824,7 +5813,6 @@
 <translation id="491779113051926205">ChromeOS 流量计数器</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 希望与“<ph name="EXTENSION_NAME" />”扩展程序通信</translation>
 <translation id="4918086044614829423">接受</translation>
-<translation id="4918134162946436591">显示提示叠加层</translation>
 <translation id="4918762404810341788">复制并打开</translation>
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="4921348630401250116">文字转语音</translation>
@@ -6182,6 +6170,7 @@
 <translation id="5181140330217080051">正在下载</translation>
 <translation id="5181172023548002891">保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具</translation>
 <translation id="5181551096188687373">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中。</translation>
+<translation id="5182671122927417841">停用扩展程序</translation>
 <translation id="5183344263225877832">重置所有 HID 设备权限？</translation>
 <translation id="5184063094292164363">JavaScript 控制台(&amp;J)</translation>
 <translation id="5184209580557088469">已有票据使用此用户名</translation>
@@ -6719,7 +6708,6 @@
 <translation id="5551573675707792127">键盘和文字输入</translation>
 <translation id="5551753770140674714">使用您的同步口令加密数据，Google Pay 中的支付方式和地址不在加密范围内。</translation>
 <translation id="5553089923092577885">证书政策映射</translation>
-<translation id="5554240068773209752">点击此处可自定义控件</translation>
 <translation id="5554403733534868102">此后，再也不必等待系统完成更新</translation>
 <translation id="5554489410841842733">如果该扩展程序可以在当前网页上运行，则会显示此图标。</translation>
 <translation id="5554720593229208774">电子邮件证书授权中心</translation>
@@ -7478,7 +7466,6 @@
 <translation id="6078752646384677957">请检查您的麦克风和音量。</translation>
 <translation id="608029822688206592">找不到任何网络。请插入 SIM 卡，然后重试。</translation>
 <translation id="6080689532560039067">检查系统时间</translation>
-<translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6086004606538989567">您已验证的账号无权访问此设备。</translation>
 <translation id="6086350918562605938">按系统安装的更新程序</translation>
@@ -7964,7 +7951,6 @@
 <translation id="641899100123938294">扫描新设备</translation>
 <translation id="6419524191360800346">可以升级至 Debian 11 (Bullseye)</translation>
 <translation id="6419546358665792306">加载未打包的扩展程序</translation>
-<translation id="6422467884169339421">最近聊天记录</translation>
 <translation id="6423685703035190381">在手机上接收价格跟踪提醒</translation>
 <translation id="642469772702851743">此设备（序列号：<ph name="SERIAL_NUMBER" />）已被所有者锁定。</translation>
 <translation id="6425556984042222041">文字转语音的语速</translation>
@@ -8725,6 +8711,7 @@
 <translation id="6935286146439255109">找不到送纸盘</translation>
 <translation id="6938386202199793006">您有 1 台已保存的打印机。</translation>
 <translation id="6938606182859551396">如需在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知，请按照手机上的说明向 Google Play 服务授予通知权限。</translation>
+<translation id="6941514251635934269">询问关于此文档的问题</translation>
 <translation id="694168622559714949">您的管理员已设置默认语言，您无法修改。</translation>
 <translation id="6941937518557314510">请登录“<ph name="TOKEN_NAME" />”，使用证书向 <ph name="HOST_NAME" /> 验证身份。</translation>
 <translation id="6943060957016121200">启用“即时网络共享”</translation>
@@ -8823,7 +8810,6 @@
 <translation id="7003339318920871147">网络数据库</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 个文件}other{{COUNT} 个文件}}</translation>
 <translation id="7003644704445046755">已下载高品质<ph name="LANGUAGE" />语音文件</translation>
-<translation id="7003705861991657723">Alpha 版</translation>
 <translation id="7003723821785740825">为您的设备设置更快速的解锁方式</translation>
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">此网站可能会使用 MIDI</translation>
@@ -9620,7 +9606,6 @@
 <translation id="7560756177962144929">同步您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7561759921596375678">开启声音</translation>
-<translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7563576896417108627">自定义和控制“<ph name="APP_NAME" />”。应用有更新。</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
 <translation id="7564847347806291057">结束进程</translation>
@@ -9939,7 +9924,6 @@
 <translation id="7769709635093101687">用于暂停的键盘快捷键</translation>
 <translation id="7769748505895274502">收起“最近关闭的标签页”部分</translation>
 <translation id="7770072242481632881">侧边栏选择器</translation>
-<translation id="7770450735129978837">用鼠标右键点击</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>
 <translation id="7770827449915784217">固件已是最新版本</translation>
 <translation id="7771452384635174008">布局</translation>
@@ -10118,7 +10102,6 @@
 <translation id="7900950034255258543">为确保您可以安全使用此设备，您的组织可以查看设备操作系统、浏览器和设置方面的信息，以及设备上安装了哪些软件</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7901728443188947649">生成图片</translation>
-<translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
 <translation id="7903481341948453971">填充密码时使用屏幕锁定</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="7903984238293908205">片假名</translation>
@@ -11011,6 +10994,7 @@
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8482077254400484047">在此处管理闲置标签页的外观</translation>
+<translation id="8482446859919078896">询问关于这些文件的问题</translation>
 <translation id="8486666913807228950">原因：系统在“会被强制在…中打开”列表中发现了反转规则“<ph name="REVERT_RULE" />”。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8487699605742506766">热点</translation>

@@ -1844,6 +1844,7 @@
 <translation id="3927932062596804919">നിരസിക്കൂ</translation>
 <translation id="3928806096717999469">എഡിറ്റ് ചെയ്യുക, പുതിയ വിൻഡോയിൽ തുറക്കുന്നു</translation>
 <translation id="3930260846839546333">ഹാൻഡ്‌ബാഗുകളും പേഴ്‌സുകളും</translation>
+<translation id="393417216277380082">മോഷൻ, ലൈറ്റ് സെൻസറുകൾ</translation>
 <translation id="3937834511546249636">പ്രതിരോധ വ്യവസായം</translation>
 <translation id="3939773374150895049">CVC-യ്ക്ക് പകരം WebAuthn ഉപയോഗിക്കണോ?</translation>
 <translation id="3941630233824954464">നിർബന്ധിതമായുള്ള വീണ്ടും പരിശോധിച്ചുറപ്പിക്കൽ പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -2531,6 +2532,7 @@
 <translation id="5018802455907704660">16 x 20 ഇഞ്ച്</translation>
 <translation id="5019198164206649151">ബാക്കിംഗ് സംഭരണം മോശം അവസ്ഥയിലാണ്</translation>
 <translation id="5019293549442035120">സംരക്ഷിച്ച വിലാസങ്ങൾ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഉപയോഗിക്കാം. ഈ വിലാസം നിങ്ങളുടെ Google അക്കൗണ്ടിൽ (<ph name="USER_EMAIL" />) സംരക്ഷിക്കും.</translation>
+<translation id="5019819206251569004">മോഷൻ, ലൈറ്റ് സെൻസറുകൾ</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> നയം സജ്ജീകരിച്ചു. വിപുലീകരണങ്ങൾ പേജിലെ ഡെവലപ്പർ മോഡിന്റെ ലഭ്യതയെ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> നിയന്ത്രിക്കില്ല.</translation>
 <translation id="5021500396464456616">ഈ ലിങ്ക് അയച്ച വ്യക്തിയെ ബന്ധപ്പെടുക</translation>
 <translation id="5021557570875267742">Chrome ഉപയോഗിച്ച് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
@@ -2574,6 +2576,7 @@
 <translation id="5093232627742069661">Z-മടക്ക്</translation>
 <translation id="5093417502834168387">സൈൻ ഇൻ ചെയ്യുന്നതിൽ പ്രശ്നമുണ്ടോ? മറ്റൊരു രീതി പരീക്ഷിക്കുക</translation>
 <translation id="5094747076828555589">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിനെ Chromium-ത്തിന്ന് പരിചയമില്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
+<translation id="5096066272198024688">നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിക്കുന്നു...</translation>
 <translation id="5097099694988056070">CPU/RAM ഉപയോഗം പോലുള്ള ഉപകരണ സ്ഥിതിവിവരക്കണക്കുകൾ</translation>
 <translation id="5097468150760963273">27 x 39 ഇഞ്ച്</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3783,7 @@
 <translation id="7003278537452757231">പരവതാനികളും കാർപ്പെറ്റുകളും</translation>
 <translation id="7003322000677139268">വാഹന ഭാഗങ്ങളും ആക്‌സസറികളും</translation>
 <translation id="7004499039102548441">സമീപകാല ടാബുകൾ</translation>
+<translation id="700483187606163535">നിങ്ങളുടെ വിവരങ്ങൾ <ph name="ACCOUNT" /> എന്ന അക്കൗണ്ടിനുള്ള <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു. ഫോമുകൾ വേഗത്തിൽ പൂരിപ്പിക്കാൻ നിങ്ങൾക്ക് Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഇത് ഉപയോഗിക്കാം.</translation>
 <translation id="7006930604109697472">എന്തായാലും അയയ്‌ക്കുക</translation>
 <translation id="7009364359744329733">ഈ കാർഡ് ഇപ്പോൾ ലഭ്യമല്ല, പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7010658264061801199">ഭക്ഷണപാനീയങ്ങൾ</translation>

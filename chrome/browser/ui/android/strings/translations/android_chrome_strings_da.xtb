@@ -746,6 +746,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4198423547019359126">Der er ingen tilgængelige downloadplaceringer</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Du har brugt den på dette website</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
+<translation id="421517251707893998">Tryk på Fastgør denne genvej</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
 <translation id="4225725533026049334">Følger</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
@@ -1325,6 +1326,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6508722015517270189">Genstart Chrome</translation>
 <translation id="6513924416597632811">Kopiér linket til søgeresultatsiden for: <ph name="SEARCH_QUERY" />. Kilde: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verificer</translation>
+<translation id="6521218807522232085">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6532866250404780454">Websites, du besøger i Chrome, vises ikke. Alle timere for websites slettes.</translation>
@@ -1373,6 +1375,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6684262542644248484">Log ind på et website</translation>
 <translation id="6684809838922667136">Gør Chrome bedre</translation>
 <translation id="6689436252814043643">Læsetilstand er ikke tilgængelig</translation>
+<translation id="669971068476817798">Tryk på Gem</translation>
 <translation id="6700279777779583398">Dine valg er gemt</translation>
 <translation id="670498945988402717">Tjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
@@ -1482,6 +1485,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>
 <translation id="7057969023583258980">Åbn hele Chrome-historikken</translation>
 <translation id="7063006564040364415">Der kunne ikke oprettes forbindelse til synkroniseringsserveren.</translation>
+<translation id="7063106218165698546">Tilpas fanegruppen, og tryk på Udfør</translation>
 <translation id="7071521146534760487">Administrer konto</translation>
 <translation id="707155805709242880">Vælg, hvad der skal synkroniseres, nedenfor</translation>
 <translation id="7077143737582773186">SD-kort</translation>

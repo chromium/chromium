@@ -217,6 +217,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
           <ph name="LIST_ITEM" />Je werkgever of school
           <ph name="LIST_ITEM" />Je internetprovider
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Land van uitgifte</translation>
 <translation id="1337692097987160377">Dit tabblad delen</translation>
 <translation id="1339601241726513588">Inschrijvingsdomein:</translation>
 <translation id="1340482604681802745">Ophaaladres</translation>
@@ -2473,6 +2474,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op 'Tab' en vervolgens op 'Enter' om te zoeken</translation>
 <translation id="4930153903256238152">Hoge capaciteit</translation>
 <translation id="4930714375720679147">Aanzetten</translation>
+<translation id="4931347573573430180">Uitgavedatum</translation>
 <translation id="4932035752129140860">Tekst die je plakt of bijvoegt, wordt voor analyse naar Google Cloud of naar derden gestuurd. Deze kan bijvoorbeeld worden gescand op gevoelige gegevens en worden opgeslagen op basis van het bedrijfsbeleid en zichtbaar zijn voor je beheerder.</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933788293078559286">Betalen met Pix</translation>
@@ -3105,6 +3107,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5950901984834744590">Scheermessen en scheerapparaten</translation>
 <translation id="5951495562196540101">Kan consumentenaccount niet inschrijven (verpakte licentie beschikbaar).</translation>
 <translation id="5952076224478208938">Merk</translation>
+<translation id="5952196777020238475">Licentienummer</translation>
 <translation id="5953516610448771166">Live ondertiteling is niet beschikbaar voor deze media. Blokkeer <ph name="CONTENT_SETTINGS" /> voor deze site als je ondertiteling wilt hebben.</translation>
 <translation id="5960795367348889467">Verificatie</translation>
 <translation id="5963413905009737549">Sectie</translation>
@@ -4608,6 +4611,7 @@ Aanvullende informatie:
 <translation id="8288320283441806607">Zet Zoekopdrachten en browsefunctionaliteit verbeteren aan om deze functie te gebruiken</translation>
 <translation id="8288807391153049143">Certificaat bekijken</translation>
 <translation id="8289355894181816810">Neem contact op met je netwerkbeheerder als je niet zeker weet wat dit betekent.</translation>
+<translation id="8291367150570302588">Identiteitskaart</translation>
 <translation id="829335040383910391">geluid</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297545700510100061">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="SETTINGS" /> om de cookies voor alle sites te beheren.</translation>

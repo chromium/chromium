@@ -1842,6 +1842,7 @@
 <translation id="3927932062596804919">ଅସ୍ଵୀକାର</translation>
 <translation id="3928806096717999469">ଏଡିଟ କରନ୍ତୁ, ଏକ ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲେ</translation>
 <translation id="3930260846839546333">ହେଣ୍ଡବେଗ ଓ ପର୍ସ</translation>
+<translation id="393417216277380082">ମୋସନ ଏବଂ ଲାଇଟ ସେନ୍ସର</translation>
 <translation id="3937834511546249636">ଡିଫେନ୍ସ ଇଣ୍ଡଷ୍ଟ୍ରି</translation>
 <translation id="3939773374150895049">CVC ପରିବର୍ତ୍ତେ WebAuthn ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="3941630233824954464">ବାଧ୍ୟତାମୂଳକ ପୁଣି-ପ୍ରମାଣୀକରଣକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -2529,6 +2530,7 @@
 <translation id="5018802455907704660">16 x 20 ଇଞ୍ଚ</translation>
 <translation id="5019198164206649151">ବ୍ୟାକିଂ ଷ୍ଟୋର୍‌ ଖରାପ ସ୍ଥିତିରେ ଅଛି</translation>
 <translation id="5019293549442035120">ସେଭ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକୁ ଆପଣ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ। ଏହି ଠିକଣାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ, <ph name="USER_EMAIL" />ରେ ସେଭ କରାଯିବ।</translation>
+<translation id="5019819206251569004">ମୋସନ ଏବଂ ଲାଇଟ ସେନ୍ସର</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> ନୀତି ସେଟ କରାଯାଇଛି। <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ଏକ୍ସଟେନସନ ପୃଷ୍ଠାରେ ଡେଭେଲପର ମୋଡର ଉପଲବ୍ଧତାକୁ ନିୟନ୍ତ୍ରଣ କରିବ ନାହିଁ।</translation>
 <translation id="5021500396464456616">ଏହି ଲିଙ୍କ ପଠାଇଥିବା ବ୍ୟକ୍ତିଙ୍କୁ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="5021557570875267742">Chrome ମାଧ୍ୟମରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
@@ -2572,6 +2574,7 @@
 <translation id="5093232627742069661">Z-ଫୋଲ୍ଡ</translation>
 <translation id="5093417502834168387">ସାଇନ ଇନ କରିବାରେ ସମସ୍ୟା ହୋଇଛି? ଅନ୍ୟ ଏକ ଉପାୟ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="5094747076828555589">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ Chromium ଦ୍ୱାରା ବିଶ୍ୱସନୀୟ ନୁହେଁ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନ୍‌ଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
+<translation id="5096066272198024688">ଆପଣଙ୍କ ସୂଚନା ସେଭ କରାଯାଉଛି...</translation>
 <translation id="5097099694988056070">ଡିଭାଇସ୍ ପରିସଂଖ୍ୟାନ ଯେପରି CPU/RAMର ବ୍ୟବହାର</translation>
 <translation id="5097468150760963273">27 x 39 ଇଞ୍ଚ</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3777,6 +3780,7 @@
 <translation id="7003278537452757231">ରଗ୍ସ ଏବଂ କାର୍ପେଟ</translation>
 <translation id="7003322000677139268">ଗାଡ଼ି ପାର୍ଟ ଏବଂ ଆକ୍ସେସୋରୀଗୁଡ଼ିକ</translation>
 <translation id="7004499039102548441">ସାମ୍ପ୍ରତିକ ଟାବ୍‌</translation>
+<translation id="700483187606163535"><ph name="ACCOUNT" /> ପାଇଁ ଆପଣଙ୍କ ସୂଚନାକୁ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ରେ ସେଭ କରାଯାଇଛି। ଫର୍ମଗୁଡ଼ିକୁ ଶୀଘ୍ର ପୂରଣ କରିବା ପାଇଁ ଆପଣ ଏହାକୁ ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="7006930604109697472">ଯେ କୌଣସି ଭାବେ ପଠାନ୍ତୁ</translation>
 <translation id="7009364359744329733">ଏହି କାର୍ଡ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ନାହିଁ, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7010658264061801199">ଖାଦ୍ୟ ଓ ପାନୀୟ</translation>

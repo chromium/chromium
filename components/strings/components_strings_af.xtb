@@ -1845,6 +1845,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3927932062596804919">Weier</translation>
 <translation id="3928806096717999469">Wysig, maak ’n nuwe venster oop</translation>
 <translation id="3930260846839546333">Handsakke en beursies</translation>
+<translation id="393417216277380082">Beweging- en ligsensors</translation>
 <translation id="3937834511546249636">Verdedigingbedryf</translation>
 <translation id="3939773374150895049">Gebruik WebAuthn pleks van CVC?</translation>
 <translation id="3941630233824954464">Aktiveer verpligte herstawing</translation>
@@ -2532,6 +2533,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5018802455907704660">16x20 dm.</translation>
 <translation id="5019198164206649151">Agtergrondstoor in swak toestand</translation>
 <translation id="5019293549442035120">Jy kan gestoorde adresse oral in Google-produkte gebruik. Hierdie adres sal in jou Google-rekening, <ph name="USER_EMAIL" />, gestoor word.</translation>
+<translation id="5019819206251569004">beweging- en ligsensors</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" />-beleid is gestel. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sal nie die beskikbaarheid van ontwikkelaarmodus op uitbreidingsbladsy beheer nie.</translation>
 <translation id="5021500396464456616">Kontak die persoon wat hierdie skakel gestuur het</translation>
 <translation id="5021557570875267742">Spoor pryse na met Chrome</translation>
@@ -2575,6 +2577,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5093232627742069661">Z-vou</translation>
 <translation id="5093417502834168387">Sukkel jy om aan te meld? Probeer op ’n ander manier</translation>
 <translation id="5094747076828555589">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat word nie deur Chromium vertrou nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
+<translation id="5096066272198024688">Stoor tans jou inligting …</translation>
 <translation id="5097099694988056070">Toestelstatistieke, soos CPU- of RAM-gebruik</translation>
 <translation id="5097468150760963273">27x39 dm.</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="7003278537452757231">Matte en tapyte</translation>
 <translation id="7003322000677139268">Voertuigonderdele en -bykomstighede</translation>
 <translation id="7004499039102548441">Onlangse oortjies</translation>
+<translation id="700483187606163535">Jou inligting is in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gestoor vir <ph name="ACCOUNT" />. Jy kan dit in alle Google-produkte gebruik om vorms vinniger in te vul.</translation>
 <translation id="7006930604109697472">Stuur in elk geval</translation>
 <translation id="7009364359744329733">Hierdie kaart is nie nou beskikbaar nie. Probeer later weer.</translation>
 <translation id="7010658264061801199">Kos en drinkgoed</translation>

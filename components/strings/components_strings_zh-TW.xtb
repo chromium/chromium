@@ -1843,6 +1843,7 @@
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="3928806096717999469">編輯，開啟新視窗</translation>
 <translation id="3930260846839546333">手提包與皮包</translation>
+<translation id="393417216277380082">動作和光源感應器</translation>
 <translation id="3937834511546249636">國防工業</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代信用卡驗證碼嗎？</translation>
 <translation id="3941630233824954464">啟用強制重新驗證</translation>
@@ -2530,6 +2531,7 @@
 <translation id="5018802455907704660">16 x 20 吋</translation>
 <translation id="5019198164206649151">備份儲存狀態不佳</translation>
 <translation id="5019293549442035120">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
+<translation id="5019819206251569004">動作和光源感應器</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策已設定。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不會控管能否在擴充功能頁面上使用開發人員模式。</translation>
 <translation id="5021500396464456616">請與傳送這個連結的使用者聯絡</translation>
 <translation id="5021557570875267742">使用 Chrome 追蹤價格</translation>
@@ -2573,6 +2575,7 @@
 <translation id="5093232627742069661">彈簧二摺</translation>
 <translation id="5093417502834168387">登入時發生問題嗎？試試其他方法</translation>
 <translation id="5094747076828555589">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chromium 的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
+<translation id="5096066272198024688">正在儲存你的資訊...</translation>
 <translation id="5097099694988056070">CPU/RAM 使用量等裝置統計資料</translation>
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3779,6 +3782,7 @@
 <translation id="7003278537452757231">地墊與地毯</translation>
 <translation id="7003322000677139268">汽車零件與配件</translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
+<translation id="700483187606163535">這項資訊會儲存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。你可以在各項 Google 產品中使用這項資訊，更快填寫表單。</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7009364359744329733">目前無法使用這張卡片，請稍後再試。</translation>
 <translation id="7010658264061801199">餐飲</translation>

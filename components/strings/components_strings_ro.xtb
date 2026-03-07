@@ -1845,6 +1845,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3927932062596804919">Refuză</translation>
 <translation id="3928806096717999469">Editează, se deschide într-o fereastră nouă</translation>
 <translation id="3930260846839546333">Genți și poșete</translation>
+<translation id="393417216277380082">Senzori de mișcare și de lumină</translation>
 <translation id="3937834511546249636">Industria apărării</translation>
 <translation id="3939773374150895049">Folosești WebAuthn în loc de CVC?</translation>
 <translation id="3941630233824954464">Activează reautentificarea obligatorie</translation>
@@ -2532,6 +2533,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5018802455907704660">16 x 20 in</translation>
 <translation id="5019198164206649151">Depozit de fundal în stare nevalidă</translation>
 <translation id="5019293549442035120">Poți folosi adresele salvate în toate produsele Google. Această adresă se va salva în Contul tău Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">senzori de mișcare și de lumină</translation>
 <translation id="5019952743397118625">Politica <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> este setată. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> nu va controla disponibilitatea modului pentru dezvoltatori în pagina de extensii.</translation>
 <translation id="5021500396464456616">Contactează persoana care ți-a trimis acest link</translation>
 <translation id="5021557570875267742">Urmărește prețurile cu Chrome</translation>
@@ -2575,6 +2577,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5093232627742069661">Îndoire în Z</translation>
 <translation id="5093417502834168387">Probleme la conectare? Încearcă altă metodă</translation>
 <translation id="5094747076828555589">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chromium nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
+<translation id="5096066272198024688">Ți se salvează informațiile...</translation>
 <translation id="5097099694988056070">Statistici privind dispozitivul, cum ar fi utilizarea CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7003278537452757231">Covoare și preșuri</translation>
 <translation id="7003322000677139268">Piese și accesorii pentru vehicule</translation>
 <translation id="7004499039102548441">File recente</translation>
+<translation id="700483187606163535">Informațiile tale sunt salvate în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pentru <ph name="ACCOUNT" />. Îl poți folosi în produsele Google pentru a completa mai rapid formulare.</translation>
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7009364359744329733">Momentan, cardul nu este disponibil. Încearcă din nou mai târziu.</translation>
 <translation id="7010658264061801199">Mâncare și băutură</translation>

@@ -746,6 +746,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Ön használta ezen a webhelyen</translation>
 <translation id="4214315110991671325">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéshez használja fel őket.</translation>
+<translation id="421517251707893998">Koppintson a Parancsikon kitűzése lehetőségre</translation>
 <translation id="4216511743389425832">Oldal meghallgatása</translation>
 <translation id="4225725533026049334">Követve</translation>
 <translation id="4225895483398857530">Eszköztár gyorsparancs</translation>
@@ -1325,6 +1326,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6508722015517270189">Indítsa újra a Chrome-ot</translation>
 <translation id="6513924416597632811">A következő keresési kifejezés találatoldalára mutató link másolása: <ph name="SEARCH_QUERY" />. Forrás: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Ellenőrzés</translation>
+<translation id="6521218807522232085">Létrehozhatja, mentheti és kezelheti jelszavait, hogy egyszerűen bejelentkezhessen.</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="652948702951888897">Chrome-előzmények</translation>
 <translation id="6532866250404780454">A Chrome-ban felkeresett webhelyek nem fognak megjelenni. A webhelyekkel kapcsolatos összes időzítés törlődik.</translation>
@@ -1373,6 +1375,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6684262542644248484">Jelentkezzen be egy webhelyre.</translation>
 <translation id="6684809838922667136">A Chrome fejlesztése</translation>
 <translation id="6689436252814043643">Az Olvasási mód nem áll rendelkezésre.</translation>
+<translation id="669971068476817798">Koppintson a Mentés gombra.</translation>
 <translation id="6700279777779583398">A választott beállításait mentettük</translation>
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
 <translation id="6710213216561001401">Előző</translation>
@@ -1482,6 +1485,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
 <translation id="7057969023583258980">A teljes Chrome-előzmények megnyitása</translation>
 <translation id="7063006564040364415">Nem sikerült csatlakozni a szinkronizálószerverhez.</translation>
+<translation id="7063106218165698546">Szabja személyre a lapcsoportot, majd válassza a Kész gombot</translation>
 <translation id="7071521146534760487">Fiók kezelése</translation>
 <translation id="707155805709242880">Alább válassza ki a szinkronizálni kívánt elemeket</translation>
 <translation id="7077143737582773186">SD-kártya</translation>

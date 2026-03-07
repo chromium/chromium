@@ -746,6 +746,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Koristili ste na ovoj web lokaciji</translation>
 <translation id="4214315110991671325">Ako dozvolite kolačiće, Chrome ih može koristiti za predučitavanje.</translation>
+<translation id="421517251707893998">Dodirnite Zakači ovu prečicu</translation>
 <translation id="4216511743389425832">Poslušajte ovu stranicu</translation>
 <translation id="4225725533026049334">Pratite</translation>
 <translation id="4225895483398857530">Prečica za alatnu traku</translation>
@@ -1325,6 +1326,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6508722015517270189">Ponovo pokrenite Chrome</translation>
 <translation id="6513924416597632811">Kopiranje linka stranice rezultata pretraživanja: <ph name="SEARCH_QUERY" />. Izvor: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Potvrdi</translation>
+<translation id="6521218807522232085">Kreirajte i sačuvajte lozinke te upravljajte njima da se možete lako prijaviti</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="652948702951888897">Historija Chromea</translation>
 <translation id="6532866250404780454">Neće se prikazivati web lokacije koje posjetite preko Chromea. Svi tajmeri web lokacija će biti izbrisani.</translation>
@@ -1373,6 +1375,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6684262542644248484">Prijavite se na web lokaciju</translation>
 <translation id="6684809838922667136">Poboljšajte Chrome</translation>
 <translation id="6689436252814043643">Način rada za čitanje nije dostupan</translation>
+<translation id="669971068476817798">Dodirnite Sačuvaj</translation>
 <translation id="6700279777779583398">Odabiri su sačuvani</translation>
 <translation id="670498945988402717">Provjereno jučer</translation>
 <translation id="6710213216561001401">Nazad</translation>
@@ -1482,6 +1485,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7054588988317389591">Preuzeti opise slika?</translation>
 <translation id="7057969023583258980">Otvori cijelu historiju Chromea</translation>
 <translation id="7063006564040364415">Povezivanje na server za sinhronizaciju nije uspjelo.</translation>
+<translation id="7063106218165698546">Prilagodite grupu kartica i kliknite na Gotovo</translation>
 <translation id="7071521146534760487">Upravljaj računom</translation>
 <translation id="707155805709242880">U nastavku odaberite šta želite sinhronizirati</translation>
 <translation id="7077143737582773186">SD kartica</translation>

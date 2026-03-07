@@ -1845,6 +1845,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3927932062596804919">Recusar</translation>
 <translation id="3928806096717999469">Editar, abre uma nova janela</translation>
 <translation id="3930260846839546333">Bolsas de mão e carteiras</translation>
+<translation id="393417216277380082">Sensores de movimento e de luz</translation>
 <translation id="3937834511546249636">Indústria de defesa</translation>
 <translation id="3939773374150895049">Quer utilizar o WebAuthn em vez do CVC?</translation>
 <translation id="3941630233824954464">Ative a reautenticação obrigatória</translation>
@@ -2532,6 +2533,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5018802455907704660">16 x 20 pol.</translation>
 <translation id="5019198164206649151">Armazenamento de segurança em mau estado</translation>
 <translation id="5019293549442035120">Pode usar moradas guardadas entre produtos Google. Esta morada vai ser guardada na sua Conta Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">sensores de movimento e de luz</translation>
 <translation id="5019952743397118625">A política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> está definida. A política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não controla a disponibilidade do modo de programador na página de extensões.</translation>
 <translation id="5021500396464456616">Contacte a pessoa que enviou este link</translation>
 <translation id="5021557570875267742">Acompanhe os preços com o Chrome</translation>
@@ -2575,6 +2577,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5093232627742069661">Dobra em Z</translation>
 <translation id="5093417502834168387">Está a ter dificuldade em iniciar sessão? Experimentar outra forma</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chromium não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
+<translation id="5096066272198024688">A guardar as suas informações…</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como utilização da CPU/RAM.</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3781,6 +3784,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003322000677139268">Peças e acessórios para veículos</translation>
 <translation id="7004499039102548441">Separadores recentes</translation>
+<translation id="700483187606163535">As suas informações são guardadas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />. Pode usá-las nos produtos Google para preencher formulários mais rapidamente.</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7009364359744329733">O cartão não está disponível neste momento. Tente mais tarde.</translation>
 <translation id="7010658264061801199">Alimentos e bebidas</translation>

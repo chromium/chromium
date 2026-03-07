@@ -1305,7 +1305,7 @@
 <translation id="5718049162805123412">您应立即更改密码</translation>
 <translation id="5721040778297053709">将信用卡放到此框内</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
-<translation id="5724590854763964497">默认情况下，开始新对话时，系统会分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google，但这些信息不会用于改进生成式 AI 模型。您可以随时更改此设置。</translation>
+<translation id="5724590854763964497">开始新对话时，系统会默认分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google，但这些信息不会用于改进生成式 AI 模型。你可以随时更改此设置。</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
 <translation id="5728700505257787410">很抱歉，登录您的账号时出现问题。</translation>
@@ -2144,7 +2144,7 @@
 <translation id="8660600697590740984">使用智能镜头搜索复制的图片</translation>
 <translation id="866266761389616183">喔唷，崩溃啦！</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
-<translation id="8664992138761940052">默认情况下，开始新对话时，系统会分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google。您可以随时更改此设置。</translation>
+<translation id="8664992138761940052">开始新对话时，系统会默认分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google。你可以随时更改此设置。</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
 <translation id="8672642291731179042">翻译网页</translation>
 <translation id="8672733398999596205">全部可选</translation>

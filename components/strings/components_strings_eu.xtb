@@ -1841,6 +1841,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3927932062596804919">Ukatu</translation>
 <translation id="3928806096717999469">Editatu, beste leiho batean irekitzen da</translation>
 <translation id="3930260846839546333">Esku-poltsak eta zorroak</translation>
+<translation id="393417216277380082">Mugimendu- eta argi-sentsoreak</translation>
 <translation id="3937834511546249636">Defentsaren industria</translation>
 <translation id="3939773374150895049">WebAuthn erabili nahi duzu CVCaren ordez?</translation>
 <translation id="3941630233824954464">Gaitu derrigorrez berriro autentifikatzea</translation>
@@ -2528,6 +2529,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5018802455907704660">40,64 × 50,8 cm (16 × 20 in)</translation>
 <translation id="5019198164206649151">Ordezko memoria egoera txarrean dago</translation>
 <translation id="5019293549442035120">Gordetako helbideak Google-ren produktu guztietan erabil ditzakezu. Helbide hau Google-ko kontuan (<ph name="USER_EMAIL" />) gordeko da.</translation>
+<translation id="5019819206251569004">mugimendu- eta argi-sentsoreak</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> gidalerroa dago ezarrita. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gidalerroak ez du kontrolatuko luzapenen orrian garatzaile modua erabiltzeko aukera.</translation>
 <translation id="5021500396464456616">Jarri esteka bidali duen pertsonarekin harremanetan</translation>
 <translation id="5021557570875267742">Egin prezioen jarraipena Chrome-ren bidez</translation>
@@ -2571,6 +2573,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5093232627742069661">Z-erako tolestura</translation>
 <translation id="5093417502834168387">Arazoak dituzu saioa hasteko? Erabili beste modu bat</translation>
 <translation id="5094747076828555589">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chromium ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
+<translation id="5096066272198024688">Informazioa gordetzen…</translation>
 <translation id="5097099694988056070">Gailuaren estatistikak, hala nola CPU/RAM erabilera</translation>
 <translation id="5097468150760963273">68,58 × 99,06 cm (27 × 39 in)</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3776,6 +3779,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="7003278537452757231">Alfonbrak eta moketak</translation>
 <translation id="7003322000677139268">Ibilgailuen piezak eta osagarriak</translation>
 <translation id="7004499039102548441">Azkenaldiko fitxak</translation>
+<translation id="700483187606163535">Informazioa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> zerbitzuan gordeko da, <ph name="ACCOUNT" /> kontuan. Google-ren produktu guztietan erabil dezakezu inprimakiak bizkorrago betetzeko.</translation>
 <translation id="7006930604109697472">Bidali hala ere</translation>
 <translation id="7009364359744329733">Txartel hau ez dago erabilgarri une honetan. Saiatu berriro geroago.</translation>
 <translation id="7010658264061801199">Jan-edanak</translation>

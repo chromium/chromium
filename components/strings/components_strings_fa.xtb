@@ -1846,6 +1846,7 @@
 <translation id="3927932062596804919">ردکردن</translation>
 <translation id="3928806096717999469">ویرایش، پنجره جدیدی را باز می‌کند</translation>
 <translation id="3930260846839546333">کیف دستی و کیف پول</translation>
+<translation id="393417216277380082">حسگرهای حرکتی و نوری</translation>
 <translation id="3937834511546249636">صنایع دفاعی</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
 <translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
@@ -2533,6 +2534,7 @@
 <translation id="5018802455907704660">۲۰ × ۱۶ اینچ</translation>
 <translation id="5019198164206649151">پشتیبان‌گیری ذخیره در وضعیت نادرست است</translation>
 <translation id="5019293549442035120">‏می‌توانید از نشانی‌های ذخیره‌شده در محصولات Google استفاده کنید. این نشانی در «حساب Google» شما (<ph name="USER_EMAIL" />) ذخیره خواهد شد.</translation>
+<translation id="5019819206251569004">حسگرهای حرکتی و نوری</translation>
 <translation id="5019952743397118625">خط‌مشی <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> تنظیم شده است. ‫<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> دردسترس بودن حالت توسعه‌دهنده در صفحه افزونه‌ها را کنترل نخواهد کرد.</translation>
 <translation id="5021500396464456616">با شخصی که این پیوند را ارسال کرده است تماس بگیرید</translation>
 <translation id="5021557570875267742">‏ردیابی قیمت‌ها با Chrome</translation>
@@ -2576,6 +2578,7 @@
 <translation id="5093232627742069661">‏تاخوردگی Z شکل</translation>
 <translation id="5093417502834168387">برای وارد شدن به سیستم مشکل دارید؟ روش دیگری را امتحان کنید</translation>
 <translation id="5094747076828555589">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیت آن مورداعتماد Chromium نیست. علت این موضوع می‌توان پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
+<translation id="5096066272198024688">درحال ذخیره کردن اطلاعات شما…</translation>
 <translation id="5097099694988056070">‏آمار دستگاه مانند استفاده از CPU یا RAM</translation>
 <translation id="5097468150760963273">۳۹ × ۲۷ اینچ</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3782,6 +3785,7 @@
 <translation id="7003278537452757231">فرش و قالیچه</translation>
 <translation id="7003322000677139268">قطعات و لوازم جانبی خودرو</translation>
 <translation id="7004499039102548441">زبانه‌های جدید</translation>
+<translation id="700483187606163535">‏اطلاعاتتان در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود. می‌توانید از آن در محصولات Google برای تکمیل سریع‌تر فرم‌ها استفاده کنید.</translation>
 <translation id="7006930604109697472">در هر حال فرستاده شود</translation>
 <translation id="7009364359744329733">این کارت درحال‌حاضر دردسترس نیست. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="7010658264061801199">غذا و نوشیدنی</translation>

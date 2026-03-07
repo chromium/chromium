@@ -746,6 +746,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
 <translation id="4209029522667123437">Utilizzato su questo sito: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4214315110991671325">Se consenti i cookie, Chrome potrebbe usarli per il caricamento.</translation>
+<translation id="421517251707893998">Tocca Fissa questa scorciatoia</translation>
 <translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4225725533026049334">Stai seguendo</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
@@ -1325,6 +1326,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6508722015517270189">Riavvia Chrome</translation>
 <translation id="6513924416597632811">Copia il link alla pagina dei risultati di ricerca per: <ph name="SEARCH_QUERY" />. Fonte: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Verifica</translation>
+<translation id="6521218807522232085">Crea, salva e gestisci le tue password in modo da poter accedere facilmente</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="652948702951888897">Cronologia di Chrome</translation>
 <translation id="6532866250404780454">I siti che visiti in Chrome non verranno mostrati. Tutti i timer dei siti saranno eliminati.</translation>
@@ -1373,6 +1375,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6684262542644248484">Accedi a un sito web</translation>
 <translation id="6684809838922667136">Migliora Chrome</translation>
 <translation id="6689436252814043643">Modalità Lettura non disponibile</translation>
+<translation id="669971068476817798">Tocca Salva</translation>
 <translation id="6700279777779583398">Selezioni salvate</translation>
 <translation id="670498945988402717">Eseguito ieri</translation>
 <translation id="6710213216561001401">Precedente</translation>
@@ -1482,6 +1485,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7054588988317389591">Vuoi recuperare le descrizioni delle immagini?</translation>
 <translation id="7057969023583258980">Apri la cronologia completa di Chrome</translation>
 <translation id="7063006564040364415">Impossibile collegarsi al server di sincronizzazione.</translation>
+<translation id="7063106218165698546">Personalizza il gruppo di schede e tocca Fine</translation>
 <translation id="7071521146534760487">Gestisci account</translation>
 <translation id="707155805709242880">Scegli qui sotto i dati da sincronizzare</translation>
 <translation id="7077143737582773186">Scheda SD</translation>

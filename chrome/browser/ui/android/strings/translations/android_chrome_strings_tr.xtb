@@ -746,6 +746,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4198423547019359126">Kullanılabilir indirme yeri yok</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Bu sitede kullandınız</translation>
 <translation id="4214315110991671325">Çerezlere izin verirseniz Chrome bunları önceden yükleme işlemi için kullanabilir.</translation>
+<translation id="421517251707893998">Bu kısayolu sabitle'ye dokunun</translation>
 <translation id="4216511743389425832">Bu sayfayı sesli oku</translation>
 <translation id="4225725533026049334">Takip ediliyor:</translation>
 <translation id="4225895483398857530">Araç çubuğu kısayolu</translation>
@@ -1325,6 +1326,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6508722015517270189">Chrome'u yeniden başlatın</translation>
 <translation id="6513924416597632811"><ph name="SEARCH_QUERY" /> için arama sonuçları sayfasının bağlantısını kopyalayın. Kaynak: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Doğrula</translation>
+<translation id="6521218807522232085">Kolayca oturum açabilmek için şifreler oluşturun, kaydedin ve yönetin</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
 <translation id="6532866250404780454">Chrome'da ziyaret ettiğiniz siteler gösterilmez. Tüm site zamanlayıcıları silinir.</translation>
@@ -1373,6 +1375,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6684262542644248484">Bir web sitesinde oturum açın.</translation>
 <translation id="6684809838922667136">Chrome'u daha iyi hale getirin</translation>
 <translation id="6689436252814043643">Okuma Modu kullanılamıyor</translation>
+<translation id="669971068476817798">Kaydet'e dokunun</translation>
 <translation id="6700279777779583398">Seçimler kaydedildi</translation>
 <translation id="670498945988402717">Dün kontrol edildi</translation>
 <translation id="6710213216561001401">Önceki</translation>
@@ -1482,6 +1485,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="7054588988317389591">Resim açıklaması almak istiyor musunuz?</translation>
 <translation id="7057969023583258980">Chrome geçmişinin tamamını aç</translation>
 <translation id="7063006564040364415">Senkronizasyon sunucusuna bağlanılamadı.</translation>
+<translation id="7063106218165698546">Sekme grubunu özelleştirip Bitti'yi tıklayın</translation>
 <translation id="7071521146534760487">Hesabı yönet</translation>
 <translation id="707155805709242880">Aşağıda nelerin senkronize edileceğini seçin</translation>
 <translation id="7077143737582773186">SD kart</translation>

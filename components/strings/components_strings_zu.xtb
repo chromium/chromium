@@ -1842,6 +1842,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="3927932062596804919">Phika</translation>
 <translation id="3928806096717999469">Hlela, kuvuleka ewindini elisha</translation>
 <translation id="3930260846839546333">Izikhwama Nezikhwama Zemali</translation>
+<translation id="393417216277380082">Izinzwa zokunyakaza nezokukhanya</translation>
 <translation id="3937834511546249636">Umsebenzi wozokuvikela</translation>
 <translation id="3939773374150895049">Sebenzisa i-WebAuthn esikhundleni se-CVC?</translation>
 <translation id="3941630233824954464">Nika amandla ukuqinisekiswa kabusha okuphoqelekile</translation>
@@ -2529,6 +2530,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5018802455907704660">U-16 x 20 phakathi</translation>
 <translation id="5019198164206649151">Isekela isitolo esisesimeni esibi</translation>
 <translation id="5019293549442035120">Ungasebenzisa amakheli alondoloziwe kuyo yonke imikhiqizo ye-Google. Leli kheli lizolondolozwa ku-Google Account yakho, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">izinzwa zokunyakaza nezokukhanya</translation>
 <translation id="5019952743397118625">Inqubomgomo ye-<ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> isethiwe. I-<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ngeke ilawule ukutholakala kwemodi yonjiniyela ekhasini lezandiso.</translation>
 <translation id="5021500396464456616">Xhumana nomuntu othumele le linki</translation>
 <translation id="5021557570875267742">Landelela izintengo nge-Chrome</translation>
@@ -2572,6 +2574,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5093232627742069661">Z-fold</translation>
 <translation id="5093417502834168387">Unenkinga yokungena ngemvume? Zama enye indlela</translation>
 <translation id="5094747076828555589">Le seva ayikwazanga ukukhombisa ukuthi iyi-<ph name="DOMAIN" />; isitifiketi sayo sokuvikeleka asithenjiwe i-Chromium. Lokhu kungenzeka kubangelwe ukulungisa okungalungile noma umhlaseli uzama ukufinyelela uxhumo lwakho.</translation>
+<translation id="5096066272198024688">Ilondoloza imininingwane yakho...</translation>
 <translation id="5097099694988056070">Izibalo zedivayisi ezifana nokusetshenziswa kwe-CPU/i-RAM</translation>
 <translation id="5097468150760963273">U-27 x 39 phakathi</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3778,6 +3781,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="7003278537452757231">Umati Namakhaphethi</translation>
 <translation id="7003322000677139268">Izingxenye Zemoto Nezisetshenziswa</translation>
 <translation id="7004499039102548441">Amathebhu wakamuva</translation>
+<translation id="700483187606163535">Imininingwane yakho igcinwe ku-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kokuthi <ph name="ACCOUNT" /> Ungayisebenzisa kuyo yonke imikhiqizo yeGoogle ukuze ugcwalise amafomu ngokushesha.</translation>
 <translation id="7006930604109697472">Thumela noma kunjalo</translation>
 <translation id="7009364359744329733">Leli khadi alitholakali okwamanje. Sicela uzame futhi ngemva kwesikhathi.</translation>
 <translation id="7010658264061801199">Ukudla Nesiphuzo</translation>

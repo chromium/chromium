@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Използвано от вас на този сайт</translation>
 <translation id="4214315110991671325">Ако разрешите „бисквитките“, Chrome може да ги използва за предварителното зареждане.</translation>
+<translation id="421517251707893998">Докоснете „Фиксиране на този пряк път“</translation>
 <translation id="4216511743389425832">Слушане на тази страница</translation>
 <translation id="4225725533026049334">Следено</translation>
 <translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Рестартирайте Chrome.</translation>
 <translation id="6513924416597632811">Копиране на връзката към страницата с резултати от търсенето за следната заявка: „<ph name="SEARCH_QUERY" />“. Източник: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Потвърждаване</translation>
+<translation id="6521218807522232085">Създавайте, запазвайте и управлявайте паролите си, за да можете лесно да влизате в профила си</translation>
 <translation id="6527303717912515753">Споделяне</translation>
 <translation id="652948702951888897">История в Chrome</translation>
 <translation id="6532866250404780454">Посетените от вас сайтове в Chrome няма да се показват. Всички таймери за сайтове ще бъдат изтрити.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Влезте в уебсайт</translation>
 <translation id="6684809838922667136">Подобряване на Chrome</translation>
 <translation id="6689436252814043643">Няма достъп до режима на четене</translation>
+<translation id="669971068476817798">Докоснете „Запазване“</translation>
 <translation id="6700279777779583398">Предпочитанията са запазени</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Искате ли да получавате описания на изображенията?</translation>
 <translation id="7057969023583258980">Отваряне на цялата история в Chrome</translation>
 <translation id="7063006564040364415">Не можа да се установи връзка със синхронизиращия сървър.</translation>
+<translation id="7063106218165698546">Персонализирайте групата раздели и изберете „Готово“</translation>
 <translation id="7071521146534760487">Управление на профила</translation>
 <translation id="707155805709242880">Изберете какво да синхронизирате по-долу</translation>
 <translation id="7077143737582773186">SD карта</translation>

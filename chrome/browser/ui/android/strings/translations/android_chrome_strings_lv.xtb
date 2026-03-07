@@ -746,6 +746,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Jūs to izmantojāt šajā vietnē</translation>
 <translation id="4214315110991671325">Ja atļaujat sīkfailus, Chrome var tos izmantot iepriekšējai ielādei.</translation>
+<translation id="421517251707893998">Pieskarieties vienumam “Piespraust šo saīsni”.</translation>
 <translation id="4216511743389425832">Klausīties šo lapu</translation>
 <translation id="4225725533026049334">Sekojat</translation>
 <translation id="4225895483398857530">Rīkjoslas saīsne</translation>
@@ -1325,6 +1326,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6508722015517270189">Restartējiet pārlūku Chrome</translation>
 <translation id="6513924416597632811">Kopēt saiti uz meklēšanas rezultātu lapu vaicājumam “<ph name="SEARCH_QUERY" />”. Avots: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Verificēt</translation>
+<translation id="6521218807522232085">Izveidojiet, saglabājiet un pārvaldiet paroles, lai varētu ērti pierakstīties.</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="652948702951888897">Chrome vēsture</translation>
 <translation id="6532866250404780454">Netiks rādītas vietnes, ko apmeklējat pārlūkā Chrome. Tiks izdzēsti visi vietņu taimeri.</translation>
@@ -1373,6 +1375,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6684262542644248484">Pierakstieties kādā vietnē.</translation>
 <translation id="6684809838922667136">Uzlabojiet Chrome</translation>
 <translation id="6689436252814043643">Lasīšanas režīms nav pieejams.</translation>
+<translation id="669971068476817798">Pieskarieties vienumam “Saglabāt”.</translation>
 <translation id="6700279777779583398">Izvēlētās lietotnes ir saglabātas</translation>
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
@@ -1482,6 +1485,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7054588988317389591">Vai vēlaties iespējot attēlu aprakstus?</translation>
 <translation id="7057969023583258980">Atvērt visu Chrome vēsturi</translation>
 <translation id="7063006564040364415">Nevarēja izveidot savienojumu ar sinhronizācijas serveri.</translation>
+<translation id="7063106218165698546">Pielāgojiet ciļņu grupu un pieskarieties vienumam “Gatavs”.</translation>
 <translation id="7071521146534760487">Pārvaldīt kontu</translation>
 <translation id="707155805709242880">Tālāk izvēlieties, kādus datus sinhronizēt.</translation>
 <translation id="7077143737582773186">SD karte</translation>

@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Χρησιμοποιήθηκε σε αυτόν τον ιστότοπο</translation>
 <translation id="4214315110991671325">Εάν επιτρέψετε τη χρήση cookie, το Chrome μπορεί να τα χρησιμοποιήσει για την προφόρτωση.</translation>
+<translation id="421517251707893998">Πατήστε Καρφίτσωμα αυτής της συντόμευσης</translation>
 <translation id="4216511743389425832">Ακρόαση αυτής της σελίδας</translation>
 <translation id="4225725533026049334">Ακολουθείτε</translation>
 <translation id="4225895483398857530">Συντόμευση γραμμής εργαλείων</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Επανεκκινήστε το Chrome</translation>
 <translation id="6513924416597632811">Αντιγραφή συνδέσμου στη σελίδα αποτελεσμάτων αναζήτησης για: <ph name="SEARCH_QUERY" />. Πηγή: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Επαλήθευση</translation>
+<translation id="6521218807522232085">Δημιουργήστε, αποθηκεύστε και διαχειριστείτε κωδικούς πρόσβασης, ώστε να μπορείτε να συνδέεστε εύκολα</translation>
 <translation id="6527303717912515753">Κοινοποίηση</translation>
 <translation id="652948702951888897">Ιστορικό Chrome</translation>
 <translation id="6532866250404780454">Δεν θα εμφανίζονται οι ιστότοποι που επισκέπτεστε στο Chrome. Όλα τα χρονόμετρα ιστοτόπων θα διαγραφούν.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Συνδεθείτε σε έναν ιστότοπο</translation>
 <translation id="6684809838922667136">Βελτίωση του Chrome</translation>
 <translation id="6689436252814043643">Η λειτουργία Ανάγνωσης δεν είναι διαθέσιμη</translation>
+<translation id="669971068476817798">Πατήστε Αποθήκευση</translation>
 <translation id="6700279777779583398">Οι επιλογές αποθηκεύτηκαν</translation>
 <translation id="670498945988402717">Ελέγχθηκε χθες</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7057969023583258980">Άνοιγμα πλήρους ιστορικού Chrome</translation>
 <translation id="7063006564040364415">Δεν ήταν δυνατή η σύνδεση στον διακομιστή συγχρονισμού.</translation>
+<translation id="7063106218165698546">Προσαρμόστε την ομάδα καρτελών και πατήστε Τέλος</translation>
 <translation id="7071521146534760487">Διαχείριση λογαριασμού</translation>
 <translation id="707155805709242880">Επιλέξτε παρακάτω τι θέλετε να συγχρονίσετε.</translation>
 <translation id="7077143737582773186">Secure Digital</translation>

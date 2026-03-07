@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
 <translation id="4209029522667123437">‫<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • החשבון שהשתמשת בו באתר הזה</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
+<translation id="421517251707893998">לוחצים על "הצמדת קיצור הדרך הזה"</translation>
 <translation id="4216511743389425832">האזנה לדף הזה</translation>
 <translation id="4225725533026049334">במעקב</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
 <translation id="6513924416597632811">העתקת הקישור לדף תוצאות החיפוש של: <ph name="SEARCH_QUERY" />. מקור: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">אימות</translation>
+<translation id="6521218807522232085">כדי להיכנס לחשבון בקלות, אפשר ליצור, לשמור ולנהל סיסמאות</translation>
 <translation id="6527303717912515753">שיתוף</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6532866250404780454">‏אתרים שנכנסים אליהם ב-Chrome לא יופיעו. כל הטיימרים של האתרים יימחקו.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">נכנסים לחשבון באתר כלשהו</translation>
 <translation id="6684809838922667136">‏משפרים את Chrome</translation>
 <translation id="6689436252814043643">מצב הקריאה לא זמין</translation>
+<translation id="669971068476817798">לוחצים על "שמירה"</translation>
 <translation id="6700279777779583398">הבחירות נשמרו</translation>
 <translation id="670498945988402717">התבצעה בדיקה אתמול</translation>
 <translation id="6710213216561001401">הקודם</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">רוצה לקבל תיאורי תמונות?</translation>
 <translation id="7057969023583258980">‏פתיחת ההיסטוריה המלאה ב-Chrome</translation>
 <translation id="7063006564040364415">לא ניתן היה להתחבר אל שרת הסנכרון.</translation>
+<translation id="7063106218165698546">מתאימים אישית את קבוצת הכרטיסיות ולוחצים על "סיום"</translation>
 <translation id="7071521146534760487">ניהול חשבון</translation>
 <translation id="707155805709242880">יש לבחור למטה מה לסנכרן</translation>
 <translation id="7077143737582773186">‏כרטיס SD</translation>

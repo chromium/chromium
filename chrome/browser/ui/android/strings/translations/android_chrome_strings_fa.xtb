@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
 <translation id="4209029522667123437">‫<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • در این سایت استفاده کرده‌اید</translation>
 <translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگذاری استفاده کند.</translation>
+<translation id="421517251707893998">روی «سنجاق کردن این میان‌بر» تک‌ضرب بزنید</translation>
 <translation id="4216511743389425832">خواندن این صفحه</translation>
 <translation id="4225725533026049334">دنبال می‌کنید</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">‏بازراه‌اندازی Chrome</translation>
 <translation id="6513924416597632811">کپی کردن پیوند صفحه نتایج جستجو برای: <ph name="SEARCH_QUERY" />. منبع: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">درستی‌سنجی</translation>
+<translation id="6521218807522232085">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم وارد شوید</translation>
 <translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="652948702951888897">‏سابقه Chrome</translation>
 <translation id="6532866250404780454">‏سایت‌هایی که در Chrome بازدید می‌کنید، نشان داده نخواهد شد. همه تایمرهای سایت حذف خواهد شد.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">به سیستم وب‌سایتی وارد شوید</translation>
 <translation id="6684809838922667136">‏بهتر کردن Chrome</translation>
 <translation id="6689436252814043643">«حالت خواندن» دردسترس نیست</translation>
+<translation id="669971068476817798">روی «ذخیره» تک‌ضرب بزنید.</translation>
 <translation id="6700279777779583398">انتخاب‌ها ذخیره شد</translation>
 <translation id="670498945988402717">آخرین بررسی: دیروز</translation>
 <translation id="6710213216561001401">قبلی</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>
 <translation id="7057969023583258980">‏باز کردن سابقه کامل Chrome</translation>
 <translation id="7063006564040364415">اتصال به سرور همگام‌سازی ممکن نیست.</translation>
+<translation id="7063106218165698546">گروه زبانه‌ها را سفارشی‌سازی کنید و روی «تمام» بزنید</translation>
 <translation id="7071521146534760487">مدیریت حساب</translation>
 <translation id="707155805709242880">آنچه را باید همگام‌سازی شود در زیر انتخاب کنید</translation>
 <translation id="7077143737582773186">‏کارت SD</translation>
