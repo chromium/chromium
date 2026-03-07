@@ -97,6 +97,12 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
 void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
   double scale_factor;
 
+  Settings* settings = document_->GetSettings();
+  if (!settings) {
+    // Non-rendered documents (no Frame) return nullptr for GetSettings().
+    return;
+  }
+
   // For compat, we don't expose env(preferred-text-scale)'s true value to pages
   // in WebView if the page has no meta text-scale tag and the app does not
   // enable autosizing.
@@ -111,20 +117,18 @@ void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
     // handle scaling themselves, so we populate env() to let them use it.
     // Elsewhere, in response to meta, we have disabled Webview inflating all
     // text.
-    scale_factor =
-        FontSizeFunctions::SnapToClosestFontScaleBucket(
-            document_->GetSettings()->GetAccessibilityFontScaleFactor()) *
-        (document_->GetSettings()->GetDefaultFontSize() / 16.0);
+    scale_factor = FontSizeFunctions::SnapToClosestFontScaleBucket(
+                       settings->GetAccessibilityFontScaleFactor()) *
+                   (settings->GetDefaultFontSize() / 16.0);
   } else {
     const bool should_hide_env_to_prevent_double_scaling =
-        document_->GetSettings()->GetScaleAllFontsIfNoMetaTextScaleTag() &&
-        !document_->GetSettings()->GetTextAutosizingEnabled();
+        settings->GetScaleAllFontsIfNoMetaTextScaleTag() &&
+        !settings->GetTextAutosizingEnabled();
 
-    scale_factor =
-        should_hide_env_to_prevent_double_scaling
-            ? 1.0
-            : FontSizeFunctions::SnapToClosestFontScaleBucket(
-                  document_->GetSettings()->GetAccessibilityFontScaleFactor());
+    scale_factor = should_hide_env_to_prevent_double_scaling
+                       ? 1.0
+                       : FontSizeFunctions::SnapToClosestFontScaleBucket(
+                             settings->GetAccessibilityFontScaleFactor());
   }
 
   SetVariable(UADefinedVariable::kPreferredTextScale,

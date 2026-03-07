@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<link rel="help" href="https://crbug.com/490318095">
+<script>
+  // 1. Create a document with a frame
+  let iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  let doc = iframe.contentDocument;
+
+  // 2. Detach the frame (so GetSettings() becomes null)
+  iframe.remove();
+
+  // 3. Trigger the crash logic
+  doc.head.innerHTML = `<meta name="text-scale" content="scale">`;
+</script>
