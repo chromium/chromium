@@ -59,6 +59,7 @@ export const defaultConfig = [
       'eslint-plugin-lit/no-private-properties': ['error', {'private': '_$'}],
       // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui/webui_lit_style_guide.md#Inline-Lambdas
       '@webui-eslint/inline-event-handler': 'error',
+      '@webui-eslint/lit-element-expressions': 'error',
       '@webui-eslint/lit-element-template-structure': 'error',
     },
   },

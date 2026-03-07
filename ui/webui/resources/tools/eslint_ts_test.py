@@ -577,5 +577,71 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementBindings(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test([
+          "with_webui_plugin_lit_element_bindings_violations.ts",
+          "with_webui_plugin_lit_element_bindings_violations.html.ts",
+      ])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-expressions"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _INCORRECT_ATTRIBUTE_ERROR = "Incorrect assignment to property '%(propertyName)s' using attribute expression '%(attributeName)s='. Object/Array Lit properties can only be initialized with property expressions. Change to '%(propertyExpression)s' instead, or update the property's type if Object/Array is not accurate"
+
+    _INCORRECT_BOOLEAN_ERROR = "Incorrect assignment to property '%(propertyName)s' using boolean attribute expression '?%(attributeName)s='. Boolean attribute expressions should only be assigned to boolean properties. To bind to the truthiness of '%(propertyName)s', convert it to a boolean using '!!'"
+
+    # The following strings *should* appear in the error output.
+    errors = [
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'value',
+            'propertyName': 'value',
+            'propertyExpression': '.value=',
+        },
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'aria-description',
+            'propertyName': 'description',
+            'propertyExpression': '.ariaDescription=',
+        },
+        _INCORRECT_BOOLEAN_ERROR % {
+            'attributeName': 'invalid',
+            'propertyName': 'errorMessage',
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    # The following strings *should not* appear in the error output.
+    non_errors = [
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'aria-label',
+            'propertyName': 'label',
+            'propertyExpression': '.ariaLabel=',
+        },
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'error-message',
+            'propertyName': 'errorMessage',
+            'propertyExpression': '.errorMessage=',
+        },
+        _INCORRECT_BOOLEAN_ERROR % {
+            'attributeName': 'disabled',
+            'propertyName': 'disabled',
+        },
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'min',
+            'propertyName': 'limits',
+            'propertyExpression': '.min=',
+        },
+        _INCORRECT_ATTRIBUTE_ERROR % {
+            'attributeName': 'max',
+            'propertyName': 'limits',
+            'propertyExpression': '.max=',
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
+
 if __name__ == "__main__":
   unittest.main()

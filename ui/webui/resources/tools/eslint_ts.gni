@@ -31,6 +31,7 @@ template("eslint_ts") {
       tsconfig,
       "//ui/webui/resources/tools/eslint/inline_event_handler.js",
       "//ui/webui/resources/tools/eslint/lit_property_accessor.js",
+      "//ui/webui/resources/tools/eslint/lit_element_bindings.js",
       "//ui/webui/resources/tools/eslint/lit_element_invalid_interface.js",
       "//ui/webui/resources/tools/eslint/lit_element_structure.js",
       "//ui/webui/resources/tools/eslint/lit_element_template_structure.js",

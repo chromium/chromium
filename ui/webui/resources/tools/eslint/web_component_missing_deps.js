@@ -8,6 +8,8 @@ import path from 'node:path';
 import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 
+import {extractClassImport} from './query_utils.js';
+
 export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
   name: 'web-component-missing-deps',
   meta: {
@@ -82,44 +84,26 @@ export const webComponentMissingDeps = ESLintUtils.RuleCreator.withoutDocs({
     // Regular expression to extract all DOM tag names from a string.
     const TAG_NAME_REGEX = /<(?<tagName>[^ >\/!\n]+)/g;
 
-    const importNodes = [];
-
     return {
-      ['ImportDeclaration'](node) {
-        if (node.specifiers.length > 0) {
-          importNodes.push(node);
-        }
-      },
       ['FunctionDeclaration[id.name=/getHtml|getTemplate/]'](node) {
         // Looking for either of the following patterns
         //  - Lit templates: 'getHtml(this: SomeType) {...}'
         //  - Polymer templates: 'getTemplate() {...}'
 
-        if (node.id.name === 'getHtml' &&
-            (node.params.length !== 1 || node.params[0].name !== 'this')) {
+        if (node.id.name === 'getHtml') {
+          const classParams = extractClassImport(node, context.sourceCode.ast);
+
           // Handle a few cases where lit-html is used directly and there is no
           // classDefinitionFilename file.
-          return;
-        }
+          if (classParams.type === '') {
+            return;
+          }
 
-        if (node.id.name === 'getHtml' && !classDefinitionFile) {
           // Handle cases for sub-templates by finding the appropriate file.
-          const paramSelector = esquery.parse('Identifier[name="this"]');
-          const matchingNodes = esquery.match(node, paramSelector);
-          const className =
-              matchingNodes[0].typeAnnotation.typeAnnotation.typeName.name;
-          // Find the URL of the import that imports the class.
-          const classImport =
-              importNodes
-                  .find(importNode => {
-                    return importNode.specifiers.some(specifier => {
-                      return specifier.local.name === className;
-                    });
-                  })
-                  .source.value;
-          const classFile = path.basename(classImport).replace('.js', '.ts');
-          classDefinitionFile =
-              sourceFiles.find(f => path.basename(f.fileName) === classFile);
+          if (!classDefinitionFile) {
+            classDefinitionFile = sourceFiles.find(
+                f => path.basename(f.fileName) === classParams.fileName);
+          }
         }
 
         // Extract function's body as a string.

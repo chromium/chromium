@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import assert from 'node:assert';
+import path from 'node:path';
 
 import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 
@@ -60,4 +61,38 @@ export function isCrLitElementSubclass(node, programNode) {
 
 export function dashCaseToCamelCase(string) {
   return string.replace(/-([a-z])/g, group => group[1].toUpperCase());
+}
+
+// Extracts information about the imported element class from a Lit element
+// template file. Returns an object containing 2 properties:
+// type: The type of the "this" parameter in the getHtml() method.
+// fileName: The name of the file the class type is imported from.
+export function extractClassImport(node, programNode) {
+  assert.ok(node.type === 'FunctionDeclaration' && node.id.name === 'getHtml');
+  const paramSelector = esquery.parse('Identifier[name="this"]');
+  const matchingNodes = esquery.match(node, paramSelector);
+  if (matchingNodes.length === 0) {
+    // Case where there is no "this" parameter for the getHtml() method
+    return {
+      type: '',
+      fileName: '',
+    };
+  }
+
+  const type = matchingNodes[0].typeAnnotation.typeAnnotation.typeName.name;
+  // Find the URL of the import that imports the class.
+  const importNodeQuery = esquery.parse('ImportDeclaration');
+  const importNodes = esquery.match(programNode, importNodeQuery);
+
+  const classImport = importNodes
+                          .find(importNode => {
+                            return importNode.specifiers.some(specifier => {
+                              return specifier.local.name === type;
+                            });
+                          })
+                          .source.value;
+  return {
+    type: type,
+    fileName: path.basename(classImport).replace('.js', '.ts'),
+  };
 }
