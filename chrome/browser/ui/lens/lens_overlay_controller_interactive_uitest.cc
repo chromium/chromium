@@ -1885,6 +1885,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
                        ComposeboxLensButtonClearsThenTogglesOverlay) {
+  WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
@@ -1893,6 +1894,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   const DeepQuery kPathToLensButton{"contextual-tasks-app",
                                     "contextual-tasks-composebox",
                                     "cr-composebox", "#lensIcon"};
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto off_center_point = base::BindLambdaForTesting([browser_view]() {
@@ -1913,6 +1916,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
       InstrumentNonTabWebView(kSidePanelWebContentsId,
                               kContextualTasksSidePanelWebViewElementId),
+      // Fix load-abort in the side panel by navigating the embedded frame
+      // to a local URL. This keeps the searchbox visible.
+      ExecuteJsAt(
+          kSidePanelWebContentsId, {"contextual-tasks-app", "#threadFrame"},
+          base::StringPrintf("el => { el.src = '%s'; }", url.spec().c_str())),
+      // Force the searchbox to stay visible by mimicking an AI page status.
+      ExecuteJsAt(kSidePanelWebContentsId, DeepQuery{"contextual-tasks-app"},
+                  "el => { el.isAiPage_ = true; }"),
       WaitForWebContentsReady(kSidePanelWebContentsId),
 
       // 2. Click the Lens button in the side panel to clear the overlay.
