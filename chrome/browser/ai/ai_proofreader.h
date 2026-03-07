@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_AI_AI_PROOFREADER_H_
 #define CHROME_BROWSER_AI_AI_PROOFREADER_H_
 
+#include <optional>
+#include <string_view>
+
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
@@ -42,6 +46,12 @@ class AIProofreader : public AIContextBoundObject,
 
   static std::unique_ptr<optimization_guide::proto::ProofreadOptions>
   ToProtoOptions(const blink::mojom::AIProofreaderCreateOptionsPtr& options);
+
+  // Returns a set of BCP 47 base language codes that are supported and enabled,
+  // or nullopt if all languages are enabled (e.g. via local flags).
+  static std::optional<base::flat_set<std::string>>
+  GetEnabledLanguageBaseCodes();
+  static base::flat_set<std::string> GetDefaultSupportedLanguageBaseCodes();
 
  private:
   friend class AITestUtils;

@@ -7,7 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
@@ -37,8 +39,11 @@ class AIRewriter : public AIContextBoundObject,
   static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
   ToProtoOptions(const blink::mojom::AIRewriterCreateOptionsPtr& options);
 
-  // Returns a set of BCP 47 base language codes that are supported and enabled.
-  static base::flat_set<std::string_view> GetSupportedLanguageBaseCodes();
+  // Returns a set of BCP 47 base language codes that are supported and enabled,
+  // or nullopt if all languages are enabled (e.g. via local flags).
+  static std::optional<base::flat_set<std::string>>
+  GetEnabledLanguageBaseCodes();
+  static base::flat_set<std::string> GetDefaultSupportedLanguageBaseCodes();
 
   // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,

@@ -48,8 +48,9 @@ inline void SendStreamingStatus(
 blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
     optimization_guide::OnDeviceError error);
 
-base::flat_set<std::string_view> RestrictSupportedLanguagesForFeature(
-    const base::flat_set<std::string_view>& supported,
+// Returns nullopt if all languages are enabled.
+std::optional<base::flat_set<std::string>> GetEnabledLanguagesForFeature(
+    const base::flat_set<std::string>& default_supported,
     const base::FeatureParam<std::string>& feature_param);
 
 }  // namespace on_device_ai

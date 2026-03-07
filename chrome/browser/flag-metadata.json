@@ -9095,6 +9095,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "summarizer-api-for-gemini-nano",
+    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 159
+  },
+  {
     "name": "summarizer-api-performance-preference",
     "owners": [
       "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "jaeone@google.com" ],

@@ -106,16 +106,24 @@ std::string AISummarizer::CombineContexts(std::string_view shared,
 }
 
 // static
-base::flat_set<std::string_view> AISummarizer::GetSupportedLanguageBaseCodes() {
+std::optional<base::flat_set<std::string>>
+AISummarizer::GetEnabledLanguageBaseCodes() {
   // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAISummarizationAPILanguagesEnabled{
       &blink::features::kAISummarizationAPI, "langs", /*default=*/"en,es,ja"};
+  return on_device_ai::GetEnabledLanguagesForFeature(
+      GetDefaultSupportedLanguageBaseCodes(),
+      kAISummarizationAPILanguagesEnabled);
+}
+
+// static
+base::flat_set<std::string>
+AISummarizer::GetDefaultSupportedLanguageBaseCodes() {
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-  return on_device_ai::RestrictSupportedLanguagesForFeature(
-      base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
-      kAISummarizationAPILanguagesEnabled);
+  return base::flat_set<std::string>(kSupportedBaseLanguages.begin(),
+                                     kSupportedBaseLanguages.end());
 }
 
 void AISummarizer::Summarize(

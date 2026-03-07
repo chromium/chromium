@@ -189,7 +189,7 @@ TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
 
 // Test CheckAndFixLanguages templates for LanguageModel.
 TEST_F(AIManagerTest, CheckAndFixLanguagesLanguageModel) {
-  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  base::flat_set<std::string> enabled = {"en", "es", "ja"};
   auto make_expected = [](const base::flat_set<std::string>& languages) {
     auto expected = blink::mojom::AILanguageModelExpected::New();
     expected->languages.emplace();
@@ -211,20 +211,25 @@ TEST_F(AIManagerTest, CheckAndFixLanguagesLanguageModel) {
   };
 
   auto options = blink::mojom::AILanguageModelCreateOptions::New();
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({"en", "es-MX"}, {});
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({}, {"en-UK", "es-SP", "ja-JP"});
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({"en", "fr"}, {});
-  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_FALSE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({"en"}, {"hi"});
-  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_FALSE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
 }
 
 // Test CheckAndFixLanguages templates for Summarizer, Writer, and Rewriter.
 TEST_F(AIManagerTest, CheckAndFixLanguagesWritingAssistance) {
-  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  base::flat_set<std::string> enabled = {"en", "es", "ja"};
   auto make_options = [](const std::vector<std::string>& input,
                          const std::vector<std::string>& context,
                          const std::string& output) {
@@ -236,22 +241,27 @@ TEST_F(AIManagerTest, CheckAndFixLanguagesWritingAssistance) {
   };
 
   auto options = blink::mojom::AISummarizerCreateOptions::New();
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({}, {}, "");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   EXPECT_TRUE(options->output_language->code.empty());
   options = make_options({"en", "es-MX"}, {"ja"}, "en-US");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({"en-UK", "en-US"}, {"en"}, "");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   EXPECT_EQ(options->output_language->code, "en-UK");
   options = make_options({"en", "fr"}, {}, "hi");
-  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_FALSE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
 }
 
 // Test CheckAndFixLanguages templates for Proofreader.
 TEST_F(AIManagerTest, CheckAndFixLanguagesProofreader) {
-  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  base::flat_set<std::string> enabled = {"en", "es", "ja"};
   auto make_options = [](const std::vector<std::string>& input,
                          const std::string& correction_explanation) {
     auto options = blink::mojom::AIProofreaderCreateOptions::New();
@@ -262,17 +272,22 @@ TEST_F(AIManagerTest, CheckAndFixLanguagesProofreader) {
   };
 
   auto options = blink::mojom::AIProofreaderCreateOptions::New();
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({}, "");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   EXPECT_TRUE(options->correction_explanation_language->code.empty());
   options = make_options({"en", "es-MX", "ja"}, "en-US");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   options = make_options({"en-UK", "en-US", "en"}, "");
-  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
   EXPECT_EQ(options->correction_explanation_language->code, "en-UK");
   options = make_options({"en", "fr"}, "hi");
-  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_FALSE(
+      ai_manager_->CheckAndFixLanguages(options, "API", enabled, enabled));
 }
 
 // Test that GetLanguageModelParams returns null when sampling config is

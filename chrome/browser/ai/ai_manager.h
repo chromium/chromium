@@ -111,9 +111,11 @@ class AIManager : public base::SupportsUserData::Data,
   // Returns true if `options` uses only `supported` languages, false otherwise.
   // Logs errors and warnings and initializes empty output languages as needed.
   template <typename OptionsPtrType>
-  bool CheckAndFixLanguages(OptionsPtrType& options,
-                            std::string_view api_name,
-                            const base::flat_set<std::string_view>& supported);
+  bool CheckAndFixLanguages(
+      OptionsPtrType& options,
+      std::string_view api_name,
+      const std::optional<base::flat_set<std::string>>& enabled,
+      const base::flat_set<std::string>& default_supported);
 
  private:
   void OnModelPathValidationComplete(const base::FilePath& model_path,
@@ -168,10 +170,13 @@ class AIManager : public base::SupportsUserData::Data,
 
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,
-      const base::flat_set<std::string_view>& supported_languages);
+      const std::optional<base::flat_set<std::string>>& enabled_languages);
   void MaybeLogUnsupportedLanguageError(
       const std::string_view api_name,
-      const base::flat_set<std::string_view>& supported_languages);
+      const std::optional<base::flat_set<std::string>>& enabled_languages);
+  void MaybeLogExperimentalLanguageWarning(
+      const std::string_view api_name,
+      const base::flat_set<std::string>& default_supported_languages);
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
@@ -188,6 +193,7 @@ class AIManager : public base::SupportsUserData::Data,
 
   bool did_log_missing_output_language_warning_ = false;
   bool did_log_unsupported_language_error_ = false;
+  bool did_log_experimental_language_warning_ = false;
 
   // Features that have attempted initialization in this session.
   base::flat_set<optimization_guide::mojom::OnDeviceFeature> tried_init_;

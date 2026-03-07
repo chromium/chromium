@@ -4804,6 +4804,16 @@ inline constexpr char kSummarizerAPIWithPerformancePreferenceDescription[] =
 inline constexpr const char* kSummarizerAPIWithPerformancePreferenceLink[1] = {
     "https://chromestatus.com/feature/6309243756085248"};
 
+inline constexpr char kSummarizerAPIForGeminiNanoName[] =
+    "Summarizer API for Gemini Nano";
+inline constexpr char kSummarizerAPIForGeminiNanoDescription[] =
+    "Enables the Summarizer API, allowing you to summarize a piece "
+    "of text with a built-in large language model (Gemini Nano in Chrome). "
+    "The API may be subject to changes including the supported options. "
+    "Please refer to the built-in AI article [1] for details. "
+    "You must comply with our Prohibited Use Policy [2] which provides "
+    "additional details about appropriate use of Generative AI.";
+
 inline constexpr char kOnDeviceModelLitertLmBackendName[] =
     "LiteRT-LM for On-Device AI";
 inline constexpr char kOnDeviceModelLitertLmBackendDescription[] =

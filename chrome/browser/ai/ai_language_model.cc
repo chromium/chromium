@@ -515,17 +515,23 @@ uint32_t AILanguageModel::GetTotalModelTokens() const {
 }
 
 // static
-base::flat_set<std::string_view>
-AILanguageModel::GetSupportedLanguageBaseCodes() {
+std::optional<base::flat_set<std::string>>
+AILanguageModel::GetEnabledLanguageBaseCodes() {
   // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAIPromptAPILanguagesEnabled{
       &blink::features::kAIPromptAPI, "langs", /*default=*/"en,es,ja"};
+  return on_device_ai::GetEnabledLanguagesForFeature(
+      GetDefaultSupportedLanguageBaseCodes(), kAIPromptAPILanguagesEnabled);
+}
+
+// static
+base::flat_set<std::string>
+AILanguageModel::GetDefaultSupportedLanguageBaseCodes() {
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-  return on_device_ai::RestrictSupportedLanguagesForFeature(
-      base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
-      kAIPromptAPILanguagesEnabled);
+  return base::flat_set<std::string>(kSupportedBaseLanguages.begin(),
+                                     kSupportedBaseLanguages.end());
 }
 
 AILanguageModel::AILanguageModel(

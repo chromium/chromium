@@ -4,13 +4,34 @@
 
 #include "chrome/browser/ai/ai_proofreader.h"
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
+
+// static
+std::optional<base::flat_set<std::string>>
+AIProofreader::GetEnabledLanguageBaseCodes() {
+  const base::FeatureParam<std::string> kAIProofreaderLanguagesEnabled{
+      &blink::features::kAIProofreadingAPI, "langs", "en"};
+  return on_device_ai::GetEnabledLanguagesForFeature(
+      GetDefaultSupportedLanguageBaseCodes(), kAIProofreaderLanguagesEnabled);
+}
+
+// static
+base::flat_set<std::string>
+AIProofreader::GetDefaultSupportedLanguageBaseCodes() {
+  auto kSupportedBaseLanguages =
+      base::MakeFixedFlatSet<std::string_view>({"en"});
+  return base::flat_set<std::string>(kSupportedBaseLanguages.begin(),
+                                     kSupportedBaseLanguages.end());
+}
 
 AIProofreader::AIProofreader(
     AIContextBoundObjectSet& context_bound_object_set,
