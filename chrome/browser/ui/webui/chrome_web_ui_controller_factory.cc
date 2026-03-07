@@ -128,19 +128,11 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_url_overrides.h"
-#include "extensions/browser/extension_registry.h"  // nogncheck
-#include "extensions/browser/extension_system.h"    // nogncheck
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/feature_switch.h"
-#include "extensions/common/manifest.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
-#endif
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 using content::WebUI;
 using content::WebUIController;
@@ -285,7 +277,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
   // overrides. This changes urls in |kChromeUIScheme| to extension urls, and
   // allows to use ExtensionUrlOverrides::GetFaviconForURL.
   GURL url(page_url);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   ExtensionUrlOverrides::HandleChromeURLOverride(&url, profile);
 
   // All extensions get their favicon from the icons part of the manifest.
@@ -293,7 +285,7 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     ExtensionUrlOverrides::GetFaviconForURL(profile, url, std::move(callback));
     return;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   std::vector<favicon_base::FaviconRawBitmapResult> favicon_bitmap_results;
 
