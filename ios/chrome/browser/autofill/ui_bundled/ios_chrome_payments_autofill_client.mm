@@ -609,11 +609,35 @@ IOSChromePaymentsAutofillClient::GetSaveAndFillManager() {
 }
 
 void IOSChromePaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
-    CardSaveAndFillDialogCallback callback) {}
+    CardSaveAndFillDialogCallback callback) {
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_source_feature(payments::PaymentsAutofillClient::SourceFeature::
+                                   kScanCardSaveAndFill);
+
+  ShowSaveCreditCard(
+      AutofillSaveCardUiInfo::CreateForLocalSave(options),
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options));
+}
 
 void IOSChromePaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
-    CardSaveAndFillDialogCallback callback) {}
+    CardSaveAndFillDialogCallback callback) {
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options =
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_source_feature(payments::PaymentsAutofillClient::SourceFeature::
+                                   kScanCardSaveAndFill);
+
+  AccountInfo account_info =
+      client_->GetIdentityManager()->FindExtendedAccountInfo(
+          client_->GetIdentityManager()->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin));
+
+  ShowSaveCreditCard(
+      AutofillSaveCardUiInfo::CreateForUploadSave(options, legal_message_lines,
+                                                  account_info),
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options));
+}
 
 void IOSChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
     CardSaveAndFillDialogCallback callback) {}

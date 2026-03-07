@@ -765,6 +765,26 @@ TEST_F(
       /*expected_count=*/0);
 }
 
+// Tests that ShowCreditCardLocalSaveAndFillDialog shows the save card bottom
+// sheet with the kScanCardSaveAndFill source feature.
+TEST_F(IOSChromePaymentsAutofillClientTest,
+       ShowCreditCardLocalSaveAndFillDialog_ShowsBottomSheet) {
+  payments_client()->ShowCreditCardLocalSaveAndFillDialog(base::DoNothing());
+
+  // Verify that the bottom sheet command was invoked.
+  EXPECT_TRUE([autofill_commands() showSaveCardBottomSheetCalled]);
+
+  // Retrieve the model from the tab helper to verify options.
+  std::unique_ptr<autofill::SaveCardBottomSheetModel> model =
+      bottomsheet_tab_helper_->GetSaveCardBottomSheetModel();
+  ASSERT_TRUE(model);
+
+  // Verify that the SourceFeature is set to kScanCardSaveAndFill.
+  EXPECT_EQ(
+      model->save_card_delegate()->GetSaveCreditCardOptions().source_feature,
+      payments::PaymentsAutofillClient::SourceFeature::kScanCardSaveAndFill);
+}
+
 }  // namespace
 
 }  // namespace autofill

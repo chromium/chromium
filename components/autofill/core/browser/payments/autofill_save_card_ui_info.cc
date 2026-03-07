@@ -373,6 +373,23 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       is_chrome_branding_enabled, is_for_bottom_sheet);
 }
 
+// static
+AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options) {
+  // Reuse the existing logic by passing an empty card internally.
+  return CreateForLocalSave(options, CreditCard());
+}
+
+// static
+AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+    const LegalMessageLines& legal_message_lines,
+    const AccountInfo& displayed_target_account) {
+  // Reuse the existing logic by passing an empty card internally.
+  return CreateForUploadSave(options, CreditCard(), legal_message_lines,
+                             displayed_target_account);
+}
+
 #if BUILDFLAG(IS_IOS)
 bool ShouldShowSaveCardBottomSheet(
     CardSaveType card_save_type,
