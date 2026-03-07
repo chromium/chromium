@@ -1531,8 +1531,12 @@ PaintLayer* PaintLayer::HitTestLayer(
                                         layer_fragments, temp_result,
                                         recursion_data.location,
                                         inside_fragment_foreground_rect) &&
-          IsHitCandidateForDepthOrder(this, false, z_offset_for_contents_ptr,
-                                      local_transform_state) &&
+          IsHitCandidateForDepthOrder(
+              this, false, z_offset_for_contents_ptr,
+              RuntimeEnabledFeatures::
+                      HitTestContainerTransformStateForPreserve3dEnabled()
+                  ? container_transform_state
+                  : local_transform_state) &&
           IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
         if (result.GetHitTestRequest().ListBased())
           result.Append(temp_result);
@@ -1571,8 +1575,12 @@ PaintLayer* PaintLayer::HitTestLayer(
                                   recursion_data.location,
                                   HitTestPhase::kSelfBlockBackground,
                                   inside_fragment_background_rect) &&
-        IsHitCandidateForDepthOrder(this, false, z_offset_for_contents_ptr,
-                                    local_transform_state) &&
+        IsHitCandidateForDepthOrder(
+            this, false, z_offset_for_contents_ptr,
+            RuntimeEnabledFeatures::
+                    HitTestContainerTransformStateForPreserve3dEnabled()
+                ? container_transform_state
+                : local_transform_state) &&
         IsHitCandidateForStopNode(GetLayoutObject(), stop_node)) {
       if (result.GetHitTestRequest().ListBased())
         result.Append(temp_result);

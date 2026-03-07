@@ -3071,6 +3071,14 @@
       name: "HitTestBorderRadiusForStackingContext",
     },
     {
+      // Use container_transform_state instead of local_transform_state when
+      // computing z-depth for depth ordering in preserve-3d hit testing.
+      // Fixes incorrect hit-test results for layers without CSS transforms.
+      // https://crbug.com/464173566
+      name: "HitTestContainerTransformStateForPreserve3d",
+      status: "stable",
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",
