@@ -10385,6 +10385,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="In Title Case: The button in context menu that allows users to send feedback about vertical tabs.">
             Send Feedback About the Tab Strip
           </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_SHOW_VERTICAL" desc="The body for the vertical tabs IPH tutorial step to switch to the vertical tabstrip. The string in quotation marks should match the translation for IDS_SWITCH_TO_VERTICAL_TAB.">
+            Right-click here and select “Show Tabs Vertically”
+          </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_COLLAPSE" desc="The body for the vertical tabs IPH tutorial step to collapse the vertical tabstrip.">
+            Try collapsing the tab strip to get more space
+          </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_END" desc="The body for the celebratory end step of the vertical tabs IPH tutorial. The string in quotation marks should match the translation for IDS_SWITCH_TO_HORIZONTAL_TAB.">
+            You can move your tabs back to the top by right-clicking any tab and selecting “Show Tabs Horizontally”
+          </message>
         </then>
         <else>
           <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
@@ -10405,8 +10414,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="The button in context menu that allows users to send feedback about vertical tabs.">
             Send feedback about the tab strip
           </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_SHOW_VERTICAL" desc="The body for the vertical tabs IPH tutorial step to switch to the vertical tabstrip. The string in quotation marks should match the translation for IDS_SWITCH_TO_VERTICAL_TAB.">
+            Right-click here and select “Show tabs vertically”
+          </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_COLLAPSE" desc="The body for the vertical tabs IPH tutorial step to collapse the vertical tabstrip.">
+            Try collapsing the tab strip to get more space
+          </message>
+          <message name="IDS_VERTICAL_TABS_TUTORIAL_STEP_END" desc="The body for the celebratory end step of the vertical tabs IPH tutorial. The string in quotation marks should match the translation for IDS_SWITCH_TO_HORIZONTAL_TAB.">
+            You can move your tabs back to the top by right-clicking any tab and selecting “Show tabs horizontally”
+          </message>
         </else>
       </if>
+      <message name="IDS_VERTICAL_TABS_IPH_TITLE" desc="The title for the vertical tabs IPH tutorial.">
+        Move your tabs to the side
+      </message>
+      <message name="IDS_VERTICAL_TABS_IPH_BODY" desc="The body for the vertical tabs IPH tutorial.">
+        See entire tab titles, easily manage tab groups, and free up vertical space by moving your tabs to the side.
+      </message>
       <!-- /Vertical Tab Strings -->
 
       <!-- Projects Panel Strings -->

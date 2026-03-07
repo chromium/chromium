@@ -99,6 +99,8 @@ chromium-metrics-reviews@google.com.
   <variant name="SplitView" summary="the tutorial for the split view feature"/>
   <variant name="TabGroup" summary="the tutorial for tab groups"/>
   <variant name="Test" summary="the tutorial used for testing only"/>
+  <variant name="VerticalTabs"
+      summary="the tutorial for the vertical tabs feature"/>
 </variants>
 
 <variants name="WhatsNewModule">

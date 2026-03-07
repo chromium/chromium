@@ -17,9 +17,11 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -145,6 +147,13 @@ void VerticalTabStripStateController::SetCollapsed(bool collapsed) {
   if (state_.collapsed != collapsed) {
     state_.collapsed = collapsed;
     NotifyCollapseChanged();
+    if (auto* browser_element_views =
+            BrowserElementsViews::From(browser_window_);
+        collapsed && browser_element_views) {
+      browser_element_views->NotifyEvent(
+          kVerticalTabStripRegionElementId,
+          kVerticalTabStripCollapsedCustomEventId);
+    }
   }
 }
 
