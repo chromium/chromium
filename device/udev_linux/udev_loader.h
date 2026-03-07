@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevLoader {
   virtual const char* udev_device_get_action(udev_device* udev_device) = 0;
   virtual const char* udev_device_get_devnode(udev_device* udev_device) = 0;
   virtual const char* udev_device_get_devtype(udev_device* udev_device) = 0;
+  virtual const char* udev_device_get_driver(
+      struct udev_device* udev_device) = 0;
   virtual udev_device* udev_device_get_parent(udev_device* udev_device) = 0;
   virtual udev_device* udev_device_get_parent_with_subsystem_devtype(
       udev_device* udev_device,

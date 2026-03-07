@@ -37,6 +37,8 @@ const char* udev_device_get_devnode(udev_device* udev_device);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
 const char* udev_device_get_devtype(udev_device* udev_device);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
+const char* udev_device_get_driver(struct udev_device* udev_device);
+COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
 udev_device* udev_device_get_parent(udev_device* udev_device);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
 udev_device* udev_device_get_parent_with_subsystem_devtype(

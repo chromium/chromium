@@ -214,7 +214,7 @@ void GamepadPlatformDataFetcherMac::DeviceAdd(IOHIDDeviceRef device) {
 
   state->mapper = GetGamepadStandardMappingFunction(
       product_name, vendor_int, product_int, /*hid_specification_version=*/0,
-      version_int, GAMEPAD_BUS_UNKNOWN);
+      version_int, GAMEPAD_BUS_UNKNOWN, kGamepadDriverUnknown);
 
   UpdateGamepadStrings(product_name, vendor_int, product_int,
                        state->mapper != nullptr, state->data);

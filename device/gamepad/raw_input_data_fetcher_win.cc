@@ -222,7 +222,7 @@ void RawInputDataFetcher::EnumerateDevices() {
         state->mapper = GetGamepadStandardMappingFunction(
             product_string, vendor_int, product_int,
             /*hid_specification_version=*/0, version_number,
-            GAMEPAD_BUS_UNKNOWN);
+            GAMEPAD_BUS_UNKNOWN, kGamepadDriverUnknown);
         state->axis_mask = 0;
         state->button_mask = 0;
 

@@ -1038,13 +1038,15 @@ GamepadStandardMappingFunction NintendoController::GetMappingFunction() const {
     return GetGamepadStandardMappingFunction(
         kProductNameSwitchCompositeDevice, kVendorNintendo,
         kProductSwitchChargingGrip,
-        /*hid_specification_version=*/0, /*version_number=*/0, bus_type_);
+        /*hid_specification_version=*/0, /*version_number=*/0, bus_type_,
+        kGamepadDriverUnknown);
   } else {
     return GetGamepadStandardMappingFunction(
         device_info_->product_name, device_info_->vendor_id,
         device_info_->product_id,
 
-        /*hid_specification_version=*/0, /*version_number=*/0, bus_type_);
+        /*hid_specification_version=*/0, /*version_number=*/0, bus_type_,
+        kGamepadDriverUnknown);
   }
 }
 

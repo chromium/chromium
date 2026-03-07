@@ -146,6 +146,11 @@ const char* FakeUdevLoader::udev_device_get_devtype(udev_device* device) {
   return device->devtype->c_str();
 }
 
+const char* FakeUdevLoader::udev_device_get_driver(struct udev_device* device) {
+  CHECK(device);
+  return nullptr;
+}
+
 udev_device* FakeUdevLoader::udev_device_get_parent(udev_device* device) {
   DCHECK(device);
   udev_device* parent = nullptr;

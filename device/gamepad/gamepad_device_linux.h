@@ -177,6 +177,8 @@ class GamepadDeviceLinux final : public AbstractHapticGamepad {
   // GAMEPAD_BUS_UNKNOWN if the bus type could not be determined.
   GamepadBusType bus_type_ = GAMEPAD_BUS_UNKNOWN;
 
+  GamepadDriver driver_ = kGamepadDriverUnknown;
+
   // Dualshock4 functionality, if available.
   std::unique_ptr<Dualshock4Controller> dualshock4_;
 

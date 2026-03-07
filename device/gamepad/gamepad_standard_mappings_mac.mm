@@ -896,7 +896,8 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     const uint16_t product_id,
     const uint16_t hid_specification_version,
     const uint16_t version_number,
-    GamepadBusType bus_type) {
+    GamepadBusType bus_type,
+    GamepadDriver driver) {
   GamepadId gamepad_id =
       GamepadIdList::Get().GetGamepadId(product_name, vendor_id, product_id);
   const auto* find_it = std::ranges::find(kAvailableMappings, gamepad_id,

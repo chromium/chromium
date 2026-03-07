@@ -42,6 +42,7 @@ namespace {
 const char kInputSubsystem[] = "input";
 const char kUsbSubsystem[] = "usb";
 const char kUsbDeviceType[] = "usb_device";
+const char kUsbInterfaceDeviceType[] = "usb_interface";
 const float kMaxLinuxAxisValue = 32767.0;
 const int kInvalidEffectId = -1;
 const uint16_t kRumbleMagnitudeMax = 0xffff;
@@ -438,7 +439,7 @@ bool GamepadDeviceLinux::ReadEvdevSpecialKeys(Gamepad* pad) {
 GamepadStandardMappingFunction GamepadDeviceLinux::GetMappingFunction() const {
   return GetGamepadStandardMappingFunction(name_, vendor_id_, product_id_,
                                            hid_specification_version_,
-                                           version_number_, bus_type_);
+                                           version_number_, bus_type_, driver_);
 }
 
 bool GamepadDeviceLinux::IsSameDevice(const UdevGamepadLinux& pad_info) {
@@ -456,6 +457,17 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
       base::ScopedFD(open(pad_info.path.c_str(), O_RDONLY | O_NONBLOCK));
   if (!joydev_fd_.is_valid())
     return false;
+
+  udev_device* parent_interface =
+      device::udev_device_get_parent_with_subsystem_devtype(
+          device, kUsbSubsystem, kUsbInterfaceDeviceType);
+
+  const GamepadDriver driver =
+      parent_interface &&
+              ToStringView(device::udev_device_get_driver(parent_interface)) ==
+                  "xpad"
+          ? kGamepadDriverXpad
+          : kGamepadDriverUnknown;
 
   udev_device* parent_device =
       device::udev_device_get_parent_with_subsystem_devtype(
@@ -515,6 +527,7 @@ bool GamepadDeviceLinux::OpenJoydevNode(const UdevGamepadLinux& pad_info,
   name_ = name_string;
   gamepad_id_ =
       GamepadIdList::Get().GetGamepadId(name_, vendor_id_, product_id_);
+  driver_ = driver;
 
   return true;
 }

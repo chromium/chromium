@@ -21,6 +21,8 @@ enum GamepadBusType {
   GAMEPAD_BUS_BLUETOOTH
 };
 
+enum GamepadDriver { kGamepadDriverUnknown, kGamepadDriverXpad };
+
 typedef void (*GamepadStandardMappingFunction)(const Gamepad& original,
                                                Gamepad* mapped);
 
@@ -37,7 +39,8 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     const uint16_t product_id,
     const uint16_t hid_specification_version,
     const uint16_t version_number,
-    GamepadBusType bus_type);
+    GamepadBusType bus_type,
+    GamepadDriver driver);
 
 // This defines our canonical mapping order for gamepad-like devices. If these
 // items cannot all be satisfied, it is a case-by-case judgement as to whether

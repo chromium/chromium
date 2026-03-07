@@ -24,6 +24,11 @@ const char* Udev1Loader::udev_device_get_devtype(udev_device* udev_device) {
   return ::udev_device_get_devtype(udev_device);
 }
 
+const char* Udev1Loader::udev_device_get_driver(
+    struct udev_device* udev_device) {
+  return ::udev_device_get_driver(udev_device);
+}
+
 udev_device* Udev1Loader::udev_device_get_parent(udev_device* udev_device) {
   return ::udev_device_get_parent(udev_device);
 }
