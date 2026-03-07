@@ -23,11 +23,9 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,17 +34,6 @@
 
 namespace pdf::infobar {
 namespace {
-
-// Returns true if `navigation_handle` is committed, not an error page, and
-// contains a PDF.
-bool IsLoadedPdf(content::NavigationHandle* navigation_handle) {
-  const bool has_committed = navigation_handle->HasCommitted();
-  const bool is_error_page = navigation_handle->IsErrorPage();
-  auto* web_contents = navigation_handle->GetWebContents();
-  const bool is_pdf =
-      web_contents && web_contents->GetContentsMimeType() == pdf::kPDFMimeType;
-  return has_committed && !is_error_page && is_pdf;
-}
 
 // Returns true if `browser` supports being set as default and is a normal,
 // non-incognito, non-guest browser.
@@ -81,15 +68,6 @@ PdfInfoBarController::PdfInfoBarController(BrowserWindowInterface* browser)
   browser_subscriptions_.push_back(
       browser_->RegisterBrowserDidClose(base::BindRepeating(
           &PdfInfoBarController::OnBrowserClosed, base::Unretained(this))));
-
-  // This is the entry point to the PDF infobar if it shows when a PDF loads.
-  if (features::kPdfInfoBarTrigger.Get() ==
-      features::PdfInfoBarTrigger::kPdfLoad) {
-    // Register to find out when the active tab changes.
-    browser_subscriptions_.push_back(browser_->RegisterActiveTabDidChange(
-        base::BindRepeating(&PdfInfoBarController::OnActiveTabChanged,
-                            base::Unretained(this))));
-  }
 }
 
 PdfInfoBarController::~PdfInfoBarController() = default;
@@ -105,32 +83,13 @@ void PdfInfoBarController::MaybeShowInfoBarAtStartup(
   if (!IsAppropriateForInfoBar(startup_browser.get())) {
     return;
   }
-  // This is the entry point to the PDF infobar if it shows at startup.
-  if (features::kPdfInfoBarTrigger.Get() ==
-      features::PdfInfoBarTrigger::kStartup) {
-    startup_browser->GetFeatures().pdf_infobar_controller()->MaybeShowInfoBar();
-  }
-}
-
-void PdfInfoBarController::OnActiveTabChanged(BrowserWindowInterface* browser) {
-  // Observe web contents to see if it loads a PDF (see
-  // `DidFinishNavigation()`).
-  Observe(browser->GetActiveTabInterface()->GetContents());
+  startup_browser->GetFeatures().pdf_infobar_controller()->MaybeShowInfoBar();
 }
 
 void PdfInfoBarController::OnBrowserClosed(BrowserWindowInterface* browser) {
   if (infobar_) {
     CHECK(infobar_scoped_observation_.IsObserving());
     infobar_scoped_observation_.GetSource()->RemoveInfoBar(infobar_);
-  }
-}
-
-void PdfInfoBarController::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  CHECK(features::kPdfInfoBarTrigger.Get() ==
-        features::PdfInfoBarTrigger::kPdfLoad);
-  if (IsLoadedPdf(navigation_handle)) {
-    MaybeShowInfoBar();
   }
 }
 

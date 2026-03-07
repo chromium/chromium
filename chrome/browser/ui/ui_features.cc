@@ -70,17 +70,6 @@ BASE_FEATURE(kOfferPinToTaskbarInfoBar, base::FEATURE_ENABLED_BY_DEFAULT);
 // isn't the default already.
 BASE_FEATURE(kPdfInfoBar, base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<PdfInfoBarTrigger>::Option
-    kPdfInfoBarTriggerOptions[] = {{PdfInfoBarTrigger::kPdfLoad, "pdf-load"},
-                                   {PdfInfoBarTrigger::kStartup, "startup"}};
-
-BASE_FEATURE_ENUM_PARAM(PdfInfoBarTrigger,
-                        kPdfInfoBarTrigger,
-                        &kPdfInfoBar,
-                        "trigger",
-                        PdfInfoBarTrigger::kPdfLoad,
-                        &kPdfInfoBarTriggerOptions);
-
 BASE_FEATURE(kSeparateDefaultAndPinPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kSeparateDefaultAndPinPromptRandSeed,

@@ -56,6 +56,8 @@ class PdfInfoBarControllerTest : public testing::Test {
   }
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kPdfInfoBar);
+    PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(false);
     AddTab();
     infobars::ContentInfoBarManager::CreateForWebContents(
         tab_strip_model_->GetActiveWebContents());
@@ -98,7 +100,6 @@ class PdfInfoBarControllerTest : public testing::Test {
   MockBrowserWindowInterface* browser_window_interface() {
     return browser_window_interface_.get();
   }
-  base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
   // Must be the first member.
@@ -117,63 +118,30 @@ class PdfInfoBarControllerTest : public testing::Test {
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 };
 
-class PdfInfoBarControllerPdfLoadTest : public PdfInfoBarControllerTest {
-  void SetUp() override {
-    feature_list().InitAndEnableFeatureWithParameters(
-        features::kPdfInfoBar, {{"trigger", "pdf-load"}});
-    PdfInfoBarControllerTest::SetUp();
-  }
-};
-
-// Register to be called when the active tab changes if the browser is normal.
-TEST_F(PdfInfoBarControllerPdfLoadTest, RegisterActiveTabDidChangeNormal) {
-  SetBrowserType(BrowserWindowInterface::Type::TYPE_NORMAL);
-  EXPECT_CALL(*(browser_window_interface()), RegisterActiveTabDidChange);
-  PdfInfoBarController controller{browser_window_interface()};
-}
-
-// Don't register for active tab changes if the browser is not a normal type.
-TEST_F(PdfInfoBarControllerPdfLoadTest, RegisterActiveTabDidChangeApp) {
-  SetBrowserType(BrowserWindowInterface::Type::TYPE_APP);
-  EXPECT_CALL(*(browser_window_interface()), RegisterActiveTabDidChange)
-      .Times(0);
-  PdfInfoBarController controller{browser_window_interface()};
-}
-
-class PdfInfoBarControllerStartupTest : public PdfInfoBarControllerTest {
-  void SetUp() override {
-    feature_list().InitAndEnableFeatureWithParameters(features::kPdfInfoBar,
-                                                      {{"trigger", "startup"}});
-    PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(false);
-    PdfInfoBarControllerTest::SetUp();
-  }
-};
-
 // Show the infobar if the feature is enabled, the browser type is normal, and
 // Chrome is not the default PDF viewer.
-TEST_F(PdfInfoBarControllerStartupTest, MaybeShowInfoBarCallback) {
+TEST_F(PdfInfoBarControllerTest, MaybeShowInfoBarCallback) {
   EXPECT_TRUE(
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));
 }
 
 // Don't show the infobar if Chrome is already the default PDF viewer.
-TEST_F(PdfInfoBarControllerStartupTest, DontShowInfoBarIfChromeIsDefault) {
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfChromeIsDefault) {
   EXPECT_FALSE(
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
                      shell_integration::DefaultWebClientState::IS_DEFAULT));
 }
 
 // Don't show the infobar if another Chrome channel is the default PDF viewer.
-TEST_F(PdfInfoBarControllerStartupTest,
-       DontShowInfoBarIfAnotherChromeIsDefault) {
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfAnotherChromeIsDefault) {
   EXPECT_FALSE(DidShowInfoBar(
       BrowserWindowInterface::Type::TYPE_NORMAL,
       shell_integration::DefaultWebClientState::OTHER_MODE_IS_DEFAULT));
 }
 
 // Don't show the infobar if Chrome's PDF viewer is disabled.
-TEST_F(PdfInfoBarControllerStartupTest, DontShowInfoBarIfPdfViewerDisabled) {
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfPdfViewerDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
                                     true);
   EXPECT_FALSE(
@@ -182,8 +150,7 @@ TEST_F(PdfInfoBarControllerStartupTest, DontShowInfoBarIfPdfViewerDisabled) {
 }
 
 // Don't show the infobar if default apps are managed by a policy.
-TEST_F(PdfInfoBarControllerStartupTest,
-       DontShowInfoBarIfDefaultIsPolicyControlled) {
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultIsPolicyControlled) {
   local_state()->SetManagedPref(prefs::kDefaultBrowserSettingEnabled,
                                 base::Value(true));
   EXPECT_FALSE(
@@ -191,8 +158,7 @@ TEST_F(PdfInfoBarControllerStartupTest,
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));
 }
 
-TEST_F(PdfInfoBarControllerStartupTest,
-       DontShowInfoBarIfDefaultBrowserPromptShown) {
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultBrowserPromptShown) {
   PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(true);
   EXPECT_FALSE(
       DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
