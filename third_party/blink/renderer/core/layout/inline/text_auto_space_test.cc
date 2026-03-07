@@ -104,9 +104,7 @@ TEST_F(TextAutoSpaceTest, InsertSpacing) {
   for (const Member<InlineItem>& item_ptr : node_data->items) {
     const InlineItem& item = *item_ptr;
     const auto* shape_result = item.TextShapeResult();
-    Vector<CharacterRange> ranges;
-    shape_result->IndividualCharacterRanges(&ranges);
-    final_ranges.append_range(ranges);
+    final_ranges.append_range(shape_result->IndividualCharacterRanges());
   }
   Vector<float> expected_result_start{0, 10, 20, 31.25, 41.25, 51.25, 62.5};
   ASSERT_EQ(expected_result_start.size(), final_ranges.size());

@@ -2324,25 +2324,24 @@ void ShapeResult::AddRunInfoRanges(const ShapeResultRun& run_info,
   }
 }
 
-float ShapeResult::IndividualCharacterRanges(Vector<CharacterRange>* ranges,
-                                             float start_x) const {
-  DCHECK(ranges);
-  float current_x = start_x;
+Vector<CharacterRange> ShapeResult::IndividualCharacterRanges() const {
+  Vector<CharacterRange> ranges;
+  float current_x = 0u;
 
   if (IsRtl()) {
     unsigned run_count = runs_.size();
     for (int index = run_count - 1; index >= 0; index--) {
       current_x -= runs_[index]->width_;
-      AddRunInfoRanges(*runs_[index], current_x, ranges);
+      AddRunInfoRanges(*runs_[index], current_x, &ranges);
     }
   } else {
     for (const auto& run : runs_) {
-      AddRunInfoRanges(*run, current_x, ranges);
+      AddRunInfoRanges(*run, current_x, &ranges);
       current_x += run->width_;
     }
   }
 
-  return current_x;
+  return ranges;
 }
 
 template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>

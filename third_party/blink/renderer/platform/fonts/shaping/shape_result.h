@@ -171,10 +171,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   unsigned NumGlyphs() const;
   bool HasFallbackFonts(const SimpleFontData* primary_font) const;
 
-  // TODO(eae): Remove start_x and return value once ShapeResultBuffer has been
-  // removed.
-  float IndividualCharacterRanges(Vector<CharacterRange>* ranges,
-                                  float start_x = 0) const;
+  Vector<CharacterRange> IndividualCharacterRanges() const;
 
   // The character start/end index of a range shape result.
   unsigned StartIndex() const { return start_index_; }

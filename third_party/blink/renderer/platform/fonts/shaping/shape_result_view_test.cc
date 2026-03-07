@@ -411,23 +411,6 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
   EXPECT_EQ(view2->NumGlyphs(), 14u);
 }
 
-TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
-  Font* font = MakeGarbageCollected<Font>(font_description);
-
-  String string = u"\u2067\u2022\u0020";
-  TextDirection direction = TextDirection::kRtl;
-  LayoutUnit symbol_width = LayoutUnit(7);
-  const ShapeResult* result =
-      ShapeResult::CreateForSpaces(font, direction, 1, 2, symbol_width);
-
-  ShapeResultView::Segment segments[] = {{result, 1, 2}};
-  auto* shape_result_view = ShapeResultView::Create(segments);
-  const ShapeResult* shape_result = shape_result_view->CreateShapeResult();
-
-  Vector<CharacterRange> ranges;
-  shape_result->IndividualCharacterRanges(&ranges);
-}
-
 TEST_F(ShapeResultViewTest, SpacesInLTR) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 

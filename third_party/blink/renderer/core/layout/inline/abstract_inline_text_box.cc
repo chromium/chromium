@@ -285,9 +285,9 @@ void AbstractInlineTextBox::GetCharacterLayoutPixelOffsets(
   }
   // TODO(layout-dev): Add support for IndividualCharacterRanges to
   // ShapeResultView to avoid the copy below.
-  ShapeResult* shape_result = shape_result_view->CreateShapeResult();
-  Vector<CharacterRange> ranges;
-  shape_result->IndividualCharacterRanges(&ranges);
+  const ShapeResult* shape_result = shape_result_view->CreateShapeResult();
+  const Vector<CharacterRange> ranges =
+      shape_result->IndividualCharacterRanges();
   float width_so_far = 0;
   for (wtf_size_t i = 0; i < offsets.size(); ++i) {
     if (i < ranges.size()) {

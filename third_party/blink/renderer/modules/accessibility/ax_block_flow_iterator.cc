@@ -435,24 +435,20 @@ void AXBlockFlowIterator::GetCharacterLayoutPixelOffsets(Vector<int>& offsets) {
     return;
   }
 
-    ShapeResult* shape_result = shape_result_view->CreateShapeResult();
-    if (!shape_result) {
-      return;
+  const ShapeResult* shape_result = shape_result_view->CreateShapeResult();
+  const Vector<CharacterRange> ranges =
+      shape_result->IndividualCharacterRanges();
+  float width_so_far = 0.0;
+  for (wtf_size_t i = 0; i < offsets.size(); ++i) {
+    if (i < ranges.size()) {
+      // The shaper can fail to return glyph metrics for all characters (see
+      // crbug.com/613915 and crbug.com/615661) so add empty ranges to ensure
+      // all characters have an associated range. This means that if there is
+      // no range value, we assume 0 and just add the previous offset.
+      width_so_far += ranges[i].Width();
     }
-      Vector<CharacterRange> ranges;
-      shape_result->IndividualCharacterRanges(&ranges);
-      float width_so_far = 0.0;
-      for (wtf_size_t i = 0; i < offsets.size(); ++i) {
-        if (i < ranges.size()) {
-          // The shaper can fail to return glyph metrics for all characters (see
-          // crbug.com/613915 and crbug.com/615661) so add empty ranges to
-          // ensure all characters have an associated range. This means that if
-          // there is no range value, we assume 0 and just add the previous
-          // offset.
-          width_so_far += ranges[i].Width();
-        }
-        offsets[i] = roundf(width_so_far);
-      }
+    offsets[i] = roundf(width_so_far);
+  }
 }
 
 AXBlockFlowData::Neighbor AXBlockFlowIterator::NextOnLineAsIndex() {
