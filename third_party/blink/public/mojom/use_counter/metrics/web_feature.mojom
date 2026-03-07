@@ -5129,6 +5129,10 @@ enum WebFeature {
   kPerformanceScriptTimingForcedLayoutDuration = 5812,
   kPaymentRequestGetSecurePaymentConfirmationCapabilities = 5813,
   kOpaqueRange = 5814,
+  kHTMLButtonElementTypeChangedWhileConnected = 5815,
+  kHTMLInputElementTypeChangedWhileConnected = 5816,
+  kHTMLButtonElementTypeChangedWhileDisconnected = 5817,
+  kHTMLInputElementTypeChangedWhileDisconnected = 5818,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

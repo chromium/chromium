@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:ansollan@microsoft.com">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id="container"></div>
+
+<script>
+const kTypeChangedConnected = 5816;
+const kTypeChangedDisconnected = 5818;
+
+function resetUseCounters() {
+  internals.clearUseCounter(document, kTypeChangedConnected);
+  internals.clearUseCounter(document, kTypeChangedDisconnected);
+}
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_true(internals.isUseCounted(document, kTypeChangedDisconnected));
+}, 'Type set via property before connection only triggers disconnected UseCounter');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  container.appendChild(input);
+  input.type = 'checkbox';
+
+  assert_true(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  input.remove();
+}, 'Type set via property after connection only triggers connected UseCounter');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  input.setAttribute('type', 'checkbox');
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_true(internals.isUseCounted(document, kTypeChangedDisconnected));
+}, 'Type set via setAttribute before connection only triggers disconnected UseCounter');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  container.appendChild(input);
+  input.setAttribute('type', 'checkbox');
+
+  assert_true(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  input.remove();
+}, 'Type set via setAttribute after connection only triggers connected UseCounter');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  input.type = 'text';
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+}, 'Setting same type via property while disconnected does not trigger UseCounters');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  container.appendChild(input);
+  input.type = 'text';
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  input.remove();
+}, 'Setting same type via property while connected does not trigger UseCounters');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  input.setAttribute('type', 'text');
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+}, 'Setting same type via setAttribute while disconnected does not trigger UseCounters');
+
+test(() => {
+  resetUseCounters();
+  const input = document.createElement('input');
+  container.appendChild(input);
+  input.setAttribute('type', 'text');
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  input.remove();
+}, 'Setting same type via setAttribute while connected does not trigger UseCounters');
+
+test(() => {
+  resetUseCounters();
+  container.innerHTML = '<input type="checkbox">';
+
+  assert_false(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  container.innerHTML = '';
+}, 'Parser-set type does not trigger UseCounters');
+
+test(() => {
+  resetUseCounters();
+  container.innerHTML = '<input type="text" id="inp">';
+  document.getElementById('inp').type = 'email';
+
+  assert_true(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  container.innerHTML = '';
+}, 'Changing parser-set type via property only triggers connected UseCounter');
+
+test(() => {
+  resetUseCounters();
+  container.innerHTML = '<input type="text" id="inp">';
+  document.getElementById('inp').setAttribute('type', 'email');
+
+  assert_true(internals.isUseCounted(document, kTypeChangedConnected));
+  assert_false(internals.isUseCounted(document, kTypeChangedDisconnected));
+  container.innerHTML = '';
+}, 'Changing parser-set type via setAttribute only triggers connected UseCounter');
+</script>

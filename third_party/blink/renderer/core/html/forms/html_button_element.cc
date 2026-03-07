@@ -130,9 +130,10 @@ std::optional<HTMLButtonElement::Type> HTMLButtonElement::TypeFromString(
 void HTMLButtonElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
+    Type new_type = kSubmit;
     if (std::optional<HTMLButtonElement::Type> type =
             TypeFromString(params.new_value)) {
-      SetTypeInternal(*type);
+      new_type = *type;
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
@@ -147,11 +148,25 @@ void HTMLButtonElement::ParseAttribute(
         UseCounter::Count(
             GetDocument(),
             WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
-        SetTypeInternal(kButton);
-      } else {
-        SetTypeInternal(kSubmit);
+        new_type = kButton;
       }
     }
+
+    // Only count type changes initiated by JavaScript.
+    if (new_type != type_ &&
+        params.reason == AttributeModificationReason::kDirectly) {
+      if (isConnected()) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kHTMLButtonElementTypeChangedWhileConnected);
+      } else {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kHTMLButtonElementTypeChangedWhileDisconnected);
+      }
+    }
+
+    SetTypeInternal(new_type);
     if (formOwner() && isConnected()) {
       formOwner()->InvalidateDefaultButtonStyle();
     }
