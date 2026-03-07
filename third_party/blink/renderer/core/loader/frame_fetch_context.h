@@ -140,13 +140,14 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   void Trace(Visitor*) const override;
 
-  bool CalculateIfAdSubresource(
+  bool IsFrameContext() const override { return true; }
+
+  std::optional<AdProvenance> CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
-      bool scan_stack_for_ads,
-      subresource_filter::ScopedRule* out_rule) override;
+      bool scan_stack_for_ads) override;
 
   // LoadingBehaviorObserver overrides:
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;

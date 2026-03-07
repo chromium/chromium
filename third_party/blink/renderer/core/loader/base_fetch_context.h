@@ -89,16 +89,17 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual std::unique_ptr<WebSocketHandshakeThrottle>
   CreateWebSocketHandshakeThrottle() = 0;
 
+  virtual bool IsFrameContext() const { return false; }
+
   // If the optional `alias_url` is non-null, it will be used to perform the
   // check in place of `resource_request.Url()`, e.g. in the case of DNS
   // aliases.
-  bool CalculateIfAdSubresource(
+  std::optional<AdProvenance> CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
-      bool scan_stack_for_ads,
-      subresource_filter::ScopedRule* out_rule) override;
+      bool scan_stack_for_ads) override;
 
  protected:
   BaseFetchContext(const DetachableResourceFetcherProperties& properties,

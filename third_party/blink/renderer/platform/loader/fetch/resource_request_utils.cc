@@ -203,11 +203,11 @@ void UpgradeResourceRequestForLoader(
 
   resource_request_context.RecordTrace();
 
-  if (context.CalculateIfAdSubresource(
-          resource_request, /*alias_url=*/std::nullopt, resource_type,
-          options.initiator_info, /*scan_stack_for_ads=*/false,
-          /*out_rule=*/nullptr)) {
-    resource_request.SetIsAdResource();
+  if (std::optional<AdProvenance> ad_provenance =
+          context.CalculateIfAdSubresource(
+              resource_request, /*alias_url=*/std::nullopt, resource_type,
+              options.initiator_info, /*scan_stack_for_ads=*/false)) {
+    resource_request.SetIsAdResource(std::move(*ad_provenance));
   }
 
   // For initial requests, call PrepareRequest() here before revalidation
@@ -311,11 +311,11 @@ PrepareResourceRequestForCacheAccess(
                          options, reporting_disposition,
                          resource_request.GetRedirectInfo());
 
-  if (context.CalculateIfAdSubresource(
-          resource_request, /*alias_url=*/std::nullopt, resource_type,
-          options.initiator_info, /*scan_stack_for_ads=*/true,
-          /*out_rule=*/nullptr)) {
-    resource_request.SetIsAdResource();
+  if (std::optional<AdProvenance> ad_provenance =
+          context.CalculateIfAdSubresource(
+              resource_request, /*alias_url=*/std::nullopt, resource_type,
+              options.initiator_info, /*scan_stack_for_ads=*/true)) {
+    resource_request.SetIsAdResource(std::move(*ad_provenance));
   }
   if (blocked_reason) {
     return blocked_reason;

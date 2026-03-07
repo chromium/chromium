@@ -109,7 +109,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       site_for_cookies_set_(false),
       is_form_submission_(false),
       priority_incremental_(net::kDefaultPriorityIncremental),
-      is_ad_resource_(false),
       upgrade_if_insecure_(false),
       is_revalidating_(false),
       is_automatic_upgrade_(false),
@@ -230,8 +229,11 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetPriorityIncremental(PriorityIncremental());
 
   request->SetCorsPreflightPolicy(CorsPreflightPolicy());
-  if (IsAdResource())
-    request->SetIsAdResource();
+
+  if (const std::optional<AdProvenance>& ad_provenance = GetAdProvenance()) {
+    request->SetIsAdResource(*ad_provenance);
+  }
+
   request->SetUpgradeIfInsecure(UpgradeIfInsecure());
   request->SetIsAutomaticUpgrade(IsAutomaticUpgrade());
   request->SetRequestedWithHeader(GetRequestedWithHeader());

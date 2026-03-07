@@ -620,11 +620,11 @@ bool ResourceLoader::WillFollowRedirect(
                              reporting_disposition,
                              new_request->GetRedirectInfo());
 
-    if (Context().CalculateIfAdSubresource(
-            *new_request, /*alias_url=*/std::nullopt, resource_type,
-            options.initiator_info, /*scan_stack_for_ads=*/false,
-            /*out_rule=*/nullptr)) {
-      new_request->SetIsAdResource();
+    if (std::optional<AdProvenance> ad_provenance =
+            Context().CalculateIfAdSubresource(
+                *new_request, /*alias_url=*/std::nullopt, resource_type,
+                options.initiator_info, /*scan_stack_for_ads=*/false)) {
+      new_request->SetIsAdResource(std::move(*ad_provenance));
     }
 
     if (blocked_reason) {
@@ -1547,13 +1547,14 @@ bool ResourceLoader::ShouldBlockRequestBasedOnSubresourceFilterDnsAliasCheck(
       return true;
     }
 
-    if (!resource_->GetResourceRequest().IsAdResource() &&
-        Context().CalculateIfAdSubresource(
-            resource_->GetResourceRequest(), alias_url, resource_type,
-            options.initiator_info, /*scan_stack_for_ads=*/false,
-            /*out_rule=*/nullptr)) {
-      resource_->SetIsAdResource();
-      cname_alias_info_for_testing_.was_ad_tagged_based_on_alias = true;
+    if (!resource_->GetResourceRequest().IsAdResource()) {
+      if (std::optional<AdProvenance> ad_provenance =
+              Context().CalculateIfAdSubresource(
+                  resource_->GetResourceRequest(), alias_url, resource_type,
+                  options.initiator_info, /*scan_stack_for_ads=*/false)) {
+        resource_->SetIsAdResource(std::move(*ad_provenance));
+        cname_alias_info_for_testing_.was_ad_tagged_based_on_alias = true;
+      }
     }
   }
 

@@ -78,21 +78,37 @@ BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
   return std::nullopt;
 }
 
-bool BaseFetchContext::CalculateIfAdSubresource(
+std::optional<AdProvenance> BaseFetchContext::CalculateIfAdSubresource(
     const ResourceRequestHead& request,
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info,
-    bool scan_stack_for_ads,
-    subresource_filter::ScopedRule* out_rule) {
+    bool scan_stack_for_ads) {
   // A derived class should override this if they have more signals than just
   // the SubresourceFilter.
+
+  // 1. Check if the request is already flagged as an ad.
+  if (const std::optional<AdProvenance>& ad_provenance =
+          request.GetAdProvenance()) {
+    return ad_provenance;
+  }
+
+  // 2. Check the SubresourceFilter.
   SubresourceFilter* filter = GetSubresourceFilter();
   const KURL& url = alias_url.has_value() ? alias_url.value() : request.Url();
 
-  return request.IsAdResource() ||
-         (filter &&
-          filter->IsAdResource(url, request.GetRequestDestination(), out_rule));
+  subresource_filter::ScopedRule rule;
+
+  // Retrieve matching rule only for frame contexts to save resources. This
+  // decision can be revisited if worker contexts later require support.
+  subresource_filter::ScopedRule* out_rule = IsFrameContext() ? &rule : nullptr;
+
+  if (filter &&
+      filter->IsAdResource(url, request.GetRequestDestination(), out_rule)) {
+    return std::move(rule);
+  }
+
+  return std::nullopt;
 }
 
 void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {

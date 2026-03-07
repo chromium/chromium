@@ -45,6 +45,7 @@
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/guardrail_policy_asset_type.h"
@@ -224,20 +225,17 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual const FeatureContext* GetFeatureContext() const { return nullptr; }
 
   // Determine if the request is on behalf of an advertisement. If so, return
-  // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in
-  // which case it checks the latter. If `out_rule` is non-null and the
-  // SubresourceFilter identifies the current resource as an ad based on its
-  // URL, then `out_rule` will be populated with the matching filterlist rule.
+  // the associated `AdProvenance`. Checks `resource_request.Url()` unless
+  // `alias_url` is non-null, in which case it checks the latter.
   // `scan_stack_for_ads` should be true once per request, and should be called
   // while the v8 stack that triggered this request is still available.
-  virtual bool CalculateIfAdSubresource(
+  virtual std::optional<AdProvenance> CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
-      bool scan_stack_for_ads,
-      subresource_filter::ScopedRule* out_rule) {
-    return false;
+      bool scan_stack_for_ads) {
+    return std::nullopt;
   }
 
   // Returns a wrapper of ResourceLoadInfoNotifier to notify loading stats.

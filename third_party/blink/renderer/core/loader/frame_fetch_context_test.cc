@@ -299,11 +299,23 @@ class FrameFetchContextSubresourceFilterTest
         CanRequestInternal(ReportingDisposition::kReport);
     ResourceRequest request(KURL("http://example.com/"));
     FetchInitiatorInfo initiator_info;
-    EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
-                                request, std::nullopt /* alias_url */,
-                                ResourceType::kMock, initiator_info,
-                                /*scan_stack_for_ads=*/false,
-                                /*out_rule=*/nullptr));
+
+    std::optional<AdProvenance> ad_provenance =
+        GetFetchContext()->CalculateIfAdSubresource(
+            request, std::nullopt /* alias_url */, ResourceType::kMock,
+            initiator_info,
+            /*scan_stack_for_ads=*/false);
+
+    if (expect_is_ad) {
+      EXPECT_TRUE(std::holds_alternative<subresource_filter::ScopedRule>(
+          *ad_provenance));
+      // Note: Since the mock subresource filter does not populate specific
+      // rules, we only verify the provenance type rather than checking the
+      // rule's exact contents.
+    } else {
+      EXPECT_FALSE(ad_provenance.has_value());
+    }
+
     return reason;
   }
 
@@ -1805,12 +1817,21 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
 
     ResourceLoaderOptions options(nullptr /* world */);
 
-    EXPECT_EQ(test.expected_to_be_tagged_ad,
-              GetFetchContext()->CalculateIfAdSubresource(
-                  resource_request, alias_url, ResourceType::kScript,
-                  options.initiator_info,
-                  /*scan_stack_for_ads=*/false,
-                  /*out_rule=*/nullptr));
+    std::optional<AdProvenance> ad_provenance =
+        GetFetchContext()->CalculateIfAdSubresource(
+            resource_request, alias_url, ResourceType::kScript,
+            options.initiator_info,
+            /*scan_stack_for_ads=*/false);
+
+    if (test.expected_to_be_tagged_ad) {
+      EXPECT_TRUE(std::holds_alternative<subresource_filter::ScopedRule>(
+          *ad_provenance));
+      // Note: Since the mock subresource filter does not populate specific
+      // rules, we only verify the provenance type rather than checking the
+      // rule's exact contents.
+    } else {
+      EXPECT_FALSE(ad_provenance.has_value());
+    }
   }
 }
 

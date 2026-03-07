@@ -459,7 +459,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   }
 
   // Sets the ResourceRequest to be tagged as an ad.
-  void SetIsAdResource();
+  void SetIsAdResource(AdProvenance ad_provenance);
 
   void DidRemoveClientOrObserver();
 

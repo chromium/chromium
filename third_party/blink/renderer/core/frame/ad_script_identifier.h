@@ -7,8 +7,8 @@
 
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
-#include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -16,21 +16,6 @@
 #include "v8/include/v8.h"
 
 namespace blink {
-
-using V8ScriptId = base::StrongAlias<class V8ScriptIdTag, int>;
-
-template <>
-struct HashTraits<V8ScriptId> : GenericHashTraits<V8ScriptId> {
-  static unsigned GetHash(const V8ScriptId& value) {
-    return blink::HashInt(value.value());
-  }
-  static constexpr bool kEmptyValueIsZero = true;
-  static V8ScriptId EmptyValue() { return V8ScriptId(0); }
-  static void ConstructDeletedValue(V8ScriptId& slot) { slot = V8ScriptId(-1); }
-  static bool IsDeletedValue(const V8ScriptId& value) {
-    return value == V8ScriptId(-1);
-  }
-};
 
 // Used to uniquely identify ad script on the stack.
 struct CORE_EXPORT AdScriptIdentifier {

@@ -189,25 +189,25 @@ class TestAdTracker : public AdTracker {
   }
 
  protected:
-  bool CalculateIfAdSubresource(
+  std::optional<AdProvenance> CalculateIfAdSubresource(
       ExecutionContext* execution_context,
       const KURL& request_url,
       ResourceType resource_type,
       const FetchInitiatorInfo& initiator_info,
-      bool known_ad,
-      bool scan_stack_for_ads,
-      const subresource_filter::ScopedRule& rule) override {
-    bool observed_result = AdTracker::CalculateIfAdSubresource(
-        execution_context, request_url, resource_type, initiator_info, known_ad,
-        scan_stack_for_ads, rule);
+      std::optional<AdProvenance> known_ad_provenance,
+      bool scan_stack_for_ads) override {
+    std::optional<AdProvenance> observed_ad_provenance =
+        AdTracker::CalculateIfAdSubresource(
+            execution_context, request_url, resource_type, initiator_info,
+            std::move(known_ad_provenance), scan_stack_for_ads);
 
     String resource_url = request_url.GetString();
-    is_ad_.insert(resource_url, observed_result);
+    is_ad_.insert(resource_url, observed_ad_provenance.has_value());
 
     if (quit_closure_ && url_to_wait_for_ == resource_url) {
       std::move(quit_closure_).Run();
     }
-    return observed_result;
+    return observed_ad_provenance;
   }
 
  private:
@@ -1805,8 +1805,8 @@ TEST_F(
 // non-subresource-filter-flagged URL, and then a new script with the same
 // non-filterlisted URL is loaded and creates an iframe.
 
-// This test expects the iframe to be ad-tagged but has no associated filter
-// rule.
+// This test expects the iframe to be ad-tagged AND have an associated filter
+// rule inherited from the redirect chain.
 TEST_F(
     AdTrackerSimTest,
     AdScriptAncestry_RedirectedNonFilterlistedUrlEncounteredAgainAsInitialUrl) {
@@ -1864,16 +1864,16 @@ TEST_F(
   )SCRIPT");
   base::RunLoop().RunUntilIdle();
 
-  // The frame is ad-tagged. Its ad script ancestry contains one script but no
-  // no filterlist rule. This is because the script URL was first encountered as
-  // a non-filterlisted URL redirected from a filterlisted URL.
+  // The frame is ad-tagged. Its ad script ancestry contains one script and
+  // a valid filterlist rule inherited from the redirect chain.
   auto* child_frame =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
   EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
 
   EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
-  EXPECT_FALSE(ad_tracker_->last_ad_script_ancestry()
-                   .root_script_filterlist_rule.IsValid());
+  EXPECT_EQ(String(ad_tracker_->last_ad_script_ancestry()
+                       .root_script_filterlist_rule.ToString()),
+            "ad=true|");
 
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(redirect_from_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));

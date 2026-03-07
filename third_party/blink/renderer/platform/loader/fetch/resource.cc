@@ -1287,8 +1287,8 @@ void Resource::SetClockForTesting(const base::Clock* clock) {
   g_clock_for_testing = clock;
 }
 
-void Resource::SetIsAdResource() {
-  resource_request_.SetIsAdResource();
+void Resource::SetIsAdResource(AdProvenance ad_provenance) {
+  resource_request_.SetIsAdResource(std::move(ad_provenance));
 }
 
 void Resource::UpdateMemoryCacheLastAccessedTime() {

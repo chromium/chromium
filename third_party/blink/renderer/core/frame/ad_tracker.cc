@@ -310,20 +310,20 @@ void AdTracker::Did(const probe::CallFunction& probe) {
   }
 }
 
-bool AdTracker::CalculateIfAdSubresource(
+std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
     ExecutionContext* execution_context,
     const KURL& request_url,
     ResourceType resource_type,
     const FetchInitiatorInfo& initiator_info,
-    bool known_ad,
-    bool scan_stack_for_ads,
-    const subresource_filter::ScopedRule& rule) {
-  DCHECK(!rule.IsValid() || known_ad);
-
+    std::optional<AdProvenance> known_ad_provenance,
+    bool scan_stack_for_ads) {
   // Check if the document loading the resource is an ad.
   const bool is_ad_execution_context =
       IsKnownAdExecutionContext(execution_context);
-  known_ad = known_ad || is_ad_execution_context;
+
+  if (!known_ad_provenance && is_ad_execution_context) {
+    known_ad_provenance = NoProvenance{};
+  }
 
   // We skip script checking for stylesheet-initiated resource requests as the
   // stack may represent the cause of a style recalculation rather than the
@@ -331,41 +331,33 @@ bool AdTracker::CalculateIfAdSubresource(
   // CSSParserContext when the request is made. See crbug.com/1051605.
   if (initiator_info.name == fetch_initiator_type_names::kCSS ||
       initiator_info.name == fetch_initiator_type_names::kUacss) {
-    return known_ad;
+    return known_ad_provenance;
   }
 
   // Check if any executing script is an ad.
-  std::optional<AdScriptIdentifier> ancestor_ad_script;
-  if (scan_stack_for_ads) {
-    known_ad = known_ad ||
-               IsAdScriptInStackHelper(
-                   StackType::kTopOnly,
-                   /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild,
-                   &ancestor_ad_script);
+  if (!known_ad_provenance && scan_stack_for_ads) {
+    std::optional<AdScriptIdentifier> ancestor_ad_script;
+    if (IsAdScriptInStackHelper(
+            StackType::kTopOnly,
+            /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild,
+            &ancestor_ad_script)) {
+      known_ad_provenance = ancestor_ad_script
+                                ? AdProvenance(ancestor_ad_script->id)
+                                : AdProvenance(NoProvenance{});
+    }
   }
 
   // If it is a script marked as an ad and it's not in an ad context, append it
   // to the known ad script set. We don't need to keep track of ad scripts in ad
   // contexts, because any script executed inside an ad context is considered an
   // ad script by IsKnownAdScript.
-  if (resource_type == ResourceType::kScript && known_ad &&
+  if (resource_type == ResourceType::kScript && known_ad_provenance &&
       !is_ad_execution_context) {
-    DCHECK(!ancestor_ad_script || !rule.IsValid());
-
-    AdProvenance ad_provenance;
-    if (!ancestor_ad_script && !rule.IsValid()) {
-      ad_provenance = NoProvenance{};
-    } else if (ancestor_ad_script) {
-      ad_provenance = ancestor_ad_script->id;
-    } else {
-      DCHECK(rule.IsValid());
-      ad_provenance = rule;
-    }
     AppendToKnownAdScripts(*execution_context, request_url.GetString(),
-                           std::move(ad_provenance));
+                           *known_ad_provenance);
   }
 
-  return known_ad;
+  return known_ad_provenance;
 }
 
 void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {

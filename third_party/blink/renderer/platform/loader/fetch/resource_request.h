@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
@@ -446,8 +447,20 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return suggested_filename_;
   }
 
-  void SetIsAdResource() { is_ad_resource_ = true; }
-  bool IsAdResource() const { return is_ad_resource_; }
+  void SetIsAdResource(AdProvenance ad_provenance = NoProvenance{}) {
+    // Only update `ad_provenance_` if it wasn't set.
+    // TODO(crbug.com/490396399): Ideally, we should ensure `SetIsAdResource` is
+    // only called once.
+    if (!ad_provenance_.has_value()) {
+      ad_provenance_ = std::move(ad_provenance);
+    }
+  }
+
+  bool IsAdResource() const { return ad_provenance_.has_value(); }
+
+  const std::optional<AdProvenance>& GetAdProvenance() const {
+    return ad_provenance_;
+  }
 
   void SetUpgradeIfInsecure(bool upgrade_if_insecure) {
     upgrade_if_insecure_ = upgrade_if_insecure;
@@ -729,7 +742,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool site_for_cookies_set_ : 1;
   bool is_form_submission_ : 1;
   bool priority_incremental_ : 1;
-  bool is_ad_resource_ : 1;
   bool upgrade_if_insecure_ : 1;
   bool is_revalidating_ : 1;
   bool is_automatic_upgrade_ : 1;
@@ -773,6 +785,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   std::optional<RedirectInfo> redirect_info_;
   std::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;
   network::mojom::IPAddressSpace target_address_space_;
+
+  std::optional<AdProvenance> ad_provenance_;
 
   std::optional<String> suggested_filename_;
 

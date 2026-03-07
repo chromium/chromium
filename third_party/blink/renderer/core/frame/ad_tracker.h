@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <optional>
-#include <variant>
 
 #include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -54,18 +54,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
     kNodeAppendChild
   };
 
-  struct NoProvenance {};
-
-  // Represents the reason why a script is classified as an ad. It can be one
-  // of:
-  // - NoProvenance: The script has neither an ancestor nor a rule match.
-  // - subresource_filter::ScopedRule: The script is flagged by the subresource
-  //   filter.
-  // - V8ScriptId: The script itself is not flagged, but another ad
-  //   script (the "ancestor") exists in its creation stack.
-  using AdProvenance =
-      std::variant<NoProvenance, subresource_filter::ScopedRule, V8ScriptId>;
-
   // Stack scans of `kBottomOnly` will only scan the bottom frame of the sync
   // stack and also include async frames. `kTopOnly` will scan the top
   // frame, and fall back on the async stack if there is no top frame (e.g.,
@@ -103,20 +91,22 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   void Did(const probe::CallFunction&);
 
   // Called when a subresource request is about to be sent or is redirected.
-  // Returns true if any of the following are true:
-  // - the resource is loaded in an ad iframe
-  // - `known_ad` is true
-  // - ad script is in the v8 stack and the resource was not requested by CSS.
-  // This check is only done if `scan_stack_for_ads` is true.
+  // Returns the `AdProvenance` of the subresource if it is identified as an ad,
+  // or `std::nullopt` otherwise. A subresource is considered an ad if any of
+  // the following are true:
+  // - `known_ad_provenance` has a value.
+  // - The resource is loaded in an ad iframe.
+  // - An ad script is in the v8 stack and the resource was not requested by
+  //   CSS. This stack check is only performed if `scan_stack_for_ads` is true.
+  //
   // Virtual for testing.
-  virtual bool CalculateIfAdSubresource(
+  virtual std::optional<AdProvenance> CalculateIfAdSubresource(
       ExecutionContext* execution_context,
       const KURL& request_url,
       ResourceType resource_type,
       const FetchInitiatorInfo& initiator_info,
-      bool known_ad,
-      bool scan_stack_for_ads,
-      const subresource_filter::ScopedRule& rule);
+      std::optional<AdProvenance> known_ad_provenance,
+      bool scan_stack_for_ads);
 
   // Called when an async task is created. Check at this point for ad script on
   // the stack and annotate the task if so.
