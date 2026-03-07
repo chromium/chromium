@@ -148,6 +148,12 @@ class CORE_EXPORT ResponsivenessMetrics
 
   // During composition or for simulated clicks, we sometimes just match to most
   // recent keydown.
+  //
+  // TODO(crbug.com/490481909): This is also used to assign the interaction id
+  // for (non-composition) keypress events. Those should be able to use
+  // `keycode_to_interactionid_`, but keypress events always use the uppercase
+  // version of the keycode, so there can be a mismatch. This map should be
+  // changed to use the physical key.
   std::optional<PerformanceTimelineEntryIdInfo> last_keydown_interaction_id_;
 
   // Popstate and hashchange events can reuse the most recent navigate

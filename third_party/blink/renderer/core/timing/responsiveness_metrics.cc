@@ -225,6 +225,12 @@ void ResponsivenessMetrics::HandleKeyboardInteraction(
   }
 
   if (event_type == event_type_names::kKeypress) {
+    // TODO(crbug.com/490481909): This is needed because keypress events always
+    // use the uppercase version of the keycode. The `keycode_to_interactionid_`
+    // should be changed to use the physical key.
+    if (last_keydown_interaction_id_) {
+      interaction_id_for_keycode = *last_keydown_interaction_id_;
+    }
     SetInteractionId(new_entry, interaction_id_for_keycode);
     return;
   }
