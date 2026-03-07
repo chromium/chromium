@@ -148,7 +148,8 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     private FuseboxSessionState createSession() {
-        return new FuseboxSessionState(mAutocompleteInput, mComposebox, null);
+        return new FuseboxSessionState(
+                mAutocompleteController, mAutocompleteInput, mComposebox, null);
     }
 
     @After

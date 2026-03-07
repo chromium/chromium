@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.AfterClass;
@@ -34,6 +36,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** Public Transit tests for Omnibox. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/480976526")
 @Batch(Batch.PER_CLASS)
 public class OmniboxPTTest {
     @Rule

@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -30,6 +31,7 @@ import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -51,12 +53,11 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OmniboxActionsTest {
-    @Rule
-    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+    public @Rule ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private @Mock AutocompleteController mAutocompleteController;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
@@ -65,7 +66,15 @@ public class OmniboxActionsTest {
     public void setUp() throws InterruptedException {
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
-        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
+        // Set up mock Autocomplete Controller for this session to feed our own suggestions.
+        ThreadUtils.runOnUiThread(
+                () ->
+                        FuseboxSessionState.setInstanceForTesting(
+                                new FuseboxSessionState(
+                                        mAutocompleteController,
+                                        new AutocompleteInput(),
+                                        null,
+                                        null)));
     }
 
     @After
@@ -77,7 +86,6 @@ public class OmniboxActionsTest {
                 () -> {
                     IncognitoTabHostUtils.closeAllIncognitoTabs();
                 });
-        AutocompleteControllerJni.setInstanceForTesting(null);
     }
 
     /**
