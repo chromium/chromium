@@ -515,10 +515,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLinkHelpers);
 // Enables showing auto picture-in-picture permission details in page info.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPicturePageInfoDetails);
 
-// Enables sending provisioning requests in the body of the POST request rather
-// than encoding it inside the URL.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePostBodyForUrlProvisionFetcher);
-
 // Causes the AVC parser to output Treats H.264 SEI recovery points with a
 // `recovery_frame_cnt=0` as keyframes.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kParseSEIRecoveryPoints);

@@ -91,17 +91,10 @@ void URLProvisionFetcher::Retrieve(
   std::string post_body;
   std::string content_type;
 
-  if (base::FeatureList::IsEnabled(media::kUsePostBodyForUrlProvisionFetcher)) {
-    resource_request->url = default_url;
-    post_body = "signedRequest=" + request_data;
-    content_type = "application/x-www-form-urlencoded";
-  } else {
-    const std::string request_string =
-        default_url.spec() + "&signedRequest=" + request_data;
-    resource_request->url = GURL(request_string);
-    post_body = "";
-    content_type = "application/json";
-  }
+  resource_request->url = default_url;
+  post_body = "signedRequest=" + request_data;
+  content_type = "application/x-www-form-urlencoded";
+
   DVLOG(1) << __func__ << ": url:'" << resource_request->url
            << "' content_type:'" << content_type << "' body:'" << post_body
            << "'";

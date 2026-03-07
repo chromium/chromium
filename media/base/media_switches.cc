@@ -979,13 +979,6 @@ BASE_FEATURE(kAutoPictureInPictureSurveys, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables sending provisioning requests in the body of the POST request rather
-// than encoding it inside the URL.
-// Owner: vpasupathy@chromium.org
-// Bug: 448700051
-BASE_FEATURE(kUsePostBodyForUrlProvisionFetcher,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Causes the AVC parser to additionally parse and indicate when an SEI
 // recovery point with `recovery_frame_cnt=0` has been found.
 BASE_FEATURE(kParseSEIRecoveryPoints, base::FEATURE_ENABLED_BY_DEFAULT);

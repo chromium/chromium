@@ -63,36 +63,7 @@ class URLProvisionFetcherTest : public testing::Test {
   std::unique_ptr<media::ProvisionFetcher> fetcher_;
 };
 
-TEST_F(URLProvisionFetcherTest,
-       FeatureDisabled_SendsPostRequestWithParamInUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(media::kUsePostBodyForUrlProvisionFetcher);
-
-  const GURL expected_url(
-      base::StrCat({GURL(kTestUrl).spec(), "&", kRequestParam}));
-
-  base::RunLoop run_loop;
-  fetcher_->Retrieve(GURL(kTestUrl), kTestRequestBody,
-                     base::BindOnce([](bool, const std::string&) {
-                     }).Then(run_loop.QuitClosure()));
-
-  const network::TestURLLoaderFactory::PendingRequest* pending_request_ptr;
-  CheckCommonRequestExpectations(expected_url, &pending_request_ptr);
-  const auto& pending_request = pending_request_ptr->request;
-
-  EXPECT_EQ(pending_request.url, expected_url);
-  EXPECT_EQ(pending_request.headers.GetHeader("Content-Type"),
-            "application/json");
-  EXPECT_TRUE(pending_request.request_body->elements()->empty());
-
-  SimulateResponse(expected_url.spec());
-  run_loop.Run();
-}
-
-TEST_F(URLProvisionFetcherTest, FeatureEnabled_SendsPostRequestWithBody) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kUsePostBodyForUrlProvisionFetcher);
-
+TEST_F(URLProvisionFetcherTest, SendsPostRequestWithBody) {
   const GURL expected_url(kTestUrl);
 
   base::RunLoop run_loop;
@@ -120,8 +91,6 @@ TEST_F(URLProvisionFetcherTest, FeatureEnabled_SendsPostRequestWithBody) {
 }
 
 TEST_F(URLProvisionFetcherTest, UserAgent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kUsePostBodyForUrlProvisionFetcher);
 
   std::string expected_user_agent;
 #if BUILDFLAG(IS_ANDROID)
