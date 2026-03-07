@@ -4,7 +4,15 @@
 
 // <if expr="not is_android">
 import './composebox.js';
+
+import type {ContextualTasksComposeboxElement} from './composebox.js';
 // </if>
+
+// <if expr="is_android">
+// ContextualTasksComposeboxElement is not compiled on Android.
+type ContextualTasksComposeboxElement = any;
+// </if>
+
 import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
@@ -15,25 +23,17 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-// <if expr="not is_android">
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-// </if>
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-// <if expr="not is_android">
-import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ComposeboxPosition, IconType} from './contextual_tasks.mojom-webui.js';
-// </if>
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
-// <if expr="not is_android">
 import type {Rect} from './post_message_handler.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
-
-// </if>
 
 declare global {
   interface HTMLElementEventMap {
@@ -54,13 +54,11 @@ export type OnBeforeRequestDetails = Parameters<
 const VIEWPORT_HEIGHT_KEY = 'bih';
 const VIEWPORT_WIDTH_KEY = 'biw';
 
-// <if expr="not is_android">
 // The extra padding to add to the occluders to ensure that the composebox is
 // fully visible. This helps to account for inconsistencies between the bounding
 // boxes of the element, and what is actually rendered (for example, box shadows
 // on the elements might not be included in the bounding box).
 const OCCLUDER_EXTRA_PADDING_PX = 15;
-// </if>
 
 export interface ContextualTasksAppElement {
   $: {
@@ -199,15 +197,11 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      // <if expr="not is_android">
       forcedComposeboxBounds_: {type: Object},
-      // </if>
       friendlyZeroStateGaiaName_: {type: String},
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
-      // <if expr="not is_android">
       occluders_: {type: Array},
-      // </if>
     };
   }
 
@@ -243,7 +237,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor isLoadingZeroStateFromResults_: boolean = false;
   // The bounds of the composebox that are forced by the embedded page. These
   // bounds are relative to the <webview> and not the viewport.
-  // <if expr="not is_android">
   protected accessor forcedComposeboxBounds_: Rect|null = null;
   // A list of occluders that are currently visible to the user. An occluder is
   // any element that is currently visible to the user that may be intersecting
@@ -251,7 +244,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   // embedded page, which allows the client to keep track and know which parts
   // of the composebox are not visible to the user, and therefore not clickable.
   protected accessor occluders_: Rect[]|null = null;
-  // </if>
 
   protected friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -286,6 +278,15 @@ export class ContextualTasksAppElement extends CrLitElement {
   // already in basic mode, the user is returned to basic mode.
 
   private pendingBasicMode_: boolean|null = null;
+
+  private get composebox_(): ContextualTasksComposeboxElement|null {
+    // <if expr="not is_android">
+    return this.$.composebox || null;
+    // </if>
+    // <if expr="is_android">
+    return null;
+    // </if>
+  }
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -347,22 +348,20 @@ export class ContextualTasksAppElement extends CrLitElement {
 
         this.isInBasicMode_ = false;
       }),
-      // <if expr="not is_android">
       callbackRouter.injectInput.addListener(
           (title: string, thumbnail: string, fileToken: UnguessableToken) => {
-            this.$.composebox.injectInput(
+            this.composebox_?.injectInput(
                 title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
                 fileToken);
           }),
       callbackRouter.injectInputWithIcon.addListener(
           (title: string, iconId: IconType, fileToken: UnguessableToken) => {
-            this.$.composebox.injectInputWithIcon(title, iconId, fileToken);
+            this.composebox_?.injectInputWithIcon(title, iconId, fileToken);
           }),
       callbackRouter.removeInjectedInput.addListener(
           (fileToken: UnguessableToken) => {
-            this.$.composebox.deleteFile(fileToken);
+            this.composebox_?.deleteFile(fileToken);
           }),
-      // </if>
       callbackRouter.setTaskDetails.addListener(updateTaskDetailsInUrl),
       callbackRouter.setAimUrl.addListener(updateAimUrl),
       callbackRouter.onZeroStateChange.addListener((isZeroState: boolean) => {
@@ -373,12 +372,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         // we are not in zero state anymore, or not in an AIM URL. In
         // both thread/AIM cases for zero state, we clear input.
         if (isZeroState && !wasZeroState) {
-          // <if expr="not is_android">
-          this.$.composebox.clearInputAndFocus();
+          this.composebox_?.clearInputAndFocus();
           // Reset the forced composebox bounds since the zero state position
           // is controlled natively.
           this.forcedComposeboxBounds_ = null;
-          // </if>
         }
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
@@ -396,11 +393,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.showOauthErrorDialog.addListener(() => {
         this.isErrorDialogVisible_ = true;
       }),
-      // <if expr="not is_android">
       callbackRouter.updateComposeboxPosition.addListener(
           this.onUpdateComposeboxPosition_.bind(this),
           ),
-      // </if>
       callbackRouter.lockInput.addListener(() => {
         this.isInputLocked_ = true;
       }),
@@ -467,9 +462,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     } else {
       const {url} = await this.browserProxy_.handler.getThreadUrl();
       threadUrl = url;
-      // <if expr="not is_android">
-      this.$.composebox.clearInputAndFocus();
-      // </if>
+      this.composebox_?.clearInputAndFocus();
     }
 
     const threadUrlAsUrl = new URL(threadUrl);
@@ -521,16 +514,20 @@ export class ContextualTasksAppElement extends CrLitElement {
   override firstUpdated() {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
-    // <if expr="not is_android">
+
+    const composebox = this.composebox_;
+    if (!composebox) {
+      return;
+    }
+
     this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
         this.onInputPlateBoundsUpdate_.bind(this));
-
     this.eventTracker_.add(
-        this.$.composebox, 'composebox-height-update',
+        composebox, 'composebox-height-update',
         (e: CustomEvent<{height: number}>) => {
-          // TODO(crbug.com/483737358): Sending an object instead of a proto is
-          // a temporary solution to unblock the prototype. Remove this method
-          // once the proto is implemented on the webview side.
+          // TODO(crbug.com/483737358): Sending an object instead of a proto
+          // is a temporary solution to unblock the prototype. Remove this
+          // method once the proto is implemented on the webview side.
           this.postMessageHandler_.sendObjectMessage({
             type: 'composebox-height-update',
             height: e.detail.height,
@@ -546,7 +543,6 @@ export class ContextualTasksAppElement extends CrLitElement {
             this.requestUpdate();
           }
         });
-    // </if>
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -571,38 +567,32 @@ export class ContextualTasksAppElement extends CrLitElement {
       });
     };
 
-    // <if expr="not is_android">
-    restartAnimations(this.$.composebox);
-    // </if>
+    const composebox = this.composebox_;
+    if (composebox) {
+      restartAnimations(composebox);
+      // Restart the composebox glow animation.
+      composebox.startExpandAnimation();
+    }
     restartAnimations(this.$.composeboxHeaderWrapper);
 
     if (this.$.nameShimmer) {
       restartAnimations(this.$.nameShimmer);
     }
-
-    // Restart the composebox glow animation.
-    // <if expr="not is_android">
-    this.$.composebox.startExpandAnimation();
-    // </if>
   }
 
-  // <if expr="not is_android">
   private setStyleVariable(variable: string, value: string) {
-    this.$.composebox.style.setProperty(variable, `${value}px`);
+    this.composebox_?.style.setProperty(variable, `${value}px`);
   }
-  // </if>
 
   private async onThreadFrameLoadStart(ev: chrome.webviewTag.LoadStartEvent) {
     // If is from inner iframe and not from main webview URL:
     if (!ev.isTopLevel) {
       return;
     }
-    // <if expr="not is_android">
     // Reset the composebox bounds and the occluders since the embedded page is
     // reloading.
     this.forcedComposeboxBounds_ = null;
     this.occluders_ = null;
-    // </if>
 
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
@@ -681,7 +671,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   /* Adjust composebox based on server notifications. Negatives are used if
    * server wants to change marginTop, marginRight.
    */
-  // <if expr="not is_android">
   private onUpdateComposeboxPosition_(position: ComposeboxPosition) {
     if (position.maxWidth !== null) {
       this.setStyleVariable('--max-composebox-width', `${position.maxWidth}px`);
@@ -703,12 +692,11 @@ export class ContextualTasksAppElement extends CrLitElement {
           '--composebox-margin-left', `${position.marginLeft}px`);
     }
   }
-  // </if>
 
-  // <if expr="not is_android">
   private onInputPlateBoundsUpdate_(inputRect?: Rect, occluders?: Rect[]) {
     if (inputRect !== undefined) {
-      const currentHeight = this.$.composebox.offsetHeight;
+      const composebox = this.composebox_!;
+      const currentHeight = composebox.offsetHeight;
       if (currentHeight !== inputRect.height) {
         // If the height that the client reports for the composebox is different
         // from the height that the server is reporting, update the server.
@@ -765,28 +753,27 @@ export class ContextualTasksAppElement extends CrLitElement {
     ];
     return style.join(' ');
   }
-  // </if>
 
   getThreadFrameStyles(): string {
-    // <if expr="not is_android">
     if (this.occluders_ == null) {
+      return '';
+    }
+
+    const composebox = this.composebox_;
+    if (!composebox) {
       return '';
     }
 
     // If the forced composebox bounds are set, use those since its cheaper
     // than calling getBoundingClientRect();
-    const composeboxBounds = this.forcedComposeboxBounds_ ??
-        this.$.composebox.getBoundingClientRect();
+    const composeboxBounds =
+        this.forcedComposeboxBounds_ ?? composebox.getBoundingClientRect();
 
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
     return getNonOccludedClipPath(
                composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX) +
         'z-index: 100;';
-    // </if>
-    // <if expr="is_android">
-    return '';
-    // </if>
   }
 
   protected async onNewThreadClick_() {
@@ -806,10 +793,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       newThreadUrl.searchParams.set('aep', aep);
     }
     this.$.threadFrame.src = newThreadUrl.href;
-    // <if expr="not is_android">
-    this.$.composebox.startExpandAnimation();
-    this.$.composebox.clearInputAndFocus();
-    // </if>
+    const composebox = this.composebox_;
+    if (composebox) {
+      composebox.startExpandAnimation();
+      composebox.clearInputAndFocus();
+    }
   }
 
   getEnableNativeZeroStateSuggestionsForTesting() {

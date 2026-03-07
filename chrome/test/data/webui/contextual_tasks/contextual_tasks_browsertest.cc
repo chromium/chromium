@@ -36,6 +36,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
@@ -51,6 +52,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Submit) {
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_ZeroState) {
   RunTest("contextual_tasks/composebox_zero_state_test.js", "mocha.run();");
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
   RunTest("contextual_tasks/post_message_handler_test.js", "mocha.run();");
