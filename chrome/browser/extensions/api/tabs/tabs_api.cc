@@ -163,8 +163,8 @@ bool IsValidStateForWindowsCreateFunction(
 
 // Sets the opener of the given `tab` to `opener`. Returns true on success;
 // on failure, populates `error`.
-bool SetOpenerOfTab(content::WebContents& tab,
-                    content::WebContents& opener,
+bool SetOpenerOfTab(::tabs::TabInterface& tab,
+                    ::tabs::TabInterface& opener,
                     std::string& error) {
   // Bug fix for crbug.com/1197888. Don't let the extension update the tab
   // if the user is dragging tabs.
@@ -175,27 +175,21 @@ bool SetOpenerOfTab(content::WebContents& tab,
   }
 
   BrowserWindowInterface* opener_browser =
-      browser_window_util::GetBrowserForTabContents(opener);
+      browser_window_util::GetBrowserForTabContents(*opener.GetContents());
   // NOTE: This would be more efficient if there were a
   // TabListInterface::GetIndexOfWebContents() or similar, since then we could
   // just check `opener_browser->GetIndexOfWebContents(&tab)` instead of looking
   // up the tab's browser.
   BrowserWindowInterface* tab_browser =
-      browser_window_util::GetBrowserForTabContents(tab);
+      browser_window_util::GetBrowserForTabContents(*tab.GetContents());
   if (!opener_browser || opener_browser != tab_browser) {
     error = "Tab opener must be in the same window as the updated tab.";
     return false;
   }
 
-  // TODO(https://crbug.com/371432155): Support this on desktop android.
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip =
-      tab_browser->GetBrowserForMigrationOnly()->tab_strip_model();
-  int tab_index = tab_strip->GetIndexOfWebContents(&tab);
-  CHECK_NE(TabStripModel::kNoTab, tab_index);
-  tab_strip->SetOpenerOfTabAt(tab_index,
-                              ::tabs::TabInterface::GetFromContents(&opener));
-#endif
+  TabListInterface* tab_list = TabListInterface::From(tab_browser);
+  CHECK(tab_list);
+  tab_list->SetOpenerForTab(tab.GetHandle(), opener.GetHandle());
 
   return true;
 }
@@ -2093,7 +2087,21 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
 
   if (opener_tab) {
     std::string error;
-    SetOpenerOfTab(*new_contents, *opener_tab, error);
+
+    // We know these should never be null:
+    // * We just created the tab in OpenTabHelper::OpenTab() above, and verified
+    //   it returned a valid contents.
+    // * The `opener_tab` is fetched from GetTabById(), which only returns tab
+    //   contents, so if `opener_tab` is non-null, there should always be a
+    //   TabInterface for it.
+    ::tabs::TabInterface* tab_interface =
+        ::tabs::TabInterface::GetFromContents(new_contents);
+    CHECK(tab_interface);
+    ::tabs::TabInterface* opener_interface =
+        ::tabs::TabInterface::GetFromContents(opener_tab);
+    CHECK(opener_interface);
+    SetOpenerOfTab(*tab_interface, *opener_interface, error);
+
     // Since we've already created the new browser, we ignore the error (if
     // any).
   }
@@ -2341,7 +2349,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
                                          base::NumberToString(opener_id))));
     }
 
-    if (!SetOpenerOfTab(*original_contents, *opener_contents, error)) {
+    ::tabs::TabInterface* opener_tab =
+        ::tabs::TabInterface::GetFromContents(opener_contents);
+    CHECK(opener_tab);
+    if (!SetOpenerOfTab(*target_tab, *opener_tab, error)) {
       return RespondNow(Error(std::move(error)));
     }
   }
