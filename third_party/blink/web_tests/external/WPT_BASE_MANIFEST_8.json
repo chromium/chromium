@@ -98037,6 +98037,45 @@
         {}
        ]
       ],
+      "multi-line-column-flex-fragmentation-059.html": [
+       "1d57b8df0ed46883c70bb37f5fd71cd59296ddcf",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-column-flex-fragmentation-059-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-060.html": [
+       "21333eb81cb1525002b167821eb5ce26693d036c",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-column-flex-fragmentation-060-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-column-flex-fragmentation-061.html": [
+       "8c08575229336a345c48f350f60f4d2e18274130",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-column-flex-fragmentation-061-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "multi-line-row-flex-fragmentation-001.html": [
        "ba6b0103e447994a2778cbd9ea356a490f62b8fb",
        [
@@ -98415,7 +98454,7 @@
        ]
       ],
       "multi-line-row-flex-fragmentation-031.html": [
-       "e5780d254e1238d628a7487a3f5f1c25fe872a81",
+       "7f35cda6d54b8d88fe0b4d8276245d05d219a5cd",
        [
         null,
         [
@@ -99175,6 +99214,45 @@
         [
          [
           "/css/css-break/flexbox/multi-line-row-flex-fragmentation-093-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-094.html": [
+       "e92879db581bb14311979e0a85bf5227e04067f0",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-row-flex-fragmentation-094-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-095.html": [
+       "2e43493f60f38921350696c9ab936decc52ae333",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-row-flex-fragmentation-095-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multi-line-row-flex-fragmentation-096.html": [
+       "b5b3892e4db14daefd8dd79625935199739dd28e",
+       [
+        null,
+        [
+         [
+          "/css/css-break/flexbox/multi-line-row-flex-fragmentation-096-ref.html",
           "=="
          ]
         ],
@@ -142319,6 +142397,19 @@
        ],
        {}
       ]
+     ],
+     "textarea-base-appearance-rendering.tentative.html": [
+      "1b49fc2a4de715b7f7b605e5aa710cc8613b92a5",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/textarea-base-appearance-rendering-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-gaps": {
@@ -143373,6 +143464,19 @@
          [
           [
            "/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-020-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "flex-gap-decorations-fragmentation-021.html": [
+        "20efb30692689cbf4301b8c73577eac78776f246",
+        [
+         null,
+         [
+          [
+           "/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-021-ref.html",
            "=="
           ]
          ],
@@ -300008,6 +300112,122 @@
        {}
       ]
      ],
+     "backdrop-filter-nested-border-radius-clip-2.html": [
+      "2b9c48876f268fca2b953bd4fece4194695b66c1",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-nested-border-radius-clip-2-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            100
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "backdrop-filter-nested-border-radius-clip-3.html": [
+      "c32c59ed7d663eada3b047aba39d7925ee88a388",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-nested-border-radius-clip-3-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            100
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "backdrop-filter-nested-border-radius-clip-4.html": [
+      "84f815f9be89036a8b941addd7a0f3b2ee640fbf",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-nested-border-radius-clip-4-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            150
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "backdrop-filter-nested-border-radius-clip.html": [
+      "6080b4715415ea86e4e5fd8df8a1a756478b5d89",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-nested-border-radius-clip-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            100
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "backdrop-filter-opacity-rounded-clip.html": [
       "88fed5742034734f539d965d99ffa20c16428282",
       [
@@ -323518,6 +323738,19 @@
          {}
         ]
        ],
+       "video-controls-stacking.html": [
+        "5c3018578dce71dc2cc9c851c8db0ce22d2200ae",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/embedded-content/video-controls-stacking-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "video-controls-vertical-writing-mode.html": [
         "acd258811290c60258c3a0dbf6c290d207225bd5",
         [
@@ -325843,7 +326076,7 @@
      "forms": {
       "customizable-combobox": {
        "customizable-combobox-appearance.html": [
-        "91efb58905993d20aa012711685ad2379ff575a1",
+        "e2181b582dd3b50ea055b5a1197b2188601640a5",
         [
          null,
          [
@@ -340904,6 +341137,19 @@
        [
         [
          "/svg/struct/reftests/reference/green-100x100.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "animate-fill-underlying-value-change.html": [
+      "bad90ef24dc792707004a6efea653013cd3e842f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -369698,6 +369944,18 @@
        "20710e8c292e4783b12404174b7de7c40edd6d97",
        []
       ],
+      "multi-line-column-flex-fragmentation-059-ref.html": [
+       "1f53fc6bebd51dc0b246cb8b99420d0d0c79f223",
+       []
+      ],
+      "multi-line-column-flex-fragmentation-060-ref.html": [
+       "a7ba22d851d9f49fb5b2c7e48a55d3be9b5f876f",
+       []
+      ],
+      "multi-line-column-flex-fragmentation-061-ref.html": [
+       "04dccd27c6ae54f784fe19363028e7b3f5715f04",
+       []
+      ],
       "multi-line-row-flex-fragmentation-047-ref.html": [
        "d669603858d938bd4b70d394188f3f3cca6e82ea",
        []
@@ -369768,6 +370026,18 @@
       ],
       "multi-line-row-flex-fragmentation-093-ref.html": [
        "b1a12a814dc71a9cdf597a6dbab5d18bdb65b508",
+       []
+      ],
+      "multi-line-row-flex-fragmentation-094-ref.html": [
+       "2a9443f51164d0d1da94b1f6fd50467054d168bb",
+       []
+      ],
+      "multi-line-row-flex-fragmentation-095-ref.html": [
+       "a5a33fa349d865713beb259d871b3d01336294cf",
+       []
+      ],
+      "multi-line-row-flex-fragmentation-096-ref.html": [
+       "d774ec093368423d34c94dbe31b0a537d53b8e60",
        []
       ],
       "single-line-column-flex-fragmentation-040-ref.html": [
@@ -383930,7 +384200,7 @@
       []
      ],
      "input-text-base-appearance-rendering-ref.html": [
-      "a26cba52dd97f26cb1e1699cb13f731c5f003d27",
+      "6b97fe22ac3e9926fb5cc8bfabafb80aa4feae65",
       []
      ],
      "progress-base-appearance-rendering-ref.tentative.html": [
@@ -383939,6 +384209,10 @@
      ],
      "select-combobox-print-notref.html": [
       "c5d336141fcd4085f45b449ccf58009e40e5e37e",
+      []
+     ],
+     "textarea-base-appearance-rendering-ref.tentative.html": [
+      "bfc9810587c52a6d2984346b4b1370f496a117e9",
       []
      ]
     },
@@ -384265,6 +384539,10 @@
        ],
        "flex-gap-decorations-fragmentation-020-ref.html": [
         "fc83c421ee7a3ec5ff3a3e79e36477260ed2ad0e",
+        []
+       ],
+       "flex-gap-decorations-fragmentation-021-ref.html": [
+        "aa5ddb306956facdd4ec823db2b5881cf596694d",
         []
        ]
       }
@@ -415599,6 +415877,22 @@
       "28f3c415f94ab6dd6e63a061e984475593400fd8",
       []
      ],
+     "backdrop-filter-nested-border-radius-clip-2-ref.html": [
+      "fba477b2f8e2881d97ee6010e2abd7ceeb0d9bca",
+      []
+     ],
+     "backdrop-filter-nested-border-radius-clip-3-ref.html": [
+      "4cd2f1635cbede2bdd2a505d02034e90366683d5",
+      []
+     ],
+     "backdrop-filter-nested-border-radius-clip-4-ref.html": [
+      "fdc3d07890275a6e2474b9ffd1f71b444efde343",
+      []
+     ],
+     "backdrop-filter-nested-border-radius-clip-ref.html": [
+      "170f0e20f9c17849db1b6b6bad41b19c0f713295",
+      []
+     ],
      "backdrop-filter-non-isolation-ref.html": [
       "229d6b4faadad52ddae75b1ad92e5600e588df67",
       []
@@ -418087,7 +418381,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "14bf29348ece3cab45438e5e97761287fd7c3c61",
+     "f93112e0f70626c13980a053d982c61c88562fea",
      []
     ],
     "cross-realm-callback-report-exception-expected.txt": [
@@ -440429,6 +440723,10 @@
         "01c1e2f86f4dd4f610f9070101a83de6d7bdd045",
         []
        ],
+       "video-controls-stacking-ref.html": [
+        "2043cd54201499306e98b4d1bacd3158d326a736",
+        []
+       ],
        "video-controls-vertical-writing-mode-ref.html": [
         "e65bf6cbe808b4ea2674f3540a5d3845966a5dce",
         []
@@ -442473,10 +442771,6 @@
         "2fb0255609adc25a3394ae3edbd75ce4a43cb06d",
         []
        ],
-       "image-alternate-no-store.window-expected.txt": [
-        "956938c34fa411039fd326d5fb11b43f93b3ef2f",
-        []
-       ],
        "image-compositing-change-ref.html": [
         "ea80d8b545ff978775ebcff54b3083520bed8334",
         []
@@ -442819,7 +443113,7 @@
        ],
        "resources": {
         "customizable-combobox-styles.css": [
-         "376455bce6a31e2e512557f1aaab90a2fb734e9c",
+         "6c3b055dca5500787647f3f48cc803a8f810e1df",
          []
         ]
        }
@@ -460824,10 +461118,6 @@
      "428aeee63a2a8a03f720d24edb7d743aa7ceab2e",
      []
     ],
-    "sanitizer-javascript-url-expected.txt": [
-     "27dcb367dc3656fada4101c77799b2fd4980eb21",
-     []
-    ],
     "sethtml-safety.sub.dat": [
      "314d5ac37b135f9303a76ad84bce5d8065524140",
      []
@@ -468915,7 +469205,7 @@
        []
       ],
       "SVGList-parse-invalid-clears-items-expected.txt": [
-       "ee5224a6044b484a497fb0b430e7a02ffda478ff",
+       "faa9c80f047ba41a72993b05acf69be9b9fdb20c",
        []
       ],
       "SVGMatrix-tentative-expected.txt": [
@@ -511455,6 +511745,62 @@
     }
    },
    "ai": {
+    "classifier": {
+     "classifier-availability.tentative.https.window.js": [
+      "d9f65f0a4018ae7f5145b22cb62c27633f6711a9",
+      [
+       "ai/classifier/classifier-availability.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Classifier Availability"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "classifier-create.tentative.https.window.js": [
+      "421e36016d11090405d8af946c2a6c3d5cecdf83",
+      [
+       "ai/classifier/classifier-create.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Classifier Create"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ]
+    },
     "language-model": {
      "language-model-abort.tentative.https.window.js": [
       "e6833979583bb2ccffe3ddea71a6bc595da9ad9b",
@@ -562681,7 +563027,7 @@
        ]
       ],
       "custom-property-animation-color.html": [
-       "001fc407e7ba96a277de1a6558883d8fd0ac23a0",
+       "47e7f42c96f8cebfd97980f0a6138de5d8630cb8",
        [
         null,
         {}
@@ -580710,7 +581056,7 @@
        ]
       ],
       "will-change-invalid.html": [
-       "e8b0b01973231b06b7b4e069b3c2a4eebdffee1d",
+       "4f804029b456999bf4d51f43c1c08f1ff21a91ba",
        [
         null,
         {}
@@ -587232,24 +587578,6 @@
       {}
      ]
     ],
-    "behaves-like-button-with-command.tentative.html": [
-     "93b1fe471249643a38b96941227a910029fc04c0",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "behaves-like-button-with-popover.tentative.html": [
-     "13f6aebc431d7c89a65760aa1e084951abda8a4e",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
     "builtin-coverage.html": [
      "e3001a2c4855e9c10afaf46cdd2fe60fcd2a1cd3",
      [
@@ -588094,14 +588422,14 @@
       ]
      ],
      "ShadowRoot-init-customElementRegistry.html": [
-      "b81fbce26d6a7514a54be0d2d5e40cb2bdb3ae6c",
+      "a392b50e50f6963ca5f0c6b4882a580f76f943c6",
       [
        null,
        {}
       ]
      ],
      "ShadowRoot-init-declarative.html": [
-      "13359df5e60d42b0d7642005f15225bee8eec4ed",
+      "f1d71137b1b10d532b8dcded85be7c7b05b19108",
       [
        null,
        {}
@@ -693492,6 +693820,13 @@
          {}
         ]
        ],
+       "video-controls-stacking-hit-test.html": [
+        "7ed23403e0d973b206b2f67311f7900a51f4dff8",
+        [
+         null,
+         {}
+        ]
+       ],
        "video-stacking-hit-test.html": [
         "26fb86fabef41d2b38937d5329f6eefb102f71dd",
         [
@@ -700021,7 +700356,7 @@
         ]
        ],
        "customizable-combobox-filtered-pseudo.tentative.html": [
-        "5947e7082424432b4e832f94c019407c4f511871",
+        "b293baf3247aac81c68d984837136b1250227da0",
         [
          null,
          {
@@ -702650,7 +702985,7 @@
        },
        "filterable-select": {
         "filterable-select-filtered-pseudo.tentative.html": [
-         "457c679ceb1b6575003fafad2798492022d130ff",
+         "7ded28bd58154d4c7b5b697a469d9dc3759cb48e",
          [
           null,
           {
@@ -755222,7 +755557,7 @@
      ]
     ],
     "sanitizer-javascript-url.html": [
-     "d237cdf473396f04da79c51c29ece60cd7bfd7bb",
+     "e8904359e0e03c2a46d2ad87c18bd7b05587c79c",
      [
       null,
       {}
@@ -809196,7 +809531,7 @@
        ]
       ],
       "commitStyles.html": [
-       "5efec92fc2dff94d360ac29b7750c31d4a713ab2",
+       "4df705f4d75aa371044a9c4799057ea29d06da2d",
        [
         null,
         {}
