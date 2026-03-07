@@ -525,8 +525,11 @@ void Navigator::DidNavigate(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Run tasks that must execute just before the commit.
+  delegate_->DidNavigateAnyFramePreCommit(navigation_request.get(),
+                                          was_within_same_document);
+
   if (ui::PageTransitionIsMainFrame(params.transition)) {
-    // Run tasks that must execute just before the commit.
     delegate_->DidNavigateMainFramePreCommit(navigation_request.get(),
                                              was_within_same_document);
   }

@@ -1581,6 +1581,152 @@ TEST_F(WebContentsImplTest, NavigationExitsFullscreen) {
   contents()->SetDelegate(nullptr);
 }
 
+TEST_F(WebContentsImplTest, FullscreenNoExitOnIframeNavigate) {
+  FakeFullscreenDelegate fake_delegate;
+  contents()->SetDelegate(&fake_delegate);
+
+  // Navigate to a site.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://a.com"));
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+
+  // Create a subframe and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  sub_rfh = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
+                                                         sub_rfh));
+
+  // Make the top page fullscreen.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  main_rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  main_rfh->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
+                            base::BindOnce(&ExpectTrue));
+  EXPECT_TRUE(contents()->IsFullscreen());
+
+  // Navigate the iframe.
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://c.com"),
+                                                     sub_rfh);
+
+  // Fullscreen should NOT be exited.
+  EXPECT_TRUE(contents()->IsFullscreen());
+  EXPECT_TRUE(fake_delegate.IsFullscreenForTabOrPending(contents()));
+
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsImplTest, FullscreenNoExitOnIframeSameDocumentNavigate) {
+  FakeFullscreenDelegate fake_delegate;
+  contents()->SetDelegate(&fake_delegate);
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+
+  // Navigate to a site.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://a.com"));
+  main_rfh = main_test_rfh();
+
+  // Create a subframe and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  sub_rfh = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
+                                                         sub_rfh));
+
+  // Make the top page fullscreen.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  main_rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  main_rfh->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
+                            base::BindOnce(&ExpectTrue));
+  EXPECT_TRUE(contents()->IsFullscreen());
+
+  // Navigate the iframe same-document.
+  NavigationSimulator::CreateRendererInitiated(GURL("http://b.com/#hash"),
+                                               sub_rfh)
+      ->CommitSameDocument();
+
+  // Fullscreen should NOT be exited.
+  EXPECT_TRUE(contents()->IsFullscreen());
+  EXPECT_TRUE(fake_delegate.IsFullscreenForTabOrPending(contents()));
+
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsImplTest,
+       FullscreenExitOnIframeNavigateWhileIframeIsFullscreen) {
+  FakeFullscreenDelegate fake_delegate;
+  contents()->SetDelegate(&fake_delegate);
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+
+  // Navigate to a site.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://a.com"));
+  main_rfh = main_test_rfh();
+
+  // Create a subframe and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  sub_rfh = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
+                                                         sub_rfh));
+
+  // Make the subframe fullscreen.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  sub_rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  sub_rfh->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
+                           base::BindOnce(&ExpectTrue));
+  EXPECT_TRUE(contents()->IsFullscreen());
+
+  // Navigate the iframe.
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://c.com"),
+                                                     sub_rfh);
+
+  // Fullscreen SHOULD be exited.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  EXPECT_FALSE(fake_delegate.IsFullscreenForTabOrPending(contents()));
+
+  contents()->SetDelegate(nullptr);
+}
+
+TEST_F(WebContentsImplTest,
+       FullscreenExitOnMainFrameNavigateWhileIframeIsFullscreen) {
+  FakeFullscreenDelegate fake_delegate;
+  contents()->SetDelegate(&fake_delegate);
+  TestRenderFrameHost* main_rfh = main_test_rfh();
+
+  // Navigate to a site.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://a.com"));
+  main_rfh = main_test_rfh();
+
+  // Create a subframe and navigate it.
+  TestRenderFrameHost* sub_rfh = main_rfh->AppendChild("subframe");
+  sub_rfh = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://b.com"),
+                                                         sub_rfh));
+
+  // Make the subframe fullscreen.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  sub_rfh->frame_tree_node()->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kTest);
+  sub_rfh->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
+                           base::BindOnce(&ExpectTrue));
+  EXPECT_TRUE(contents()->IsFullscreen());
+
+  // Navigate the main frame.
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("http://c.com"));
+
+  // Fullscreen SHOULD be exited.
+  EXPECT_FALSE(contents()->IsFullscreen());
+  EXPECT_FALSE(fake_delegate.IsFullscreenForTabOrPending(contents()));
+
+  contents()->SetDelegate(nullptr);
+}
+
 // Tests that fullscreen is exited throughout the object hierarchy when
 // instructing NavigationController to GoBack() or GoForward().
 TEST_F(WebContentsImplTest, HistoryNavigationExitsFullscreen) {
