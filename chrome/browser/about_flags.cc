@@ -12213,10 +12213,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          blink::features::kControlledFrameWebRequestSecurityInfo)},
-    {"multicast-in-direct-sockets",
-     flag_descriptions::kMulticastInDirectSocketsName,
-     flag_descriptions::kMulticastInDirectSocketsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kMulticastInDirectSockets)},
     {"source-specific-multicast-in-direct-sockets",
      flag_descriptions::kSourceSpecificMulticastInDirectSocketsName,
      flag_descriptions::kSourceSpecificMulticastInDirectSocketsDescription,

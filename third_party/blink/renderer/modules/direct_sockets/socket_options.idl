@@ -30,10 +30,10 @@ dictionary UDPSocketOptions : SocketOptions {
   // TODO(crbug.com/1413161): Implement ipv6Only support.
   boolean ipv6Only;
 
-  [RuntimeEnabled=MulticastInDirectSockets] boolean multicastAllowAddressSharing;
+  boolean multicastAllowAddressSharing;
 
-  [RuntimeEnabled=MulticastInDirectSockets, EnforceRange] octet multicastTimeToLive;
-  [RuntimeEnabled=MulticastInDirectSockets] boolean multicastLoopback;
+  [EnforceRange] octet multicastTimeToLive;
+  boolean multicastLoopback;
 };
 
 dictionary TCPServerSocketOptions {

@@ -2436,11 +2436,6 @@ class IsolatedWebMulticastSocketsTest
     : public web_app::IsolatedWebAppBrowserTestHarness,
       public content::DevToolsAgentHostClient {
  public:
-  IsolatedWebMulticastSocketsTest() {
-    features_.InitWithFeatures({blink::features::kMulticastInDirectSockets},
-                               {});
-  }
-
   content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
     using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
@@ -2484,14 +2479,6 @@ class IsolatedWebMulticastSocketsTest
   }
 
  protected:
-  void SetUpOnMainThread() override {
-    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
-  }
-
   void Detach() {
     if (agent_host_) {
       agent_host_->DetachClient(this);
@@ -2550,7 +2537,6 @@ class IsolatedWebMulticastSocketsTest
   std::unique_ptr<base::RunLoop> wait_for_notification_run_loop_;
   std::string wait_for_method_;
   int last_id_ = 0;
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebMulticastSocketsTest,

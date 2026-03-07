@@ -1,6 +1,10 @@
 [
-    RuntimeEnabled=MulticastInDirectSockets,
-    Exposed=(Window, DedicatedWorker, SharedWorker, ServiceWorker),
+    Exposed(
+      Window DirectSockets,
+      DedicatedWorker DirectSockets,
+      SharedWorker DirectSocketsInSharedWorkers,
+      ServiceWorker DirectSocketsInServiceWorkers
+    ),
     SecureContext,
     IsolatedContext
 ]

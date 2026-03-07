@@ -10831,7 +10831,6 @@ from previous Chrome versions.
   <int value="-1235516826" label="disable-features"/>
   <int value="-1235356380" label="UseOutOfProcessVideoDecoding:disabled"/>
   <int value="-1235021573" label="ImeOptionsInSettings:disabled"/>
-  <int value="-1234764720" label="MulticastInDirectSockets:enabled"/>
   <int value="-1234740672" label="UsePdfCompositorServiceForPrint:disabled"/>
   <int value="-1234518922" label="ChromeLabs:disabled"/>
   <int value="-1234385389" label="TextFragmentColorChange:enabled"/>
@@ -14841,7 +14840,6 @@ from previous Chrome versions.
   <int value="125934378" label="enable-password-link"/>
   <int value="126341641" label="EnableDrDcVulkan:enabled"/>
   <int value="126485278" label="SurfacePolishForToolbarKillSwitch:enabled"/>
-  <int value="126943324" label="MulticastInDirectSockets:disabled"/>
   <int value="127338155" label="NtpSafeBrowsingModule:disabled"/>
   <int value="127383237" label="ContainerTypeNoLayoutContainment:disabled"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>

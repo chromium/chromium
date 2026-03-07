@@ -144,11 +144,6 @@ bool ValidateRequest(const Context& context,
 }
 
 bool IsMulticastAllowed(const Context& context) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kMulticastInDirectSockets)) {
-    return false;
-  }
-
   return std::visit(
       absl::Overload{[](content::RenderFrameHost* rfh) {
                        return rfh->IsFeatureEnabled(

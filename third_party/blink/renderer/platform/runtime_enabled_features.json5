@@ -3765,13 +3765,6 @@
       status: "stable",
     },
     {
-      // Multicast in Direct Sockets API.
-      // https://github.com/WICG/direct-sockets/blob/main/docs/multicast-explainer.md
-      name: "MulticastInDirectSockets",
-      status: "stable",
-      depends_on: ["DirectSockets"]
-    },
-    {
       name: "MulticolColumnWrapping",
       status: "stable",
     },
@@ -5308,7 +5301,7 @@
       // Source-specific multicast support in the Direct Sockets API.
       name: "SourceSpecificMulticastInDirectSockets",
       status: "test",
-      depends_on: ["MulticastInDirectSockets"],
+      depends_on: ["DirectSockets"],
     },
     {
       // Whether spatial navigation should use cursor inheritance to exclude

@@ -2887,14 +2887,6 @@ inline constexpr char kMostVisitedTilesNewScoringDescription[] =
     "When showing MV tiles, use a new scoring function to compute the score of "
     "each segment.";
 
-inline constexpr char kMulticastInDirectSocketsName[] =
-    "Multicast in Direct Sockets API";
-inline constexpr char kMulticastInDirectSocketsDescription[] =
-    "Enables access Multicast in Direct Sockets API. See "
-    "https://github.com/WICG/direct-sockets/blob/main/docs/"
-    "multicast-explainer.md for "
-    "details.";
-
 inline constexpr char kMultiInstanceSharedPrefsMigrationName[] =
     "Multi-Instance Shared Prefs Migration";
 inline constexpr char kMultiInstanceSharedPrefsMigrationDescription[] =

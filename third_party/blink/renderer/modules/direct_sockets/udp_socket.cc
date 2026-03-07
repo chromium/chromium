@@ -53,15 +53,6 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "Cannot use Multicast options if feature "
-        "MulticastInDirectSocketsEnabled is not enabled. Go to chrome://flags "
-        "to enable it.");
-    return false;
-  }
-
   if (execution_context->IsWindow() ||
       execution_context->IsDedicatedWorkerGlobalScope()) {
     if (!execution_context->IsFeatureEnabled(
@@ -84,10 +75,6 @@ bool ValidateMulticastOptions(ExecutionContext* execution_context,
 }
 
 bool IsMulticastAllowed(ExecutionContext* execution_context) {
-  if (!RuntimeEnabledFeatures::MulticastInDirectSocketsEnabled()) {
-    return false;
-  }
-
   if (execution_context->IsWindow() ||
       execution_context->IsDedicatedWorkerGlobalScope()) {
     if (!execution_context->IsFeatureEnabled(

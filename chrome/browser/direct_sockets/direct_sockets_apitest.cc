@@ -756,11 +756,7 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
   }
 };
 
-class IsolatedWebAppMulticastApiTest : public IsolatedWebAppApiTest {
- private:
-  base::test::ScopedFeatureList features_{
-      blink::features::kMulticastInDirectSockets};
-};
+using IsolatedWebAppMulticastApiTest = IsolatedWebAppApiTest;
 
 class IsolatedWebAppSharedWorkerApiTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -797,8 +793,7 @@ class IsolatedWebAppSharedWorkerApiTest
   )";
 
   IsolatedWebAppSharedWorkerApiTest() {
-    features_.InitWithFeatures({blink::features::kDirectSocketsInSharedWorkers,
-                                blink::features::kMulticastInDirectSockets},
+    features_.InitWithFeatures({blink::features::kDirectSocketsInSharedWorkers},
                                {});
   }
 
@@ -865,9 +860,8 @@ class IsolatedWebAppServiceWorkerApiTest
   )";
 
   IsolatedWebAppServiceWorkerApiTest() {
-    features_.InitWithFeatures({blink::features::kDirectSocketsInServiceWorkers,
-                                blink::features::kMulticastInDirectSockets},
-                               {});
+    features_.InitWithFeatures(
+        {blink::features::kDirectSocketsInServiceWorkers}, {});
   }
 
   content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
