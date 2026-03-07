@@ -230,21 +230,6 @@ crbug.com/1307787 [ fuchsia ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ mac ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 crbug.com/1307787 [ win ] Pixel_VulkanSwiftShader_WebGPU* [ Skip ]
 
-# Test is too slow for old phones and laptops, and in Debug and ASAN.
-crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1356246 [ mac intel release asan ] Pixel_SVGHuge [ Skip ]
-# Mac Nvidia laptops are quite old and the test times out on release builds too.
-crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
-# With the SmallerInterestArea experiment, the test becomes slower, and thus
-# times out. Remove this if crbug.com/1459256 ends up not shipping. This is
-# because the feature causes Chrome to raster the SVG image more times, which
-# increases runtime (by ~50%), pushing it from flaky to failing.
-crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1474637 [ linux nvidia debug ] Pixel_SVGHuge [ Skip ]
-crbug.com/1474637 [ mac graphite-disabled amd release no-asan ] Pixel_SVGHuge [ Skip ]
-
 # Fuchsia devices do not have enough memory for this test.
 crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
 
@@ -367,20 +352,39 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColor
 # Permanent Slow Expectations #
 ###############################
 
-# Test is slow enough on some Android devices to hit heartbeat timeouts.
-[ android android-pixel-2 ] Pixel_SVGHuge [ Slow ]
-[ android android-pixel-4 ] Pixel_SVGHuge [ Slow ]
-[ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
-[ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
-[ android android-sm-a236b ] Pixel_SVGHuge [ Slow ]
-# Also applies to Windows arm64.
-[ win qualcomm-0x41333430 target-cpu-64 ] Pixel_SVGHuge [ Slow ]
-# Also applies to 32-bit Windows
-[ win release target-cpu-32 ] Pixel_SVGHuge [ Slow ]
-# Doesn't hit heartbeat timeouts, but can time out when trying to execute
-# JavaScript after the SVG is loaded.
-[ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
-[ mac apple release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
+### This test is slow for various reasons. On some configs, it's so slow it needs to be skipped.
+### Both types of expectations are *INTERLEAVED* here so it's easy to see ~all platforms are covered.
+# Android
+crbug.com/486121429 [ android android-pixel-2 ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ android android-pixel-4 ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ android android-pixel-6 ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ android android-pixel-10 ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ android android-sm-a236b ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ android android-sm-s911u1 ] Pixel_SVGHuge [ Slow ]
+# Mac
+crbug.com/1356246 [ mac nvidia ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ mac intel debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ mac intel release asan ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ mac intel release no-asan ] Pixel_SVGHuge [ Slow ]
+crbug.com/1356246 [ mac amd debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/1356246 [ mac amd release asan ] Pixel_SVGHuge [ Skip ]
+crbug.com/1474637 [ mac amd release no-asan graphite-disabled ] Pixel_SVGHuge [ Skip ]
+crbug.com/381211724 [ mac amd release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ mac apple ] Pixel_SVGHuge [ Slow ]
+# Win
+crbug.com/1474637 [ win10 nvidia debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ win10 nvidia release ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win11 nvidia ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win intel ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win amd ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ win qualcomm ] Pixel_SVGHuge [ Slow ]
+# Linux
+crbug.com/1474637 [ linux nvidia debug ] Pixel_SVGHuge [ Skip ]
+crbug.com/486121429 [ linux nvidia release ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ linux intel ] Pixel_SVGHuge [ Slow ]
+crbug.com/486121429 [ linux amd ] Pixel_SVGHuge [ Slow ]
 
 # Context recovery can be slow on these devices.
 # On Win11 Adreno 690 it can also not have a context lost recorded.
@@ -388,9 +392,6 @@ crbug.com/447600149 [ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [
 
 # Long-running test, can flakily time out on old/slow hardware.
 [ mac arch-x86_64 amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
-
-# Hitting timeout with graphite
-crbug.com/381211724 [ mac amd-0x679e release no-asan graphite-enabled ] Pixel_SVGHuge [ Slow ]
 
 # Mac Asan timeouts
 crbug.com/338200323 [ mac angle-opengl asan graphite-disabled intel-0x3e9b passthrough ] Pixel_WebGPUToDataURL [ Slow ]
