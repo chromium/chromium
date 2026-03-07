@@ -2,8 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
 import("//media/media_options.gni")
 import("//third_party/libgav1/options.gni")
+
+rust_static_library("safe_parsers") {
+  crate_root = "parse_jpeg.rs"
+  sources = [ "parse_jpeg.rs" ]
+  cxx_bindings = [ "parse_jpeg.rs" ]
+
+  # Required by Chromium policy because cxx generates unsafe code under the hood.
+  allow_unsafe = true
+}
 
 source_set("parsers") {
   sources = [
@@ -18,6 +28,8 @@ source_set("parsers") {
     "h264_poc.h",
     "jpeg_parser.cc",
     "jpeg_parser.h",
+    "parse_jpeg_wrapper.cc",
+    "parse_jpeg_wrapper.h",
     "temporal_scalability_id_extractor.cc",
     "temporal_scalability_id_extractor.h",
     "vp8_bool_decoder.cc",
@@ -51,6 +63,7 @@ source_set("parsers") {
   configs += [ "//media:subcomponent_config" ]
 
   deps = [
+    ":safe_parsers",
     "//base",
     "//media/base",
     "//third_party/libgav1:libgav1_parser",

@@ -267,7 +267,7 @@ bool MjpegFileParser::Initialize(VideoCaptureFormat* capture_format) {
   }
 
   JpegParseResult result;
-  if (!ParseJpegStream(mapped_file_->bytes(), &result)) {
+  if (!ParseJpegPicture(mapped_file_->bytes(), &result)) {
     return false;
   }
 
@@ -294,7 +294,7 @@ base::span<const uint8_t> MjpegFileParser::GetNextFrame() {
       mapped_file_->bytes().subspan(current_byte_index_);
 
   JpegParseResult result;
-  if (!ParseJpegStream(buf_span, &result)) {
+  if (!ParseJpegPicture(buf_span, &result)) {
     return base::span<const uint8_t>();
   }
   int frame_size = frame_size_ = result.image_size;

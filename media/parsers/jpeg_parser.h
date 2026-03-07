@@ -8,7 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
+#include <ostream>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
@@ -80,6 +82,7 @@ const size_t kJpegMaxQuantizationTableNum = 4;
 
 // Parsing result of JPEG DHT marker.
 struct JpegHuffmanTable {
+  bool operator==(const JpegHuffmanTable&) const = default;
   bool valid;
   std::array<uint8_t, 16> code_length;
   std::array<uint8_t, 162> code_value;
@@ -97,6 +100,15 @@ extern const std::array<JpegHuffmanTable, kJpegMaxHuffmanTableNumBaseline>
 
 // Parsing result of JPEG DQT marker.
 struct JpegQuantizationTable {
+  bool operator==(const JpegQuantizationTable& other) const {
+    if (valid != other.valid) {
+      return false;
+    }
+    if (!valid) {
+      return true;
+    }
+    return std::ranges::equal(value, other.value);
+  }
   bool valid;
   uint8_t value[kDctSize];  // baseline only supports 8 bits quantization table
 };
@@ -110,6 +122,7 @@ extern const JpegQuantizationTable kDefaultQuantTable[2];
 
 // Parsing result of a JPEG component.
 struct JpegComponent {
+  bool operator==(const JpegComponent&) const = default;
   uint8_t id;
   uint8_t horizontal_sampling_factor;
   uint8_t vertical_sampling_factor;
@@ -118,6 +131,7 @@ struct JpegComponent {
 
 // Parsing result of a JPEG SOF marker.
 struct JpegFrameHeader {
+  bool operator==(const JpegFrameHeader&) const = default;
   uint16_t visible_width;
   uint16_t visible_height;
   uint16_t coded_width;
@@ -128,8 +142,10 @@ struct JpegFrameHeader {
 
 // Parsing result of JPEG SOS marker.
 struct JpegScanHeader {
+  bool operator==(const JpegScanHeader&) const = default;
   uint8_t num_components;
   struct Component {
+    bool operator==(const Component&) const = default;
     uint8_t component_selector;
     uint8_t dc_selector;
     uint8_t ac_selector;
@@ -138,6 +154,7 @@ struct JpegScanHeader {
 };
 
 struct JpegParseResult {
+  bool operator==(const JpegParseResult& other) const;
   JpegFrameHeader frame_header;
   JpegHuffmanTable dc_table[kJpegMaxHuffmanTableNumBaseline];
   JpegHuffmanTable ac_table[kJpegMaxHuffmanTableNumBaseline];
@@ -149,18 +166,21 @@ struct JpegParseResult {
   size_t image_size;
 };
 
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      const JpegParseResult& result);
+
+// Parses JPEG picture in |buffer| with |length| using the C++ implementation.
+// This is exposed for differential fuzzing against the Rust implementation.
+MEDIA_EXPORT
+bool ParseJpegPictureLegacy(base::span<const uint8_t> buffer,
+                            JpegParseResult* result);
+
 // Parses JPEG picture in |buffer| with |length|.  Returns true iff header is
 // valid and JPEG baseline sequential process is present. If parsed
 // successfully, |result| is the parsed result.
 MEDIA_EXPORT
 bool ParseJpegPicture(base::span<const uint8_t> buffer,
                       JpegParseResult* result);
-
-// Parses the first image of JPEG stream in |buffer| with |length|.  Returns
-// true iff header is valid and JPEG baseline sequential process is present.
-// If parsed successfully, |result| is the parsed result.
-MEDIA_EXPORT
-bool ParseJpegStream(base::span<const uint8_t> buffer, JpegParseResult* result);
 
 }  // namespace media
 
