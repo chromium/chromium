@@ -130,6 +130,38 @@ class ClassInfo {
     });
   }
 
+  runCustomEventTypeParameterCheck(node) {
+    assert.ok(node.type === 'TSTypeReference');
+
+    if (!this.isLitElement) {
+      return;
+    }
+
+    const parentNode = node.parent.parent;
+
+    if (parentNode.type === 'Identifier') {
+      this.context.report({
+        node: parentNode,
+        messageId: 'missingCustomEventTypeParameter',
+        data: {
+          type: 'function parameter',
+          name: parentNode.name,
+        },
+      });
+      return;
+    }
+
+    assert.ok(parentNode.type === 'VariableDeclarator');
+    this.context.report({
+      node: parentNode,
+      messageId: 'missingCustomEventTypeParameter',
+      data: {
+        type: 'variable',
+        name: parentNode.id.name,
+      },
+    });
+  }
+
   runUseFireHelperCheck(node) {
     if (!this.isLitElement) {
       return;
@@ -301,6 +333,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
           'Tag/class name pair registration to HTMLElementTagNameMap interface missing for {{tagName}} \u2194 {{className}}.',
       missingCustomElementRegistration:
           'Missing customElements.define({{className}}.is, {{className}}) call.',
+      missingCustomEventTypeParameter:
+          'Missing CustomEvent type parameter for {{type}} \'{{name}}\' (use CustomEvent<void> or CustomEvent<SomeType>).',
     },
   },
   defaultOptions: [],
@@ -399,6 +433,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
         }
 
         currentClassInfo.runUseFireHelperCheck(node);
+      },
+      ['MethodDefinition > FunctionExpression TSTypeReference[typeName.name="CustomEvent"]:not([typeArguments])'](
+          node) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        currentClassInfo.runCustomEventTypeParameterCheck(node);
       },
       'ClassDeclaration:exit'(node) {
         if (!hasLitImport) {

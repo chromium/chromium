@@ -249,6 +249,7 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
     _EXPECTED_USE_FIRE_HELPER_ERROR = "Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))."
     _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR = "Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event \'%(eventName)s\'"
+    _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s \'%(name)s\' (use CustomEvent<void> or CustomEvent<SomeType>)"
 
     super_call_required_methods = [
         'connectedCallback', 'disconnectedCallback', 'willUpdate', 'updated'
@@ -304,6 +305,14 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR % {
             'dashCaseName': 'hello-button',
             'camelCaseName': 'helloButton',
+        },
+        _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR % {
+            'type': 'function parameter',
+            'name': 'someEvent',
+        },
+        _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR % {
+            'type': 'variable',
+            'name': '_otherEvent',
         },
         # Case 1.7
         _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
@@ -396,6 +405,14 @@ class EslintTsTest(unittest.TestCase):
         _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR % {
             'dashCaseName': 'hello-other-button',
             'camelCaseName': 'helloOtherButton',
+        },
+        _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR % {
+            'type': 'function parameter',
+            'name': 'someEvent2',
+        },
+        _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR % {
+            'type': 'variable',
+            'name': '_otherEvent2',
         },
         # Case 2.4
         _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {

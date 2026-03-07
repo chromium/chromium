@@ -72,6 +72,7 @@ customElements.define(TestError5Element.is, TestError5Element);
 //  1) Incorrect order method definition order
 //  2) Usage of this.dispatchEvent(new CustomEvent(...))
 //  3) Usage of incorrect dollar sign notation.
+//  4) Usage of CustomEvent type without a type parameter.
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -121,6 +122,12 @@ export class TestError6Element extends CrLitElement {
   }
 
   override firstUpdated() {}
+
+  // Test case where CustomEvent is used with a function parameter.
+  protected onFoo_(someEvent: CustomEvent) {
+    // Test case where CustomEvent is used with a type assertion.
+    const _otherEvent = someEvent as CustomEvent;
+  }
 }
 
 declare global {
@@ -257,6 +264,12 @@ export class TestNoError3Element extends CrLitElement {
 
     this.fire('bar-updated', 'bar');
     this.$.helloOtherButton.focus();
+  }
+
+  // Test case where CustomEvent is used with a function parameter.
+  protected onFoo_(someEvent2: CustomEvent<string>) {
+    // Test case where CustomEvent is used with a type assertion.
+    const _otherEvent2 = someEvent2 as CustomEvent<string>;
   }
 }
 
