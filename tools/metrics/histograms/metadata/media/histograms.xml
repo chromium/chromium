@@ -4030,7 +4030,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuNvidiaActiveWithExternalDisplay"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4042,7 +4042,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.MultiGpuWithExternalDisplay"
-    enum="Boolean" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5452,7 +5452,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.MultiGpu.MultiGpuNvidiaActiveWithExternalDisplay"
-    enum="Boolean" expires_after="2026-04-05">
+    enum="Boolean" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5464,7 +5464,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundationRenderer.MultiGpu.MultiGpuWithExternalDisplay"
-    enum="Boolean" expires_after="2026-08-30">
+    enum="Boolean" expires_after="2026-12-09">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
