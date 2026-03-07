@@ -401,7 +401,7 @@ Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SET
 <translation id="129206366270737897">Inhabilita cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="1294263471858445589">Habilita la autenticación pasiva en sesiones normales y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita el dictado en la pantalla de inicio de sesión</translation>
-<translation id="1297182715641689552">Utilizar una secuencia de comandos .pac de proxy</translation>
+<translation id="1297182715641689552">Utilizar un script .pac de proxy</translation>
 <translation id="1297909092292754072">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes no seguros. Los patrones solo se aceptan para nombres de host. Las URLs o los orígenes con esquemas deben ser cadenas exactas. Las organizaciones pueden especificar orígenes para aplicaciones antiguas que no pueden implementar TLS o configurar un servidor provisional para el desarrollo web interno, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
 
 Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URLs separadas por comas. Esta política anula tanto la marca de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
@@ -1343,7 +1343,7 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://chromeenterprise.google/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
-      Ten en cuenta que esta política bloquea JavaScript en función de si el origen del documento de nivel superior (normalmente, la URL de la página que también aparece en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques de la cadena de suministro web. Por ejemplo, si se proporciona el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en https://example.com ejecute una secuencia de comandos cargada desde https://www.foo.com/example.js. Además, si se proporciona el patrón "https://example.com/", no se evitará que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se inserta como submarco en una página alojada en otro origen, como https://www.bar.com.</translation>
+      Ten en cuenta que esta política bloquea JavaScript en función de si el origen del documento de nivel superior (normalmente, la URL de la página que también aparece en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques de la cadena de suministro web. Por ejemplo, si se proporciona el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en https://example.com ejecute un script cargada desde https://www.foo.com/example.js. Además, si se proporciona el patrón "https://example.com/", no se evitará que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se inserta como submarco en una página alojada en otro origen, como https://www.bar.com.</translation>
 <translation id="1942015922182679826">Habilitar la eliminación de contraseñas que no se pueden descifrar</translation>
 <translation id="1942626390957213764">Inhabilitar el centro para compartir escritorio</translation>
 <translation id="194407941132272412">Inhabilitar el aislamiento en todos los sitios web, pero permitir que el usuario lo habilite</translation>
@@ -2135,7 +2135,7 @@ Si no se define esta política, la opción predeterminada será <ph name="POLICY
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes sobre datos del sistema y contenido de páginas para ayudar a mejorar la función Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
-<translation id="2497751676088107779">Secuencia de comandos de usuario</translation>
+<translation id="2497751676088107779">Script de usuario</translation>
 <translation id="249798396824949930"> Controla si el navegador puede detectar si el nivel de cada política es obligatorio en <ph name="MAC_OS_NAME" /> o no.
 
       Si se habilita esta política o no se establece, el nivel de cada política lo determinará el nivel del perfil gestionado de <ph name="MAC_OS_NAME" />.
@@ -2968,9 +2968,9 @@ Si se establece la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se acepta
 
   * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: te permite especificar el servidor proxy que usa Chrome y evita que los usuarios cambien la configuración del proxy
 
-  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: una URL a un archivo .pac de proxy o una secuencia de comandos PAC codificada como una URL de datos con el tipo de MIME application/x-ns-proxy-autoconfig
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: una URL a un archivo .pac de proxy o un script PAC codificada como una URL de datos con el tipo de MIME application/x-ns-proxy-autoconfig
 
-  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: evita que la pila de red recurra a conexiones directas con una secuencia de comandos PAC no válida o no disponible
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: evita que la pila de red recurra a conexiones directas con un script PAC no válida o no disponible
 
   * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: una URL del servidor proxy
 
@@ -6524,7 +6524,7 @@ Si se le asigna el valor false, no podrán acceder a la función.</translation>
       Si no se asigna ningún valor, el usuario podrá elegir la imagen del avatar que le representará en la pantalla de inicio de sesión.</translation>
 <translation id="5428716437928918274">Controles de configuración de Privacy Sandbox</translation>
 <translation id="5430760800138878127">Se habilitará un nuevo comportamiento del analizador de HTML que permite más etiquetas.</translation>
-<translation id="5431392643649571773">Si se habilita, la función <ph name="PRODUCT_NAME" /> permite el uso de la caché de páginas completas. Al salir de una página, es posible que su estado (árbol de documentos, secuencia de comandos, etc.) se almacene en caché de páginas completas. Si el navegador vuelve a visitar esa página, puede restaurarse desde el almacenamiento en caché de páginas completas y mostrarse en el estado en el que estaba al almacenarse en caché la vez anterior.
+<translation id="5431392643649571773">Si se habilita, la función <ph name="PRODUCT_NAME" /> permite el uso de la caché de páginas completas. Al salir de una página, es posible que su estado (árbol de documentos, script, etc.) se almacene en caché de páginas completas. Si el navegador vuelve a visitar esa página, puede restaurarse desde el almacenamiento en caché de páginas completas y mostrarse en el estado en el que estaba al almacenarse en caché la vez anterior.
 
           Es probable que esta función provoque fallos en algunos sitios web que no esperen que se almacenen en caché. Especialmente, los sitios web que dependen de que el evento "<ph name="UNLOAD_HANDLER_NAME" />" se envíe al usuario cuando el navegador salga de la página. El evento "<ph name="UNLOAD_HANDLER_NAME" />" no se enviará si la página se guarda en el almacenamiento en caché en páginas completas.
 
@@ -8408,7 +8408,7 @@ Si no se establece esta política, se aplicará el intervalo predeterminado de 1
 
        Si se decide usar:
          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: servidores proxy fijos. Se pueden especificar otras opciones con <ph name="PROXY_SERVER_POLICY_NAME" /> y <ph name="PROXY_BYPASS_LIST_POLICY_NAME" />. Solo el servidor proxy HTTP con la mayor prioridad está disponible para las aplicaciones ARC.
-         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: una secuencia de comandos .pac de proxy. Usa <ph name="PROXY_PAC_URL_POLICY_NAME" /> para establecer la URL de un archivo .pac de proxy.
+         * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: un script .pac de proxy. Usa <ph name="PROXY_PAC_URL_POLICY_NAME" /> para establecer la URL de un archivo .pac de proxy.
 
       Si no se asigna ningún valor a esta política, los usuarios pueden elegir los ajustes del proxy.
 
@@ -8775,7 +8775,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 <translation id="6788500377069760677">Habilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
 <translation id="6789319144568227749">Configura la compatibilidad con encabezados de solicitud CORS sin comodín.
 
-      La versión 97 de <ph name="PRODUCT_NAME" /> introduce la compatibilidad con encabezados de solicitud CORS sin comodín. Cuando una secuencia de comandos realiza una solicitud de red de varios orígenes mediante fetch() y XMLHttpRequest con un encabezado Authorization añadido en secuencia de comandos, este encabezado debe estar permitido explícitamente por el encabezado Access-Control-Allow-Headers en la respuesta de solicitud preparatoria CORS. Con "explícitamente", nos referimos a que el carácter comodín ("*") no incluye el encabezado Authorization. Consulta <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> para obtener más información.
+      La versión 97 de <ph name="PRODUCT_NAME" /> introduce la compatibilidad con encabezados de solicitud CORS sin comodín. Cuando un script realiza una solicitud de red de varios orígenes mediante fetch() y XMLHttpRequest con un encabezado Authorization añadido en script, este encabezado debe estar permitido explícitamente por el encabezado Access-Control-Allow-Headers en la respuesta de solicitud preparatoria CORS. Con "explícitamente", nos referimos a que el carácter comodín ("*") no incluye el encabezado Authorization. Consulta <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> para obtener más información.
 
       Si no se establece esta política o se le asigna el valor True, <ph name="PRODUCT_NAME" /> admitirá los encabezados de solicitud CORS sin comodín y funcionará como se indica arriba.
 
@@ -11191,19 +11191,19 @@ El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="8479032202539686055">WebRTC usará todas las interfaces disponibles al buscar la mejor ruta.</translation>
 <translation id="8479496880635054740">Inhabilitar el teclado virtual de accesibilidad en la pantalla de inicio de sesión</translation>
 <translation id="8482518340010585741">Configurar la restauración de aplicaciones al iniciar sesión</translation>
-<translation id="8483004350080020634">Elimina las partes de las URL de tipo https:// que contienen información sensible de seguridad y privacidad antes de que se transfieran a las secuencias de comandos de configuración automática de proxy que utiliza <ph name="PRODUCT_NAME" /> durante la resolución de proxy.
+<translation id="8483004350080020634">Elimina las partes de las URL de tipo https:// que contienen información sensible de seguridad y privacidad antes de que se transfieran a los scripts de configuración automática de proxy que utiliza <ph name="PRODUCT_NAME" /> durante la resolución de proxy.
 
 
-      Si se le asigna el valor "True", se habilita la función de seguridad y las URL de tipo https:// se eliminan antes de su envío a la secuencia de comandos de configuración automática de proxy. Así, la secuencia no puede ver los datos que normalmente están protegidos por un canal cifrado, como la ruta y la consulta de la URL.
+      Si se le asigna el valor "True", se habilita la función de seguridad y las URL de tipo https:// se eliminan antes de su envío al script de configuración automática de proxy. Así, la secuencia no puede ver los datos que normalmente están protegidos por un canal cifrado, como la ruta y la consulta de la URL.
 
 
-      Si se le asigna el valor "False", se inhabilita la función de seguridad y las secuencias de comandos de configuración automática de proxy pueden ver todos los componentes de las URL de tipo https://. Esto se aplica a todas las secuencias de comandos de configuración automática de proxy, independientemente de su origen, como las obtenidas con un método de transporte no seguro o a través de WPAD.
+      Si se le asigna el valor "False", se inhabilita la función de seguridad y los scripts de configuración automática de proxy pueden ver todos los componentes de las URL de tipo https://. Esto se aplica a todas los scripts de configuración automática de proxy, independientemente de su origen, como las obtenidas con un método de transporte no seguro o a través de WPAD.
 
 
       El valor "True" se asigna de forma predeterminada (función de seguridad habilitada).
 
 
-      Se recomienda asignar el valor "True". El único motivo para asignar el valor "False" es que el valor "True" provoque un problema de compatibilidad con las secuencias de comandos de configuración automática de proxy existentes.
+      Se recomienda asignar el valor "True". El único motivo para asignar el valor "False" es que el valor "True" provoque un problema de compatibilidad con los scripts de configuración automática de proxy existentes.
 
       Esta política se eliminará en M75.</translation>
 <translation id="8484375800789836289">Permitir que el navegador filtre parámetros de URL</translation>

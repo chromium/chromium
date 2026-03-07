@@ -4079,7 +4079,7 @@ Ek ayrıntılar:
 <translation id="7564667064360547717">Gömlekler ve Üst Giyim</translation>
 <translation id="7567204685887185387">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası hileli bir şekilde yayınlanmış olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="7568616151991626879">Google Chrome, <ph name="APP_NAME" /> adresinde şifrenizi doldurmaya çalışıyor.</translation>
-<translation id="7569072768465750771">{COUNT,plural, =0{Yok}=1{Bu cihazda 1 sekme}other{Bu cihazda # sekme var}}</translation>
+<translation id="7569072768465750771">{COUNT,plural, =0{Yok}=1{Bu cihazdaki 1 sekme}other{Bu cihazdaki # sekme}}</translation>
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Kredi kartı Chrome'dan kaldırılsın mı?</translation>
 <translation id="7569983096843329377">Siyah</translation>
