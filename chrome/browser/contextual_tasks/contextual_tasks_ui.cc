@@ -1051,6 +1051,13 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // accordingly.
   const bool is_zero_state = ContextualTasksUI::IsZeroState(url, ui_service_);
 
+  // Record the HTTP response code of the inner frame contents if response
+  // headers are available.
+  if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
+    contextual_tasks::RecordInnerFrameContentsHttpResponseCode(
+        response_headers->response_code(), is_zero_state);
+  }
+
   // Check if the zero state status has changed since the last navigation.
   const bool has_zero_state_changed =
       is_zero_state !=

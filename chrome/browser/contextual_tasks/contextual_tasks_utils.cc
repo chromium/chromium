@@ -34,6 +34,18 @@ void RecordErrorPageShown(contextual_search::ContextualSearchSource source) {
       contextual_search::ContextualSearchErrorPage::kPageContextNotEligible);
 }
 
+void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
+                                              bool is_zero_state) {
+  base::UmaHistogramSparse(
+      "ContextualTasks.InnerFrameContents.HttpResponseCode", http_status_code);
+  if (!is_zero_state) {
+    base::UmaHistogramSparse(
+        "ContextualTasks.InnerFrameContents.HttpResponseCode."
+        "ExcludeZeroStateLoads",
+        http_status_code);
+  }
+}
+
 ContextualTasksUIInterface* GetWebUiInterface(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)

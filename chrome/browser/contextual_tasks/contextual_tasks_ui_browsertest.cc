@@ -150,7 +150,9 @@ class MockContextualTasksCookieSynchronizer
 
 class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
  public:
-  ContextualTasksUIBrowserTest() = default;
+  ContextualTasksUIBrowserTest() {
+    feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+  }
   ~ContextualTasksUIBrowserTest() override = default;
 
   // This override is required to inject the FakeProfileOAuth2TokenService
@@ -221,6 +223,7 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<ContextualTasksUI> controller_;
   base::CallbackListSubscription create_services_subscription_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
@@ -289,17 +292,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
   run_loop.Run();
 }
 
-class ContextualTasksLensBrowserTest : public ContextualTasksUIBrowserTest {
- public:
-  ContextualTasksLensBrowserTest() {
-    feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksLensBrowserTest, HandleLensButtonClick) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, HandleLensButtonClick) {
   // Setup LensController
   auto override =
       tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
@@ -445,6 +439,31 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify third inner contents is observed.
   EXPECT_EQ(controller_->GetInnerFrameUrl(), url3);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       RecordsHttpResponseCodeHistograms) {
+  base::HistogramTester histogram_tester;
+
+  // Create inner contents to trigger the observer.
+  std::unique_ptr<content::WebContents> inner_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  TriggerOnInnerWebContentsCreated(inner_contents.get());
+
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  inner_contents->GetController().LoadURL(
+      url, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents.get()));
+
+  // Since the URL is not an AI URL, IsZeroState will return false.
+  // Both histograms should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.InnerFrameContents.HttpResponseCode", 200, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.InnerFrameContents.HttpResponseCode."
+      "ExcludeZeroStateLoads",
+      200, 1);
 }
 
 class ContextualTasksNoMockBrowserTest : public InProcessBrowserTest {
