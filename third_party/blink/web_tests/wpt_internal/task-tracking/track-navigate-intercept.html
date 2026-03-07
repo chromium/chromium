@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/task-ids.js"></script>
+
+<button id="navigateBack">Go Back!</button>
+
+<script>
+  // Set up the history stack.
+  let pageId = 0;
+  history.pushState({}, '', '/home/');
+  history.pushState({}, '', '/forward-' + ++pageId);
+  history.pushState({}, '', '/forward-' + ++pageId);
+
+  navigateBack.onclick = () => {
+    if (testRunner) {
+      testRunner.goToOffset(-1);
+    }
+  };
+
+  async function runTest(handlerType, navigationType) {
+    let expectedId;
+    const {promise, resolve} = Promise.withResolvers();
+
+    // Set an initial value for scheduler.asyncData. For pushState navs, this
+    // will be the current data when the navigate event handler runs. For back
+    // navs, the data will be 0 because the navigate event runs in a new task.
+    const initialId = initializeTaskId();
+
+    window.navigation.addEventListener('navigate', e => {
+      const startId = scheduler.asyncData;
+
+      // Bump the asyncData id to differentiate it from the initial one.
+      expectedId = initializeTaskId();
+
+      let args = {};
+      args[handlerType] = () => resolve(scheduler.asyncData);
+      e.intercept(args);
+
+      // Restore this since handlers run in the same task as the navigate
+      // event dispatch. This assures we're actually propagating and not
+      // leaking state into the handlers.
+      scheduler.asyncData = startId;
+    }, {once:true});
+
+    if (navigationType === 'back') {
+      if (test_driver) {
+        await test_driver.click(navigateBack);
+        --pageId;
+      }
+    } else if (navigationType === 'push') {
+      history.pushState({}, '', '/forward-' + ++pageId);
+    }
+
+    let handlerId = await promise;
+    assert_not_equals(expectedId, 0, 'The expectedId should not be 0');
+    assert_not_equals(expectedId, initialId, 'The expectedId should be the initialId');
+    // For back navs, the state should use `expectedId` since no JS was on the
+    // stack when dispatching the event. For pushState navs, the `expectedId`
+    // should not be propagated since there is JS on the stack.
+    if (navigationType === "back") {
+      assert_equals(handlerId, expectedId, 'The handlerId should be the expectedId for "back".');
+    } else {
+      assert_equals(handlerId, initialId, 'The handlerId should be the expectedId for "back".');
+    }
+  }
+
+  promise_test(t => {
+    return runTest('handler', 'back');
+  }, 'Task state is propagated from intercept to the commit handler with back');
+
+  promise_test(t => {
+    return runTest('precommitHandler', 'back');
+  }, 'Task state is propagated from intercept to the precommit handler with back');
+
+
+  promise_test(t => {
+    return runTest('handler', 'push');
+  }, 'Task state is propagated from intercept to the commit handler with pushState');
+
+  promise_test(t => {
+    return runTest('precommitHandler', 'push');
+  }, 'Task state is propagated from intercept to the precommit handler with pushState');
+</script>

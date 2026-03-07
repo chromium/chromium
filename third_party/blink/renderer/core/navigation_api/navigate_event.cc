@@ -43,6 +43,8 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_top_level_override_scope.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -54,6 +56,18 @@
 #include "v8-function.h"
 
 namespace blink {
+
+namespace {
+TaskAttributionTopLevelOverrideScope::Type GetTaskAttributionScopeType(
+    NavigateEventDispatchParams* params) {
+  // The current task state should be used (i.e. not overridden) if the
+  // navigation occurs during JS execution. Otherwise ensure the intercept()
+  // state is propagated to the handlers.
+  return params->involvement == UserNavigationInvolvement::kNone
+             ? TaskAttributionTopLevelOverrideScope::Type::kDoNotOverride
+             : TaskAttributionTopLevelOverrideScope::Type::kOverride;
+}
+}  // namespace
 
 enum class HandlerPhase { kPrecommit, kPostcommit };
 
@@ -181,6 +195,8 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
           "navigate event is cancelable.");
       return;
     }
+    options->precommitHandler()->SetTaskState(
+        CaptureCurrentTaskState(DomWindow()));
     navigation_action_precommit_handlers_list_.push_back(
         options->precommitHandler());
   }
@@ -223,6 +239,7 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
         intercept_state_ == InterceptState::kIntercepted);
   intercept_state_ = InterceptState::kIntercepted;
   if (options->hasHandler()) {
+    options->handler()->SetTaskState(CaptureCurrentTaskState(DomWindow()));
     navigation_action_handlers_list_.push_back(options->handler());
   }
 }
@@ -448,6 +465,9 @@ void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
 
   HeapVector<MemberScriptPromise<IDLUndefined>> precommit_promises_list;
   for (auto& function : handlers_list) {
+    TaskAttributionTopLevelOverrideScope override_scope(
+        DomWindow(), GetTaskAttributionScopeType(dispatch_params_),
+        TaskAttributionTopLevelOverrideScope::PassKeyType{});
     ScriptPromise<IDLUndefined> result;
     if (function->Invoke(this, controller).To(&result)) {
       precommit_promises_list.push_back(result);
@@ -631,6 +651,9 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
 
   for (auto& function : handlers_list) {
     ScriptPromise<IDLUndefined> result;
+    TaskAttributionTopLevelOverrideScope override_scope(
+        DomWindow(), GetTaskAttributionScopeType(dispatch_params_),
+        TaskAttributionTopLevelOverrideScope::PassKeyType{});
     if (function->Invoke(this).To(&result))
       navigation_action_promises_list_.push_back(result);
   }
