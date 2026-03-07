@@ -2524,7 +2524,9 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 
     // Generate media logs.
     PlayVideo(web_contents);
+    WaitForAudioFocusGained();
     WaitForMediaSessionPlaying(web_contents);
+    WaitForWasRecentlyAudible(web_contents);
 
     // Verify that media logs were recorded, since the player should be using
     // the media element execution context of the opener document.
