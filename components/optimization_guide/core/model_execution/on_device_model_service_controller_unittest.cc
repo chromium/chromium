@@ -2509,17 +2509,6 @@ TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
   EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceCapabilities(),
             on_device_model::Capabilities(
                 {on_device_model::CapabilityFlags::kImageInput}));
-
-  broker_.InstallBaseModel({
-      .config = ExecutionConfigWithCapabilities(
-          {proto::OnDeviceModelCapability::
-               ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT}),
-  });
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(broker_.GetOrCreateBrokerState().GetOnDeviceCapabilities(),
-            on_device_model::Capabilities(
-                {on_device_model::CapabilityFlags::kAudioInput}));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,

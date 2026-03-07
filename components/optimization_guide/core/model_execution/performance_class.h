@@ -24,6 +24,9 @@ void UpdatePerformanceClassPref(
     PrefService* local_state,
     OnDeviceModelPerformanceClass performance_class);
 
+// Stores the device VRAM in the preferences file.
+void UpdateVramPref(PrefService* local_state, uint64_t vram_mb);
+
 // Stores the device info in the preferences file.
 void UpdateDeviceInfoPrefs(PrefService* local_state,
                            uint32_t vendor_id,

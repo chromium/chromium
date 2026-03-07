@@ -78,6 +78,9 @@ const char kOnDevicePerformanceClass[] =
 const char kOnDevicePerformanceClassVersion[] =
     "optimization_guide.on_device.performance_class_version";
 
+// Stores the device VRAM in MB.
+const char kOnDeviceVramMb[] = "optimization_guide.on_device.vram_mb";
+
 // Timestamps for the last time each features was used while on-device eligible.
 // Used to decide which models are worth fetching.
 const char kLastUsageByFeature[] =
@@ -109,6 +112,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
   registry->RegisterStringPref(localstate::kOnDevicePerformanceClassVersion,
                                std::string());
+  registry->RegisterUint64Pref(localstate::kOnDeviceVramMb, 0);
   registry->RegisterTimePref(
       localstate::kLastTimeEligibleForOnDeviceModelDownload, base::Time::Min());
   registry->RegisterDictionaryPref(localstate::kOnDeviceModelValidationResult);

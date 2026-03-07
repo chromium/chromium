@@ -158,6 +158,43 @@ TEST_F(PerformanceClassPossibleHintsTest, ForceCpu) {
       testing::ElementsAre(proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU));
 }
 
+class PerformanceClassCapabilitiesTest : public testing::Test {
+ public:
+  PerformanceClassCapabilitiesTest()
+      : client_(base::BindRepeating(
+            [](::mojo::PendingReceiver<
+                on_device_model::mojom::OnDeviceModelService>) {})) {
+    model_execution::prefs::RegisterLocalStatePrefs(prefs_.registry());
+    UpdatePerformanceClassPref(&prefs_,
+                               OnDeviceModelPerformanceClass::kUnknown);
+    classifier_ =
+        std::make_unique<PerformanceClassifier>(&prefs_, client_.GetSafeRef());
+  }
+
+ protected:
+  TestingPrefServiceSimple& prefs() { return prefs_; }
+  PerformanceClassifier& classifier() { return *classifier_; }
+
+ private:
+  TestingPrefServiceSimple prefs_;
+  on_device_model::ServiceClient client_;
+  std::unique_ptr<PerformanceClassifier> classifier_;
+};
+
+TEST_F(PerformanceClassCapabilitiesTest,
+       SupportsAudioInput_GpuCapable_HighVram) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kHigh);
+  UpdateVramPref(&prefs(), 6144);
+  EXPECT_TRUE(classifier().SupportsAudioInput());
+}
+
+TEST_F(PerformanceClassCapabilitiesTest,
+       SupportsAudioInput_GpuCapable_LowVram) {
+  UpdatePerformanceClassPref(&prefs(), OnDeviceModelPerformanceClass::kHigh);
+  UpdateVramPref(&prefs(), 5000);
+  EXPECT_FALSE(classifier().SupportsAudioInput());
+}
+
 }  // namespace
 
 }  // namespace optimization_guide
