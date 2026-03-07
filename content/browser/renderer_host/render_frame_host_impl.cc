@@ -6889,7 +6889,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
   if (!proceed || treat_as_final_completion_callback) {
     beforeunload_pending_replies_.clear();
   } else {
-    beforeunload_pending_replies_.erase(frame);
+    beforeunload_pending_replies_.erase(frame->GetGlobalId());
     if (!beforeunload_pending_replies_.empty()) {
       return;
     }
@@ -12157,7 +12157,7 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
 
   if (run_beforeunload_for_legacy) {
     DCHECK(send_ipc);
-    beforeunload_pending_replies_.insert(this);
+    beforeunload_pending_replies_.insert(GetGlobalId());
     SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
   }
 
@@ -12232,7 +12232,7 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
   while (!rfh->is_local_root() && rfh != this) {
     rfh = rfh->GetParent();
   }
-  if (beforeunload_pending_replies_.contains(rfh)) {
+  if (beforeunload_pending_replies_.contains(rfh->GetGlobalId())) {
     return FrameIterationAction::kContinue;
   }
 
@@ -12240,7 +12240,9 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
   // innermost frame, as Blink will walk all local (same-SiteInstanceGroup)
   // descendants. Detect cases like this and skip them.
   bool has_same_site_ancestor = false;
-  for (RenderFrameHostImpl* added_rfh : beforeunload_pending_replies_) {
+  for (const GlobalRenderFrameHostId& id : beforeunload_pending_replies_) {
+    RenderFrameHostImpl* added_rfh = RenderFrameHostImpl::FromID(id);
+    CHECK(added_rfh);
     if (rfh->IsDescendantOfWithinFrameTree(added_rfh) &&
         rfh->GetSiteInstance()->group() ==
             added_rfh->GetSiteInstance()->group()) {
@@ -12268,7 +12270,7 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
 
   // Add |rfh| to the list of frames that need to receive beforeunload
   // ACKs.
-  beforeunload_pending_replies_.insert(rfh);
+  beforeunload_pending_replies_.insert(rfh->GetGlobalId());
 
   SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false);
   return FrameIterationAction::kContinue;

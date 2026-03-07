@@ -1861,8 +1861,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
   // frame, since they are in the same process and SiteInstance.
   RenderFrameHostImpl* frame_that_sent_beforeunload_ipc =
       AreAllSitesIsolatedForTesting() ? child : main_frame;
-  EXPECT_TRUE(main_frame->beforeunload_pending_replies_.count(
-      frame_that_sent_beforeunload_ipc));
+  EXPECT_TRUE(main_frame->beforeunload_pending_replies_.contains(
+      frame_that_sent_beforeunload_ipc->GetGlobalId()));
 
   // Answer the dialog with "cancel" to stay on current page.
   CloseDialogAndCancel();
