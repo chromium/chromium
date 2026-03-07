@@ -10,9 +10,9 @@ export function getHtml(this: BookmarkBarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   ${this.bookmarks_.map((item, index) => html`
-    <webui-browser-bookmark-element .data="${item}" data-index="${index}"
+    <webui-browser-bookmark .data="${item}" data-index="${index}"
         @click="${this.onBookmarkClick_}">
-    </webui-browser-bookmark-element>
+    </webui-browser-bookmark>
   `)}
 <!--_html_template_end_-->`;
   // clang-format on

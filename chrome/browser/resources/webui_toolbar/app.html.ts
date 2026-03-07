@@ -19,19 +19,23 @@ ${this.isBackForwardButtonEnabled_ ? html`
   <back-forward-button id="forward" direction="forward"
    .state="${this.navigationControlsState_.backForwardControlState.forwardButtonState}">
   </back-forward-button>` : ''}
-${this.isReloadButtonEnabled_ ?
-  html`<reload-button-app id="reload"
+  ${this.isReloadButtonEnabled_ ? html`
+    <reload-button id="reload"
         .state="${this.navigationControlsState_.reloadControlState}">
-       </reload-button-app>` : ''}
-${this.isSplitTabsButtonEnabled_ ?
-  html`<split-tabs-button-app id="split-tabs"
+    </reload-button>
+  ` : ''}
+  ${this.isSplitTabsButtonEnabled_ ? html`
+    <split-tabs-button id="split-tabs"
         .state="${this.navigationControlsState_.splitTabsControlState}">
-       </split-tabs-button-app>` : ''}
-${this.isLocationBarEnabled_ ? html`<div id="location-bar">
-            <div id="WebUILocationBar::kWebUIDashboardElementId"></div>
-            <div id="WebUILocationBar::kWebUILocationIconElementId"></div>
-            <div id="omnibox-view" contenteditable>https://example.org/</div>
-          </div>` : ''}
+    </split-tabs-button>
+  ` : ''}
+  ${this.isLocationBarEnabled_ ? html`
+    <div id="location-bar">
+      <div id="WebUILocationBar::kWebUIDashboardElementId"></div>
+      <div id="WebUILocationBar::kWebUILocationIconElementId"></div>
+      <div id="omnibox-view" contenteditable>https://example.org/</div>
+    </div>
+  ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

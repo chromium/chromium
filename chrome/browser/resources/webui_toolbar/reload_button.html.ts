@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ReloadButtonAppElement} from './reload_button.js';
+import type {ReloadButtonElement} from './reload_button.js';
 
-export function getHtml(this: ReloadButtonAppElement) {
+export function getHtml(this: ReloadButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button class="${
       this.state.isNavigationLoading ? 'icon-clear' : 'icon-refresh'}"

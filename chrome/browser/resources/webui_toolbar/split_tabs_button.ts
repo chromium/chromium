@@ -20,7 +20,7 @@ import type {SplitTabsControlState} from './toolbar_ui_api_data_model.mojom-webu
 
 export class SplitTabsButtonElement extends CrLitElement {
   static get is() {
-    return 'split-tabs-button-app';
+    return 'split-tabs-button';
   }
 
   static override get styles() {
@@ -112,7 +112,7 @@ export class SplitTabsButtonElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'split-tabs-button-app': SplitTabsButtonElement;
+    'split-tabs-button': SplitTabsButtonElement;
   }
 }
 

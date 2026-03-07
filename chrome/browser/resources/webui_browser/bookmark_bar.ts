@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './bookmark_element.js';
+import './bookmark.js';
 import './icons.html.js';
 
 import {getCss as getCrHiddenStyleCss} from '//resources/cr_elements/cr_hidden_style_lit.css.js';

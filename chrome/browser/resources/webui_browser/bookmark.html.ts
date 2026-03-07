@@ -4,8 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {BookmarkElement} from './bookmark.js';
 import {BookmarkType} from './bookmark_bar.mojom-webui.js';
-import type {BookmarkElement} from './bookmark_element.js';
 
 export function getHtml(this: BookmarkElement) {
   return html`

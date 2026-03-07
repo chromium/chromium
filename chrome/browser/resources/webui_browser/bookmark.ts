@@ -8,16 +8,16 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {getCss} from './bookmark.css.js';
+import {getHtml} from './bookmark.html.js';
 import type {BookmarkData} from './bookmark_bar.mojom-webui.js';
 import {BookmarkType} from './bookmark_bar.mojom-webui.js';
-import {getCss} from './bookmark_element.css.js';
-import {getHtml} from './bookmark_element.html.js';
 
 const DEFAULT_FAVICON_URL: string = 'url(chrome://favicon2/)';
 
 export class BookmarkElement extends CrLitElement {
   static get is() {
-    return 'webui-browser-bookmark-element';
+    return 'webui-browser-bookmark';
   }
 
   static override get styles() {
@@ -63,7 +63,7 @@ export class BookmarkElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-bookmark-element': BookmarkElement;
+    'webui-browser-bookmark': BookmarkElement;
   }
 }
 

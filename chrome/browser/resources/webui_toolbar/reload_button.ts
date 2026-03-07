@@ -30,9 +30,9 @@ const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
 
 const LONG_PRESS_TIMER_THRESHOLD_MS = 500;
 
-export class ReloadButtonAppElement extends CrLitElement {
+export class ReloadButtonElement extends CrLitElement {
   static get is() {
-    return 'reload-button-app';
+    return 'reload-button';
   }
 
   static override get styles() {
@@ -217,8 +217,8 @@ export class ReloadButtonAppElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'reload-button-app': ReloadButtonAppElement;
+    'reload-button': ReloadButtonElement;
   }
 }
 
-customElements.define(ReloadButtonAppElement.is, ReloadButtonAppElement);
+customElements.define(ReloadButtonElement.is, ReloadButtonElement);

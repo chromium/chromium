@@ -77,8 +77,8 @@ constexpr int kNumMaxRecoveryTime = 2;
 constexpr base::TimeDelta kRecoveryResetInterval = base::Seconds(10);
 constexpr base::TimeDelta kRecoveryRetryInterval = base::Seconds(20);
 
-constexpr char kSplitTabsSelector[] = "split-tabs-button-app";
-constexpr char kReloadButtonSelector[] = "reload-button-app";
+constexpr char kSplitTabsSelector[] = "split-tabs-button";
+constexpr char kReloadButtonSelector[] = "reload-button";
 constexpr char kBackSelector[] = "#back";
 constexpr char kForwardSelector[] = "#forward";
 

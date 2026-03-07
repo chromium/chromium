@@ -8,13 +8,13 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement, type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
-import {getCss} from './extension_element.css.js';
-import {getHtml} from './extension_element.html.js';
+import {getCss} from './extension.css.js';
+import {getHtml} from './extension.html.js';
 import type {ExtensionsBarElement} from './extensions_bar.js';
 
 export class ExtensionElement extends CrLitElement {
   static get is() {
-    return 'webui-browser-extension-element';
+    return 'webui-browser-extension';
   }
 
   static override get styles() {
@@ -75,7 +75,7 @@ export class ExtensionElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webui-browser-extension-element': ExtensionElement;
+    'webui-browser-extension': ExtensionElement;
   }
 }
 

@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ExtensionElement} from './extension_element.js';
+import type {ExtensionElement} from './extension.js';
 
 export function getHtml(this: ExtensionElement) {
   return html`
