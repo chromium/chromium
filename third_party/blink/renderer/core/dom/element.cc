@@ -7434,7 +7434,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
       shadow_root_init_dict->hasCustomElementRegistry();
   auto* registry = scoped_registry
                        ? shadow_root_init_dict->customElementRegistry()
-                       : GetTreeScope().customElementRegistry();
+                       : GetDocument().customElementRegistry();
   // 2-1. If registry is non-null, and registry's "is scoped" is false and
   // registry is not this's node document's custom element registry, then
   // throw a "NotSupportedError" DOMException.
