@@ -2679,7 +2679,6 @@ interface ElementInternals
     getter role
     getter shadowRoot
     getter states
-    getter type
     getter validationMessage
     getter validity
     getter willValidate
@@ -2742,7 +2741,6 @@ interface ElementInternals
     setter ariaValueText
     setter ariaVirtualContent
     setter role
-    setter type
 interface EncodedAudioChunk
     attribute @@toStringTag
     getter byteLength

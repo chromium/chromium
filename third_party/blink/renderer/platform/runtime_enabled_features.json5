@@ -2325,16 +2325,6 @@
       status: "stable",
     },
     {
-      // ElementInternals.type allows web authors to create autonomous
-      // custom elements that inherit specific behaviors from native
-      // HTML elements, while maintaining the ability to use shadow DOM
-      // and custom rendering.
-      // crbug.com/422947646
-      // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
-      name: "ElementInternalsDotType",
-      status: "experimental",
-    },
-    {
       // When enabled, the readonly attribute will prevent constraint validation
       // only in some cases, depending on the element.
       // This was added in M147 and can be removed after M149.

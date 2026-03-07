@@ -152,14 +152,6 @@ HTMLElement* ElementInternals::formForBinding(
   return ListedElement::RetargetedForm();
 }
 
-String ElementInternals::type() const {
-  return type_;
-}
-
-void ElementInternals::setType(const String& value) {
-  type_ = value;
-}
-
 String ElementInternals::ToolParamSchema() const {
   return tool_param_schema_;
 }

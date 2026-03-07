@@ -108,11 +108,6 @@ enum class PopoverHideResult {
   kForcedOpenByInspector,
 };
 
-enum class PopoverTriggerSupport {
-  kNone,
-  kSupported,
-};
-
 class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -255,9 +250,6 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual FormAssociated* ToFormAssociatedOrNull() { return nullptr; }
   bool IsFormAssociatedCustomElement() const;
 
-  // Returns true if the elementInternals.type is set to "button".
-  bool IsCustomButton() const;
-
   void UpdateDescendantDirectionality(TextDirection direction);
   void UpdateDirectionalityAfterInputTypeChange(const AtomicString& old_value,
                                                 const AtomicString& new_value);
@@ -347,8 +339,6 @@ class CORE_EXPORT HTMLElement : public Element {
       HidePopoverTransitionBehavior,
       HeapVector<Member<HTMLElement>>* popovers_held_open_by_inspector =
           nullptr);
-
-  virtual PopoverTriggerSupport SupportsPopoverTriggering() const;
 
   void SetImplicitAnchor(Element* element);
   Element* implicitAnchor() const;

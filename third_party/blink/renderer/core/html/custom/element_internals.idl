@@ -31,8 +31,6 @@ interface ElementInternals {
   [MeasureAs=ElementInternalsStates]
   readonly attribute CustomStateSet states;
 
-  [RuntimeEnabled=ElementInternalsDotType] attribute DOMString type;
-
   [RuntimeEnabled=WebMCPFormAssociatedCustomElements] void setToolParamSchema(DOMString? schema);
 
   // Access to shadowRoot from custom elements. See crbug.com/1042130 and

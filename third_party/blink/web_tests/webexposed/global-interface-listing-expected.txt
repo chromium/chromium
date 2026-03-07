@@ -2781,7 +2781,6 @@ interface ElementInternals
     getter role
     getter shadowRoot
     getter states
-    getter type
     getter validationMessage
     getter validity
     getter willValidate
@@ -2844,7 +2843,6 @@ interface ElementInternals
     setter ariaValueText
     setter ariaVirtualContent
     setter role
-    setter type
 interface EmailVerifiedEvent : Event
     attribute @@toStringTag
     getter presentationToken

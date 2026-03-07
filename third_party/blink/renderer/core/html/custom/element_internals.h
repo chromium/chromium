@@ -61,10 +61,6 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   LabelsNodeList* labels(ExceptionState& exception_state);
   CustomStateSet* states();
 
-  // Type attribute accessors
-  String type() const;
-  void setType(const String& value);
-
   String ToolParamSchema() const;
   void setToolParamSchema(const String& schema);
 
@@ -145,7 +141,6 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   bool is_disabled_ = false;
   Member<ValidityStateFlags> validity_flags_;
   Member<Element> validation_anchor_;
-  String type_;
   String tool_param_schema_;
   Member<CustomStateSet> custom_states_;
 

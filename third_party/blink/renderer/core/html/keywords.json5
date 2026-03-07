@@ -252,8 +252,8 @@
     "-internal-print-footer",
     "-internal-print-page-number",
 
-    // ElementInternals.type
-    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
+    // Values of the button type attribute
+    // https://html.spec.whatwg.org/multipage/form-elements.html#attr-button-type
     "button",
     "reset",
     "submit",
