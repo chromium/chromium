@@ -55,17 +55,14 @@ export abstract class SelectionOverlayBaseLitElement extends
       isScreenshotRendered: {
         type: Boolean,
         reflect: true,
-        attribute: 'is-screenshot-rendered',
       },
       isResized: {
         type: Boolean,
         reflect: true,
-        attribute: 'is-resized',
       },
       isInitialSize: {
         type: Boolean,
         reflect: true,
-        attribute: 'is-initial-size',
       },
       canvasHeight: {type: Number},
       canvasWidth: {type: Number},
@@ -73,48 +70,39 @@ export abstract class SelectionOverlayBaseLitElement extends
       currentGesture: {type: Object},
       disableShimmer: {
         type: Boolean,
-        attribute: 'disable-shimmer',
       },
       enableBorderGlow: {
         type: Boolean,
-        attribute: 'enable-border-glow',
       },
       isClosing: {
         type: Boolean,
         reflect: true,
-        attribute: 'is-closing',
       },
       shimmerOnSegmentation: {
         type: Boolean,
         reflect: true,
-        attribute: 'shimmer-on-segmentation',
       },
       shimmerFadeOutComplete: {
         type: Boolean,
         reflect: true,
-        attribute: 'shimmer-fade-out-complete',
       },
       darkenExtraScrim: {
         type: Boolean,
         reflect: true,
-        attribute: 'darken-extra-scrim',
       },
       theme: {type: Object},
       selectionOverlayRect: {type: Object},
       hideBackgroundImageCanvas: {
         type: Boolean,
         reflect: true,
-        attribute: 'hide-background-image-canvas',
       },
       sidePanelOpened: {
         type: Boolean,
         reflect: true,
-        attribute: 'side-panel-opened',
       },
       enableRegionContextMenu: {
         type: Boolean,
         reflect: true,
-        attribute: 'enable-region-context-menu',
       },
     };
   }
@@ -161,6 +149,7 @@ export abstract class SelectionOverlayBaseLitElement extends
   protected eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
   protected listenerIds: number[] = [];
+  private onOverlayReshownListenerId?: number;
   // The feature currently being dragged. Once a feature responds to a drag
   // event, no other feature will receive gesture events.
   protected draggingRespondent = DragFeature.NONE;
@@ -202,22 +191,28 @@ export abstract class SelectionOverlayBaseLitElement extends
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
         this.screenshotDataReceived.bind(this));
-    ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
-        this.onOverlayReshown.bind(this));
+    this.onOverlayReshownListenerId =
+        ScreenshotBitmapBrowserProxyImpl.getInstance()
+            .addOnOverlayReshownListener(this.onOverlayReshown.bind(this));
     this.eventTracker_.add(
         document, 'shimmer-fade-out-complete', (e: CustomEvent<boolean>) => {
           this.shimmerFadeOutComplete = e.detail;
         });
     this.eventTracker_.add(
         document, 'set-cursor', (e: CustomEvent<CursorData>) => {
-          if (e.detail.cursor === CursorType.POINTER) {
-            this.setCursorToPointer();
-          } else if (e.detail.cursor === CursorType.CROSSHAIR) {
-            this.setCursorToCrosshair();
-          } else if (e.detail.cursor === CursorType.TEXT) {
-            this.setCursorToText();
-          } else {
-            this.resetCursor();
+          switch (e.detail.cursor) {
+            case CursorType.POINTER:
+              this.setCursorToPointer();
+              break;
+            case CursorType.CROSSHAIR:
+              this.setCursorToCrosshair();
+              break;
+            case CursorType.TEXT:
+              this.setCursorToText();
+              break;
+            default:
+              this.resetCursor();
+              break;
           }
         });
     this.eventTracker_.add(document, 'darken-extra-scrim-opacity', () => {
@@ -253,9 +248,14 @@ export abstract class SelectionOverlayBaseLitElement extends
     this.listenerIds.forEach(id => assert(this.baseHandler.removeListener(id)));
     this.listenerIds = [];
 
+    if (this.onOverlayReshownListenerId !== undefined) {
+      ScreenshotBitmapBrowserProxyImpl.getInstance()
+          .removeOnOverlayReshownListener(this.onOverlayReshownListenerId);
+      this.onOverlayReshownListenerId = undefined;
+    }
+
     if (this.matchMedia) {
-      this.matchMedia.removeEventListener(
-          'change', this.onDevicePixelRatioChanged.bind(this));
+      this.matchMedia = undefined;
     }
   }
 

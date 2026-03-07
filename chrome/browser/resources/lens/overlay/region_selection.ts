@@ -301,20 +301,16 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     this.canvasHeight = height;
     this.canvasPhysicalWidth = width * window.devicePixelRatio;
     this.canvasPhysicalHeight = height * window.devicePixelRatio;
-    if (this.context) {
-      this.context.setTransform(
-          window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
-    }
+    this.context.setTransform(
+        window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
   }
 
   private clearCanvas() {
-    if (this.context) {
-      this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    }
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
   private renderBoundingBox(event: GestureEvent, idealCornerRadius = 24) {
-    if (!this.context || !this.selectionOverlayRect) {
+    if (!this.selectionOverlayRect) {
       return;
     }
 

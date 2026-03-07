@@ -23,7 +23,8 @@ export interface ScreenshotBitmapBrowserProxy {
   // sent already, the promise will return immediately. Else, the promise will
   // resolve once the screenshot has been retrieved.
   fetchScreenshot(callback: ScreenshotReceivedCallback): void;
-  addOnOverlayReshownListener(callback: OverlayReshownCallback): void;
+  addOnOverlayReshownListener(callback: OverlayReshownCallback): number;
+  removeOnOverlayReshownListener(id: number): void;
 }
 
 export class ScreenshotBitmapBrowserProxyImpl implements
@@ -33,7 +34,9 @@ export class ScreenshotBitmapBrowserProxyImpl implements
   private screenshotListenerId: number;
   private onOverlayReshownListenerId: number;
   private callbacks: ScreenshotReceivedCallback[] = [];
-  private onOverlayReshownCallbacks: OverlayReshownCallback[] = [];
+  private onOverlayReshownCallbacks: Map<number, OverlayReshownCallback> =
+      new Map();
+  private nextCallbackId: number = 0;
 
   constructor() {
     this.screenshotListenerId = SelectionOverlayBaseHandler.getInstance()
@@ -67,8 +70,14 @@ export class ScreenshotBitmapBrowserProxyImpl implements
     }
   }
 
-  addOnOverlayReshownListener(callback: OverlayReshownCallback): void {
-    this.onOverlayReshownCallbacks.push(callback);
+  addOnOverlayReshownListener(callback: OverlayReshownCallback): number {
+    const id = this.nextCallbackId++;
+    this.onOverlayReshownCallbacks.set(id, callback);
+    return id;
+  }
+
+  removeOnOverlayReshownListener(id: number): void {
+    this.onOverlayReshownCallbacks.delete(id);
   }
 
   private async parseScreenshotData(
@@ -108,7 +117,7 @@ export class ScreenshotBitmapBrowserProxyImpl implements
 
     this.screenshot = await this.parseScreenshotData(screenshotData);
     // Send the screenshot to all the callbacks.
-    for (const callback of this.onOverlayReshownCallbacks) {
+    for (const callback of this.onOverlayReshownCallbacks.values()) {
       // We need to make a new bitmap because each canvas takes ownership of the
       // bitmap, so it cannot be drawn to multiple HTMLCanvasElement.
       createImageBitmap(this.screenshot).then((bitmap) => {
