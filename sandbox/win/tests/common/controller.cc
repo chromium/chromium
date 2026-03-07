@@ -154,6 +154,10 @@ std::string ToString(const std::wstring& value) {
   return base::WideToUTF8(value);
 }
 
+std::string ToString(const wchar_t* value) {
+  return base::WideToUTF8(value);
+}
+
 }  // namespace internal
 
 std::wstring MakePathToSys(std::wstring_view name, bool is_obj_man_path) {

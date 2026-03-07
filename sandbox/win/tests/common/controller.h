@@ -37,6 +37,8 @@ std::string ToString(const T& value) {
 template <>
 std::string ToString(const std::wstring& value);
 
+std::string ToString(const wchar_t* value);
+
 template <typename T>
 concept TestNameDefinition = requires {
   { T::kTestName } -> std::convertible_to<std::string_view>;

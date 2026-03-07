@@ -5,7 +5,9 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include <array>
+
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer_agent.h"
@@ -20,10 +22,6 @@
 namespace {
 
 const wchar_t kDeviceKsecDD[] = L"\\Device\\KsecDD";
-
-// Used by the thread pool tests.
-HANDLE finish_event;
-const int kWaitCount = 20;
 
 // Opens a handle to KsecDD in the same way as cryptbase.dll.
 HANDLE OpenKsecDD() {
@@ -53,17 +51,14 @@ HANDLE OpenKsecDD() {
 namespace sandbox {
 
 // Checks for the presence of a list of files (in object path form).
-// Format: CheckForFileHandle (Y|N) [devices or files to check for].
-// - Y or N depending if the file should exist or not.
-SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
-  if (argc < 2) {
+// Format: CheckForFileHandle should_find [devices or files to check for].
+// - should_find is "1" or "0" depending if the file should exist or not.
+SBOX_TEST_COMMAND(CheckForFileHandles) {
+  if (args.size() < 2) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
   }
-  bool should_find = argv[0][0] == L'Y';
-  if (UNSAFE_TODO(argv[0][1]) != L'\0' ||
-      (!should_find && argv[0][0] != L'N')) {
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
-  }
+
+  bool should_find = args[0] == L"1";
 
   static int state = BEFORE_INIT;
   switch (state++) {
@@ -90,8 +85,8 @@ SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
         reinterpret_cast<size_t&>(handle) += kHandleOffset;
         auto handle_name = GetPathFromHandle(handle);
         if (handle_name) {
-          for (int i = 1; i < argc; ++i) {
-            if (handle_name.value() == UNSAFE_TODO(argv[i])) {
+          for (size_t i = 1; i < args.size(); ++i) {
+            if (handle_name.value() == args[i]) {
               return should_find ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
             }
           }
@@ -110,7 +105,7 @@ SBOX_TESTS_COMMAND int CheckForFileHandles(int argc, wchar_t** argv) {
 
 // Checks that closed handle becomes an Event and it's not waitable.
 // Format: CheckForEventHandles
-SBOX_TESTS_COMMAND int CheckForEventHandles(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(CheckForEventHandles) {
   static int state = BEFORE_INIT;
   static HANDLE to_check;
 
@@ -140,37 +135,27 @@ SBOX_TESTS_COMMAND int CheckForEventHandles(int argc, wchar_t** argv) {
 }
 
 TEST(HandleCloserTest, CheckForDeviceHandles) {
-  TestRunner runner;
+  CheckForFileHandlesTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
 
-  std::wstring command = std::wstring(L"CheckForFileHandles Y");
-  command += (L" ");
-  command += kDeviceKsecDD;
-
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()))
-      << "Failed: " << command;
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(1, kDeviceKsecDD));
 }
 
 TEST(HandleCloserTest, CloseSupportedDevices) {
-  TestRunner runner;
+  CheckForFileHandlesTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
   sandbox::TargetPolicy* policy = runner.GetPolicy();
 
-  std::wstring command = std::wstring(L"CheckForFileHandles N");
-  command += (L" ");
-  command += kDeviceKsecDD;
-
   policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kKsecDD);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()))
-      << "Failed: " << command;
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(0, kDeviceKsecDD));
 }
 
 TEST(HandleCloserTest, CheckStuffedHandle) {
-  TestRunner runner;
+  CheckForEventHandlesTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
   sandbox::TargetPolicy* policy = runner.GetPolicy();
@@ -178,52 +163,67 @@ TEST(HandleCloserTest, CheckStuffedHandle) {
   policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   policy->GetConfig()->AddKernelObjectToClose(HandleToClose::kKsecDD);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"CheckForEventHandles"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 }
 
-void WINAPI ThreadPoolTask(void* event, BOOLEAN timeout) {
-  static volatile LONG waiters_remaining = kWaitCount;
+struct WaitTask {
+  base::win::ScopedHandle event;
+  HANDLE finish_event;
+  raw_ptr<LONG> waiters_remaining;
+  HANDLE wait_object;
+};
+
+void WINAPI ThreadPoolTask(void* param, BOOLEAN timeout) {
   CHECK(!timeout);
-  CHECK(::CloseHandle(event));
-  if (::InterlockedDecrement(&waiters_remaining) == 0)
-    CHECK(::SetEvent(finish_event));
+  WaitTask* task = static_cast<WaitTask*>(param);
+  if (::InterlockedDecrement(task->waiters_remaining) == 0) {
+    CHECK(::SetEvent(task->finish_event));
+  }
 }
 
 // Run a thread pool inside a sandbox without a CSRSS connection.
-SBOX_TESTS_COMMAND int RunThreadPool(int argc, wchar_t** argv) {
-  HANDLE wait_list[20];
-  finish_event = ::CreateEvent(nullptr, true, false, nullptr);
-  CHECK(finish_event);
+SBOX_TEST_COMMAND(RunThreadPool) {
+  constexpr int kWaitCount = 20;
+  std::array<WaitTask, kWaitCount> wait_list;
+  LONG waiters_remaining = kWaitCount;
+  base::win::ScopedHandle finish_event(
+      ::CreateEvent(nullptr, true, false, nullptr));
+  CHECK(finish_event.is_valid());
 
   // Set up a bunch of waiters.
-  HANDLE pool = nullptr;
-  for (int i = 0; i < kWaitCount; ++i) {
-    HANDLE event = ::CreateEvent(nullptr, true, false, nullptr);
-    CHECK(event);
-    CHECK(::RegisterWaitForSingleObject(&pool, event, ThreadPoolTask, event,
-                                        INFINITE, WT_EXECUTEONLYONCE));
-    UNSAFE_TODO(wait_list[i]) = event;
+  for (WaitTask& task : wait_list) {
+    task.event.Set(::CreateEvent(nullptr, true, false, nullptr));
+    CHECK(task.event.is_valid());
+    task.finish_event = finish_event.get();
+    task.waiters_remaining = &waiters_remaining;
+    CHECK(::RegisterWaitForSingleObject(&task.wait_object, task.event.get(),
+                                        ThreadPoolTask, &task, INFINITE,
+                                        WT_EXECUTEONLYONCE));
   }
 
   // Signal all the waiters.
-  for (int i = 0; i < kWaitCount; ++i)
-    CHECK(::SetEvent(UNSAFE_TODO(wait_list[i])));
+  for (const WaitTask& task : wait_list) {
+    CHECK(::SetEvent(task.event.get()));
+  }
 
-  CHECK_EQ(::WaitForSingleObject(finish_event, INFINITE), WAIT_OBJECT_0);
-  CHECK(::CloseHandle(finish_event));
+  CHECK_EQ(::WaitForSingleObject(finish_event.get(), INFINITE), WAIT_OBJECT_0);
+
+  for (const WaitTask& task : wait_list) {
+    CHECK(::UnregisterWait(task.wait_object));
+  }
 
   return SBOX_TEST_SUCCEEDED;
 }
 
 TEST(HandleCloserTest, RunThreadPool) {
-  TestRunner runner;
+  RunThreadPoolTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(AFTER_REVERT);
 
   // Sandbox policy will determine which platforms to disconnect CSRSS and when
   // to close the CSRSS handle.
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"RunThreadPool"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 }
 
 }  // namespace sandbox

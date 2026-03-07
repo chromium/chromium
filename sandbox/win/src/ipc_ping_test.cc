@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/string_number_conversions_win.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
@@ -12,50 +13,53 @@ namespace sandbox {
 
 // Tests that the IPC is working by issuing a special IPC that is not exposed
 // in the public API.
-SBOX_TESTS_COMMAND int IPC_Ping(int argc, wchar_t** argv) {
-  if (argc != 1)
+SBOX_TEST_COMMAND(IPC_Ping) {
+  if (args.size() != 1) {
     return SBOX_TEST_FAILED;
+  }
 
   TargetServices* ts = SandboxFactory::GetTargetServices();
-  if (!ts)
+  if (!ts) {
     return SBOX_TEST_FAILED;
+  }
 
   // Downcast because we have internal knowledge of the object returned.
   TargetServicesBase* ts_base = reinterpret_cast<TargetServicesBase*>(ts);
 
   int version = 0;
-  if (L'1' == argv[0][0])
-    version = 1;
-  else
-    version = 2;
-
-  if (!ts_base->TestIPCPing(version))
+  if (!base::StringToInt(args[0], &version)) {
     return SBOX_TEST_FAILED;
+  }
+
+  if (!ts_base->TestIPCPing(version)) {
+    return SBOX_TEST_FAILED;
+  }
 
   ::Sleep(1);
-  if (!ts_base->TestIPCPing(version))
+  if (!ts_base->TestIPCPing(version)) {
     return SBOX_TEST_FAILED;
+  }
 
   return SBOX_TEST_SUCCEEDED;
 }
 
 // The IPC ping test should work before and after the token drop.
 TEST(IPCTest, IPCPingTestSimple) {
-  TestRunner runner;
+  IPC_PingTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"IPC_Ping 1"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(1));
 }
 
 TEST(IPCTest, IPCPingTestWithOutput) {
-  TestRunner runner1;
-  runner1.SetTimeout(2000);
-  runner1.SetTestState(EVERY_STATE);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner1.RunTest(L"IPC_Ping 2"));
-  TestRunner runner2;
+  IPC_PingTestRunner runner;
+  runner.SetTimeout(2000);
+  runner.SetTestState(EVERY_STATE);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(2));
+  IPC_PingTestRunner runner2;
   runner2.SetTimeout(2000);
   runner2.SetTestState(EVERY_STATE);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(L"IPC_Ping 2"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(2));
 }
 
 }  // namespace sandbox
