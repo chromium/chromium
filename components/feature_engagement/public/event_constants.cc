@@ -221,6 +221,8 @@ const char kIOSChromeOpenedFromIcon[] = "ios_chrome_opened_from_icon";
 const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kTabSearchComboButtonUsed[] = "tab_search_combo_button_used";
+
 }  // namespace events
 
 }  // namespace feature_engagement

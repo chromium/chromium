@@ -253,6 +253,7 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
         AddChildView(std::make_unique<TabStripComboButton>(browser));
     combo_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
+    combo_button_->MaybeShowIPH();
   }
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {

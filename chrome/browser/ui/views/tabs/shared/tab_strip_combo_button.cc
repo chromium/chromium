@@ -17,12 +17,16 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -142,6 +146,17 @@ void TabStripComboButton::UpdateButtonsVisibility() {
       GetEndButtonActionItem(), end_button_animation_,
       prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip) ||
           show_tab_search_ephemerally_);
+}
+
+void TabStripComboButton::OnTabSearchBubbleShown() {
+  if (auto* const user_education =
+          BrowserUserEducationInterface::From(browser_)) {
+    user_education->NotifyAdditionalConditionEvent(
+        feature_engagement::events::kTabSearchComboButtonUsed);
+    user_education->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHTabSearchComboButtonFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
 }
 
 void TabStripComboButton::SetOrientation(views::LayoutOrientation orientation) {
@@ -318,6 +333,8 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void TabStripComboButton::OnBubbleInitializing() {
+  OnTabSearchBubbleShown();
+
   PrefService* prefs = browser_->GetProfile()->GetPrefs();
   if (prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip)) {
     return;
@@ -348,6 +365,18 @@ void TabStripComboButton::SetTabSearchBubbleHost(TabSearchBubbleHost* host) {
   tab_search_bubble_host_observation_.Reset();
   if (host) {
     tab_search_bubble_host_observation_.Observe(host);
+  }
+}
+
+void TabStripComboButton::MaybeShowIPH() {
+  PrefService* prefs = browser_->GetProfile()->GetPrefs();
+  if (prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip) &&
+      prefs->GetBoolean(tab_search_prefs::kTabSearchUsed)) {
+    if (auto* const user_education =
+            BrowserUserEducationInterface::From(browser_)) {
+      user_education->MaybeShowStartupFeaturePromo(
+          feature_engagement::kIPHTabSearchComboButtonFeature);
+    }
   }
 }
 

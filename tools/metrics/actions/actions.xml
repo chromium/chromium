@@ -760,6 +760,8 @@ should be able to be added at any place in this file.
       summary="For the tab organization feature."/>
   <variant name="_TabPinnedFeature" summary="For tab pinned overflow hint."/>
   <variant name="_TabSearch" summary="For the tab search feature."/>
+  <variant name="_TabSearchComboButton"
+      summary="For the tab search migration to a tab strip combo button."/>
   <variant name="_TabSearchToolbarButton"
       summary="For the tab search migration to a toolbar button."/>
   <variant name="_TabSwitcherButton" summary="For tab switcher button."/>

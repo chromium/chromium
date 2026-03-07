@@ -434,6 +434,8 @@ extern const char kIOSChromeOpenedFromIcon[];
 extern const char kPwaInstallMenuSelected[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+extern const char kTabSearchComboButtonUsed[];
+
 }  // namespace events
 
 }  // namespace feature_engagement

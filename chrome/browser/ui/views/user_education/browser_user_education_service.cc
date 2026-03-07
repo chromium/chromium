@@ -1343,6 +1343,26 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered when the tab search button has been moved "
                        "into the toolbar.")));
 
+  // kIPHTabSearchComboButtonFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTabSearchComboButtonFeature,
+          kTabSearchButtonElementId, IDS_TAB_SEARCH_COMBO_BUTTON_PROMO_BODY,
+          IDS_TAB_SEARCH_COMBO_BUTTON_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleTitleText(IDS_TAB_SEARCH_COMBO_BUTTON_PROMO_TITLE)
+          // Overriding due to director-level guidance that we show a more
+          // prominent promo than the move to the tab search toolbar button
+          .OverrideBubbleShouldTimeOut(false)
+          .SetAdditionalConditions(std::move(
+              AdditionalConditions().AddAdditionalCondition(AdditionalCondition{
+                  feature_engagement::events::kTabSearchComboButtonUsed,
+                  AdditionalConditions::Constraint::kExactly, 0})))
+          .SetMetadata(147, "emshack@chromium.org",
+                       "Triggered when the tab search button has been moved "
+                       "into the tab strip combo button.")));
+
   // kIPHDesktopSharedHighlightingFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForLegacyPromo(

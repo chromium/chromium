@@ -281,6 +281,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHTabGroupsSharedTabChangedFeature,
     &kIPHTabGroupsSharedTabFeedbackFeature,
     &kIPHTabOrganizationSuccessFeature,
+    &kIPHTabSearchComboButtonFeature,
     &kIPHTabSearchToolbarButtonFeature,
     &kIPHDesktopPwaInstallFeature,
     &kIPHProfileSwitchFeature,
