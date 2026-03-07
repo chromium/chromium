@@ -564,6 +564,7 @@ source_set("browser_sources") {
     "//components/file_access",
     "//components/services/storage/privileged/mojom",
     "//components/services/storage/public/mojom",
+    "//components/surface_embed/buildflags",
     "//content/public/common:buildflags",
     "//content/public/common:common_sources",
     "//device/vr/buildflags",

@@ -9,6 +9,7 @@ import("//build/config/features.gni")
 import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//components/surface_embed/buildflags/buildflags.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/browser/devtools/features.gni")
 import("//content/common/features.gni")
@@ -159,6 +160,7 @@ source_set("browser") {
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//components/sqlite_proto",
+    "//components/surface_embed/buildflags",
     "//components/system_media_controls",
     "//components/tracing:tracing_config",
     "//components/ukm",
@@ -3743,6 +3745,13 @@ source_set("browser") {
   # TODO(crbug.com/371609830): Remove dep on experiment end.
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
+  }
+
+  if (enable_surface_embed) {
+    sources += [
+      "surface_embed/surface_embed_connector_impl.cc",
+      "surface_embed/surface_embed_connector_impl.h",
+    ]
   }
 }
 
