@@ -444205,10 +444205,6 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
-       "dialog-closedby-corner-cases-expected.txt": [
-        "27ca795c70df0984e57b157878ac2c504e50d4b7",
-        []
-       ],
        "dialog-open-expected.txt": [
         "309bf8c66d2f7a560fc346a251fc07bdec9bb0e6",
         []
@@ -561996,7 +561992,7 @@
       ]
      ],
      "overscroll-behavior-without-overflow.html": [
-      "1491ff6d586d38f23457d225c60e681f9f1122fa",
+      "41437bdf613ddd32816a3d95ee651cbf9f0b0e48",
       [
        null,
        {
@@ -568751,6 +568747,13 @@
         {}
        ]
       ],
+      "flex-stretch-min-max-cross-001.html": [
+       "e416354996fcc0f614d78f040d39d2b4133fcf8a",
+       [
+        null,
+        {}
+       ]
+      ],
       "indefinite-1.html": [
        "e69689c939f42b330f68eaa2ae07885557f65657",
        [
@@ -568781,6 +568784,13 @@
       ],
       "parsing.html": [
        "3125a78d19a5bb312eefb425ff6bd4f7134b7f51",
+       [
+        null,
+        {}
+       ]
+      ],
+      "replaced-stretch-height-001.html": [
+       "9be134f56e44341fbc30e46335c17952b5d56066",
        [
         null,
         {}
@@ -573357,6 +573367,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "hittest-preserve-3d-2.html": [
+      "a78390f3f42115c56f4a2b3dd64bd5197cc20a11",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "hittest-preserve-3d.html": [
@@ -703721,7 +703740,7 @@
         ]
        ],
        "dialog-closedby-corner-cases.html": [
-        "0ce20f08dd7fc409ee7a43d575c5b4aaa8ac3c7f",
+        "450dc945a6029efc3c172e90e5dd3c42b74ce46a",
         [
          null,
          {
