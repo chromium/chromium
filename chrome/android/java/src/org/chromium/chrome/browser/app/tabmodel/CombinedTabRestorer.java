@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.TabRestorer.TabRestorerDelegate;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -249,6 +250,20 @@ class CombinedTabRestorer {
                                 tabModelSelector)
                         : null;
         mLoadStartTime = logRestoreDuration ? SystemClock.elapsedRealtime() : INVALID_TIME;
+    }
+
+    /**
+     * Should be called when the active tab for one of the models has been loaded from the cache.
+     *
+     * @param tab The tab state loaded from storage.
+     * @param incognito Whether the tab is for the incognito tab restorer.
+     */
+    public void onCachedActiveTabLoaded(LoadedTabState tab, boolean incognito) {
+        if (incognito) {
+            assumeNonNull(mIncognitoTabRestorer).onCachedActiveTabLoaded(tab);
+        } else {
+            mRegularTabRestorer.onCachedActiveTabLoaded(tab);
+        }
     }
 
     /**

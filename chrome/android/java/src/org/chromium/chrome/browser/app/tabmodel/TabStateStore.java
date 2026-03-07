@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.app.tabmodel.CombinedTabRestorer.CombinedTabR
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.StorageLoadingStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -299,6 +300,7 @@ public class TabStateStore implements TabPersistentStore {
                         : new boolean[] {false, true};
         for (boolean incognito : restoreOrder) {
             if (incognito && ignoreIncognitoFiles) continue;
+            loadCachedActiveTab(incognito);
             mTabStateStorageService.loadAllData(
                     mWindowTag, incognito, data -> onDataLoaded(data, incognito));
         }
@@ -551,6 +553,15 @@ public class TabStateStore implements TabPersistentStore {
         updateTabCountForModel(tab.isOffTheRecord());
     }
 
+    private void loadCachedActiveTab(boolean incognito) {
+        assertInitialized();
+
+        LoadedTabState tabState = mActiveTabCache.restoreActiveTab(incognito);
+        if (tabState == null) return;
+
+        assumeNonNull(mCombinedTabRestorer).onCachedActiveTabLoaded(tabState, incognito);
+    }
+
     /** Called when the data for one of the models has been loaded. */
     private void onDataLoaded(StorageLoadedData data, boolean incognito) {
         assertInitialized();
@@ -585,9 +596,7 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         assumeNonNull(mModelTrackingManager).onDataLoaded(data, incognito);
-
-        assumeNonNull(mCombinedTabRestorer);
-        mCombinedTabRestorer.onDataLoaded(data, incognito);
+        assumeNonNull(mCombinedTabRestorer).onDataLoaded(data, incognito);
     }
 
     /** Called after both the regular and incognito data has been loaded. */
@@ -663,8 +672,8 @@ public class TabStateStore implements TabPersistentStore {
 
     private void fullyDestroyLoadedData(StorageLoadedData data) {
         assumeNonNull(mModelTrackingManager).onRestoreCancelled();
-        StorageLoadedData.LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        for (StorageLoadedData.LoadedTabState loadedTabState : loadedTabStates) {
+        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
+        for (LoadedTabState loadedTabState : loadedTabStates) {
             WebContentsState contentsState = loadedTabState.tabState.contentsState;
             if (contentsState == null) continue;
             contentsState.destroy();
