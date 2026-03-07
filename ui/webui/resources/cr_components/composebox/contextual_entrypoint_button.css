@@ -42,6 +42,10 @@ cr-button#entrypoint {
   width: max-content;
 }
 
+cr-button#entrypoint:focus {
+  outline-offset: 0;
+}
+
 @keyframes slide-in {
   to {
     transform: translateX(0);

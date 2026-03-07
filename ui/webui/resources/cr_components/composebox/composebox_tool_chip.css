@@ -23,6 +23,10 @@
   padding-top: 6px;
 }
 
+#toolEnabledButton:focus {
+  outline-offset: -2px;
+}
+
 #toolEnabledButton .icon-container {
   align-items: center;
   display: flex;
