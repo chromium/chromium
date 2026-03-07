@@ -11,7 +11,7 @@ package lens;
 import "lens_overlay_routing_info.proto";
 
 // Request Id definition to support request sequencing and state lookup.
-// Next Id: 11
+// Next Id: 14
 message LensOverlayRequestId {
   // A unique identifier for a sequence of related Lens requests.
   optional uint64 uuid = 1;
@@ -48,6 +48,10 @@ message LensOverlayRequestId {
     MEDIA_TYPE_WEBPAGE = 2;
     MEDIA_TYPE_PDF_AND_IMAGE = 3;
     MEDIA_TYPE_WEBPAGE_AND_IMAGE = 4;
+    MEDIA_TYPE_UNRESOLVED_URL = 5;
+    // Media type for all file bytes upload. This needs to be set with mime_type
+    // below. See go/lens-rfc-180.
+    MEDIA_TYPE_RAW_FILE = 6;
   }
 
   // The type of media this object represents.
@@ -56,6 +60,9 @@ message LensOverlayRequestId {
   // Identifier for the contextualized document in this request. Stable across
   // follow-up requests for the same document.
   optional int64 context_id = 12;
+
+  // MIME type of file bytes. Only required for MEDIA_TYPE_RAW_FILE uploads.
+  optional string mime_type = 13;
 
   // True if the context/media is derived from a Chrome tab.
   optional bool has_chrome_tab_data = 15;

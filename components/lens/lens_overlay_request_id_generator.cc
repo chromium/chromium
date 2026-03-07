@@ -52,6 +52,10 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   // Verify that the initial request id is only generated once.
   CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
         sequence_id_ == 0);
+  // RAW_FILE should use the mime type version of the function.
+  CHECK(media_type != lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+  // Reset the mime type if this is not a RAW_FILE request.
+  mime_type_.reset();
 
   bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
 
@@ -61,14 +65,28 @@ LensOverlayRequestIdGenerator::GetNextRequestId(
   std::unique_ptr<lens::LensOverlayRequestId> next_request_id =
       CreateNextRequestIdForUpdate(std::move(current_request_id), update_mode);
 
-  // Update the internal state.
-  uuid_ = next_request_id->uuid();
-  sequence_id_ = next_request_id->sequence_id();
-  image_sequence_id_ = next_request_id->image_sequence_id();
-  long_context_id_ = next_request_id->long_context_id();
-  if (store_analytics_id) {
-    analytics_id_ = next_request_id->analytics_id();
-  }
+  UpdateInternalStateFromRequestId(*next_request_id, store_analytics_id);
+  return next_request_id;
+}
+
+std::unique_ptr<lens::LensOverlayRequestId>
+LensOverlayRequestIdGenerator::GetNextRequestId(RequestIdUpdateMode update_mode,
+                                                std::string mime_type) {
+  // Verify that the initial request id is only generated once.
+  CHECK(update_mode != RequestIdUpdateMode::kInitialRequest ||
+        sequence_id_ == 0);
+
+  bool store_analytics_id = update_mode != RequestIdUpdateMode::kOpenInNewTab;
+  mime_type_ = mime_type;
+
+  std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
+      GetCurrentRequestId();
+  current_request_id->set_media_type(
+      lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+  std::unique_ptr<lens::LensOverlayRequestId> next_request_id =
+      CreateNextRequestIdForUpdate(std::move(current_request_id), update_mode);
+
+  UpdateInternalStateFromRequestId(*next_request_id, store_analytics_id);
   return next_request_id;
 }
 
@@ -92,6 +110,9 @@ LensOverlayRequestIdGenerator::CreateNextRequestIdForUpdate(
   request_id->set_context_id(previous_request_id->context_id());
   request_id->set_has_chrome_tab_data(
       previous_request_id->has_chrome_tab_data());
+  if (previous_request_id->has_mime_type()) {
+    request_id->set_mime_type(previous_request_id->mime_type());
+  }
 
   bool create_analytics_id =
       update_mode != RequestIdUpdateMode::kSearchUrl &&
@@ -151,6 +172,24 @@ LensOverlayRequestIdGenerator::SetRoutingInfo(
   return GetCurrentRequestId();
 }
 
+void LensOverlayRequestIdGenerator::UpdateInternalStateFromRequestId(
+    const lens::LensOverlayRequestId& request_id,
+    bool save_analytics_id) {
+  uuid_ = request_id.uuid();
+  sequence_id_ = request_id.sequence_id();
+  image_sequence_id_ = request_id.image_sequence_id();
+  long_context_id_ = request_id.long_context_id();
+  if (save_analytics_id) {
+    analytics_id_ = request_id.analytics_id();
+  }
+  if (request_id.has_mime_type()) {
+    mime_type_ = request_id.mime_type();
+  }
+  if (request_id.has_routing_info()) {
+    routing_info_ = request_id.routing_info();
+  }
+}
+
 std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   auto request_id = std::make_unique<lens::LensOverlayRequestId>();
@@ -166,6 +205,9 @@ LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   }
   request_id->set_context_id(context_id_);
   request_id->set_has_chrome_tab_data(has_chrome_tab_data_);
+  if (mime_type_.has_value()) {
+    request_id->set_mime_type(mime_type_.value());
+  }
   return request_id;
 }
 }  // namespace lens

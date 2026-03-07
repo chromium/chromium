@@ -11900,6 +11900,7 @@ from previous Chrome versions.
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-870118210" label="AutofillEnableCardBenefitsSync:enabled"/>
   <int value="-869690461" label="ShoppingListTrackByDefault:enabled"/>
+  <int value="-869495134" label="LensSendRawFileMediaTypes:disabled"/>
   <int value="-869149210" label="ProjectorUseDVSPlaybackEndpoint:enabled"/>
   <int value="-869023958" label="PasskeyUnlockManager:disabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
@@ -17343,6 +17344,7 @@ from previous Chrome versions.
   <int value="983236654" label="TrackingProtection3pcd:enabled"/>
   <int value="983311394" label="tab-management-experiment-type"/>
   <int value="983461731" label="SafetyHubServicesOnStartUp:disabled"/>
+  <int value="984871594" label="LensSendRawFileMediaTypes:enabled"/>
   <int value="985127848"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:disabled"/>
   <int value="986796748" label="AccountConsistency:enabled"/>

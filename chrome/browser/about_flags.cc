@@ -8844,6 +8844,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kEnableInputEventLogging)},
 #endif
 
+    {"lens-enable-raw-file-media-types",
+     flag_descriptions::kLensEnableSendRawFileMediaTypesName,
+     flag_descriptions::kLensEnableSendRawFileMediaTypesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(lens::features::kLensSendRawFileMediaTypes)},
+
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

@@ -14,6 +14,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/prefs/pref_service.h"
 #include "contextual_search_context_controller.h"
@@ -142,13 +143,25 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
   }
 
   lens::MimeType mime_type;
+  bool mime_type_has_image = file_mime_type.find("image") != std::string::npos;
 
-  if (file_mime_type.find("pdf") != std::string::npos) {
-    mime_type = lens::MimeType::kPdf;
-  } else if (file_mime_type.find("image") != std::string::npos) {
-    mime_type = lens::MimeType::kImage;
+  if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    // When the raw file media types feature is enabled, only set the mime type
+    // to image if the file is an image, otherwise set it to unknown for all
+    // other file types.
+    if (mime_type_has_image) {
+      mime_type = lens::MimeType::kImage;
+    } else {
+      mime_type = lens::MimeType::kUnknown;
+    }
   } else {
-    NOTREACHED();
+    if (file_mime_type.find("pdf") != std::string::npos) {
+      mime_type = lens::MimeType::kPdf;
+    } else if (mime_type_has_image) {
+      mime_type = lens::MimeType::kImage;
+    } else {
+      NOTREACHED();
+    }
   }
 
   std::unique_ptr<lens::ContextualInputData> input_data =
@@ -156,17 +169,15 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
   input_data->context_input = std::vector<lens::ContextualInput>();
   input_data->primary_content_type = mime_type;
   input_data->file_name = file_name;
-
-  if (mime_type == lens::MimeType::kPdf){
-    // For PDF file uploads, the file name is set in the page_title field.
-    input_data->page_title = file_name;
-  }
+  // For manual file uploads, the file name is also set in the page_title field.
+  input_data->page_title = file_name;
 
   base::span<const uint8_t> file_data_span = base::span(file_bytes);
   std::vector<uint8_t> file_data_vector(file_data_span.begin(),
                                         file_data_span.end());
   input_data->context_input->push_back(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
+  input_data->mime_type_string = file_mime_type;
 
   metrics_recorder->RecordFileSizeMetric(mime_type, file_bytes.size());
   context_controller->StartFileUploadFlow(file_token, std::move(input_data),

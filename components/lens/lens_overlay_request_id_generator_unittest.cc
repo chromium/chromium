@@ -371,4 +371,34 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   ASSERT_FALSE(request_id2->has_chrome_tab_data());
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextRequestIdWithMimeType_SetsMediaTypeAndMimeType) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest, "application/pdf");
+  ASSERT_EQ(request_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+  ASSERT_EQ(request_id->mime_type(), "application/pdf");
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       GetNextRequestIdWithMediaType_ResetsMimeType) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  std::unique_ptr<lens::LensOverlayRequestId> first_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest, "application/pdf");
+  ASSERT_EQ(first_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE);
+  ASSERT_EQ(first_id->mime_type(), "application/pdf");
+
+  std::unique_ptr<lens::LensOverlayRequestId> second_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kFullImageRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_EQ(second_id->media_type(),
+            lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_FALSE(second_id->has_mime_type());
+}
+
 }  // namespace lens
