@@ -26,16 +26,6 @@
   # (where each config name is a key in the 'configs' dict, below). MB uses
   # this dict to look up which config to use for a given bot.
   'builder_groups': {
-    'chrome': {
-      # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
-      # They monitor binary size growth, which may be affected by the tables.
-      'linux-chrome': 'official_remoteexec',
-      'mac-chrome': 'official_remoteexec_mac_x64',
-      'win-branded-rel': 'chrome_branded_remoteexec_minimal_symbols',
-      'win-chrome': 'official_remoteexec_x86',
-      'win64-chrome': 'official_remoteexec_x64',
-    },
-
     'chrome.gpu.fyi': {
       'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_remoteexec_skylab',
     },
@@ -214,15 +204,10 @@
     },
 
     'tryserver.chrome': {
-      'linux-chrome': 'official_remoteexec',
       'linux-finch-smoke-chrome': 'official_remoteexec',
       'mac-arm64-finch-smoke-chrome': 'official_remoteexec_mac_arm',
-      'mac-chrome': 'official_remoteexec_mac_x64',
-      'win-branded-compile-rel': 'chrome_branded_remoteexec_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
-      'win-chrome': 'official_remoteexec_x86',
       'win-finch-smoke-chrome': 'official_remoteexec',
-      'win64-chrome': 'official_remoteexec_x64',
     },
 
     'tryserver.chrome.gpu': {
@@ -336,10 +321,6 @@
 
     'cast_binary_size_remoteexec': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_remoteexec',
-    ],
-
-    'chrome_branded_remoteexec_minimal_symbols': [
-      'chrome_branded', 'minimal_symbols', 'release_bot_remoteexec',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_remoteexec': [
@@ -543,10 +524,6 @@
       'official', 'remoteexec', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
     ],
 
-    'official_remoteexec_mac_x64': [
-      'official', 'remoteexec', 'x64', 'no_widevine_cdm_host_verification',
-    ],
-
     'official_remoteexec_min_symbol_webview_android_desktop_arm64': [
       'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo', 'webview', 'arm64', 'android_desktop', 'dcheck_off'
     ],
@@ -593,14 +570,6 @@
 
     'official_remoteexec_perf_win_cross_arm64': [
       'official', 'remoteexec_win_cross', 'arm64', 'minimal_symbols', 'pgo_phase_0',
-    ],
-
-    'official_remoteexec_x64': [
-      'official', 'remoteexec', 'x64', 'minimal_symbols',
-    ],
-
-    'official_remoteexec_x86': [
-      'official', 'remoteexec', 'x86', 'minimal_symbols',
     ],
 
     'official_webview_arm32_orderfile': [

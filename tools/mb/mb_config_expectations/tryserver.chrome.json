@@ -1,12 +1,4 @@
 {
-  "linux-chrome": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
   "linux-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
@@ -25,27 +17,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-chrome": {
-    "gn_args": {
-      "ignore_missing_widevine_signing_cert": true,
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "target_cpu": "x64",
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
-  "win-branded-compile-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_chrome_branded": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
   "win-celab-try-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -58,30 +29,10 @@
       "use_remoteexec": true
     }
   },
-  "win-chrome": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
   "win-finch-smoke-chrome": {
     "gn_args": {
       "is_chrome_branded": true,
       "is_official_build": true,
-      "use_reclient": false,
-      "use_remoteexec": true
-    }
-  },
-  "win64-chrome": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
       "use_reclient": false,
       "use_remoteexec": true
     }
