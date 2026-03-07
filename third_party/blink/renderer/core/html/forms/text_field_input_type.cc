@@ -830,7 +830,7 @@ void UpdateOptionFiltered(HTMLInputElement& input, HTMLOptionElement& option) {
   // TODO(crbug.com/453705243): Consider doing something more sophisticated like
   // HTMLInputElement::FilteredDataListOptions, but probably with DisplayLabel
   // instead of option.value and option.label.
-  if (option.DisplayLabel().contains(input.Value())) {
+  if (option.DisplayLabel().FoldCase().contains(input.Value().FoldCase())) {
     option.SetFiltered(false);
   } else {
     option.SetFiltered(true);
