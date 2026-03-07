@@ -55,7 +55,6 @@ struct TabSimilarityScores {
 };
 
 std::optional<TabSimilarityScores> GetEmbeddingScores(
-    content::WebContents* web_contents,
     const passage_embeddings::Embedding& query_embedding,
     const std::vector<page_content_annotations::PassageEmbedding>&
         web_contents_embeddings) {
@@ -352,8 +351,8 @@ ContextualTasksContextService::SelectRelevantTabs(
     TabSignals tab_signals;
     tab_signals.web_contents = web_contents;
     std::optional<TabSimilarityScores> similarity_scores = GetEmbeddingScores(
-        web_contents, query_embedding,
-        page_embeddings_service_->GetEmbeddings(web_contents));
+        query_embedding, page_embeddings_service_->GetEmbeddings(
+                             web_contents->GetPrimaryPage()));
     tab_signals.embedding_score =
         similarity_scores
             ? std::make_optional(similarity_scores->best_similarity_score.first)

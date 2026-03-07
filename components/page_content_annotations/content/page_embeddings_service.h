@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -85,9 +87,8 @@ class PageEmbeddingsService : public KeyedService,
     virtual UsageMode GetUsageMode() const;
 
     // Invoked when embeddings become available or are updated for the
-    // web_contents. The embeddings then can be queried via GetEmbeddings().
-    virtual void OnPageEmbeddingsAvailable(content::WebContents* web_contents) {
-    }
+    // page. The embeddings then can be queried via GetEmbeddings().
+    virtual void OnPageEmbeddingsAvailable(content::Page& page) {}
   };
 
   // ScopedPriority allows observers to temporarily raise the priority of the
@@ -140,11 +141,11 @@ class PageEmbeddingsService : public KeyedService,
   // kContinuous observers. Virtual for testing.
   virtual void ProcessEmbeddingsOnDemand();
 
-  // Retrieves the embeddings for web_content. Returns the empty vector if
+  // Retrieves the embeddings for page. Returns the empty vector if
   // embeddings have not yet been computed.
   // Virtual for testing.
   virtual std::vector<PassageEmbedding> GetEmbeddings(
-      content::WebContents* web_content) const;
+      content::Page& page) const;
 
   // PageContentExtractionService:
   void OnPageContentExtracted(
@@ -155,12 +156,16 @@ class PageEmbeddingsService : public KeyedService,
  private:
   class WebContentsEventsObserver;
 
-  void ComputeEmbeddings(content::WebContents* web_contents);
-  void ComputeEmbeddingsOnHide(content::WebContents* web_contents);
+  struct PageState;
+  struct WebContentsState;
+
+  void ComputeEmbeddings(content::Page& page);
+  void ComputeEmbeddingsOnHide(content::Page& page);
 
   void OnEmbeddingsComputed(
       std::vector<EmbeddingPassageType> passage_types,
       base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<content::Page> page,
       std::vector<std::string> passage_strings,
       std::vector<passage_embeddings::Embedding> embeddings,
       passage_embeddings::Embedder::TaskId task_id,
@@ -174,8 +179,6 @@ class PageEmbeddingsService : public KeyedService,
 
   static UsageMode GetActiveUsageMode(
       const base::ObserverList<Observer>& observers);
-
-  struct WebContentsState;
 
   const EmbeddingCandidatesGenerator candidates_generator_;
 

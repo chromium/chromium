@@ -110,7 +110,7 @@ class MockPageEmbeddingsService
 
   MOCK_METHOD(std::vector<page_content_annotations::PassageEmbedding>,
               GetEmbeddings,
-              (content::WebContents * web_contents),
+              (content::Page & page),
               (const override));
 
   MOCK_METHOD(void, ProcessEmbeddingsOnDemand, (), (override));

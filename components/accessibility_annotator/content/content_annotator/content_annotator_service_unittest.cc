@@ -75,7 +75,7 @@ class MockPageEmbeddingsService
 
   MOCK_METHOD(std::vector<page_content_annotations::PassageEmbedding>,
               GetEmbeddings,
-              (content::WebContents*),
+              (content::Page&),
               (const, override));
 };
 
@@ -178,13 +178,13 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
 
     // 4. Send PageEmbeddingsAvailable
     EXPECT_CALL(*mock_page_embeddings_service_,
-                GetEmbeddings(web_contents.get()))
+                GetEmbeddings(testing::Ref(web_contents->GetPrimaryPage())))
         .WillOnce(
             Return(std::vector<page_content_annotations::PassageEmbedding>{
                 {{"Test Title",
                   page_content_annotations::EmbeddingPassageType::kTitle},
                  passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
-    service_->OnPageEmbeddingsAvailable(web_contents.get());
+    service_->OnPageEmbeddingsAvailable(web_contents->GetPrimaryPage());
   }
 
   ContentAnnotatorFeatureList feature_list_;
@@ -208,7 +208,6 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
   GURL url("https://example.com/");
   base::Time base_time = base::Time::Now();
 
-  // Expect Classify to be called when the final piece of data arrives.
   EXPECT_CALL(*mock_classifier_, Classify(testing::_))
       .WillOnce(Return(ContentClassificationResult()));
 
@@ -274,11 +273,11 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
   service_->OnPageContentExtracted(web_contents2->GetPrimaryPage(), apc2);
 
   EXPECT_CALL(*mock_page_embeddings_service_,
-              GetEmbeddings(web_contents2.get()))
+              GetEmbeddings(testing::Ref(web_contents2->GetPrimaryPage())))
       .WillOnce(Return(std::vector<page_content_annotations::PassageEmbedding>{
           {{"Title 2", page_content_annotations::EmbeddingPassageType::kTitle},
            passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
-  service_->OnPageEmbeddingsAvailable(web_contents2.get());
+  service_->OnPageEmbeddingsAvailable(web_contents2->GetPrimaryPage());
 }
 
 TEST_F(ContentAnnotatorServiceTest,

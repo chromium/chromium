@@ -43,6 +43,29 @@ PassageEmbedding::PassageEmbedding(
     passage_embeddings::Embedding embedding)
     : passage(std::move(passage)), embedding(std::move(embedding)) {}
 
+struct PageEmbeddingsService::PageState {
+  explicit PageState(content::Page& page) : page(page.GetWeakPtr()) {}
+
+  base::WeakPtr<content::Page> page;
+
+  // pending_passages is non-empty from the time passages are produced via
+  // candidates_generator_ to the time that embeddings are requested.
+  std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages;
+
+  // The currently active task for computing embeddings. Non-empty while the
+  // embedding computation is pending.
+  std::optional<passage_embeddings::Embedder::TaskId> active_task;
+
+  // passage_embeddings is empty until embeddings are received.
+  std::vector<PassageEmbedding> passage_embeddings;
+};
+
+struct PageEmbeddingsService::WebContentsState {
+  std::unique_ptr<WebContentsEventsObserver> observer;
+
+  std::optional<PageState> page_state;
+};
+
 class PageEmbeddingsService::WebContentsEventsObserver
     : public content::WebContentsObserver {
  public:
@@ -54,7 +77,8 @@ class PageEmbeddingsService::WebContentsEventsObserver
 
   void OnVisibilityChanged(content::Visibility visibility) override {
     if (visibility == content::Visibility::HIDDEN) {
-      page_embeddings_service_->ComputeEmbeddingsOnHide(web_contents());
+      page_embeddings_service_->ComputeEmbeddingsOnHide(
+          web_contents()->GetPrimaryPage());
     }
   }
 
@@ -68,24 +92,6 @@ class PageEmbeddingsService::WebContentsEventsObserver
 
  private:
   raw_ptr<PageEmbeddingsService> page_embeddings_service_;
-};
-
-struct PageEmbeddingsService::WebContentsState {
-  WebContentsState();
-  ~WebContentsState();
-
-  std::unique_ptr<WebContentsEventsObserver> observer;
-
-  // pending_passages is non-empty from the time passages are produced via
-  // candidates_generator_ to the time that embeddings are requested.
-  std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages;
-
-  // The currently active task for computing embeddings. Non-empty while the
-  // embedding computation is pending.
-  std::optional<passage_embeddings::Embedder::TaskId> active_task;
-
-  // passage_embeddings is empty until embeddings are received.
-  std::vector<PassageEmbedding> passage_embeddings;
 };
 
 PageEmbeddingsService::Priority
@@ -181,8 +187,10 @@ void PageEmbeddingsService::AddObserver(Observer* observer) {
       // are available.
       for (const auto& [web_contents, web_contents_state] :
            web_contents_state_) {
-        if (!web_contents_state.observer->IsWebContentsHidden()) {
-          ComputeEmbeddings(web_contents);
+        if (web_contents_state.page_state &&
+            web_contents_state.page_state->page &&
+            !web_contents_state.observer->IsWebContentsHidden()) {
+          ComputeEmbeddings(*web_contents_state.page_state->page);
         }
       }
     }
@@ -218,19 +226,23 @@ void PageEmbeddingsService::ProcessEmbeddingsOnDemand() {
   // Force the computation of embeddings for all visible tabs, which are
   // otherwise only lazily computed on being hidden.
   for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
-    if (!web_contents_state.observer->IsWebContentsHidden()) {
-      ComputeEmbeddings(web_contents);
+    if (web_contents_state.page_state && web_contents_state.page_state->page &&
+        !web_contents_state.observer->IsWebContentsHidden()) {
+      ComputeEmbeddings(*web_contents_state.page_state->page);
     }
   }
 }
 
 std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
-    content::WebContents* web_content) const {
-  const auto loc = web_contents_state_.find(web_content);
-  if (loc == web_contents_state_.end()) {
+    content::Page& page) const {
+  auto* const web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  const auto loc = web_contents_state_.find(web_contents);
+  if (loc == web_contents_state_.end() || !loc->second.page_state ||
+      loc->second.page_state->page.get() != &page) {
     return {};
   }
-  return loc->second.passage_embeddings;
+  return loc->second.page_state->passage_embeddings;
 }
 
 void PageEmbeddingsService::OnPageContentExtracted(
@@ -242,38 +254,55 @@ void PageEmbeddingsService::OnPageContentExtracted(
 
   auto loc = web_contents_state_.find(web_contents);
   if (loc == web_contents_state_.end()) {
-    web_contents_state_[web_contents].observer =
+    loc = web_contents_state_.try_emplace(web_contents).first;
+    loc->second.observer =
         std::make_unique<WebContentsEventsObserver>(web_contents, this);
   }
 
-  web_contents_state_[web_contents].pending_passages =
-      candidates_generator_.Run(page_content->data,
-                                passage_embeddings::kMaxPassagesPerPage.Get());
+  WebContentsState& state = loc->second;
+  if (state.page_state) {
+    if (state.page_state->active_task.has_value()) {
+      embedder_->TryCancel(*state.page_state->active_task);
+    }
+    state.page_state.reset();
+  }
+
+  state.page_state.emplace(page);
+
+  state.page_state->pending_passages = candidates_generator_.Run(
+      page_content->data, passage_embeddings::kMaxPassagesPerPage.Get());
 
   if (current_usage_mode_ == kContinuous ||
-      web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
+      state.observer->IsWebContentsHidden()) {
     // The WebContents may have transitioned from visible to hidden by the time
     // we received the passages, so compute embeddings.
-    ComputeEmbeddings(web_contents);
+    ComputeEmbeddings(page);
   }
 }
 
-void PageEmbeddingsService::ComputeEmbeddings(
-    content::WebContents* web_contents) {
-  WebContentsState& state = web_contents_state_[web_contents];
-  if (state.active_task.has_value()) {
-    embedder_->TryCancel(*state.active_task);
-    state.active_task.reset();
-  }
-
-  if (state.pending_passages.empty()) {
+void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
+  auto* const web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  auto loc = web_contents_state_.find(web_contents);
+  if (loc == web_contents_state_.end() || !loc->second.page_state ||
+      loc->second.page_state->page.get() != &page) {
     return;
   }
 
-  // Ensure that state.pending_passages is cleared before invoking
+  WebContentsState& state = loc->second;
+  if (state.page_state->active_task.has_value()) {
+    embedder_->TryCancel(*state.page_state->active_task);
+    state.page_state->active_task.reset();
+  }
+
+  if (state.page_state->pending_passages.empty()) {
+    return;
+  }
+
+  // Ensure that state.page_state->pending_passages is cleared before invoking
   // ComputePassagesEmbeddings().
   std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages;
-  pending_passages.swap(state.pending_passages);
+  pending_passages.swap(state.page_state->pending_passages);
 
   std::vector<EmbeddingPassageType> passage_types;
   passage_types.reserve(pending_passages.size());
@@ -284,25 +313,25 @@ void PageEmbeddingsService::ComputeEmbeddings(
     passage_types.push_back(passage.second);
   }
 
-  state.active_task = embedder_->ComputePassagesEmbeddings(
+  state.page_state->active_task = embedder_->ComputePassagesEmbeddings(
       ConvertToPassagePriority(current_priority_), std::move(string_passages),
       base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(passage_types),
-                     web_contents->GetWeakPtr()));
+                     web_contents->GetWeakPtr(), state.page_state->page));
 }
 
-void PageEmbeddingsService::ComputeEmbeddingsOnHide(
-    content::WebContents* web_contents) {
+void PageEmbeddingsService::ComputeEmbeddingsOnHide(content::Page& page) {
   if (current_usage_mode_ != kOnDemand) {
     return;
   }
 
-  ComputeEmbeddings(web_contents);
+  ComputeEmbeddings(page);
 }
 
 void PageEmbeddingsService::OnEmbeddingsComputed(
     std::vector<EmbeddingPassageType> passage_types,
     base::WeakPtr<content::WebContents> web_contents,
+    base::WeakPtr<content::Page> page,
     std::vector<std::string> passage_strings,
     std::vector<passage_embeddings::Embedding> embeddings,
     passage_embeddings::Embedder::TaskId task_id,
@@ -312,17 +341,29 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
     return;
   }
 
-  const auto loc = web_contents_state_.find(web_contents.get());
-  DCHECK(loc != web_contents_state_.end());
-
-  // Ignore stale embeddings from previously cancelled tasks.
-  if (loc->second.active_task != task_id) {
+  if (!page) {
+    // The page was destroyed while computing the embeddings.
+    const auto loc = web_contents_state_.find(web_contents.get());
+    if (loc != web_contents_state_.end() && loc->second.page_state &&
+        !loc->second.page_state->page) {
+      loc->second.page_state.reset();
+    }
     return;
   }
 
-  loc->second.active_task.reset();
+  const auto loc = web_contents_state_.find(web_contents.get());
+  DCHECK(loc != web_contents_state_.end());
+
+  // Ignore stale embeddings from previously cancelled tasks or old pages.
+  if (!loc->second.page_state ||
+      loc->second.page_state->page.get() != page.get() ||
+      loc->second.page_state->active_task != task_id) {
+    return;
+  }
+
+  loc->second.page_state->active_task.reset();
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
-    loc->second.passage_embeddings.clear();
+    loc->second.page_state->passage_embeddings.clear();
     return;
   }
 
@@ -336,10 +377,10 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
                        std::move(passage_types[i])),
         std::move(embeddings[i]));
   }
-  loc->second.passage_embeddings = std::move(passage_embeddings);
+  loc->second.page_state->passage_embeddings = std::move(passage_embeddings);
 
   for (Observer& observer : observers_) {
-    observer.OnPageEmbeddingsAvailable(web_contents.get());
+    observer.OnPageEmbeddingsAvailable(*page);
   }
 }
 
@@ -370,8 +411,9 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
 
   std::set<passage_embeddings::Embedder::TaskId> tasks;
   for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
-    if (web_contents_state.active_task.has_value()) {
-      tasks.insert(*web_contents_state.active_task);
+    if (web_contents_state.page_state &&
+        web_contents_state.page_state->active_task.has_value()) {
+      tasks.insert(*web_contents_state.page_state->active_task);
     }
   }
 
@@ -388,9 +430,5 @@ PageEmbeddingsService::UsageMode PageEmbeddingsService::GetActiveUsageMode(
       [](UsageMode u1, UsageMode u2) { return std::max(u1, u2); },
       [](const Observer& observer) { return observer.GetUsageMode(); });
 }
-
-PageEmbeddingsService::WebContentsState::WebContentsState() = default;
-
-PageEmbeddingsService::WebContentsState::~WebContentsState() = default;
 
 }  // namespace page_content_annotations

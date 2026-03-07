@@ -80,7 +80,7 @@ class ContentAnnotatorService
   // page_content_annotations::PageEmbeddingsService::Observer:
   page_content_annotations::PageEmbeddingsService::UsageMode GetUsageMode()
       const override;
-  void OnPageEmbeddingsAvailable(content::WebContents* web_contents) override;
+  void OnPageEmbeddingsAvailable(content::Page& page) override;
 
  protected:
   ContentAnnotatorService(

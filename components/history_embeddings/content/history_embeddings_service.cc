@@ -484,8 +484,9 @@ HistoryEmbeddingsService::GetUsageMode() const {
   return page_content_annotations::PageEmbeddingsService::kContinuous;
 }
 
-void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(
-    content::WebContents* web_contents) {
+void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(content::Page& page) {
+  auto* const web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
   const auto loc = last_history_visit_.find(web_contents);
   if (loc == last_history_visit_.end()) {
     return;
@@ -493,7 +494,7 @@ void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(
   const VisitMetadata& visit = loc->second;
 
   std::vector<page_content_annotations::PassageEmbedding> passage_embeddings =
-      page_embeddings_service_->GetEmbeddings(web_contents);
+      page_embeddings_service_->GetEmbeddings(page);
   StorePassageEmbeddings(visit.url_id, visit.visit_id, visit.visit_time,
                          passage_embeddings);
 }

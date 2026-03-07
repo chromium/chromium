@@ -17,6 +17,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -66,7 +67,7 @@ class ObserverMock : public PageEmbeddingsService::Observer {
 
   MOCK_METHOD(void,
               OnPageEmbeddingsAvailable,
-              (content::WebContents * web_contents),
+              (content::Page & page),
               (override));
 };
 
@@ -175,7 +176,8 @@ TEST_F(PageEmbeddingsServiceTest, NotifiesObserver) {
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get()));
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())));
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -215,7 +217,7 @@ TEST_F(PageEmbeddingsServiceTest,
           });
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get())).Times(0);
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(testing::_)).Times(0);
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -250,8 +252,9 @@ TEST_F(PageEmbeddingsServiceTest, GetEmbeddings) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -262,7 +265,7 @@ TEST_F(PageEmbeddingsServiceTest, GetEmbeddings) {
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
   std::vector<PassageEmbedding> embeddings =
-      page_embeddings_service().GetEmbeddings(web_contents.get());
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage());
   ASSERT_EQ(1u, embeddings.size());
   EXPECT_EQ("passage text", embeddings[0].passage.first);
   EXPECT_EQ(EmbeddingPassageType::kTitle, embeddings[0].passage.second);
@@ -289,8 +292,9 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsNotPresentOnError) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -301,7 +305,7 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsNotPresentOnError) {
            passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
 
   std::vector<PassageEmbedding> embeddings =
-      page_embeddings_service().GetEmbeddings(web_contents.get());
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage());
   EXPECT_TRUE(embeddings.empty());
 }
 
@@ -316,8 +320,9 @@ TEST_F(PageEmbeddingsServiceTest, NewPageContentCancelsExistingEmbeddingTask) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(2);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -331,9 +336,9 @@ TEST_F(PageEmbeddingsServiceTest, NewPageContentCancelsExistingEmbeddingTask) {
       base::MakeRefCounted<RefCountedAnnotatedPageContent>());
 }
 
-// Validates that the embeddings are no longer available after destroying the
-// WebContents.
-TEST_F(PageEmbeddingsServiceTest, EmbeddingsRemovedOnWebContentsDestruction) {
+// Validates that providing embeddings after destroying the WebContents does not
+// crash.
+TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnWebContentsDestroyed) {
   std::unique_ptr<content::WebContents> web_contents =
       CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
 
@@ -352,8 +357,9 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsRemovedOnWebContentsDestruction) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -364,9 +370,6 @@ TEST_F(PageEmbeddingsServiceTest, EmbeddingsRemovedOnWebContentsDestruction) {
   std::move(compute_passages_embeddings_callback)
       .Run({""}, {passage_embeddings::Embedding({1.0f})}, 1,
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
-
-  EXPECT_TRUE(
-      page_embeddings_service().GetEmbeddings(web_contents.get()).empty());
 }
 
 // Validates that the cancelled embeddings are ignored, even if received due to
@@ -382,8 +385,9 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(2);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   EXPECT_CALL(embedder_mock(), TryCancel(1));
 
@@ -421,15 +425,16 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
       .Run({"passage text 1"}, {passage_embeddings::Embedding({1.0f})}, 1,
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
-  EXPECT_TRUE(
-      page_embeddings_service().GetEmbeddings(web_contents.get()).empty());
+  EXPECT_TRUE(page_embeddings_service()
+                  .GetEmbeddings(web_contents->GetPrimaryPage())
+                  .empty());
 
   std::move(compute_passages_embeddings_callback2)
       .Run({"passage text 2"}, {passage_embeddings::Embedding({1.0f})}, 2,
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
   std::vector<PassageEmbedding> embeddings =
-      page_embeddings_service().GetEmbeddings(web_contents.get());
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage());
   ASSERT_EQ(1u, embeddings.size());
   EXPECT_EQ("passage text 2", embeddings[0].passage.first);
   EXPECT_EQ(EmbeddingPassageType::kTitle, embeddings[0].passage.second);
@@ -447,8 +452,9 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
 
   EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(2);
 
-  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
-              IsEmpty());
+  EXPECT_THAT(
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage()),
+      IsEmpty());
 
   EXPECT_CALL(embedder_mock(), TryCancel(1));
 
@@ -487,15 +493,16 @@ TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
       .Run({"passage text 1"}, {}, 1,
            passage_embeddings::ComputeEmbeddingsStatus::kCanceled);
 
-  EXPECT_TRUE(
-      page_embeddings_service().GetEmbeddings(web_contents.get()).empty());
+  EXPECT_TRUE(page_embeddings_service()
+                  .GetEmbeddings(web_contents->GetPrimaryPage())
+                  .empty());
 
   std::move(compute_passages_embeddings_callback2)
       .Run({"passage text 2"}, {passage_embeddings::Embedding({1.0f})}, 2,
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
   std::vector<PassageEmbedding> embeddings =
-      page_embeddings_service().GetEmbeddings(web_contents.get());
+      page_embeddings_service().GetEmbeddings(web_contents->GetPrimaryPage());
   ASSERT_EQ(1u, embeddings.size());
   EXPECT_EQ("passage text 2", embeddings[0].passage.first);
   EXPECT_EQ(EmbeddingPassageType::kTitle, embeddings[0].passage.second);
@@ -767,7 +774,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get())).Times(0);
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(0);
 
   page_embeddings_service().AddObserver(&observer);
 
@@ -804,7 +813,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kContinuous));
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get())).Times(1);
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(1);
 
   page_embeddings_service().AddObserver(&observer);
 
@@ -846,7 +857,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(on_demand_observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
-  EXPECT_CALL(on_demand_observer, OnPageEmbeddingsAvailable(web_contents.get()))
+  EXPECT_CALL(
+      on_demand_observer,
+      OnPageEmbeddingsAvailable(testing::Ref(web_contents->GetPrimaryPage())))
       .Times(1);
 
   page_embeddings_service().AddObserver(&on_demand_observer);
@@ -856,8 +869,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(continuous_observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kContinuous));
-  EXPECT_CALL(continuous_observer,
-              OnPageEmbeddingsAvailable(web_contents.get()))
+  EXPECT_CALL(
+      continuous_observer,
+      OnPageEmbeddingsAvailable(testing::Ref(web_contents->GetPrimaryPage())))
       .Times(1);
 
   page_embeddings_service().AddObserver(&continuous_observer);
@@ -901,7 +915,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get())).Times(1);
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(1);
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -945,7 +961,9 @@ TEST_F(PageEmbeddingsServiceTest,
       .WillRepeatedly(Return(PageEmbeddingsService::kDefault));
   EXPECT_CALL(observer, GetUsageMode)
       .WillRepeatedly(Return(PageEmbeddingsService::kOnDemand));
-  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(web_contents.get())).Times(1);
+  EXPECT_CALL(observer, OnPageEmbeddingsAvailable(
+                            testing::Ref(web_contents->GetPrimaryPage())))
+      .Times(1);
 
   page_embeddings_service().OnPageContentExtracted(
       web_contents->GetPrimaryPage(),
@@ -1029,6 +1047,24 @@ TEST_F(PageEmbeddingsServiceTest, ContinuousModeEagerComputationOnlyRunsOnce) {
 
   page_embeddings_service().RemoveObserver(&continuous_observer1);
   page_embeddings_service().RemoveObserver(&continuous_observer2);
+}
+
+// Validates that data is reset for the WebContents upon navigation.
+TEST_F(PageEmbeddingsServiceTest, NavigationResetsData) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>());
+
+  // Navigate to a new page.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL("http://example.com"));
+
+  EXPECT_TRUE(page_embeddings_service()
+                  .GetEmbeddings(web_contents->GetPrimaryPage())
+                  .empty());
 }
 
 }  // namespace page_content_annotations

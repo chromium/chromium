@@ -134,7 +134,7 @@ class HistoryEmbeddingsService
       const override;
   page_content_annotations::PageEmbeddingsService::UsageMode GetUsageMode()
       const override;
-  void OnPageEmbeddingsAvailable(content::WebContents* web_contents) override;
+  void OnPageEmbeddingsAvailable(content::Page& page) override;
 
   // This can be overridden to gate answer generation for some accounts.
   virtual bool IsAnswererUseAllowed() const;

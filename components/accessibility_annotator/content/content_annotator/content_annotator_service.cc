@@ -27,7 +27,6 @@
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
-#include "content/public/browser/web_contents.h"
 
 namespace accessibility_annotator {
 
@@ -140,28 +139,22 @@ ContentAnnotatorService::GetUsageMode() const {
       kContinuous;
 }
 
-void ContentAnnotatorService::OnPageEmbeddingsAvailable(
-    content::WebContents* web_contents) {
+void ContentAnnotatorService::OnPageEmbeddingsAvailable(content::Page& page) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<page_content_annotations::PassageEmbedding> embeddings =
-      page_embeddings_service_->GetEmbeddings(web_contents);
+      page_embeddings_service_->GetEmbeddings(page);
   if (embeddings.empty()) {
     return;
   }
 
-  const GURL& url = web_contents->GetLastCommittedURL();
+  const GURL& url = page.GetMainDocument().GetLastCommittedURL();
   CacheIterator it = GetOrCreateJoinEntry(url);
 
   for (const auto& embedding : embeddings) {
     // TODO(crbug.com/487779615): Add support for body text embeddings.
     if (embedding.passage.second ==
         page_content_annotations::EmbeddingPassageType::kTitle) {
-      // TODO(crbug.com/489121690): Remove this check once better URL mapping to
-      // embeddings are available.
-      if (it->second.page_title != embedding.passage.first) {
-        break;
-      }
       it->second.page_title_embedding = embedding.embedding;
       break;
     }
