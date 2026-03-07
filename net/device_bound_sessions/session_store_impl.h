@@ -64,7 +64,8 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   SessionsMap GetAllSessions() const override;
   void RestoreSessionBindingKey(
       const SessionKey& session_key,
-      RestoreSessionBindingKeyCallback callback) override;
+      RestoreSessionBindingKeyCallback callback,
+      RestoreSessionBindingKeyCallbackPriority priority) override;
 
   DBStatus db_status() const { return db_status_; }
 
@@ -132,7 +133,13 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
 
   // Holds pending key restore operations. This ensures that we don't
   // try to restore the same key twice.
-  std::map<SessionKey, std::vector<RestoreSessionBindingKeyCallback>>
+  static constexpr size_t kPriorityCount =
+      static_cast<size_t>(
+          SessionStore::RestoreSessionBindingKeyCallbackPriority::kMaxValue) +
+      1;
+  std::map<
+      SessionKey,
+      std::array<std::vector<RestoreSessionBindingKeyCallback>, kPriorityCount>>
       restore_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);

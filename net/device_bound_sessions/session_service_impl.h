@@ -206,6 +206,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
           all_key_ids_or_error);
   void DoGarbageCollection(
       std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
+  void OnSessionKeyRestoredForGarbageCollection(
+      const SessionKey& session_key,
+      base::OnceClosure done_closure,
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+          key_id_or_error);
+  void DoGarbageCollectionWithSessionsReady(
+      std::vector<unexportable_keys::UnexportableKeyId> all_key_ids);
 
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
   void UnblockDeferredRequests(

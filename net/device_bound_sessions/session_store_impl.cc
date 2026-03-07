@@ -275,7 +275,8 @@ SessionStore::SessionsMap SessionStoreImpl::GetAllSessions() const {
 
 void SessionStoreImpl::RestoreSessionBindingKey(
     const SessionKey& session_key,
-    RestoreSessionBindingKeyCallback callback) {
+    RestoreSessionBindingKeyCallback callback,
+    RestoreSessionBindingKeyCallbackPriority priority) {
   auto key_id_or_error = base::unexpected(ServiceError::kKeyNotFound);
   if (db_status_ != DBStatus::kSuccess) {
     std::move(callback).Run(key_id_or_error);
@@ -291,7 +292,8 @@ void SessionStoreImpl::RestoreSessionBindingKey(
       // session key.
       auto [callbacks_it, inserted] =
           restore_callbacks_.try_emplace(session_key);
-      callbacks_it->second.emplace_back(std::move(callback));
+      callbacks_it->second[static_cast<size_t>(priority)].emplace_back(
+          std::move(callback));
       if (!inserted) {
         return;
       }
@@ -321,9 +323,11 @@ void SessionStoreImpl::OnSessionBindingKeyRestored(
     return;
   }
 
-  auto callbacks = std::move(it->second);
-  for (auto& callback : callbacks) {
-    std::move(callback).Run(key_or_error);
+  auto callbacks_by_priority = std::move(it->second);
+  for (auto& callbacks : callbacks_by_priority) {
+    for (auto& callback : callbacks) {
+      std::move(callback).Run(key_or_error);
+    }
   }
 
   restore_callbacks_.erase(it);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
@@ -205,7 +206,8 @@ class SessionStoreImplTest : public testing::Test {
                        unexportable_keys::UnexportableKeyId> key_id_or_error) {
               session->set_unexportable_key_id(key_id_or_error);
               run_loop.Quit();
-            }));
+            }),
+        SessionStore::RestoreSessionBindingKeyCallbackPriority::kHigh);
     run_loop.Run();
   }
 
@@ -603,6 +605,60 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidRefreshInitiator) {
   EXPECT_EQ(sessions_map.size(), 0u);
   EXPECT_EQ(keys_to_delete.size(), 1u);
   EXPECT_EQ(keys_to_delete[0], site.Serialize());
+}
+
+TEST_F(SessionStoreImplTest, RestoreSessionBindingKeyPriority) {
+  CreateStoreAndLoadSessions();
+
+  // Save a session.
+  std::unique_ptr<Session> session = CreateSessionHelper(
+      unexportable_key_service(), "https://foo.test", "session1");
+  auto site = net::SchemefulSite(GURL("https://foo.test"));
+  store().SaveSession(site, *session);
+
+  // Clear the key service's internal cache. This ensures that the next key
+  // restore posts an asynchronous background task rather than resolving
+  // synchronously.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<size_t>>
+      delete_future;
+  unexportable_key_service().DeleteAllKeysSlowlyAsync(
+      delete_future.GetCallback());
+  // DeleteAllKeysSlowlyAsync returns an error on stateless providers (like for
+  // tests), which is fine as long as it clears the in-memory maps.
+  std::ignore = delete_future.Get();
+
+  // We will restore the key twice, once with low priority and once with high
+  // priority. The high priority callback must be executed first.
+  std::vector<int> callback_order;
+  base::RunLoop run_loop;
+  auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  store().RestoreSessionBindingKey(
+      SessionKey{site, session->id()},
+      base::BindLambdaForTesting(
+          [&callback_order, barrier_closure](
+              unexportable_keys::ServiceErrorOr<
+                  unexportable_keys::UnexportableKeyId> key_id_or_error) {
+            callback_order.push_back(1);  // Low priority
+            barrier_closure.Run();
+          }),
+      SessionStore::RestoreSessionBindingKeyCallbackPriority::kLow);
+
+  store().RestoreSessionBindingKey(
+      SessionKey{site, session->id()},
+      base::BindLambdaForTesting(
+          [&callback_order, barrier_closure](
+              unexportable_keys::ServiceErrorOr<
+                  unexportable_keys::UnexportableKeyId> key_id_or_error) {
+            callback_order.push_back(2);  // High priority
+            barrier_closure.Run();
+          }),
+      SessionStore::RestoreSessionBindingKeyCallbackPriority::kHigh);
+
+  // Run the background task loop so the restore operation completes.
+  run_loop.Run();
+
+  EXPECT_THAT(callback_order, testing::ElementsAre(2, 1));
 }
 
 }  // namespace net::device_bound_sessions

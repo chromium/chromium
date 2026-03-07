@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -464,6 +465,48 @@ void SessionServiceImpl::OnGetAllKeysForGarbageCollection(
 }
 
 void SessionServiceImpl::DoGarbageCollection(
+    std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
+  CHECK(session_store_);
+  std::vector<const SessionKey*> sessions_to_restore;
+  sessions_to_restore.reserve(unpartitioned_sessions_.size());
+
+  for (const auto& [session_key, session] : unpartitioned_sessions_) {
+    if (session->unexportable_key_id() ==
+        base::unexpected(unexportable_keys::ServiceError::kKeyNotReady)) {
+      sessions_to_restore.push_back(&session_key);
+    }
+  }
+
+  auto barrier_closure = base::BarrierClosure(
+      sessions_to_restore.size(),
+      base::BindOnce(&SessionServiceImpl::DoGarbageCollectionWithSessionsReady,
+                     weak_factory_.GetWeakPtr(), std::move(all_key_ids)));
+
+  for (const SessionKey* session_key : sessions_to_restore) {
+    session_store_->RestoreSessionBindingKey(
+        *session_key,
+        base::BindOnce(
+            &SessionServiceImpl::OnSessionKeyRestoredForGarbageCollection,
+            weak_factory_.GetWeakPtr(), *session_key, barrier_closure),
+        SessionStore::RestoreSessionBindingKeyCallbackPriority::kLow);
+  }
+}
+
+void SessionServiceImpl::OnSessionKeyRestoredForGarbageCollection(
+    const SessionKey& session_key,
+    base::OnceClosure done_closure,
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        key_id_or_error) {
+  if (!key_id_or_error.has_value()) {
+    DeleteSessionAndNotify(DeletionReason::kFailedToUnwrapKey, session_key,
+                           base::NullCallback());
+  } else if (auto* session = GetSession(session_key)) {
+    session->set_unexportable_key_id(key_id_or_error);
+  }
+  std::move(done_closure).Run();
+}
+
+void SessionServiceImpl::DoGarbageCollectionWithSessionsReady(
     std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
   const size_t key_count = all_key_ids.size();
   base::UmaHistogramCounts100(
@@ -1289,9 +1332,11 @@ void SessionServiceImpl::RestoreSessionKey(
         void(std::optional<unexportable_keys::UnexportableKeyId>)> callback) {
   if (session_store_) {
     session_store_->RestoreSessionBindingKey(
-        session_key, base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
-                                    weak_factory_.GetWeakPtr(), session_key,
-                                    on_access_callback, std::move(callback)));
+        session_key,
+        base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
+                       weak_factory_.GetWeakPtr(), session_key,
+                       on_access_callback, std::move(callback)),
+        SessionStore::RestoreSessionBindingKeyCallbackPriority::kHigh);
   } else {
     OnSessionKeyRestored(
         session_key, on_access_callback, std::move(callback),
