@@ -36,7 +36,7 @@ export interface TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
-  notifySearchUiReadyToShow(): void;
+  maybeShowUi(): void;
 }
 
 export class TabSearchApiProxyImpl implements TabSearchApiProxy {
@@ -102,8 +102,8 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
   }
 
-  notifySearchUiReadyToShow() {
-    this.handler.notifySearchUIReadyToShow();
+  maybeShowUi() {
+    this.handler.maybeShowUI();
   }
 
   static getInstance(): TabSearchApiProxy {

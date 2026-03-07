@@ -24,7 +24,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'replaceActiveSplitTab',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
-      'notifySearchUiReadyToShow',
+      'maybeShowUi',
     ]);
 
     this.callbackRouter = new PageCallbackRouter();
@@ -74,8 +74,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
   }
 
-  notifySearchUiReadyToShow() {
-    this.methodCalled('notifySearchUiReadyToShow');
+  maybeShowUi() {
+    this.methodCalled('maybeShowUi');
   }
 
   getCallbackRouter() {

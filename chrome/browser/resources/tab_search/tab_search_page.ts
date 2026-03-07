@@ -332,7 +332,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       // or scroll position change triggers the viewport fill logic.
       listenOnce(
           this.$.tabsList, 'viewport-filled',
-          () => this.apiProxy_.notifySearchUiReadyToShow());
+          () => this.apiProxy_.maybeShowUi());
 
       this.tabsChanged_(profileData);
     });

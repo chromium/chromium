@@ -12,17 +12,12 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
-#include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tabs/public/tab_group.h"
@@ -34,8 +29,6 @@
 
 class Browser;
 class MetricsReporter;
-class TabOrganizationService;
-class OptimizationGuideKeyedService;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -53,13 +46,9 @@ enum class TabSearchRecentlyClosedToggleAction {
   kMaxValue = kCollapse,
 };
 
-class TabSearchPageHandler
-    : public tab_search::mojom::PageHandler,
-      public TabStripModelObserver,
-      public BrowserTabStripTrackerDelegate,
-      public TabOrganizationSession::Observer,
-      public TabOrganizationObserver,
-      public optimization_guide::SettingsEnabledObserver {
+class TabSearchPageHandler : public tab_search::mojom::PageHandler,
+                             public TabStripModelObserver,
+                             public BrowserTabStripTrackerDelegate {
  public:
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -74,45 +63,17 @@ class TabSearchPageHandler
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
   void CloseWebUiTab() override;
-  void AcceptTabOrganization(
-      int32_t session_id,
-      int32_t organization_id,
-      std::vector<tab_search::mojom::TabPtr> tabs) override;
-  void RejectTabOrganization(int32_t session_id,
-                             int32_t organization_id) override;
-  void RenameTabOrganization(int32_t session_id,
-                             int32_t organization_id,
-                             const std::u16string& name) override;
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
-  void GetTabOrganizationSession(
-      GetTabOrganizationSessionCallback callback) override;
-  void GetTabOrganizationModelStrategy(
-      GetTabOrganizationModelStrategyCallback callback) override;
   void GetIsSplit(GetIsSplitCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
-  void RequestTabOrganization() override;
-  void RemoveTabFromOrganization(int32_t session_id,
-                                 int32_t organization_id,
-                                 tab_search::mojom::TabPtr tab) override;
-  void RejectSession(int32_t session_id) override;
   void ReplaceActiveSplitTab(int32_t replacement_tab_id) override;
-  void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
   void StartTabGroupTutorial() override;
-  void TriggerFeedback(int32_t session_id) override;
   void TriggerSignIn() override;
-  void OpenHelpPage() override;
-  void SetTabOrganizationModelStrategy(
-      tab_search::mojom::TabOrganizationModelStrategy strategy) override;
-  void SetTabOrganizationUserInstruction(
-      const std::string& user_instruction) override;
-  void SetUserFeedback(int32_t session_id,
-                       tab_search::mojom::UserFeedback feedback) override;
-  void NotifyOrganizationUIReadyToShow() override;
-  void NotifySearchUIReadyToShow() override;
+  void MaybeShowUI() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -130,26 +91,6 @@ class TabSearchPageHandler
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
-
-  // Convert TabOrganizations data to mojo serialized objects.
-  tab_search::mojom::TabPtr GetMojoForTabData(TabData* tab_data) const;
-  tab_search::mojom::TabOrganizationPtr GetMojoForTabOrganization(
-      const TabOrganization* organization) const;
-  tab_search::mojom::TabOrganizationSessionPtr GetMojoForTabOrganizationSession(
-      const TabOrganizationSession* session) const;
-
-  // TabOrganizationSession::Observer
-  void OnTabOrganizationSessionUpdated(
-      const TabOrganizationSession* session) override;
-  void OnTabOrganizationSessionDestroyed(
-      TabOrganizationSession::ID session_id) override;
-
-  // TabOrganizationObserver
-  void OnSessionCreated(const Browser* browser,
-                        TabOrganizationSession* session) override;
-
-  // SettingsEnabledObserver
-  void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
   void disable_last_active_elapsed_text_for_testing() {
     disable_last_active_time_for_testing_ = true;
@@ -179,9 +120,6 @@ class TabSearchPageHandler
 
     raw_ptr<tabs::TabInterface> tab;
   };
-
-  // Show the UI if all tabs are ready to be shown.
-  void MaybeShowUI();
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 
@@ -225,8 +163,6 @@ class TabSearchPageHandler
 
   void NotifyTabIndexPrefChanged(const Profile* profile);
 
-  void NotifyShowFREPrefChanged(const Profile* profile);
-
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();
 
@@ -238,9 +174,7 @@ class TabSearchPageHandler
   const raw_ptr<MetricsReporter> metrics_reporter_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
-  raw_ptr<TabOrganizationService> organization_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
   // Tracks how many times |CloseTab()| has been evoked for the currently open
   // instance of Tab Search for logging in UMA.
@@ -254,25 +188,10 @@ class TabSearchPageHandler
   // purposes.
   bool called_switch_to_tab_ = false;
 
-  // Tracks whether a session restart is currently in progress.
-  bool restarting_ = false;
-
-  // Tracks whether each tab within the UI is ready to be shown. The bubble
-  // will only be shown once all tabs are ready.
-  bool organization_ready_to_show_ = false;
-  bool search_ready_to_show_ = false;
-
   bool disable_last_active_time_for_testing_ = false;
 
   // Notifies this when the browser window context changes.
   base::CallbackListSubscription browser_window_changed_subscription_;
-
-  // Listened TabOrganization sessions.
-  std::vector<raw_ptr<TabOrganizationSession, VectorExperimental>>
-      listened_sessions_;
-
-  base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
-      tab_organization_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
