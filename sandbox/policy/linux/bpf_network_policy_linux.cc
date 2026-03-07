@@ -121,18 +121,23 @@ ResultExpr RestrictSetSockoptForNetworkService() {
   // IPV6_JOIN_GROUP, IPV6_LEAVE_GROUP are for mDNS and extensions.
   //
   // IP_TOS and IPV6_TCLASS are for P2P sockets.
+  //
+  // MCAST_JOIN_SOURCE_GROUP, MCAST_LEAVE_SOURCE_GROUP are for source-specific
+  // multicast (SSM/IGMPv3) used by the Direct Sockets API.
   ResultExpr ipv4_optname_switch =
       Switch(optname)
           .Cases({IP_RECVERR, IP_MTU_DISCOVER, IP_MULTICAST_LOOP,
                   IP_MULTICAST_TTL, IP_MULTICAST_IF, IP_ADD_MEMBERSHIP,
-                  IP_DROP_MEMBERSHIP, IP_TOS, IP_RECVTOS},
+                  IP_DROP_MEMBERSHIP, IP_TOS, IP_RECVTOS,
+                  MCAST_JOIN_SOURCE_GROUP, MCAST_LEAVE_SOURCE_GROUP},
                  Allow())
           .Default(CrashSIGSYSSockopt());
   ResultExpr ipv6_optname_switch =
       Switch(optname)
           .Cases({IPV6_RECVERR, IPV6_MTU_DISCOVER, IPV6_MULTICAST_LOOP,
                   IPV6_MULTICAST_HOPS, IPV6_MULTICAST_IF, IPV6_JOIN_GROUP,
-                  IPV6_LEAVE_GROUP, IPV6_TCLASS, IPV6_V6ONLY, IPV6_RECVTCLASS},
+                  IPV6_LEAVE_GROUP, IPV6_TCLASS, IPV6_V6ONLY, IPV6_RECVTCLASS,
+                  MCAST_JOIN_SOURCE_GROUP, MCAST_LEAVE_SOURCE_GROUP},
                  Allow())
           .Default(CrashSIGSYSSockopt());
   ResultExpr tcp_optname_switch =
