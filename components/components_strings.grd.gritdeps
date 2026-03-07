@@ -52,6 +52,7 @@ components/search_engine_choice_strings.grdp
 components/security_interstitials_strings.grdp
 components/send_tab_to_self_strings.grdp
 components/site_settings_strings.grdp
+components/smart_tab_sharing.grdp
 components/sms_strings.grdp
 components/ssl_errors_strings.grdp
 components/strings/components_strings_af.xtb
