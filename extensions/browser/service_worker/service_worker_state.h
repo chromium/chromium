@@ -31,11 +31,6 @@ class ServiceWorkerState
     kNotActive,
     // Worker has started (i.e. has seen DidStartWorkerForScope).
     kActive,
-    // Worker has completed starting (i.e. has seen DidStartWorkerForScope and
-    // DidStartServiceWorkerContext).
-    // TODO(crbug.com/447640764): Remove this once
-    // `OptimizeServiceWorkerStateRequests` is the default behavior.
-    kReady,
   };
 
   // Render process worker state of an activated extension.
