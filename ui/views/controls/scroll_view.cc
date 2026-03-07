@@ -1515,6 +1515,8 @@ void ScrollView::UpdateOverflowIndicatorVisibility(const gfx::PointF& offset) {
     UpdateGradientMask();
   } else if (layer() && layer()->HasGradientMask()) {
     layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
+    is_leading_gradient_visible_ = false;
+    is_trailing_gradient_visible_ = false;
   }
 }
 
