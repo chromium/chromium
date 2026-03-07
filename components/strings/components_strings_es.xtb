@@ -549,7 +549,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveedores de cable y satélite</translation>
 <translation id="1870473978371099486">Servicios de tutoría particulares</translation>
-<translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de secuencia de comandos .pac.</translation>
+<translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de script .pac.</translation>
 <translation id="1871284979644508959">Campo obligatorio</translation>
 <translation id="1871739799120352748">Precio alto</translation>
 <translation id="1874224422119691492">En <ph name="SETTINGS" /> puedes elegir si usar el bloqueo de pantalla para rellenar contraseñas</translation>
@@ -1927,7 +1927,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4073797364926776829">Ver tarjeta</translation>
 <translation id="4075732493274867456">El cliente y el servidor no son compatibles con la misma versión de protocolo SSL o de cifrado.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
-<translation id="4079302484614802869">Se ha configurado el proxy para que use una URL de secuencia de comandos .pac, en lugar de servidores proxy fijos.</translation>
+<translation id="4079302484614802869">Se ha configurado el proxy para que use una URL de script .pac, en lugar de servidores proxy fijos.</translation>
 <translation id="4080668349181235831">Para ofrecer sugerencias y mejorar esta función, la URL y el contenido completo de la página que visitas se comparten con Google. Consulta más información sobre <ph name="IDS_WALLET_WALLETABLE_PASS_CONSENT_DIALOG_LEARN_MORE" />.</translation>
 <translation id="4080855220442581440">desplazarse por pestañas compartidas y ampliarlas</translation>
 <translation id="4082333119419111506">Papel (preimpreso)</translation>
@@ -3104,7 +3104,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5983602399618208855">Puedes encontrar el archivo en la carpeta de la cámara</translation>
 <translation id="5984570616552610254">Humedad de la cámara</translation>
 <translation id="598637245381783098">No se ha podido abrir la aplicación de pago</translation>
-<translation id="5989320800837274978">No se han especificado servidores proxy fijos ni una URL de secuencia de comandos .pac.</translation>
+<translation id="5989320800837274978">No se han especificado servidores proxy fijos ni una URL de script .pac.</translation>
 <translation id="5989917734461988169">Puedes usar direcciones guardadas en los productos de Google. Esto no cambiará tu dirección de casa actual. Se guardará en tu cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5992691462791905444">Plegado en Z asimétrico</translation>
 <translation id="5992805036496113940">Ver información utilizada para mostrarte anuncios</translation>
@@ -3741,7 +3741,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6971439137020188025">Crea una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6972867931824045907">Para usar el portapapeles, concede acceso a Chrome en <ph name="LINK" />.</translation>
-<translation id="6973656660372572881">Se especifican tanto servidores proxy fijos como una URL de secuencia de comandos .pac.</translation>
+<translation id="6973656660372572881">Se especifican tanto servidores proxy fijos como una URL de script .pac.</translation>
 <translation id="6973988895180423160">3,5 x 5 pulgadas</translation>
 <translation id="6978121630131642226">Buscadores</translation>
 <translation id="6978236010531171013">Compartir igualmente</translation>
