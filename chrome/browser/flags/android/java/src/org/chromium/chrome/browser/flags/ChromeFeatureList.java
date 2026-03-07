@@ -772,7 +772,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidThemeResourceProvider =
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidTwaOriginDisplay =
-            newCachedFlag(ANDROID_TWA_ORIGIN_DISPLAY, false);
+            newCachedFlag(ANDROID_TWA_ORIGIN_DISPLAY, true);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
             newCachedFlag(ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO, true);
     public static final CachedFlag sAndroidWindowControlsOverlay =

@@ -122,6 +122,7 @@ public class WebAppHeaderUtils {
 
         return intentDataProvider.isTrustedWebActivity()
                 && displayMode == DisplayMode.STANDALONE
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
                 && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled();
     }
 
