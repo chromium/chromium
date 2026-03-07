@@ -4,39 +4,42 @@
 
 source_set("favicon") {
   sources = [
-    "chrome_favicon_client.cc",
     "chrome_favicon_client.h",
-    "favicon_service_factory.cc",
     "favicon_service_factory.h",
-    "favicon_utils.cc",
     "favicon_utils.h",
-    "history_ui_favicon_request_handler_factory.cc",
     "history_ui_favicon_request_handler_factory.h",
-    "large_icon_service_factory.cc",
     "large_icon_service_factory.h",
   ]
 
-  # TODO(1335199): split favicon in public and impl targets (due to the circular dependency).
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/favicon/content",
+    "//components/favicon/core",
+    "//components/keyed_service/core",
+    "//ui/base",
+    "//ui/color",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_favicon_client.cc",
+    "favicon_service_factory.cc",
+    "favicon_utils.cc",
+    "history_ui_favicon_request_handler_factory.cc",
+    "large_icon_service_factory.cc",
+  ]
+  public_deps = [ ":favicon" ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/sync:factories",
-    "//chrome/common",
-    "//components/bookmarks/browser",
-    "//components/favicon/content",
-    "//components/favicon/core",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
     "//components/favicon/core:history_implementation",
     "//components/image_fetcher/core",
-    "//components/keyed_service/content",
     "//components/password_manager/content/common",
-    "//components/search_engines",
-    "//components/sync",
-    "//content/public/browser",
-    "//ui/gfx",
     "//ui/native_theme",
     "//ui/resources",
   ]
@@ -45,5 +48,44 @@ source_set("favicon") {
   }
   if (is_mac || is_win || is_linux || is_chromeos) {
     deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "favicon_utils_unittest.cc",
+    "large_icon_service_factory_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/color",
+    "//ui/resources",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "content_favicon_driver_browsertest.cc" ]
+    deps = [
+      ":impl",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/favicon/content",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gmock",
+      "//ui/gfx:test_support",
+    ]
   }
 }

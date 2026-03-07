@@ -1382,7 +1382,7 @@ static_library("browser") {
     # c/b/browser_process_platform_part.h
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/devtools",
-    "//chrome/browser/favicon",
+    "//chrome/browser/favicon:impl",
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access:impl",
@@ -1443,9 +1443,6 @@ static_library("browser") {
     # Circular dependency due to SystemNetworkContextManager.
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiling_host",
-
-    # TODO(crbug.com/40228447): break this dep when favicon is in its own target
-    "//chrome/browser/share",
 
     # TODO(crbug.com/417228688): Remove this circular dependency when c/b/profiles/profile_manager.h
     # gets modularized.
@@ -1585,6 +1582,12 @@ static_library("browser") {
     "//chrome/browser/background/glic:impl",
   ]
 
+  if (is_android) {
+    # TODO(crbug.com/353332589): Remove this circular dependency when
+    # profiles/profile_manager.h gets componentized.
+    allow_circular_includes_from += [ "//chrome/browser/share" ]
+  }
+
   public_deps = [
     # WARNING WARNING WARNING
     # New dependencies outside of //chrome/browser should be added to
@@ -1708,7 +1711,7 @@ static_library("browser") {
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/enterprise/platform_auth:features",
-    "//chrome/browser/favicon",
+    "//chrome/browser/favicon:impl",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/feature_engagement:impl",
     "//chrome/browser/feedback",
