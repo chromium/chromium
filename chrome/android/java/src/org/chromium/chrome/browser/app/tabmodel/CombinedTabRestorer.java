@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * A thin wrapper around two {@link TabRestorer}s, one for regular tabs and one for incognito tabs.
@@ -220,6 +221,7 @@ class CombinedTabRestorer {
      * @param delegate The delegate to be notified of events from the tab restorers.
      * @param tabCreatorManager The tab creator manager to create the tabs.
      * @param batchFactory The factory to create scoped storage batches.
+     * @param tabModelSelector The tab model selector.
      * @param logRestoreDuration Whether to log the restore duration.
      */
     CombinedTabRestorer(
@@ -227,6 +229,7 @@ class CombinedTabRestorer {
             CombinedTabRestorerDelegate delegate,
             TabCreatorManager tabCreatorManager,
             Supplier<ScopedStorageBatch> batchFactory,
+            TabModelSelector tabModelSelector,
             boolean logRestoreDuration) {
         mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs);
         mRegularTabRestorer =
@@ -234,14 +237,16 @@ class CombinedTabRestorer {
                         /* incognito= */ false,
                         mDelegate,
                         tabCreatorManager.getTabCreator(/* incognito= */ false),
-                        batchFactory);
+                        batchFactory,
+                        tabModelSelector);
         mIncognitoTabRestorer =
                 restoreIncognitoTabs
                         ? new TabRestorer(
                                 /* incognito= */ true,
                                 mDelegate,
                                 tabCreatorManager.getTabCreator(/* incognito= */ true),
-                                batchFactory)
+                                batchFactory,
+                                tabModelSelector)
                         : null;
         mLoadStartTime = logRestoreDuration ? SystemClock.elapsedRealtime() : INVALID_TIME;
     }

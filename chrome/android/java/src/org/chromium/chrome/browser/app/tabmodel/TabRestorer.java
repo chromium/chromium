@@ -26,6 +26,9 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.lang.annotation.ElementType;
@@ -120,6 +123,7 @@ class TabRestorer {
     private final TabRestorerDelegate mDelegate;
     private final TabCreator mTabCreator;
     private final Supplier<ScopedStorageBatch> mBatchFactory;
+    private final TabModelSelector mTabModelSelector;
     private final List<Integer> mTabIdsToIgnore = new ArrayList<>();
 
     private @State int mState = State.EMPTY;
@@ -139,16 +143,19 @@ class TabRestorer {
      * @param delegate The delegate to notify when the tab restorer for certain events.
      * @param tabCreator The tab creator to use to create tabs.
      * @param batchFactory The factory to create scoped storage batches.
+     * @param tabModelSelector The tab model selector.
      */
     TabRestorer(
             boolean incognito,
             TabRestorerDelegate delegate,
             TabCreator tabCreator,
-            Supplier<ScopedStorageBatch> batchFactory) {
+            Supplier<ScopedStorageBatch> batchFactory,
+            TabModelSelector tabModelSelector) {
         mIncognito = incognito;
         mDelegate = delegate;
         mTabCreator = tabCreator;
         mBatchFactory = batchFactory;
+        mTabModelSelector = tabModelSelector;
     }
 
     /**
@@ -441,6 +448,8 @@ class TabRestorer {
         }
 
         if (isActiveTab && tab != null) {
+            TabModel model = mTabModelSelector.getModel(mIncognito);
+            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tab.getId()));
             mDelegate.onActiveTabRestored(mIncognito);
         }
         return tab;

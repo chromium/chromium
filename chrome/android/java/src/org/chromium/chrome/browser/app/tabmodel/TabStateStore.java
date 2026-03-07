@@ -290,6 +290,7 @@ public class TabStateStore implements TabPersistentStore {
                         mCombinedTabRestorerDelegate,
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
+                        mTabModelSelector,
                         /* logRestoreDuration= */ true);
 
         boolean[] restoreOrder =
@@ -348,6 +349,7 @@ public class TabStateStore implements TabPersistentStore {
                         delegate,
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
+                        mTabModelSelector,
                         /* logRestoreDuration= */ false);
 
         for (boolean incognito : new boolean[] {false, true}) {
