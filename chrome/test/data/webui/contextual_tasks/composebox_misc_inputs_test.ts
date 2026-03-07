@@ -272,6 +272,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       url: null,
       tabId: null,
       iconName: null,
+      supportsUnimodal: true,
     };
     composebox.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();

@@ -46,6 +46,7 @@ export function createComposeboxFile(
         tabId: null,
         isDeletable: true,
         iconName: null,
+        supportsUnimodal: true,
       },
       override);
 }

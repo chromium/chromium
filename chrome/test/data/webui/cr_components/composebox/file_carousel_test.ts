@@ -53,6 +53,7 @@ suite('FileCarouselTest', function() {
       tabId: null,
       isDeletable: true,
       iconName: null,
+      supportsUnimodal: true,
     };
   }
 
@@ -84,6 +85,7 @@ suite('FileCarouselTest', function() {
         tabId: null,
         isDeletable: true,
         iconName: null,
+        supportsUnimodal: true,
       },
       {
         uuid: uuid2,
@@ -96,6 +98,7 @@ suite('FileCarouselTest', function() {
         tabId: null,
         isDeletable: true,
         iconName: null,
+        supportsUnimodal: true,
       },
     ];
     fileCarousel.files = files;

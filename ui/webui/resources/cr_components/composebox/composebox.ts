@@ -855,10 +855,15 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private hasValidQuery_() {
-    // If there are files or an autocomplete match is selected, it's a valid
-    // query.
-    if (this.files_.size > 0 ||
-        (this.selectedMatchIndex_ >= 0 && !!this.result_)) {
+    // If there is at least one file that supports unimodal search, query is
+    // valid.
+    if (this.files_.values().find(
+            (file: ComposeboxFile) => file.supportsUnimodal)) {
+      return true;
+    }
+
+    // If an autocomplete match is selected, it's a valid query.
+    if (this.selectedMatchIndex_ >= 0 && !!this.result_) {
       return true;
     }
 
@@ -1000,6 +1005,7 @@ export class ComposeboxElement extends I18nMixinLit
         tabId: null,
         isDeletable: true,
         iconName: null,
+        supportsUnimodal: true,
       };
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
@@ -1025,6 +1031,7 @@ export class ComposeboxElement extends I18nMixinLit
       tabId: null,
       isDeletable: fileInfo.isDeletable,
       iconName: null,
+      supportsUnimodal: true,
     };
 
     this.onFileContextAdded_(attachment);
@@ -1032,7 +1039,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
-      iconName?: string) {
+      supportsUnimodal: boolean, iconName?: string) {
     const attachment: ComposeboxFile = {
       uuid: fileToken,
       name: title,
@@ -1044,6 +1051,7 @@ export class ComposeboxElement extends I18nMixinLit
       tabId: null,
       isDeletable: true,
       iconName: iconName ?? null,
+      supportsUnimodal: supportsUnimodal,
     };
 
     this.onFileContextAdded_(attachment);
@@ -1153,6 +1161,7 @@ export class ComposeboxElement extends I18nMixinLit
         tabId: tabUpload.tabId,
         isDeletable: true,
         iconName: null,
+        supportsUnimodal: true,
       };
 
       this.files_ = new Map(
@@ -2308,6 +2317,7 @@ export class ComposeboxElement extends I18nMixinLit
           tabId: null,
           isDeletable: true,
           iconName: null,
+          supportsUnimodal: true,
         };
         // Update pending uploads in 'composebox.ts' to disable
         // submit button.
@@ -2447,6 +2457,7 @@ export class ComposeboxElement extends I18nMixinLit
       tabId: null,
       isDeletable: true,
       iconName: null,
+      supportsUnimodal: true,
     };
     this.onFileContextAdded_(composeboxFile);
   }

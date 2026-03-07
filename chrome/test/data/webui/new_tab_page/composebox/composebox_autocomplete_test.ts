@@ -189,6 +189,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       url: null,
       tabId: null,
       iconName: null,
+      supportsUnimodal: true,
     });
     testProxy.element.addFileContextForTesting({
       uuid: FAKE_TOKEN_STRING + '2',
@@ -201,6 +202,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       url: null,
       tabId: null,
       iconName: null,
+      supportsUnimodal: true,
     });
     await microtasksFinished();
     assertTrue(composeboxDropdown!.hidden);
@@ -363,6 +365,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       url: null,
       tabId: null,
       iconName: null,
+      supportsUnimodal: true,
     });
     await microtasksFinished();
     assertTrue(composeboxDropdown!.hidden);
@@ -1116,6 +1119,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
           url: null,
           tabId: null,
           iconName: null,
+          supportsUnimodal: true,
         });
         await microtasksFinished();
 

@@ -1072,4 +1072,88 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
   });
+
+  test('Submit button disabled if no input supports unimodal', async () => {
+    composebox.injectInput(
+        'title', 'thumbnail', FAKE_TOKEN_STRING, /*supportsUnimodal=*/ false);
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+
+    // Multiple calls needed to avoid flaking.
+    // TODO(crbug.com/490496860): Investigate removing.
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
+    assertTrue(!!submitButton, 'Submit button should exist');
+    assertTrue(submitButton?.disabled, 'Button should be disabled');
+  });
+
+  test(
+      'Submit button enabled if no input supports unimodal but has text query',
+      async () => {
+        composebox.injectInput(
+            'title', 'thumbnail', FAKE_TOKEN_STRING,
+            /*supportsUnimodal=*/ false);
+        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+        composebox.input_ = 'test';
+
+        // Multiple calls needed to avoid flaking.
+        // TODO(crbug.com/490496860): Investigate removing.
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await composebox.updateComplete;
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
+        assertTrue(!!submitButton, 'Submit button should exist');
+        assertFalse(submitButton?.disabled, 'Button should be enabled');
+      });
+
+  test('Submit button enabled if input supports unimodal', async () => {
+    composebox.injectInput(
+        'title', 'thumbnail', FAKE_TOKEN_STRING, /*supportsUnimodal=*/ true);
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+
+    // Multiple calls needed to avoid flaking.
+    // TODO(crbug.com/490496860): Investigate removing.
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
+    assertTrue(!!submitButton, 'Submit button should exist');
+    assertFalse(submitButton?.disabled, 'Button should be enabled');
+  });
+
+  test(
+      'Submit button enabled if at least one input supports unimodal',
+      async () => {
+        composebox.injectInput(
+            'title', 'thumbnail', FAKE_TOKEN_STRING,
+            /*supportsUnimodal=*/ false);
+        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+        composebox.injectInput(
+            'title2', 'thumbnail2', FAKE_TOKEN_STRING_2,
+            /*supportsUnimodal=*/ true);
+        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING_2, ContextUploadStatus.kUploadSuccessful, null);
+
+        // Multiple calls needed to avoid flaking.
+        // TODO(crbug.com/490496860): Investigate removing.
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+        await composebox.updateComplete;
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
+        assertTrue(!!submitButton, 'Submit button should exist');
+        assertFalse(submitButton?.disabled, 'Button should be enabled');
+      });
 });
