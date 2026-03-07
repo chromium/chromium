@@ -486,6 +486,7 @@ public class WebContentsAccessibilityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/490529464")
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
     @EnableFeatures(ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS)
     public void testStaleNode_LabeledBy() throws Throwable {
