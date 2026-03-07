@@ -205,12 +205,12 @@ export class GeolocationMock {
    * This accepts the request as long as the permission has been set to
    * granted.
    */
-  createGeolocation(receiver, user_gesture) {
+  createGeolocation(receiver, user_gesture, accuracy) {
     if (this.permissionStatus_.precise === PermissionStatus.ASK &&
         this.permissionStatus_.approximate === PermissionStatus.ASK) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve(this.createGeolocation(receiver, user_gesture));
+          resolve(this.createGeolocation(receiver, user_gesture, accuracy));
         }, 50);
       });
     } else if (

@@ -587,6 +587,7 @@ void Geolocation::UpdateGeolocationState() {
 void Geolocation::StopUpdating() {
   updating_ = false;
   ResetGeolocationConnection();
+  accuracy_ = mojom::blink::GeolocationAccuracy::kApproximate;
   enable_high_accuracy_ = false;
 }
 
@@ -602,7 +603,7 @@ bool Geolocation::EnsureGeolocationConnection() {
       geolocation_service_.BindNewPipeAndPassReceiver(task_runner));
   geolocation_service_->CreateGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(std::move(task_runner)),
-      LocalFrame::HasTransientUserActivation(GetFrame()),
+      LocalFrame::HasTransientUserActivation(GetFrame()), GetAccuracyLevel(),
       blink::BindOnce(&Geolocation::OnGeolocationPermissionStatusUpdated,
                       WrapWeakPersistent(this)));
 
@@ -710,36 +711,55 @@ void Geolocation::HandlePermissionError() {
 }
 
 void Geolocation::UpdateAccuracyHint() {
-  auto is_approximate = [](const auto& notifier) {
-    return notifier->Options()->accuracyMode().AsEnum() ==
-           V8AccuracyMode::Enum::kApproximate;
-  };
-
-  // AccuracyMode::kApproximate takes precedence. If any request is approximate,
-  // we must respect that constraint.
-  const bool has_approximate_request =
-      std::ranges::any_of(*one_shots_, is_approximate) ||
-      std::ranges::any_of(watchers_->Notifiers(), is_approximate);
-
-  bool new_enable_high_accuracy = false;
-  if (!has_approximate_request) {
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    // When the feature is enabled, we manage accuracy state based on the
+    // aggregated `accuracyMode` and ignore `enableHighAccuracy` option.
+    mojom::blink::GeolocationAccuracy new_accuracy = GetAccuracyLevel();
+    if (new_accuracy != accuracy_) {
+      accuracy_ = new_accuracy;
+      const bool high_accuracy =
+          (accuracy_ == mojom::blink::GeolocationAccuracy::kPrecise);
+      if (geolocation_.is_bound()) {
+        geolocation_->SetHighAccuracyHint(high_accuracy);
+      }
+    }
+  } else {
+    // Legacy behavior: accuracy hint is driven solely by the
+    // `enableHighAccuracy` option.
     auto wants_high_accuracy = [](const auto& notifier) {
       return notifier->Options()->enableHighAccuracy();
     };
-
-    // If there are no approximate requests, we enable high accuracy if at least
-    // one request has enableHighAccuracy is true.
-    new_enable_high_accuracy =
+    const bool enable_high_accuracy =
         std::ranges::any_of(*one_shots_, wants_high_accuracy) ||
         std::ranges::any_of(watchers_->Notifiers(), wants_high_accuracy);
-  }
-
-  if (new_enable_high_accuracy != enable_high_accuracy_) {
-    enable_high_accuracy_ = new_enable_high_accuracy;
-    if (geolocation_.is_bound()) {
-      geolocation_->SetHighAccuracyHint(enable_high_accuracy_);
+    if (enable_high_accuracy != enable_high_accuracy_) {
+      enable_high_accuracy_ = enable_high_accuracy;
+      if (geolocation_.is_bound()) {
+        geolocation_->SetHighAccuracyHint(enable_high_accuracy);
+      }
     }
   }
+}
+
+mojom::blink::GeolocationAccuracy Geolocation::GetAccuracyLevel() const {
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled()) {
+    // When `ApproximateGeolocationWebVisibleAPI` is enabled, we use
+    // `AccuracyMode` to determine whether to request a precise or approximate
+    // permission level.
+    auto is_approximate = [](const auto& notifier) {
+      return notifier->Options()->accuracyMode().AsEnum() ==
+             V8AccuracyMode::Enum::kApproximate;
+    };
+    bool require_approximate =
+        std::ranges::any_of(*one_shots_, is_approximate) ||
+        std::ranges::any_of(watchers_->Notifiers(), is_approximate);
+    return require_approximate ? mojom::blink::GeolocationAccuracy::kApproximate
+                               : mojom::blink::GeolocationAccuracy::kPrecise;
+  }
+
+  // When the feature is disabled, we always request precise location as
+  // approximate mode is not supported.
+  return mojom::blink::GeolocationAccuracy::kPrecise;
 }
 
 }  // namespace blink

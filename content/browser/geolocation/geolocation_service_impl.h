@@ -38,6 +38,7 @@ class GeolocationServiceImplContext {
   using PermissionCallback = base::OnceCallback<void(PermissionResult)>;
   void RequestPermission(RenderFrameHost* render_frame_host,
                          bool user_gesture,
+                         blink::mojom::GeolocationAccuracy accuracy,
                          PermissionCallback callback);
 
  private:
@@ -68,6 +69,7 @@ class CONTENT_EXPORT GeolocationServiceImpl
   void CreateGeolocation(
       mojo::PendingReceiver<device::mojom::Geolocation> receiver,
       bool user_gesture,
+      blink::mojom::GeolocationAccuracy accuracy,
       CreateGeolocationCallback callback) override;
 
   void HandlePermissionResultChange(PermissionResult permission_result);

@@ -246,6 +246,8 @@ class CORE_EXPORT Geolocation final
 
   void UpdateAccuracyHint();
 
+  mojom::blink::GeolocationAccuracy GetAccuracyLevel() const;
+
   Member<GeoNotifierSet> one_shots_;
   Member<GeolocationWatchers> watchers_;
   // GeoNotifiers that are in the middle of invocation.
@@ -265,7 +267,18 @@ class CORE_EXPORT Geolocation final
 
   HeapMojoRemote<device::mojom::blink::Geolocation> geolocation_;
   HeapMojoRemote<mojom::blink::GeolocationService> geolocation_service_;
+  // `enable_high_accuracy_` tracks whether any active request has opted into
+  // high accuracy. This is used as a hint for the location provider to balance
+  // power consumption vs. accuracy.
   bool enable_high_accuracy_ = false;
+
+  // `accuracy_` represents the aggregated accuracy level requested by all
+  // active listeners. If any request specifies `kApproximate`, the service
+  // level is downgraded to approximate to respect privacy constraints.
+  // Note: `accuracy_` is only used when the
+  // `ApproximateGeolocationWebVisibleAPI` flag is enabled.
+  mojom::blink::GeolocationAccuracy accuracy_ =
+      mojom::blink::GeolocationAccuracy::kApproximate;
 
   // Whether a QueryNextPosition request sent and we are waiting for a position
   // update.

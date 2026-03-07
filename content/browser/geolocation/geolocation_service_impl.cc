@@ -68,6 +68,7 @@ GeolocationServiceImplContext::~GeolocationServiceImplContext() = default;
 void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
+    blink::mojom::GeolocationAccuracy accuracy,
     PermissionCallback callback) {
   if (has_pending_permission_request_) {
     mojo::ReportBadMessage(
@@ -78,14 +79,21 @@ void GeolocationServiceImplContext::RequestPermission(
 
   has_pending_permission_request_ = true;
 
+  // Map the requested accuracy to the appropriate permission type.
+  // GEOLOCATION_APPROXIMATE is used specifically when the site accepts or
+  // requests reduced precision for privacy.
+  blink::PermissionType permission_type =
+      (accuracy == blink::mojom::GeolocationAccuracy::kApproximate)
+          ? blink::PermissionType::GEOLOCATION_APPROXIMATE
+          : blink::PermissionType::GEOLOCATION;
+
   render_frame_host->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionFromCurrentDocument(
           render_frame_host,
           PermissionRequestDescription(
               content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      blink::PermissionType::GEOLOCATION),
+                  CreatePermissionDescriptorForPermissionType(permission_type),
               user_gesture),
           base::BindOnce(&GeolocationServiceImplContext::HandlePermissionResult,
                          weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -127,6 +135,7 @@ void GeolocationServiceImpl::Bind(
 void GeolocationServiceImpl::CreateGeolocation(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver,
     bool user_gesture,
+    blink::mojom::GeolocationAccuracy accuracy,
     CreateGeolocationCallback callback) {
   if (!render_frame_host_->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kGeolocation)) {
@@ -140,7 +149,7 @@ void GeolocationServiceImpl::CreateGeolocation(
       std::move(callback), blink::mojom::PermissionStatus::DENIED);
 
   receiver_set_.current_context()->RequestPermission(
-      render_frame_host_, user_gesture,
+      render_frame_host_, user_gesture, accuracy,
       // The owning RenderFrameHost might be destroyed before the permission
       // request finishes. To avoid calling a callback on a destroyed object,
       // use a WeakPtr and skip the callback if the object is invalid.

@@ -7,6 +7,14 @@ module blink.mojom;
 import "services/device/public/mojom/geolocation.mojom";
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 
+// Indicates the accuracy level requested by the site.
+enum GeolocationAccuracy {
+  // Prefer more accuracy (less uncertainty).
+  kPrecise,
+  // Require approximate location (more uncertainty).
+  kApproximate,
+};
+
 // GeolocationService provides a Geolocation. It exists in order to examine the
 // environment (permissions, etc.) before creating a Geolocation.
 // There should only be one GeolocationService instance that creates many
@@ -14,8 +22,13 @@ import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 interface GeolocationService {
   // Creates a Geolocation. Returns the status of the geolocation permission
   // request (GRANTED or DENIED).
+  // |receiver| is the pending receiver for the Geolocation instance.
+  // |user_gesture| indicates whether the request was triggered by a user action.
+  // |accuracy| indicates the accuracy level requested by the site.
   // This may not be called a second time until the Geolocation instance has
   // been created.
-  CreateGeolocation(pending_receiver<device.mojom.Geolocation> receiver, bool user_gesture)
+  CreateGeolocation(pending_receiver<device.mojom.Geolocation> receiver,
+                    bool user_gesture,
+                    GeolocationAccuracy accuracy)
       => (PermissionStatus status);
 };

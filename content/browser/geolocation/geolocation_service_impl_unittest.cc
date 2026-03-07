@@ -63,7 +63,7 @@ class TestPermissionManager : public MockPermissionManager {
     ASSERT_EQ(request_description.permissions.size(), 1u);
     EXPECT_EQ(blink::PermissionDescriptorToPermissionType(
                   request_description.permissions[0]),
-              blink::PermissionType::GEOLOCATION);
+              expected_permission_type_);
     EXPECT_TRUE(request_description.user_gesture);
     request_callback_.Run(std::move(callback));
   }
@@ -73,8 +73,14 @@ class TestPermissionManager : public MockPermissionManager {
     request_callback_ = std::move(request_callback);
   }
 
+  void SetExpectedPermissionType(blink::PermissionType type) {
+    expected_permission_type_ = type;
+  }
+
  private:
   base::RepeatingCallback<void(PermissionCallback)> request_callback_;
+  blink::PermissionType expected_permission_type_ =
+      blink::PermissionType::GEOLOCATION;
 };
 
 class GeolocationServiceTest : public RenderViewHostImplTestHarness {
@@ -187,6 +193,7 @@ TEST_F(GeolocationServiceTest, PermissionGrantedPolicyViolation) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
@@ -212,6 +219,7 @@ TEST_F(GeolocationServiceTest, PermissionGrantedSync) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status);
       }));
@@ -238,6 +246,7 @@ TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
@@ -267,6 +276,7 @@ TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, status);
       }));
@@ -297,6 +307,7 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus status) {
         EXPECT_EQ(blink::mojom::PermissionStatus::DENIED, status);
       }));
@@ -317,6 +328,7 @@ TEST_F(GeolocationServiceTest, ServiceClosedBeforePermissionResponse) {
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
       base::BindOnce([](blink::mojom::PermissionStatus) {
         ADD_FAILURE() << "PositionStatus received unexpectedly.";
       }));
@@ -340,9 +352,10 @@ TEST_F(ApproximatePermissionGeolocationServiceTest, GrantPrecisePermission) {
   mojo::Remote<Geolocation> geolocation;
   TestFuture<PermissionStatus> create_geolocation_future;
 
-  service_remote()->CreateGeolocation(geolocation.BindNewPipeAndPassReceiver(),
-                                      true,
-                                      create_geolocation_future.GetCallback());
+  service_remote()->CreateGeolocation(
+      geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
+      create_geolocation_future.GetCallback());
 
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
@@ -363,9 +376,10 @@ TEST_F(ApproximatePermissionGeolocationServiceTest,
   mojo::Remote<Geolocation> geolocation;
   TestFuture<PermissionStatus> create_geolocation_future;
 
-  service_remote()->CreateGeolocation(geolocation.BindNewPipeAndPassReceiver(),
-                                      true,
-                                      create_geolocation_future.GetCallback());
+  service_remote()->CreateGeolocation(
+      geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
+      create_geolocation_future.GetCallback());
 
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
@@ -385,9 +399,10 @@ TEST_F(ApproximatePermissionGeolocationServiceTest, PermissionDenied) {
   mojo::Remote<Geolocation> geolocation;
   TestFuture<PermissionStatus> create_geolocation_future;
 
-  service_remote()->CreateGeolocation(geolocation.BindNewPipeAndPassReceiver(),
-                                      true,
-                                      create_geolocation_future.GetCallback());
+  service_remote()->CreateGeolocation(
+      geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kPrecise,
+      create_geolocation_future.GetCallback());
 
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback callback) {
@@ -397,6 +412,33 @@ TEST_F(ApproximatePermissionGeolocationServiceTest, PermissionDenied) {
       }));
 
   EXPECT_EQ(PermissionStatus::DENIED, create_geolocation_future.Get());
+}
+
+TEST_F(ApproximatePermissionGeolocationServiceTest,
+       GrantApproximatePermissionWithApproximateRequest) {
+  CreateEmbeddedFrameAndGeolocationService(
+      /*allow_via_permissions_policy=*/true);
+  mojo::Remote<Geolocation> geolocation;
+  TestFuture<PermissionStatus> create_geolocation_future;
+
+  permission_manager()->SetExpectedPermissionType(
+      blink::PermissionType::GEOLOCATION_APPROXIMATE);
+
+  service_remote()->CreateGeolocation(
+      geolocation.BindNewPipeAndPassReceiver(), true,
+      blink::mojom::GeolocationAccuracy::kApproximate,
+      create_geolocation_future.GetCallback());
+
+  permission_manager()->SetRequestCallback(
+      base::BindRepeating([](PermissionCallback callback) {
+        GeolocationSetting setting{.approximate = PermissionOption::kAllowed,
+                                   .precise = PermissionOption::kAsk};
+        std::move(callback).Run({content::PermissionResult(
+            PermissionStatus::GRANTED, PermissionStatusSource::UNSPECIFIED,
+            /*retrieved_permission_data=*/setting)});
+      }));
+
+  EXPECT_EQ(PermissionStatus::GRANTED, create_geolocation_future.Get());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
