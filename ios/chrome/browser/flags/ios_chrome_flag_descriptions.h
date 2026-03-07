@@ -1029,15 +1029,6 @@ extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
-extern const char kWebPageAlternativeTextZoomName[];
-extern const char kWebPageAlternativeTextZoomDescription[];
-
-extern const char kWebPageDefaultZoomFromDynamicTypeName[];
-extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
-
-extern const char kWebPageTextZoomIPadName[];
-extern const char kWebPageTextZoomIPadDescription[];
-
 extern const char kWelcomeBackName[];
 extern const char kWelcomeBackDescription[];
 

@@ -10103,21 +10103,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "webpage-alternative-text-zoom",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
-    "name": "webpage-default-zoom-from-dynamic-type",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
-    "name": "webpage-text-zoom-ipad",
-    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "webrtc-allow-wgc-screen-capturer",
     "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
     "expiry_milestone": 139

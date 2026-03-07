@@ -73,7 +73,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/settings/ui_bundled/privacy:privacy_constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

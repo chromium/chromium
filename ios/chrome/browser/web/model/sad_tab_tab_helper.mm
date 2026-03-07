@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/notification_observer_bridge.h"
-#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper_delegate.h"
 #import "ios/components/webui/web_ui_url_constants.h"

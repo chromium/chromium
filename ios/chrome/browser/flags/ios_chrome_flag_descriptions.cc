@@ -1686,21 +1686,6 @@ const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";
 
-const char kWebPageAlternativeTextZoomName[] =
-    "Use different method for zooming web pages";
-const char kWebPageAlternativeTextZoomDescription[] =
-    "When enabled, switches the method used to zoom web pages.";
-
-const char kWebPageDefaultZoomFromDynamicTypeName[] =
-    "Use dynamic type size for default text zoom level";
-const char kWebPageDefaultZoomFromDynamicTypeDescription[] =
-    "When enabled, the default text zoom level for a website comes from the "
-    "current dynamic type setting.";
-
-const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
-const char kWebPageTextZoomIPadDescription[] =
-    "When enabled, text zoom works again on iPad";
-
 const char kWelcomeBackName[] = "Enable Welcome Back screen";
 const char kWelcomeBackDescription[] =
     "When enabled, returning users will see the Welcome Back screen.";

@@ -316,7 +316,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/voice/ui_bundled",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model:delegate",
-    "//ios/chrome/browser/web/model:feature_flags",
     "//ios/chrome/browser/web/model:page_placeholder",
     "//ios/chrome/browser/web/model:tab_helper_delegates",
     "//ios/chrome/browser/web/model/annotations",

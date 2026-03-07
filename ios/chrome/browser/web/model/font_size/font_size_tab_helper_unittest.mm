@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -37,9 +36,6 @@ using user_prefs::PrefRegistrySyncable;
 class FontSizeTabHelperFakeWebStateTest : public PlatformTest {
  public:
   FontSizeTabHelperFakeWebStateTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        {web::kWebPageDefaultZoomFromDynamicType});
-
     // FontSizeTabHelper requires a web frames manager.
     web_state_.SetWebFramesManager(
         FontSizeJavaScriptFeature::GetInstance()->GetSupportedContentWorld(),
@@ -77,9 +73,6 @@ class FontSizeTabHelperTest : public PlatformTest {
   FontSizeTabHelperTest()
       : web_client_(std::make_unique<web::FakeWebClient>()),
         application_(OCMPartialMock([UIApplication sharedApplication])) {
-    scoped_feature_list_.InitAndEnableFeature(
-        {web::kWebPageDefaultZoomFromDynamicType});
-
     OCMStub([application_ preferredContentSizeCategory])
         .andDo(^(NSInvocation* invocation) {
           [invocation setReturnValue:&preferred_content_size_category_];
@@ -201,77 +194,19 @@ class FontSizeTabHelperTest : public PlatformTest {
   id application_ = nil;
 };
 
-// Tests that a web page's font size is set properly in a procedure started
-// with default `UIApplication.sharedApplication.preferredContentSizeCategory`.
-TEST_F(FontSizeTabHelperTest, PageLoadedWithDefaultFontSize) {
-  LoadWebpage();
-  ASSERT_EQ(0ul, [GetMainFrameTextSizeAdjustment() length]);
-
-  // Change PreferredContentSizeCategory and send
-  // UIContentSizeCategoryDidChangeNotification.
-  preferred_content_size_category_ = UIContentSizeCategoryExtraLarge;
-  SendUIContentSizeCategoryDidChangeNotification();
-
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(112));
-
-  // Reload web page, font size should be set to the same previous value.
-  LoadWebpage();
-
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(112));
-}
-
-// Tests that a web page's font size is set properly in a procedure started
-// with special `UIApplication.sharedApplication.preferredContentSizeCategory`.
-TEST_F(FontSizeTabHelperTest, PageLoadedWithExtraLargeFontSize) {
-  preferred_content_size_category_ = UIContentSizeCategoryExtraLarge;
-
-  LoadWebpage();
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(112));
-
-  // Change PreferredContentSizeCategory and send
-  // UIContentSizeCategoryDidChangeNotification.
-  preferred_content_size_category_ = UIContentSizeCategoryExtraExtraLarge;
-  SendUIContentSizeCategoryDidChangeNotification();
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(124));
-
-  // Reload web page, font size should be set to the same previous value.
-  LoadWebpage();
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(124));
-}
-
-// Tests that UMA log is sent when
-// `UIApplication.sharedApplication.preferredContentSizeCategory` returns an
-// unrecognizable category.
-TEST_F(FontSizeTabHelperTest, PageLoadedWithUnrecognizableFontSize) {
-  preferred_content_size_category_ = @"This is a new Category";
-
-  LoadWebpage();
-  ASSERT_EQ(0ul, [GetMainFrameTextSizeAdjustment() length]);
-
-  // Change PreferredContentSizeCategory and send
-  // UIContentSizeCategoryDidChangeNotification.
-  preferred_content_size_category_ = UIContentSizeCategoryExtraExtraLarge;
-  SendUIContentSizeCategoryDidChangeNotification();
-
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(124));
-
-  // Reload web page, font size should be set to the same previous value.
-  LoadWebpage();
-
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(124));
-}
-
 // Tests that the font size is changed in all frames on the page.
 TEST_F(FontSizeTabHelperTest, ZoomInAllFrames) {
-  preferred_content_size_category_ = UIContentSizeCategoryExtraLarge;
-
   web::test::LoadHtml(@"<html><body>Content<iframe srcdoc=\"<html>iFrame "
                       @"Content</html>\"></iframe></body></html>",
                       web_state());
 
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(112));
+  FontSizeTabHelper* font_size_tab_helper =
+      FontSizeTabHelper::FromWebState(web_state());
+  font_size_tab_helper->UserZoom(ZOOM_IN);
 
-  EXPECT_EQ(112, GetCurrentFontSizeFromString(GetIframeTextSizeAdjusment()));
+  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(110));
+
+  EXPECT_EQ(110, GetCurrentFontSizeFromString(GetIframeTextSizeAdjusment()));
 }
 
 // Tests that the user can zoom in, and that after zooming in, the correct
@@ -341,28 +276,6 @@ TEST_F(FontSizeTabHelperTest, ResetZoom) {
 
   EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(100));
   EXPECT_FALSE(pref.FindDoubleByDottedPath(pref_key));
-}
-
-// Tests that when the user changes the accessibility content size category and
-// zooms, the resulting zoom level is the multiplication of both parts.
-TEST_F(FontSizeTabHelperTest, ZoomAndAccessibilityTextSize) {
-  preferred_content_size_category_ = UIContentSizeCategoryExtraLarge;
-
-  GURL test_url("https://test.url/");
-  LoadWebpage(test_url);
-
-  FontSizeTabHelper* font_size_tab_helper =
-      FontSizeTabHelper::FromWebState(web_state());
-  font_size_tab_helper->UserZoom(ZOOM_IN);
-
-  std::string pref_key =
-      ZoomMultiplierPrefKey(preferred_content_size_category_, test_url);
-  // 1.12 from accessibility * 1.1 from zoom
-  EXPECT_TRUE(WaitForMainFrameTextSizeAdjustmentEqualTo(123));
-  // Only the user zoom portion is stored in the preferences.
-  const base::DictValue& pref =
-      profile_->GetPrefs()->GetDict(prefs::kIosUserZoomMultipliers);
-  EXPECT_EQ(1.1, pref.FindDoubleByDottedPath(pref_key));
 }
 
 // Tests that the user pref is cleared when requested.

@@ -59,7 +59,6 @@ include_rules = [
   "+ios/chrome/browser/upgrade/model",
   "+ios/chrome/browser/voice/model",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
-  "+ios/chrome/browser/web/model/features.h",
   "+ios/chrome/browser/webauthn",
   # keep-sorted end
 ]

@@ -118,7 +118,6 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
-#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1450,18 +1449,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(web::features::kFullscreenScrollThreshold,
                                     kFullscreenScrollThresholdVariations,
                                     "FullscreenScrollThreshold")},
-    {"webpage-default-zoom-from-dynamic-type",
-     flag_descriptions::kWebPageDefaultZoomFromDynamicTypeName,
-     flag_descriptions::kWebPageDefaultZoomFromDynamicTypeDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::kWebPageDefaultZoomFromDynamicType)},
-    {"webpage-alternative-text-zoom",
-     flag_descriptions::kWebPageAlternativeTextZoomName,
-     flag_descriptions::kWebPageAlternativeTextZoomDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(web::kWebPageAlternativeTextZoom)},
-    {"webpage-text-zoom-ipad", flag_descriptions::kWebPageTextZoomIPadName,
-     flag_descriptions::kWebPageTextZoomIPadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(web::kWebPageTextZoomIPad)},
     {"aim-server-eligibility",
      flag_descriptions::kIOSOmniboxAimServerEligibilityName,
      flag_descriptions::kIOSOmniboxAimServerEligibilityDescription,

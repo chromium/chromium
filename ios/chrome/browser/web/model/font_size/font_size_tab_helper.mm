@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/web/model/features.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
@@ -164,13 +163,8 @@ bool FontSizeTabHelper::CurrentPageSupportsTextZoom() const {
 }
 
 int FontSizeTabHelper::GetFontSize() const {
-  // Only add in the dynamic type multiplier if the flag is enabled.
-  double dynamic_type_multiplier =
-      base::FeatureList::IsEnabled(web::kWebPageDefaultZoomFromDynamicType)
-          ? ui_util::SystemSuggestedFontSizeMultiplier()
-          : 1;
   // Multiply by 100 as the web property needs a percentage.
-  return dynamic_type_multiplier * GetCurrentUserZoomMultiplier() * 100;
+  return GetCurrentUserZoomMultiplier() * 100;
 }
 
 void FontSizeTabHelper::OnContentSizeCategoryChanged() {
@@ -229,13 +223,8 @@ PrefService* FontSizeTabHelper::GetPrefService() const {
 }
 
 std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {
-  UIContentSizeCategory content_size_category =
-      base::FeatureList::IsEnabled(web::kWebPageDefaultZoomFromDynamicType)
-          ? UIApplication.sharedApplication.preferredContentSizeCategory
-          : UIContentSizeCategoryLarge;
-
   std::string content_size_category_key =
-      base::SysNSStringToUTF8(content_size_category);
+      base::SysNSStringToUTF8(UIContentSizeCategoryLarge);
   return base::StringPrintf("%s.%s", content_size_category_key.c_str(),
                             GetUserZoomMultiplierKeyUrlPart().c_str());
 }
