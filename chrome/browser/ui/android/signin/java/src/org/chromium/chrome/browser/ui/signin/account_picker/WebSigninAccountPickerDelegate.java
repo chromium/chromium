@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import android.os.Bundle;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -14,12 +16,15 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+
+import java.util.function.Function;
 
 /**
  * Implementation of {@link AccountPickerDelegate} for the web-signin flow.
@@ -47,6 +52,13 @@ public class WebSigninAccountPickerDelegate
         mCurrentTab = null;
         mContinueUrl = null;
     }
+
+    /**
+     * TODO(crbug.com/478813952): Pass in TabModelSelector to fetch Tab from
+     * WebSigninDelegateContext#mTabId. Support keeping the bottom sheet open while synchronized
+     * cookies are being created. Handle WebSigninTrackerResult errors, and redirect to
+     * WebSigninDelegateContext#mContinueUrl
+     */
 
     /**
      * @deprecated Prefer {@link #WebSigninAccountPickerDelegate(WebSigninBridge.Factory)}.
@@ -78,8 +90,7 @@ public class WebSigninAccountPickerDelegate
     /** Implements {@link AccountPickerDelegate}. */
     @Override
     public void addAccount() {
-        // TODO(b/326019991): Remove this exception along with the delegate implementation once
-        // all bottom sheet entry points will be started from `SigninAndHistorySyncActivity`.
+        // TODO(crbug.com/469772349): Remove after activity-less sign-in launch.
         throw new UnsupportedOperationException(
                 "WebSigninAccountPickerDelegate.addAccount() should never be called.");
     }
@@ -109,6 +120,12 @@ public class WebSigninAccountPickerDelegate
     @Override
     public @FlowVariant String getSigninFlowVariant() {
         return FlowVariant.WEB;
+    }
+
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    @Override
+    public @Nullable Function<Bundle, DelegateContext> getDelegateContextFactory() {
+        return WebSigninDelegateContext::fromBundle;
     }
 
     private Callback<@WebSigninTrackerResult Integer> createWebSigninBridgeCallback(

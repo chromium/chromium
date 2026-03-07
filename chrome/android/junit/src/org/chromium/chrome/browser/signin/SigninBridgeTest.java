@@ -50,9 +50,12 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.DelegateContext;
 import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninDelegateContext;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -74,6 +77,8 @@ import java.lang.ref.WeakReference;
 @Config(manifest = Config.NONE)
 public class SigninBridgeTest {
     private static final GURL CONTINUE_URL = new GURL("https://test-continue-url.com");
+    private static final @TabId int TAB_ID = 1;
+
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     @Rule
@@ -112,6 +117,7 @@ public class SigninBridgeTest {
         lenient().when(mTabMock.getProfile()).thenReturn(mProfileMock);
         lenient().when(mTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         lenient().when(mTabMock.isUserInteractable()).thenReturn(true);
+        lenient().when(mTabMock.getId()).thenReturn(TAB_ID);
         lenient().when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
 
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
@@ -481,8 +487,16 @@ public class SigninBridgeTest {
     private void verifyBottomSheetStartSigninFlow(@Nullable CoreAccountId accountId) {
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mCoordinatorMock).startSigninFlow(configCaptor.capture());
+        ArgumentCaptor<DelegateContext> delegateContextCaptor =
+                ArgumentCaptor.forClass(DelegateContext.class);
+        verify(mCoordinatorMock)
+                .startSigninFlow(configCaptor.capture(), delegateContextCaptor.capture());
+        Assert.assertNotNull(delegateContextCaptor.getValue());
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         Assert.assertEquals(accountId, config.selectedCoreAccountId);
+        WebSigninDelegateContext delegateContext =
+                (WebSigninDelegateContext) delegateContextCaptor.getValue();
+        Assert.assertEquals(CONTINUE_URL, delegateContext.getContinueUrl());
+        Assert.assertEquals(TAB_ID, delegateContext.getTabId());
     }
 }

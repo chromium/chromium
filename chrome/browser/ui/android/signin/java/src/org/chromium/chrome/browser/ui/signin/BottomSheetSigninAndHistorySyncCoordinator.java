@@ -61,6 +61,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** Responsible of showing the correct sub-component of the sign-in and history opt-in flow. */
@@ -103,6 +104,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     private @Nullable HistorySyncCoordinator mHistorySyncCoordinator;
     private @Nullable PropertyModel mDialogModel;
     private BottomSheetSigninAndHistorySyncConfig mConfig;
+    private @Nullable DelegateContext mDelegateContext;
     private boolean mDidShowSigninStep;
     private @Nullable String mPendingAddedAccountEmail;
     // This is used for the sign-in Activity only, doesn't need clean-up in the activityless sign-in
@@ -145,6 +147,15 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         /** Returns the sign-in flow variant for logging purposes. */
         default @FlowVariant String getSigninFlowVariant() {
             return FlowVariant.OTHER;
+        }
+
+        /**
+         * Returns a factory method to restore {@link DelegateContext} from a bundle. If this method
+         * returns null, the {@link DelegateContext} will not be restored across activity
+         * recreation.
+         */
+        default @Nullable Function<Bundle, DelegateContext> getDelegateContextFactory() {
+            return null;
         }
     }
 
@@ -298,6 +309,25 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
      */
     @Initializer
     public void startSigninFlow(BottomSheetSigninAndHistorySyncConfig config) {
+        startSigninFlowInternal(config, /* delegateContext= */ null);
+    }
+
+    /**
+     * Starts the sign-in and history sync UI flow with a {@link DelegateContext} that will be
+     * passed to delegate callbacks.
+     *
+     * @param config The configuration for the bottom sheet.
+     * @param delegateContext The delegate-specific state.
+     */
+    @Initializer
+    public void startSigninFlow(
+            BottomSheetSigninAndHistorySyncConfig config, DelegateContext delegateContext) {
+        startSigninFlowInternal(config, delegateContext);
+    }
+
+    private void startSigninFlowInternal(
+            BottomSheetSigninAndHistorySyncConfig config,
+            @Nullable DelegateContext delegateContext) {
         assert SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
 
         // Assert that the previous flow finished properly.
@@ -306,6 +336,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         assert mPendingAddedAccountEmail == null;
 
         mConfig = config;
+        mDelegateContext = delegateContext;
         assumeNonNull(mProfileSupplier)
                 .runSyncOrOnAvailable(
                         profile -> {
@@ -404,7 +435,8 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                                 }
                                 SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
                                 Bundle configBundle =
-                                        SigninAndHistorySyncBundleHelper.getBundle(mConfig);
+                                        SigninAndHistorySyncBundleHelper.getBundle(
+                                                mConfig, mDelegateContext);
                                 mActivityResultTracker.startActivity(this, intent, configBundle);
                             });
         } else {
@@ -501,6 +533,9 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
                         "mConfig and savedInstanceData shouldn't be both null at this point.");
             }
             mConfig = SigninAndHistorySyncBundleHelper.getBottomSheetConfig(savedInstanceData);
+            mDelegateContext =
+                    SigninAndHistorySyncBundleHelper.getDelegateContext(
+                            savedInstanceData, mDelegate.getDelegateContextFactory());
         }
         assumeNonNull(mProfileSupplier)
                 .runSyncOrOnAvailable(
