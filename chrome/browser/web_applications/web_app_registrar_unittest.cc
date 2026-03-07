@@ -1468,9 +1468,6 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
 }
 
 TEST_F(WebAppRegistrarTest, GetAllAppsControllingUrl_ScopeExtensions) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPwaNavigationCapturingWithScopeExtensions);
-
   StartWebAppProvider();
 
   auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(

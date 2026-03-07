@@ -8233,15 +8233,6 @@ inline constexpr char kGlicZOrderChangesName[] = "Glic Z Order Changes";
 inline constexpr char kGlicZOrderChangesDescription[] =
     "Enables glic z order changing";
 
-inline constexpr char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
-    "Desktop PWA Link Capturing with Scope Extensions";
-inline constexpr char
-    kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
-        "Allows the 'Desktop PWA Scope Extensions' feature to be used with the "
-        "'Desktop PWA Link Capturing' feature. Both of those features are "
-        "required "
-        "to be turned on for this flag to have an effect.";
-
 inline constexpr char kEnableGenericOidcAuthProfileManagementName[] =
     "Enable generic OIDC profile management";
 inline constexpr char kEnableGenericOidcAuthProfileManagementDescription[] =

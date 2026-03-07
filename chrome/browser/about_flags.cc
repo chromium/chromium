@@ -9869,11 +9869,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(profile_management::features::
                             kEnableGenericOidcAuthProfileManagement)},
-    {"enable-user-link-capturing-scope-extensions-pwa",
-     flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsName,
-     flag_descriptions::kDesktopPWAsUserLinkCapturingScopeExtensionsDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(features::kPwaNavigationCapturingWithScopeExtensions)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

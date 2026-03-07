@@ -589,9 +589,6 @@ TEST_P(AppManagementPageHandlerTestBase, DifferentScopeNoOverlap) {
 }
 
 TEST_P(AppManagementPageHandlerTestBase, GetSupportedLinksWithScopeExtensions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ::features::kPwaNavigationCapturingWithScopeExtensions);
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://example.com/"));
   web_app_info->title = u"app_name";

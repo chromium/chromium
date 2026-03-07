@@ -842,9 +842,6 @@ class NavCaptureParameterizedBrowserTest
     enabled_features.emplace_back(
         features::kPwaNavigationCapturing,
         base::FieldTrialParams({{"link_capturing_state", mode}}));
-    enabled_features.emplace_back(
-        features::kPwaNavigationCapturingWithScopeExtensions,
-        base::FieldTrialParams());
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/enabled_features,
         /*disabled_features=*/{});

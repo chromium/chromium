@@ -165,8 +165,6 @@ class IntentPickerIconBrowserTest
         {::features::kPageActionsMigration,
          {{::features::kPageActionsMigrationIntentPicker.name,
            IsMigrationEnabled() ? "true" : "false"}}});
-    features_to_enable.push_back(
-        {features::kPwaNavigationCapturingWithScopeExtensions, {}});
 
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }

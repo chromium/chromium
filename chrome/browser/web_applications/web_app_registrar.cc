@@ -1376,13 +1376,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
     if (!CanCaptureLinksInScope(app_id)) {
       continue;
     }
-    int score;
-    if (base::FeatureList::IsEnabled(
-            features::kPwaNavigationCapturingWithScopeExtensions)) {
-      score = GetAppExtendedScopeScore(url, app_id);
-    } else {
-      score = GetUrlInAppScopeScore(url, app_id);
-    }
+    int score = GetAppExtendedScopeScore(url, app_id);
+
     // A score of 0 means it doesn't apply at all.
     if (score == 0 || score < top_score) {
       continue;
@@ -1408,20 +1403,14 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppThatCapturesLinksInScope(
 bool WebAppRegistrar::IsLinkCapturableByApp(const webapps::AppId& app,
                                             const GURL& url) const {
   CHECK(url.is_valid());
-  auto app_score = [&](const webapps::AppId& app_id) {
-    if (base::FeatureList::IsEnabled(
-            features::kPwaNavigationCapturingWithScopeExtensions)) {
-      return GetAppExtendedScopeScore(url, app_id);
-    } else {
-      return GetUrlInAppScopeScore(url, app_id);
-    }
-  };
-
-  int score = app_score(app);
-  return score > 0 &&
-         std::ranges::none_of(GetAppIds(WebAppFilter::InstalledInChrome()),
+  int app_score = GetAppExtendedScopeScore(url, app);
+  if (app_score == 0) {
+    return false;
+  }
+  return std::ranges::none_of(GetAppIds(WebAppFilter::InstalledInChrome()),
                               [&](const webapps::AppId& app_id) {
-                                return app_score(app_id) > score;
+                                return GetAppExtendedScopeScore(url, app_id) >
+                                       app_score;
                               });
 }
 

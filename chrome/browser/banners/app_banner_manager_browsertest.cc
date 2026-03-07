@@ -1211,11 +1211,6 @@ class AppBannerManagerObserverAdapter : public AppBannerManager::Observer {
 class AppBannerManagerNoFakeBrowserTest
     : public AppBannerManagerBrowserTestBase {
  public:
-  AppBannerManagerNoFakeBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        ::features::kPwaNavigationCapturingWithScopeExtensions);
-  }
-
   void SetUpOnMainThread() override {
     AppBannerManagerBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());

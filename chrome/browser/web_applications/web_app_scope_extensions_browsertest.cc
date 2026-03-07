@@ -58,9 +58,6 @@ class WebAppScopeExtensionsBrowserTest
         secondary_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
-    enabled_features.emplace_back(
-        features::kPwaNavigationCapturingWithScopeExtensions,
-        base::FieldTrialParams());
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }

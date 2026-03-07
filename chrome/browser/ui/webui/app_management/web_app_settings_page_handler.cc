@@ -55,15 +55,12 @@ std::vector<std::string> GetSupportedLinks(const std::string& app_id,
   }
 
   std::vector<std::string> supported_links;
-  if (base::FeatureList::IsEnabled(
-          features::kPwaNavigationCapturingWithScopeExtensions)) {
-    for (const auto& scope_extension :
-         effective_scope->validated_scope_extensions()) {
-      std::string formatted_scope = FormatScope(scope_extension.scope);
-      supported_links.push_back(formatted_scope);
-      if (scope_extension.has_origin_wildcard) {
-        supported_links.push_back("*." + formatted_scope);
-      }
+  for (const auto& scope_extension :
+       effective_scope->validated_scope_extensions()) {
+    std::string formatted_scope = FormatScope(scope_extension.scope);
+    supported_links.push_back(formatted_scope);
+    if (scope_extension.has_origin_wildcard) {
+      supported_links.push_back("*." + formatted_scope);
     }
   }
 
