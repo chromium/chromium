@@ -26,6 +26,7 @@
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
+#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -150,7 +152,9 @@ GetIconSizesPerPurposeForBitmaps(const IconBitmaps& icon_bitmaps) {
 
 // static
 std::unique_ptr<ManifestUpdateJob> ManifestUpdateJob::CreateAndStart(
-    WithAppResources* lock,
+    Profile& profile,
+    Lock* lock,
+    WithAppResources* lock_resources,
     content::WebContents* web_contents,
     base::DictValue* debug_value,
     blink::mojom::ManifestPtr manifest,
@@ -159,21 +163,24 @@ std::unique_ptr<ManifestUpdateJob> ManifestUpdateJob::CreateAndStart(
     ManifestUpdateJobCallback callback,
     Options options) {
   CHECK(lock);
+  CHECK(lock_resources);
   CHECK(web_contents);
   CHECK(debug_value);
   CHECK(manifest);
   CHECK(data_retriever);
   CHECK(clock);
 
-  std::unique_ptr<ManifestUpdateJob> job =
-      base::WrapUnique(new ManifestUpdateJob(
-          lock, web_contents, debug_value, std::move(manifest), data_retriever,
-          clock, std::move(callback), options));
+  std::unique_ptr<ManifestUpdateJob> job = base::WrapUnique(
+      new ManifestUpdateJob(profile, lock, lock_resources, web_contents,
+                            debug_value, std::move(manifest), data_retriever,
+                            clock, std::move(callback), options));
   job->Start();
   return job;
 }
 
-ManifestUpdateJob::ManifestUpdateJob(WithAppResources* lock,
+ManifestUpdateJob::ManifestUpdateJob(Profile& profile,
+                                     Lock* lock,
+                                     WithAppResources* lock_resources,
                                      content::WebContents* web_contents,
                                      base::DictValue* debug_value,
                                      blink::mojom::ManifestPtr manifest,
@@ -181,7 +188,9 @@ ManifestUpdateJob::ManifestUpdateJob(WithAppResources* lock,
                                      base::Clock* clock,
                                      ManifestUpdateJobCallback callback,
                                      Options options)
-    : lock_(*lock),
+    : profile_(profile),
+      lock_(*lock),
+      lock_resources_(*lock_resources),
       web_contents_(web_contents->GetWeakPtr()),
       debug_value_(*debug_value),
       manifest_(std::move(manifest)),
@@ -220,7 +229,7 @@ void ManifestUpdateJob::Start() {
     return;
   }
 
-  if (!lock_->registrar().AppMatches(
+  if (!lock_resources_->registrar().AppMatches(
           app_id_, WebAppFilter::IsAppEligibleForManifestUpdate())) {
     Complete(Result::kAppNotAllowedToUpdate);
     return;
@@ -264,7 +273,7 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
 
   new_install_info_ = std::move(install_info);
 
-  const WebApp* app = lock_->registrar().GetAppById(app_id_);
+  const WebApp* app = lock_resources_->registrar().GetAppById(app_id_);
   CHECK(app);
 
   web_app_comparison_ =
@@ -273,24 +282,24 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
 
   // Store the conditions for which a silent update of the app's identity is
   // allowed.
-  bool is_trusted_install =
-      lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted()) ||
-      options_.use_manifest_icons_as_trusted;
+  bool is_trusted_install = lock_resources_->registrar().AppMatches(
+                                app_id_, WebAppFilter::IsTrusted()) ||
+                            options_.use_manifest_icons_as_trusted;
   bool can_fix_generated_icons =
       app->is_generated_icon() &&
       app->latest_install_source() == webapps::WebappInstallSource::SYNC &&
       generated_icon_fix_util::IsWithinFixTimeWindow(*app) &&
       web_app_comparison_.ExistingAppWithoutPendingEqualsNewUpdate();
-  bool is_migration_suggestion = lock_->registrar().AppMatches(
+  bool is_migration_suggestion = lock_resources_->registrar().AppMatches(
       app_id_, WebAppFilter::IsAppSuggestedForMigration());
   silently_update_app_identity_ =
       (is_trusted_install || can_fix_generated_icons ||
        options_.force_silent_update_identity || is_migration_suggestion);
 
   if (can_fix_generated_icons) {
-    ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+    ScopedRegistryUpdate update = lock_resources_->sync_bridge().BeginUpdate();
     generated_icon_fix_util::EnsureFixTimeWindowStarted(
-        *lock_, update, app_id_,
+        *lock_resources_, update, app_id_,
         proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
   }
   debug_value_->Set("is_trusted_install", is_trusted_install);
@@ -321,7 +330,7 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
 
   // Load existing icons from disk.
   base::ConcurrentClosures barrier;
-  lock_->icon_manager().ReadAllIcons(
+  lock_resources_->icon_manager().ReadAllIcons(
       app_id_, base::BindOnce(&ManifestUpdateJob::OnExistingIconsLoaded,
                               weak_factory_.GetWeakPtr())
                    .Then(barrier.CreateClosure()));
@@ -332,7 +341,7 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
   // **disk** for the silent update (which acts like a re-install)."
   if (!options_.force_silent_update_identity &&
       web_app_comparison_.shortcut_menu_item_infos_equality()) {
-    lock_->icon_manager().ReadAllShortcutsMenuIcons(
+    lock_resources_->icon_manager().ReadAllShortcutsMenuIcons(
         app_id_,
         base::BindOnce(&ManifestUpdateJob::OnExistingShortcutsMenuIconsLoaded,
                        weak_factory_.GetWeakPtr())
@@ -403,7 +412,7 @@ void ManifestUpdateJob::OnIconsFetched() {
 
 void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   // Copy over any icons that did not have manifest changes.
-  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
+  const WebApp* web_app = lock_resources_->registrar().GetAppById(app_id_);
   if (web_app_comparison_.shortcut_menu_item_infos_equality()) {
     new_install_info_->shortcuts_menu_item_infos =
         web_app->shortcuts_menu_item_infos();
@@ -414,8 +423,11 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   // Exit early to finalize the update if we know that we are silently updating
   // the app identity.
   if (silently_update_app_identity_) {
-    lock_->install_finalizer().FinalizeUpdate(
-        new_install_info_->Clone(),
+    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
+
+    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
+        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(), std::nullopt,
                        /*silent_icon_update_happened=*/false));
@@ -444,15 +456,16 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
     new_install_info_->icon_bitmaps = existing_manifest_icon_bitmaps_;
     new_install_info_->trusted_icon_bitmaps = existing_trusted_icon_bitmaps_;
     new_install_info_->is_generated_icon = web_app->is_generated_icon();
-    lock_->install_finalizer().FinalizeUpdate(
-        new_install_info_->Clone(),
-        base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(pending_update_info),
-                       /*silent_icon_update_happened=*/false));
+    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
+
+    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
+        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_->Start(base::BindOnce(
+        &ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
+        weak_factory_.GetWeakPtr(), std::move(pending_update_info),
+        /*silent_icon_update_happened=*/false));
     return;
   }
-
   CHECK(!new_install_info_->trusted_icons.empty());
 
   if (new_install_info_->trusted_icon_bitmaps.empty()) {
@@ -463,7 +476,7 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   static constexpr int kLogoSizeInDialog = 96;
   SkBitmap old_trusted_icon = [&]() {
     std::optional<apps::IconInfo> trusted_icon =
-        lock_->registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+        lock_resources_->registrar().GetSingleTrustedAppIconForSecuritySurfaces(
             app_id_, kLogoSizeInDialog);
     if (!trusted_icon.has_value()) {
       return SkBitmap();
@@ -536,8 +549,11 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   }
 
   if (silent_update_required_) {
-    lock_->install_finalizer().FinalizeUpdate(
-        new_install_info_->Clone(),
+    WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile_.get());
+
+    install_update_job_ = std::make_unique<FinalizeUpdateJob>(
+        &lock_.get(), &lock_resources_.get(), *provider, *new_install_info_);
+    install_update_job_->Start(
         base::BindOnce(&ManifestUpdateJob::UpdateFinalizedWritePendingInfo,
                        weak_factory_.GetWeakPtr(),
                        std::move(pending_update_info), silent_icon_update));
@@ -557,6 +573,7 @@ void ManifestUpdateJob::UpdateFinalizedWritePendingInfo(
     bool silent_icon_update_happened,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  install_update_job_.reset();
   debug_value_->Set("silent_update_install_code", base::ToString(code));
 
   if (!webapps::IsSuccess(code)) {
@@ -584,7 +601,7 @@ void ManifestUpdateJob::WritePendingUpdateInfoThenComplete(
     kDeleteIcons
   } icon_operation = IconOperation::kNone;
 
-  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
+  const WebApp* web_app = lock_resources_->registrar().GetAppById(app_id_);
   CHECK(web_app);
 
   if (web_app->pending_update_info() == pending_update) {
@@ -614,7 +631,7 @@ void ManifestUpdateJob::WritePendingUpdateInfoThenComplete(
       return;
     case IconOperation::kDeleteIcons:
       std::move(write_pending_update_info_to_db).Run();
-      lock_->icon_manager().DeletePendingIconData(
+      lock_resources_->icon_manager().DeletePendingIconData(
           app_id_, WebAppIconManager::DeletePendingPassKey(),
           base::BindOnce(
               [](Result original_result, bool icon_operation_success) {
@@ -630,7 +647,7 @@ void ManifestUpdateJob::WritePendingUpdateInfoThenComplete(
     case IconOperation::kWriteIcons:
       CHECK(!pending_trusted_icon_bitmaps_.empty());
       CHECK(!pending_manifest_icon_bitmaps_.empty());
-      lock_->icon_manager().WritePendingIconData(
+      lock_resources_->icon_manager().WritePendingIconData(
           app_id_, std::move(pending_trusted_icon_bitmaps_),
           std::move(pending_manifest_icon_bitmaps_),
           base::BindOnce(
@@ -656,7 +673,8 @@ void ManifestUpdateJob::WritePendingUpdateToWebAppUpdateObservers(
   }
   bool trigger_pending_update_observers = false;
   {
-    web_app::ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+    web_app::ScopedRegistryUpdate update =
+        lock_resources_->sync_bridge().BeginUpdate();
     web_app::WebApp* app_to_update = update->UpdateApp(app_id_);
     CHECK(app_to_update);
     trigger_pending_update_observers =
@@ -669,7 +687,7 @@ void ManifestUpdateJob::WritePendingUpdateToWebAppUpdateObservers(
   }
 
   if (trigger_pending_update_observers) {
-    lock_->registrar().NotifyPendingUpdateInfoChanged(
+    lock_resources_->registrar().NotifyPendingUpdateInfoChanged(
         app_id_, pending_update.has_value(),
         base::PassKey<ManifestUpdateJob>());
   }

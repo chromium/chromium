@@ -11,11 +11,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -69,15 +72,20 @@ void ManifestUpdateFinalizeCommand::StartWithLock(
   // if it is empty.
   CHECK(install_info_->validated_scope_extensions.has_value());
 
-  lock_->install_finalizer().FinalizeUpdate(
-      *install_info_,
+  WebAppProvider* provider =
+      WebAppProvider::GetForWebApps(profile_keep_alive_->profile());
+
+  install_update_job_ = std::make_unique<FinalizeUpdateJob>(
+      lock_.get(), lock_.get(), *provider, *install_info_);
+  install_update_job_->Start(
       base::BindOnce(&ManifestUpdateFinalizeCommand::OnInstallationComplete,
-                     AsWeakPtr()));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ManifestUpdateFinalizeCommand::OnInstallationComplete(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
+  install_update_job_.reset();
   if (!IsSuccess(code)) {
     CompleteCommand(code, ManifestUpdateResult::kAppUpdateFailed);
     return;

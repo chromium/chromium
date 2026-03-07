@@ -166,6 +166,7 @@ void InstallMigrateToAppCommand::OnAppLockAcquired() {
       install_state.has_value() ? base::ToString(*install_state) : "nullopt");
   if (install_state.has_value()) {
     update_job_ = ManifestUpdateJob::CreateAndStart(
+        *profile_, shared_web_contents_with_app_lock_.get(),
         shared_web_contents_with_app_lock_.get(),
         &shared_web_contents_with_app_lock_->shared_web_contents(),
         GetMutableDebugValue().EnsureDict("ManifestUpdateJob"),

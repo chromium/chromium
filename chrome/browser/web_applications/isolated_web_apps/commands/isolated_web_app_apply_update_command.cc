@@ -35,12 +35,14 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
+#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -213,8 +215,18 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
       "actual_version", install_info.isolated_web_app_version().GetString());
   GetMutableDebugValue().Set("app_title", install_info.title.AsDebugValue());
 
-  lock_->install_finalizer().FinalizeUpdate(
-      install_info,
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile());
+
+  if (on_finalize_before_job_callback_for_testing_) {
+    auto [app_id, result_code] =
+        std::move(on_finalize_before_job_callback_for_testing_).Run();
+    OnFinalized(app_id, result_code);
+    return;
+  }
+
+  install_update_job_ = std::make_unique<FinalizeUpdateJob>(
+      lock_.get(), lock_.get(), *provider, install_info);
+  install_update_job_->Start(
       base::BindOnce(&IsolatedWebAppApplyUpdateCommand::OnFinalized,
                      weak_factory_.GetWeakPtr()));
 }
@@ -222,8 +234,8 @@ void IsolatedWebAppApplyUpdateCommand::FinalizeUpdate(
 void IsolatedWebAppApplyUpdateCommand::OnFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode update_result_code) {
+  install_update_job_.reset();
   CHECK_EQ(app_id, url_info_.app_id());
-
   if (update_result_code ==
       webapps::InstallResultCode::kSuccessAlreadyInstalled) {
     ReportSuccess();

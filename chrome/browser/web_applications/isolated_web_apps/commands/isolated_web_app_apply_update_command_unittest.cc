@@ -145,11 +145,22 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     base::WriteFile(installed_path, "");
   }
 
-  IsolatedWebAppApplyUpdateCommandResult ApplyPendingUpdate() {
+  IsolatedWebAppApplyUpdateCommandResult ApplyPendingUpdate(
+      base::OnceCallback<void(IsolatedWebAppApplyUpdateCommand&)>
+          on_before_start = base::DoNothing()) {
     base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
-    fake_provider().scheduler().ApplyPendingIsolatedWebAppUpdate(
-        url_info_, /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    auto command = std::make_unique<IsolatedWebAppApplyUpdateCommand>(
+        url_info_,
+        IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+            *profile()),
+        /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr, future.GetCallback(),
+        std::make_unique<IsolatedWebAppInstallCommandHelper>(
+            url_info_, fake_web_contents_manager().CreateDataRetriever()));
+
+    std::move(on_before_start).Run(*command);
+
+    fake_provider().command_manager().ScheduleCommand(std::move(command));
 
     return future.Take();
   }
@@ -386,23 +397,6 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
 #endif
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,
        MAYBE_FailsIfInstallFinalizerFails) {
-  class FailingUpdateFinalizer : public WebAppInstallFinalizer {
-   public:
-    explicit FailingUpdateFinalizer(webapps::AppId app_id)
-        : WebAppInstallFinalizer(nullptr), app_id_(std::move(app_id)) {}
-
-    void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
-                        InstallFinalizedCallback callback) override {
-      std::move(callback).Run(app_id_,
-                              webapps::InstallResultCode::kNotInstallable);
-    }
-
-   private:
-    webapps::AppId app_id_;
-  };
-
-  fake_provider().SetInstallFinalizer(
-      std::make_unique<FailingUpdateFinalizer>(url_info_.app_id()));
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   InstallIwa(update_info());
@@ -413,12 +407,21 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyPendingUpdate(base::BindOnce(
+      [](const webapps::AppId& app_id,
+         IsolatedWebAppApplyUpdateCommand& command) {
+        command.OverrideUpdateJobForTesting(base::BindOnce(
+            [](const webapps::AppId& app_id) {
+              return std::make_pair(
+                  app_id, webapps::InstallResultCode::kNotInstallable);
+            },
+            app_id));
+      },
+      url_info_.app_id()));
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("Error during finalization"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
-
 }  // namespace
 }  // namespace web_app

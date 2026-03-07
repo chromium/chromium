@@ -12,11 +12,13 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/finalize_update_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace webapps {
 enum class InstallResultCode;
@@ -70,6 +72,7 @@ class ManifestUpdateFinalizeCommand
   // still happen even though the app window has closed.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+  std::unique_ptr<FinalizeUpdateJob> install_update_job_;
 
   base::WeakPtrFactory<ManifestUpdateFinalizeCommand> weak_factory_{this};
 };
