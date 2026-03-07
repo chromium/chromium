@@ -296,6 +296,10 @@ public class SettingsSearchCoordinator
             mFirstUiEntered = savedState.getBoolean(KEY_FIRST_UI_ENTERED);
             mResultUpdated = savedState.getBoolean(KEY_RESULT_UPDATED);
             mSearchCompleted = savedState.getBoolean(KEY_SEARCH_COMPLETED);
+            mHandler.post(
+                    () ->
+                            assumeNonNull(ToolbarUtils.getTitleTextView(actionBar))
+                                    .setVisibility(View.VISIBLE));
         }
     }
 

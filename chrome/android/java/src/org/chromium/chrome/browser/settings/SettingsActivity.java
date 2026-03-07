@@ -79,6 +79,7 @@ import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
@@ -552,6 +553,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         updateFirstVisibleTitle,
                         getModalDialogManagerSupplier());
         if (mMultiColumnSettings != null) {
+            if (savedState != null) {
+                // Title text view gets temporarily hidden while restoring the
+                // search UI to avoid flickering. See https://crbug.com/482952320.
+                Toolbar actionBar = findViewById(R.id.action_bar);
+                assumeNonNull(ToolbarUtils.getTitleTextView(actionBar))
+                        .setVisibility(View.INVISIBLE);
+            }
             mMultiColumnSettings.setOnCreateViewRunnable(
                     () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedState));
             mMultiColumnSettings.addObserver(mSearchCoordinator);
