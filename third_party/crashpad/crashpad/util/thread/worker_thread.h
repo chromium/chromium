@@ -95,7 +95,7 @@ class WorkerThread {
   double work_interval_;
   Delegate* delegate_;  // weak
   std::unique_ptr<internal::WorkerThreadImpl> impl_;
-  bool running_;
+  std::atomic_bool running_;
   std::atomic_bool do_work_now_;
 };
 
