@@ -928,10 +928,6 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.files_ = new Map([...this.files_.entries()].filter(
         ([uuid, _]) => uuid !== uuidToDelete));
-    // If we're in create image mode, notify that image is gone.
-    if (this.activeToolMode_ === ComposeboxToolMode.kImageGen) {
-      this.handleToolModeUpdate_();
-    }
     this.pendingUploads_.delete(uuidToDelete);
     this.fileUploadsComplete = this.pendingUploads_.size === 0;
     this.searchboxHandler_.deleteContext(uuidToDelete, fromAutoSuggestedChip);
@@ -1998,10 +1994,7 @@ export class ComposeboxElement extends I18nMixinLit
       // For image files:
       if (status === ContextUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
-        // If we're in create image mode, update the aim tool mode.
-        if (this.activeToolMode_ === ComposeboxToolMode.kImageGen) {
-          this.handleToolModeUpdate_();
-        } else if (this.enableImageContextualSuggestions_) {
+        if (this.enableImageContextualSuggestions_) {
           // Query autocomplete to get contextual suggestions for files.
           this.queryAutocomplete_(/* clearMatches= */ true);
         } else {
