@@ -253,6 +253,8 @@ class PrerendererImplBrowserTestPrefetchAhead
              {
                  {"kPrerender2FallbackPrefetchSchedulerPolicy",
                   prefetch_scheduler_policy},
+                 {"kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout",
+                  "false"},
              },
          },
          {
@@ -273,7 +275,7 @@ class PrerendererImplBrowserTestPrefetchAhead
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
+    /* no prefix */,
     PrerendererImplBrowserTestPrefetchAhead,
     testing::Values(
         features::Prerender2FallbackPrefetchSchedulerPolicy::kNotUse,
@@ -996,8 +998,7 @@ IN_PROC_BROWSER_TEST_P(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
       "PotentialCandidateServingResult",
-      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout,
-      1);
+      PrefetchPotentialCandidateServingResult::kNotServedLoadFailed, 1);
 
   histogram_tester().ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
@@ -1020,24 +1021,24 @@ IN_PROC_BROWSER_TEST_P(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
       "ServableStateAndMatcherAction",
-      // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
-      // 2 = PrefetchMatchResolverAction::ActionKind::kWait
-      // 3 =
-      // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
+      // 4 = PrefetchServableState::kNotServable
+      // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
+      // 8 =
+      // PrefetchMatchResolverAction::ActionReason::kFailedDeterminedHead
       // 1 = is_expired == false
-      2231, 1);
+      4181, 1);
   histogram_tester().ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
       "PotentialCandidateServingResultAndServableStateAndMatcherAction",
+      // 12 =
+      // PrefetchPotentialCandidateServingResult::kNotServedLoadFailed
+      // 4 = PrefetchServableState::kNotServable
+      // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
       // 8 =
-      // PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout
-      // 2 = PrefetchServableState::kShouldBlockUntilHeadReceived
-      // 2 = PrefetchMatchResolverAction::ActionKind::kWait
-      // 3 =
-      // PrefetchMatchResolverAction::ActionReason::kWaitingNonRedirectHeader
+      // PrefetchMatchResolverAction::ActionReason::kFailedDeterminedHead
       // 1 = is_expired == false
-      82231, 1);
+      124181, 1);
   histogram_tester().ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen.QueueSize",
@@ -1065,11 +1066,14 @@ IN_PROC_BROWSER_TEST_P(
   // Taken and used to record UMAs.
   ASSERT_FALSE(prerender_initial_preload_serving_metrics);
 
+  // PreloadServingMetrics for ordinal navigation.
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());
-  ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list[0]
+  // The navigation reaches to `PrefetchMatchResolver` after prefetch A and
+  // prerender A' failed. There is no available prefetch.
+  ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list[0]
                     ->n_initial_candidates);
-  ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list[0]
+  ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list[0]
                     ->n_initial_candidates_block_until_head);
   ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
                    ->prefetch_container_metrics);
