@@ -1702,6 +1702,10 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_id()
                 .media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
+  EXPECT_EQ(file_upload_request->objects_request()
+                .viewport_request_context()
+                .pdf_page_number(),
+            1);
   EXPECT_EQ(viewport_upload_request->objects_request()
                 .request_context()
                 .request_id()

@@ -378,9 +378,9 @@ class ComposeboxQueryController
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<lens::ImageEncodingOptions> options);
 
-  // Callback that takes the image request body proto and adds the pdf page
+  // Callback that takes the upload request body proto and adds the pdf page
   // index to it.
-  void AddPageIndexToImageUploadRequestAndContinue(
+  void AddPageIndexToUploadRequestAndContinue(
       std::optional<size_t> pdf_page_index,
       RequestBodyProtoCreatedCallback callback,
       lens::LensOverlayServerRequest request,
