@@ -306,28 +306,30 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   Browser* new_browser = nullptr;
   {
-    CreateAndLoadUserWebContentsObserver frame_observer;
     // Open a new window.
     new_browser = chrome::FindBrowserWithTab(browser()->OpenURL(
         content::OpenURLParams(GURL("about:blank"), content::Referrer(),
                                WindowOpenDisposition::NEW_WINDOW,
                                ui::PAGE_TRANSITION_TYPED, false),
         /*navigation_handle_callback=*/{}));
+    ui_test_utils::BrowserActivationWaiter waiter(new_browser);
+    waiter.WaitForActivation();
+
     // Pin the extension to test that it opens when the action is on the
     // toolbar.
     ToolbarActionsModel::Get(profile())->SetActionVisibility(
         last_loaded_extension_id(), true);
-    frame_observer.Wait();
   }
 
   EXPECT_TRUE(new_browser != nullptr);
 
   ResultCatcher catcher;
   {
-    CreateAndLoadUserWebContentsObserver frame_observer;
+    ExtensionHostTestHelper host_helper(profile());
+    host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
     // Show second popup in new window.
     listener.Reply("show another");
-    frame_observer.Wait();
+    ASSERT_TRUE(host_helper.WaitForHostCompletedFirstLoad());
     EXPECT_TRUE(ExtensionActionTestHelper::Create(new_browser)->HasPopup());
   }
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
@@ -343,15 +345,18 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopup) {
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        MAYBE_TestOpenPopupIncognito) {
-  // The creation of the incognito window is the first WebContents.
-  CreateAndLoadUserWebContentsObserver frame_observer(
-      /*num_expected_contents=*/2);
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ExtensionHostTestHelper host_helper(incognito_profile);
+  host_helper.RestrictToType(mojom::ViewType::kExtensionPopup);
+
   ASSERT_TRUE(RunExtensionTest(
       "browser_action/open_popup",
       {.extension_url = "open_popup_succeeds.html", .open_in_incognito = true},
       {.allow_in_incognito = true}))
       << message_;
-  frame_observer.Wait();
+
+  ASSERT_TRUE(host_helper.WaitForHostCompletedFirstLoad());
   // Non-Aura Linux uses a singleton for the popup, so it looks like all windows
   // have popups if there is any popup open.
 #if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(USE_AURA))
