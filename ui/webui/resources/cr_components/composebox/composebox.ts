@@ -1577,63 +1577,27 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.caret.style.transform = `translate(${originX}px, ${originY}px)`;
   }
 
-  protected onKeydown_(e: KeyboardEvent) {
-    const KEYDOWN_HANDLED_KEYS = [
-      'ArrowDown',
-      'ArrowUp',
-      'Enter',
-      'Escape',
-      'PageDown',
-      'PageUp',
-      'Tab',
-    ];
+  private isFocusInInput_(): boolean {
+    return this.shadowRoot.activeElement === this.$.input;
+  }
 
-    if (!KEYDOWN_HANDLED_KEYS.includes(e.key)) {
+  private hasMatches_(): boolean {
+    return !!(this.result_ && this.result_.matches.length > 0);
+  }
+
+  private finalizeMatchSelection_(e: KeyboardEvent) {
+    this.smartComposeInlineHint_ = '';
+    e.preventDefault();
+    if (this.shadowRoot.activeElement === this.$.matches) {
+      this.$.matches.focusSelected();
+    }
+  }
+
+  private handleArrowKey_(e: KeyboardEvent) {
+    if (this.isFocusInInput_() && !this.showDropdown_) {
       return;
     }
-
-    if (this.shadowRoot.activeElement === this.$.input) {
-      if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') &&
-          !this.showDropdown_) {
-        return;
-      }
-
-      if (e.key === 'Tab') {
-        // If focus leaves the input, unselect the first match.
-        if (e.shiftKey) {
-          this.$.matches.unselect();
-        } else if (this.smartComposeEnabled_ && this.smartComposeInlineHint_) {
-          this.input_ = this.input_ + this.smartComposeInlineHint_;
-          this.smartComposeInlineHint_ = '';
-          e.preventDefault();
-          this.queryAutocomplete_(/* clearMatches= */ true);
-        }
-        return;
-      }
-    }
-
-    if (e.key === 'Enter' &&
-        (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey)) {
-      e.preventDefault();
-      if (this.canSubmitFilesAndInput_) {
-        this.submitQuery_(e);
-      }
-    }
-
-    if (e.key === 'Escape') {
-      this.handleEscapeKeyLogic();
-      e.stopPropagation();
-      e.preventDefault();
-      return;
-    }
-
-    // Do not handle the following keys if there are no matches available.
-    if (!this.result_ || this.result_.matches.length === 0) {
-      return;
-    }
-
-    // Do not handle the following keys if there are key modifiers.
-    if (hasKeyModifiers(e)) {
+    if (!this.hasMatches_() || hasKeyModifiers(e)) {
       return;
     }
 
@@ -1641,13 +1605,27 @@ export class ComposeboxElement extends I18nMixinLit
       this.$.matches.selectNext();
     } else if (e.key === 'ArrowUp') {
       this.$.matches.selectPrevious();
-    } else if (e.key === 'Escape' || e.key === 'PageUp') {
-      this.selectFirstMatch();
-    } else if (e.key === 'PageDown') {
-      this.$.matches.selectLast();
-    } else if (e.key === 'Tab') {
+    }
+    this.finalizeMatchSelection_(e);
+  }
+
+  private handleTab_(e: KeyboardEvent) {
+    if (this.isFocusInInput_()) {
+      // If focus leaves the input, unselect the first match.
+      if (e.shiftKey) {
+        this.$.matches.unselect();
+      } else if (this.smartComposeEnabled_ && this.smartComposeInlineHint_) {
+        this.input_ = this.input_ + this.smartComposeInlineHint_;
+        this.smartComposeInlineHint_ = '';
+        e.preventDefault();
+        this.queryAutocomplete_(/* clearMatches= */ true);
+      }
+      return;
+    }
+
+    if (this.hasMatches_() && !hasKeyModifiers(e)) {
       // If focus goes past the last match, unselect the last match.
-      if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
+      if (this.selectedMatchIndex_ === this.result_!.matches.length - 1) {
         if (this.selectedMatch_!.supportsDeletion) {
           const focusedMatchElem =
               this.shadowRoot.activeElement?.shadowRoot?.activeElement;
@@ -1659,15 +1637,63 @@ export class ComposeboxElement extends I18nMixinLit
           this.$.matches.unselect();
         }
       }
+    }
+  }
+
+  private handleEnter_(e: KeyboardEvent) {
+    if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
+      e.preventDefault();
+      if (this.canSubmitFilesAndInput_) {
+        this.submitQuery_(e);
+      }
+    }
+    this.finalizeMatchSelection_(e);
+  }
+
+  private handleEscape_(e: KeyboardEvent) {
+    this.handleEscapeKeyLogic();
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  private handlePageNavigation_(e: KeyboardEvent) {
+    if (!this.hasMatches_() || hasKeyModifiers(e)) {
       return;
     }
-    this.smartComposeInlineHint_ = '';
-    e.preventDefault();
 
-    // Focus the selected match if focus is currently in the matches.
-    if (this.shadowRoot.activeElement === this.$.matches) {
-      this.$.matches.focusSelected();
+    if (e.key === 'PageUp') {
+      this.selectFirstMatch();
+    } else {
+      this.$.matches.selectLast();
     }
+    this.finalizeMatchSelection_(e);
+  }
+
+  protected onKeydown_(e: KeyboardEvent) {
+    const HANDLED_KEYS = [
+      'ArrowDown',
+      'ArrowUp',
+      'Enter',
+      'Escape',
+      'PageDown',
+      'PageUp',
+      'Tab',
+    ];
+    if (!HANDLED_KEYS.includes(e.key)) {
+      return;
+    }
+
+    const handlers: Record<string, (e: KeyboardEvent) => void> = {
+      'ArrowDown': (e) => this.handleArrowKey_(e),
+      'ArrowUp': (e) => this.handleArrowKey_(e),
+      'Enter': (e) => this.handleEnter_(e),
+      'Escape': (e) => this.handleEscape_(e),
+      'Tab': (e) => this.handleTab_(e),
+      'PageUp': (e) => this.handlePageNavigation_(e),
+      'PageDown': (e) => this.handlePageNavigation_(e),
+    };
+
+    handlers[e.key]!(e);
   }
 
   protected handleInputFocusIn_() {

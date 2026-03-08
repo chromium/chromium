@@ -373,6 +373,229 @@ suite('NewTabPageComposeboxTest', () => {
         testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
   });
 
+  test('navigates matches with ArrowDown and ArrowUp', async () => {
+    createComposeboxElement(testProxy);
+    const input = testProxy.element.$.input;
+    const matchesElement = testProxy.element.$.matches;
+
+    // Verify navigation is blocked when no matches are available.
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches: []}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    // Populate matches for testing.
+    const matches = [
+      createSearchMatchForTesting({fillIntoEdit: 'test1'}),
+      createSearchMatchForTesting({fillIntoEdit: 'test2'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify navigation is blocked when focus is in input but dropdown is
+    // hidden.
+    input.focus();
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches: []}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify navigation is blocked when key modifiers are present.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'ArrowDown', ctrlKey: true, bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    // Verify normal navigation when all guard conditions are met.
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(0, matchesElement.selectedMatchIndex);
+
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(1, matchesElement.selectedMatchIndex);
+
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(0, matchesElement.selectedMatchIndex);
+  });
+
+  test('selects first or last match with PageUp and PageDown', async () => {
+    createComposeboxElement(testProxy);
+    const input = testProxy.element.$.input;
+    const matchesElement = testProxy.element.$.matches;
+
+    // Verify navigation is blocked when no matches are available.
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches: []}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'PageDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    const matches = [
+      createSearchMatchForTesting({fillIntoEdit: 'test1'}),
+      createSearchMatchForTesting({fillIntoEdit: 'test2'}),
+      createSearchMatchForTesting({fillIntoEdit: 'test3'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify navigation is blocked when key modifiers are present.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'PageDown', altKey: true, bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    // Verify navigation to the last and first match.
+    // PageDown selects the last match.
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'PageDown', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(2, matchesElement.selectedMatchIndex);
+
+    // PageUp selects the first match.
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'PageUp', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(0, matchesElement.selectedMatchIndex);
+  });
+
+  test('Tab behavior when focus is in input', async () => {
+    createComposeboxElement(testProxy);
+    const input = testProxy.element.$.input;
+    const matchesElement = testProxy.element.$.matches;
+
+    // Populate matches and select the first one.
+    const matches = [createSearchMatchForTesting()];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+    matchesElement.selectNext();
+    assertEquals(0, matchesElement.selectedMatchIndex);
+
+    // Ensure focus is in the input.
+    input.focus();
+
+    // Verify Shift+Tab unselects the match.
+    input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', shiftKey: true, bubbles: true}));
+    await microtasksFinished();
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+
+    // Verify Tab accepts the Smart Compose hint when available.
+    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+    (testProxy.element as any).smartComposeEnabled_ = true;
+    input.value = 'tes';
+    input.dispatchEvent(new Event('input'));
+    const hint = 't';
+
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: 'tes',
+          matches,
+          smartComposeInlineHint: hint,
+        }));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+    const tabEvent = new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true});
+    input.dispatchEvent(tabEvent);
+    await microtasksFinished();
+
+    assertEquals('test', input.value);
+    assertTrue(tabEvent.defaultPrevented);
+  });
+
+  test('Tab behavior in matches list bypasses input focus check', async () => {
+    createComposeboxElement(testProxy);
+    const input = testProxy.element.$.input;
+    const matchesElement = testProxy.element.$.matches;
+
+    // Move focus away from the input so it bypasses input focus check.
+    input.blur();
+    matchesElement.focus();
+    assertTrue(input !== testProxy.element.shadowRoot.activeElement);
+
+    // Verify Tab is ignored when no matches are available.
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches: []}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+    const emptyEvent = new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true});
+    matchesElement.dispatchEvent(emptyEvent);
+    await microtasksFinished();
+    assertFalse(emptyEvent.defaultPrevented);
+
+    // Populate matches.
+    const matches = [
+      createSearchMatchForTesting(
+          {fillIntoEdit: 'match1', supportsDeletion: false}),
+      createSearchMatchForTesting(
+          {fillIntoEdit: 'match2', supportsDeletion: false}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify Tab is ignored when modifiers are present.
+    const modifierEvent = new KeyboardEvent(
+        'keydown',
+        {key: 'Tab', ctrlKey: true, bubbles: true, cancelable: true});
+    matchesElement.dispatchEvent(modifierEvent);
+    await microtasksFinished();
+    assertFalse(modifierEvent.defaultPrevented);
+
+    // Select the last match.
+    input.focus();
+    input.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowUp', bubbles: true}));
+    await microtasksFinished();
+    assertEquals(1, matchesElement.selectedMatchIndex);
+
+    // Move focus back to matches element to bypass the input block.
+    input.blur();
+    matchesElement.focus();
+    assertTrue(input !== testProxy.element.shadowRoot.activeElement);
+
+    // Verify normal Tab behavior unselects the last match.
+    const normalTabEvent = new KeyboardEvent(
+        'keydown', {key: 'Tab', bubbles: true, cancelable: true});
+    matchesElement.dispatchEvent(normalTabEvent);
+    await microtasksFinished();
+
+    // Verify the match is unselected.
+    assertEquals(-1, matchesElement.selectedMatchIndex);
+    // Default behavior is not prevented, allowing focus to move.
+    assertFalse(normalTabEvent.defaultPrevented);
+  });
+
+
   test('clear button title changes with input', async () => {
     createComposeboxElement(testProxy);
     assertEquals(
