@@ -217,6 +217,13 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+                                                   addListener() {},
+                                                   addEventListener() {},
+                                                   removeListener() {},
+                                                   removeEventListener() {},
+                                                 }));
+
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;
 

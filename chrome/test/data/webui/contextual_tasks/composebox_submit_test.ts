@@ -119,6 +119,12 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+                                            addListener() {},
+                                            addEventListener() {},
+                                            removeListener() {},
+                                            removeEventListener() {},
+                                            }));
 
     searchboxCallbackRouterRemote.onInputStateChanged(mockInputState);
     await microtasksFinished();

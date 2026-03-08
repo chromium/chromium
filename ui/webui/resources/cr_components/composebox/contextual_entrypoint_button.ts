@@ -20,6 +20,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {GlifAnimationState, recordBoolean} from './common.js';
 import {getCss} from './contextual_entrypoint_button.css.js';
 import {getHtml} from './contextual_entrypoint_button.html.js';
+import {WindowProxy} from './window_proxy.js';
 
 const ContextualEntrypointButtonElementBase = I18nMixinLit(CrLitElement);
 
@@ -73,7 +74,7 @@ export class ContextualEntrypointButtonElement extends
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
-        window.matchMedia('(width <= 264px)'), 'change',
+        WindowProxy.getInstance().matchMedia('(width <= 264px)'), 'change',
         (e: MediaQueryListEvent) => {
           this.windowWidthBelowThreshold_ = e.matches;
         });

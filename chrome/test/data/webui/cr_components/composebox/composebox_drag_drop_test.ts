@@ -244,6 +244,13 @@ suite('ComposeboxDragAndDrop', () => {
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+                                                   addListener() {},
+                                                   addEventListener() {},
+                                                   removeListener() {},
+                                                   removeEventListener() {},
+                                                 }));
+
 
     loadTimeData.overrideValues({
       'composeboxContextDragAndDropEnabled': true,

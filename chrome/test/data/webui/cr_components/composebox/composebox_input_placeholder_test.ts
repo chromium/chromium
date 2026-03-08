@@ -65,6 +65,13 @@ suite('ComposeboxInputPlaceholder', () => {
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+                                                   addListener() {},
+                                                   addEventListener() {},
+                                                   removeListener() {},
+                                                   removeEventListener() {},
+                                                 }));
+
 
     composebox = document.createElement('cr-composebox');
     document.body.appendChild(composebox);
