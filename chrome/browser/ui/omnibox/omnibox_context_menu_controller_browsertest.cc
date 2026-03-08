@@ -279,3 +279,60 @@ INSTANTIATE_TEST_SUITE_P(All,
                          OmniboxContextMenuControllerBrowserTestWithCommand,
                          testing::Values(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
                                          IDC_OMNIBOX_CONTEXT_ADD_FILE));
+
+class OmniboxContextMenuControllerPecBrowserTest : public InProcessBrowserTest {
+ public:
+  OmniboxContextMenuControllerPecBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{omnibox::internal::kWebUIOmniboxAimPopup,
+          {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+            "inline"},
+           {omnibox::kShowToolsAndModels.name, "true"}}},
+         {omnibox::kWebUIOmniboxPopup, {}},
+         {omnibox::kAimUsePecApi, {}}},
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+  }
+
+  OmniboxContextMenuControllerPecBrowserTest(
+      const OmniboxContextMenuControllerPecBrowserTest&) = delete;
+  OmniboxContextMenuControllerPecBrowserTest& operator=(
+      const OmniboxContextMenuControllerPecBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
+    LocationBar* location_bar = browser()->window()->GetLocationBar();
+    OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
+        ->set_omnibox_controller(location_bar->GetOmniboxController());
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
+                       RecordHistogramOnCanvasCommand) {
+  base::HistogramTester histogram_tester;
+
+  auto owning_window = gfx::NativeWindow();
+  TestOmniboxPopupFileSelector file_selector(owning_window);
+  OmniboxContextMenuController controller(&file_selector, GetWebContents());
+
+  // Execute the command for canvas. This should not crash even if the
+  // composebox_handler is null (which it is by default in this test setup).
+  controller.ExecuteCommand(IDC_OMNIBOX_CONTEXT_CANVAS, 0);
+
+  // When AimUsePecApi is enabled and composebox_handler is null, it should
+  // fallback to the default logic and log the histogram.
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEntrypoint.ClassicPopup.ContextualElement.Clicked",
+      OmniboxContextMenuController::ContextType::kCanvas, 1);
+}
