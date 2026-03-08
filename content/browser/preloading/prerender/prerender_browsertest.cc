@@ -2640,8 +2640,39 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
 // Used for running tests that should commonly pass regardless of target hints.
 class PrerenderTargetAgnosticBrowserTest
     : public PrerenderBrowserTest,
-      public testing::WithParamInterface<std::string> {
+      public testing::WithParamInterface<std::tuple<std::string, bool>> {
  public:
+  PrerenderTargetAgnosticBrowserTest()
+      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+    if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {
+              {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+                  {
+                      {
+                          features::
+                              kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                  .name,
+                          "false",
+                      },
+                      {
+                          features::kPrerender2FallbackPrefetchSchedulerPolicy
+                              .name,
+                          "NotUse",
+                      },
+                  },
+              },
+          },
+          {});
+    } else {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {}, {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+              });
+    }
+  }
+
   // Activates a prerendered page for `url` hosted on `prerender_web_contents`.
   void ActivatePrerenderedPage(WebContents& prerender_web_contents,
                                const GURL& url) {
@@ -2657,16 +2688,29 @@ class PrerenderTargetAgnosticBrowserTest
     ASSERT_TRUE(prerender_observer.was_activated());
   }
 
- protected:
-  std::string GetTargetHint() { return GetParam(); }
+  std::string GetTargetHint() const { return std::get<0>(GetParam()); }
+  bool IsPrerender2FallbackPrefetchSpecRulesEnabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsPrefetchAheadOfPrerenderTriggered() const {
+    return GetTargetHint() == "_self" &&
+           IsPrerender2FallbackPrefetchSpecRulesEnabled();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrerenderTargetAgnosticBrowserTest,
-                         testing::Values("_self", "_blank"),
-                         [](const testing::TestParamInfo<std::string>& info) {
-                           return info.param;
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    PrerenderTargetAgnosticBrowserTest,
+    testing::Combine(testing::Values("_self", "_blank"), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<std::string, bool>>& info) {
+      return base::StringPrintf(
+          "%s_%s", std::get<0>(info.param),
+          std::get<1>(info.param) ? "FallbackEnabled" : "FallbackDisabled");
+    });
 
 class AutoSpeculationRulesPrerenderBrowserTest
     : public PrerenderBrowserTestFallbackEnabledDisabled {
@@ -4295,8 +4339,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   host_observer.WaitForDestroyed();
 
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kNavigationBadHttpStatus);
+  if (IsPrefetchAheadOfPrerenderTriggered()) {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kPrerenderFailedDuringPrefetch);
+    histogram_tester().ExpectUniqueSample(
+        "Prerender.Experimental.PrefetchAheadOfPrerenderFailed."
+        "PrefetchStatus.SpeculationRule",
+        PrefetchStatus::kPrefetchFailedNon2XX, 1);
+  } else {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kNavigationBadHttpStatus);
+  }
 }
 
 // Tests that prerendering is cancelled if a network request for the
@@ -4320,8 +4373,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   host_observer.WaitForDestroyed();
 
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kNavigationBadHttpStatus);
+  if (IsPrefetchAheadOfPrerenderTriggered()) {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kPrerenderFailedDuringPrefetch);
+    histogram_tester().ExpectUniqueSample(
+        "Prerender.Experimental.PrefetchAheadOfPrerenderFailed."
+        "PrefetchStatus.SpeculationRule",
+        PrefetchStatus::kPrefetchFailedNon2XX, 1);
+  } else {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kNavigationBadHttpStatus);
+  }
 }
 
 // Tests that prerendering is cancelled if a network request for the
@@ -4345,8 +4407,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
   host_observer.WaitForDestroyed();
 
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kNavigationBadHttpStatus);
+  if (IsPrefetchAheadOfPrerenderTriggered()) {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kPrerenderFailedDuringPrefetch);
+    histogram_tester().ExpectUniqueSample(
+        "Prerender.Experimental.PrefetchAheadOfPrerenderFailed."
+        "PrefetchStatus.SpeculationRule",
+        PrefetchStatus::kPrefetchFailedNon2XX, 1);
+  } else {
+    ExpectFinalStatusForSpeculationRule(
+        PrerenderFinalStatus::kNavigationBadHttpStatus);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
