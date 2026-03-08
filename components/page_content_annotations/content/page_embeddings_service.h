@@ -156,9 +156,15 @@ class PageEmbeddingsService : public KeyedService,
  private:
   class WebContentsEventsObserver;
 
-  struct PageState;
+  struct Pending;
+  struct Computing;
+  struct Available;
+  struct Unavailable;
+
   struct WebContentsState;
 
+  // Computes embeddings for the page. Expects that the embeddings state is
+  // Pending, i.e. we have already received passages for the page.
   void ComputeEmbeddings(content::Page& page);
   void ComputeEmbeddingsOnHide(content::Page& page);
 

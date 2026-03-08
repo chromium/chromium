@@ -34,6 +34,9 @@ namespace page_content_annotations {
 std::vector<std::pair<std::string, EmbeddingPassageType>> GenerateCandidates(
     const optimization_guide::proto::AnnotatedPageContent& page_content,
     int page_content_passages_to_generate) {
+  if (page_content.main_frame_data().title() == "EMPTY") {
+    return {};
+  }
   return {std::make_pair(page_content.main_frame_data().title(),
                          EmbeddingPassageType::kTitle)};
 }
@@ -121,7 +124,7 @@ class PageEmbeddingsServiceTest : public content::RenderViewHostTestHarness {
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<PageContentExtractionService> page_content_extraction_service_;
-  EmbedderMock embedder_mock_;
+  testing::NiceMock<EmbedderMock> embedder_mock_;
   std::optional<PageEmbeddingsService> page_embeddings_service_;
 };
 
@@ -1062,6 +1065,59 @@ TEST_F(PageEmbeddingsServiceTest, NavigationResetsData) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents.get(), GURL("http://example.com"));
 
+  EXPECT_TRUE(page_embeddings_service()
+                  .GetEmbeddings(web_contents->GetPrimaryPage())
+                  .empty());
+}
+
+// Validates that seeing a new page with no passages clears the embeddings
+// from the previous page in the same WebContents.
+TEST_F(PageEmbeddingsServiceTest, NewPageWithNoPassagesClearsOldEmbeddings) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault(
+          [&](passage_embeddings::PassagePriority priority,
+              std::vector<std::string> passages,
+              passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                  callback) {
+            compute_passages_embeddings_callback = std::move(callback);
+            return 1;
+          });
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings);
+
+  // Load Page 1 and compute embeddings.
+  scoped_refptr<RefCountedAnnotatedPageContent> page_content1 =
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>();
+  page_content1->data.mutable_main_frame_data()->set_title("page 1");
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(), page_content1);
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"page 1"}, {passage_embeddings::Embedding({1.0f})}, 1,
+           passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  ASSERT_FALSE(page_embeddings_service()
+                   .GetEmbeddings(web_contents->GetPrimaryPage())
+                   .empty());
+
+  // Navigate to Page 2.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL("http://example.com/2"));
+
+  // Extract content for Page 2, but it has no passages.
+  scoped_refptr<RefCountedAnnotatedPageContent> page_content2 =
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>();
+  page_content2->data.mutable_main_frame_data()->set_title("EMPTY");
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(), page_content2);
+
+  // The embeddings from Page 1 should no longer be available for Page 2.
   EXPECT_TRUE(page_embeddings_service()
                   .GetEmbeddings(web_contents->GetPrimaryPage())
                   .empty());
