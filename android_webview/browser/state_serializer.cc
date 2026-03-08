@@ -11,7 +11,9 @@
 #include <utility>
 #include <vector>
 
+#include "android_webview/common/aw_features.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -40,7 +42,7 @@ namespace android_webview {
 
 namespace {
 
-const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_MOST_RECENT_FIRST;
+const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_INCLUDE_HEADERS;
 
 // The production implementation of NavigationHistory and NavigationHistorySink,
 // backed by a NavigationController.
@@ -229,7 +231,8 @@ uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator) {
 bool IsSupportedVersion(uint32_t state_version) {
   return state_version == internal::AW_STATE_VERSION_INITIAL ||
          state_version == internal::AW_STATE_VERSION_DATA_URL ||
-         state_version == internal::AW_STATE_VERSION_MOST_RECENT_FIRST;
+         state_version == internal::AW_STATE_VERSION_MOST_RECENT_FIRST ||
+         state_version == internal::AW_STATE_VERSION_INCLUDE_HEADERS;
 }
 
 void WriteNavigationEntryToPickle(content::NavigationEntry& entry,
@@ -269,6 +272,16 @@ void WriteNavigationEntryToPickle(uint32_t state_version,
   pickle->WriteBool(static_cast<int>(entry.GetIsOverridingUserAgent()));
   pickle->WriteInt64(entry.GetTimestamp().ToInternalValue());
   pickle->WriteInt(entry.GetHttpStatusCode());
+
+  if (state_version >= internal::AW_STATE_VERSION_INCLUDE_HEADERS) {
+    std::string headers = entry.GetExtraHeaders();
+    UMA_HISTOGRAM_BOOLEAN("Android.WebView.SaveState.ExtraHeadersAttached",
+                          !headers.empty());
+    pickle->WriteString(
+        base::FeatureList::IsEnabled(features::kWebViewSaveStateIncludeHeaders)
+            ? headers
+            : "");
+  }
 
   // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
   // format is changed.
@@ -483,6 +496,18 @@ bool RestoreNavigationEntryFromPickle(
     if (!iterator->ReadInt(&http_status_code))
       return false;
     entry->SetHttpStatusCode(http_status_code);
+  }
+
+  if (state_version >= internal::AW_STATE_VERSION_INCLUDE_HEADERS) {
+    string extra_headers;
+    if (!iterator->ReadString(&extra_headers)) {
+      return false;
+    }
+    if (!extra_headers.empty() &&
+        base::FeatureList::IsEnabled(
+            features::kWebViewSaveStateIncludeHeaders)) {
+      entry->AddExtraHeaders(extra_headers);
+    }
   }
 
   return true;

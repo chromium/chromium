@@ -313,4 +313,9 @@ BASE_FEATURE(kWebViewUseNonembeddedLowEntropySource,
 // waiting for chromium startup to complete.
 BASE_FEATURE(kWebViewFasterGetDefaultUserAgent,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, navigation headers will be saved and restored as part
+// of saved state for WebView.
+BASE_FEATURE(kWebViewSaveStateIncludeHeaders,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

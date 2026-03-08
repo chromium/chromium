@@ -45,7 +45,8 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
   const GURL base_url_for_data_url("http://base_url");
   const string data_url_as_string("data:text/html;charset=utf-8;base64,");
   const bool is_overriding_user_agent = true;
-  const base::Time timestamp = base::Time::FromInternalValue(12345);
+  const base::Time timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(12345);
   const int http_status_code = 404;
 
   entry->SetURL(gurl);
@@ -63,6 +64,7 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
   entry->SetIsOverridingUserAgent(is_overriding_user_agent);
   entry->SetTimestamp(timestamp);
   entry->SetHttpStatusCode(http_status_code);
+
   return entry;
 }
 
@@ -299,6 +301,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   pickle.WriteBool(is_overriding_user_agent);
   pickle.WriteInt64(timestamp);
   pickle.WriteInt(http_status_code);
+  pickle.WriteString("");
 
   // Deserialize the |pickle|.
   base::PickleIterator iterator(pickle);

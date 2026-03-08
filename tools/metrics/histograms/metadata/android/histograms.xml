@@ -8618,6 +8618,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SaveState.ExtraHeadersAttached" enum="Boolean"
+    expires_after="2027-03-01">
+  <owner>jdeabreu@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded whenever an embedder calls WebView#saveState, for each navigation
+    entry saved, records whether any headers are associated with the entry. This
+    is logged even if the feature to save the headers to saveState is disabled.
+    This data will be used to check that no headers are currently being passed
+    through via AwContents#loadUrl or any other flow and that headers are being
+    passed through once the new AwContents#navigate method is being used.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SaveState.Size" units="KB"
     expires_after="2026-12-11">
   <owner>peconn@chromium.org</owner>

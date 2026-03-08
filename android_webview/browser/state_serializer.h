@@ -46,6 +46,10 @@ namespace internal {
 const uint32_t AW_STATE_VERSION_INITIAL = 20130814;
 const uint32_t AW_STATE_VERSION_DATA_URL = 20151204;
 const uint32_t AW_STATE_VERSION_MOST_RECENT_FIRST = 20250213;
+// Note: This version always writes the headers field to the bundle,
+// but whether the actual headers or an empty string is saved is dependant
+// on the feature kWebViewSaveStateIncludeHeaders
+const uint32_t AW_STATE_VERSION_INCLUDE_HEADERS = 20260226;
 
 // The navigation history to be saved. Primarily exists for testing.
 class NavigationHistory {

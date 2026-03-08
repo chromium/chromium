@@ -1345,7 +1345,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "NoSequenceForLevelDBCleanupTasks",
                 "When enabled, LevelDB cleanup tasks are run concurrently instead of in sequence."),
-
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SAVE_STATE_INCLUDE_HEADERS,
+                "When enabled, navigation headers will be saved and restored as part of saved state"
+                        + " for WebView"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
