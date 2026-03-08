@@ -2604,10 +2604,17 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  content::WebContentsAddedObserver nav_observer;
+  BrowserAddedWaiter browser_added_waiter;
   CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
   ASSERT_EQ(1U, chrome::GetIncognitoBrowserCount());
-  nav_observer.GetWebContents();
+  browser_added_waiter.Wait();
+  Browser* incognito_browser = browser_added_waiter.browser_added();
+  ASSERT_TRUE(incognito_browser);
+  content::WebContents* active_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  if (active_contents) {
+    content::WaitForLoadStop(active_contents);
+  }
   std::vector<Profile*> otr_profiles = profile()->GetAllOffTheRecordProfiles();
   CHECK(!otr_profiles.empty());
   active_profile_ = otr_profiles.back();
