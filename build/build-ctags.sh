@@ -4,11 +4,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if [[ a"`ctags --version | head -1 | grep \"^Exuberant Ctags\"`" == "a" ]]; then
+if [[ a"`ctags --version | head -1 |
+        grep -E \"^(Exuberant|Universal) Ctags\"`" == "a" ]]; then
   cat <<EOF
-  You must be using Exuberant Ctags, not just standard GNU ctags. If you are on
-  Debian or a related flavor of Linux, you may want to try running
-  apt-get install exuberant-ctags.
+  You must be using Exuberant or Universal Ctags, not just standard GNU ctags.
+  If you are on Debian or a related flavor of Linux, you may want to try
+  running apt-get install exuberant-ctags or universal-ctags.
 EOF
   exit
 fi
