@@ -121,4 +121,7 @@ tast.camera.EncodeAccelJPEG@brya
 tast.camera.EncodeAccelJPEG@jacuzzi
 tast.camera.EncodeAccelJPEG@volteer
 
+# b/488388275
+tast.health.RunCameraFrameAnalysisRoutine
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
