@@ -118,6 +118,15 @@ class PolicyApplicator {
                      const std::string& error_name,
                      const std::string& error_message);
 
+  void ProcessEntry(const std::string& entry_identifier,
+                    base::DictValue entry_properties,
+                    base::OnceClosure callback);
+
+  // Picks an ethernet entry to use for policy application (as shill can
+  // currently only represent one ethernet configuration), and applies policy on
+  // that entry.
+  void ProcessEthernetEntries();
+
   // Applies |new_policy| for |entry_identifier|.
   // |entry_properties| are the current properties for the entry. |ui_data| is
   // the NetworkUIData extracted from |entry_properties| and is passed so it
@@ -183,6 +192,12 @@ class PolicyApplicator {
 
   base::flat_set<std::string> remaining_policy_guids_;
   base::flat_set<std::string> pending_get_entry_calls_;
+
+  // Ethernet entries that will be processed after all entries have been
+  // visited.
+  // The key is the shill entry identifier, the value is the shill service
+  // properties dictionary for the entry.
+  base::flat_map<std::string, base::DictValue> ethernet_entries_;
 
   // Contains GUIDs of new cellular policies so they can be reported back to
   // the caller.

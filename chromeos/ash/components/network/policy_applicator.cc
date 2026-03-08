@@ -33,6 +33,8 @@ namespace ash {
 
 namespace {
 
+static constexpr char kShillGenericEthernetServiceIdentifier[] = "ethernet_any";
+
 void LogErrorMessageAndInvokeCallback(base::OnceClosure callback,
                                       const base::Location& from_where,
                                       const std::string& error_name,
@@ -97,6 +99,73 @@ void CopyRequiredCellularProperties(const base::DictValue& old_shill_properties,
                 shill::kIccidProperty);
   CopyStringKey(old_shill_properties, new_shill_properties,
                 shill::kEidProperty);
+}
+
+// Returns true if `service_shill_properties` contains shill service
+// properties for a service that is a regular ethernet service (so it could
+// contain a static IP Address or nameserver config).
+//
+// The special shill kEthernetEap type service is not considered because it is
+// only used to store per-shill profile EAP authentication details and never
+// stores static IP/nameserver configuration.
+bool IsEthernetEntry(const base::DictValue& service_shill_properties) {
+  const std::string* shill_network_type =
+      service_shill_properties.FindString(shill::kTypeProperty);
+  // Explicitly don't check for kTypeEthernetEap.
+  return shill_network_type && *shill_network_type == shill::kTypeEthernet;
+}
+
+// shill can currently only persist one ethernet configuration, so
+// PolicyApplicator should only act on one ethernet entry. If N>1 entries are
+// enumerated (this will mean one entry that contains the persistent
+// configuration, and N-1 entries for additional ethernet adapters whose
+// configuration will not be persisted to disk), then PolicyApplicator will
+// evaluate the entry with the highest return value of
+// `GetEthernetEntryPriority` for re-applying user-entered settings such as a
+// static IP address. See http://b/467741000 for more details.
+int GetEthernetEntryPriority(const std::string& entry_identifier,
+                             const base::DictValue& service_shill_properties) {
+  std::unique_ptr<NetworkUIData> ui_data =
+      shill_property_util::GetUIDataFromProperties(service_shill_properties);
+
+  int priority = 0;
+  if (!ui_data) {
+    return priority;
+  }
+
+  const bool was_managed =
+      (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
+       ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
+
+  bool has_static_ip_or_nameserver = false;
+  const base::DictValue* user_settings = ui_data->GetUserSettingsDictionary();
+  if (user_settings) {
+    const auto* ip_addr_config_type =
+        user_settings->Find(::onc::network_config::kIPAddressConfigType);
+    if (ip_addr_config_type &&
+        *ip_addr_config_type == ::onc::network_config::kIPConfigTypeStatic) {
+      has_static_ip_or_nameserver = true;
+    }
+
+    const auto* nameserver_config_type =
+        user_settings->Find(::onc::network_config::kNameServersConfigType);
+    if (nameserver_config_type &&
+        *nameserver_config_type == ::onc::network_config::kIPConfigTypeStatic) {
+      has_static_ip_or_nameserver = true;
+    }
+  }
+
+  if (was_managed) {
+    priority += 4;
+  }
+  if (has_static_ip_or_nameserver) {
+    priority += 2;
+  }
+  if (entry_identifier == kShillGenericEthernetServiceIdentifier) {
+    priority += 1;
+  }
+
+  return priority;
 }
 
 }  // namespace
@@ -207,6 +276,28 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
   VLOG(2) << "Received properties for entry " << entry_identifier
           << " of profile " << profile_.ToDebugString();
 
+  auto profile_entry_finished_callback =
+      base::BindOnce(&PolicyApplicator::ProfileEntryFinished,
+                     weak_ptr_factory_.GetWeakPtr(), entry_identifier);
+
+  if (features::IsFixStaticIpForTwoManagedEthPortsEnabled() &&
+      IsEthernetEntry(entry_properties)) {
+    // Save it for later processing, when all Ethernet entries can be evaluated
+    // (see ProcessEthernetEntries).
+    NET_LOG(EVENT) << "Deferring processing of eth entry " << entry_identifier
+                   << " for later.";
+    ethernet_entries_.emplace(entry_identifier, std::move(entry_properties));
+    std::move(profile_entry_finished_callback).Run();
+    return;
+  }
+
+  ProcessEntry(entry_identifier, std::move(entry_properties),
+               std::move(profile_entry_finished_callback));
+}
+
+void PolicyApplicator::ProcessEntry(const std::string& entry_identifier,
+                                    base::DictValue entry_properties,
+                                    base::OnceClosure callback) {
   base::DictValue onc_part = onc::TranslateShillServiceToONCPart(
       entry_properties, ::onc::ONC_SOURCE_UNKNOWN,
       &chromeos::onc::kNetworkWithStateSignature, nullptr /* network_state */);
@@ -240,9 +331,6 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     new_policy = FindMatchingPolicy(all_policies_, onc_part);
   }
 
-  auto profile_entry_finished_callback =
-      base::BindOnce(&PolicyApplicator::ProfileEntryFinished,
-                     weak_ptr_factory_.GetWeakPtr(), entry_identifier);
   if (new_policy) {
     std::string new_guid = GetGUIDFromONCPart(*new_policy);
     DCHECK(!new_guid.empty());
@@ -254,8 +342,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
         << "configuration.";
 
     ApplyOncPolicy(entry_identifier, entry_properties, std::move(ui_data),
-                   old_guid, new_guid, *new_policy,
-                   std::move(profile_entry_finished_callback));
+                   old_guid, new_guid, *new_policy, std::move(callback));
 
     const std::string* iccid = policy_util::GetIccidFromONC(*new_policy);
 
@@ -282,7 +369,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
     // Remove the entry, because the network was managed but isn't anymore.
     // Note: An alternative might be to preserve the user settings, but it's
     // unclear which values originating the policy should be removed.
-    DeleteEntry(entry_identifier, std::move(profile_entry_finished_callback));
+    DeleteEntry(entry_identifier, std::move(callback));
 
     const std::string* iccid = policy_util::GetIccidFromONC(onc_part);
     if (managed_cellular_pref_handler_ && iccid) {
@@ -292,7 +379,7 @@ void PolicyApplicator::GetEntryCallback(const std::string& entry_identifier,
   }
 
   ApplyGlobalPolicyOnUnmanagedEntry(entry_identifier, entry_properties,
-                                    std::move(profile_entry_finished_callback));
+                                    std::move(callback));
 }
 
 void PolicyApplicator::GetEntryError(const std::string& entry_identifier,
@@ -457,8 +544,45 @@ void PolicyApplicator::ProfileEntryFinished(
   auto iter = pending_get_entry_calls_.find(entry_identifier);
   DCHECK(iter != pending_get_entry_calls_.end());
   pending_get_entry_calls_.erase(iter);
-  if (pending_get_entry_calls_.empty())
-    ApplyRemainingPolicies();
+  if (pending_get_entry_calls_.empty()) {
+    ProcessEthernetEntries();
+  }
+}
+
+void PolicyApplicator::ProcessEthernetEntries() {
+  auto when_done = base::BindOnce(&PolicyApplicator::ApplyRemainingPolicies,
+                                  weak_ptr_factory_.GetWeakPtr());
+
+  if (!features::IsFixStaticIpForTwoManagedEthPortsEnabled()) {
+    std::move(when_done).Run();
+    return;
+  }
+
+  std::string ethernet_entry_to_reapply;
+  base::DictValue* shill_properties_of_entry_to_reapply = nullptr;
+  int max_priority = -1;
+  for (auto& [entry_identifier, shill_properties] : ethernet_entries_) {
+    int priority = GetEthernetEntryPriority(entry_identifier, shill_properties);
+    // If two ethernet entries have the same priority, use the latter to be
+    // consistent with legacy behavior.
+    if (priority >= max_priority) {
+      max_priority = priority;
+      ethernet_entry_to_reapply = entry_identifier;
+      shill_properties_of_entry_to_reapply = &shill_properties;
+    }
+  }
+
+  if (ethernet_entry_to_reapply.empty()) {
+    NET_LOG(EVENT) << "No pre-existing eth entry for policy application.";
+    std::move(when_done).Run();
+    return;
+  }
+
+  NET_LOG(EVENT) << "Using eth entry " << ethernet_entry_to_reapply
+                 << " for policy application.";
+  ProcessEntry(ethernet_entry_to_reapply,
+               std::move(*shill_properties_of_entry_to_reapply),
+               std::move(when_done));
 }
 
 void PolicyApplicator::ApplyRemainingPolicies() {

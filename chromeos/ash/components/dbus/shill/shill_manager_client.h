@@ -223,6 +223,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
         FakeShillSimulatedResult operation_result,
         const std::string& result_code) = 0;
 
+    virtual void SetConfigureServiceHook(
+        base::RepeatingCallback<void(const base::DictValue&)>
+            configure_service_hook) = 0;
+
     // Clears profile list.
     virtual void ClearProfiles() = 0;
 

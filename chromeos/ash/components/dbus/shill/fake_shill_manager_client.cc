@@ -392,6 +392,10 @@ void FakeShillManagerClient::ConfigureService(
     const base::DictValue& properties,
     chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
+  if (!configure_service_hook_.is_null()) {
+    configure_service_hook_.Run(properties);
+  }
+
   switch (simulate_configuration_result_) {
     case FakeShillSimulatedResult::kSuccess:
       break;
@@ -1209,6 +1213,12 @@ void FakeShillManagerClient::SetSimulateDisconnectFromP2PGroupResult(
       FakeShillSimulatedResult::kSuccess) {
     simulate_disconnect_p2p_group_result_code_ = result_code;
   }
+}
+
+void FakeShillManagerClient::SetConfigureServiceHook(
+    base::RepeatingCallback<void(const base::DictValue&)>
+        configure_service_hook) {
+  configure_service_hook_ = configure_service_hook;
 }
 
 void FakeShillManagerClient::SetupDefaultEnvironment() {
