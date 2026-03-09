@@ -248,9 +248,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   int VisibleClientCount() override;
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
-#if !BUILDFLAG(IS_ANDROID)
-  bool IsForInitialWebUI() const override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  bool IsForTopChromeWebUI() const override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
@@ -980,13 +978,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
     // renderer process.
     kDisallowV8FeatureFlagOverrides = 1 << 4,
 
-#if !BUILDFLAG(IS_ANDROID)
-    // Indicates that this RenderProcessHost is hosting the initial WebUI.
-    // Initial WebUI (WaaP) and WebUI (e.g. Tab Search) are hosted in the same
-    // process. This flag is only set when the initial WebUI exists.
+    // Indicates that this RenderProcessHost is hosting a Top Chrome WebUI.
     // Only used on desktop.
-    kForInitialWebUI = 1 << 5,
-#endif  // !BUILDFLAG(IS_ANDROID)
+    kForTopChromeWebUI = 1 << 5,
   };
 
 #if BUILDFLAG(IS_ANDROID)

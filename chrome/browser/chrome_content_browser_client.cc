@@ -2399,7 +2399,7 @@ bool ChromeContentBrowserClient::ShouldTryToUseExistingProcessHost(
     const GURL& url) {
   // Top Chrome WebUI should try to share a RenderProcessHost with other
   // existing Top Chrome WebUI.
-  if (IsTopChromeWebUIURL(url)) {
+  if (::IsTopChromeWebUIURL(url)) {
     return true;
   }
 
@@ -2661,6 +2661,10 @@ bool ChromeContentBrowserClient::IsInitialWebUIURL(const GURL& url) {
   return waap::IsForInitialWebUI(url);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+bool ChromeContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
+  return ::IsTopChromeWebUIURL(url);
+}
 
 bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
     content::BrowserContext* browser_context,
@@ -3970,7 +3974,7 @@ bool ChromeContentBrowserClient::IsWebUIBundledCodeCachingEnabled(
     const GURL& webui_lock_url) const {
   // Enable bundled code caching only for top-chrome WebUI hosts.
   return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-         IsTopChromeWebUIURL(webui_lock_url);
+         ::IsTopChromeWebUIURL(webui_lock_url);
 }
 
 base::flat_map<GURL, int>
@@ -5629,7 +5633,7 @@ ChromeContentBrowserClient::GetDevToolsBackgroundServiceExpirations(
 std::optional<base::TimeDelta>
 ChromeContentBrowserClient::GetSpareRendererDelayForSiteURL(
     const GURL& site_url) {
-  if (IsTopChromeWebUIURL(site_url)) {
+  if (::IsTopChromeWebUIURL(site_url)) {
     // Experiments have shown that delaying 2s brings the most significant
     // improvements to Top Chrome WebUIs. See crbug.com/41490050.
     return base::Seconds(2);
@@ -8008,7 +8012,7 @@ bool ChromeContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
     const GURL& site_url) {
   // Disable V8 feature flag overrides specifically for top-chrome WebUI URLs.
   return base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache) &&
-         IsTopChromeWebUIURL(site_url);
+         ::IsTopChromeWebUIURL(site_url);
 }
 
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {

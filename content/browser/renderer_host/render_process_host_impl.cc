@@ -1588,8 +1588,8 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 #if !BUILDFLAG(IS_ANDROID)
   if (site_instance) {
     const GURL& site_url = site_instance->GetSiteURL();
-    if (GetContentClient()->browser()->IsInitialWebUIURL(site_url)) {
-      flags |= RenderProcessFlags::kForInitialWebUI;
+    if (GetContentClient()->browser()->IsTopChromeWebUIURL(site_url)) {
+      flags |= RenderProcessFlags::kForTopChromeWebUI;
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -3493,11 +3493,9 @@ bool RenderProcessHostImpl::IsForGuestsOnly() {
   return !!(flags_ & RenderProcessFlags::kForGuestsOnly);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-bool RenderProcessHostImpl::IsForInitialWebUI() const {
-  return (flags_ & RenderProcessFlags::kForInitialWebUI) != 0;
+bool RenderProcessHostImpl::IsForTopChromeWebUI() const {
+  return (flags_ & RenderProcessFlags::kForTopChromeWebUI) != 0;
 }
-#endif
 
 bool RenderProcessHostImpl::IsJitDisabled() {
   return !!(flags_ & RenderProcessFlags::kJitDisabled);
@@ -3532,7 +3530,7 @@ bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
     if (features::kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly.Get()) {
 #if !BUILDFLAG(IS_ANDROID)
       // Skip pausing if we're on initial WebUI, so return false in that case.
-      return !IsForInitialWebUI();
+      return !IsForTopChromeWebUI();
 #else
       // We're definitely not on initial WebUI, so return true to pause.
       return true;

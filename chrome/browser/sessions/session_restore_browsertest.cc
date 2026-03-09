@@ -306,7 +306,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
         base::BindLambdaForTesting([&](content::WebContents* contents) {
           if (!contents->GetPrimaryMainFrame()
                    ->GetProcess()
-                   ->IsForInitialWebUI()) {
+                   ->IsForTopChromeWebUI()) {
             queues.emplace_back(
                 std::make_unique<content::DOMMessageQueue>(contents));
           }

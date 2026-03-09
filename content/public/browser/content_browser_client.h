@@ -809,6 +809,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsInitialWebUIURL(const GURL& url);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Returns true if the given `url` hosts a Top Chrome WebUI.
+  // This allows the embedder to identify WebUIs that are part of the browser
+  // chrome, e.g., Tab Search, Side Panel, Initial WebUI etc., so that content/
+  // can apply specific process-sharing or metric-gathering logic.
+  //
+  // This function is defined on all platforms, but is expected to always return
+  // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
+  virtual bool IsTopChromeWebUIURL(const GURL& url);
+
   // Allows the embedder to enable access to Isolated Context Web APIs for the
   // given |lock_url| -- the URL to which the renderer process is locked.
   // See [IsolatedContext] IDL attribute for more details.

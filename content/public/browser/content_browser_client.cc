@@ -420,6 +420,10 @@ bool ContentBrowserClient::IsInitialWebUIURL(const GURL& url) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool ContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
+  return false;
+}
+
 bool ContentBrowserClient::IsIsolatedContextAllowedForUrl(
     BrowserContext* browser_context,
     const GURL& lock_url) {

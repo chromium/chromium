@@ -92,9 +92,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   int VisibleClientCount() override;
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
-#if !BUILDFLAG(IS_ANDROID)
-  bool IsForInitialWebUI() const override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  bool IsForTopChromeWebUI() const override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
@@ -299,8 +297,8 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   void set_priority(base::Process::Priority priority) { priority_ = priority; }
 
-  void SetIsForInitialWebUI(bool is_for_initial_web_ui) {
-    is_for_initial_web_ui_ = is_for_initial_web_ui;
+  void SetIsForTopChromeWebUI(bool is_for_top_chrome_web_ui) {
+    is_for_top_chrome_web_ui_ = is_for_top_chrome_web_ui;
   }
 
   void SetProcess(base::Process&& new_process) {
@@ -348,7 +346,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_for_guests_only_;
   base::Process::Priority priority_;
   bool is_unused_;
-  bool is_for_initial_web_ui_ = false;
+  bool is_for_top_chrome_web_ui_ = false;
   bool is_ready_ = false;
   base::Process process;
   int pending_view_count_;

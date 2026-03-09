@@ -637,7 +637,7 @@ TEST_F(RendererStartupHelperTest, SkipInitializationOnLaunchWithFeature) {
   auto new_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context());
 
-  new_process->SetIsForInitialWebUI(true);
+  new_process->SetIsForTopChromeWebUI(true);
 
   // 1. Simulate process launch.
   helper_->OnRenderProcessLaunched(new_process.get());

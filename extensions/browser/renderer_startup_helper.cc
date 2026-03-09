@@ -230,9 +230,7 @@ RendererStartupHelper::~RendererStartupHelper() {
 void RendererStartupHelper::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/483888399): Use a more generic IsForTopChromeWebUI() check
-  // instead of IsForInitialWebUI() to correctly handle all Top Chrome WebUIs.
-  if (host->IsForInitialWebUI() &&
+  if (host->IsForTopChromeWebUI() &&
       base::FeatureList::IsEnabled(
           blink::features::kInitialWebUIWithoutExtensions)) {
     // We initialize extension for topchrome processes on DidStartNavigation or
@@ -253,9 +251,7 @@ void RendererStartupHelper::OnRenderProcessHostCreated(
 void RendererStartupHelper::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/483888399): Use a more generic IsForTopChromeWebUI() check
-  // instead of IsForInitialWebUI() to correctly handle all Top Chrome WebUIs.
-  if (host->IsForInitialWebUI() &&
+  if (host->IsForTopChromeWebUI() &&
       base::FeatureList::IsEnabled(
           blink::features::kInitialWebUIWithoutExtensions)) {
     // We initialize extension for topchrome processes on DidStartNavigation or

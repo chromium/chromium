@@ -2938,17 +2938,17 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 // Asserts RenderProcessHosts are configured to reflect the embedder's policy
-// defined by `ContentBrowserClient::IsInitialWebUIURL()`.
-IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForInitialWebUIAppliedToHosts) {
-  class ForInitialWebUIContentBrowserClient
+// defined by `ContentBrowserClient::IsTopChromeWebUIURL()`.
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForTopChromeWebUIAppliedToHosts) {
+  class ForTopChromeWebUIContentBrowserClient
       : public ContentBrowserTestContentBrowserClient {
    public:
     // ContentBrowserTestContentBrowserClient:
-    bool IsInitialWebUIURL(const GURL& url) override {
+    bool IsTopChromeWebUIURL(const GURL& url) override {
       return url == GURL("chrome://initial-webui-test-scheme");
     }
   };
-  ForInitialWebUIContentBrowserClient content_browser_client;
+  ForTopChromeWebUIContentBrowserClient content_browser_client;
 
   const GURL url_a("chrome://initial-webui-test-scheme");
   const GURL url_b("http://b.com");
@@ -2968,9 +2968,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ForInitialWebUIAppliedToHosts) {
   process_b->Init();
 
   EXPECT_TRUE(
-      static_cast<RenderProcessHostImpl*>(process_a)->IsForInitialWebUI());
+      static_cast<RenderProcessHostImpl*>(process_a)->IsForTopChromeWebUI());
   EXPECT_FALSE(
-      static_cast<RenderProcessHostImpl*>(process_b)->IsForInitialWebUI());
+      static_cast<RenderProcessHostImpl*>(process_b)->IsForTopChromeWebUI());
 
   process_a->Cleanup();
   process_b->Cleanup();

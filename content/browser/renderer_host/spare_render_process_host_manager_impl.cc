@@ -616,12 +616,15 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       //    launched.
       // 2. The SiteInstance has opted out of using the spare process.
       // 3. The SiteInstance is a guest SiteInstance.
-      // 4. The SiteInstance is a initial WebUI SiteInstance.
+      // 4. The SiteInstance is a Top Chrome WebUI SiteInstance. Top Chrome
+      //    WebUIs need their processes created with their SiteInstance so that
+      //    the kForTopChromeWebUI flag is correctly set on the
+      //    RenderProcessHost.
       site_instance->HasProcess() ||
       !site_instance->CanAssociateWithSpareProcess() ||
       site_instance->GetSecurityPrincipal().IsGuest()
 #if !BUILDFLAG(IS_ANDROID)
-      || GetContentClient()->browser()->IsInitialWebUIURL(
+      || GetContentClient()->browser()->IsTopChromeWebUIURL(
              site_instance->GetSiteURL())
 #endif
   ) {

@@ -23,8 +23,6 @@
 
 namespace waap {
 
-namespace {
-
 // Initializes a web ui controller after navigation. Note that this is probably
 // an indication that these tests require too much insight into the state of
 // inner implementation details, or there is some deficiency in the testing
@@ -96,9 +94,9 @@ class WebUIToolbarInitializer : public WebUIControllerInitalizer {
   ToolbarDependencyProvider injector_;
 };
 
-class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
+class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
  public:
-  InitialWebUINavigationBrowserTest() {
+  InitialWebUIBrowserTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kInitialWebUI, {{"use_separate_process", "true"}}},
          {features::kWebUIReloadButton, {}},
@@ -149,20 +147,22 @@ class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Initial WebUI flag should be correctly set even if a non-initial WebUI is
+class InitialWebUINavigationBrowserTest : public InitialWebUIBrowserTestBase {};
+
+// TopChrome WebUI flag should be correctly set even if a non-TopChrome WebUI is
 // created first.
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
-                       Flag_NonInitialTopChromeCommittedFirst) {
-  // 1) Navigate to non-initial WebUI topchrome in a new WebContents.
-  GURL url(chrome::kChromeUITabSearchURL);
-  EXPECT_TRUE(IsTopChromeWebUIURL(url));
+                       Flag_NonTopChromeCommittedFirst) {
+  // 1) Navigate to non-TopChrome WebUI in a new WebContents.
+  GURL url(chrome::kChromeUIVersionURL);
+  EXPECT_FALSE(IsTopChromeWebUIURL(url));
   EXPECT_FALSE(IsForInitialWebUI(url));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents =
       CreateAndNavigateWebContents(url, nullptr);
-  // Ensure that the process doesn't have the initial WebUI flag set.
+  // Ensure that the process doesn't have the TopChrome WebUI flag set.
   EXPECT_FALSE(non_initial_webui_web_contents->GetPrimaryMainFrame()
                    ->GetProcess()
-                   ->IsForInitialWebUI());
+                   ->IsForTopChromeWebUI());
 
   // 2) Navigate to initial WebUI in a new WebContents.
   GURL url2(chrome::kChromeUIWebUIToolbarURL);
@@ -171,40 +171,42 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   WebUIToolbarInitializer initializer;
   std::unique_ptr<content::WebContents> initial_webui_web_contents =
       CreateAndNavigateWebContents(url2, &initializer);
-  // Ensure that the process has the initial WebUI flag set.
+  // Ensure that the process has the TopChrome WebUI flag set.
   EXPECT_TRUE(initial_webui_web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
-                  ->IsForInitialWebUI());
+                  ->IsForTopChromeWebUI());
 }
 
-// Initial WebUI process shoudl not be shared with non-initial WebUI.
+// Initial WebUI process should not be shared with non-Initial WebUI per
+// https://crrev.com/c/7508984.
+// However, both should have the TopChrome WebUI flag set.
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                        InitialWebUIProcessSharing) {
   // 1) Navigate to initial WebUI in a new WebContents.
   GURL url(chrome::kChromeUIWebUIToolbarURL);
   EXPECT_TRUE(IsTopChromeWebUIURL(url));
-  EXPECT_TRUE(IsForInitialWebUI(url));
   WebUIToolbarInitializer initializer;
   std::unique_ptr<content::WebContents> initial_webui_web_contents =
       CreateAndNavigateWebContents(url, &initializer);
 
-  // Ensure that the process has the initial WebUI flag set.
+  // Ensure that the process has the TopChrome WebUI flag set.
   EXPECT_TRUE(initial_webui_web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
-                  ->IsForInitialWebUI());
+                  ->IsForTopChromeWebUI());
 
-  // 2) Navigate to non-initial WebUI topchrome in a new WebContents.
+  // 2) Navigate to another TopChrome WebUI (but not Initial WebUI) in a new
+  // WebContents.
   GURL url2(chrome::kChromeUITabSearchURL);
   EXPECT_TRUE(IsTopChromeWebUIURL(url2));
-  EXPECT_FALSE(IsForInitialWebUI(url2));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents =
       CreateAndNavigateWebContents(url2, nullptr);
 
-  // Ensure that the process doesn't have the initial WebUI flag set.
-  EXPECT_FALSE(non_initial_webui_web_contents->GetPrimaryMainFrame()
-                   ->GetProcess()
-                   ->IsForInitialWebUI());
-  // Initial WebUI and non-initial WebUI should use different processes.
+  // It also has the TopChrome WebUI flag set.
+  EXPECT_TRUE(non_initial_webui_web_contents->GetPrimaryMainFrame()
+                  ->GetProcess()
+                  ->IsForTopChromeWebUI());
+  // Initial WebUI and other TopChrome WebUI should use different processes
+  // because Initial WebUI is explicitly isolated.
   EXPECT_NE(
       initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
       non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
@@ -213,34 +215,28 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   std::unique_ptr<content::WebContents> initial_webui_web_contents2 =
       CreateAndNavigateWebContents(url, &initializer);
 
-  // Initial WebUI should share process with the other initial WebUI
-  // WebContents, but not the non-initial WebUI topchrome one.
+  // Initial WebUI should share process with the other Initial WebUI
+  // WebContents, but not the non-Initial TopChrome WebUI one.
   EXPECT_EQ(initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
             initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
   EXPECT_NE(
       initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
       non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
 
-  // 4) Navigate to another non-initial WebUI topchrome in a new WebContents.
+  // 4) Navigate to another non-Initial TopChrome WebUI in a new WebContents.
   GURL url3(chrome::kChromeUIReadLaterURL);
   EXPECT_TRUE(IsTopChromeWebUIURL(url3));
-  EXPECT_FALSE(IsForInitialWebUI(url3));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents2 =
       CreateAndNavigateWebContents(url3, nullptr);
 
-  // Non-initial topchrome WebUI should share process with the other initial
-  // WebUI WebContents, but not the initial WebUI topchrome one.
+  // Non-Initial TopChrome WebUIs share a process with EACH OTHER,
+  // but not with the Initial WebUI.
   EXPECT_EQ(
       non_initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess(),
       non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
   EXPECT_NE(
       non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
       initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
-  EXPECT_NE(
-      non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
-      initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
 }
-
-}  // namespace
 
 }  // namespace waap

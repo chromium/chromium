@@ -230,10 +230,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual void OnImmersiveXrSessionStarted() = 0;
   virtual void OnImmersiveXrSessionStopped() = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns true if the process is for an initial WebUI.
-  virtual bool IsForInitialWebUI() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
+  // Returns true if the process is hosting a Top Chrome WebUI, e.g., Tab
+  // Search, Side Panel, Initial WebUI. High-privilege WebUIs that share
+  // processes use this to ensure they don't share with non-Top Chrome WebUIs.
+  //
+  // This function is defined on all platforms, but is expected to always return
+  // false on platforms that do not support Top Chrome WebUIs, e.g., Android.
+  virtual bool IsForTopChromeWebUI() const = 0;
 
   // Indicates whether the current RenderProcessHost is exclusively hosting
   // guest RenderFrames. Not all guest RenderFrames are created equal.  A guest,

@@ -65,6 +65,10 @@ class InitialWebUIOverrideChromeContentBrowserClient
     return initial_webui_url_ == url;
   }
 
+  bool IsTopChromeWebUIURL(const GURL& url) override {
+    return initial_webui_url_ == url;
+  }
+
  private:
   GURL initial_webui_url_;
 };

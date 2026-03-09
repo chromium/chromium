@@ -42,6 +42,9 @@ class InitialWebUIOverrideContentBrowserClient
   bool IsInitialWebUIURL(const GURL& url) override {
     return initial_webui_url_ == url;
   }
+  bool IsTopChromeWebUIURL(const GURL& url) override {
+    return initial_webui_url_ == url;
+  }
 
  private:
   GURL initial_webui_url_;
@@ -149,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, CommitInitialWebUI) {
   EXPECT_EQ("bar", EvalJs(rfh.get(), "document.body.innerHTML"));
 
   // Ensure that the process has the correct flag set.
-  EXPECT_TRUE(rfh->GetProcess()->IsForInitialWebUI());
+  EXPECT_TRUE(rfh->GetProcess()->IsForTopChromeWebUI());
 
   // Check that CSP was set.
   {
