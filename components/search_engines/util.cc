@@ -595,7 +595,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
       // entries from Sync, the conflict resolution logic knows that this was
       // updated and propagates the new values to the server.
       prepopulated_url->last_modified = base::Time::Now();
-      actions.edited_engines.push_back({existing_url, *prepopulated_url});
+      actions.edited_engines.emplace_back(existing_url, *prepopulated_url);
     } else {
       actions.added_engines.push_back(*prepopulated_url);
     }
@@ -619,7 +619,7 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
         // prepopulate_id for it.
         TemplateURLData data = template_url->data();
         data.prepopulate_id = 0;
-        actions.edited_engines.push_back({template_url, data});
+        actions.edited_engines.emplace_back(template_url, data);
       } else {
         actions.removed_engines.push_back(template_url);
       }
@@ -688,7 +688,7 @@ ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
       // entries from Sync, the conflict resolution logic knows that this was
       // updated and propagates the new values to the server.
       url->last_modified = base::Time::Now();
-      actions.edited_engines.push_back({existing_url, *url});
+      actions.edited_engines.emplace_back(existing_url, *url);
     } else {
       actions.added_engines.push_back(*url);
     }
