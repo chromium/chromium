@@ -1,6 +1,8 @@
 This is a wdspec test.
 [FAIL] test_set_standard_headers[fetch-referer-some nonsense value]
   KeyError: 'referer'
+[FAIL] test_set_standard_headers[fetch-x-diacritics-\\xe4]
+  KeyError: 'headers'
 [FAIL] test_set_standard_headers[fetch-x-unicode-value-\\u4f60\\u597d\\u4e16\\u754c]
   AssertionError: assert ['????'] == ['你好世界']
 [FAIL] test_set_standard_headers[fetch-host-some nonsense value]
