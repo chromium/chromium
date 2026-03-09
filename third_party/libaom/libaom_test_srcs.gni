@@ -33,6 +33,7 @@ aom_unit_test_common_sources = [
 
 aom_unit_test_decoder_sources = [
   "//third_party/libaom/source/libaom/test/decode_api_test.cc",
+  "//third_party/libaom/source/libaom/test/decode_frame_size_limit_test.cc",
   "//third_party/libaom/source/libaom/test/decode_scalability_test.cc",
   "//third_party/libaom/source/libaom/test/external_frame_buffer_test.cc",
   "//third_party/libaom/source/libaom/test/invalid_file_test.cc",
