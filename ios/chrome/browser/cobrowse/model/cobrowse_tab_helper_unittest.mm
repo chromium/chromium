@@ -6,6 +6,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -27,7 +29,12 @@ class CobrowseTabHelperTest : public PlatformTest {
     feature_list_.InitAndEnableFeature(kAimCobrowse);
 
     profile_ = TestProfileIOS::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+
+    mock_scene_state_ = OCMClassMock([SceneState class]);
+    mock_tab_grid_state_ = OCMClassMock([TabGridState class]);
+    OCMStub([mock_scene_state_ tabGridState]).andReturn(mock_tab_grid_state_);
+
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state_);
     web_state_list_ = browser_->GetWebStateList();
 
     // Create a mock dispatcher and associate it with a mock scene commands
@@ -61,6 +68,8 @@ class CobrowseTabHelperTest : public PlatformTest {
   raw_ptr<CobrowseTabHelper> tab_helper_;
   id mock_scene_commands_handler_;
   id mock_command_dispatcher_;
+  id mock_scene_state_;
+  id mock_tab_grid_state_;
 };
 
 // Tests that showAssistant is called when navigating in a new tab if the opener
@@ -68,6 +77,8 @@ class CobrowseTabHelperTest : public PlatformTest {
 TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
+
+  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
   // Create an opener WebState and add it to the list.
   auto opener_web_state = std::make_unique<web::FakeWebState>();
@@ -136,6 +147,8 @@ TEST_F(CobrowseTabHelperTest, NoTriggerFromNonAimOpener) {
   web::FakeNavigationContext context;
   context.SetUrl(next_url);
 
+  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
+
   [[mock_scene_commands_handler_ reject] showAssistant];
 
   new_tab_helper->DidStartNavigation(new_web_state_ptr, &context);
@@ -153,6 +166,8 @@ TEST_F(CobrowseTabHelperTest, NoTriggerInSameTab) {
 
   web::FakeNavigationContext context;
   context.SetUrl(non_aim_url);
+
+  OCMStub([mock_tab_grid_state_ tabGridVisible]).andReturn(NO);
 
   [[mock_scene_commands_handler_ reject] showAssistant];
 
