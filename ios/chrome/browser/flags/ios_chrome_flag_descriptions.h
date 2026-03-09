@@ -65,6 +65,9 @@ extern const char kAutofillAcrossIframesDescription[];
 extern const char kAutofillAiCreateEntityDataManagerName[];
 extern const char kAutofillAiCreateEntityDataManagerDescription[];
 
+extern const char kAutofillAiReauthRequiredName[];
+extern const char kAutofillAiReauthRequiredDescription[];
+
 extern const char kAutofillAiWithDataSchemaName[];
 extern const char kAutofillAiWithDataSchemaDescription[];
 

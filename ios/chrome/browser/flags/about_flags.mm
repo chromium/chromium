@@ -2717,6 +2717,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAiCreateEntityDataManager)},
+    {"autofill-ai-reauth-required",
+     flag_descriptions::kAutofillAiReauthRequiredName,
+     flag_descriptions::kAutofillAiReauthRequiredDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiReauthRequired)},
     {"autofill-ai-with-data-schema",
      flag_descriptions::kAutofillAiWithDataSchemaName,
      flag_descriptions::kAutofillAiWithDataSchemaDescription, flags_ui::kOsIos,

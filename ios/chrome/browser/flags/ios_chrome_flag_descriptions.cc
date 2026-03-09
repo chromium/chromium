@@ -77,6 +77,10 @@ const char kAutofillAiCreateEntityDataManagerName[] =
 const char kAutofillAiCreateEntityDataManagerDescription[] =
     "Enables Autofill AI Create Entity Data Manager.";
 
+const char kAutofillAiReauthRequiredName[] = "Autofill AI Reauth Required";
+const char kAutofillAiReauthRequiredDescription[] =
+    "Enables Autofill AI Reauth Required.";
+
 const char kAutofillAiWithDataSchemaName[] = "Autofill AI With Data Schema";
 const char kAutofillAiWithDataSchemaDescription[] =
     "Enables Autofill AI With Data Schema.";

@@ -720,6 +720,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "autofill-ai-reauth-required",
+    "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-ai-with-data-schema",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 160

@@ -16434,6 +16434,7 @@ from previous Chrome versions.
   <int value="672599279" label="WebUiSystemFont:disabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="673960072" label="ViewportSegments:enabled"/>
+  <int value="674221890" label="autofill-ai-reauth-required:enabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
   <int value="674788251" label="EnableNewBadgeOnMenuItems:enabled"/>
   <int value="675427884" label="EnableFakeMouseHeuristic:enabled"/>
@@ -18179,6 +18180,7 @@ from previous Chrome versions.
       label="ForceSupervisedUserReauthenticationForYouTube:disabled"/>
   <int value="1262757386" label="OmniboxDebugLogs:disabled"/>
   <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
+  <int value="1264635129" label="autofill-ai-reauth-required:disabled"/>
   <int value="1265411197" label="EdgeToEdgeBottomChin:disabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
   <int value="1265587614" label="AppDiscoveryForOobe:disabled"/>
