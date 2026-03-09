@@ -39,7 +39,7 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
     <cr-button class="cancel-button" @click="${this.onCancelButtonClick_}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button">
+    <cr-button class="action-button" @click="${this.onActionButtonClick_}">
       $i18n{reportUnsafeSiteDialogSendButtonLabel}
     </cr-button>
   </div>

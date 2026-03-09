@@ -56,6 +56,10 @@ class SafeBrowsingTabObserver
 
   ~SafeBrowsingTabObserver() override;
 
+  ClientSideDetectionHost* client_side_detection_host() {
+    return safebrowsing_detection_host_.get();
+  }
+
  private:
   SafeBrowsingTabObserver(content::WebContents* web_contents,
                           std::unique_ptr<Delegate> delegate);

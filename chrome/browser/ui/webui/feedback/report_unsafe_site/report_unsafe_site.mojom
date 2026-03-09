@@ -13,6 +13,10 @@ interface PageHandler {
   // used for display only.
   GetTriggeringPageInfo() => (string pageUrl, url.mojom.Url screenshotDataUri);
 
+  // Sends a safe-browsing CSD ping with the screenshot if the user chose to
+  // provide it. Calls callback once safe-browsing CSD ping has been sent.
+  SendReport(bool includeScreenshot) => ();
+
   // Closes the dialog.
   CloseDialog();
 };

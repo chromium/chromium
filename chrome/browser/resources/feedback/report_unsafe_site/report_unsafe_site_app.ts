@@ -61,6 +61,15 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
     this.includeScreenshot_ = e.detail.value;
   }
 
+  protected async onActionButtonClick_() {
+    const pageHandler =
+        ReportUnsafeSiteBrowserProxyImpl.getInstance().getPageHandler();
+    await pageHandler.sendReport(this.includeScreenshot_);
+    // TODO(crbug.com/490928372) Show spinner while waiting for safe-browsing
+    // ping to be sent.
+    pageHandler.closeDialog();
+  }
+
   protected onCancelButtonClick_() {
     ReportUnsafeSiteBrowserProxyImpl.getInstance()
         .getPageHandler()
