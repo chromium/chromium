@@ -454,7 +454,10 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   base::UmaHistogramTimes(kHistogramStartRequestToReceiveResponse,
                           response_received_time_ - request_start_time_);
   base::UmaHistogramBoolean(
-      kHistogramSyntheticResponseIsValidBodyStreamProvided, body.is_valid());
+      base::StrCat({kHistogramSyntheticResponseIsValidBodyStreamProvided,
+                    status_ == SyntheticResponseStatus::kReady ? ".Ready"
+                                                               : ".NotReady"}),
+      body.is_valid());
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());

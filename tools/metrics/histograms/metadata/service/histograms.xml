@@ -2061,7 +2061,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.SyntheticResponse.IsValidBodyStreamProvided"
+<histogram
+    name="ServiceWorker.SyntheticResponse.IsValidBodyStreamProvided.{Status}"
     enum="Boolean" expires_after="2026-07-19">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -2072,6 +2073,14 @@ chromium-metrics-reviews@google.com.
     the network, while committed the navigation with locally stored headers. If
     this is true, the URLLoader provided a valid response body handle.
   </summary>
+  <token key="Status">
+    <variant name="NotReady"
+        summary="Required data pipes are not created yet, or there is no
+                 local response header."/>
+    <variant name="Ready"
+        summary="Required data pipes are all created, and there is a local
+                 response header."/>
+  </token>
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.ReceiveResponseToComplete"
