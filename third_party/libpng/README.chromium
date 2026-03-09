@@ -1,8 +1,8 @@
 Name: libpng
-URL: http://libpng.org/
-Version: 1.6.43
+URL: https://github.com/pnggroup/libpng
+Version: 1.6.55
 Update Mechanism: Manual
-CPEPrefix: cpe:/a:libpng:libpng:1.6.43
+CPEPrefix: cpe:/a:libpng:libpng:1.6.55
 Security Critical: no
 Shipped: no
 License: Libpng-2.0, Libpng
@@ -10,9 +10,11 @@ License File: LICENSE
 License Android Compatible: yes
 
 Description:
-Updated to 1.6.43, stripped all unneeded files.
-
-- Use custom configuration file pnglibconf.h, which turns off all features that
-  are not in use.
+- Copied sources from v<version> tag upstream.
+- Dropped unused files.
+- Use custom configuration file pnglibconf.h, which was at one point a
+  deliberate selection of libpng features to enable in Chrome. The
+  file hasn't been updated one way or another to reflect features added in
+  newer library versions.
 - Configures custom png chunk user limits (crbug.com/117369) in pnglibconf.h.
 - Keeps the fuzz target in contrib/oss-fuzz/ for running on clusterfuzz.

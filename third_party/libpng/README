@@ -1,4 +1,4 @@
-README for libpng version 1.6.43
+README for libpng version 1.6.55
 ================================
 
 See the note about version numbers near the top of `png.h`.
@@ -24,14 +24,14 @@ for more things than just PNG files.  You can use zlib as a drop-in
 replacement for `fread()` and `fwrite()`, if you are so inclined.
 
 zlib should be available at the same place that libpng is, or at
-https://zlib.net .
+<https://zlib.net>.
 
 You may also want a copy of the PNG specification.  It is available
 as an RFC, a W3C Recommendation, and an ISO/IEC Standard.  You can find
-these at http://www.libpng.org/pub/png/pngdocs.html .
+these at <http://www.libpng.org/pub/png/pngdocs.html>.
 
-This code is currently being archived at https://libpng.sourceforge.io
-in the download area, and at http://libpng.download/src .
+This code is currently being archived at <https://libpng.sourceforge.io>
+in the download area, and at <http://libpng.download/src>.
 
 This release, based in a large way on Glenn's, Guy's and Andreas'
 earlier work, was created and will be supported by myself and the PNG
@@ -39,12 +39,12 @@ development group.
 
 Send comments, corrections and commendations to `png-mng-implement`
 at `lists.sourceforge.net`.  (Subscription is required; visit
-https://lists.sourceforge.net/lists/listinfo/png-mng-implement
+<https://lists.sourceforge.net/lists/listinfo/png-mng-implement>
 to subscribe.)
 
 Send general questions about the PNG specification to `png-mng-misc`
 at `lists.sourceforge.net`.  (Subscription is required; visit
-https://lists.sourceforge.net/lists/listinfo/png-mng-misc
+<https://lists.sourceforge.net/lists/listinfo/png-mng-misc>
 to subscribe.)
 
 Historical notes
@@ -147,6 +147,7 @@ Files included in this distribution
     loongarch/    =>  Optimized code for LoongArch LSX
     mips/         =>  Optimized code for MIPS MSA and MIPS MMI
     powerpc/      =>  Optimized code for PowerPC VSX
+    riscv/        =>  Optimized code for the RISC-V platform
     ci/           =>  Scripts for continuous integration
     contrib/      =>  External contributions
         arm-neon/     =>  Optimized code for the ARM-NEON platform
@@ -157,13 +158,12 @@ Files included in this distribution
                           "PNG: The Definitive Guide" by Greg Roelofs,
                           O'Reilly, 1999
         libtests/     =>  Test programs
-        oss-fuzz/     =>  Files used by the OSS-Fuzz project for fuzz-testing
-                          libpng
         pngexif/      =>  Program to inspect the EXIF information in PNG files
         pngminim/     =>  Minimal decoder, encoder, and progressive decoder
                           programs demonstrating the use of pngusr.dfa
         pngminus/     =>  Simple pnm2png and png2pnm programs
         pngsuite/     =>  Test images
+        riscv-rvv/    =>  Optimized code for the RISC-V Vector platform
         testpngs/     =>  Test images
         tools/        =>  Various tools
         visupng/      =>  VisualPng, a Windows viewer for PNG images
