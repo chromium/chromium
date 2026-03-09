@@ -219,7 +219,8 @@ class AutofillClient {
                   std::vector<Suggestion> suggestions,
                   AutofillSuggestionTriggerSource trigger_source,
                   int32_t form_control_ax_id,
-                  PopupAnchorType anchor_type);
+                  PopupAnchorType anchor_type,
+                  bool show_tabbed_popup = false);
     PopupOpenArgs(const PopupOpenArgs&);
     PopupOpenArgs(PopupOpenArgs&&);
     PopupOpenArgs& operator=(const PopupOpenArgs&);
@@ -236,6 +237,7 @@ class AutofillClient {
         AutofillSuggestionTriggerSource::kUnspecified;
     int32_t form_control_ax_id = 0;
     PopupAnchorType anchor_type = PopupAnchorType::kField;
+    bool show_tabbed_popup = false;
   };
 
   using EntityImportPromptResultCallback =

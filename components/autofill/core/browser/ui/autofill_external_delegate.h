@@ -246,6 +246,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Attempts to fill an Autofill AI `suggestion` into for `query_field_`;
   void FillAutofillAiFormAndHidePopup(const Suggestion& suggestion);
 
+  // Returns if the Pay Now Pay Later tabs should be shown.
+  virtual bool ShouldShowPayNowPayLaterTabs();
+
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions

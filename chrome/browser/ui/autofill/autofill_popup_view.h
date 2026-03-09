@@ -21,6 +21,10 @@ class AutofillSuggestionController;
 
 // The interface for creating and controlling a platform-dependent
 // AutofillPopupView.
+// TODO(crbug.com/477689220): Check if this interface is still needed, and if
+// not, deprecate it. This interface is only implemented by `PopupViewViews` and
+// thus is no longer platform-dependent. The struct definitions can then be
+// moved to `PopupViewViews`.
 class AutofillPopupView {
  public:
   struct SearchBarConfig {
@@ -28,11 +32,39 @@ class AutofillPopupView {
     std::u16string no_results_message;
   };
 
-  // Factory function for creating the view. Providing `std::nullopt` to
-  // the `search_bar_config` results in creating a popup without a search bar.
+  // Configuration for displaying a tabbed pane within the Autofill popup.
+  struct TabbedPaneConfig {
+    enum class TabType {
+      kPayNow = 0,
+      kPayLater = 1,
+    };
+
+    // Represents a single tab to be rendered in the tabbed pane.
+    struct Tab {
+      TabType type;
+      std::u16string title;
+    };
+
+    explicit TabbedPaneConfig(std::vector<TabbedPaneConfig::Tab> tabs);
+    TabbedPaneConfig(const TabbedPaneConfig&);
+    TabbedPaneConfig(TabbedPaneConfig&&);
+    TabbedPaneConfig& operator=(const TabbedPaneConfig&);
+    TabbedPaneConfig& operator=(TabbedPaneConfig&&);
+    ~TabbedPaneConfig();
+
+    // The ordered list of tabs that should be displayed in the tabbed pane.
+    std::vector<Tab> tabs;
+  };
+
+  // Factory function for creating the view.
+  // `search_bar_config` will be used to create a popup with a search bar, if
+  // present.
+  // `tabbed_pane_config` will be used to create a popup with a tabbed pane,
+  // if present.
   static base::WeakPtr<AutofillPopupView> Create(
       base::WeakPtr<AutofillSuggestionController> controller,
-      std::optional<const SearchBarConfig> search_bar_config = std::nullopt);
+      std::optional<const SearchBarConfig> search_bar_config = std::nullopt,
+      std::optional<const TabbedPaneConfig> tabbed_pane_config = std::nullopt);
 
   // Attempts to display the Autofill popup and fills it with data from the
   // controller. Returns whether the popup was shown.

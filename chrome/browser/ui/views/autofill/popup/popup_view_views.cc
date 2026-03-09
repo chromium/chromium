@@ -90,6 +90,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -226,7 +227,8 @@ PopupViewViews::PopupViewViews(
 
 PopupViewViews::PopupViewViews(
     base::WeakPtr<AutofillPopupController> controller,
-    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config)
+    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config,
+    std::optional<const AutofillPopupView::TabbedPaneConfig> tabbed_pane_config)
     : PopupBaseView(controller,
                     views::Widget::GetTopLevelWidgetForNativeView(
                         controller->container_view()),
@@ -234,7 +236,8 @@ PopupViewViews::PopupViewViews(
                         ? views::Widget::InitParams::Activatable::kYes
                         : views::Widget::InitParams::Activatable::kDefault),
       controller_(controller),
-      search_bar_config_(std::move(search_bar_config)) {
+      search_bar_config_(std::move(search_bar_config)),
+      tabbed_pane_config_(std::move(tabbed_pane_config)) {
   InitViews();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
@@ -971,6 +974,10 @@ void PopupViewViews::InitViews() {
     AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
   }
 
+  if (tabbed_pane_config_) {
+    CreateTabbedPaneView();
+  }
+
   suggestions_container_ =
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -1248,6 +1255,36 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
   }
 
   return size;
+}
+
+void PopupViewViews::CreateTabbedPaneView() {
+  auto tabbed_pane = std::make_unique<views::TabbedPane>();
+
+  auto create_empty_pane = []() {
+    auto pane = std::make_unique<views::View>();
+    pane->SetBorder(
+        views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
+            views::INSETS_DIALOG_SUBSECTION)));
+    return pane;
+  };
+
+  const int kCustomTabHeight = 52;
+  for (const auto& tab_config : tabbed_pane_config_->tabs) {
+    tabbed_pane->AddTab(tab_config.title, create_empty_pane());
+
+    views::TabbedPaneTab* tab_view =
+        tabbed_pane->GetTabAt(tabbed_pane->GetTabCount() - 1);
+    tab_view->SetHeight(kCustomTabHeight);
+  }
+
+  // TODO(crbug.com/477689220): Investigate better approaches (e.g., layout
+  // management) for sizing the tabbed pane so it doesn't overlap the
+  // suggestions container.
+  // Calculate and set the preferred size for the tabbed pane based on its
+  // contents.
+  tabbed_pane->SetPreferredSize(tabbed_pane->GetPreferredSize());
+
+  tabbed_pane_ = AddChildView(std::move(tabbed_pane));
 }
 
 bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
@@ -1544,7 +1581,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
 // static
 base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
     base::WeakPtr<AutofillSuggestionController> controller,
-    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config) {
+    std::optional<const AutofillPopupView::SearchBarConfig> search_bar_config,
+    std::optional<const AutofillPopupView::TabbedPaneConfig>
+        tabbed_pane_config) {
   if (!controller || !CanShowRootPopup(*controller)) {
     return nullptr;
   }
@@ -1552,7 +1591,7 @@ base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
   // On Desktop, all controllers are `AutofillPopupController`s.
   return (new PopupViewViews(
               static_cast<AutofillPopupController&>(*controller).GetWeakPtr(),
-              std::move(search_bar_config)))
+              std::move(search_bar_config), std::move(tabbed_pane_config)))
       ->GetWeakPtr();
 }
 

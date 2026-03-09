@@ -163,6 +163,7 @@ source_set("impl") {
     "autofill_client_provider.cc",
     "autofill_client_provider_factory.cc",
     "autofill_popup_hide_helper.cc",
+    "autofill_popup_view.cc",
     "autofill_suggestion_controller.cc",
     "autofill_suggestion_controller_utils.cc",
     "chrome_autofill_client.cc",

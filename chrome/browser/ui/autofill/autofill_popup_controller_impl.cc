@@ -265,10 +265,20 @@ void AutofillPopupControllerImpl::Show(
     OnSuggestionsChanged();
   } else {
     bool has_parent = parent_controller_ && parent_controller_->get();
+    auto tabbed_pane_config =
+        controller_common_.show_tabbed_popup
+            ? std::make_optional<AutofillPopupView::TabbedPaneConfig>(
+                  std::vector<AutofillPopupView::TabbedPaneConfig::Tab>{
+                      {AutofillPopupView::TabbedPaneConfig::TabType::kPayNow,
+                       l10n_util::GetStringUTF16(IDS_AUTOFILL_PAY_NOW)},
+                      {AutofillPopupView::TabbedPaneConfig::TabType::kPayLater,
+                       l10n_util::GetStringUTF16(IDS_AUTOFILL_PAY_LATER)}})
+            : std::nullopt;
     view_ = has_parent
                 ? parent_controller_->get()->CreateSubPopupView(GetWeakPtr())
                 : AutofillPopupView::Create(GetWeakPtr(),
-                                            GetSearchBarConfig(trigger_source));
+                                            GetSearchBarConfig(trigger_source),
+                                            std::move(tabbed_pane_config));
 
     // It is possible to fail to create the popup, in this case
     // treat the popup as hiding right away.
