@@ -18,6 +18,8 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace private_ai {
+
 class PrivateAiInternalsUI;
 class PrivateAiInternalsPageHandler;
 
@@ -50,5 +52,7 @@ class PrivateAiInternalsUI : public ui::MojoWebUIController {
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
+
+}  // namespace private_ai
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_UI_H_

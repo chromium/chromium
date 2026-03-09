@@ -27,6 +27,8 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
+namespace private_ai {
+
 PrivateAiInternalsUIConfig::PrivateAiInternalsUIConfig()
     : DefaultInternalWebUIConfig(chrome::kChromeUIPrivateAiInternalsHost) {}
 
@@ -34,13 +36,12 @@ PrivateAiInternalsUIConfig::~PrivateAiInternalsUIConfig() = default;
 
 bool PrivateAiInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  if (!base::FeatureList::IsEnabled(private_ai::kPrivateAi)) {
+  if (!base::FeatureList::IsEnabled(kPrivateAi)) {
     return false;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* private_ai_service =
-      private_ai::PrivateAiServiceFactory::GetForProfile(profile);
+  auto* private_ai_service = PrivateAiServiceFactory::GetForProfile(profile);
   return private_ai_service && private_ai_service->GetTokenManager();
 }
 
@@ -56,17 +57,16 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
       source, base::span(kPrivateAiInternalsResources),
       IDR_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_HTML);
 
-  source->AddString("default_url", private_ai::kPrivateAiUrl.Get());
-  source->AddString("default_api_key", private_ai::kPrivateAiApiKey.Get());
-  source->AddString("default_proxy_url",
-                    private_ai::kPrivateAiProxyServerUrl.Get());
-  source->AddString("default_feature_name",
-                    private_ai::proto::FeatureName_Name(
-                        private_ai::proto::FeatureName::
-                            FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT));
+  source->AddString("default_url", kPrivateAiUrl.Get());
+  source->AddString("default_api_key", kPrivateAiApiKey.Get());
+  source->AddString("default_proxy_url", kPrivateAiProxyServerUrl.Get());
+  source->AddString(
+      "default_feature_name",
+      proto::FeatureName_Name(
+          proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT));
   source->AddBoolean(
       "default_use_token_attestation",
-      base::FeatureList::IsEnabled(private_ai::kPrivateAiUseTokenAttestation));
+      base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation));
 }
 
 PrivateAiInternalsUI::~PrivateAiInternalsUI() = default;
@@ -75,8 +75,7 @@ void PrivateAiInternalsUI::BindInterface(
     mojo::PendingReceiver<
         private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  auto* private_ai_service =
-      private_ai::PrivateAiServiceFactory::GetForProfile(profile);
+  auto* private_ai_service = PrivateAiServiceFactory::GetForProfile(profile);
 
   // IsWebUIEnabled should have prevented this from being created if the token
   // service or manager is not available.
@@ -92,3 +91,5 @@ void PrivateAiInternalsUI::BindInterface(
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrivateAiInternalsUI)
+
+}  // namespace private_ai

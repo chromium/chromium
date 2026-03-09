@@ -24,10 +24,12 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+namespace private_ai {
+
 PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
-    private_ai::phosphor::TokenManager* token_manager,
+    phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context,
-    private_ai::Client* private_ai_client,
+    Client* private_ai_client,
     mojo::PendingReceiver<
         private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver)
     : token_manager_(token_manager),
@@ -51,10 +53,10 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                                             const std::string& proxy_url,
                                             bool use_token_attestation,
                                             ConnectCallback callback) {
-  webui_client_ = private_ai::Client::Create(
-      url, api_key, proxy_url, use_token_attestation, network_context_,
-      token_manager_, content::GetNetworkService(),
-      std::make_unique<private_ai::PrivateAiLogger>());
+  webui_client_ = Client::Create(url, api_key, proxy_url, use_token_attestation,
+                                 network_context_, token_manager_,
+                                 content::GetNetworkService(),
+                                 std::make_unique<PrivateAiLogger>());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   webui_client_->EstablishConnection();
   std::move(callback).Run();
@@ -78,9 +80,8 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
     return;
   }
 
-  private_ai::proto::FeatureName feature_name_proto;
-  if (!private_ai::proto::FeatureName_Parse(feature_name,
-                                            &feature_name_proto)) {
+  proto::FeatureName feature_name_proto;
+  if (!proto::FeatureName_Parse(feature_name, &feature_name_proto)) {
     auto result = private_ai_internals::mojom::PrivateAiResponse::New();
     result->error = std::string("Error: invalid feature_name: ") + feature_name;
     std::move(callback).Run(std::move(result));
@@ -91,7 +92,7 @@ void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
       feature_name_proto, request,
       base::BindOnce(
           [](SendRequestCallback callback,
-             base::expected<std::string, private_ai::ErrorCode> response) {
+             base::expected<std::string, ErrorCode> response) {
             auto result = private_ai_internals::mojom::PrivateAiResponse::New();
             if (response.has_value()) {
               result->response = *response;
@@ -134,3 +135,5 @@ void PrivateAiInternalsPageHandler::LogToPage(
   page_->OnLogMessage(level, timestamp + location.function_name() + ": " +
                                  std::string(message));
 }
+
+}  // namespace private_ai

@@ -13,25 +13,26 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace private_ai {
-class Client;
-namespace phosphor {
-class TokenManager;
-}  // namespace phosphor
-}  // namespace private_ai
-
 namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
+namespace private_ai {
+
+class Client;
+
+namespace phosphor {
+class TokenManager;
+}  // namespace phosphor
+
 class PrivateAiInternalsPageHandler
     : public private_ai_internals::mojom::PrivateAiInternalsPageHandler,
-      public private_ai::PrivateAiLogger::Observer {
+      public PrivateAiLogger::Observer {
  public:
   explicit PrivateAiInternalsPageHandler(
-      private_ai::phosphor::TokenManager* token_manager,
+      phosphor::TokenManager* token_manager,
       network::mojom::NetworkContext* network_context,
-      private_ai::Client* private_ai_client,
+      Client* private_ai_client,
       mojo::PendingReceiver<
           private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver);
   ~PrivateAiInternalsPageHandler() override;
@@ -54,7 +55,7 @@ class PrivateAiInternalsPageHandler
                    const std::string& request,
                    SendRequestCallback callback) override;
 
-  // private_ai::PrivateAiLogger::Observer:
+  // PrivateAiLogger::Observer:
   void OnLogInfo(const base::Location& location,
                  std::string_view message) override;
   void OnLogError(const base::Location& location,
@@ -65,19 +66,20 @@ class PrivateAiInternalsPageHandler
                  const base::Location& location,
                  std::string_view message);
 
-  raw_ptr<private_ai::phosphor::TokenManager> token_manager_;
+  raw_ptr<phosphor::TokenManager> token_manager_;
   // The global client, only used for observation.
-  raw_ptr<private_ai::Client> private_ai_client_;
+  raw_ptr<Client> private_ai_client_;
   // The client created by webui. Used for testing.
-  std::unique_ptr<private_ai::Client> webui_client_;
+  std::unique_ptr<Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>
       receiver_;
   mojo::Remote<private_ai_internals::mojom::PrivateAiInternalsPage> page_;
 
-  base::ScopedMultiSourceObservation<private_ai::PrivateAiLogger,
-                                     private_ai::PrivateAiLogger::Observer>
+  base::ScopedMultiSourceObservation<PrivateAiLogger, PrivateAiLogger::Observer>
       scoped_logger_observations_{this};
 };
+
+}  // namespace private_ai
 
 #endif  // CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
