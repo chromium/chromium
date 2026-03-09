@@ -9,20 +9,18 @@ import hashlib
 import io
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
 
 REPOSITORY_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 sys.path.insert(0, REPOSITORY_ROOT)
 
-from build.android.gyp.util import build_utils  # pylint: disable=wrong-import-position
 from components.cronet.tools import api_static_checks  # pylint: disable=wrong-import-position
 from components.cronet.tools import update_api  # pylint: disable=wrong-import-position
-
-JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
-JAVAC_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javac')
+from components.cronet.tools import utils  # pylint: disable=wrong-import-position
 
 # pylint: disable=useless-object-inheritance
 
@@ -72,10 +70,9 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
         self.temp_dir = tempfile.mkdtemp(dir=self.exe_path)
         os.chdir(self.temp_dir)
         os.mkdir('android')
-        with open(API_VERSION_FILENAME, 'w') as api_version_file:
-            api_version_file.write('0')
-        with open(API_FILENAME, 'w') as api_file:
-            api_file.write('}\nStamp: 7d9d25f71cb8a5aba86202540a20d405\n')
+        utils.write_file(API_VERSION_FILENAME, '0')
+        utils.write_file(API_FILENAME,
+                         '}\nStamp: 7d9d25f71cb8a5aba86202540a20d405\n')
         shutil.copytree(os.path.dirname(__file__), 'tools')
 
     def tearDown(self):
@@ -89,13 +86,12 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
         class_filenames = class_name + '*.class'
         jar_filename = class_name + '.jar'
 
-        with open(java_filename, 'w') as java_file:
-            java_file.write('public class %s {' % class_name)
-            java_file.write(java)
-            java_file.write('}')
-        os.system(f'{os.path.abspath(JAVAC_PATH)} {java_filename}')
-        os.system(
-            f'{os.path.abspath(JAR_PATH)} cf {jar_filename} {class_filenames}')
+        utils.write_file(java_filename,
+                         'public class %s {%s}' % (class_name, java))
+        utils.run([utils.JAVAC_PATH, java_filename], verbose=False)
+        utils.run(f'{utils.JAR_PATH} cf {jar_filename} {class_filenames}',
+                  verbose=False,
+                  shell=True)
         return jar_filename
 
     def run_check_api_calls(self, api_java, impl_java):
@@ -106,6 +102,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
             def __init__(self):
                 self.api_jar = test.make_jar(api_java, 'Api')
                 self.impl_jar = [test.make_jar(impl_java, 'Impl')]
+                self.verbose = False
 
         opts = MockOpts()
         with capture_output() as return_output:
@@ -134,15 +131,18 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
             [False, ERROR_PREFIX_CHECK_API_CALLS + 'Impl/b -> Api/a:()V\n'])
 
     def run_check_api_version(self, java):
-        OUT_FILENAME = 'out.txt'
-        return_code = os.system('./tools/update_api.py --api_jar %s > %s' %
-                                (self.make_jar(java, 'Api'), OUT_FILENAME))
-        with open(API_FILENAME, 'r') as api_file:
-            api = api_file.read()
-        with open(API_VERSION_FILENAME, 'r') as api_version_file:
-            api_version = api_version_file.read()
-        with open(OUT_FILENAME, 'r') as out_file:
-            output = out_file.read()
+        jar_path = self.make_jar(java, 'Api')
+        try:
+            output = utils.run_and_get_stdout(
+                ['python3', './tools/update_api.py', '--api_jar', jar_path],
+                verbose=False)
+            return_code = 0
+        except subprocess.CalledProcessError as e:
+            output = e.stdout.decode('utf-8') + e.stderr.decode('utf-8')
+            return_code = e.returncode
+
+        api = utils.read_file(API_FILENAME)
+        api_version = utils.read_file(API_VERSION_FILENAME)
 
         # Verify stamp
         api_stamp = api.split('\n')[-2]

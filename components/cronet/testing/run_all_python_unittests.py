@@ -21,5 +21,4 @@ if __name__ == '__main__':
     sys.exit(
         typ.main(top_level_dirs=[
             os.path.join(REPOSITORY_ROOT, 'components', 'cronet')
-        ],
-                 skip=['tools.api_static_checks_unittest.*']))
+        ]))
