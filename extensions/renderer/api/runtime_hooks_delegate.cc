@@ -51,7 +51,7 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
-      info.HolderV2()->GetCreationContextChecked(isolate);
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -69,7 +69,7 @@ void GetDynamicId(v8::Local<v8::Name> property_name,
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
-      info.HolderV2()->GetCreationContextChecked(isolate);
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed

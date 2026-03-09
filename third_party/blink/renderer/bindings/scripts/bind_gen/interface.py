@@ -456,7 +456,7 @@ def bind_callback_local_vars(code_node, cg_context):
         # the property being processed.
         local_vars.append(
             S("v8_receiver",
-              "v8::Local<v8::Object> ${v8_receiver} = ${info}.HolderV2();"))
+              "v8::Local<v8::Object> ${v8_receiver} = ${info}.Holder();"))
 
     # v8_return_value
     def create_v8_return_value(symbol_node):
@@ -479,8 +479,7 @@ def bind_callback_local_vars(code_node, cg_context):
 
 
 def _make_throw_security_error():
-    return TextNode(
-        "BindingSecurity::FailedAccessCheckFor(${info}.HolderV2());")
+    return TextNode("BindingSecurity::FailedAccessCheckFor(${info}.Holder());")
 
 
 def _make_reflect_content_attribute_key(code_node, cg_context):
@@ -3279,7 +3278,7 @@ def make_named_property_setter_callback(cg_context, function_name):
             body.append(
                 TextNode("""\
 // [LegacyOverrideBuiltIns]
-if (${info}.HolderV2()->GetRealNamedPropertyAttributesInPrototypeChain(
+if (${info}.Holder()->GetRealNamedPropertyAttributesInPrototypeChain(
         ${current_context}, ${v8_property_name}).IsJust()) {
   // Do not intercept. Fallback to the existing property.
   return v8::Intercepted::kNo;

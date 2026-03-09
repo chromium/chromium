@@ -979,7 +979,7 @@ TEST_F(ArgumentSpecUnitTest, V8Conversion) {
       v8::Local<v8::Object> object = value.As<v8::Object>();
       // We expect a null prototype to ensure we avoid tricky getters/setters on
       // the Object prototype.
-      EXPECT_TRUE(object->GetPrototypeV2()->IsNull());
+      EXPECT_TRUE(object->GetPrototype()->IsNull());
       gin::Dictionary dict(v8::Isolate::GetCurrent(), object);
       v8::Local<v8::Value> result;
       ASSERT_TRUE(dict.Get("str", &result));

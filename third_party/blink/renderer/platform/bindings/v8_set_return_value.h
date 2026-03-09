@@ -69,7 +69,7 @@ struct V8ReturnValue {
   }
   static v8::Local<v8::Object> GetReceiver(
       const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return info.HolderV2();
+    return info.Holder();
   }
   // Helper function for ScriptWrappable
   template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
@@ -450,14 +450,14 @@ inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              const WrapperTypeInfo* wrapper_type_info,
                              V8ReturnValue::InterfaceObject) {
   info.GetReturnValue().Set(GetExposedInterfaceObject(
-      info.GetIsolate(), info.HolderV2(), wrapper_type_info));
+      info.GetIsolate(), info.Holder(), wrapper_type_info));
 }
 
 inline void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
                              const WrapperTypeInfo* wrapper_type_info,
                              V8ReturnValue::NamespaceObject) {
   info.GetReturnValue().Set(GetExposedNamespaceObject(
-      info.GetIsolate(), info.HolderV2(), wrapper_type_info));
+      info.GetIsolate(), info.Holder(), wrapper_type_info));
 }
 
 }  // namespace blink::bindings

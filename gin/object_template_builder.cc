@@ -46,7 +46,7 @@ v8::Intercepted ObjectTemplateBuilder::NamedPropertyGetterImpl(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
+      NamedInterceptorFromV8(isolate, info.Holder(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -68,7 +68,7 @@ v8::Intercepted ObjectTemplateBuilder::NamedPropertySetterImpl(
     const v8::PropertyCallbackInfo<void>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
+      NamedInterceptorFromV8(isolate, info.Holder(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -86,7 +86,7 @@ v8::Intercepted ObjectTemplateBuilder::NamedPropertyQueryImpl(
     const v8::PropertyCallbackInfo<v8::Integer>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
+      NamedInterceptorFromV8(isolate, info.Holder(), tag);
   if (!interceptor) {
     return v8::Intercepted::kNo;
   }
@@ -104,7 +104,7 @@ void ObjectTemplateBuilder::NamedPropertyEnumeratorImpl(
     const v8::PropertyCallbackInfo<v8::Array>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   NamedPropertyInterceptor* interceptor =
-      NamedInterceptorFromV8(isolate, info.HolderV2(), tag);
+      NamedInterceptorFromV8(isolate, info.Holder(), tag);
   if (!interceptor) {
     return;
   }

@@ -1472,7 +1472,7 @@ void HTMLFormElement::UseCountPropertyAccess(
     v8::Local<v8::Name>& v8_property_name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   bool hasPropertyInPrototypeChain =
-      !info.HolderV2()
+      !info.Holder()
            ->GetRealNamedPropertyInPrototypeChain(
                info.GetIsolate()->GetCurrentContext(), v8_property_name)
            .IsEmpty();

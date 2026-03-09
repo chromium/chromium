@@ -543,7 +543,7 @@ void APIBinding::GetEventObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.HolderV2()->GetCreationContext(isolate).ToLocal(&context) ||
+  if (!info.Holder()->GetCreationContext(isolate).ToLocal(&context) ||
       !binding::IsContextValidOrThrowError(context)) {
     return;
   }
@@ -576,7 +576,7 @@ void APIBinding::GetCustomPropertyObject(
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context;
-  if (!info.HolderV2()->GetCreationContext(isolate).ToLocal(&context) ||
+  if (!info.Holder()->GetCreationContext(isolate).ToLocal(&context) ||
       !binding::IsContextValid(context)) {
     return;
   }

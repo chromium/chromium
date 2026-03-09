@@ -321,13 +321,13 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
 
   // The prototype object of Window interface (aka Window.prototype).
   v8::Local<v8::Object> window_prototype =
-      global_proxy->GetPrototypeV2().As<v8::Object>();
+      global_proxy->GetPrototype().As<v8::Object>();
   CHECK(!window_prototype.IsEmpty());
 
   // The named properties object of Window interface (aka WindowProperties)
   // also needs a link to DOMWindow object.
   v8::Local<v8::Object> window_properties =
-      window_prototype->GetPrototypeV2().As<v8::Object>();
+      window_prototype->GetPrototype().As<v8::Object>();
   CHECK(!window_properties.IsEmpty());
   V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties, window);
 
@@ -506,15 +506,15 @@ void Getter(v8::Local<v8::Name> property,
   v8::Isolate* isolate = info.GetIsolate();
   AtomicString name = ToCoreAtomicString(isolate, property.As<v8::String>());
   HTMLDocument* html_document =
-      V8HTMLDocument::ToWrappableUnsafe(isolate, info.HolderV2());
+      V8HTMLDocument::ToWrappableUnsafe(isolate, info.Holder());
   DCHECK(html_document);
   v8::Local<v8::Value> namedPropertyValue =
-      GetNamedProperty(html_document, name, info.HolderV2(), isolate);
+      GetNamedProperty(html_document, name, info.Holder(), isolate);
   bool hasNamedProperty = !namedPropertyValue.IsEmpty();
 
   v8::Local<v8::Value> prototypeChainValue;
   bool hasPropertyInPrototypeChain =
-      info.HolderV2()
+      info.Holder()
           ->GetRealNamedPropertyInPrototypeChain(isolate->GetCurrentContext(),
                                                  property.As<v8::String>())
           .ToLocal(&prototypeChainValue);
