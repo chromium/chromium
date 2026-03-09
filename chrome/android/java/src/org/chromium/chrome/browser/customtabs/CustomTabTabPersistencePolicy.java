@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -18,6 +19,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.SequencedTaskRunner;
@@ -58,6 +60,23 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private static final Object CLEAN_UP_TASK_LOCK = new Object();
 
     private static @Nullable AsyncTask<@Nullable Void> sCleanupTask;
+
+    // LINT.IfChange(CustomTabsOpenType)
+    @IntDef({
+        CustomTabsOpenType.NEW,
+        CustomTabsOpenType.OMNIBOX,
+        CustomTabsOpenType.RESTORE_OK,
+        CustomTabsOpenType.RESTORE_FAIL,
+    })
+    @interface CustomTabsOpenType {
+        int NEW = 0;
+        int OMNIBOX = 1;
+        int RESTORE_OK = 2;
+        int RESTORE_FAIL = 3;
+        int COUNT = 4;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsOpenType)
 
     private final int mTaskId;
     private final boolean mShouldRestore;
@@ -113,6 +132,27 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
                     protected @Nullable Void doInBackground() {
                         File stateDir = getOrCreateStateDirectory();
                         File metadataFile = new File(stateDir, getMetadataFileName());
+                        if (!metadataFile.exists() && !mShouldRestore) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "CustomTabs.OpenType",
+                                    CustomTabsOpenType.NEW,
+                                    CustomTabsOpenType.COUNT);
+                        } else if (metadataFile.exists() && !mShouldRestore) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "CustomTabs.OpenType",
+                                    CustomTabsOpenType.OMNIBOX,
+                                    CustomTabsOpenType.COUNT);
+                        } else if (metadataFile.exists() && mShouldRestore) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "CustomTabs.OpenType",
+                                    CustomTabsOpenType.RESTORE_OK,
+                                    CustomTabsOpenType.COUNT);
+                        } else if (!metadataFile.exists() && mShouldRestore) {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "CustomTabs.OpenType",
+                                    CustomTabsOpenType.RESTORE_FAIL,
+                                    CustomTabsOpenType.COUNT);
+                        }
                         if (metadataFile.exists()) {
                             if (mShouldRestore) {
                                 if (!metadataFile.setLastModified(System.currentTimeMillis())) {

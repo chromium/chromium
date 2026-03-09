@@ -668,6 +668,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.OpenType" units="CustomTabsOpenType"
+    expires_after="2026-05-30">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records how CCT was opened i.e. opened as a new one, opened on top of Google
+    search widget results via CCT omnibox, or restored from a disk state file.
+    Recored once per CCT when it is initialized. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.PageInsights.Event" enum="PageInsightsEvent"
     expires_after="2024-12-08">
   <owner>jinsukkim@chromium.org</owner>

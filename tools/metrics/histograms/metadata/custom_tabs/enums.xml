@@ -198,6 +198,17 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java:CustomTabsNavigationEvent) -->
 
+<!--LINT.IfChange(CustomTabsOpenType) -->
+
+<enum name="CustomTabsOpenType">
+  <int value="0" label="New"/>
+  <int value="1" label="Omnibox"/>
+  <int value="2" label="RestoreOk"/>
+  <int value="3" label="RestoreFail"/>
+</enum>
+
+<!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistencePolicy.java:CustomTabsOpenType) -->
+
 <enum name="CustomTabsParallelRequestStatusOnStart">
   <int value="0" label="No Parallel Request was requested"/>
   <int value="1" label="Parallel request successfully started"/>
