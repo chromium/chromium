@@ -41,6 +41,10 @@ auto RangeAsRvalues(Range&& range LIFETIME_BOUND) {
 //     // iterates through v from back to front
 //   }
 template <typename Range>
+  requires requires (Range&& range) {
+    std::ranges::rbegin(range);
+    std::ranges::rend(range);
+  }
 auto Reversed(Range&& range LIFETIME_BOUND) {
   return internal::ReversedAdapter<Range>(std::forward<Range>(range));
 }
