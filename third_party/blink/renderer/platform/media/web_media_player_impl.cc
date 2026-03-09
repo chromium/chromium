@@ -918,7 +918,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 
   // Do a truncation to kMaxUrlLength+1 at most; we can add ellipsis later.
   media_log_->AddEvent<MediaLogEvent::kLoad>(
-      String(url).Substring(0, media::kMaxUrlLength + 1).Utf8());
+      url.GetString().GetString().subview(0, media::kMaxUrlLength + 1).Utf8());
   load_start_time_ = base::TimeTicks::Now();
 
   media_metrics_provider_->Initialize(
