@@ -79,13 +79,13 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
   explicit FakeContextualPanelTabHelper(
       web::WebState* web_state,
       std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
+               raw_ptr<ContextualPanelModel>> models)
       : ContextualPanelTabHelper(web_state, models) {}
 
   static void CreateForWebState(
       web::WebState* web_state,
       std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models) {
+               raw_ptr<ContextualPanelModel>> models) {
     web_state->SetUserData(
         UserDataKey(),
         std::make_unique<FakeContextualPanelTabHelper>(web_state, models));
@@ -192,7 +192,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
 
     // Contextual Panel setup.
     std::map<ContextualPanelItemType,
-             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+             raw_ptr<ContextualPanelModel>>
         models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
     InfoBarManagerImpl::CreateForWebState(web_state.get());
@@ -683,7 +683,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelWebStateListChanged) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
   std::map<ContextualPanelItemType,
-           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+           raw_ptr<ContextualPanelModel>>
       models;
   FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
   InfoBarManagerImpl::CreateForWebState(web_state.get());

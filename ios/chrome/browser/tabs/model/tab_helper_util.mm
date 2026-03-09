@@ -443,17 +443,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       .CreateDeferredWhen<ContextualPanelTabHelper>(
           attacher.IsForStandardNavigation())
       .With([&]() {
-        ContextualPanelModelService* model_service =
-            ContextualPanelModelServiceFactory::GetForProfile(profile);
-        // Revert back to model_service->models() once DanglingUntriaged is
-        // removed.
-        std::map<ContextualPanelItemType,
-                 raw_ptr<ContextualPanelModel, DanglingUntriaged>>
-            models;
-        for (auto const& [key, val] : model_service->models()) {
-          models.emplace(key, val);
-        }
-        return models;
+        return ContextualPanelModelServiceFactory::GetForProfile(profile)
+            ->models();
       });
 
   auto* optimization_guide_decider =

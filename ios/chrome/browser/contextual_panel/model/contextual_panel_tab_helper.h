@@ -108,8 +108,7 @@ class ContextualPanelTabHelper
   // Protected to allow test overriding.
   ContextualPanelTabHelper(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models);
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
 
  private:
   friend class web::WebStateUserData<ContextualPanelTabHelper>;
@@ -173,9 +172,7 @@ class ContextualPanelTabHelper
   std::optional<EntrypointMetricsData> metrics_data_ = std::nullopt;
 
   // Map of the models this tab helper should query for possible panels.
-  std::map<ContextualPanelItemType,
-           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
-      models_;
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models_;
 
   // The time the current request began.
   base::Time request_start_time_;

@@ -17,8 +17,7 @@ class ContextualPanelModel;
 class ContextualPanelModelService : public KeyedService {
  public:
   ContextualPanelModelService(
-      std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models);
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
 
   ContextualPanelModelService(const ContextualPanelModelService&) = delete;
   ContextualPanelModelService& operator=(const ContextualPanelModelService&) =
@@ -31,14 +30,11 @@ class ContextualPanelModelService : public KeyedService {
 
   // Returns a map of ContextualPanelModels to use, each keyed by the
   // appropriate item type.
-  const std::map<ContextualPanelItemType,
-                 raw_ptr<ContextualPanelModel, DanglingUntriaged>>&
+  const std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>>&
   models();
 
  private:
-  std::map<ContextualPanelItemType,
-           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
-      models_;
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models_;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_MODEL_SERVICE_H_

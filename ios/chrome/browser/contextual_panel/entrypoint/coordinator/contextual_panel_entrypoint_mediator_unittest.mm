@@ -135,13 +135,13 @@ class FakeContextualPanelTabHelper : public ContextualPanelTabHelper {
   explicit FakeContextualPanelTabHelper(
       web::WebState* web_state,
       std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
+               raw_ptr<ContextualPanelModel>> models)
       : ContextualPanelTabHelper(web_state, models) {}
 
   static void CreateForWebState(
       web::WebState* web_state,
       std::map<ContextualPanelItemType,
-               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models) {
+               raw_ptr<ContextualPanelModel>> models) {
     web_state->SetUserData(
         UserDataKey(),
         std::make_unique<FakeContextualPanelTabHelper>(web_state, models));
@@ -193,7 +193,7 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
       : web_state_list_(&web_state_list_delegate_) {
     auto web_state = std::make_unique<web::FakeWebState>();
     std::map<ContextualPanelItemType,
-             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+             raw_ptr<ContextualPanelModel>>
         models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
     InfoBarManagerImpl::CreateForWebState(web_state.get());
@@ -513,7 +513,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
 
   auto web_state = std::make_unique<web::FakeWebState>();
   std::map<ContextualPanelItemType,
-           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+           raw_ptr<ContextualPanelModel>>
       models;
   FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
   InfoBarManagerImpl::CreateForWebState(web_state.get());
