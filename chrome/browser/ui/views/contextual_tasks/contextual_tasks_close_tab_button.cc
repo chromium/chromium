@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 
 #include "base/functional/bind.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_button_controller.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -30,7 +30,7 @@ ContextualTasksCloseTabButton::ContextualTasksCloseTabButton(
   const std::u16string button_tooltip = l10n_util::GetStringUTF16(IDS_CLOSE);
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
-  SetVectorIcon(kCloseTabChromeRefreshIcon);
+  SetVectorIcon(vector_icons::kCloseIcon);
 
   ContextualTasksCloseButtonController* const controller =
       ContextualTasksCloseButtonController::From(browser_window_interface_);
