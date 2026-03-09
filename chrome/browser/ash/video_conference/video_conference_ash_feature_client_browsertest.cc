@@ -70,15 +70,7 @@ class VideoConferenceAshfeatureClientTest : public InProcessBrowserTest {
   }
 
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> GetMediaApps() {
-    std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
-
-    VideoConferenceAshFeatureClient::Get()->GetMediaApps(
-        base::BindLambdaForTesting(
-            [&media_app_info](
-                std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>
-                    result) { media_app_info = std::move(result); }));
-
-    return media_app_info;
+    return VideoConferenceAshFeatureClient::Get()->GetMediaApps();
   }
 
   // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh

@@ -214,21 +214,17 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
       {vc_app3->state().id, vc_app3},
   };
 
-  client.GetMediaApps(base::BindLambdaForTesting(
-      [&](std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps) {
-        EXPECT_EQ(apps.size(), 3u);
+  auto apps = client.GetMediaApps();
+  EXPECT_EQ(apps.size(), 3u);
 
-        for (auto& app : apps) {
-          auto* vc_app = id_to_vc_app[app->id];
-          EXPECT_EQ(vc_app->state().is_capturing_camera,
-                    app->is_capturing_camera);
-          EXPECT_EQ(vc_app->state().is_capturing_microphone,
-                    app->is_capturing_microphone);
-          EXPECT_EQ(vc_app->state().is_capturing_screen,
-                    app->is_capturing_screen);
-          EXPECT_EQ(vc_app->GetWebContents().GetTitle(), app->title);
-        }
-      }));
+  for (auto& app : apps) {
+    auto* vc_app = id_to_vc_app[app->id];
+    EXPECT_EQ(vc_app->state().is_capturing_camera, app->is_capturing_camera);
+    EXPECT_EQ(vc_app->state().is_capturing_microphone,
+              app->is_capturing_microphone);
+    EXPECT_EQ(vc_app->state().is_capturing_screen, app->is_capturing_screen);
+    EXPECT_EQ(vc_app->GetWebContents().GetTitle(), app->title);
+  }
 }
 
 // Tests setting/clearing system statuses for camera and microphone.
@@ -387,23 +383,14 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ReturnToApp) {
   auto* vc_app1 = client.CreateVideoConferenceWebApp(web_contents1);
   auto* vc_app2 = client.CreateVideoConferenceWebApp(web_contents2);
 
-  client.ReturnToApp(
-      vc_app1->state().id, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
-      }));
+  EXPECT_TRUE(client.ReturnToApp(vc_app1->state().id));
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
 
-  client.ReturnToApp(
-      vc_app2->state().id, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
-      }));
+  EXPECT_TRUE(client.ReturnToApp(vc_app2->state().id));
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
 
-  client.ReturnToApp(
-      vc_app1->state().id, base::BindLambdaForTesting([&](bool success) {
-        EXPECT_TRUE(success);
-        EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
-      }));
+  EXPECT_TRUE(client.ReturnToApp(vc_app1->state().id));
+  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 0);
 }
 
 // Tests that for extensions, permissions equate to capturing statuses.

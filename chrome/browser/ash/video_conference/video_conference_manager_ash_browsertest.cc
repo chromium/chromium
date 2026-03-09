@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -32,18 +33,14 @@ class FakeVideoConferenceManagerClient : public VideoConferenceManagerClient {
   ~FakeVideoConferenceManagerClient() override = default;
 
   // VideoConferenceManagerClient overrides
-  void GetMediaApps(GetMediaAppsCallback callback) override {
-    std::move(callback).Run(
-        std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>());
+  MediaApps GetMediaApps() override { return MediaApps(); }
+
+  bool ReturnToApp(const base::UnguessableToken& id) override { NOTREACHED(); }
+
+  bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                  bool enabled) override {
+    NOTREACHED();
   }
-
-  void ReturnToApp(const base::UnguessableToken& id,
-                   ReturnToAppCallback callback) override {}
-
-  void SetSystemMediaDeviceStatus(
-      VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) override {}
 
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };

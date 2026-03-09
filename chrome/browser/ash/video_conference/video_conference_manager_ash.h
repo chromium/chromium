@@ -50,8 +50,8 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
                                   bool enabled) override;
   void CreateBackgroundImage() override;
 
-  // Registers an ash-browser client. Non-mojo clients need to manually call
-  // |UnregisterClient|, e.g. inside their destructor.
+  // Registers a client. Clients need to manually call |UnregisterClient|,
+  // e.g. inside their destructor.
   void RegisterCppClient(VideoConferenceManagerClient* client,
                          const base::UnguessableToken& client_id);
 

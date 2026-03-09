@@ -229,14 +229,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> GetMediaApps() {
-    std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info;
-
-    client_->GetMediaApps(base::BindLambdaForTesting(
-        [&media_app_info](
-            std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>
-                result) { media_app_info = std::move(result); }));
-
-    return media_app_info;
+    return client_->GetMediaApps();
   }
 
   // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh
@@ -364,10 +357,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
 
   // Return to token1 should not do anything since the token1 is not in the
   // client_->id_to_app_state_.
-  client_->ReturnToApp(
-      token1, base::BindLambdaForTesting([&reactivated_app](bool result) {
-        reactivated_app = result;
-      }));
+  reactivated_app = client_->ReturnToApp(token1);
 
   EXPECT_FALSE(reactivated_app);
   EXPECT_FALSE(window1->IsVisible());
@@ -378,10 +368,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
   AddAppState(kAppId1, state1);
 
   // Return to token1 should show all instances associated with kAppId1.
-  client_->ReturnToApp(
-      token1, base::BindLambdaForTesting([&reactivated_app](bool result) {
-        reactivated_app = result;
-      }));
+  reactivated_app = client_->ReturnToApp(token1);
 
   EXPECT_TRUE(reactivated_app);
   EXPECT_TRUE(window1->IsVisible());

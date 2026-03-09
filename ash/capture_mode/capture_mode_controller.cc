@@ -1498,8 +1498,8 @@ void CaptureModeController::SuspendImminent(
   EndSessionOrRecording(EndRecordingReason::kImminentSuspend);
 }
 
-void CaptureModeController::GetMediaApps(GetMediaAppsCallback callback) {
-  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
+VideoConferenceManagerClient::MediaApps CaptureModeController::GetMediaApps() {
+  MediaApps apps;
 
   if (is_recording_in_progress()) {
     apps.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
@@ -1514,39 +1514,36 @@ void CaptureModeController::GetMediaApps(GetMediaAppsCallback callback) {
         /*app_type=*/crosapi::mojom::VideoConferenceAppType::kAshCaptureMode));
   }
 
-  std::move(callback).Run(std::move(apps));
+  return apps;
 }
 
-void CaptureModeController::ReturnToApp(const base::UnguessableToken& token,
-                                        ReturnToAppCallback callback) {
+bool CaptureModeController::ReturnToApp(const base::UnguessableToken& token) {
   // The return-to-app feature is only available when recording an app window
   // (rather than the fullscreen or region). In this case, it simply "returns"
   // to that window by activating it.
-  bool success = false;
   if (video_recording_watcher_ &&
       !video_recording_watcher_->is_shutting_down() &&
       video_recording_watcher_->recording_source() ==
           CaptureModeSource::kWindow) {
     wm::ActivateWindow(video_recording_watcher_->window_being_recorded());
-    success = true;
+    return true;
   }
-  std::move(callback).Run(success);
+  return false;
 }
 
-void CaptureModeController::SetSystemMediaDeviceStatus(
+bool CaptureModeController::SetSystemMediaDeviceStatus(
     VideoConferenceMediaDevice device,
-    bool enabled,
-    SetSystemMediaDeviceStatusCallback callback) {
+    bool enabled) {
   switch (device) {
     case VideoConferenceMediaDevice::kCamera:
       is_camera_muted_ = !enabled;
-      std::move(callback).Run(true);
-      return;
+      return true;
     case VideoConferenceMediaDevice::kMicrophone:
       is_microphone_muted_ = !enabled;
-      std::move(callback).Run(true);
-      return;
+      return true;
   }
+
+  NOTREACHED();
 }
 
 void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {

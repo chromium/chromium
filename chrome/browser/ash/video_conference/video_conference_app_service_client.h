@@ -59,8 +59,7 @@ class VideoConferenceAppServiceClient
   ~VideoConferenceAppServiceClient() override;
 
   // VideoConferenceManagerClient overrides.
-  void ReturnToApp(const base::UnguessableToken& token,
-                   ReturnToAppCallback callback) override;
+  bool ReturnToApp(const base::UnguessableToken& token) override;
 
   // apps::AppCapabilityAccessCache::Observer overrides.
   void OnCapabilityAccessUpdate(

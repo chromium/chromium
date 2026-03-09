@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/video_conference/video_conference_client_base.h"
 
 #include "base/check_deref.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 
@@ -48,8 +49,9 @@ VideoConferenceClientBase::~VideoConferenceClientBase() {
   video_conference_manager_ash_->UnregisterClient(client_id_);
 }
 
-void VideoConferenceClientBase::GetMediaApps(GetMediaAppsCallback callback) {
-  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
+VideoConferenceManagerClient::MediaApps
+VideoConferenceClientBase::GetMediaApps() {
+  MediaApps apps;
 
   for (const auto& [app_id, app_state] : id_to_app_state_) {
     const std::string app_name = GetAppName(app_id);
@@ -69,22 +71,21 @@ void VideoConferenceClientBase::GetMediaApps(GetMediaAppsCallback callback) {
         /*app_type=*/ToVideoConferenceAppType(GetAppType(app_id))));
   }
 
-  std::move(callback).Run(std::move(apps));
+  return apps;
 }
-void VideoConferenceClientBase::SetSystemMediaDeviceStatus(
+bool VideoConferenceClientBase::SetSystemMediaDeviceStatus(
     VideoConferenceMediaDevice device,
-    bool enabled,
-    SetSystemMediaDeviceStatusCallback callback) {
+    bool enabled) {
   switch (device) {
     case VideoConferenceMediaDevice::kCamera:
       camera_system_enabled_ = enabled;
-      std::move(callback).Run(true);
-      return;
+      return true;
     case VideoConferenceMediaDevice::kMicrophone:
       microphone_system_enabled_ = enabled;
-      std::move(callback).Run(true);
-      return;
+      return true;
   }
+
+  NOTREACHED();
 }
 
 void VideoConferenceClientBase::HandleMediaUsageUpdate() {

@@ -32,8 +32,7 @@ class VideoConferenceAshFeatureClient : public VideoConferenceClientBase {
 
   ~VideoConferenceAshFeatureClient() override;
 
-  void ReturnToApp(const base::UnguessableToken& token,
-                   ReturnToAppCallback callback) override;
+  bool ReturnToApp(const base::UnguessableToken& token) override;
 
   // Called when VmCameraMicManager change Camera/Mic accessing state.
   void OnVmDeviceUpdated(VmCameraMicManager::VmType vm_type,

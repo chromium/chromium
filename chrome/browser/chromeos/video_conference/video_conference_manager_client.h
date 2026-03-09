@@ -31,7 +31,7 @@ struct VideoConferencePermissions;
 //    1. Tracking VC apps on the browser, recording changes in their permissions
 //       and capturing statuses and notifying `VideoConferenceManagerAsh`.
 //    2. Allowing the manager to query the client and perform actions by
-//       implementing the VideoConferenceManagerClient crosapi interface.
+//       implementing the VideoConferenceManagerClient C++ interface.
 class VideoConferenceManagerClientImpl
     : public ash::VideoConferenceManagerClient {
  public:
@@ -65,13 +65,10 @@ class VideoConferenceManagerClientImpl
                                      const std::u16string& app_name);
 
   // ash::VideoConferenceManagerClient overrides
-  void GetMediaApps(GetMediaAppsCallback callback) override;
-  void ReturnToApp(const base::UnguessableToken& id,
-                   ReturnToAppCallback callback) override;
-  void SetSystemMediaDeviceStatus(
-      ash::VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) override;
+  MediaApps GetMediaApps() override;
+  bool ReturnToApp(const base::UnguessableToken& id) override;
+  bool SetSystemMediaDeviceStatus(ash::VideoConferenceMediaDevice device,
+                                  bool enabled) override;
 
  protected:
   // Sends VcManager the updated `VideoConferenceMediaUsageStatus`. Can be

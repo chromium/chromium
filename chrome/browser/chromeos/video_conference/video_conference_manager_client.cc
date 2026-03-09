@@ -238,9 +238,9 @@ void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
       std::move(device), app_name, base::DoNothing());
 }
 
-void VideoConferenceManagerClientImpl::GetMediaApps(
-    GetMediaAppsCallback callback) {
-  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
+VideoConferenceManagerClientImpl::MediaApps
+VideoConferenceManagerClientImpl::GetMediaApps() {
+  MediaApps apps;
 
   for (auto [_, web_contents] : id_to_webcontents_) {
     auto* web_app =
@@ -267,12 +267,11 @@ void VideoConferenceManagerClientImpl::GetMediaApps(
         /*app_type=*/GetAppType(web_contents)));
   }
 
-  std::move(callback).Run(std::move(apps));
+  return apps;
 }
 
-void VideoConferenceManagerClientImpl::ReturnToApp(
-    const base::UnguessableToken& id,
-    ReturnToAppCallback callback) {
+bool VideoConferenceManagerClientImpl::ReturnToApp(
+    const base::UnguessableToken& id) {
   if (auto it = id_to_webcontents_.find(id); it != id_to_webcontents_.end()) {
     auto* web_app =
         content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
@@ -281,21 +280,20 @@ void VideoConferenceManagerClientImpl::ReturnToApp(
         << "WebContents with no corresponding VideoConferenceWebApp.";
 
     web_app->ActivateApp();
-    std::move(callback).Run(true);
-  } else {
-    // As the manager calls `ReturnToApp` on all clients, it is normal and
-    // expected that a client doesn't have any `VideoConferenceWebApp` with the
-    // provided `id`.
-    std::move(callback).Run(false);
+    return true;
   }
+
+  // As the manager calls `ReturnToApp` on all clients, it is normal and
+  // expected that a client doesn't have any `VideoConferenceWebApp` with the
+  // provided `id`.
+  return false;
 }
 
-void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
+bool VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
     ash::VideoConferenceMediaDevice device,
-    bool enabled,
-    SetSystemMediaDeviceStatusCallback callback) {
+    bool enabled) {
   media_listener_->SetSystemMediaDeviceStatus(std::move(device), enabled);
-  std::move(callback).Run(true);
+  return true;
 }
 
 void VideoConferenceManagerClientImpl::NotifyManager(

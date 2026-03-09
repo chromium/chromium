@@ -72,12 +72,11 @@ VideoConferenceAshFeatureClient::~VideoConferenceAshFeatureClient() {
   g_client_instance = nullptr;
 }
 
-void VideoConferenceAshFeatureClient::ReturnToApp(
-    const base::UnguessableToken& token,
-    ReturnToAppCallback callback) {
+bool VideoConferenceAshFeatureClient::ReturnToApp(
+    const base::UnguessableToken& token) {
   // Currently, for Vms, we treat the whole VM as one app, so it is not clear
   // which one to return to.
-  std::move(callback).Run(true);
+  return true;
 }
 
 void VideoConferenceAshFeatureClient::OnVmDeviceUpdated(

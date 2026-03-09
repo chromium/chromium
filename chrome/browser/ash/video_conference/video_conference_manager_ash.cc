@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 
 #include <algorithm>
+#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,11 +15,8 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
-#include "base/barrier_callback.h"
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -59,47 +57,27 @@ void VideoConferenceManagerAsh::RegisterCppClient(
 
 void VideoConferenceManagerAsh::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
-  // Because the lacros client communicates over mojo, the GetMediaApps method
-  // on all clients is asynchronous and passes results via callbacks. The
-  // |done_callback| defined below gets the collected results from the
-  // BarrierCallback, flattens them into a single vector, and passes them
-  // to the |ui_callback| provided to VideoConferenceManagerAsh::GetMediaApps.
-  base::OnceCallback<void(std::vector<MediaApps>)> done_callback =
-      base::BindOnce(
-          [](base::OnceCallback<void(MediaApps)> callback,
-             std::vector<MediaApps> apps_from_all_clients) {
-            MediaApps apps;
-
-            for (MediaApps& apps_from_client : apps_from_all_clients) {
-              for (auto& app : apps_from_client) {
-                apps.push_back(std::move(app));
-              }
-            }
-
-            // Sort all apps based on last activity time.
-            std::sort(
-                apps.begin(), apps.end(),
-                [](const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app1,
-                   const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app2) {
-                  return app1->last_activity_time > app2->last_activity_time;
-                });
-
-            // Call bound |ui_callback| with aggregated app info structs.
-            std::move(callback).Run(std::move(apps));
-          },
-          std::move(ui_callback));
-
-  const auto barrier_callback = base::BarrierCallback<MediaApps>(
-      client_info_map_.size(), std::move(done_callback));
+  MediaApps apps;
 
   for (auto& [_, client_info] : client_info_map_) {
-    client_info.client->GetMediaApps(barrier_callback);
+    MediaApps apps_from_client = client_info.client->GetMediaApps();
+    apps.insert(apps.end(), std::make_move_iterator(apps_from_client.begin()),
+                std::make_move_iterator(apps_from_client.end()));
   }
+
+  // Sort all apps based on last activity time.
+  std::sort(apps.begin(), apps.end(),
+            [](const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app1,
+               const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app2) {
+              return app1->last_activity_time > app2->last_activity_time;
+            });
+
+  std::move(ui_callback).Run(std::move(apps));
 }
 
 void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {
   for (auto& [_, client_info] : client_info_map_) {
-    client_info.client->ReturnToApp(id, base::DoNothing());
+    client_info.client->ReturnToApp(id);
   }
 }
 
@@ -107,14 +85,10 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
     VideoConferenceMediaDevice device,
     bool enabled) {
   for (auto& [_, client_info] : client_info_map_) {
-    client_info.client->SetSystemMediaDeviceStatus(
-        device, enabled, base::BindOnce([](bool success) {
-          if (!success) {
-            LOG(ERROR)
-                << "VideoConferenceClient::SetSystemMediaDeviceStatus was "
-                   "unsuccessful.";
-          }
-        }));
+    if (!client_info.client->SetSystemMediaDeviceStatus(device, enabled)) {
+      LOG(ERROR) << "VideoConferenceClient::SetSystemMediaDeviceStatus was "
+                    "unsuccessful.";
+    }
   }
 }
 

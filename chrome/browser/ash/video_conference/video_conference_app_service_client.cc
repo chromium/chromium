@@ -53,9 +53,8 @@ VideoConferenceAppServiceClient::~VideoConferenceAppServiceClient() {
   g_client_instance = nullptr;
 }
 
-void VideoConferenceAppServiceClient::ReturnToApp(
-    const base::UnguessableToken& token,
-    ReturnToAppCallback callback) {
+bool VideoConferenceAppServiceClient::ReturnToApp(
+    const base::UnguessableToken& token) {
   // Go through `id_to_app_state_` to find possible app to reactivate.
   // This loop is inevitable unless we use multiple maps which also makes things
   // complicated.
@@ -71,8 +70,7 @@ void VideoConferenceAppServiceClient::ReturnToApp(
     // This will happen very frequently; this is not an error, but expected
     // behavior. This indicates that the app represented by this id does not
     // belong to this client.
-    std::move(callback).Run(false);
-    return;
+    return false;
   }
 
   for (const apps::Instance* instance :
@@ -82,7 +80,7 @@ void VideoConferenceAppServiceClient::ReturnToApp(
     // This is required in virtual desktop to reactivate an arc++ app.
     instance->Window()->Focus();
   }
-  std::move(callback).Run(true);
+  return true;
 }
 
 void VideoConferenceAppServiceClient::OnCapabilityAccessUpdate(

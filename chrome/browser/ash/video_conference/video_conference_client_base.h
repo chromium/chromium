@@ -41,11 +41,9 @@ class VideoConferenceClientBase : public VideoConferenceManagerClient {
   };
 
   // VideoConferenceManagerClient:
-  void GetMediaApps(GetMediaAppsCallback callback) override;
-  void SetSystemMediaDeviceStatus(
-      VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) override;
+  MediaApps GetMediaApps() override;
+  bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                  bool enabled) override;
 
   // Calculates a new `crosapi::mojom::VideoConferenceMediaUsageStatus` from all
   // current VC apps and notifies the manager if a field has changed.

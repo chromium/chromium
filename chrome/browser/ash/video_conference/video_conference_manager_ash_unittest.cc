@@ -10,6 +10,7 @@
 
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -40,24 +41,22 @@ class FakeVcManagerCppClient : public VideoConferenceManagerClient {
   ~FakeVcManagerCppClient() override { vc_manager_->UnregisterClient(id_); }
 
   // VideoConferenceManagerClient overrides
-  void GetMediaApps(
-      VideoConferenceManagerClient::GetMediaAppsCallback callback) override {
-    std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
+  MediaApps GetMediaApps() override {
+    MediaApps apps;
 
     for (auto& app : apps_) {
       apps.push_back(app->Clone());
     }
 
-    std::move(callback).Run(std::move(apps));
+    return apps;
   }
 
-  void ReturnToApp(const base::UnguessableToken& id,
-                   ReturnToAppCallback callback) override {}
+  bool ReturnToApp(const base::UnguessableToken& id) override { NOTREACHED(); }
 
-  void SetSystemMediaDeviceStatus(
-      VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) override {}
+  bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                  bool enabled) override {
+    NOTREACHED();
+  }
 
   // Public for testing.
   base::UnguessableToken id_;

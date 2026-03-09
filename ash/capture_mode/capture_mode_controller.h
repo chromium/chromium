@@ -440,13 +440,10 @@ class ASH_EXPORT CaptureModeController
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
   // VideoConferenceManagerClient:
-  void GetMediaApps(GetMediaAppsCallback callback) override;
-  void ReturnToApp(const base::UnguessableToken& token,
-                   ReturnToAppCallback callback) override;
-  void SetSystemMediaDeviceStatus(
-      VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) override;
+  MediaApps GetMediaApps() override;
+  bool ReturnToApp(const base::UnguessableToken& token) override;
+  bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                  bool enabled) override;
   // ShellObserver:
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
 

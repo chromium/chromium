@@ -115,28 +115,27 @@ enum class VideoConferenceMediaDevice {
 // VideoConferenceManagerAsh.
 class ASH_EXPORT VideoConferenceManagerClient {
  public:
-  // TODO(crbug.com/365741912, crbug.com/365902693): In a later CL, drop these
-  // callbacks and return the result directly.
-  using GetMediaAppsCallback = base::OnceCallback<void(
-      std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>)>;
-  using ReturnToAppCallback = base::OnceCallback<void(bool)>;
-  using SetSystemMediaDeviceStatusCallback = base::OnceCallback<void(bool)>;
+  using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
   virtual ~VideoConferenceManagerClient() = default;
 
-  virtual void GetMediaApps(GetMediaAppsCallback callback) = 0;
-  virtual void ReturnToApp(const base::UnguessableToken& id,
-                           ReturnToAppCallback callback) = 0;
-  virtual void SetSystemMediaDeviceStatus(
-      VideoConferenceMediaDevice device,
-      bool enabled,
-      SetSystemMediaDeviceStatusCallback callback) = 0;
+  // Returns the media apps currently tracked by this client.
+  virtual MediaApps GetMediaApps() = 0;
+
+  // Opens and focuses the media app corresponding to `id`. Returns whether the
+  // client handled the request.
+  virtual bool ReturnToApp(const base::UnguessableToken& id) = 0;
+
+  // Informs the client of the system or hardware media device status. Returns
+  // whether the client handled the update.
+  virtual bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                          bool enabled) = 0;
 };
 
 // This class defines the public interfaces of VideoConferenceManagerAsh exposed
-// to VideoConferenceTrayController. Although these public functions look
-// identical to VideoConferenceManagerClient, we should not use
-// VideoConferenceManagerClient here; because they represent different concepts.
+// to VideoConferenceTrayController. Although these public functions serve
+// similar purposes to VideoConferenceManagerClient, we should not use
+// VideoConferenceManagerClient here because they represent different concepts.
 // The signal will be passed from VideoConferenceTrayController to
 // VideoConferenceManagerAsh to VideoConferenceManagerClient.
 class VideoConferenceManagerBase {
