@@ -66,8 +66,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   NSLayoutConstraint* _scrollContainerBottomToSafeAreaBottomConstraint;
   // Stack view for the action buttons.
   UIStackView* _actionStackView;
-  // The bottom constraint for the action stack view against the safe area.
-  NSLayoutConstraint* _actionStackSafeAreaBottomConstraint;
   // A secondary bottom constraint for the action stack view against the view.
   NSLayoutConstraint* _actionStackBottomConstraint;
   // The container for the scroll view.
@@ -433,7 +431,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   if (![self hasVisibleButtons]) {
     contraintConstant = 0;
   }
-  _actionStackSafeAreaBottomConstraint.constant = contraintConstant;
   _actionStackBottomConstraint.constant = contraintConstant;
 }
 
@@ -534,10 +531,11 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
       constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor];
   _contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
-  _actionStackSafeAreaBottomConstraint = [_actionStackView.bottomAnchor
-      constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
+  NSLayoutConstraint* actionStackSafeAreaBottomConstraint =
+      [_actionStackView.bottomAnchor
+          constraintEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
   // Lower priority to avoid conflicts when the safe area bottom inset is zero.
-  _actionStackSafeAreaBottomConstraint.priority = UILayoutPriorityDefaultHigh;
+  actionStackSafeAreaBottomConstraint.priority = UILayoutPriorityDefaultHigh;
 
   _actionStackBottomConstraint = [_actionStackView.bottomAnchor
       constraintLessThanOrEqualToAnchor:view.bottomAnchor];
@@ -553,7 +551,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
         constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
     _contentViewHeightConstraint,
     _actionStackBottomConstraint,
-    _actionStackSafeAreaBottomConstraint,
+    actionStackSafeAreaBottomConstraint,
   ]];
 }
 
