@@ -185,7 +185,7 @@ void ActiveTaskContextProviderImpl::RefreshContext() {
   contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
   if (contextual_tasks_panel_controller_) {
     auto [task_id, handle] = contextual_tasks_panel_controller_
-                                 ->GetSessionHandleForActiveTabOrSidePanel();
+                                 ->GetSessionHandleForActiveTabOrPanel();
     session_handle = handle;
     active_task_id_ = task_id;
   } else {

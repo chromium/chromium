@@ -80,6 +80,9 @@ class ContextualTasksPanelHost {
   // state, e.g. on desktop if the glic side panel is open.
   virtual bool IsPanelSuppressed() const = 0;
 
+  // For testing only. Sets whether the panel should be suppressed.
+  virtual void SetPanelSuppressedForTesting(bool suppressed) = 0;
+
   // Content management.
   // Get current WebContents attached to panel, or nullptr if none attached.
   virtual content::WebContents* GetWebContents() = 0;

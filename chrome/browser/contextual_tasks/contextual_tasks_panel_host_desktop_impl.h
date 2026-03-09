@@ -54,6 +54,7 @@ class ContextualTasksPanelHostDesktopImpl : public ContextualTasksPanelHost,
   // crbug.com/477278769: Do not open side panel if glic side panel is already
   // open on tab changed.
   bool IsPanelSuppressed() const override;
+  void SetPanelSuppressedForTesting(bool suppressed) override;
   content::WebContents* GetWebContents() override;
   void SetWebContents(content::WebContents* web_contents) override;
 
@@ -88,6 +89,9 @@ class ContextualTasksPanelHostDesktopImpl : public ContextualTasksPanelHost,
 
   // Observers to inform when the panel state changes.
   base::ObserverList<ContextualTasksPanelHost::Observer> observers_;
+
+  // True if the panel should be suppressed for testing.
+  bool suppressed_for_testing_ = false;
 
   base::WeakPtrFactory<ContextualTasksPanelHostDesktopImpl> weak_factory_{this};
 };

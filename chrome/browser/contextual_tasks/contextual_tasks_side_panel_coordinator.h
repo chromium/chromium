@@ -12,9 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,9 +21,6 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
-class SidePanelEntryScope;
-class SidePanelRegistry;
-class SidePanelUI;
 class PrefService;
 
 namespace base {
@@ -40,37 +36,31 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-namespace views {
-class View;
-class WebView;
-}  // namespace views
-
 namespace contextual_tasks {
 
 class ContextualTask;
 class ContextualTasksService;
 class ContextualTasksUiService;
-class ContextualTasksWebView;
 class ActiveTaskContextProvider;
 class EntryPointEligibilityManager;
 
 class ContextualTasksSidePanelCoordinator
     : public ContextualTasksPanelController,
+      public ContextualTasksPanelHost::Observer,
       public TabListInterfaceObserver,
-      public SidePanelEntryObserver,
       content::WebContentsObserver {
  public:
-  // A data structure to hold the cache and state of the side panel per thread.
+  // A data structure to hold the cache and state of the panel per thread.
   struct WebContentsCacheItem {
     WebContentsCacheItem(std::unique_ptr<content::WebContents> wc, bool open);
     ~WebContentsCacheItem();
     WebContentsCacheItem(const WebContentsCacheItem&) = delete;
     WebContentsCacheItem& operator=(const WebContentsCacheItem&) = delete;
 
-    // Own the WebContents from the side panel.
+    // Own the WebContents from the panel.
     std::unique_ptr<content::WebContents> web_contents;
 
-    // Whether the side panel is open. Only used when FeatureParam
+    // Whether the panel is open. Only used when FeatureParam
     // `kTaskScopedSidePanel` is set to true.
     bool is_open;
 
@@ -88,18 +78,20 @@ class ContextualTasksSidePanelCoordinator
   // For testing only.
   ContextualTasksSidePanelCoordinator(
       BrowserWindowInterface* browser_window,
-      SidePanelUI* side_panel_ui,
+      std::unique_ptr<ContextualTasksPanelHost> contextual_tasks_panel_host,
       ActiveTaskContextProvider* active_task_context_provider,
       EntryPointEligibilityManager* eligibility_manager);
+
   ContextualTasksSidePanelCoordinator(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ContextualTasksSidePanelCoordinator& operator=(
       const ContextualTasksSidePanelCoordinator&) = delete;
   ~ContextualTasksSidePanelCoordinator() override;
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
-
-  // ContextualTasksPanelController overrides:
+  // ContextualTasksPanelController:
+  void AddObserver(ContextualTasksPanelController::Observer* observer) override;
+  void RemoveObserver(
+      ContextualTasksPanelController::Observer* observer) override;
   void Show(bool transition_from_tab,
             omnibox::ChromeAimEntryPoint entry_point) override;
   void Close() override;
@@ -108,7 +100,7 @@ class ContextualTasksSidePanelCoordinator
   void OnTaskChanged(content::WebContents* web_contents,
                      base::Uuid task_id) override;
   void OnAiInteraction() override;
-  content::WebContents* GetActiveWebContents() override;
+  content::WebContents* GetActiveWebContents() const override;
   std::vector<content::WebContents*> GetPanelWebContentsList() const override;
   std::unique_ptr<content::WebContents> DetachWebContentsForTask(
       const base::Uuid& task_id) override;
@@ -120,17 +112,16 @@ class ContextualTasksSidePanelCoordinator
   std::optional<ContextualTask> GetCurrentTask() override;
   std::pair<std::optional<base::Uuid>,
             contextual_search::ContextualSearchSessionHandle*>
-  GetSessionHandleForActiveTabOrSidePanel() override;
+  GetSessionHandleForActiveTabOrPanel() override;
   size_t GetNumberOfActiveTasks() const override;
   void MoveTaskUiToNewTab() override;
   void NotifyExpandToFullTabStateChanged() override;
   bool CanExpandToFullTab() const override;
 
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
-  // Check if the side panel is currently showing
-  bool IsSidePanelOpen();
+  // ContextualTasksPanelHost::Observer:
+  void OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState state,
+      ContextualTasksPanelHost::StateChangeReason reason) override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -140,17 +131,7 @@ class ContextualTasksSidePanelCoordinator
   void PrimaryPageChanged(content::Page& page) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
 
-  // SidePanelEntryObserver:
-  void OnEntryShown(SidePanelEntry* entry) override;
-  void OnEntryHidden(SidePanelEntry* entry) override;
-
-  // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
-  ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
-  GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
-
-  void SetSidePanelIdNotToOverrideForTesting(SidePanelEntry::Id side_panel_id);
-
-  // TabListInterfaceObserver overrides:
+  // TabListInterfaceObserver:
   void OnTabAdded(TabListInterface& tab_list,
                   tabs::TabInterface* tab,
                   int index) override;
@@ -160,28 +141,31 @@ class ContextualTasksSidePanelCoordinator
                     tabs::TabInterface* tab,
                     TabRemovedReason removed_reason) override;
 
+  // Get the WebContentsCacheItem for web_contents, return nullptr if not found.
+  ContextualTasksSidePanelCoordinator::WebContentsCacheItem*
+  GetWebContentsCacheItemForWebContents(content::WebContents* web_contents);
+
  private:
   friend class ContextualTasksSidePanelCoordinatorInteractiveUiTest;
   friend class ContextualTasksSidePanelCoordinatorTest;
 
-  // Hide or show side panel base on open state of the current task.
-  void UpdateSidePanelVisibility();
+  void SetPanelSuppressedForTesting(bool suppressed) {
+    contextual_tasks_panel_host_->SetPanelSuppressedForTesting(suppressed);
+  }
+
+  // Hide or show panel base on open state of the current task.
+  void UpdatePanelVisibility();
 
   // Clean up unused WebContents.
   void CleanUpUnusedWebContents();
-
-  int GetPreferredDefaultSidePanelWidth();
 
   // Update the associated WebContents for active tab. Returns whether the web
   // contents was changed.
   bool UpdateWebContentsForActiveTab();
 
-  // Create the side panel view.
-  std::unique_ptr<views::View> CreateSidePanelView(SidePanelEntryScope& scope);
-
-  // Get the side panel contents for active tab. Return nullptr if no thread is
+  // Get the panel contents for active tab. Return nullptr if no thread is
   // associated with the current tab.
-  content::WebContents* GetSidePanelWebContentsForActiveTab();
+  content::WebContents* GetPanelWebContentsForActiveTab();
 
   // Create a cached WebContents if one does not exist for the current task.
   void MaybeCreateCachedWebContents(omnibox::ChromeAimEntryPoint entry_point);
@@ -189,49 +173,54 @@ class ContextualTasksSidePanelCoordinator
   // Create a cached WebContents for a task. For tests only.
   void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open);
 
-  // Hide/Unhide the side panel and don't update any task associated with it.
+  // Hide/Unhide the panel and don't update any task associated with it.
   void Hide();
   void Unhide();
 
-  // Called before a WebContents is moved or destroyed to make sure the side
-  // panel does not attach to it any more.
-  void MaybeDetachWebContentsFromWebView(content::WebContents* web_contents);
+  // Called before a WebContents is moved or destroyed to make sure the panel
+  // does not attach to it any more, e.g. when AI Mode is transitioned from the
+  // current tab to the panel. Only detaches if the passed-in WebContents
+  // matches the currently active WebContents.
+  void MaybeDetachWebContents(content::WebContents* web_contents);
 
   // Called when active tab has been updated.
   void ObserveWebContentsOnActiveTab();
 
-  // Update the status of active tab context on the side panel.
+  // Update the status of active tab context on the panel.
   void UpdateContextualTaskUI();
 
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
 
-  // Update open state of the side panel, can be either task scoped or tab
-  // scoped based on FeatureParam `kTaskScopedSidePanel`.
+  // Update open state of the panel, can be either task scoped or tab scoped
+  // based on FeatureParam `kTaskScopedSidePanel`.
   void UpdateOpenState(bool is_open);
 
-  // Get the open state of the side panel, can be either task scoped or tab
+  // Get the open state of the panel, can be either task scoped or tab
   // scoped based on FeatureParam `kTaskScopedSidePanel`.
   bool ShouldBeOpen();
 
-  // Initialize the open state of the tab scoped side panel if the
-  // active tab does not have an open state.
+  // Initialize the open state of the tab scoped panel if the active tab does
+  // not have an open state.
   void MaybeInitTabScopedOpenState();
 
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);
 
   // Notifies the ActiveTaskContextProvider about the current session state.
-  // This checks both the side panel and the active tab for a valid session
-  // handle.
+  // This checks both the panel and the active tab for a valid session handle.
   void NotifyActiveTaskContextProvider();
 
   void RecordSessionEndMetrics();
 
   void OnEligibilityChange(bool is_eligible);
 
-  // Browser window of the current side panel.
+  // Browser window of the current panel.
   const raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
+
+  // Interface to interact with/get state about the panel UI. Own the unique_ptr
+  // so that its lifetime is tied to `this`.
+  const std::unique_ptr<ContextualTasksPanelHost> contextual_tasks_panel_host_;
 
   // Context controller to query task information.
   const raw_ptr<ContextualTasksService> contextual_tasks_service_;
@@ -244,14 +233,7 @@ class ContextualTasksSidePanelCoordinator
   // Pref service for the current profile.
   const raw_ptr<PrefService> pref_service_;
 
-  const raw_ptr<SidePanelUI> side_panel_ui_;
-
   const raw_ptr<ActiveTaskContextProvider> active_task_context_provider_;
-
-  // WebView of the current side panel. It's owned by side panel framework so
-  // weak pointer is needed in case it's destroyed. The WebContents in the
-  // WebView is owned by the cache and can change based on active task change.
-  base::WeakPtr<ContextualTasksWebView> web_view_ = nullptr;
 
   // WebContents cache for each task.
   // It's okay to assume there is only 1 WebContents per task per window.
@@ -259,13 +241,9 @@ class ContextualTasksSidePanelCoordinator
   std::map<base::Uuid, std::unique_ptr<WebContentsCacheItem>>
       task_id_to_web_contents_cache_;
 
-  // The tab scoped side panel open state map. Only used when FeatureParam
+  // The tab scoped panel open state map. Only used when FeatureParam
   // `kTaskScopedSidePanel` is set to false.
   std::map<SessionID, bool> tab_scoped_open_state_;
-
-  // If the side panel with this specific id is open, do not override it with
-  // the contextual tasks side panel when active tab is changed.
-  SidePanelEntry::Id side_panel_id_not_to_override_ = SidePanelEntry::Id::kGlic;
 
   base::CallbackListSubscription eligibility_change_subscription_;
 
@@ -274,7 +252,7 @@ class ContextualTasksSidePanelCoordinator
 
   bool in_cobrowsing_session_ = false;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 
   base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{
       this};
