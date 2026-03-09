@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -33,7 +34,8 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
   SetUpListDefaultBrowserPromoCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    window_ = [[UIWindow alloc] init];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
     UIView.animationsEnabled = NO;
