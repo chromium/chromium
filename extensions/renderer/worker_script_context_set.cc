@@ -50,6 +50,12 @@ void WorkerScriptContextSet::ForEach(
 
   for (const std::unique_ptr<ScriptContext>& context : *contexts) {
     DCHECK(!context->GetRenderFrame());
+    // Some callers assume the context is valid so don't run the callback if it
+    // is not. This can happen when this callback is being run when the worker
+    // is in the process of terminating.
+    if (!context->is_valid()) {
+      continue;
+    }
 
     switch (host_id.type) {
       case mojom::HostID::HostType::kExtensions:
