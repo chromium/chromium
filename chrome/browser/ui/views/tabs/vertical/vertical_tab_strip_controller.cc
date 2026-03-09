@@ -107,6 +107,16 @@ void VerticalTabStripController::ShiftTabPrevious(
   ShiftTabRelative(tab_interface, -1);
 }
 
+void VerticalTabStripController::ShiftGroupUp(
+    const tab_groups::TabGroupId& group) {
+  ShiftGroupRelative(group, -1);
+}
+
+void VerticalTabStripController::ShiftGroupDown(
+    const tab_groups::TabGroupId& group) {
+  ShiftGroupRelative(group, 1);
+}
+
 void VerticalTabStripController::MoveTabFirst(
     const tabs::TabInterface* tab_interface) {
   const std::optional<int> start_index = model_->GetIndexOfTab(tab_interface);
@@ -537,6 +547,50 @@ void VerticalTabStripController::ShiftTabRelative(
   browser_view_->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16((offset > 0) ? IDS_TAB_AX_ANNOUNCE_MOVED_DOWN
                                              : IDS_TAB_AX_ANNOUNCE_MOVED_UP));
+}
+
+void VerticalTabStripController::ShiftGroupRelative(
+    const tab_groups::TabGroupId& group,
+    int offset) {
+  CHECK_EQ(1, std::abs(offset))
+      << "Offset must be 1 or -1 to shift the group up or down.";
+
+  const TabGroup* tab_group = model_->group_model()->GetTabGroup(group);
+  if (!tab_group) {
+    return;
+  }
+  gfx::Range tabs_in_group = tab_group->ListTabs();
+
+  const int start_index = tabs_in_group.start();
+  const int index_of_skipped_over_tab =
+      offset == 1 ? tabs_in_group.end() : start_index - 1;
+
+  if (!model_->ContainsIndex(start_index) ||
+      !model_->ContainsIndex(index_of_skipped_over_tab)) {
+    return;
+  }
+
+  if (model_->IsTabPinned(index_of_skipped_over_tab)) {
+    return;
+  }
+
+  // Avoid moving into the middle of another group by accounting for its size.
+  std::optional<tab_groups::TabGroupId> target_group =
+      model_->GetTabGroupForTab(index_of_skipped_over_tab);
+  if (target_group.has_value()) {
+    CHECK_NE(target_group.value(), group)
+        << "The target group must be different from the current group to move.";
+  }
+
+  const int num_skipped_tabs = target_group.has_value()
+                                   ? model_->group_model()
+                                         ->GetTabGroup(target_group.value())
+                                         ->ListTabs()
+                                         .length()
+                                   : 1;
+
+  const int target_index = start_index + offset * num_skipped_tabs;
+  model_->MoveGroupTo(group, target_index);
 }
 
 void VerticalTabStripController::AnnounceTabAddedToGroup(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -183,6 +184,25 @@ bool VerticalTabGroupHeaderView::OnKeyPressed(const ui::KeyEvent& event) {
         ToggleTabGroupCollapsedStateOrigin::kKeyboard);
     return true;
   }
+
+  std::optional<event_utils::ReorderDirection> reorder_direction =
+      event_utils::GetReorderCommandForKeyboardEvent(
+          event, views::LayoutOrientation::kVertical);
+  if (!reorder_direction) {
+    return false;
+  }
+
+  switch (*reorder_direction) {
+    case event_utils::ReorderDirection::kPrevious: {
+      delegate_->ShiftGroupUp();
+      return true;
+    }
+    case event_utils::ReorderDirection::kNext: {
+      delegate_->ShiftGroupDown();
+      return true;
+    }
+  }
+
   return false;
 }
 

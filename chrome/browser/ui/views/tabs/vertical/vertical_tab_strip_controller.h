@@ -55,6 +55,8 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
 
   void ShiftTabNext(const tabs::TabInterface* tab_interface);
   void ShiftTabPrevious(const tabs::TabInterface* tab_interface);
+  void ShiftGroupUp(const tab_groups::TabGroupId& group);
+  void ShiftGroupDown(const tab_groups::TabGroupId& group);
   void MoveTabFirst(const tabs::TabInterface* tab_interface);
   void MoveTabLast(const tabs::TabInterface* tab_interface);
   void SelectTab(const tabs::TabInterface* tab_interface,
@@ -115,6 +117,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
       std::optional<tab_groups::TabGroupId> group);
 
   void ShiftTabRelative(const tabs::TabInterface* tab_interface, int offset);
+  void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 
   void AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id);
   void AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id);

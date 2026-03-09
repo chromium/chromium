@@ -501,5 +501,21 @@ void VerticalTabGroupView::HideHoverCard() const {
   }
 }
 
+void VerticalTabGroupView::ShiftGroupUp() {
+  if (!collection_node_) {
+    return;
+  }
+  const TabGroup* group = GetTabGroupFromNode(collection_node_);
+  collection_node_->GetController()->ShiftGroupUp(group->id());
+}
+
+void VerticalTabGroupView::ShiftGroupDown() {
+  if (!collection_node_) {
+    return;
+  }
+  const TabGroup* group = GetTabGroupFromNode(collection_node_);
+  collection_node_->GetController()->ShiftGroupDown(group->id());
+}
+
 BEGIN_METADATA(VerticalTabGroupView)
 END_METADATA
