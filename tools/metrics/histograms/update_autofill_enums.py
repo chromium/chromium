@@ -26,6 +26,7 @@ FIELD_TYPES_PATH = 'components/autofill/core/browser/field_types.h'
 FIELD_PREDICTION_GROUPS_PATH = \
     'components/autofill/core/browser/metrics/prediction_quality_metrics.cc'
 ENTITY_SCHEMA_PATH = AUTOFILL_AI_ENTITY_DIR + '/entity_schema.json'
+PREDICTION_SOURCE_PATH = 'components/autofill/core/browser/autofill_field.h'
 
 def ReadEnum(filename, first_line, last_line_exclusive):
   """Extracts an enum from a file.
@@ -85,9 +86,9 @@ def ReadFieldPredictionGroups(filename):
   return {k: v.replace('GROUP_', '') for k, v in result.items()}
 
 
-def GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types):
+def GenerateAutofilledFieldUserEditingStatusByFieldType(field_types):
   result = {}
-  for enum_id, enum_name in server_field_types.items():
+  for enum_id, enum_name in field_types.items():
     result[16 * enum_id + 0] = f'{enum_name}: edited'
     result[16 * enum_id + 1] = f'{enum_name}: accepted'
   return result
@@ -119,11 +120,22 @@ def GenerateAutofillDataUtilizationByFieldType(field_types):
   return result
 
 
-def GenerateFillingAcceptanceByFieldType(server_field_types):
+def GenerateFillingAcceptanceByFieldType(field_types):
   result = {}
-  for enum_id, enum_name in server_field_types.items():
+  for enum_id, enum_name in field_types.items():
     result[4 * enum_id + 0] = f'{enum_name}: Ignored'
     result[4 * enum_id + 1] = f'{enum_name}: Accepted'
+  return result
+
+
+def GenerateAutofillPredictionSourceByFieldType(field_types):
+  prediction_sources = ReadEnum(PREDICTION_SOURCE_PATH,
+                                'enum class AutofillPredictionSource {',
+                                'kMaxValue')
+  result = {}
+  for type_id, type_name in field_types.items():
+    for source_id, source_name in prediction_sources.items():
+      result[16 * type_id + source_id] = f'{type_name}: {source_name}'
   return result
 
 
@@ -135,17 +147,17 @@ def GenerateAutofillAiEntityType():
   return result
 
 if __name__ == '__main__':
-  server_field_types = ReadFieldTypes(FIELD_TYPES_PATH)
+  field_types = ReadFieldTypes(FIELD_TYPES_PATH)
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
-      'AutofillFieldType', server_field_types, FIELD_TYPES_PATH,
+      'AutofillFieldType', field_types, FIELD_TYPES_PATH,
       os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofilledFieldUserEditingStatusByFieldType',
-      GenerateAutofilledFieldUserEditingStatusByFieldType(server_field_types),
+      GenerateAutofilledFieldUserEditingStatusByFieldType(field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
@@ -157,19 +169,25 @@ if __name__ == '__main__':
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
       'AutofillDataUtilizationByFieldType',
-      GenerateAutofillDataUtilizationByFieldType(server_field_types),
-      FIELD_TYPES_PATH, os.path.basename(__file__))
+      GenerateAutofillDataUtilizationByFieldType(field_types), FIELD_TYPES_PATH,
+      os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/enums.xml',
       'FillingAcceptanceByFieldType',
-      GenerateFillingAcceptanceByFieldType(server_field_types),
+      GenerateFillingAcceptanceByFieldType(field_types), FIELD_TYPES_PATH,
+      os.path.basename(__file__))
+
+  update_histogram_enum.UpdateHistogramFromDict(
+      'tools/metrics/histograms/metadata/autofill/enums.xml',
+      'AutofillPredictionSourceByFieldType',
+      GenerateAutofillPredictionSourceByFieldType(field_types),
       FIELD_TYPES_PATH, os.path.basename(__file__))
 
   update_histogram_enum.UpdateHistogramFromDict(
       'tools/metrics/histograms/metadata/autofill/histograms.xml',
       'AutofillFieldType',
-      server_field_types,
+      field_types,
       FIELD_TYPES_PATH,
       os.path.basename(__file__),
       update_comment=False)

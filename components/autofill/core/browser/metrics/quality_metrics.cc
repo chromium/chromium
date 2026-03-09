@@ -183,6 +183,7 @@ void LogPredictionMetrics(
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
+    LogFieldTypeAtSubmissionMetrics(*field);
     LogHeuristicPredictionQualityMetrics(form_interactions_ukm_logger,
                                          source_id, form, *field, metric_type,
                                          now);

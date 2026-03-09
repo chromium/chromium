@@ -3908,6 +3908,49 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FieldTypeAtSubmission.PreferredSource.Aggregate"
+    enum="AutofillPredictionSource2" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the prediction source used to make the overall type of a field.
+    Emitted once at submission time for every submitted field with non-trivial
+    type.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FieldTypeAtSubmission.PreferredSource.ByFieldType"
+    enum="AutofillPredictionSourceByFieldType" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the prediction source used to make the overall type of a field,
+    split by the field type. Emitted once at submission time for every submitted
+    field with non-trivial type.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FieldTypeAtSubmission.{PredictionSource}Type"
+    enum="AutofillFieldType" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of the field as seen at submission time.
+
+    {PredictionSource}.
+
+    Emitted once at submission time for every submitted field with non-trivial
+    type.
+  </summary>
+  <token key="PredictionSource">
+    <variant name="Heuristic" summary="Records the heuristic type."/>
+    <variant name="Html" summary="Records the html type."/>
+    <variant name="Overall" summary="Records the overall type."/>
+    <variant name="Server" summary="Records the server type."/>
+    <variant name="Voted" summary="Records the type to upload as a vote."/>
+  </token>
+</histogram>
+
 <histogram
     name="Autofill.FillDuration.FromInteraction.WithAutofill{AutofillFormType}"
     units="units" expires_after="2026-12-12">

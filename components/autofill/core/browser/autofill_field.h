@@ -48,6 +48,8 @@ enum class AutofillPredictionSource {
   kHeuristics = 2,
   kAutocomplete = 3,
   kRationalization = 4,
+  // Please update `tools/metrics/histograms/enums.xml` by executing
+  // `tools/metrics/histograms/update_autofill_enums.py` when this enum changes.
   kMaxValue = kRationalization
 };
 

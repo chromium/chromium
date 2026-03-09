@@ -2732,6 +2732,786 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/autofill_field.h:AutofillPredictionSource) -->
 
+<enum name="AutofillPredictionSourceByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA: kServerCrowdsourcing"/>
+  <int value="1" label="NO_SERVER_DATA: kServerOverride"/>
+  <int value="2" label="NO_SERVER_DATA: kHeuristics"/>
+  <int value="3" label="NO_SERVER_DATA: kAutocomplete"/>
+  <int value="4" label="NO_SERVER_DATA: kRationalization"/>
+  <int value="16" label="UNKNOWN_TYPE: kServerCrowdsourcing"/>
+  <int value="17" label="UNKNOWN_TYPE: kServerOverride"/>
+  <int value="18" label="UNKNOWN_TYPE: kHeuristics"/>
+  <int value="19" label="UNKNOWN_TYPE: kAutocomplete"/>
+  <int value="20" label="UNKNOWN_TYPE: kRationalization"/>
+  <int value="32" label="EMPTY_TYPE: kServerCrowdsourcing"/>
+  <int value="33" label="EMPTY_TYPE: kServerOverride"/>
+  <int value="34" label="EMPTY_TYPE: kHeuristics"/>
+  <int value="35" label="EMPTY_TYPE: kAutocomplete"/>
+  <int value="36" label="EMPTY_TYPE: kRationalization"/>
+  <int value="48" label="NAME_FIRST: kServerCrowdsourcing"/>
+  <int value="49" label="NAME_FIRST: kServerOverride"/>
+  <int value="50" label="NAME_FIRST: kHeuristics"/>
+  <int value="51" label="NAME_FIRST: kAutocomplete"/>
+  <int value="52" label="NAME_FIRST: kRationalization"/>
+  <int value="64" label="NAME_MIDDLE: kServerCrowdsourcing"/>
+  <int value="65" label="NAME_MIDDLE: kServerOverride"/>
+  <int value="66" label="NAME_MIDDLE: kHeuristics"/>
+  <int value="67" label="NAME_MIDDLE: kAutocomplete"/>
+  <int value="68" label="NAME_MIDDLE: kRationalization"/>
+  <int value="80" label="NAME_LAST: kServerCrowdsourcing"/>
+  <int value="81" label="NAME_LAST: kServerOverride"/>
+  <int value="82" label="NAME_LAST: kHeuristics"/>
+  <int value="83" label="NAME_LAST: kAutocomplete"/>
+  <int value="84" label="NAME_LAST: kRationalization"/>
+  <int value="96" label="NAME_MIDDLE_INITIAL: kServerCrowdsourcing"/>
+  <int value="97" label="NAME_MIDDLE_INITIAL: kServerOverride"/>
+  <int value="98" label="NAME_MIDDLE_INITIAL: kHeuristics"/>
+  <int value="99" label="NAME_MIDDLE_INITIAL: kAutocomplete"/>
+  <int value="100" label="NAME_MIDDLE_INITIAL: kRationalization"/>
+  <int value="112" label="NAME_FULL: kServerCrowdsourcing"/>
+  <int value="113" label="NAME_FULL: kServerOverride"/>
+  <int value="114" label="NAME_FULL: kHeuristics"/>
+  <int value="115" label="NAME_FULL: kAutocomplete"/>
+  <int value="116" label="NAME_FULL: kRationalization"/>
+  <int value="128" label="NAME_SUFFIX: kServerCrowdsourcing"/>
+  <int value="129" label="NAME_SUFFIX: kServerOverride"/>
+  <int value="130" label="NAME_SUFFIX: kHeuristics"/>
+  <int value="131" label="NAME_SUFFIX: kAutocomplete"/>
+  <int value="132" label="NAME_SUFFIX: kRationalization"/>
+  <int value="144" label="EMAIL_ADDRESS: kServerCrowdsourcing"/>
+  <int value="145" label="EMAIL_ADDRESS: kServerOverride"/>
+  <int value="146" label="EMAIL_ADDRESS: kHeuristics"/>
+  <int value="147" label="EMAIL_ADDRESS: kAutocomplete"/>
+  <int value="148" label="EMAIL_ADDRESS: kRationalization"/>
+  <int value="160" label="PHONE_HOME_NUMBER: kServerCrowdsourcing"/>
+  <int value="161" label="PHONE_HOME_NUMBER: kServerOverride"/>
+  <int value="162" label="PHONE_HOME_NUMBER: kHeuristics"/>
+  <int value="163" label="PHONE_HOME_NUMBER: kAutocomplete"/>
+  <int value="164" label="PHONE_HOME_NUMBER: kRationalization"/>
+  <int value="176" label="PHONE_HOME_CITY_CODE: kServerCrowdsourcing"/>
+  <int value="177" label="PHONE_HOME_CITY_CODE: kServerOverride"/>
+  <int value="178" label="PHONE_HOME_CITY_CODE: kHeuristics"/>
+  <int value="179" label="PHONE_HOME_CITY_CODE: kAutocomplete"/>
+  <int value="180" label="PHONE_HOME_CITY_CODE: kRationalization"/>
+  <int value="192" label="PHONE_HOME_COUNTRY_CODE: kServerCrowdsourcing"/>
+  <int value="193" label="PHONE_HOME_COUNTRY_CODE: kServerOverride"/>
+  <int value="194" label="PHONE_HOME_COUNTRY_CODE: kHeuristics"/>
+  <int value="195" label="PHONE_HOME_COUNTRY_CODE: kAutocomplete"/>
+  <int value="196" label="PHONE_HOME_COUNTRY_CODE: kRationalization"/>
+  <int value="208" label="PHONE_HOME_CITY_AND_NUMBER: kServerCrowdsourcing"/>
+  <int value="209" label="PHONE_HOME_CITY_AND_NUMBER: kServerOverride"/>
+  <int value="210" label="PHONE_HOME_CITY_AND_NUMBER: kHeuristics"/>
+  <int value="211" label="PHONE_HOME_CITY_AND_NUMBER: kAutocomplete"/>
+  <int value="212" label="PHONE_HOME_CITY_AND_NUMBER: kRationalization"/>
+  <int value="224" label="PHONE_HOME_WHOLE_NUMBER: kServerCrowdsourcing"/>
+  <int value="225" label="PHONE_HOME_WHOLE_NUMBER: kServerOverride"/>
+  <int value="226" label="PHONE_HOME_WHOLE_NUMBER: kHeuristics"/>
+  <int value="227" label="PHONE_HOME_WHOLE_NUMBER: kAutocomplete"/>
+  <int value="228" label="PHONE_HOME_WHOLE_NUMBER: kRationalization"/>
+  <int value="480" label="ADDRESS_HOME_LINE1: kServerCrowdsourcing"/>
+  <int value="481" label="ADDRESS_HOME_LINE1: kServerOverride"/>
+  <int value="482" label="ADDRESS_HOME_LINE1: kHeuristics"/>
+  <int value="483" label="ADDRESS_HOME_LINE1: kAutocomplete"/>
+  <int value="484" label="ADDRESS_HOME_LINE1: kRationalization"/>
+  <int value="496" label="ADDRESS_HOME_LINE2: kServerCrowdsourcing"/>
+  <int value="497" label="ADDRESS_HOME_LINE2: kServerOverride"/>
+  <int value="498" label="ADDRESS_HOME_LINE2: kHeuristics"/>
+  <int value="499" label="ADDRESS_HOME_LINE2: kAutocomplete"/>
+  <int value="500" label="ADDRESS_HOME_LINE2: kRationalization"/>
+  <int value="512" label="ADDRESS_HOME_APT_NUM: kServerCrowdsourcing"/>
+  <int value="513" label="ADDRESS_HOME_APT_NUM: kServerOverride"/>
+  <int value="514" label="ADDRESS_HOME_APT_NUM: kHeuristics"/>
+  <int value="515" label="ADDRESS_HOME_APT_NUM: kAutocomplete"/>
+  <int value="516" label="ADDRESS_HOME_APT_NUM: kRationalization"/>
+  <int value="528" label="ADDRESS_HOME_CITY: kServerCrowdsourcing"/>
+  <int value="529" label="ADDRESS_HOME_CITY: kServerOverride"/>
+  <int value="530" label="ADDRESS_HOME_CITY: kHeuristics"/>
+  <int value="531" label="ADDRESS_HOME_CITY: kAutocomplete"/>
+  <int value="532" label="ADDRESS_HOME_CITY: kRationalization"/>
+  <int value="544" label="ADDRESS_HOME_STATE: kServerCrowdsourcing"/>
+  <int value="545" label="ADDRESS_HOME_STATE: kServerOverride"/>
+  <int value="546" label="ADDRESS_HOME_STATE: kHeuristics"/>
+  <int value="547" label="ADDRESS_HOME_STATE: kAutocomplete"/>
+  <int value="548" label="ADDRESS_HOME_STATE: kRationalization"/>
+  <int value="560" label="ADDRESS_HOME_ZIP: kServerCrowdsourcing"/>
+  <int value="561" label="ADDRESS_HOME_ZIP: kServerOverride"/>
+  <int value="562" label="ADDRESS_HOME_ZIP: kHeuristics"/>
+  <int value="563" label="ADDRESS_HOME_ZIP: kAutocomplete"/>
+  <int value="564" label="ADDRESS_HOME_ZIP: kRationalization"/>
+  <int value="576" label="ADDRESS_HOME_COUNTRY: kServerCrowdsourcing"/>
+  <int value="577" label="ADDRESS_HOME_COUNTRY: kServerOverride"/>
+  <int value="578" label="ADDRESS_HOME_COUNTRY: kHeuristics"/>
+  <int value="579" label="ADDRESS_HOME_COUNTRY: kAutocomplete"/>
+  <int value="580" label="ADDRESS_HOME_COUNTRY: kRationalization"/>
+  <int value="816" label="CREDIT_CARD_NAME_FULL: kServerCrowdsourcing"/>
+  <int value="817" label="CREDIT_CARD_NAME_FULL: kServerOverride"/>
+  <int value="818" label="CREDIT_CARD_NAME_FULL: kHeuristics"/>
+  <int value="819" label="CREDIT_CARD_NAME_FULL: kAutocomplete"/>
+  <int value="820" label="CREDIT_CARD_NAME_FULL: kRationalization"/>
+  <int value="832" label="CREDIT_CARD_NUMBER: kServerCrowdsourcing"/>
+  <int value="833" label="CREDIT_CARD_NUMBER: kServerOverride"/>
+  <int value="834" label="CREDIT_CARD_NUMBER: kHeuristics"/>
+  <int value="835" label="CREDIT_CARD_NUMBER: kAutocomplete"/>
+  <int value="836" label="CREDIT_CARD_NUMBER: kRationalization"/>
+  <int value="848" label="CREDIT_CARD_EXP_MONTH: kServerCrowdsourcing"/>
+  <int value="849" label="CREDIT_CARD_EXP_MONTH: kServerOverride"/>
+  <int value="850" label="CREDIT_CARD_EXP_MONTH: kHeuristics"/>
+  <int value="851" label="CREDIT_CARD_EXP_MONTH: kAutocomplete"/>
+  <int value="852" label="CREDIT_CARD_EXP_MONTH: kRationalization"/>
+  <int value="864" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: kServerCrowdsourcing"/>
+  <int value="865" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: kServerOverride"/>
+  <int value="866" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: kHeuristics"/>
+  <int value="867" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: kAutocomplete"/>
+  <int value="868" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: kRationalization"/>
+  <int value="880" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: kServerCrowdsourcing"/>
+  <int value="881" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: kServerOverride"/>
+  <int value="882" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: kHeuristics"/>
+  <int value="883" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: kAutocomplete"/>
+  <int value="884" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: kRationalization"/>
+  <int value="896"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: kServerCrowdsourcing"/>
+  <int value="897" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: kServerOverride"/>
+  <int value="898" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: kHeuristics"/>
+  <int value="899" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: kAutocomplete"/>
+  <int value="900" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: kRationalization"/>
+  <int value="912"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: kServerCrowdsourcing"/>
+  <int value="913" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: kServerOverride"/>
+  <int value="914" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: kHeuristics"/>
+  <int value="915" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: kAutocomplete"/>
+  <int value="916" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: kRationalization"/>
+  <int value="928" label="CREDIT_CARD_TYPE: kServerCrowdsourcing"/>
+  <int value="929" label="CREDIT_CARD_TYPE: kServerOverride"/>
+  <int value="930" label="CREDIT_CARD_TYPE: kHeuristics"/>
+  <int value="931" label="CREDIT_CARD_TYPE: kAutocomplete"/>
+  <int value="932" label="CREDIT_CARD_TYPE: kRationalization"/>
+  <int value="944" label="CREDIT_CARD_VERIFICATION_CODE: kServerCrowdsourcing"/>
+  <int value="945" label="CREDIT_CARD_VERIFICATION_CODE: kServerOverride"/>
+  <int value="946" label="CREDIT_CARD_VERIFICATION_CODE: kHeuristics"/>
+  <int value="947" label="CREDIT_CARD_VERIFICATION_CODE: kAutocomplete"/>
+  <int value="948" label="CREDIT_CARD_VERIFICATION_CODE: kRationalization"/>
+  <int value="960" label="COMPANY_NAME: kServerCrowdsourcing"/>
+  <int value="961" label="COMPANY_NAME: kServerOverride"/>
+  <int value="962" label="COMPANY_NAME: kHeuristics"/>
+  <int value="963" label="COMPANY_NAME: kAutocomplete"/>
+  <int value="964" label="COMPANY_NAME: kRationalization"/>
+  <int value="1168" label="MERCHANT_EMAIL_SIGNUP: kServerCrowdsourcing"/>
+  <int value="1169" label="MERCHANT_EMAIL_SIGNUP: kServerOverride"/>
+  <int value="1170" label="MERCHANT_EMAIL_SIGNUP: kHeuristics"/>
+  <int value="1171" label="MERCHANT_EMAIL_SIGNUP: kAutocomplete"/>
+  <int value="1172" label="MERCHANT_EMAIL_SIGNUP: kRationalization"/>
+  <int value="1184" label="MERCHANT_PROMO_CODE: kServerCrowdsourcing"/>
+  <int value="1185" label="MERCHANT_PROMO_CODE: kServerOverride"/>
+  <int value="1186" label="MERCHANT_PROMO_CODE: kHeuristics"/>
+  <int value="1187" label="MERCHANT_PROMO_CODE: kAutocomplete"/>
+  <int value="1188" label="MERCHANT_PROMO_CODE: kRationalization"/>
+  <int value="1200" label="PASSWORD: kServerCrowdsourcing"/>
+  <int value="1201" label="PASSWORD: kServerOverride"/>
+  <int value="1202" label="PASSWORD: kHeuristics"/>
+  <int value="1203" label="PASSWORD: kAutocomplete"/>
+  <int value="1204" label="PASSWORD: kRationalization"/>
+  <int value="1216" label="ACCOUNT_CREATION_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1217" label="ACCOUNT_CREATION_PASSWORD: kServerOverride"/>
+  <int value="1218" label="ACCOUNT_CREATION_PASSWORD: kHeuristics"/>
+  <int value="1219" label="ACCOUNT_CREATION_PASSWORD: kAutocomplete"/>
+  <int value="1220" label="ACCOUNT_CREATION_PASSWORD: kRationalization"/>
+  <int value="1232" label="ADDRESS_HOME_STREET_ADDRESS: kServerCrowdsourcing"/>
+  <int value="1233" label="ADDRESS_HOME_STREET_ADDRESS: kServerOverride"/>
+  <int value="1234" label="ADDRESS_HOME_STREET_ADDRESS: kHeuristics"/>
+  <int value="1235" label="ADDRESS_HOME_STREET_ADDRESS: kAutocomplete"/>
+  <int value="1236" label="ADDRESS_HOME_STREET_ADDRESS: kRationalization"/>
+  <int value="1264" label="ADDRESS_HOME_SORTING_CODE: kServerCrowdsourcing"/>
+  <int value="1265" label="ADDRESS_HOME_SORTING_CODE: kServerOverride"/>
+  <int value="1266" label="ADDRESS_HOME_SORTING_CODE: kHeuristics"/>
+  <int value="1267" label="ADDRESS_HOME_SORTING_CODE: kAutocomplete"/>
+  <int value="1268" label="ADDRESS_HOME_SORTING_CODE: kRationalization"/>
+  <int value="1296"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: kServerCrowdsourcing"/>
+  <int value="1297" label="ADDRESS_HOME_DEPENDENT_LOCALITY: kServerOverride"/>
+  <int value="1298" label="ADDRESS_HOME_DEPENDENT_LOCALITY: kHeuristics"/>
+  <int value="1299" label="ADDRESS_HOME_DEPENDENT_LOCALITY: kAutocomplete"/>
+  <int value="1300" label="ADDRESS_HOME_DEPENDENT_LOCALITY: kRationalization"/>
+  <int value="1328" label="ADDRESS_HOME_LINE3: kServerCrowdsourcing"/>
+  <int value="1329" label="ADDRESS_HOME_LINE3: kServerOverride"/>
+  <int value="1330" label="ADDRESS_HOME_LINE3: kHeuristics"/>
+  <int value="1331" label="ADDRESS_HOME_LINE3: kAutocomplete"/>
+  <int value="1332" label="ADDRESS_HOME_LINE3: kRationalization"/>
+  <int value="1360"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1361" label="NOT_ACCOUNT_CREATION_PASSWORD: kServerOverride"/>
+  <int value="1362" label="NOT_ACCOUNT_CREATION_PASSWORD: kHeuristics"/>
+  <int value="1363" label="NOT_ACCOUNT_CREATION_PASSWORD: kAutocomplete"/>
+  <int value="1364" label="NOT_ACCOUNT_CREATION_PASSWORD: kRationalization"/>
+  <int value="1376" label="USERNAME: kServerCrowdsourcing"/>
+  <int value="1377" label="USERNAME: kServerOverride"/>
+  <int value="1378" label="USERNAME: kHeuristics"/>
+  <int value="1379" label="USERNAME: kAutocomplete"/>
+  <int value="1380" label="USERNAME: kRationalization"/>
+  <int value="1392" label="USERNAME_AND_EMAIL_ADDRESS: kServerCrowdsourcing"/>
+  <int value="1393" label="USERNAME_AND_EMAIL_ADDRESS: kServerOverride"/>
+  <int value="1394" label="USERNAME_AND_EMAIL_ADDRESS: kHeuristics"/>
+  <int value="1395" label="USERNAME_AND_EMAIL_ADDRESS: kAutocomplete"/>
+  <int value="1396" label="USERNAME_AND_EMAIL_ADDRESS: kRationalization"/>
+  <int value="1408" label="NEW_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1409" label="NEW_PASSWORD: kServerOverride"/>
+  <int value="1410" label="NEW_PASSWORD: kHeuristics"/>
+  <int value="1411" label="NEW_PASSWORD: kAutocomplete"/>
+  <int value="1412" label="NEW_PASSWORD: kRationalization"/>
+  <int value="1424" label="PROBABLY_NEW_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1425" label="PROBABLY_NEW_PASSWORD: kServerOverride"/>
+  <int value="1426" label="PROBABLY_NEW_PASSWORD: kHeuristics"/>
+  <int value="1427" label="PROBABLY_NEW_PASSWORD: kAutocomplete"/>
+  <int value="1428" label="PROBABLY_NEW_PASSWORD: kRationalization"/>
+  <int value="1440" label="NOT_NEW_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1441" label="NOT_NEW_PASSWORD: kServerOverride"/>
+  <int value="1442" label="NOT_NEW_PASSWORD: kHeuristics"/>
+  <int value="1443" label="NOT_NEW_PASSWORD: kAutocomplete"/>
+  <int value="1444" label="NOT_NEW_PASSWORD: kRationalization"/>
+  <int value="1456" label="CREDIT_CARD_NAME_FIRST: kServerCrowdsourcing"/>
+  <int value="1457" label="CREDIT_CARD_NAME_FIRST: kServerOverride"/>
+  <int value="1458" label="CREDIT_CARD_NAME_FIRST: kHeuristics"/>
+  <int value="1459" label="CREDIT_CARD_NAME_FIRST: kAutocomplete"/>
+  <int value="1460" label="CREDIT_CARD_NAME_FIRST: kRationalization"/>
+  <int value="1472" label="CREDIT_CARD_NAME_LAST: kServerCrowdsourcing"/>
+  <int value="1473" label="CREDIT_CARD_NAME_LAST: kServerOverride"/>
+  <int value="1474" label="CREDIT_CARD_NAME_LAST: kHeuristics"/>
+  <int value="1475" label="CREDIT_CARD_NAME_LAST: kAutocomplete"/>
+  <int value="1476" label="CREDIT_CARD_NAME_LAST: kRationalization"/>
+  <int value="1488" label="PHONE_HOME_EXTENSION: kServerCrowdsourcing"/>
+  <int value="1489" label="PHONE_HOME_EXTENSION: kServerOverride"/>
+  <int value="1490" label="PHONE_HOME_EXTENSION: kHeuristics"/>
+  <int value="1491" label="PHONE_HOME_EXTENSION: kAutocomplete"/>
+  <int value="1492" label="PHONE_HOME_EXTENSION: kRationalization"/>
+  <int value="1520" label="CONFIRMATION_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1521" label="CONFIRMATION_PASSWORD: kServerOverride"/>
+  <int value="1522" label="CONFIRMATION_PASSWORD: kHeuristics"/>
+  <int value="1523" label="CONFIRMATION_PASSWORD: kAutocomplete"/>
+  <int value="1524" label="CONFIRMATION_PASSWORD: kRationalization"/>
+  <int value="1536" label="AMBIGUOUS_TYPE: kServerCrowdsourcing"/>
+  <int value="1537" label="AMBIGUOUS_TYPE: kServerOverride"/>
+  <int value="1538" label="AMBIGUOUS_TYPE: kHeuristics"/>
+  <int value="1539" label="AMBIGUOUS_TYPE: kAutocomplete"/>
+  <int value="1540" label="AMBIGUOUS_TYPE: kRationalization"/>
+  <int value="1552" label="SEARCH_TERM: kServerCrowdsourcing"/>
+  <int value="1553" label="SEARCH_TERM: kServerOverride"/>
+  <int value="1554" label="SEARCH_TERM: kHeuristics"/>
+  <int value="1555" label="SEARCH_TERM: kAutocomplete"/>
+  <int value="1556" label="SEARCH_TERM: kRationalization"/>
+  <int value="1568" label="PRICE: kServerCrowdsourcing"/>
+  <int value="1569" label="PRICE: kServerOverride"/>
+  <int value="1570" label="PRICE: kHeuristics"/>
+  <int value="1571" label="PRICE: kAutocomplete"/>
+  <int value="1572" label="PRICE: kRationalization"/>
+  <int value="1584" label="NOT_PASSWORD: kServerCrowdsourcing"/>
+  <int value="1585" label="NOT_PASSWORD: kServerOverride"/>
+  <int value="1586" label="NOT_PASSWORD: kHeuristics"/>
+  <int value="1587" label="NOT_PASSWORD: kAutocomplete"/>
+  <int value="1588" label="NOT_PASSWORD: kRationalization"/>
+  <int value="1600" label="SINGLE_USERNAME: kServerCrowdsourcing"/>
+  <int value="1601" label="SINGLE_USERNAME: kServerOverride"/>
+  <int value="1602" label="SINGLE_USERNAME: kHeuristics"/>
+  <int value="1603" label="SINGLE_USERNAME: kAutocomplete"/>
+  <int value="1604" label="SINGLE_USERNAME: kRationalization"/>
+  <int value="1616" label="NOT_USERNAME: kServerCrowdsourcing"/>
+  <int value="1617" label="NOT_USERNAME: kServerOverride"/>
+  <int value="1618" label="NOT_USERNAME: kHeuristics"/>
+  <int value="1619" label="NOT_USERNAME: kAutocomplete"/>
+  <int value="1620" label="NOT_USERNAME: kRationalization"/>
+  <int value="1648" label="ADDRESS_HOME_STREET_NAME: kServerCrowdsourcing"/>
+  <int value="1649" label="ADDRESS_HOME_STREET_NAME: kServerOverride"/>
+  <int value="1650" label="ADDRESS_HOME_STREET_NAME: kHeuristics"/>
+  <int value="1651" label="ADDRESS_HOME_STREET_NAME: kAutocomplete"/>
+  <int value="1652" label="ADDRESS_HOME_STREET_NAME: kRationalization"/>
+  <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: kServerCrowdsourcing"/>
+  <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: kServerOverride"/>
+  <int value="1666" label="ADDRESS_HOME_HOUSE_NUMBER: kHeuristics"/>
+  <int value="1667" label="ADDRESS_HOME_HOUSE_NUMBER: kAutocomplete"/>
+  <int value="1668" label="ADDRESS_HOME_HOUSE_NUMBER: kRationalization"/>
+  <int value="1680" label="ADDRESS_HOME_SUBPREMISE: kServerCrowdsourcing"/>
+  <int value="1681" label="ADDRESS_HOME_SUBPREMISE: kServerOverride"/>
+  <int value="1682" label="ADDRESS_HOME_SUBPREMISE: kHeuristics"/>
+  <int value="1683" label="ADDRESS_HOME_SUBPREMISE: kAutocomplete"/>
+  <int value="1684" label="ADDRESS_HOME_SUBPREMISE: kRationalization"/>
+  <int value="1696" label="ADDRESS_HOME_OTHER_SUBUNIT: kServerCrowdsourcing"/>
+  <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: kServerOverride"/>
+  <int value="1698" label="ADDRESS_HOME_OTHER_SUBUNIT: kHeuristics"/>
+  <int value="1699" label="ADDRESS_HOME_OTHER_SUBUNIT: kAutocomplete"/>
+  <int value="1700" label="ADDRESS_HOME_OTHER_SUBUNIT: kRationalization"/>
+  <int value="1712" label="NAME_LAST_FIRST: kServerCrowdsourcing"/>
+  <int value="1713" label="NAME_LAST_FIRST: kServerOverride"/>
+  <int value="1714" label="NAME_LAST_FIRST: kHeuristics"/>
+  <int value="1715" label="NAME_LAST_FIRST: kAutocomplete"/>
+  <int value="1716" label="NAME_LAST_FIRST: kRationalization"/>
+  <int value="1728" label="NAME_LAST_CONJUNCTION: kServerCrowdsourcing"/>
+  <int value="1729" label="NAME_LAST_CONJUNCTION: kServerOverride"/>
+  <int value="1730" label="NAME_LAST_CONJUNCTION: kHeuristics"/>
+  <int value="1731" label="NAME_LAST_CONJUNCTION: kAutocomplete"/>
+  <int value="1732" label="NAME_LAST_CONJUNCTION: kRationalization"/>
+  <int value="1744" label="NAME_LAST_SECOND: kServerCrowdsourcing"/>
+  <int value="1745" label="NAME_LAST_SECOND: kServerOverride"/>
+  <int value="1746" label="NAME_LAST_SECOND: kHeuristics"/>
+  <int value="1747" label="NAME_LAST_SECOND: kAutocomplete"/>
+  <int value="1748" label="NAME_LAST_SECOND: kRationalization"/>
+  <int value="1760" label="NAME_HONORIFIC_PREFIX: kServerCrowdsourcing"/>
+  <int value="1761" label="NAME_HONORIFIC_PREFIX: kServerOverride"/>
+  <int value="1762" label="NAME_HONORIFIC_PREFIX: kHeuristics"/>
+  <int value="1763" label="NAME_HONORIFIC_PREFIX: kAutocomplete"/>
+  <int value="1764" label="NAME_HONORIFIC_PREFIX: kRationalization"/>
+  <int value="1824" label="ADDRESS_HOME_ADDRESS: kServerCrowdsourcing"/>
+  <int value="1825" label="ADDRESS_HOME_ADDRESS: kServerOverride"/>
+  <int value="1826" label="ADDRESS_HOME_ADDRESS: kHeuristics"/>
+  <int value="1827" label="ADDRESS_HOME_ADDRESS: kAutocomplete"/>
+  <int value="1828" label="ADDRESS_HOME_ADDRESS: kRationalization"/>
+  <int value="1840"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: kServerCrowdsourcing"/>
+  <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: kServerOverride"/>
+  <int value="1842" label="ADDRESS_HOME_ADDRESS_WITH_NAME: kHeuristics"/>
+  <int value="1843" label="ADDRESS_HOME_ADDRESS_WITH_NAME: kAutocomplete"/>
+  <int value="1844" label="ADDRESS_HOME_ADDRESS_WITH_NAME: kRationalization"/>
+  <int value="1856" label="ADDRESS_HOME_FLOOR: kServerCrowdsourcing"/>
+  <int value="1857" label="ADDRESS_HOME_FLOOR: kServerOverride"/>
+  <int value="1858" label="ADDRESS_HOME_FLOOR: kHeuristics"/>
+  <int value="1859" label="ADDRESS_HOME_FLOOR: kAutocomplete"/>
+  <int value="1860" label="ADDRESS_HOME_FLOOR: kRationalization"/>
+  <int value="1936"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: kServerCrowdsourcing"/>
+  <int value="1937"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: kServerOverride"/>
+  <int value="1938"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: kHeuristics"/>
+  <int value="1939"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: kAutocomplete"/>
+  <int value="1940"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: kRationalization"/>
+  <int value="1952"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+             kServerCrowdsourcing"/>
+  <int value="1953"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: kServerOverride"/>
+  <int value="1954"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: kHeuristics"/>
+  <int value="1955"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: kAutocomplete"/>
+  <int value="1956"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+             kRationalization"/>
+  <int value="1968" label="PHONE_HOME_NUMBER_PREFIX: kServerCrowdsourcing"/>
+  <int value="1969" label="PHONE_HOME_NUMBER_PREFIX: kServerOverride"/>
+  <int value="1970" label="PHONE_HOME_NUMBER_PREFIX: kHeuristics"/>
+  <int value="1971" label="PHONE_HOME_NUMBER_PREFIX: kAutocomplete"/>
+  <int value="1972" label="PHONE_HOME_NUMBER_PREFIX: kRationalization"/>
+  <int value="1984" label="PHONE_HOME_NUMBER_SUFFIX: kServerCrowdsourcing"/>
+  <int value="1985" label="PHONE_HOME_NUMBER_SUFFIX: kServerOverride"/>
+  <int value="1986" label="PHONE_HOME_NUMBER_SUFFIX: kHeuristics"/>
+  <int value="1987" label="PHONE_HOME_NUMBER_SUFFIX: kAutocomplete"/>
+  <int value="1988" label="PHONE_HOME_NUMBER_SUFFIX: kRationalization"/>
+  <int value="2000" label="IBAN_VALUE: kServerCrowdsourcing"/>
+  <int value="2001" label="IBAN_VALUE: kServerOverride"/>
+  <int value="2002" label="IBAN_VALUE: kHeuristics"/>
+  <int value="2003" label="IBAN_VALUE: kAutocomplete"/>
+  <int value="2004" label="IBAN_VALUE: kRationalization"/>
+  <int value="2016"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: kServerCrowdsourcing"/>
+  <int value="2017"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: kServerOverride"/>
+  <int value="2018"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: kHeuristics"/>
+  <int value="2019"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: kAutocomplete"/>
+  <int value="2020"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: kRationalization"/>
+  <int value="2048" label="NUMERIC_QUANTITY: kServerCrowdsourcing"/>
+  <int value="2049" label="NUMERIC_QUANTITY: kServerOverride"/>
+  <int value="2050" label="NUMERIC_QUANTITY: kHeuristics"/>
+  <int value="2051" label="NUMERIC_QUANTITY: kAutocomplete"/>
+  <int value="2052" label="NUMERIC_QUANTITY: kRationalization"/>
+  <int value="2064" label="ONE_TIME_CODE: kServerCrowdsourcing"/>
+  <int value="2065" label="ONE_TIME_CODE: kServerOverride"/>
+  <int value="2066" label="ONE_TIME_CODE: kHeuristics"/>
+  <int value="2067" label="ONE_TIME_CODE: kAutocomplete"/>
+  <int value="2068" label="ONE_TIME_CODE: kRationalization"/>
+  <int value="2128" label="DELIVERY_INSTRUCTIONS: kServerCrowdsourcing"/>
+  <int value="2129" label="DELIVERY_INSTRUCTIONS: kServerOverride"/>
+  <int value="2130" label="DELIVERY_INSTRUCTIONS: kHeuristics"/>
+  <int value="2131" label="DELIVERY_INSTRUCTIONS: kAutocomplete"/>
+  <int value="2132" label="DELIVERY_INSTRUCTIONS: kRationalization"/>
+  <int value="2160" label="ADDRESS_HOME_OVERFLOW: kServerCrowdsourcing"/>
+  <int value="2161" label="ADDRESS_HOME_OVERFLOW: kServerOverride"/>
+  <int value="2162" label="ADDRESS_HOME_OVERFLOW: kHeuristics"/>
+  <int value="2163" label="ADDRESS_HOME_OVERFLOW: kAutocomplete"/>
+  <int value="2164" label="ADDRESS_HOME_OVERFLOW: kRationalization"/>
+  <int value="2176" label="ADDRESS_HOME_LANDMARK: kServerCrowdsourcing"/>
+  <int value="2177" label="ADDRESS_HOME_LANDMARK: kServerOverride"/>
+  <int value="2178" label="ADDRESS_HOME_LANDMARK: kHeuristics"/>
+  <int value="2179" label="ADDRESS_HOME_LANDMARK: kAutocomplete"/>
+  <int value="2180" label="ADDRESS_HOME_LANDMARK: kRationalization"/>
+  <int value="2240"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: kServerCrowdsourcing"/>
+  <int value="2241"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: kServerOverride"/>
+  <int value="2242" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: kHeuristics"/>
+  <int value="2243" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: kAutocomplete"/>
+  <int value="2244"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: kRationalization"/>
+  <int value="2256" label="ADDRESS_HOME_ADMIN_LEVEL2: kServerCrowdsourcing"/>
+  <int value="2257" label="ADDRESS_HOME_ADMIN_LEVEL2: kServerOverride"/>
+  <int value="2258" label="ADDRESS_HOME_ADMIN_LEVEL2: kHeuristics"/>
+  <int value="2259" label="ADDRESS_HOME_ADMIN_LEVEL2: kAutocomplete"/>
+  <int value="2260" label="ADDRESS_HOME_ADMIN_LEVEL2: kRationalization"/>
+  <int value="2272" label="ADDRESS_HOME_STREET_LOCATION: kServerCrowdsourcing"/>
+  <int value="2273" label="ADDRESS_HOME_STREET_LOCATION: kServerOverride"/>
+  <int value="2274" label="ADDRESS_HOME_STREET_LOCATION: kHeuristics"/>
+  <int value="2275" label="ADDRESS_HOME_STREET_LOCATION: kAutocomplete"/>
+  <int value="2276" label="ADDRESS_HOME_STREET_LOCATION: kRationalization"/>
+  <int value="2288" label="ADDRESS_HOME_BETWEEN_STREETS: kServerCrowdsourcing"/>
+  <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: kServerOverride"/>
+  <int value="2290" label="ADDRESS_HOME_BETWEEN_STREETS: kHeuristics"/>
+  <int value="2291" label="ADDRESS_HOME_BETWEEN_STREETS: kAutocomplete"/>
+  <int value="2292" label="ADDRESS_HOME_BETWEEN_STREETS: kRationalization"/>
+  <int value="2304"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: kServerCrowdsourcing"/>
+  <int value="2305"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: kServerOverride"/>
+  <int value="2306"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: kHeuristics"/>
+  <int value="2307"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: kAutocomplete"/>
+  <int value="2308"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: kRationalization"/>
+  <int value="2320"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: kServerCrowdsourcing"/>
+  <int value="2321"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: kServerOverride"/>
+  <int value="2322"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: kHeuristics"/>
+  <int value="2323"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: kAutocomplete"/>
+  <int value="2324"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: kRationalization"/>
+  <int value="2336"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: kServerCrowdsourcing"/>
+  <int value="2337"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: kServerOverride"/>
+  <int value="2338"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: kHeuristics"/>
+  <int value="2339"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: kAutocomplete"/>
+  <int value="2340"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: kRationalization"/>
+  <int value="2400"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
+             kServerCrowdsourcing"/>
+  <int value="2401"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: kServerOverride"/>
+  <int value="2402"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: kHeuristics"/>
+  <int value="2403"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: kAutocomplete"/>
+  <int value="2404"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: kRationalization"/>
+  <int value="2416"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: kServerCrowdsourcing"/>
+  <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: kServerOverride"/>
+  <int value="2418" label="ADDRESS_HOME_BETWEEN_STREETS_1: kHeuristics"/>
+  <int value="2419" label="ADDRESS_HOME_BETWEEN_STREETS_1: kAutocomplete"/>
+  <int value="2420" label="ADDRESS_HOME_BETWEEN_STREETS_1: kRationalization"/>
+  <int value="2432"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: kServerCrowdsourcing"/>
+  <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: kServerOverride"/>
+  <int value="2434" label="ADDRESS_HOME_BETWEEN_STREETS_2: kHeuristics"/>
+  <int value="2435" label="ADDRESS_HOME_BETWEEN_STREETS_2: kAutocomplete"/>
+  <int value="2436" label="ADDRESS_HOME_BETWEEN_STREETS_2: kRationalization"/>
+  <int value="2448"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: kServerCrowdsourcing"/>
+  <int value="2449" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: kServerOverride"/>
+  <int value="2450" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: kHeuristics"/>
+  <int value="2451" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: kAutocomplete"/>
+  <int value="2452"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: kRationalization"/>
+  <int value="2464"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: kServerCrowdsourcing"/>
+  <int value="2465" label="SINGLE_USERNAME_FORGOT_PASSWORD: kServerOverride"/>
+  <int value="2466" label="SINGLE_USERNAME_FORGOT_PASSWORD: kHeuristics"/>
+  <int value="2467" label="SINGLE_USERNAME_FORGOT_PASSWORD: kAutocomplete"/>
+  <int value="2468" label="SINGLE_USERNAME_FORGOT_PASSWORD: kRationalization"/>
+  <int value="2496" label="ADDRESS_HOME_APT: kServerCrowdsourcing"/>
+  <int value="2497" label="ADDRESS_HOME_APT: kServerOverride"/>
+  <int value="2498" label="ADDRESS_HOME_APT: kHeuristics"/>
+  <int value="2499" label="ADDRESS_HOME_APT: kAutocomplete"/>
+  <int value="2500" label="ADDRESS_HOME_APT: kRationalization"/>
+  <int value="2512" label="ADDRESS_HOME_APT_TYPE: kServerCrowdsourcing"/>
+  <int value="2513" label="ADDRESS_HOME_APT_TYPE: kServerOverride"/>
+  <int value="2514" label="ADDRESS_HOME_APT_TYPE: kHeuristics"/>
+  <int value="2515" label="ADDRESS_HOME_APT_TYPE: kAutocomplete"/>
+  <int value="2516" label="ADDRESS_HOME_APT_TYPE: kRationalization"/>
+  <int value="2528" label="LOYALTY_MEMBERSHIP_ID: kServerCrowdsourcing"/>
+  <int value="2529" label="LOYALTY_MEMBERSHIP_ID: kServerOverride"/>
+  <int value="2530" label="LOYALTY_MEMBERSHIP_ID: kHeuristics"/>
+  <int value="2531" label="LOYALTY_MEMBERSHIP_ID: kAutocomplete"/>
+  <int value="2532" label="LOYALTY_MEMBERSHIP_ID: kRationalization"/>
+  <int value="2560"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: kServerCrowdsourcing"/>
+  <int value="2561"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: kServerOverride"/>
+  <int value="2562"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: kHeuristics"/>
+  <int value="2563"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: kAutocomplete"/>
+  <int value="2564"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: kRationalization"/>
+  <int value="2608" label="ALTERNATIVE_FULL_NAME: kServerCrowdsourcing"/>
+  <int value="2609" label="ALTERNATIVE_FULL_NAME: kServerOverride"/>
+  <int value="2610" label="ALTERNATIVE_FULL_NAME: kHeuristics"/>
+  <int value="2611" label="ALTERNATIVE_FULL_NAME: kAutocomplete"/>
+  <int value="2612" label="ALTERNATIVE_FULL_NAME: kRationalization"/>
+  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: kServerCrowdsourcing"/>
+  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: kServerOverride"/>
+  <int value="2626" label="ALTERNATIVE_GIVEN_NAME: kHeuristics"/>
+  <int value="2627" label="ALTERNATIVE_GIVEN_NAME: kAutocomplete"/>
+  <int value="2628" label="ALTERNATIVE_GIVEN_NAME: kRationalization"/>
+  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: kServerCrowdsourcing"/>
+  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: kServerOverride"/>
+  <int value="2642" label="ALTERNATIVE_FAMILY_NAME: kHeuristics"/>
+  <int value="2643" label="ALTERNATIVE_FAMILY_NAME: kAutocomplete"/>
+  <int value="2644" label="ALTERNATIVE_FAMILY_NAME: kRationalization"/>
+  <int value="2656" label="NAME_LAST_PREFIX: kServerCrowdsourcing"/>
+  <int value="2657" label="NAME_LAST_PREFIX: kServerOverride"/>
+  <int value="2658" label="NAME_LAST_PREFIX: kHeuristics"/>
+  <int value="2659" label="NAME_LAST_PREFIX: kAutocomplete"/>
+  <int value="2660" label="NAME_LAST_PREFIX: kRationalization"/>
+  <int value="2672" label="NAME_LAST_CORE: kServerCrowdsourcing"/>
+  <int value="2673" label="NAME_LAST_CORE: kServerOverride"/>
+  <int value="2674" label="NAME_LAST_CORE: kHeuristics"/>
+  <int value="2675" label="NAME_LAST_CORE: kAutocomplete"/>
+  <int value="2676" label="NAME_LAST_CORE: kRationalization"/>
+  <int value="2704" label="PASSPORT_NUMBER: kServerCrowdsourcing"/>
+  <int value="2705" label="PASSPORT_NUMBER: kServerOverride"/>
+  <int value="2706" label="PASSPORT_NUMBER: kHeuristics"/>
+  <int value="2707" label="PASSPORT_NUMBER: kAutocomplete"/>
+  <int value="2708" label="PASSPORT_NUMBER: kRationalization"/>
+  <int value="2720" label="PASSPORT_ISSUING_COUNTRY: kServerCrowdsourcing"/>
+  <int value="2721" label="PASSPORT_ISSUING_COUNTRY: kServerOverride"/>
+  <int value="2722" label="PASSPORT_ISSUING_COUNTRY: kHeuristics"/>
+  <int value="2723" label="PASSPORT_ISSUING_COUNTRY: kAutocomplete"/>
+  <int value="2724" label="PASSPORT_ISSUING_COUNTRY: kRationalization"/>
+  <int value="2736" label="PASSPORT_EXPIRATION_DATE: kServerCrowdsourcing"/>
+  <int value="2737" label="PASSPORT_EXPIRATION_DATE: kServerOverride"/>
+  <int value="2738" label="PASSPORT_EXPIRATION_DATE: kHeuristics"/>
+  <int value="2739" label="PASSPORT_EXPIRATION_DATE: kAutocomplete"/>
+  <int value="2740" label="PASSPORT_EXPIRATION_DATE: kRationalization"/>
+  <int value="2752" label="PASSPORT_ISSUE_DATE: kServerCrowdsourcing"/>
+  <int value="2753" label="PASSPORT_ISSUE_DATE: kServerOverride"/>
+  <int value="2754" label="PASSPORT_ISSUE_DATE: kHeuristics"/>
+  <int value="2755" label="PASSPORT_ISSUE_DATE: kAutocomplete"/>
+  <int value="2756" label="PASSPORT_ISSUE_DATE: kRationalization"/>
+  <int value="2768" label="LOYALTY_MEMBERSHIP_PROGRAM: kServerCrowdsourcing"/>
+  <int value="2769" label="LOYALTY_MEMBERSHIP_PROGRAM: kServerOverride"/>
+  <int value="2770" label="LOYALTY_MEMBERSHIP_PROGRAM: kHeuristics"/>
+  <int value="2771" label="LOYALTY_MEMBERSHIP_PROGRAM: kAutocomplete"/>
+  <int value="2772" label="LOYALTY_MEMBERSHIP_PROGRAM: kRationalization"/>
+  <int value="2784" label="LOYALTY_MEMBERSHIP_PROVIDER: kServerCrowdsourcing"/>
+  <int value="2785" label="LOYALTY_MEMBERSHIP_PROVIDER: kServerOverride"/>
+  <int value="2786" label="LOYALTY_MEMBERSHIP_PROVIDER: kHeuristics"/>
+  <int value="2787" label="LOYALTY_MEMBERSHIP_PROVIDER: kAutocomplete"/>
+  <int value="2788" label="LOYALTY_MEMBERSHIP_PROVIDER: kRationalization"/>
+  <int value="2816" label="VEHICLE_LICENSE_PLATE: kServerCrowdsourcing"/>
+  <int value="2817" label="VEHICLE_LICENSE_PLATE: kServerOverride"/>
+  <int value="2818" label="VEHICLE_LICENSE_PLATE: kHeuristics"/>
+  <int value="2819" label="VEHICLE_LICENSE_PLATE: kAutocomplete"/>
+  <int value="2820" label="VEHICLE_LICENSE_PLATE: kRationalization"/>
+  <int value="2832" label="VEHICLE_VIN: kServerCrowdsourcing"/>
+  <int value="2833" label="VEHICLE_VIN: kServerOverride"/>
+  <int value="2834" label="VEHICLE_VIN: kHeuristics"/>
+  <int value="2835" label="VEHICLE_VIN: kAutocomplete"/>
+  <int value="2836" label="VEHICLE_VIN: kRationalization"/>
+  <int value="2848" label="VEHICLE_MAKE: kServerCrowdsourcing"/>
+  <int value="2849" label="VEHICLE_MAKE: kServerOverride"/>
+  <int value="2850" label="VEHICLE_MAKE: kHeuristics"/>
+  <int value="2851" label="VEHICLE_MAKE: kAutocomplete"/>
+  <int value="2852" label="VEHICLE_MAKE: kRationalization"/>
+  <int value="2864" label="VEHICLE_MODEL: kServerCrowdsourcing"/>
+  <int value="2865" label="VEHICLE_MODEL: kServerOverride"/>
+  <int value="2866" label="VEHICLE_MODEL: kHeuristics"/>
+  <int value="2867" label="VEHICLE_MODEL: kAutocomplete"/>
+  <int value="2868" label="VEHICLE_MODEL: kRationalization"/>
+  <int value="2896" label="DRIVERS_LICENSE_REGION: kServerCrowdsourcing"/>
+  <int value="2897" label="DRIVERS_LICENSE_REGION: kServerOverride"/>
+  <int value="2898" label="DRIVERS_LICENSE_REGION: kHeuristics"/>
+  <int value="2899" label="DRIVERS_LICENSE_REGION: kAutocomplete"/>
+  <int value="2900" label="DRIVERS_LICENSE_REGION: kRationalization"/>
+  <int value="2912" label="DRIVERS_LICENSE_NUMBER: kServerCrowdsourcing"/>
+  <int value="2913" label="DRIVERS_LICENSE_NUMBER: kServerOverride"/>
+  <int value="2914" label="DRIVERS_LICENSE_NUMBER: kHeuristics"/>
+  <int value="2915" label="DRIVERS_LICENSE_NUMBER: kAutocomplete"/>
+  <int value="2916" label="DRIVERS_LICENSE_NUMBER: kRationalization"/>
+  <int value="2928"
+      label="DRIVERS_LICENSE_EXPIRATION_DATE: kServerCrowdsourcing"/>
+  <int value="2929" label="DRIVERS_LICENSE_EXPIRATION_DATE: kServerOverride"/>
+  <int value="2930" label="DRIVERS_LICENSE_EXPIRATION_DATE: kHeuristics"/>
+  <int value="2931" label="DRIVERS_LICENSE_EXPIRATION_DATE: kAutocomplete"/>
+  <int value="2932" label="DRIVERS_LICENSE_EXPIRATION_DATE: kRationalization"/>
+  <int value="2944" label="DRIVERS_LICENSE_ISSUE_DATE: kServerCrowdsourcing"/>
+  <int value="2945" label="DRIVERS_LICENSE_ISSUE_DATE: kServerOverride"/>
+  <int value="2946" label="DRIVERS_LICENSE_ISSUE_DATE: kHeuristics"/>
+  <int value="2947" label="DRIVERS_LICENSE_ISSUE_DATE: kAutocomplete"/>
+  <int value="2948" label="DRIVERS_LICENSE_ISSUE_DATE: kRationalization"/>
+  <int value="2960" label="VEHICLE_YEAR: kServerCrowdsourcing"/>
+  <int value="2961" label="VEHICLE_YEAR: kServerOverride"/>
+  <int value="2962" label="VEHICLE_YEAR: kHeuristics"/>
+  <int value="2963" label="VEHICLE_YEAR: kAutocomplete"/>
+  <int value="2964" label="VEHICLE_YEAR: kRationalization"/>
+  <int value="2976" label="VEHICLE_PLATE_STATE: kServerCrowdsourcing"/>
+  <int value="2977" label="VEHICLE_PLATE_STATE: kServerOverride"/>
+  <int value="2978" label="VEHICLE_PLATE_STATE: kHeuristics"/>
+  <int value="2979" label="VEHICLE_PLATE_STATE: kAutocomplete"/>
+  <int value="2980" label="VEHICLE_PLATE_STATE: kRationalization"/>
+  <int value="3024"
+      label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: kServerCrowdsourcing"/>
+  <int value="3025" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: kServerOverride"/>
+  <int value="3026" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: kHeuristics"/>
+  <int value="3027" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: kAutocomplete"/>
+  <int value="3028" label="EMAIL_OR_LOYALTY_MEMBERSHIP_ID: kRationalization"/>
+  <int value="3040" label="NATIONAL_ID_CARD_NUMBER: kServerCrowdsourcing"/>
+  <int value="3041" label="NATIONAL_ID_CARD_NUMBER: kServerOverride"/>
+  <int value="3042" label="NATIONAL_ID_CARD_NUMBER: kHeuristics"/>
+  <int value="3043" label="NATIONAL_ID_CARD_NUMBER: kAutocomplete"/>
+  <int value="3044" label="NATIONAL_ID_CARD_NUMBER: kRationalization"/>
+  <int value="3056"
+      label="NATIONAL_ID_CARD_EXPIRATION_DATE: kServerCrowdsourcing"/>
+  <int value="3057" label="NATIONAL_ID_CARD_EXPIRATION_DATE: kServerOverride"/>
+  <int value="3058" label="NATIONAL_ID_CARD_EXPIRATION_DATE: kHeuristics"/>
+  <int value="3059" label="NATIONAL_ID_CARD_EXPIRATION_DATE: kAutocomplete"/>
+  <int value="3060" label="NATIONAL_ID_CARD_EXPIRATION_DATE: kRationalization"/>
+  <int value="3072" label="NATIONAL_ID_CARD_ISSUE_DATE: kServerCrowdsourcing"/>
+  <int value="3073" label="NATIONAL_ID_CARD_ISSUE_DATE: kServerOverride"/>
+  <int value="3074" label="NATIONAL_ID_CARD_ISSUE_DATE: kHeuristics"/>
+  <int value="3075" label="NATIONAL_ID_CARD_ISSUE_DATE: kAutocomplete"/>
+  <int value="3076" label="NATIONAL_ID_CARD_ISSUE_DATE: kRationalization"/>
+  <int value="3088"
+      label="NATIONAL_ID_CARD_ISSUING_COUNTRY: kServerCrowdsourcing"/>
+  <int value="3089" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: kServerOverride"/>
+  <int value="3090" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: kHeuristics"/>
+  <int value="3091" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: kAutocomplete"/>
+  <int value="3092" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: kRationalization"/>
+  <int value="3104" label="KNOWN_TRAVELER_NUMBER: kServerCrowdsourcing"/>
+  <int value="3105" label="KNOWN_TRAVELER_NUMBER: kServerOverride"/>
+  <int value="3106" label="KNOWN_TRAVELER_NUMBER: kHeuristics"/>
+  <int value="3107" label="KNOWN_TRAVELER_NUMBER: kAutocomplete"/>
+  <int value="3108" label="KNOWN_TRAVELER_NUMBER: kRationalization"/>
+  <int value="3120" label="REDRESS_NUMBER: kServerCrowdsourcing"/>
+  <int value="3121" label="REDRESS_NUMBER: kServerOverride"/>
+  <int value="3122" label="REDRESS_NUMBER: kHeuristics"/>
+  <int value="3123" label="REDRESS_NUMBER: kAutocomplete"/>
+  <int value="3124" label="REDRESS_NUMBER: kRationalization"/>
+  <int value="3168"
+      label="FLIGHT_RESERVATION_FLIGHT_NUMBER: kServerCrowdsourcing"/>
+  <int value="3169" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: kServerOverride"/>
+  <int value="3170" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: kHeuristics"/>
+  <int value="3171" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: kAutocomplete"/>
+  <int value="3172" label="FLIGHT_RESERVATION_FLIGHT_NUMBER: kRationalization"/>
+  <int value="3184"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: kServerCrowdsourcing"/>
+  <int value="3185"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: kServerOverride"/>
+  <int value="3186" label="FLIGHT_RESERVATION_CONFIRMATION_CODE: kHeuristics"/>
+  <int value="3187"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: kAutocomplete"/>
+  <int value="3188"
+      label="FLIGHT_RESERVATION_CONFIRMATION_CODE: kRationalization"/>
+  <int value="3200"
+      label="FLIGHT_RESERVATION_TICKET_NUMBER: kServerCrowdsourcing"/>
+  <int value="3201" label="FLIGHT_RESERVATION_TICKET_NUMBER: kServerOverride"/>
+  <int value="3202" label="FLIGHT_RESERVATION_TICKET_NUMBER: kHeuristics"/>
+  <int value="3203" label="FLIGHT_RESERVATION_TICKET_NUMBER: kAutocomplete"/>
+  <int value="3204" label="FLIGHT_RESERVATION_TICKET_NUMBER: kRationalization"/>
+  <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: kServerCrowdsourcing"/>
+  <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: kServerOverride"/>
+  <int value="3218" label="ADDRESS_HOME_ZIP_PREFIX: kHeuristics"/>
+  <int value="3219" label="ADDRESS_HOME_ZIP_PREFIX: kAutocomplete"/>
+  <int value="3220" label="ADDRESS_HOME_ZIP_PREFIX: kRationalization"/>
+  <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: kServerCrowdsourcing"/>
+  <int value="3233" label="ADDRESS_HOME_ZIP_SUFFIX: kServerOverride"/>
+  <int value="3234" label="ADDRESS_HOME_ZIP_SUFFIX: kHeuristics"/>
+  <int value="3235" label="ADDRESS_HOME_ZIP_SUFFIX: kAutocomplete"/>
+  <int value="3236" label="ADDRESS_HOME_ZIP_SUFFIX: kRationalization"/>
+  <int value="3248"
+      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: kServerCrowdsourcing"/>
+  <int value="3249"
+      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: kServerOverride"/>
+  <int value="3250" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: kHeuristics"/>
+  <int value="3251"
+      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: kAutocomplete"/>
+  <int value="3252"
+      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: kRationalization"/>
+  <int value="3264"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: kServerCrowdsourcing"/>
+  <int value="3265"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: kServerOverride"/>
+  <int value="3266" label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: kHeuristics"/>
+  <int value="3267"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: kAutocomplete"/>
+  <int value="3268"
+      label="FLIGHT_RESERVATION_DEPARTURE_AIRPORT: kRationalization"/>
+  <int value="3280"
+      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: kServerCrowdsourcing"/>
+  <int value="3281"
+      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: kServerOverride"/>
+  <int value="3282" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: kHeuristics"/>
+  <int value="3283" label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: kAutocomplete"/>
+  <int value="3284"
+      label="FLIGHT_RESERVATION_ARRIVAL_AIRPORT: kRationalization"/>
+  <int value="3296"
+      label="FLIGHT_RESERVATION_DEPARTURE_DATE: kServerCrowdsourcing"/>
+  <int value="3297" label="FLIGHT_RESERVATION_DEPARTURE_DATE: kServerOverride"/>
+  <int value="3298" label="FLIGHT_RESERVATION_DEPARTURE_DATE: kHeuristics"/>
+  <int value="3299" label="FLIGHT_RESERVATION_DEPARTURE_DATE: kAutocomplete"/>
+  <int value="3300"
+      label="FLIGHT_RESERVATION_DEPARTURE_DATE: kRationalization"/>
+  <int value="3312" label="ADDRESS_HOME_ZIP_AND_CITY: kServerCrowdsourcing"/>
+  <int value="3313" label="ADDRESS_HOME_ZIP_AND_CITY: kServerOverride"/>
+  <int value="3314" label="ADDRESS_HOME_ZIP_AND_CITY: kHeuristics"/>
+  <int value="3315" label="ADDRESS_HOME_ZIP_AND_CITY: kAutocomplete"/>
+  <int value="3316" label="ADDRESS_HOME_ZIP_AND_CITY: kRationalization"/>
+  <int value="3328" label="ORDER_ID: kServerCrowdsourcing"/>
+  <int value="3329" label="ORDER_ID: kServerOverride"/>
+  <int value="3330" label="ORDER_ID: kHeuristics"/>
+  <int value="3331" label="ORDER_ID: kAutocomplete"/>
+  <int value="3332" label="ORDER_ID: kRationalization"/>
+  <int value="3344" label="ORDER_DATE: kServerCrowdsourcing"/>
+  <int value="3345" label="ORDER_DATE: kServerOverride"/>
+  <int value="3346" label="ORDER_DATE: kHeuristics"/>
+  <int value="3347" label="ORDER_DATE: kAutocomplete"/>
+  <int value="3348" label="ORDER_DATE: kRationalization"/>
+  <int value="3360" label="ORDER_MERCHANT_NAME: kServerCrowdsourcing"/>
+  <int value="3361" label="ORDER_MERCHANT_NAME: kServerOverride"/>
+  <int value="3362" label="ORDER_MERCHANT_NAME: kHeuristics"/>
+  <int value="3363" label="ORDER_MERCHANT_NAME: kAutocomplete"/>
+  <int value="3364" label="ORDER_MERCHANT_NAME: kRationalization"/>
+  <int value="3376" label="ORDER_MERCHANT_DOMAIN: kServerCrowdsourcing"/>
+  <int value="3377" label="ORDER_MERCHANT_DOMAIN: kServerOverride"/>
+  <int value="3378" label="ORDER_MERCHANT_DOMAIN: kHeuristics"/>
+  <int value="3379" label="ORDER_MERCHANT_DOMAIN: kAutocomplete"/>
+  <int value="3380" label="ORDER_MERCHANT_DOMAIN: kRationalization"/>
+  <int value="3392" label="ORDER_PRODUCT_NAMES: kServerCrowdsourcing"/>
+  <int value="3393" label="ORDER_PRODUCT_NAMES: kServerOverride"/>
+  <int value="3394" label="ORDER_PRODUCT_NAMES: kHeuristics"/>
+  <int value="3395" label="ORDER_PRODUCT_NAMES: kAutocomplete"/>
+  <int value="3396" label="ORDER_PRODUCT_NAMES: kRationalization"/>
+  <int value="3408" label="ORDER_ACCOUNT: kServerCrowdsourcing"/>
+  <int value="3409" label="ORDER_ACCOUNT: kServerOverride"/>
+  <int value="3410" label="ORDER_ACCOUNT: kHeuristics"/>
+  <int value="3411" label="ORDER_ACCOUNT: kAutocomplete"/>
+  <int value="3412" label="ORDER_ACCOUNT: kRationalization"/>
+  <int value="3424" label="ORDER_GRAND_TOTAL: kServerCrowdsourcing"/>
+  <int value="3425" label="ORDER_GRAND_TOTAL: kServerOverride"/>
+  <int value="3426" label="ORDER_GRAND_TOTAL: kHeuristics"/>
+  <int value="3427" label="ORDER_GRAND_TOTAL: kAutocomplete"/>
+  <int value="3428" label="ORDER_GRAND_TOTAL: kRationalization"/>
+</enum>
+
 <enum name="AutofillPreferenceSetter">
   <int value="0" label="Unknown"/>
   <int value="1" label="User Setting"/>

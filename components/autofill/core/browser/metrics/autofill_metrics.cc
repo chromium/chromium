@@ -116,19 +116,19 @@ const std::string_view GetImageTypeString(
 // The lower four bits are used to encode the editing status and the higher
 // 12 bits are used to encode the field type.
 int GetFieldTypeUserEditStatusMetric(
-    FieldType server_type,
+    FieldType field_type,
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric) {
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE <= (UINT16_MAX >> 4),
-                "Autofill::ServerTypes value needs more than 12 bits.");
+  static_assert(std::to_underlying(FieldType::MAX_VALID_FIELD_TYPE) < (1 << 12),
+                "autofill::FieldType value needs more than 12 bits.");
 
   static_assert(
-      static_cast<int>(
-          AutofillMetrics::AutofilledFieldUserEditingStatusMetric::kMaxValue) <=
-          (UINT16_MAX >> 12),
+      std::to_underlying(
+          AutofillMetrics::AutofilledFieldUserEditingStatusMetric::kMaxValue) <
+          (1 << 4),
       "AutofillMetrics::AutofilledFieldUserEditingStatusMetric value needs "
-      "more than 4 bits");
+      "more than 4 bits.");
 
-  return (server_type << 4) | static_cast<int>(metric);
+  return (std::to_underlying(field_type) << 4) | std::to_underlying(metric);
 }
 
 const int kMaxBucketsCount = 50;

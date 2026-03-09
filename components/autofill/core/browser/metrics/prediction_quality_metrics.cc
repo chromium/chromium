@@ -6,12 +6,14 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -175,6 +177,20 @@ FieldPredictionOverlapSourcesSuperset GetFieldPredictionOverlapSample(
     return FieldPredictionOverlapSourcesSuperset::kAutocompleteCorrect;
   }
   return FieldPredictionOverlapSourcesSuperset::kNoneCorrect;
+}
+
+// Encodes `field_type` and `prediction_source` into a bucket of
+// AutofillPredictionSourceByFieldType enum in
+// `tools/metrics/histograms/metadata/autofill/enums.xml`.
+int GetFieldTypePredictionSourceBucket(
+    FieldType field_type,
+    AutofillPredictionSource prediction_source) {
+  static_assert(
+      std::to_underlying(AutofillPredictionSource::kMaxValue) < (1 << 4),
+      "autofill::AutofillPredictionSource value needs more than 4 bits.");
+
+  return (std::to_underlying(field_type) << 4) |
+         std::to_underlying(prediction_source);
 }
 
 }  // namespace
@@ -972,6 +988,68 @@ void LogFieldPredictionOverlapMetrics(const AutofillField& field) {
         base::StrCat({prefix, prediction_source, kAllTypes}), sample);
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, prediction_source, field_type_str}), sample);
+  }
+}
+
+void LogFieldTypeAtSubmissionMetrics(const AutofillField& field) {
+  constexpr std::string_view kFieldTypeAtSubmissionHistogramName =
+      "Autofill.FieldTypeAtSubmission.%s%s";
+  const FieldType overall_type = *field.Type().GetTypes().begin();
+  const FieldType html_type =
+      HtmlFieldTypeToBestCorrespondingFieldType(field.html_type());
+
+  auto is_type_relevant = [](FieldType type) {
+    return !FieldTypeSet{UNKNOWN_TYPE, NO_SERVER_DATA, EMPTY_TYPE}.contains(
+        type);
+  };
+
+  if (is_type_relevant(field.heuristic_type())) {
+    base::UmaHistogramExactLinear(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName, "HeuristicType",
+                           ""),
+        field.heuristic_type(), MAX_VALID_FIELD_TYPE);
+  }
+
+  if (is_type_relevant(field.server_type())) {
+    base::UmaHistogramExactLinear(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName, "ServerType",
+                           ""),
+        field.server_type(), MAX_VALID_FIELD_TYPE);
+  }
+
+  if (is_type_relevant(html_type)) {
+    base::UmaHistogramExactLinear(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName, "HtmlType", ""),
+        html_type, MAX_VALID_FIELD_TYPE);
+  }
+
+  if (is_type_relevant(overall_type)) {
+    base::UmaHistogramExactLinear(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName, "OverallType",
+                           ""),
+        overall_type, MAX_VALID_FIELD_TYPE);
+  }
+
+  for (FieldType voted_type : field.possible_types()) {
+    if (is_type_relevant(voted_type)) {
+      base::UmaHistogramExactLinear(
+          base::StringPrintf(kFieldTypeAtSubmissionHistogramName, "VotedType",
+                             ""),
+          voted_type, MAX_VALID_FIELD_TYPE);
+    }
+  }
+
+  if (field.PredictionSource() && is_type_relevant(overall_type)) {
+    base::UmaHistogramEnumeration(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName,
+                           "PreferredSource.", "Aggregate"),
+        *field.PredictionSource());
+
+    base::UmaHistogramSparse(
+        base::StringPrintf(kFieldTypeAtSubmissionHistogramName,
+                           "PreferredSource.", "ByFieldType"),
+        GetFieldTypePredictionSourceBucket(overall_type,
+                                           *field.PredictionSource()));
   }
 }
 

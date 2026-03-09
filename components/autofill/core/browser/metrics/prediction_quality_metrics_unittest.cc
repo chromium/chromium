@@ -34,6 +34,7 @@ namespace {
 using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::testing::ElementsAre;
 using ::testing::WithParamInterface;
 
 class PredictionQualityMetricsTest : public AutofillMetricsBaseTest,
@@ -566,6 +567,92 @@ TEST_F(PredictionQualityMetricsTest,
         "Autofill.FieldPrediction.PhoneCountryCode.CorrectPredictionSource",
         AutofillPredictionSource::kAutocomplete, 1);
   }
+}
+
+TEST_F(PredictionQualityMetricsTest, FieldTypeAtSubmission) {
+  GetAndAddSeenForm(
+      {.fields = {
+           {.role = NAME_FULL,
+            .server_type = NO_SERVER_DATA,
+            .autocomplete_attribute = "name"},
+           {.role = EMAIL_ADDRESS, .server_type = EMAIL_ADDRESS},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .server_type = NO_SERVER_DATA},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .server_type = NO_SERVER_DATA},
+           {.role = UNKNOWN_TYPE, .server_type = NO_SERVER_DATA}}});
+  ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
+
+  FormGlobalId form_id =
+      test_api(autofill_manager()).form_structures().front()->global_id();
+  FormStructure& form =
+      *test_api(autofill_manager()).FindCachedFormById(form_id);
+
+  form.field(2)->SetTypeTo(AutofillType(PHONE_HOME_COUNTRY_CODE),
+                           AutofillPredictionSource::kRationalization);
+
+  ASSERT_EQ(form.field(0)->Type().GetAddressType(), NAME_FULL);
+  ASSERT_EQ(form.field(0)->PredictionSource(),
+            AutofillPredictionSource::kAutocomplete);
+  ASSERT_EQ(form.field(1)->Type().GetAddressType(), EMAIL_ADDRESS);
+  ASSERT_EQ(form.field(1)->PredictionSource(),
+            AutofillPredictionSource::kServerCrowdsourcing);
+  ASSERT_EQ(form.field(2)->Type().GetAddressType(), PHONE_HOME_COUNTRY_CODE);
+  ASSERT_EQ(form.field(2)->PredictionSource(),
+            AutofillPredictionSource::kRationalization);
+  ASSERT_EQ(form.field(3)->Type().GetAddressType(), PHONE_HOME_CITY_AND_NUMBER);
+  ASSERT_EQ(form.field(3)->PredictionSource(),
+            AutofillPredictionSource::kHeuristics);
+  ASSERT_THAT(form.field(4)->Type().GetTypes(), ElementsAre(UNKNOWN_TYPE));
+  ASSERT_FALSE(form.field(4)->PredictionSource().has_value());
+
+  base::HistogramTester histogram_tester;
+  SubmitForm(form.ToFormData());
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldTypeAtSubmission.HeuristicType"),
+              BucketsAre(Bucket(NAME_FULL, 1), Bucket(EMAIL_ADDRESS, 1),
+                         Bucket(PHONE_HOME_CITY_AND_NUMBER, 2)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldTypeAtSubmission.ServerType"),
+              BucketsAre(Bucket(EMAIL_ADDRESS, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FieldTypeAtSubmission.HtmlType"),
+      BucketsAre(Bucket(NAME_FULL, 1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FieldTypeAtSubmission.OverallType"),
+              BucketsAre(Bucket(NAME_FULL, 1), Bucket(EMAIL_ADDRESS, 1),
+                         Bucket(PHONE_HOME_COUNTRY_CODE, 1),
+                         Bucket(PHONE_HOME_CITY_AND_NUMBER, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Autofill.FieldTypeAtSubmission.PreferredSource.Aggregate"),
+      BucketsAre(Bucket(AutofillPredictionSource::kAutocomplete, 1),
+                 Bucket(AutofillPredictionSource::kServerCrowdsourcing, 1),
+                 Bucket(AutofillPredictionSource::kRationalization, 1),
+                 Bucket(AutofillPredictionSource::kHeuristics, 1)));
+
+  auto get_bucket = [](FieldType type, AutofillPredictionSource source) {
+    return type << 4 | std::to_underlying(source);
+  };
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FieldTypeAtSubmission."
+                                     "PreferredSource.ByFieldType"),
+      BucketsAre(
+          Bucket(get_bucket(NAME_FULL, AutofillPredictionSource::kAutocomplete),
+                 1),
+          Bucket(get_bucket(EMAIL_ADDRESS,
+                            AutofillPredictionSource::kServerCrowdsourcing),
+                 1),
+          Bucket(get_bucket(PHONE_HOME_COUNTRY_CODE,
+                            AutofillPredictionSource::kRationalization),
+                 1),
+          Bucket(get_bucket(PHONE_HOME_CITY_AND_NUMBER,
+                            AutofillPredictionSource::kHeuristics),
+                 1)));
 }
 
 }  // namespace
