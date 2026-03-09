@@ -8,7 +8,6 @@ import re
 import string
 
 from collections import namedtuple
-from grit import lazy_re
 from grit import tclib
 
 ACCENTED_STRINGS = {
@@ -62,8 +61,8 @@ NUMBERS = [
     'ten'
 ]
 PLACEHOLDER_STRING = '{PLACEHOLDER_VARIABLE}'
-ALPHABETIC_RUN = lazy_re.compile(r'([^\W0-9_]+)')
-WORD = lazy_re.compile(r'\b\S+\b')
+ALPHABETIC_RUN = re.compile(r'([^\W0-9_]+)')
+WORD = re.compile(r'\b\S+\b')
 
 # RTL modifiers for letters
 RLO = '\u202e'
@@ -146,7 +145,7 @@ class HtmlTag(Node):
   script, style, xmp or listing.  If any of those appear in messages,
   something is wrong.
   """
-  pattern = lazy_re.compile(
+  pattern = re.compile(
       r'^</?[a-z]\w*'  # beginning of tag
       r'(?:\s+\w+(?:\s*=\s*'  # attribute start
       r'(?:[^\s"\'>]+|"[^\"]*"|\'[^\']*\'))?'  # attribute value
@@ -159,7 +158,7 @@ class RawText(Node):
   # Raw text can have a < or $ in it, but only at the very start.
   # This guarantees that it's already tried and failed to match an HTML tag
   # and variable.
-  pattern = lazy_re.compile(r'^[^{}][^{}<$]*', re.S)
+  pattern = re.compile(r'^[^{}][^{}<$]*', re.S)
 
   def GetNumWords(self):
     return len(WORD.findall(self.text))
@@ -172,7 +171,7 @@ class BasicVariable(Node):
   """Represents a variable. Usually used inside a plural option, but has been
   overloaded to store placeholders as well.
   """
-  pattern = lazy_re.compile(r'^\$?{[a-zA-Z0-9_]+}')
+  pattern = re.compile(r'^\$?{[a-zA-Z0-9_]+}')
 
   def GetNumWords(self):
     return 1
@@ -182,7 +181,7 @@ class PluralOption(Node):
   """Represents a single option for a plural selection.
   eg. =1 {singular option here}
   """
-  pattern = lazy_re.compile(r'^(=[0-9]+|other)\s*{')
+  pattern = re.compile(r'^(=[0-9]+|other)\s*{')
   after = '}\n'
 
   @classmethod
@@ -202,7 +201,7 @@ class Plural(Node):
   """Represents a set of options for plurals.
   eg. {VARIABLE, plural, =1 {singular} other {plural}}
   """
-  pattern = lazy_re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?',
+  pattern = re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?',
                             re.S)
   after = '}'
 

@@ -17,7 +17,6 @@ import tempfile
 from xml.sax import saxutils
 
 from grit import constants
-from grit import lazy_re
 
 _root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -154,7 +153,7 @@ def SetupSystemIdentifiers(ids):
   '''
   KNOWN_SYSTEM_IDENTIFIERS.update(ids)
   global SYSTEM_IDENTIFIERS
-  SYSTEM_IDENTIFIERS = lazy_re.compile(
+  SYSTEM_IDENTIFIERS = re.compile(
       ' | '.join([r'\b%s\b' % i for i in KNOWN_SYSTEM_IDENTIFIERS]),
       re.VERBOSE)
 
@@ -183,13 +182,13 @@ SetupSystemIdentifiers((
 
 
 # Matches character entities, whether specified by name, decimal or hex.
-_HTML_ENTITY = lazy_re.compile(
+_HTML_ENTITY = re.compile(
   '&(#(?P<decimal>[0-9]+)|#x(?P<hex>[a-fA-F0-9]+)|(?P<named>[a-z0-9]+));',
   re.IGNORECASE)
 
 # Matches characters that should be HTML-escaped.  This is <, > and &, but only
 # if the & is not the start of an HTML character entity.
-_HTML_CHARS_TO_ESCAPE = lazy_re.compile(
+_HTML_CHARS_TO_ESCAPE = re.compile(
     '"|<|>|&(?!#[0-9]+|#x[0-9a-z]+|[a-z]+;)',
     re.IGNORECASE | re.MULTILINE)
 
@@ -394,7 +393,7 @@ def normpath(path):
   return os.path.normpath(path)
 
 
-_LANGUAGE_SPLIT_RE = lazy_re.compile('-|_|/')
+_LANGUAGE_SPLIT_RE = re.compile('-|_|/')
 
 
 def CanonicalLanguage(code):

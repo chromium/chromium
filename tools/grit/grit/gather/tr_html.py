@@ -54,7 +54,6 @@ import re
 from grit import clique
 from grit import constants
 from grit import exception
-from grit import lazy_re
 from grit import tclib
 from grit import util
 
@@ -95,25 +94,25 @@ _SUFFIXES = '123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 # Matches whitespace in an HTML document.  Also matches HTML comments, which are
 # treated as whitespace.
-_WHITESPACE = lazy_re.compile(r'(\s|&nbsp;|\\n|\\r|<!--\s*desc\s*=.*?-->)+',
+_WHITESPACE = re.compile(r'(\s|&nbsp;|\\n|\\r|<!--\s*desc\s*=.*?-->)+',
                               re.DOTALL)
 
 # Matches whitespace sequences which can be folded into a single whitespace
 # character.  This matches single characters so that non-spaces are replaced
 # with spaces.
-_FOLD_WHITESPACE = lazy_re.compile(r'\s+')
+_FOLD_WHITESPACE = re.compile(r'\s+')
 
 # Finds a non-whitespace character
-_NON_WHITESPACE = lazy_re.compile(r'\S')
+_NON_WHITESPACE = re.compile(r'\S')
 
 # Matches two or more &nbsp; in a row (a single &nbsp is not changed into
 # placeholders because different languages require different numbers of spaces
 # and placeholders must match exactly; more than one is probably a "special"
 # whitespace sequence and should be turned into a placeholder).
-_NBSP = lazy_re.compile(r'&nbsp;(&nbsp;)+')
+_NBSP = re.compile(r'&nbsp;(&nbsp;)+')
 
 # Matches nontranslateable chunks of the document
-_NONTRANSLATEABLES = lazy_re.compile(r'''
+_NONTRANSLATEABLES = re.compile(r'''
   <\s*script.+?<\s*/\s*script\s*>
   |
   <\s*style.+?<\s*/\s*style\s*>
@@ -130,7 +129,7 @@ _NONTRANSLATEABLES = lazy_re.compile(r'''
   ''', re.MULTILINE | re.DOTALL | re.VERBOSE | re.IGNORECASE)
 
 # Matches a tag and its attributes
-_ELEMENT = lazy_re.compile(r'''
+_ELEMENT = re.compile(r'''
   # Optional closing /, element name
   <\s*(?P<closing>/)?\s*(?P<element>[a-zA-Z0-9]+)\s*
   # Attributes and/or replaceables inside the tag, if any
@@ -149,7 +148,7 @@ _ELEMENT = lazy_re.compile(r'''
 # regexp demands that the attribute value be quoted; this is necessary because
 # the non-tree-building nature of the parser means we don't know when we're
 # writing out attributes, so we wouldn't know to escape spaces.
-_SPECIAL_ELEMENT = lazy_re.compile(r'''
+_SPECIAL_ELEMENT = re.compile(r'''
   <\s*(
     input[^>]+?value\s*=\s*(\'(?P<value3>[^\']*)\'|"(?P<value4>[^"]*)")
     [^>]+type\s*=\s*"?'?(button|reset|text|submit)'?"?
@@ -169,7 +168,7 @@ _SPECIAL_ELEMENT = lazy_re.compile(r'''
 # (between tags).  This includes all characters and character entities.
 # Note that this also matches &nbsp; which needs to be handled as whitespace
 # before this regexp is applied.
-_CHARACTERS = lazy_re.compile(r'''
+_CHARACTERS = re.compile(r'''
   (
     \w
     |
@@ -182,22 +181,22 @@ _CHARACTERS = lazy_re.compile(r'''
 # Matches Total Recall's "replaceable" tags, which are just any text
 # in capitals enclosed by delimiters like [] or [~~] or [$~~$] (e.g. [HELLO],
 # [~HELLO~] and [$~HELLO~$]).
-_REPLACEABLE = lazy_re.compile(r'\[(\$?\~)?(?P<name>[A-Z0-9-_]+?)(\~\$?)?\]',
+_REPLACEABLE = re.compile(r'\[(\$?\~)?(?P<name>[A-Z0-9-_]+?)(\~\$?)?\]',
                                re.MULTILINE)
 
 
 # Matches the silly [!]-prefixed "header" that is used in some TotalRecall
 # templates.
-_SILLY_HEADER = lazy_re.compile(r'\[!\]\ntitle\t(?P<title>[^\n]+?)\n.+?\n\n',
+_SILLY_HEADER = re.compile(r'\[!\]\ntitle\t(?P<title>[^\n]+?)\n.+?\n\n',
                                 re.MULTILINE | re.DOTALL)
 
 
 # Matches a comment that provides a description for the message it occurs in.
-_DESCRIPTION_COMMENT = lazy_re.compile(
+_DESCRIPTION_COMMENT = re.compile(
   r'<!--\s*desc\s*=\s*(?P<description>.+?)\s*-->', re.DOTALL)
 
 # Matches a comment which is used to break apart multiple messages.
-_MESSAGE_BREAK_COMMENT = lazy_re.compile(r'<!--\s*message-break\s*-->',
+_MESSAGE_BREAK_COMMENT = re.compile(r'<!--\s*message-break\s*-->',
                                          re.DOTALL)
 
 # Matches a comment which is used to prevent block tags from splitting a message

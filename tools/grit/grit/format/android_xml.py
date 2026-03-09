@@ -65,7 +65,6 @@ import re
 import xml.sax.saxutils
 
 from grit import constants
-from grit import lazy_re
 from grit.node import message
 
 
@@ -77,7 +76,7 @@ _TAGGED_ONLY_DEFAULT = False
 # In tagged-only mode, only messages with this tag will be ouputted.
 _EMIT_TAG = 'android_java'
 
-_NAME_PATTERN = lazy_re.compile(r'IDS_(?P<name>[A-Z0-9_]+)\Z')
+_NAME_PATTERN = re.compile(r'IDS_(?P<name>[A-Z0-9_]+)\Z')
 
 # Most strings are output as a <string> element. Note the double quotes
 # around the value to preserve whitespace.
@@ -90,12 +89,12 @@ _PLURALS_ITEM_TEMPLATE = '  <item quantity="%s">%s</item>\n'
 # Matches e.g. "{HELLO, plural, HOW ARE YOU DOING}", while capturing
 # "HOW ARE YOU DOING" in <items>. The en-XA pseudolocale adds a set of words
 # beginning with " - one" after the plural block which is also captured.
-_PLURALS_PATTERN = lazy_re.compile(
+_PLURALS_PATTERN = re.compile(
     r'\{[A-Z_]+,\s*plural,(?P<items>.*)\}(?P<pseudolong> - one.*)?$', flags=re.S)
 
 # Repeatedly matched against the <items> capture in _PLURALS_PATTERN,
 # to match "<quantity>{<value>}".
-_PLURALS_ITEM_PATTERN = lazy_re.compile(r'(?P<quantity>\S+?)\s*'
+_PLURALS_ITEM_PATTERN = re.compile(r'(?P<quantity>\S+?)\s*'
                                         r'\{(?P<value>.*?)\}')
 _PLURALS_QUANTITY_MAP = {
   '=0': 'zero',

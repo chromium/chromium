@@ -18,7 +18,6 @@ referencing all available images.
 import os
 import re
 
-from grit import lazy_re
 from grit import util
 from grit.format import html_inline
 from grit.gather import interface
@@ -29,27 +28,27 @@ DIST_SUBSTR = '%DISTRIBUTION%'
 
 
 # Matches a chrome theme source URL.
-_THEME_SOURCE = lazy_re.compile(
+_THEME_SOURCE = re.compile(
     r'(?P<baseurl>chrome://theme/IDR_[A-Z0-9_]*)(?P<query>\?.*)?')
 # Pattern for matching CSS url() function.
 _CSS_URL_PATTERN = r'url\((?P<quote>"|\'|)(?P<filename>[^"\'()]*)(?P=quote)\)'
 # Matches CSS url() functions with the capture group 'filename'.
-_CSS_URL = lazy_re.compile(_CSS_URL_PATTERN)
+_CSS_URL = re.compile(_CSS_URL_PATTERN)
 # Matches one or more CSS image urls used in given properties.
-_CSS_IMAGE_URLS = lazy_re.compile(
+_CSS_IMAGE_URLS = re.compile(
     r'(?P<attribute>content|background|[\w-]*-image):\s*'
         r'(?P<urls>(' + _CSS_URL_PATTERN + r'\s*,?\s*)+)')
 # Matches CSS image sets.
-_CSS_IMAGE_SETS = lazy_re.compile(
+_CSS_IMAGE_SETS = re.compile(
     r'(?P<attribute>content|background|[\w-]*-image):[ ]*'
         r'(-webkit-)?image-set\((?P<images>'
         r'(\s*,?\s*url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*[0-9.]*x)*)\)',
     re.MULTILINE)
 # Matches a single image in a CSS image set with the capture group scale.
-_CSS_IMAGE_SET_IMAGE = lazy_re.compile(r'\s*,?\s*'
+_CSS_IMAGE_SET_IMAGE = re.compile(r'\s*,?\s*'
     r'url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*(?P<scale>[0-9.]*x)',
     re.MULTILINE)
-_HTML_IMAGE_SRC = lazy_re.compile(
+_HTML_IMAGE_SRC = re.compile(
     r'<img[^>]+src=\"(?P<filename>[^">]*)\"[^>]*>')
 
 def GetImageList(

@@ -11,17 +11,16 @@ from grit.node import base
 
 from grit import clique
 from grit import exception
-from grit import lazy_re
 from grit import tclib
 from grit import util
 
 
 # Matches exactly three dots ending a line or followed by whitespace.
-_ELLIPSIS_PATTERN = lazy_re.compile(r'(?<!\.)\.\.\.(?=$|\s)')
+_ELLIPSIS_PATTERN = re.compile(r'(?<!\.)\.\.\.(?=$|\s)')
 _ELLIPSIS_SYMBOL = '\u2026'  # Ellipsis
 
 # Finds whitespace at the start and end of a string which can be multiline.
-_WHITESPACE = lazy_re.compile(r'(?P<start>\s*)(?P<body>.+?)(?P<end>\s*)\Z',
+_WHITESPACE = re.compile(r'(?P<start>\s*)(?P<body>.+?)(?P<end>\s*)\Z',
                               re.DOTALL | re.MULTILINE)
 
 # <ph> placeholder elements should contain the special character formatters
@@ -36,7 +35,7 @@ _CHROME_FORMAT = r'\$+\d'
 _OTHER_FORMAT = r'%[0-9sd]'
 
 # Finds formatters that must be in a placeholder (<ph>) element.
-_FORMATTERS = lazy_re.compile(
+_FORMATTERS = re.compile(
     '(%s)|(%s)|(%s)' % (_ANDROID_FORMAT, _CHROME_FORMAT, _OTHER_FORMAT))
 _BAD_PLACEHOLDER_MSG = ('ERROR: Placeholder formatter found outside of <ph> '
                         'tag in message "%s" in %s.')
@@ -44,10 +43,10 @@ _INVALID_PH_CHAR_MSG = ('ERROR: Invalid format characters found in message '
                         '"%s" <ph> tag in %s.')
 
 # Finds HTML tag tokens.
-_HTMLTOKEN = lazy_re.compile(r'<[/]?[a-z][a-z0-9]*[^>]*>', re.I)
+_HTMLTOKEN = re.compile(r'<[/]?[a-z][a-z0-9]*[^>]*>', re.I)
 
 # Finds HTML entities.
-_HTMLENTITY = lazy_re.compile(r'&[^\s]*;')
+_HTMLENTITY = re.compile(r'&[^\s]*;')
 
 
 class MessageNode(base.ContentNode):
@@ -55,7 +54,7 @@ class MessageNode(base.ContentNode):
 
   # For splitting a list of things that can be separated by commas or
   # whitespace
-  _SPLIT_RE = lazy_re.compile(r'\s*,\s*|\s+')
+  _SPLIT_RE = re.compile(r'\s*,\s*|\s+')
 
   def __init__(self):
     super().__init__()

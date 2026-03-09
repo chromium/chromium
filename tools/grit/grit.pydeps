@@ -50,7 +50,6 @@
 //tools/grit/grit/gather/txt.py
 //tools/grit/grit/grd_reader.py
 //tools/grit/grit/grit_runner.py
-//tools/grit/grit/lazy_re.py
 //tools/grit/grit/node/__init__.py
 //tools/grit/grit/node/base.py
 //tools/grit/grit/node/brotli_util.py

@@ -25,37 +25,36 @@ from grit.tool import postprocess_interface
 from grit.tool import preprocess_interface
 
 from grit import grd_reader
-from grit import lazy_re
 from grit import tclib
 from grit import util
 
 
 # Matches files referenced from an .rc file
-_FILE_REF = lazy_re.compile(r'''
+_FILE_REF = re.compile(r'''
   ^(?P<id>[A-Z_0-9.]+)[ \t]+
   (?P<type>[A-Z_0-9]+)[ \t]+
   "(?P<file>.*?([^"]|""))"[ \t]*$''', re.VERBOSE | re.MULTILINE)
 
 
 # Matches a dialog section
-_DIALOG = lazy_re.compile(
+_DIALOG = re.compile(
     r'^(?P<id>[A-Z0-9_]+)\s+DIALOG(EX)?\s.+?^BEGIN\s*$.+?^END\s*$',
     re.MULTILINE | re.DOTALL)
 
 
 # Matches a menu section
-_MENU = lazy_re.compile(r'^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
+_MENU = re.compile(r'^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
                         re.MULTILINE | re.DOTALL)
 
 
 # Matches a versioninfo section
-_VERSIONINFO = lazy_re.compile(
+_VERSIONINFO = re.compile(
     r'^(?P<id>[A-Z0-9_]+)\s+VERSIONINFO\s.+?^BEGIN\s*$.+?^END\s*$',
     re.MULTILINE | re.DOTALL)
 
 
 # Matches a stringtable
-_STRING_TABLE = lazy_re.compile(
+_STRING_TABLE = re.compile(
     (r'^STRINGTABLE(\s+(PRELOAD|DISCARDABLE|CHARACTERISTICS.+|LANGUAGE.+|'
      r'VERSION.+))*\s*\nBEGIN\s*$(?P<body>.+?)^END\s*$'),
     re.MULTILINE | re.DOTALL)
@@ -63,7 +62,7 @@ _STRING_TABLE = lazy_re.compile(
 
 # Matches each message inside a stringtable, breaking it up into comments,
 # the ID of the message, and the (RC-escaped) message text.
-_MESSAGE = lazy_re.compile(r'''
+_MESSAGE = re.compile(r'''
   (?P<comment>(^\s+//.+?)*)  # 0 or more lines of comments preceding the message
   ^\s*
   (?P<id>[A-Za-z0-9_]+)  # id
@@ -73,11 +72,11 @@ _MESSAGE = lazy_re.compile(r'''
 
 
 # Matches each line of comment text in a multi-line comment.
-_COMMENT_TEXT = lazy_re.compile(r'^\s*//\s*(?P<text>.+?)$', re.MULTILINE)
+_COMMENT_TEXT = re.compile(r'^\s*//\s*(?P<text>.+?)$', re.MULTILINE)
 
 
 # Matches a string that is empty or all whitespace
-_WHITESPACE_ONLY = lazy_re.compile(r'\A\s*\Z', re.MULTILINE)
+_WHITESPACE_ONLY = re.compile(r'\A\s*\Z', re.MULTILINE)
 
 
 # Finds printf and FormatMessage style format specifiers
@@ -85,7 +84,7 @@ _WHITESPACE_ONLY = lazy_re.compile(r'\A\s*\Z', re.MULTILINE)
 # re.split() should include both the normal text and what we intend to
 # replace with placeholders.
 # TODO(joi) Check documentation for printf (and Windows variants) and FormatMessage
-_FORMAT_SPECIFIER = lazy_re.compile(
+_FORMAT_SPECIFIER = re.compile(
   r'(%[-# +]?(?:[0-9]*|\*)(?:\.(?:[0-9]+|\*))?(?:h|l|L)?' # printf up to last char
   r'(?:d|i|o|u|x|X|e|E|f|F|g|G|c|r|s|ls|ws)'              # printf last char
   r'|\$[1-9][0-9]*)')                                     # FormatMessage

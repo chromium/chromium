@@ -17,7 +17,6 @@ import sys
 import base64
 import mimetypes
 
-from grit import lazy_re
 from grit import util
 from grit.format import minifier
 
@@ -41,25 +40,25 @@ DIST_ENV_VAR = 'CHROMIUM_BUILD'
 DIST_SUBSTR = '%DISTRIBUTION%'
 
 # Matches beginning of an "if" block.
-_BEGIN_IF_BLOCK = lazy_re.compile(
+_BEGIN_IF_BLOCK = re.compile(
     r'<if [^>]*?expr=("(?P<expr1>[^">]*)"|\'(?P<expr2>[^\'>]*)\')[^>]*?>')
 
 # Matches ending of an "if" block.
-_END_IF_BLOCK = lazy_re.compile(r'</if>')
+_END_IF_BLOCK = re.compile(r'</if>')
 
 # Used by DoInline to replace various links with inline content.
-_STYLESHEET_RE = lazy_re.compile(
+_STYLESHEET_RE = re.compile(
     r'<link rel="stylesheet"[^>]+?href="(?P<filename>[^"]*)".*?>(\s*</link>)?',
     re.DOTALL)
-_INCLUDE_RE = lazy_re.compile(
+_INCLUDE_RE = re.compile(
     r'(?P<comment>\/\/ )?<include[^>]+?'
     r'src=("(?P<file1>[^">]*)"|\'(?P<file2>[^\'>]*)\').*?>(\s*</include>)?',
     re.DOTALL)
-_SRC_RE = lazy_re.compile(
+_SRC_RE = re.compile(
     r'<(?!script)(?:[^>]+?\s)src="(?!\[\[|{{)(?P<filename>[^"\']*)"',
     re.MULTILINE)
 # This re matches '<img srcset="..."' or '<source srcset="..."'
-_SRCSET_RE = lazy_re.compile(
+_SRCSET_RE = re.compile(
     r'<(img|source)\b(?:[^>]*?\s)srcset="(?!\[\[|{{|\$i18n{)'
     r'(?P<srcset>[^"\']*)"',
     re.MULTILINE)
@@ -72,12 +71,12 @@ _SRCSET_RE = lazy_re.compile(
 #   letter 'w'". As a reasonable compromise, we match a list of characters
 #   that form both of them.
 # Matches for example "img2.png 2x" or "img9.png 11E-2w".
-_SRCSET_ENTRY_RE = lazy_re.compile(
+_SRCSET_ENTRY_RE = re.compile(
     r'\s*(?P<url>[^,\s]\S+[^,\s])'
     r'(?:\s+(?P<descriptor>[\deE.-]+[wx]))?\s*'
     r'(?P<separator>,|$)',
     re.MULTILINE)
-_ICON_RE = lazy_re.compile(
+_ICON_RE = re.compile(
     r'<link rel="icon"\s(?:[^>]+?\s)?'
     r'href=(?P<quote>")(?P<filename>[^"\']*)\1',
     re.MULTILINE)

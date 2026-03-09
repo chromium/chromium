@@ -14,12 +14,11 @@ if __name__ == '__main__':
 
 import unittest
 
-from grit import lazy_re
 from grit import util
 from grit.gather import chrome_html
 
 
-_NEW_LINE = lazy_re.compile('(\r\n|\r|\n)', re.MULTILINE)
+_NEW_LINE = re.compile('(\r\n|\r|\n)', re.MULTILINE)
 
 
 def StandardizeHtml(text):

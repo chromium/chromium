@@ -11,7 +11,6 @@ import re
 
 from grit import constants
 from grit import exception
-from grit import lazy_re
 from grit import pseudo
 from grit import pseudolocales
 from grit import tclib
@@ -317,7 +316,7 @@ class MessageClique:
   CONSTANT_TRANSLATION = tclib.Translation(text='TTTTTT')
 
   # A pattern to match messages that are empty or whitespace only.
-  WHITESPACE_MESSAGE = lazy_re.compile(r'^\s*$')
+  WHITESPACE_MESSAGE = re.compile(r'^\s*$')
 
   def __init__(self, uber_clique, message, translateable=True,
                custom_type=None):

@@ -9,7 +9,6 @@
 import re
 
 from grit import exception
-from grit import lazy_re
 from grit import tclib
 
 from grit.gather import regexp
@@ -20,10 +19,10 @@ from grit.gather import regexp
 # a \ followed by a \n.
 # TODO(joi) Handle ampersands if we decide to change them into <ph>
 # TODO(joi) May need to handle other control characters than \n
-_NEED_UNESCAPE = lazy_re.compile(r'""|\\\\|\\n|\\t')
+_NEED_UNESCAPE = re.compile(r'""|\\\\|\\n|\\t')
 
 # Find portions that need escaping to encode string as a resource string.
-_NEED_ESCAPE = lazy_re.compile(r'"|\n|\t|\\|\&nbsp\;')
+_NEED_ESCAPE = re.compile(r'"|\n|\t|\\|\&nbsp\;')
 
 # How to escape certain characters
 _ESCAPE_CHARS = {
@@ -118,7 +117,7 @@ class Dialog(Section):
   # group in alphabetical order. We also assume that there cannot be
   # more than one description per regular expression match.
   # If that's not the case some descriptions will be clobbered.
-  dialog_re_ = lazy_re.compile(r'''
+  dialog_re_ = re.compile(r'''
     # The dialog's ID in the first line
     (?P<id1>[A-Z0-9_]+)\s+DIALOG(EX)?
     |
@@ -184,7 +183,7 @@ class Menu(Section):
 
   # A dandy regexp to suck all the IDs and translateables out of a menu
   # resource
-  menu_re_ = lazy_re.compile(r'''
+  menu_re_ = re.compile(r'''
     # Match the MENU ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+MENU
     |
@@ -248,7 +247,7 @@ class Version(Section):
   # In addition to the above fields, VALUE fields named "Comments" and
   # "LegalTrademarks" may also be translateable.
 
-  version_re_ = lazy_re.compile(r'''
+  version_re_ = re.compile(r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+VERSIONINFO
     |
@@ -276,7 +275,7 @@ class RCData(Section):
   #
   # IDR_BLAH        RCDATA      { 1, 2, 3, 4 }
 
-  dialog_re_ = lazy_re.compile(r'''
+  dialog_re_ = re.compile(r'''
     ^(?P<id1>[A-Z0-9_]+)\s+RCDATA\s+(DISCARDABLE)?\s+\{.*?\}
     ''', re.MULTILINE | re.VERBOSE | re.DOTALL)
 
@@ -325,7 +324,7 @@ class Accelerators(Section):
   #   VK_INSERT,      ID_ACCELERATOR32772,    VIRTKEY, CONTROL, NOINVERT
   # END
 
-  accelerators_re_ = lazy_re.compile(r'''
+  accelerators_re_ = re.compile(r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+ACCELERATORS\s+
     |

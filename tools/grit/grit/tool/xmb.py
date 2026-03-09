@@ -8,12 +8,12 @@
 
 import getopt
 import os
+import re
 import sys
 
 from xml.sax import saxutils
 
 from grit import grd_reader
-from grit import lazy_re
 from grit import tclib
 from grit import util
 from grit.tool import interface
@@ -21,7 +21,7 @@ from grit.tool import interface
 
 # Used to collapse presentable content to determine if
 # xml:space="preserve" is needed.
-_WHITESPACES_REGEX = lazy_re.compile(r'\s\s*')
+_WHITESPACES_REGEX = re.compile(r'\s\s*')
 
 
 # See XmlEscape below.

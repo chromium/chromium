@@ -21,8 +21,8 @@ character Qof.  It looks sort of like a latin character "p" but it is outside
 the latin-1 character set which will stress character encoding bugs.
 '''
 
+import re
 
-from grit import lazy_re
 from grit import tclib
 
 
@@ -55,7 +55,7 @@ _VOWELS = {
 _VOWELS_KEYS = set(_VOWELS.keys())
 
 # Matches vowels and P
-_PSUB_RE = lazy_re.compile("(%s)" % '|'.join(_VOWELS_KEYS | {'P'}))
+_PSUB_RE = re.compile("(%s)" % '|'.join(_VOWELS_KEYS | {'P'}))
 
 
 # Pseudotranslations previously created.  This is important for performance

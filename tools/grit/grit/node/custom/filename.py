@@ -4,9 +4,9 @@
 
 '''A CustomType for filenames.'''
 
+import re
 
 from grit import clique
-from grit import lazy_re
 
 
 class WindowsFilename(clique.CustomType):
@@ -14,7 +14,7 @@ class WindowsFilename(clique.CustomType):
   illegal characters out of translations.
   '''
 
-  BANNED = lazy_re.compile(r'\+|:|\/|\\\\|\*|\?|\"|\<|\>|\|')
+  BANNED = re.compile(r'\+|:|\/|\\\\|\*|\?|\"|\<|\>|\|')
 
   def Validate(self, message):
     return not self.BANNED.search(message.GetPresentableContent())

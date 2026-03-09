@@ -7,6 +7,7 @@
 
 import getopt
 import os.path
+import re
 import sys
 from xml.dom import Node
 import xml.dom.minidom
@@ -20,18 +21,17 @@ from grit.node import message
 from grit.tool import interface
 
 from grit import grd_reader
-from grit import lazy_re
 from grit import tclib
 
 
 # The name of a string in strings.xml
-_STRING_NAME = lazy_re.compile(r'[a-z0-9_]+\Z')
+_STRING_NAME = re.compile(r'[a-z0-9_]+\Z')
 
 # A string's character limit in strings.xml
-_CHAR_LIMIT = lazy_re.compile(r'\[CHAR_LIMIT=(\d+)\]')
+_CHAR_LIMIT = re.compile(r'\[CHAR_LIMIT=(\d+)\]')
 
 # Finds String.Format() style format specifiers such as "%-5.2f".
-_FORMAT_SPECIFIER = lazy_re.compile(
+_FORMAT_SPECIFIER = re.compile(
   r'%'
   r'([1-9][0-9]*\$|<)?'            # argument_index
   r'([-#+ 0,(]*)'                  # flags

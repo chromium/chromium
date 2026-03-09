@@ -10,7 +10,6 @@ import re
 
 from grit.gather import regexp
 from grit import exception
-from grit import lazy_re
 
 
 class MalformedAdminTemplateException(exception.Base):
@@ -28,12 +27,12 @@ class AdmGatherer(regexp.RegexpGatherer):
   '''
 
   # Finds the strings section as the group named 'strings'
-  _STRINGS_SECTION = lazy_re.compile(
+  _STRINGS_SECTION = re.compile(
       r'(?P<first_part>.+^\[strings\])(?P<strings>.+)\Z',
       re.MULTILINE | re.DOTALL)
 
   # Finds the translateable sections from within the [strings] section.
-  _TRANSLATEABLES = lazy_re.compile(
+  _TRANSLATEABLES = re.compile(
       r'^\s*[A-Za-z0-9_]+\s*=\s*"(?P<text>.+)"\s*$',
       re.MULTILINE)
 
