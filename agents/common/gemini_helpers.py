@@ -9,6 +9,7 @@ import pathlib
 import re
 import shutil
 import subprocess
+import sys
 from contextlib import contextmanager
 
 
@@ -18,7 +19,7 @@ def powershell_path_context():
     Temporarily adds .PS1 to PATHEXT on Windows to allow shutil.which() to find
     PowerShell scripts without explicit extensions.
     """
-    is_windows = os.name == 'nt'
+    is_windows = sys.platform == 'win32'
     original_pathext = os.environ.get('PATHEXT', '')
 
     # Entry: Only modify if we are on Windows and .PS1 isn't already there
@@ -28,7 +29,6 @@ def powershell_path_context():
     try:
         yield
     finally:
-        # Exit: Restore original state
         if is_windows:
             os.environ['PATHEXT'] = original_pathext
 
@@ -42,7 +42,7 @@ def get_gemini_command(use_alias=False) -> list[str]:
       3. which gemini
       4 'gemini' string
     """
-    if use_alias and not os.name == 'nt':
+    if use_alias and sys.platform != 'win32':
         shell_exe = os.environ.get('SHELL', '/bin/bash')
         try:
             # Use shell -i to ensure aliases are loaded from interactive config
@@ -65,7 +65,8 @@ def get_gemini_command(use_alias=False) -> list[str]:
     with powershell_path_context():
         gemini_cmd = shutil.which('gemini')
         if gemini_cmd:
-            if os.name == 'nt' and gemini_cmd.strip()[-4:].lower() == '.ps1':
+            if sys.platform == 'win32' and gemini_cmd.strip()[-4:].lower(
+            ) == '.ps1':
                 return ['powershell', '-File', gemini_cmd]
             return [gemini_cmd]
 
