@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/webapps/common/web_app_id.h"
+#include "ui/views/controls/webview/simple_web_view.h"
 #include "url/gurl.h"
 
 class AccountId;
@@ -24,6 +25,10 @@ class Window;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace views {
+class SimpleWebViewDialogDelegate;
+}
 
 namespace ash {
 
@@ -188,6 +193,11 @@ class BrowserController {
   // Encapsulates the creation of AutofillClient instances.
   virtual void CreateAutofillClientForWebContents(
       content::WebContents* web_contents) = 0;
+
+  // Creates a SimpleWebView.
+  virtual std::unique_ptr<views::SimpleWebView>
+  CreateSimpleWebViewForSigninScreen(
+      views::SimpleWebViewDialogDelegate* delegate) = 0;
 
  protected:
   BrowserController();

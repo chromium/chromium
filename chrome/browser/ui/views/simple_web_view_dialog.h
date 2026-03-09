@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOGIN_SIMPLE_WEB_VIEW_DIALOG_H_
-#define CHROME_BROWSER_UI_ASH_LOGIN_SIMPLE_WEB_VIEW_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIMPLE_WEB_VIEW_DIALOG_H_
+#define CHROME_BROWSER_UI_VIEWS_SIMPLE_WEB_VIEW_DIALOG_H_
 
 #include <memory>
 
@@ -18,6 +18,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/webview/simple_web_view.h"
+#include "ui/views/controls/webview/simple_web_view_dialog_delegate.h"
 #include "url/gurl.h"
 
 class CommandUpdaterImpl;
@@ -31,11 +33,8 @@ class WebContents;
 
 namespace views {
 class WebView;
-class Widget;
 class WidgetDelegate;
 }  // namespace views
-
-namespace ash {
 
 class StubBubbleModelDelegate;
 
@@ -45,6 +44,7 @@ class StubBubbleModelDelegate;
 // to be used for sign in to captive portal on login screen (when Browser
 // isn't running).
 class SimpleWebViewDialog : public views::View,
+                            public views::SimpleWebView,
                             public LocationBarView::Delegate,
                             public ChromeLocationBarModelDelegate,
                             public CommandUpdaterDelegate,
@@ -56,18 +56,19 @@ class SimpleWebViewDialog : public views::View,
 
  public:
   explicit SimpleWebViewDialog(Profile* profile);
+  SimpleWebViewDialog(Profile* profile,
+                      views::SimpleWebViewDialogDelegate* delegate);
   SimpleWebViewDialog(const SimpleWebViewDialog&) = delete;
   SimpleWebViewDialog& operator=(const SimpleWebViewDialog&) = delete;
   ~SimpleWebViewDialog() override;
 
-  // Starts loading of the given url with HTTPS upgrades disabled so that
-  // captive portals that allow HTTPS traffic before login can properly
-  // display the login URL over HTTPS. HTTPS Upgrades will remain enabled for
-  // subsequent navigations in this webview.
-  void StartLoad(const GURL& url);
-
-  // Inits view. Should be attached to a Widget before call.
-  void Init();
+  // views::SimpleWebView:
+  views::View* GetView() override;
+  void Init() override;
+  std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate() override;
+  void StartLoad(const GURL& url) override;
+  std::unique_ptr<views::View> TakeView(
+      std::unique_ptr<views::SimpleWebView> self) override;
 
   // Implements content::PageNavigator:
   content::WebContents* OpenURL(
@@ -94,8 +95,6 @@ class SimpleWebViewDialog : public views::View,
   // Implements CommandUpdaterDelegate:
   void ExecuteCommandWithDisposition(int id, WindowOpenDisposition) override;
 
-  virtual std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate();
-
  private:
   void LoadImages();
   void UpdateButtons();
@@ -113,6 +112,7 @@ class SimpleWebViewDialog : public views::View,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
   raw_ptr<Profile> profile_;
+  raw_ptr<views::SimpleWebViewDialogDelegate> delegate_ = nullptr;
   std::unique_ptr<LocationBarModel> location_bar_model_;
   std::unique_ptr<CommandUpdaterImpl> command_updater_;
 
@@ -132,6 +132,4 @@ class SimpleWebViewDialog : public views::View,
   base::ObserverList<web_modal::ModalDialogHostObserver> observers_;
 };
 
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_ASH_LOGIN_SIMPLE_WEB_VIEW_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIMPLE_WEB_VIEW_DIALOG_H_

@@ -6,6 +6,8 @@ import("//build/config/ozone.gni")
 
 component("webview") {
   sources = [
+    "simple_web_view.h",
+    "simple_web_view_dialog_delegate.h",
     "unhandled_keyboard_event_handler.cc",
     "unhandled_keyboard_event_handler.h",
     "web_contents_set_background_color.cc",

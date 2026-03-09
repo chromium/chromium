@@ -507,7 +507,7 @@ class LocationBarView
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
   // The Browser this LocationBarView is in.  Note that at least
-  // ash::SimpleWebViewDialog uses a LocationBarView outside any browser
+  // SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
   const raw_ptr<Browser> browser_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/login/simple_web_view_dialog.h"
+#include "chrome/browser/ui/views/simple_web_view_dialog.h"
 
 #include <memory>
 
@@ -39,8 +39,6 @@ constexpr char kCaptivePortalPingUrlHttps[] =
     "https://captive-portal-ping-url.com/";
 
 }  // namespace
-
-namespace ash {
 
 using SimpleWebViewDialogTest = ::InProcessBrowserTest;
 
@@ -135,5 +133,3 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, NoHttpsUpgradeOnInitialLoad) {
   histograms.ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms.ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
 }
-
-}  // namespace ash

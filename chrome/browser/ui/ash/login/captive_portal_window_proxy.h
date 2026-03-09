@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace content {
@@ -106,7 +105,6 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   // notifications from `widget_` and resets it.
   void DetachFromWidget(views::Widget* widget);
 
-  raw_ptr<Profile> profile_ = ProfileHelper::GetSigninProfile();
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<views::Widget> widget_ = nullptr;
 

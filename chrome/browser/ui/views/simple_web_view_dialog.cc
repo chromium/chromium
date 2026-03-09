@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/login/simple_web_view_dialog.h"
+#include "chrome/browser/ui/views/simple_web_view_dialog.h"
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -37,8 +36,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/webview/simple_web_view_dialog_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -51,7 +53,6 @@
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #endif
 
-namespace ash {
 namespace {
 
 using ::content::WebContents;
@@ -119,7 +120,14 @@ class StubBubbleModelDelegate : public ContentSettingBubbleModelDelegate {
 // SimpleWebViewDialog class ---------------------------------------------------
 
 SimpleWebViewDialog::SimpleWebViewDialog(Profile* profile)
-    : profile_(profile), bubble_model_delegate_(new StubBubbleModelDelegate) {
+    : SimpleWebViewDialog(profile, nullptr) {}
+
+SimpleWebViewDialog::SimpleWebViewDialog(
+    Profile* profile,
+    views::SimpleWebViewDialogDelegate* delegate)
+    : profile_(profile),
+      delegate_(delegate),
+      bubble_model_delegate_(new StubBubbleModelDelegate) {
   command_updater_ = std::make_unique<CommandUpdaterImpl>(this);
   command_updater_->UpdateCommandEnabled(IDC_BACK, true);
   command_updater_->UpdateCommandEnabled(IDC_FORWARD, true);
@@ -142,6 +150,17 @@ SimpleWebViewDialog::~SimpleWebViewDialog() {
   }
 }
 
+views::View* SimpleWebViewDialog::GetView() {
+  return this;
+}
+
+std::unique_ptr<views::View> SimpleWebViewDialog::TakeView(
+    std::unique_ptr<views::SimpleWebView> self) {
+  DCHECK_EQ(this, self.get());
+  self.release();
+  return base::WrapUnique<views::View>(this);
+}
+
 void SimpleWebViewDialog::StartLoad(const GURL& url) {
   if (!web_view_container_) {
     web_view_container_ = std::make_unique<views::WebView>(profile_);
@@ -154,9 +173,8 @@ void SimpleWebViewDialog::StartLoad(const GURL& url) {
   WebContents* web_contents = web_view_->GetWebContents();
   DCHECK(web_contents);
 
-  // Create the password manager that is needed for the proxy.
-  BrowserController::GetInstance()->CreateAutofillClientForWebContents(
-      web_contents);
+  // Create the password manager and autofill client that are needed.
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -251,7 +269,8 @@ void SimpleWebViewDialog::Init() {
   location_bar_->Init();
   UpdateReload(web_view_->web_contents()->IsLoading(), true);
 
-  gfx::Rect screen_bounds = CalculateScreenBounds(gfx::Size());
+  gfx::Rect screen_bounds =
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   screen_bounds.Inset(kExternalMargin);
   SetPreferredSize(screen_bounds.size());
 }
@@ -272,6 +291,9 @@ void SimpleWebViewDialog::NavigationStateChanged(
     location_bar_->Update(nullptr);
     UpdateButtons();
   }
+  if (delegate_) {
+    delegate_->OnNavigationStateChanged(source, changed_flags);
+  }
 }
 
 void SimpleWebViewDialog::LoadingStateChanged(WebContents* source,
@@ -279,6 +301,10 @@ void SimpleWebViewDialog::LoadingStateChanged(WebContents* source,
   bool is_loading = source->IsLoading();
   UpdateReload(is_loading && should_show_loading_ui, false);
   command_updater_->UpdateCommandEnabled(IDC_STOP, is_loading);
+
+  if (delegate_) {
+    delegate_->OnLoadingStateChanged(source, should_show_loading_ui);
+  }
 }
 
 WebContents* SimpleWebViewDialog::GetWebContents() {
@@ -339,6 +365,9 @@ SimpleWebViewDialog::MakeWidgetDelegate() {
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetInitiallyFocusedView(web_view_);
   delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+  if (delegate_) {
+    delegate = delegate_->MakeWidgetDelegate(std::move(delegate));
+  }
   return delegate;
 }
 
@@ -385,7 +414,7 @@ SimpleWebViewDialog::GetWebContentsModalDialogHost(
 }
 
 gfx::NativeView SimpleWebViewDialog::GetHostView() const {
-  return GetWidget()->GetNativeWindow();
+  return GetWidget()->GetNativeView();
 }
 
 gfx::Point SimpleWebViewDialog::GetDialogPosition(const gfx::Size& size) {
@@ -410,5 +439,3 @@ void SimpleWebViewDialog::RemoveObserver(
 
 BEGIN_METADATA(SimpleWebViewDialog)
 END_METADATA
-
-}  // namespace ash

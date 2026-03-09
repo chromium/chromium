@@ -18,7 +18,10 @@ static_library("browser_delegate") {
     "//components/account_id",
     "//components/sessions:session_id",
     "//components/webapps/common",
+    "//content/public/browser",
     "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views/controls/webview",
     "//url",
   ]
 }
@@ -42,6 +45,7 @@ static_library("impl") {
 
   deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",

@@ -37,8 +37,6 @@ static_library("login") {
     "oobe_ui_dialog_delegate.cc",
     "oobe_ui_dialog_delegate.h",
     "signin_ui.h",
-    "simple_web_view_dialog.cc",
-    "simple_web_view_dialog.h",
     "user_adding_screen.cc",
     "user_adding_screen.h",
     "user_adding_screen_input_methods_controller.cc",
@@ -239,7 +237,6 @@ source_set("browser_tests") {
     "login_feedback_browsertest.cc",
     "login_ui_pref_controller_browsertest.cc",
     "login_web_dialog_browsertest.cc",
-    "simple_web_view_dialog_browsertest.cc",
     "user_adding_screen_browsertest.cc",
   ]
 

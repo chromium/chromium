@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/login/captive_portal_view.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -32,25 +33,31 @@ GURL CaptivePortalStartURL() {
 
 }  // namespace
 
-CaptivePortalView::CaptivePortalView(Profile* profile,
-                                     CaptivePortalWindowProxy* proxy,
+CaptivePortalView::CaptivePortalView(CaptivePortalWindowProxy* proxy,
                                      const std::string& network_name)
-    : SimpleWebViewDialog(profile),
-      proxy_(proxy),
-      network_name_(network_name) {}
+    : proxy_(proxy), network_name_(network_name) {
+  SetUseDefaultFillLayout(true);
+  std::unique_ptr<views::SimpleWebView> simple_web_view =
+      BrowserController::GetInstance()->CreateSimpleWebViewForSigninScreen(
+          this);
+  simple_web_view_ = simple_web_view.get();
+  AddChildView(simple_web_view_->TakeView(std::move(simple_web_view)));
+}
 
 CaptivePortalView::~CaptivePortalView() = default;
 
 void CaptivePortalView::StartLoad() {
   start_url_ = CaptivePortalStartURL();
-  SimpleWebViewDialog::StartLoad(start_url_);
+  simple_web_view_->StartLoad(start_url_);
 }
 
-void CaptivePortalView::NavigationStateChanged(
+void CaptivePortalView::Init() {
+  simple_web_view_->Init();
+}
+
+void CaptivePortalView::OnNavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  SimpleWebViewDialog::NavigationStateChanged(source, changed_flags);
-
   // Naive way to determine the redirection. This won't be needed after portal
   // detection will be done on the Chrome side.
   GURL url = source->GetLastCommittedURL();
@@ -61,9 +68,8 @@ void CaptivePortalView::NavigationStateChanged(
   }
 }
 
-void CaptivePortalView::LoadingStateChanged(content::WebContents* source,
-                                            bool to_different_document) {
-  SimpleWebViewDialog::LoadingStateChanged(source, to_different_document);
+void CaptivePortalView::OnLoadingStateChanged(content::WebContents* source,
+                                              bool to_different_document) {
   // TODO(nkostylev): Fix case of no connectivity, check HTTP code returned.
   // Disable this heuristic as it has false positives.
   // Relying on just shill portal check to close dialog is fine.
@@ -71,8 +77,8 @@ void CaptivePortalView::LoadingStateChanged(content::WebContents* source,
   //   proxy_->OnOriginalURLLoaded();
 }
 
-std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
-  auto delegate = SimpleWebViewDialog::MakeWidgetDelegate();
+std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate(
+    std::unique_ptr<views::WidgetDelegate> delegate) {
   delegate->SetCanResize(false);
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   delegate->SetShowTitle(true);

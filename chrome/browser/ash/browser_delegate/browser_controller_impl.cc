@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/simple_web_view_dialog.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -299,6 +301,13 @@ void BrowserControllerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
 void BrowserControllerImpl::CreateAutofillClientForWebContents(
     content::WebContents* web_contents) {
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+}
+
+std::unique_ptr<views::SimpleWebView>
+BrowserControllerImpl::CreateSimpleWebViewForSigninScreen(
+    views::SimpleWebViewDialogDelegate* delegate) {
+  return std::make_unique<SimpleWebViewDialog>(
+      ash::ProfileHelper::GetSigninProfile(), delegate);
 }
 
 }  // namespace ash

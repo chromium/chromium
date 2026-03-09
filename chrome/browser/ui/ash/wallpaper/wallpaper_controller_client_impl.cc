@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"

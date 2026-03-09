@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/ash/login/captive_portal_view.h"
@@ -22,13 +24,13 @@
 namespace ash {
 namespace {
 
-// A widget that uses the supplied Profile to return a ThemeProvider.  This is
+// A widget that uses the SigninProfile to return a ThemeProvider.  This is
 // necessary because the Views in the captive portal UI need to access the theme
 // colors; also, this widget cannot copy the theme from e.g. a Browser widget
 // because there may be no Browsers started.
 class CaptivePortalWidget : public views::Widget {
  public:
-  explicit CaptivePortalWidget(Profile* profile);
+  CaptivePortalWidget();
   CaptivePortalWidget(const CaptivePortalWidget&) = delete;
   CaptivePortalWidget& operator=(const CaptivePortalWidget&) = delete;
   ~CaptivePortalWidget() override = default;
@@ -42,8 +44,8 @@ class CaptivePortalWidget : public views::Widget {
   raw_ptr<Profile> profile_;
 };
 
-CaptivePortalWidget::CaptivePortalWidget(Profile* profile)
-    : profile_(profile) {}
+CaptivePortalWidget::CaptivePortalWidget()
+    : profile_(ash::ProfileHelper::GetSigninProfile()) {}
 
 const ui::ThemeProvider* CaptivePortalWidget::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(profile_);
@@ -57,10 +59,9 @@ CaptivePortalWidget::GetCustomTheme() const {
 // The captive portal dialog is system-modal, but uses the web-content-modal
 // dialog manager (odd) and requires this atypical dialog widget initialization.
 views::Widget* CreateWindowAsFramelessChild(
-    Profile* profile,
     std::unique_ptr<views::WidgetDelegate> delegate,
     gfx::NativeView parent) {
-  views::Widget* widget = new CaptivePortalWidget(profile);
+  views::Widget* widget = new CaptivePortalWidget();
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
@@ -122,16 +123,15 @@ void CaptivePortalWindowProxy::Show(const std::string& network_name) {
   InitCaptivePortalView(network_name);
 
   std::unique_ptr<views::WidgetDelegate> delegate =
-      captive_portal_view_->MakeWidgetDelegate();
+      captive_portal_view_->simple_web_view()->MakeWidgetDelegate();
   CaptivePortalView* portal =
       delegate->SetContentsView(std::move(captive_portal_view_));
   auto* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_);
   widget_ = CreateWindowAsFramelessChild(
-      profile_, std::move(delegate),
-      manager->delegate()
-          ->GetWebContentsModalDialogHost(web_contents_)
-          ->GetHostView());
+      std::move(delegate), manager->delegate()
+                               ->GetWebContentsModalDialogHost(web_contents_)
+                               ->GetHostView());
   portal->Init();
   widget_->AddObserver(this);
   constrained_window::ShowModalDialog(widget_->GetNativeView(), web_contents_);
@@ -182,7 +182,7 @@ void CaptivePortalWindowProxy::InitCaptivePortalView(
          GetState() == STATE_WAITING_FOR_REDIRECTION);
   if (!captive_portal_view_.get()) {
     captive_portal_view_ =
-        std::make_unique<CaptivePortalView>(profile_, this, network_name);
+        std::make_unique<CaptivePortalView>(this, network_name);
   }
 
   captive_portal_view_->StartLoad();

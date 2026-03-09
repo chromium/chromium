@@ -51,6 +51,8 @@ class BrowserControllerImpl : public BrowserController,
                                 const CreateParams& params) override;
   void CreateAutofillClientForWebContents(
       content::WebContents* web_contents) override;
+  std::unique_ptr<views::SimpleWebView> CreateSimpleWebViewForSigninScreen(
+      views::SimpleWebViewDialogDelegate* delegate) override;
   void MayCloseAllBrowsers() override;
   void MayCloseAllBrowsersAndQuit() override;
   bool IsTryingToQuit() override;
