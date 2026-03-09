@@ -28,6 +28,7 @@ source_set("organization") {
     "//chrome/browser/metrics/desktop_session_duration",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_model",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/webui/tab_search:mojo_bindings",
@@ -100,6 +101,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/settings",
+      "//chrome/browser/ui/browser_window",
     ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

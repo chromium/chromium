@@ -5,16 +5,17 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_DELEGATE_IMPL_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
 class Browser;
 class Profile;
 class SigninUIError;
+class BrowserWindowInterface;
 struct AccountInfo;
 
 namespace policy {
@@ -24,7 +25,6 @@ class UserCloudSigninRestrictionPolicyFetcher;
 
 // Default implementation for TurnSyncOnHelper::Delegate.
 class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
-                                     public BrowserListObserver,
                                      public LoginUIService::Observer {
  public:
   explicit TurnSyncOnHelperDelegateImpl(Browser* browser,
@@ -68,8 +68,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   void OnSyncConfirmationUIClosed(
       LoginUIService::SyncConfirmationUIClosedResult result) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserDidClose(BrowserWindowInterface* browser);
 
   void OnProfileSigninRestrictionsFetched(
       const AccountInfo& account_info,
@@ -92,6 +91,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
+  base::CallbackListSubscription browser_close_subscription_;
   const bool is_sync_promo_;
   const bool user_already_signed_in_;
   bool profile_creation_required_by_policy_ = false;

@@ -4,9 +4,11 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
@@ -59,25 +60,21 @@ class ThumbnailObserver : public ui::test::StateObserver<bool> {
   base::WeakPtrFactory<ThumbnailObserver> weak_ptr_factory_{this};
 };
 
-class BrowserRemovedObserver : public ui::test::StateObserver<bool>,
-                               public BrowserListObserver {
+class BrowserRemovedObserver : public ui::test::StateObserver<bool> {
  public:
-  explicit BrowserRemovedObserver(Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
+  explicit BrowserRemovedObserver(BrowserWindowInterface* browser) {
+    browser_did_close_subscription_ = browser->RegisterBrowserDidClose(
+        base::BindRepeating(&BrowserRemovedObserver::OnBrowserDidClose,
+                            base::Unretained(this)));
   }
   ~BrowserRemovedObserver() override = default;
 
- protected:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser_ == browser) {
-      OnStateObserverStateChanged(true);
-      browser_ = nullptr;
-      BrowserList::RemoveObserver(this);
-    }
+ private:
+  void OnBrowserDidClose(BrowserWindowInterface* browser) {
+    OnStateObserverStateChanged(true);
   }
 
- private:
-  raw_ptr<Browser> browser_;
+  base::CallbackListSubscription browser_did_close_subscription_;
 };
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -229,9 +226,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperUpdatedInteractiveTest,
           AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUINewTabURL), 3),
           WaitForWebContentsReady(kThirdTab)),
       CheckTabCountInBrowser(4), CheckActiveTabInBrowser(3),
-      ObserveState(
-          kBrowserRemovedState,
-          [this]() { return target_browser()->GetBrowserForMigrationOnly(); }),
+      ObserveState(kBrowserRemovedState, [this]() { return target_browser(); }),
       // Can't close browser when WebContents is notifying observers.
       Do([this]() {
         // Override manual value set in MemorySaverInteractiveTestMixin to
