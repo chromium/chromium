@@ -175,7 +175,9 @@ WebRtcLogsDOMHandler::WebRtcLogsDOMHandler(Profile* profile)
           profile->GetOriginalProfile())) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& log_dir : text_log_dirs_) {
-    text_log_upload_lists_.push_back(new TextLogUploadList(log_dir));
+    text_log_upload_lists_.push_back(new TextLogUploadList(
+        webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(
+            log_dir)));
   }
 }
 
