@@ -1623,6 +1623,27 @@ runtime performance.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
 ***
 
+### std::ranges::operator| <sup>[banned]</sup>
+
+```c++
+constexpr int kArr[] = {6, 2, 8, 4, 4, 2};
+constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
+static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
+```
+
+**Description:** The pipe operator for chaining range adaptor closure objects.
+
+**Documentation:**
+[`std::ranges::operator|`](https://en.cppreference.com/w/cpp/named_req/RangeAdaptorClosureObject.html)
+
+**Notes:**
+*** promo
+Banned in Chromium since range factories and adapters are banned. Explicitly
+enforced by the Chromium style clang-plugin.
+
+[Discussion](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw) [threads](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ)
+***
+
 ### std::ranges::view_interface <sup>[banned]</sup>
 
 ```c++
@@ -1885,6 +1906,25 @@ std::vector<int> new_way(std::from_range, a_very_long_container_name);
 See also std::ranges::to which offers something similar.
 ***
 
+### std::ranges::to <sup>[allowed]</sup>
+
+```c++
+std::set<int> s = {1, 2, 3};
+auto u = std::ranges::to<std::vector>(s);
+```
+
+**Description:** Converts a range to a container.
+
+**Documentation:**
+[std::ranges::to](https://en.cppreference.com/w/cpp/ranges/to)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZzSLYf6-KwQ).
+NOTE: `std::ranges::to` could also be used as a range adaptor, but those are
+banned in Chromium, see [here](#range-factories-and-range-adaptors-banned).
+***
+
 ### std::to_underlying <sup>[allowed]</sup>
 
 ```c++
@@ -2119,26 +2159,6 @@ std::mdspan m(ptr, 10, 10);
 *** promo
 We ban std::span in favor of base::span, which has better safety guarantees.
 If we want to support this, maybe we should implement base::mdspan.
-***
-
-### std::ranges::to <sup>[tbd]</sup>
-
-```c++
-std::set<int> s = {1, 2, 3};
-auto u = std::ranges::to<std::vector>(s);
-auto v = s | std::ranges::to<std::vector>();
-```
-
-**Description:** Converts a range to a container.
-
-**Documentation:**
-[std::ranges::to](https://en.cppreference.com/w/cpp/ranges/to)
-
-**Notes:**
-*** promo
-We should ban the 2nd case in the snippet (use as an adaptor), but might want to
-allow the 1st case (simple container conversion). Note there's also
-std::from_range for use cases like the 1st one.
 ***
 
 ### Range Formatting <sup>[tbd]</sup>

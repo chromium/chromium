@@ -1402,6 +1402,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'common_range',
             'viewable_range',
             'constant_range',
+            # Range conversions
+            'to',
             # Views
             'subrange',
             'subrange_kind',
