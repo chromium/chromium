@@ -57,6 +57,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -896,6 +897,23 @@ void SyncTest::TearDownOnMainThread() {
             GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                 GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                     CREDENTIALS_REJECTED_BY_CLIENT));
+      }
+
+      // On Android, the Profile does not get shut down in an orderly fashion.
+      // In PRE_ tests, ensure that all relevant state is persisted to disk (in
+      // non-PRE_ tests, it doesn't matter since nothing will use it again).
+      if (content::IsPreTest()) {
+        base::test::TestFuture<void> prefs_write_done;
+        profile->GetPrefs()->CommitPendingWrite(prefs_write_done.GetCallback());
+        ASSERT_TRUE(prefs_write_done.Wait());
+
+        BookmarkModelFactory::GetForBrowserContext(profile)
+            ->CommitPendingWriteForTest();
+
+        fake_server::FakeServer* fake_server = GetFakeServer();
+        if (fake_server) {
+          fake_server->FlushToDisk();
+        }
       }
 #endif  // BUILDFLAG(IS_ANDROID)
     }
