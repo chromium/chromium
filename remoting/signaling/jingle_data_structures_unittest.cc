@@ -847,4 +847,112 @@ TEST(JingleMessageTest, AttachmentsMessage) {
   }
 }
 
+TEST(JingleMessageTest, ActionHelpers) {
+  EXPECT_EQ(JingleMessage::GetActionName(ActionType::kSessionInitiate),
+            "session-initiate");
+  EXPECT_EQ(JingleMessage::GetActionName(ActionType::kSessionAccept),
+            "session-accept");
+  EXPECT_EQ(JingleMessage::GetActionName(ActionType::kSessionTerminate),
+            "session-terminate");
+  EXPECT_EQ(JingleMessage::GetActionName(ActionType::kSessionInfo),
+            "session-info");
+  EXPECT_EQ(JingleMessage::GetActionName(ActionType::kTransportInfo),
+            "transport-info");
+
+  EXPECT_EQ(JingleMessage::ActionFromPayload(std::monostate()),
+            ActionType::kUnknownAction);
+  EXPECT_EQ(JingleMessage::ActionFromPayload(SessionInitiate()),
+            ActionType::kSessionInitiate);
+  EXPECT_EQ(JingleMessage::ActionFromPayload(SessionAccept()),
+            ActionType::kSessionAccept);
+  EXPECT_EQ(JingleMessage::ActionFromPayload(SessionInfo()),
+            ActionType::kSessionInfo);
+  EXPECT_EQ(JingleMessage::ActionFromPayload(JingleTransportInfo()),
+            ActionType::kTransportInfo);
+  EXPECT_EQ(JingleMessage::ActionFromPayload(SessionTerminate()),
+            ActionType::kSessionTerminate);
+}
+
+TEST(JingleMessageTest, CopyAndAssign) {
+  JingleMessage message;
+  message.sid = "test_sid";
+  message.description = std::make_unique<ContentDescription>(
+      CandidateSessionConfig::CreateEmpty(), JingleAuthentication());
+
+  JingleMessage copy(message);
+  EXPECT_EQ(copy.sid, "test_sid");
+  ASSERT_TRUE(copy.description);
+  EXPECT_NE(copy.description.get(), message.description.get());
+
+  JingleMessage assign;
+  assign = message;
+  EXPECT_EQ(assign.sid, "test_sid");
+  ASSERT_TRUE(assign.description);
+  EXPECT_NE(assign.description.get(), message.description.get());
+
+  message.description.reset();
+  assign = message;
+  EXPECT_FALSE(assign.description);
+}
+
+TEST(JingleAuthenticationTest, IsEmpty) {
+  JingleAuthentication auth;
+  EXPECT_TRUE(auth.is_empty());
+
+  auth.supported_methods = {
+      AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519};
+  EXPECT_FALSE(auth.is_empty());
+  auth.supported_methods.clear();
+
+  auth.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
+  EXPECT_FALSE(auth.is_empty());
+  auth.method.reset();
+
+  auth.spake_message = {1};
+  EXPECT_FALSE(auth.is_empty());
+  auth.spake_message.clear();
+
+  auth.verification_hash = {1};
+  EXPECT_FALSE(auth.is_empty());
+  auth.verification_hash.clear();
+
+  auth.certificate = {1};
+  EXPECT_FALSE(auth.is_empty());
+  auth.certificate.clear();
+
+  auth.pairing_info.emplace();
+  EXPECT_FALSE(auth.is_empty());
+  auth.pairing_info.reset();
+
+  auth.id = "test";
+  EXPECT_FALSE(auth.is_empty());
+  auth.id.clear();
+
+  auth.session_authz_host_token = "test";
+  EXPECT_FALSE(auth.is_empty());
+  auth.session_authz_host_token.clear();
+
+  auth.session_authz_session_token = "test";
+  EXPECT_FALSE(auth.is_empty());
+  auth.session_authz_session_token.clear();
+
+  auth.pairing_error = "test";
+  EXPECT_FALSE(auth.is_empty());
+  auth.pairing_error.clear();
+
+  auth.test_id = "test";
+  EXPECT_FALSE(auth.is_empty());
+  auth.test_id.clear();
+
+  auth.test_key = {1};
+  EXPECT_FALSE(auth.is_empty());
+}
+
+TEST(IceTransportInfoTest, NamedCandidate_Constructor) {
+  webrtc::Candidate candidate;
+  IceTransportInfo::NamedCandidate named("test_name", candidate, 5);
+  EXPECT_EQ(named.name, "test_name");
+  EXPECT_EQ(named.sdp_m_line_index, 5);
+}
+
 }  // namespace remoting::protocol

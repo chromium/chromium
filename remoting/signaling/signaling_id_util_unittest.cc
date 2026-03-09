@@ -67,4 +67,21 @@ TEST(SignalingIdUtilTest, SplitSignalingIdResource) {
   EXPECT_EQ(resource_suffix, "");
 }
 
+TEST(SignalingIdUtilTest, GetCanonicalEmail) {
+  EXPECT_EQ(GetCanonicalEmail("USER@GMAIL.COM"), "user@gmail.com");
+  EXPECT_EQ(GetCanonicalEmail("user.name@googlemail.com"),
+            "username@gmail.com");
+  EXPECT_EQ(GetCanonicalEmail("  user@DOMAIN.com  "), "user@domain.com");
+  EXPECT_EQ(GetCanonicalEmail("no_at_symbol"), "no_at_symbol");
+}
+
+TEST(SignalingIdUtilTest, IsValidFtlSignalingId) {
+  EXPECT_TRUE(IsValidFtlSignalingId(
+      "user@gmail.com/chromoting_ftl_f6b43f10-566e-11e9-8647-d663bd873d93"));
+  EXPECT_FALSE(IsValidFtlSignalingId("user@gmail.com"));
+  EXPECT_FALSE(IsValidFtlSignalingId("user@gmail.com/not_ftl_resource"));
+  EXPECT_FALSE(
+      IsValidFtlSignalingId("user@gmail.com/chromoting_ftl_invalid_uuid"));
+}
+
 }  // namespace remoting

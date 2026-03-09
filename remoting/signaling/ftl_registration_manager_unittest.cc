@@ -183,4 +183,51 @@ TEST_F(FtlRegistrationManagerTest, SignOut) {
   ASSERT_FALSE(registration_manager_.IsSignedIn());
 }
 
+TEST_F(FtlRegistrationManagerTest, SignInGaia_EmptyRegistrationId) {
+  EXPECT_CALL(*registration_client_, SignInGaia(_, _))
+      .WillOnce([](const ftl::SignInGaiaRequest& request,
+                   SignInGaiaResponseCallback on_done) {
+        auto response = std::make_unique<ftl::SignInGaiaResponse>();
+        response->set_registration_id("");
+        response->mutable_auth_token()->set_payload(kAuthToken);
+        response->mutable_auth_token()->set_expires_in(
+            kAuthTokenExpiresInMicroseconds);
+        std::move(on_done).Run(HttpStatus::OK(), std::move(response));
+      });
+
+  EXPECT_CALL(done_callback_, Run(HasErrorCode(HttpStatus::Code::UNKNOWN)))
+      .Times(1);
+  registration_manager_.SignInGaia(done_callback_.Get());
+  task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
+
+  ASSERT_FALSE(registration_manager_.IsSignedIn());
+}
+
+TEST_F(FtlRegistrationManagerTest, SignInGaia_ShortRefreshTime) {
+  EXPECT_CALL(*registration_client_, SignInGaia(_, _))
+      .WillOnce([](const ftl::SignInGaiaRequest& request,
+                   SignInGaiaResponseCallback on_done) {
+        auto response = std::make_unique<ftl::SignInGaiaResponse>();
+        response->set_registration_id("registration_id");
+        response->mutable_auth_token()->set_payload(kAuthToken);
+        // Set refresh time shorter than kRefreshBufferTime (1 hour).
+        response->mutable_auth_token()->set_expires_in(
+            base::Minutes(30).InMicroseconds());
+        std::move(on_done).Run(HttpStatus::OK(), std::move(response));
+      })
+      .WillOnce(RespondOkToSignInGaia("registration_id_2"));
+
+  EXPECT_CALL(done_callback_, Run(IsStatusOk())).Times(1);
+  registration_manager_.SignInGaia(done_callback_.Get());
+  task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
+
+  ASSERT_TRUE(registration_manager_.IsSignedIn());
+  ASSERT_EQ("registration_id", registration_manager_.GetRegistrationId());
+
+  // Should refresh in 30 minutes.
+  task_environment_.FastForwardBy(base::Minutes(30));
+  task_environment_.FastForwardBy(GetBackoff().GetTimeUntilRelease());
+  ASSERT_EQ("registration_id_2", registration_manager_.GetRegistrationId());
+}
+
 }  // namespace remoting
