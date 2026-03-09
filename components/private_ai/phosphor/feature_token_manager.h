@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/phosphor/token_manager.h"
 
@@ -37,6 +38,7 @@ namespace internal {
 class FeatureTokenManager {
  public:
   FeatureTokenManager(TokenFetcher* fetcher,
+                      PrivateAiLogger* logger,
                       quiche::ProxyLayer proxy_layer,
                       int batch_size,
                       size_t cache_low_water_mark);
@@ -79,6 +81,7 @@ class FeatureTokenManager {
   // Returns true if the cache should be refilled with new tokens.
   bool NeedsRefill() const;
 
+  const raw_ptr<PrivateAiLogger> logger_;
   const quiche::ProxyLayer proxy_layer_;
   const int batch_size_;
   const size_t cache_low_water_mark_;

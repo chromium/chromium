@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/oauth_token_provider.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -84,6 +85,8 @@ class PrivateAiService : public KeyedService,
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<PrivateAiLogger> logger_;
 
   std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory_;
 

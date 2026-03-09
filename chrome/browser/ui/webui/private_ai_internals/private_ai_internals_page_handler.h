@@ -70,6 +70,7 @@ class PrivateAiInternalsPageHandler
   // The global client, only used for observation.
   raw_ptr<Client> private_ai_client_;
   // The client created by webui. Used for testing.
+  std::unique_ptr<PrivateAiLogger> webui_logger_;
   std::unique_ptr<Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>

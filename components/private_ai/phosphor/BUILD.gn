@@ -27,6 +27,7 @@ source_set("phosphor") {
     "//base",
     "//components/private_ai:features",
     "//components/private_ai:proto",
+    "//components/private_ai/common",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -58,6 +59,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/private_ai:features",
+    "//components/private_ai/common",
     "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",

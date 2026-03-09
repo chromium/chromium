@@ -53,10 +53,13 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                                             const std::string& proxy_url,
                                             bool use_token_attestation,
                                             ConnectCallback callback) {
-  webui_client_ = Client::Create(url, api_key, proxy_url, use_token_attestation,
-                                 network_context_, token_manager_,
-                                 content::GetNetworkService(),
-                                 std::make_unique<PrivateAiLogger>());
+  if (webui_client_) {
+    scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
+  }
+  webui_logger_ = std::make_unique<PrivateAiLogger>();
+  webui_client_ = Client::Create(
+      url, api_key, proxy_url, use_token_attestation, network_context_,
+      token_manager_, content::GetNetworkService(), webui_logger_.get());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   webui_client_->EstablishConnection();
   std::move(callback).Run();
@@ -67,6 +70,7 @@ void PrivateAiInternalsPageHandler::Close(CloseCallback callback) {
     scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
     webui_client_.reset();
   }
+  webui_logger_.reset();
   std::move(callback).Run();
 }
 

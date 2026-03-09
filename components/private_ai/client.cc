@@ -30,12 +30,12 @@ std::unique_ptr<Client> Client::Create(
     network::mojom::NetworkContext* network_context,
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkService* network_service,
-    std::unique_ptr<PrivateAiLogger> logger) {
+    PrivateAiLogger* logger) {
   CHECK(!api_key.empty());
   GURL formatted_url = Client::FormatUrl(url, api_key);
 
   auto connection_factory = std::make_unique<ConnectionFactoryImpl>(
-      formatted_url, network_context, logger.get());
+      formatted_url, network_context, logger);
 
   if (use_token_attestation) {
     connection_factory->EnableTokenAttestation(token_manager);
@@ -50,7 +50,7 @@ std::unique_ptr<Client> Client::Create(
   }
 
   return base::WrapUnique(
-      new ClientImpl(std::move(connection_factory), std::move(logger)));
+      new ClientImpl(std::move(connection_factory), logger));
 }
 
 // static

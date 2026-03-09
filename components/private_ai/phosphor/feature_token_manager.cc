@@ -17,10 +17,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/phosphor/token_fetcher.h"
@@ -31,13 +34,17 @@
 namespace private_ai::phosphor::internal {
 
 FeatureTokenManager::FeatureTokenManager(TokenFetcher* fetcher,
+                                         PrivateAiLogger* logger,
                                          quiche::ProxyLayer proxy_layer,
                                          int batch_size,
                                          size_t cache_low_water_mark)
-    : proxy_layer_(proxy_layer),
+    : logger_(logger),
+      proxy_layer_(proxy_layer),
       batch_size_(batch_size),
       cache_low_water_mark_(cache_low_water_mark),
-      fetcher_(fetcher) {}
+      fetcher_(fetcher) {
+  CHECK(logger_);
+}
 
 FeatureTokenManager::~FeatureTokenManager() = default;
 
@@ -76,6 +83,8 @@ void FeatureTokenManager::GetAuthToken(
         base::Time::Now() < *try_get_auth_tokens_after_) {
       VLOG(2) << "PrivateAI ATC::GetAuthToken failed immediately due to "
                  "backoff";
+      logger_->LogError(FROM_HERE,
+                        "GetAuthToken failed immediately due to backoff");
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
       return;
@@ -102,6 +111,9 @@ void FeatureTokenManager::OnGotAuthTokens(
   if (!result.has_value()) {
     VLOG(2) << "PrivateAI ATC::OnGotAuthTokens back off until "
             << result.error();
+    logger_->LogError(FROM_HERE,
+                      "Failed to get auth tokens. Backing off until " +
+                          base::ToString(result.error()));
     base::UmaHistogramCounts100(
         "PrivateAi.Phosphor.FeatureTokenManager.TokensFetched", 0);
     try_get_auth_tokens_after_ = result.error();

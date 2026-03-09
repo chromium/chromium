@@ -110,6 +110,7 @@ source_set("testing") {
     "testing/fake_token_manager.h",
     "testing/mock_private_ai_client.h",
   ]
+  deps = [ "//components/private_ai/common" ]
   public_deps = [
     ":private_ai",
     ":proto",

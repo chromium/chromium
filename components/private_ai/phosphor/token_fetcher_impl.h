@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/phosphor/oauth_token_provider.h"
@@ -38,7 +39,8 @@ class ConfigHttp;
 class TokenFetcherImpl : public TokenFetcher {
  public:
   TokenFetcherImpl(OAuthTokenProvider* oauth_token_provider,
-                   std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
+                   std::unique_ptr<quiche::BlindSignAuthInterface> bsa,
+                   PrivateAiLogger* logger);
 
   ~TokenFetcherImpl() override;
 
@@ -88,12 +90,14 @@ class TokenFetcherImpl : public TokenFetcher {
       std::optional<std::string> access_token);
 
   void OnFetchBlindSignedTokenCompleted(
+      quiche::ProxyLayer proxy_layer,
       GetAuthnTokensCallback callback,
       base::expected<std::vector<quiche::BlindSignToken>, absl::Status> tokens);
 
   // Finish a call to `GetAuthnTokens()` by recording the result and invoking
   // its callback.
   void GetAuthnTokensComplete(
+      quiche::ProxyLayer proxy_layer,
       std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens,
       GetAuthnTokensCallback callback,
       GetAuthnTokensResult result);
@@ -102,6 +106,7 @@ class TokenFetcherImpl : public TokenFetcher {
   // `last_get_authn_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(GetAuthnTokensResult result);
 
+  const raw_ptr<PrivateAiLogger> logger_;
   raw_ptr<OAuthTokenProvider> oauth_token_provider_;
 
   // The result of the last call to `GetAuthnTokens()`, and the

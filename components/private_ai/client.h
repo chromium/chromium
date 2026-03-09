@@ -63,7 +63,7 @@ class Client {
       network::mojom::NetworkContext* network_context,
       phosphor::TokenManager* token_manager,
       network::mojom::NetworkService* network_service,
-      std::unique_ptr<PrivateAiLogger> logger);
+      PrivateAiLogger* logger);
 
   virtual ~Client() = default;
 

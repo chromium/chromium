@@ -10,9 +10,11 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/http/http_request_headers.h"
+#include "net/proxy_resolution/proxy_config.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
@@ -130,6 +132,10 @@ void ConnectionProxy::OnProxyToken(
     CallOnDisconnect(ErrorCode::kError);
     return;
   }
+
+  token_manager_->GetLogger()->LogInfo(
+      FROM_HERE,
+      "Got auth token for proxy. Connecting to " + proxy_url_.spec());
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(

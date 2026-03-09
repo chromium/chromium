@@ -20,6 +20,7 @@
 #include "base/test/test_trace_processor.h"
 #include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory_impl.h"
@@ -122,7 +123,7 @@ class TokenFetcherImplTest : public testing::Test {
     auto bsa = std::make_unique<MockBlindSignAuth>();
     bsa_ = bsa.get();
     fetcher_ = std::make_unique<TokenFetcherImpl>(&oauth_token_provider_,
-                                                  std::move(bsa));
+                                                  std::move(bsa), &logger_);
   }
 
   // Call `GetAuthnTokens()` and run until it completes.
@@ -178,6 +179,7 @@ class TokenFetcherImplTest : public testing::Test {
 
   // quiche::BlindSignAuthInterface owned and used by the fetcher.
   raw_ptr<MockBlindSignAuth> bsa_;
+  PrivateAiLogger logger_;
 
   // Default backoff times applied for calculating `try_again_after`.
   base::TimeDelta default_transient_backoff_;
@@ -545,7 +547,8 @@ TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
   auto bsa = bsa_factory.CreateBlindSignAuth(
       test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
 
-  TokenFetcherImpl fetcher(&oauth_token_provider_, std::move(bsa));
+  PrivateAiLogger logger;
+  TokenFetcherImpl fetcher(&oauth_token_provider_, std::move(bsa), &logger);
 
   // Set up BSA to fail.
   GURL::Replacements replacements;

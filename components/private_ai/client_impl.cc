@@ -78,11 +78,11 @@ void ReceivePaicMessage(
 }  // namespace
 
 ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
-                       std::unique_ptr<PrivateAiLogger> logger)
-    : logger_(std::move(logger)),
+                       PrivateAiLogger* logger)
+    : logger_(logger),
       connection_manager_(
           std::make_unique<ConnectionManager>(std::move(connection_factory),
-                                              logger_.get())) {
+                                              logger_)) {
   CHECK(logger_);
 }
 
@@ -116,7 +116,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
 }
 
 PrivateAiLogger* ClientImpl::GetLogger() {
-  return logger_.get();
+  return logger_;
 }
 
 void ClientImpl::SendGenerateContentRequest(

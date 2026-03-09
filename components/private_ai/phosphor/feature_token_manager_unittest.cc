@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_fetcher.h"
 #include "net/base/features.h"
@@ -108,7 +109,7 @@ class FeatureTokenManagerTest : public testing::Test {
     owned_mock_fetcher_ = std::make_unique<MockTokenFetcher>();
     mock_fetcher_ = owned_mock_fetcher_.get();
     feature_token_manager_ = std::make_unique<FeatureTokenManager>(
-        mock_fetcher_, quiche::ProxyLayer::kTerminalLayer,
+        mock_fetcher_, &logger_, quiche::ProxyLayer::kTerminalLayer,
         kPrivateAiAuthTokenCacheBatchSize.Get(),
         kPrivateAiAuthTokenCacheLowWaterMark.Get());
   }
@@ -136,6 +137,7 @@ class FeatureTokenManagerTest : public testing::Test {
 
   std::unique_ptr<MockTokenFetcher> owned_mock_fetcher_;
   raw_ptr<MockTokenFetcher, DanglingUntriaged> mock_fetcher_;
+  PrivateAiLogger logger_;
   std::unique_ptr<FeatureTokenManager> feature_token_manager_;
 };
 

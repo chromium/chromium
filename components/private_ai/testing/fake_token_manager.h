@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/test_future.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 
 namespace private_ai {
@@ -37,6 +38,7 @@ class FakeTokenManager : public phosphor::TokenManager {
       std::optional<phosphor::BlindSignedAuthToken> token);
 
   void OnAccountStatusChanged(bool available) override;
+  PrivateAiLogger* GetLogger() override;
 
   static const char kFakeToken[];
   static const char kFakeProxyToken[];
@@ -47,6 +49,8 @@ class FakeTokenManager : public phosphor::TokenManager {
   bool return_token_ = true;
   base::test::TestFuture<GetAuthTokenCallback> callback_future_;
   base::test::TestFuture<GetAuthTokenCallback> proxy_callback_future_;
+
+  PrivateAiLogger logger_;
 };
 
 }  // namespace private_ai

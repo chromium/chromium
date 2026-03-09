@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_fetcher.h"
 #include "net/base/features.h"
@@ -107,7 +108,7 @@ class TokenManagerImplTest : public testing::Test {
     auto mock_fetcher = std::make_unique<MockTokenFetcher>();
     mock_fetcher_ = mock_fetcher.get();
     token_manager_ =
-        std::make_unique<TokenManagerImpl>(std::move(mock_fetcher));
+        std::make_unique<TokenManagerImpl>(std::move(mock_fetcher), &logger_);
   }
 
   // Create a batch of tokens.
@@ -131,6 +132,7 @@ class TokenManagerImplTest : public testing::Test {
   // Expiration times with respect to the TaskEnvironment's mock time.
   const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);
 
+  PrivateAiLogger logger_;
   std::unique_ptr<TokenManagerImpl> token_manager_;
   raw_ptr<MockTokenFetcher> mock_fetcher_;
 };

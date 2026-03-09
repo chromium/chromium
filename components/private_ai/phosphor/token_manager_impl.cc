@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/feature_token_manager.h"
 #include "components/private_ai/phosphor/token_fetcher.h"
@@ -17,15 +18,18 @@
 
 namespace private_ai::phosphor {
 
-TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher)
+TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher,
+                                   PrivateAiLogger* logger)
     : batch_size_(kPrivateAiAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(kPrivateAiAuthTokenCacheLowWaterMark.Get()),
+      logger_(logger),
       fetcher_(std::move(fetcher)) {
+  CHECK(logger_);
   terminal_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
-      fetcher_.get(), quiche::ProxyLayer::kTerminalLayer, batch_size_,
+      fetcher_.get(), logger_, quiche::ProxyLayer::kTerminalLayer, batch_size_,
       cache_low_water_mark_);
   proxy_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
-      fetcher_.get(), quiche::ProxyLayer::kProxyB, batch_size_,
+      fetcher_.get(), logger_, quiche::ProxyLayer::kProxyB, batch_size_,
       cache_low_water_mark_);
 }
 
@@ -55,6 +59,11 @@ void TokenManagerImpl::OnAccountStatusChanged(bool available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   terminal_token_manager_->OnAccountStatusChanged(available);
   proxy_token_manager_->OnAccountStatusChanged(available);
+}
+
+PrivateAiLogger* TokenManagerImpl::GetLogger() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return logger_;
 }
 
 }  // namespace private_ai::phosphor

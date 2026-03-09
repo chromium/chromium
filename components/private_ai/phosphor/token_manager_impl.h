@@ -12,9 +12,11 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 
 namespace private_ai::phosphor {
@@ -29,7 +31,8 @@ class FeatureTokenManager;
 // using a passed in TokenFetcher pointer from the cache.
 class TokenManagerImpl : public TokenManager {
  public:
-  explicit TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher);
+  explicit TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher,
+                            PrivateAiLogger* logger);
   ~TokenManagerImpl() override;
 
   // TokenManager implementation.
@@ -38,11 +41,13 @@ class TokenManagerImpl : public TokenManager {
   void GetAuthTokenForProxy(GetAuthTokenCallback callback) override;
   void PrefetchAuthTokensForProxy() override;
   void OnAccountStatusChanged(bool available) override;
+  PrivateAiLogger* GetLogger() override;
 
  private:
   const int batch_size_;
   const size_t cache_low_water_mark_;
 
+  raw_ptr<PrivateAiLogger> logger_;
   std::unique_ptr<TokenFetcher> fetcher_;
 
   std::unique_ptr<internal::FeatureTokenManager> terminal_token_manager_;

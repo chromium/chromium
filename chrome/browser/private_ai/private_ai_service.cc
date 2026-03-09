@@ -43,22 +43,22 @@ PrivateAiService::PrivateAiService(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto logger = std::make_unique<PrivateAiLogger>();
+  logger_ = std::make_unique<PrivateAiLogger>();
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto bsa = bsa_factory_->CreateBlindSignAuth(url_loader_factory->Clone());
-  auto token_fetcher =
-      std::make_unique<phosphor::TokenFetcherImpl>(this, std::move(bsa));
+  auto token_fetcher = std::make_unique<phosphor::TokenFetcherImpl>(
+      this, std::move(bsa), logger_.get());
   token_fetcher_ = token_fetcher.get();
-  token_manager_ =
-      std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
+  token_manager_ = std::make_unique<phosphor::TokenManagerImpl>(
+      std::move(token_fetcher), logger_.get());
 
   client_ = Client::Create(
       kPrivateAiUrl.Get(), kPrivateAiApiKey.Get(),
       kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
-      token_manager_.get(), content::GetNetworkService(), std::move(logger));
+      token_manager_.get(), content::GetNetworkService(), logger_.get());
 }
 
 PrivateAiService::~PrivateAiService() {

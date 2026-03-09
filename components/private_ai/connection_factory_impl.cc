@@ -92,10 +92,15 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
 
   std::unique_ptr<Connection> connection;
   if (!proxy_url_.is_valid()) {
+    logger_->LogInfo(FROM_HERE,
+                     "Creating connection to Private AI server (direct).");
     connection = CreateConnectionStack(
         url_, logger_, token_manager_, std::move(secure_channel_factory),
         std::move(on_disconnect), network_context_);
   } else {
+    logger_->LogInfo(FROM_HERE,
+                     "Creating connection to Private AI server via proxy: " +
+                         proxy_url_.spec());
     CHECK(network_service_);
     CHECK(token_manager_);
     auto split_on_disconnect =

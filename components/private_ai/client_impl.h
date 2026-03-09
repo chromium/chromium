@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/private_ai/client.h"
@@ -27,7 +28,7 @@ class ConnectionManager;
 class ClientImpl : public Client {
  public:
   ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
-             std::unique_ptr<PrivateAiLogger> logger);
+             PrivateAiLogger* logger);
   ~ClientImpl() override;
 
   ClientImpl(const ClientImpl&) = delete;
@@ -67,7 +68,7 @@ class ClientImpl : public Client {
       OnRequestCompletedCallback cb,
       base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response);
 
-  std::unique_ptr<PrivateAiLogger> logger_;
+  raw_ptr<PrivateAiLogger> logger_;
 
   std::unique_ptr<ConnectionManager> connection_manager_;
 

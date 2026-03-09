@@ -18,11 +18,13 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/blind_sign_auth_factory.h"
 #include "components/private_ai/phosphor/config_http.h"
@@ -57,12 +59,15 @@ void TokenFetcherImpl::SequenceBoundFetch::GetTokensFromBlindSignAuth(
 
 TokenFetcherImpl::TokenFetcherImpl(
     OAuthTokenProvider* oauth_token_provider,
-    std::unique_ptr<quiche::BlindSignAuthInterface> bsa)
-    : oauth_token_provider_(oauth_token_provider),
+    std::unique_ptr<quiche::BlindSignAuthInterface> bsa,
+    PrivateAiLogger* logger)
+    : logger_(logger),
+      oauth_token_provider_(oauth_token_provider),
       thread_pool_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   helper_.emplace(thread_pool_task_runner_, std::move(bsa));
+  CHECK(logger_);
 }
 
 TokenFetcherImpl::~TokenFetcherImpl() = default;
@@ -71,10 +76,15 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
                                       quiche::ProxyLayer proxy_layer,
                                       GetAuthnTokensCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  logger_->LogInfo(FROM_HERE,
+                   "Requesting " + base::NumberToString(batch_size) +
+                       (proxy_layer == quiche::ProxyLayer::kTerminalLayer
+                            ? " Terminal tokens"
+                            : " Proxy tokens"));
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (batch_size <= 0) {
     LOG(ERROR) << "GetAuthnTokens called with non-positive batch_size.";
-    GetAuthnTokensComplete(std::nullopt, std::move(callback),
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
                            GetAuthnTokensResult::kFailedBSA400);
     return;
   }
@@ -82,7 +92,7 @@ void TokenFetcherImpl::GetAuthnTokens(int batch_size,
   // try to request tokens.
   if (last_get_authn_tokens_backoff_ &&
       *last_get_authn_tokens_backoff_ == base::TimeDelta::Max()) {
-    GetAuthnTokensComplete(std::nullopt, std::move(callback),
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
                            GetAuthnTokensResult::kFailedOAuthTokenPersistent);
     return;
   }
@@ -111,7 +121,8 @@ void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
   // the request is guaranteed to fail.
   if (!access_token) {
     CHECK(result != GetAuthnTokensResult::kSuccess);
-    GetAuthnTokensComplete(std::nullopt, std::move(callback), result);
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
+                           result);
     return;
   }
 
@@ -125,10 +136,12 @@ void TokenFetcherImpl::OnRequestOAuthTokenCompletedForGetAuthnTokens(
                 std::move(access_token), batch_size, proxy_layer,
                 base::BindPostTaskToCurrentDefault(base::BindOnce(
                     &TokenFetcherImpl::OnFetchBlindSignedTokenCompleted,
-                    weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+                    weak_ptr_factory_.GetWeakPtr(), proxy_layer,
+                    std::move(callback))));
 }
 
 void TokenFetcherImpl::OnFetchBlindSignedTokenCompleted(
+    quiche::ProxyLayer proxy_layer,
     GetAuthnTokensCallback callback,
     base::expected<std::vector<quiche::BlindSignToken>, absl::Status> tokens) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -151,26 +164,31 @@ void TokenFetcherImpl::OnFetchBlindSignedTokenCompleted(
         result = kFailedBSAOther;
         break;
     }
-    GetAuthnTokensComplete(std::nullopt, std::move(callback), result);
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
+                           result);
     return;
   }
 
   if (tokens.value().empty()) {
-    GetAuthnTokensComplete(std::nullopt, std::move(callback), kFailedBSAOther);
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
+                           kFailedBSAOther);
     return;
   }
 
   std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens =
       TokenFetcherHelper::QuicheTokensToPhosphorAuthTokens(tokens.value());
   if (!bsa_tokens) {
-    GetAuthnTokensComplete(std::nullopt, std::move(callback), kFailedBSAOther);
+    GetAuthnTokensComplete(proxy_layer, std::nullopt, std::move(callback),
+                           kFailedBSAOther);
     return;
   }
 
-  GetAuthnTokensComplete(std::move(bsa_tokens), std::move(callback), kSuccess);
+  GetAuthnTokensComplete(proxy_layer, std::move(bsa_tokens),
+                         std::move(callback), kSuccess);
 }
 
 void TokenFetcherImpl::GetAuthnTokensComplete(
+    quiche::ProxyLayer proxy_layer,
     std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens,
     GetAuthnTokensCallback callback,
     GetAuthnTokensResult result) {
@@ -182,10 +200,19 @@ void TokenFetcherImpl::GetAuthnTokensComplete(
   std::optional<base::TimeDelta> backoff = CalculateBackoff(result);
   if (bsa_tokens.has_value()) {
     DCHECK(!backoff.has_value());
+    logger_->LogInfo(FROM_HERE,
+                     "Successfully fetched " +
+                         base::NumberToString(bsa_tokens->size()) +
+                         (proxy_layer == quiche::ProxyLayer::kTerminalLayer
+                              ? " Terminal tokens"
+                              : " Proxy tokens"));
     std::move(callback).Run(base::ok(*std::move(bsa_tokens)));
     return;
   }
 
+  logger_->LogError(FROM_HERE,
+                    "Failed to fetch tokens. Result: " +
+                        base::NumberToString(static_cast<int>(result)));
   DCHECK(backoff.has_value());
   const base::Time try_again_after = (*backoff == base::TimeDelta::Max())
                                          ? base::Time::Max()
