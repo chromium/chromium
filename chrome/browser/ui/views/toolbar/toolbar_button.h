@@ -232,7 +232,7 @@ class ToolbarButton : public views::LabelButton,
   const gfx::Size GetTargetSize() const;
 
   // Returns the button's rounded corner radius based on its size.
-  int GetRoundedCornerRadius() const;
+  virtual int GetRoundedCornerRadius() const;
 
   // Updates the images using the given icons and specific colors.
   void UpdateIconsWithColors(const gfx::VectorIcon& icon,

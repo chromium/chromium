@@ -1024,6 +1024,7 @@
   E_CPONLY(kColorToolbarButtonIconInactive) \
   E_CPONLY(kColorToolbarButtonIconPressed) \
   E_CPONLY(kColorToolbarButtonText) \
+  E_CPONLY(kColorToolbarCloseButtonBackgroundDefault) \
   E_CPONLY(kColorToolbarContentAreaSeparator) \
   E_CPONLY(kColorToolbarExtensionSeparatorDisabled) \
   E_CPONLY(kColorToolbarExtensionSeparatorEnabled) \
