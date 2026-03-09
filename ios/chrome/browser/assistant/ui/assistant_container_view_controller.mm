@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -76,8 +77,14 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 }
 
 - (void)loadView {
+  // Use a ChromeOverlayContainerView as the root view. Its bounds are static,
+  // which prevents excessive layout passes in the parent view when resizing
+  // the Assistant container.
+  self.view = [[ChromeOverlayContainerView alloc] init];
+
   _assistantContainerView = [[AssistantContainerView alloc] init];
-  self.view = _assistantContainerView;
+  _assistantContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_assistantContainerView];
 }
 
 - (void)viewDidLoad {
@@ -99,8 +106,8 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   // Create and activate the height constraint.
   CGFloat initialHeight =
       MAX(_detentHeights[self.detents.front()], self.minimizedDetentHeight);
-  _heightConstraint =
-      [self.view.heightAnchor constraintEqualToConstant:initialHeight];
+  _heightConstraint = [_assistantContainerView.heightAnchor
+      constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
 }
 
@@ -232,7 +239,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   if (gestureRecognizer != _headerPanGesture) {
     return YES;
   }
-  CGPoint location = [touch locationInView:self.view];
+  CGPoint location = [touch locationInView:_assistantContainerView];
   // Restrict the pan gesture to the top area.
   return location.y <= kGestureTopAreaHeight;
 }
@@ -289,7 +296,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
       initWithTarget:self
               action:@selector(handlePanGesture:)];
   _headerPanGesture.delegate = self;
-  [self.view addGestureRecognizer:_headerPanGesture];
+  [_assistantContainerView addGestureRecognizer:_headerPanGesture];
   [self updatePanGestureEnabledState];
 }
 
@@ -300,8 +307,8 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
 // Executes the layout pass and notifies the delegate of the transition.
 - (void)executeAlongsideAnimationWithPercentage:(CGFloat)percentage {
-  [self updateContainerStylingForHeight:round(_heightConstraint.constant)];
-  [self.view.superview layoutIfNeeded];
+  [self updateContainerStylingForHeight:_heightConstraint.constant];
+  [self.view layoutIfNeeded];
 
   if ([self.delegate
           respondsToSelector:@selector(assistantContainer:
@@ -557,18 +564,28 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
     bottomAnchor = parentView.safeAreaLayoutGuide.bottomAnchor;
   }
 
-  // Use variables for horizontal constraints to update them during animation.
-  _leadingConstraint =
-      [self.view.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor
-                                              constant:0.0];
-  _trailingConstraint = [self.view.trailingAnchor
-      constraintEqualToAnchor:parentView.trailingAnchor
+  // Pin the wrapper to the parent view.
+  [NSLayoutConstraint activateConstraints:@[
+    [self.view.topAnchor constraintEqualToAnchor:parentView.topAnchor],
+    [self.view.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor],
+    [self.view.trailingAnchor
+        constraintEqualToAnchor:parentView.trailingAnchor],
+    [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor],
+  ]];
+
+  // Pin the container inside the wrapper (these constraints mutate during
+  // morphing).
+  _leadingConstraint = [_assistantContainerView.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:0.0];
+  _trailingConstraint = [_assistantContainerView.trailingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor
                      constant:0.0];
 
-  // Anchor to bottom.
-  _bottomConstraint =
-      [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor
-                                             constant:0.0];
+  // Anchor to bottom of the wrapper.
+  _bottomConstraint = [_assistantContainerView.bottomAnchor
+      constraintEqualToAnchor:self.view.bottomAnchor
+                     constant:0.0];
 
   _leadingConstraint.active = YES;
   _trailingConstraint.active = YES;
@@ -579,7 +596,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   // Update its value with the initial height based on detents.
   _heightConstraint.constant =
       MAX(_detentHeights[self.detents.front()], self.minimizedDetentHeight);
-  [self updateContainerStylingForHeight:round(_heightConstraint.constant)];
+  [self updateContainerStylingForHeight:_heightConstraint.constant];
 }
 
 // Animates layout changes with standard spring parameters.

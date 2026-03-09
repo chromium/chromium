@@ -18,6 +18,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
