@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -51,7 +52,7 @@ struct FrameBounds {
 
   // Begin frame args associated with an arbitrary scroll update or scroll end
   // in the list.
-  ScrollJankV4Frame::BeginFrameArgsForScrollJank some_args;
+  ScrollEventMetrics::DispatchBeginFrameArgs some_args;
 
   bool IsDamaging(const viz::BeginFrameId& frame_id) const {
     return min_damaging_id.has_value() && frame_id >= *min_damaging_id;
@@ -100,8 +101,7 @@ std::optional<FrameBounds> GetFrameBounds(
           .min_damaging_id = is_damaging
                                  ? std::optional<viz::BeginFrameId>(frame_id)
                                  : std::nullopt,
-          .some_args =
-              ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(args),
+          .some_args = args,
       };
     }
   }
@@ -113,15 +113,21 @@ std::optional<FrameBounds> GetFrameBounds(
 // static
 ScrollJankV4Frame::BeginFrameArgsForScrollJank
 ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
-    const viz::BeginFrameArgs& args) {
-  return {.frame_time = args.frame_time, .interval = args.interval};
+    const viz::BeginFrameArgs& args,
+    uint64_t result_id) {
+  return {.frame_time = args.frame_time,
+          .interval = args.interval,
+          .result_id = result_id};
 }
 
 // static
 ScrollJankV4Frame::BeginFrameArgsForScrollJank
 ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(
-    const ScrollEventMetrics::DispatchBeginFrameArgs& args) {
-  return {.frame_time = args.frame_time, .interval = args.interval};
+    const ScrollEventMetrics::DispatchBeginFrameArgs& args,
+    uint64_t result_id) {
+  return {.frame_time = args.frame_time,
+          .interval = args.interval,
+          .result_id = result_id};
 }
 
 ScrollJankV4Frame::ScrollJankV4Frame(BeginFrameArgsForScrollJank args,
@@ -135,7 +141,7 @@ ScrollJankV4Frame::~ScrollJankV4Frame() = default;
 
 // static
 ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
-    const EventMetrics::List& events_metrics,
+    EventMetrics::List& events_metrics,
     const viz::BeginFrameArgs& presented_args,
     base::TimeTicks presentation_ts) {
   ScrollJankV4Frame::Timeline result;
@@ -158,10 +164,12 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
   // same frame.
   if (!frame_bounds->min_damaging_id.has_value() &&
       frame_bounds->min_id == frame_bounds->max_id) {
+    uint64_t result_id = base::trace_event::GetNextGlobalTraceId();
     result.emplace_back(
-        frame_bounds->some_args, NonDamagingFrame{},
+        BeginFrameArgsForScrollJank::From(frame_bounds->some_args, result_id),
+        NonDamagingFrame{},
         ScrollJankV4FrameStage::CalculateStages(
-            events_metrics, /* skip_non_damaging_events= */ false));
+            events_metrics, result_id, /* skip_non_damaging_events= */ false));
     return result;
   }
 
@@ -169,11 +177,12 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
   // associated with the presented damaging frame.
   if (frame_bounds->min_damaging_id.has_value() &&
       *frame_bounds->min_damaging_id == frame_bounds->min_id) {
+    uint64_t result_id = base::trace_event::GetNextGlobalTraceId();
     result.emplace_back(
-        BeginFrameArgsForScrollJank::From(presented_args),
+        BeginFrameArgsForScrollJank::From(presented_args, result_id),
         DamagingFrame{.presentation_ts = presentation_ts},
         ScrollJankV4FrameStage::CalculateStages(
-            events_metrics, /* skip_non_damaging_events= */ false));
+            events_metrics, result_id, /* skip_non_damaging_events= */ false));
     return result;
   }
 
@@ -210,18 +219,20 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     } else {
       // If `effective_frame_id` doesn't have an entry in the map yet, create a
       // new entry with a reference to `effective_args` and a singleton vector.
+      uint64_t result_id = base::trace_event::GetNextGlobalTraceId();
       frame_id_to_args_and_events.emplace_hint(
           it, effective_frame_id,
           ArgsAndEvents{
-              .args = is_damaging
-                          ? BeginFrameArgsForScrollJank::From(presented_args)
-                          : BeginFrameArgsForScrollJank::From(original_args),
+              .args = is_damaging ? BeginFrameArgsForScrollJank::From(
+                                        presented_args, result_id)
+                                  : BeginFrameArgsForScrollJank::From(
+                                        original_args, result_id),
               .is_damaging = is_damaging,
               .events = {scroll_event},
           });
     }
   }
-  for (const auto& [frame_id, args_and_events] : frame_id_to_args_and_events) {
+  for (auto& [frame_id, args_and_events] : frame_id_to_args_and_events) {
     ScrollDamage damage =
         args_and_events.is_damaging
             ? ScrollDamage{DamagingFrame{.presentation_ts = presentation_ts}}
@@ -229,7 +240,8 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     result.emplace_back(
         args_and_events.args, damage,
         ScrollJankV4FrameStage::CalculateStages(
-            args_and_events.events, /* skip_non_damaging_events= */ false));
+            args_and_events.events, args_and_events.args.result_id,
+            /* skip_non_damaging_events= */ false));
   }
   return result;
 }

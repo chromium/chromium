@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
@@ -106,13 +105,12 @@ void PopulateScrollUpdatesProto(
 }
 
 void PopulateScrollJankV4ResultProto(
-    uint64_t result_id,
     const ScrollUpdates& updates,
     const ScrollDamage& damage,
     const BeginFrameArgsForScrollJank& args,
     const ScrollJankV4Result& result,
     perfetto::protos::pbzero::EventLatency::ScrollJankV4Result& out) {
-  out.set_result_id(result_id);
+  out.set_result_id(args.result_id);
 
   PopulateScrollUpdatesProto(updates, result, *out.set_updates());
 
@@ -167,13 +165,13 @@ void PopulateScrollJankV4ResultProto(
   }
 }
 
-void RecordSubEvents(uint64_t result_id,
-                     const ScrollUpdates& updates,
+void RecordSubEvents(const ScrollUpdates& updates,
                      const ScrollDamage& damage,
                      const BeginFrameArgsForScrollJank& args,
                      const ScrollJankV4Result& result,
                      const perfetto::Track& trace_track) {
-  auto set_result_id_lambda = [result_id](perfetto::EventContext context) {
+  auto set_result_id_lambda = [result_id = args.result_id](
+                                  perfetto::EventContext context) {
     auto* event = context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     event->set_scroll_jank_v4()->set_result_id(result_id);
   };
@@ -238,11 +236,9 @@ void ScrollJankV4TracingRecorder::RecordTraceEvents(
     return;
   }
 
-  uint64_t result_id = base::trace_event::GetNextGlobalTraceId();
-
   // Consecutive "ScrollJankV4" trace events are likely to overlap, so create a
   // new track for each event.
-  const perfetto::Track trace_track = perfetto::Track(result_id);
+  const perfetto::Track trace_track = perfetto::Track(args.result_id);
 
   base::TimeTicks start_ts = args.frame_time;
   base::TimeTicks end_ts = args.frame_time;
@@ -290,11 +286,11 @@ void ScrollJankV4TracingRecorder::RecordTraceEvents(
       [&](perfetto::EventContext context) {
         auto* event =
             context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        PopulateScrollJankV4ResultProto(result_id, updates, damage, args,
-                                        result, *event->set_scroll_jank_v4());
+        PopulateScrollJankV4ResultProto(updates, damage, args, result,
+                                        *event->set_scroll_jank_v4());
       });
 
-  RecordSubEvents(result_id, updates, damage, args, result, trace_track);
+  RecordSubEvents(updates, damage, args, result, trace_track);
 
   // The Perfetto trace processor assigns slice ancestors based on closed-open
   // [start, end) intervals. We add add 1 μs to the end timestamp of the

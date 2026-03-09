@@ -4,9 +4,13 @@
 
 #include "cc/metrics/scroll_jank_v4_frame.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <memory>
+#include <set>
 #include <sstream>
+#include <vector>
 
 #include "base/time/time.h"
 #include "cc/metrics/event_metrics.h"
@@ -69,16 +73,46 @@ class ScrollJankV4FrameTest : public testing::Test {
     };
   }
 
+  static std::vector<uint64_t> GetResultIds(
+      const ScrollJankV4Frame::Timeline& timeline) {
+    std::vector<uint64_t> result_ids;
+    std::transform(timeline.begin(), timeline.end(),
+                   std::back_inserter(result_ids),
+                   [](const auto& frame) { return frame.args.result_id; });
+    return result_ids;
+  }
+
+  static void ExpectResultIdsAreAllUnique(
+      const std::vector<uint64_t>& result_ids) {
+    EXPECT_THAT(result_ids,
+                ::testing::UnorderedElementsAreArray(
+                    std::set<uint64_t>(result_ids.begin(), result_ids.end())));
+  }
+
   EventMetricsTestCreator metrics_creator_;
 };
 
-TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFrom) {
+TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankFromBeginFrameArgs) {
   viz::BeginFrameArgs args = CreateBeginFrameArgs(42, MillisecondsTicks(123));
   BeginFrameArgsForScrollJank args_for_scroll_jank =
-      BeginFrameArgsForScrollJank::From(args);
+      BeginFrameArgsForScrollJank::From(args, 456);
   EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
                                       .frame_time = MillisecondsTicks(123),
                                       .interval = kVsyncInterval,
+                                      .result_id = 456,
+                                  }));
+}
+
+TEST_F(ScrollJankV4FrameTest,
+       BeginFrameArgsForScrollJankFromDispatchBeginFrameArgs) {
+  DispatchBeginFrameArgs args = {.frame_time = MillisecondsTicks(123),
+                                 .interval = kVsyncInterval};
+  BeginFrameArgsForScrollJank args_for_scroll_jank =
+      BeginFrameArgsForScrollJank::From(args, 456);
+  EXPECT_EQ(args_for_scroll_jank, (BeginFrameArgsForScrollJank{
+                                      .frame_time = MillisecondsTicks(123),
+                                      .interval = kVsyncInterval,
+                                      .result_id = 456,
                                   }));
 }
 
@@ -143,11 +177,15 @@ TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
   auto timeline = ScrollJankV4Frame::CalculateTimeline(
       events_metrics, presented_args,
       /* presentation_ts= */ MillisecondsTicks(777));
+  EXPECT_EQ(timeline.size(), 1u);
+  std::vector<uint64_t> result_ids = GetResultIds(timeline);
+  ExpectResultIdsAreAllUnique(result_ids);
   EXPECT_THAT(
       timeline,
       ElementsAre(ScrollJankV4Frame(
           BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                      .interval = kVsyncInterval},
+                                      .interval = kVsyncInterval,
+                                      .result_id = result_ids[0]},
           NonDamagingFrame{},
           {ScrollJankV4FrameStage{ScrollUpdates(
               Real{
@@ -158,6 +196,11 @@ TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
                   .max_abs_inertial_raw_delta_pixels = 4.0f,
               },
               /* synthetic= */ std::nullopt)}})));
+
+  // Check that all GSUs were assigned to the single non-damaging frame.
+  for (const auto& event : events_metrics) {
+    EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id(), result_ids[0]);
+  }
 }
 
 TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
@@ -213,12 +256,16 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
   auto timeline = ScrollJankV4Frame::CalculateTimeline(
       events_metrics, presented_args,
       /* presentation_ts= */ MillisecondsTicks(777));
+  EXPECT_EQ(timeline.size(), 3u);
+  std::vector<uint64_t> result_ids = GetResultIds(timeline);
+  ExpectResultIdsAreAllUnique(result_ids);
   EXPECT_THAT(
       timeline,
       ElementsAre(
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[0]},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollStart{}},
                ScrollJankV4FrameStage{ScrollUpdates(
@@ -232,7 +279,8 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
                    /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[1]},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollUpdates(
                   Real{
@@ -245,7 +293,8 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
                   /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(333),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[2]},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollUpdates(
                   Real{
@@ -256,6 +305,20 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
                       .max_abs_inertial_raw_delta_pixels = 200.0f,
                   },
                   /* synthetic= */ std::nullopt)}})));
+
+  // Check that each GSU was assigned to the correct non-damaging frame.
+  EXPECT_EQ(events_metrics[0]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[0]);
+  EXPECT_EQ(events_metrics[1]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[0]);
+  EXPECT_EQ(events_metrics[2]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[1]);
+  EXPECT_EQ(events_metrics[3]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[1]);
+  EXPECT_EQ(events_metrics[4]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[5]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
 }
 
 TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
@@ -313,11 +376,15 @@ TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
   auto timeline = ScrollJankV4Frame::CalculateTimeline(
       events_metrics, presented_args,
       /* presentation_ts= */ MillisecondsTicks(777));
+  EXPECT_EQ(timeline.size(), 1u);
+  std::vector<uint64_t> result_ids = GetResultIds(timeline);
+  ExpectResultIdsAreAllUnique(result_ids);
   EXPECT_THAT(
       timeline,
       ElementsAre(ScrollJankV4Frame(
           BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(666),
-                                      .interval = kVsyncInterval},
+                                      .interval = kVsyncInterval,
+                                      .result_id = result_ids[0]},
 
           DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
           {ScrollJankV4FrameStage{ScrollStart{}},
@@ -330,6 +397,11 @@ TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
                    .max_abs_inertial_raw_delta_pixels = 200.0f,
                },
                /* synthetic= */ std::nullopt)}})));
+
+  // Check that all GSUs were assigned to the single damaging frame.
+  for (const auto& event : events_metrics) {
+    EXPECT_EQ(event->AsScroll()->scroll_jank_v4_result_id(), result_ids[0]);
+  }
 }
 
 // Example from `ScrollJankV4Frame::Timeline CalculateTimeline()`'s
@@ -423,12 +495,16 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
   auto timeline = ScrollJankV4Frame::CalculateTimeline(
       events_metrics, presented_args,
       /* presentation_ts= */ MillisecondsTicks(777));
+  EXPECT_EQ(timeline.size(), 3u);
+  std::vector<uint64_t> result_ids = GetResultIds(timeline);
+  ExpectResultIdsAreAllUnique(result_ids);
   EXPECT_THAT(
       timeline,
       ElementsAre(
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(111),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[0]},
               NonDamagingFrame{},
               {ScrollJankV4FrameStage{ScrollStart{}},
                ScrollJankV4FrameStage{ScrollUpdates(
@@ -442,11 +518,13 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
                    /* synthetic= */ std::nullopt)}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(222),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[1]},
               NonDamagingFrame{}, {ScrollJankV4FrameStage{ScrollEnd{}}}),
           ScrollJankV4Frame(
               BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(666),
-                                          .interval = kVsyncInterval},
+                                          .interval = kVsyncInterval,
+                                          .result_id = result_ids[2]},
 
               DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
               {ScrollJankV4FrameStage{ScrollUpdates(
@@ -458,13 +536,38 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
                       .max_abs_inertial_raw_delta_pixels = 2000.0f,
                   },
                   /* synthetic= */ std::nullopt)}})));
+
+  // GSB should NOT have a result ID.
+  EXPECT_FALSE(
+      events_metrics[0]->AsScroll()->scroll_jank_v4_result_id().has_value());
+
+  // Check that all GSUs and GSEs were assigned to the correct frame.
+  EXPECT_EQ(events_metrics[1]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[0]);
+  EXPECT_EQ(events_metrics[2]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[0]);
+  EXPECT_EQ(events_metrics[3]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[1]);
+  EXPECT_EQ(events_metrics[4]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[5]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[6]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[7]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[8]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
+  EXPECT_EQ(events_metrics[9]->AsScroll()->scroll_jank_v4_result_id(),
+            result_ids[2]);
 }
 
 TEST_F(ScrollJankV4FrameTest, BeginFrameArgsForScrollJankToOstream) {
   std::ostringstream out;
   auto& result =
       out << BeginFrameArgsForScrollJank{.frame_time = MillisecondsTicks(123),
-                                         .interval = kVsyncInterval};
+                                         .interval = kVsyncInterval,
+                                         .result_id = 456};
   EXPECT_THAT(out.str(),
               ::testing::MatchesRegex(R"(BeginFrameArgsForScrollJank\{.+\})"));
   EXPECT_EQ(&result, &out);
@@ -497,6 +600,7 @@ TEST_F(ScrollJankV4FrameTest, ScrollJankV4FrameToOstream) {
       BeginFrameArgsForScrollJank{
           .frame_time = MillisecondsTicks(123),
           .interval = base::Milliseconds(8),
+          .result_id = 456,
       },
       DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
       {ScrollJankV4FrameStage{ScrollEnd{}}, ScrollJankV4FrameStage{ScrollEnd{}},

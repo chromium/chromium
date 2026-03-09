@@ -14,9 +14,9 @@
 namespace cc {
 
 // Class responsible for processing presented frames, deciding whether they are
-// janky according to the scroll jank v4 metric and reporting the associated UMA
-// histograms. This class also sets
-// `ScrollUpdateEventMetrics::scroll_jank_v4()`.
+// janky according to the scroll jank v4 metric, reporting the associated UMA
+// histograms and emitting relevant trace events. This class also sets
+// `ScrollUpdateEventMetrics::scroll_jank_v4_result_id()`.
 //
 // See
 // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
@@ -25,10 +25,9 @@ class CC_EXPORT ScrollJankV4Processor {
  public:
   ScrollJankV4Processor();
 
-  void ProcessEventsMetricsForPresentedFrame(
-      const EventMetrics::List& events_metrics,
-      base::TimeTicks presentation_ts,
-      const viz::BeginFrameArgs& args);
+  void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
+                                             base::TimeTicks presentation_ts,
+                                             const viz::BeginFrameArgs& args);
 
  private:
   void HandleFrame(const ScrollJankV4FrameStage::List& stages,

@@ -210,18 +210,22 @@ struct CC_EXPORT ScrollJankV4FrameStage {
   // Calculates the scroll jank reporting stages based on `events_metrics`
   // associated with a frame.
   //
+  // Sets `ScrollEventMetrics::scroll_jank_v4_result_id()` to `result_id` for
+  // all scroll updates and ends which this method uses to calculate the stages.
+  // Otherwise doesn't modify `event_metrics`.
+  //
   // `skip_non_damaging_events` controls whether the method ignores non-damaging
   // scroll updates. This allows us to experiment with the legacy behavior of
   // the scroll jank v4 metric (`skip_non_damaging_events=true`) and the new
   // logic for handling non-damaging frames (`skip_non_damaging_events=false`).
   // See `ScrollJankV4Frame` and `ScrollJankV4Decider` for more information.
   // TODO(crbug.com/444183591): Remove `skip_non_damaging_events`.
-  static ScrollJankV4FrameStage::List CalculateStages(
-      const EventMetrics::List& events_metrics,
-      bool skip_non_damaging_events = true);
-  static ScrollJankV4FrameStage::List CalculateStages(
-      const std::vector<ScrollEventMetrics*>& events_metrics,
-      bool skip_non_damaging_events = true);
+  static List CalculateStages(EventMetrics::List& events_metrics,
+                              uint64_t result_id,
+                              bool skip_non_damaging_events = true);
+  static List CalculateStages(std::vector<ScrollEventMetrics*>& events_metrics,
+                              uint64_t result_id,
+                              bool skip_non_damaging_events = true);
 };
 
 template <typename T, typename... Ts>

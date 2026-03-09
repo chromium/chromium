@@ -27,7 +27,8 @@ namespace {
 
 template <typename EventMetricsPtr>
 ScrollJankV4FrameStage::List CalculateStagesImpl(
-    const std::vector<EventMetricsPtr>& events_metrics,
+    std::vector<EventMetricsPtr>& events_metrics,
+    uint64_t result_id,
     bool skip_non_damaging_events) {
   ScrollJankV4FrameStage::List stages;
 
@@ -176,6 +177,10 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
         TRACE_EVENT("input",
                     "CalculateStages: Multiple scroll ends in a frame");
       }
+      if (auto* scroll_event = event->AsScroll()) {
+        DCHECK(!scroll_event->scroll_jank_v4_result_id().has_value());
+        scroll_event->set_scroll_jank_v4_result_id(result_id);
+      }
       scroll_end_ordering_ts = ordering_ts;
       continue;
     }
@@ -188,6 +193,9 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
     if (!scroll_update) {
       continue;
     }
+
+    DCHECK(!scroll_update->scroll_jank_v4_result_id().has_value());
+    scroll_update->set_scroll_jank_v4_result_id(result_id);
 
     // Earliest is always applied, even when the scroll update failed to
     // successfully produce a scroll.
@@ -358,16 +366,20 @@ ScrollJankV4FrameStage::~ScrollJankV4FrameStage() = default;
 
 // static
 ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
-    const EventMetrics::List& events_metrics,
+    EventMetrics::List& events_metrics,
+    uint64_t result_id,
     bool skip_non_damaging_events) {
-  return CalculateStagesImpl(events_metrics, skip_non_damaging_events);
+  return CalculateStagesImpl(events_metrics, result_id,
+                             skip_non_damaging_events);
 }
 
 // static
 ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
-    const std::vector<ScrollEventMetrics*>& events_metrics,
+    std::vector<ScrollEventMetrics*>& events_metrics,
+    uint64_t result_id,
     bool skip_non_damaging_events) {
-  return CalculateStagesImpl(events_metrics, skip_non_damaging_events);
+  return CalculateStagesImpl(events_metrics, result_id,
+                             skip_non_damaging_events);
 }
 
 }  // namespace cc

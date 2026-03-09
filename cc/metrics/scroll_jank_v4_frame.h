@@ -49,7 +49,8 @@ struct CC_EXPORT ScrollJankV4Frame {
 
   // A small number of fields from `viz::BeginFrameArgs` relevant to scroll jank
   // to avoid copying the whole args (>100 bytes) or holding a reference (and
-  // risking use-after-free).
+  // risking use-after-free). Plus a few frame-related fields which aren't
+  // present in `viz::BeginFrameArgs`.
   struct CC_EXPORT BeginFrameArgsForScrollJank {
     // See `viz::BeginFrameArgs::frame_time`.
     base::TimeTicks frame_time;
@@ -57,11 +58,20 @@ struct CC_EXPORT ScrollJankV4Frame {
     // See `viz::BeginFrameArgs::interval`.
     base::TimeDelta interval;
 
+    // The ID of the result of the scroll jank V4 metric for the frame. This ID
+    // makes it easy to retrieve the mapping between "EventLatency" and
+    // "ScrollJankV4" slices in traces.
+    //
+    // Note: This field isn't present in `viz::BeginFrameArgs`.
+    uint64_t result_id;
+
     // Note: If these were explicit constructors, they would prevent us from
     // using designated initializers (e.g. `{.frame_time = X, .interval = Y}`).
-    static BeginFrameArgsForScrollJank From(const viz::BeginFrameArgs& args);
+    static BeginFrameArgsForScrollJank From(const viz::BeginFrameArgs& args,
+                                            uint64_t result_id);
     static BeginFrameArgsForScrollJank From(
-        const ScrollEventMetrics::DispatchBeginFrameArgs& args);
+        const ScrollEventMetrics::DispatchBeginFrameArgs& args,
+        uint64_t result_id);
 
     bool operator==(const BeginFrameArgsForScrollJank&) const = default;
   };
@@ -157,16 +167,21 @@ struct CC_EXPORT ScrollJankV4Frame {
   //
   //   a. Non-damaging frame with BFA1 and events 2-3.
   //   b. Non-damaging frame with BFA2 and event 4.
-  //   c. Damaging frame with BFA6 and eccents 5-10.
+  //   c. Damaging frame with BFA6 and events 5-10.
   //
   // Note that, since event 5 is damaging, BFA3-BFA5 are damaging, so this
   // method associates events that were originally associated with BFA3 (5-6),
   // BFA4 (7-8) and BFA5 (9-10) with the presented frame (BFA6). The method only
   // cares about GSUs and GSEs, so it will ignore the initial GSB (1).
   //
-  // This method does NOT require that `events_metrics` is sorted.
+  // This method assigns a unique result ID to each frame in the returned
+  // timeline (`ScrollJankV4Frame::BeginFrameArgsForScrollJank::result_id`) and
+  // sets `ScrollEventMetrics::scroll_jank_v4_result_id()` to `result_id` for
+  // all scroll updates and ends which this method uses to calculate the frame's
+  // stages. Otherwise doesn't modify `event_metrics` This method does NOT
+  // require that `events_metrics` is sorted.
   static ScrollJankV4Frame::Timeline CalculateTimeline(
-      const EventMetrics::List& events_metrics,
+      EventMetrics::List& events_metrics,
       const viz::BeginFrameArgs& presented_args,
       base::TimeTicks presentation_ts);
 };
@@ -175,7 +190,8 @@ inline std::ostream& operator<<(
     std::ostream& os,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
   return os << "BeginFrameArgsForScrollJank{frame_time: " << args.frame_time
-            << ", interval: " << args.interval << "}";
+            << ", interval: " << args.interval
+            << ", result_id: " << args.result_id << "}";
 }
 
 inline std::ostream& operator<<(

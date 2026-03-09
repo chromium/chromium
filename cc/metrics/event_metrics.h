@@ -369,6 +369,13 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   const DispatchBeginFrameArgs& dispatch_args() const { return dispatch_args_; }
 
+  void set_scroll_jank_v4_result_id(std::optional<uint64_t> id) {
+    scroll_jank_v4_result_id_ = id;
+  }
+  std::optional<uint64_t> scroll_jank_v4_result_id() const {
+    return scroll_jank_v4_result_id_;
+  }
+
  protected:
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
@@ -402,6 +409,12 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
   // These may not match those of CompositorFrameReporter for which the event
   // is eventually displayed.
   DispatchBeginFrameArgs dispatch_args_;
+
+  // The ID of the result of the scroll jank V4 metric for the frame in which
+  // this event was first presented. This ID makes it easy to retrieve the
+  // mapping between "EventLatency" and "ScrollJankV4" slices in traces. Only
+  // set for scroll updates and ends.
+  std::optional<uint64_t> scroll_jank_v4_result_id_;
 };
 
 class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
