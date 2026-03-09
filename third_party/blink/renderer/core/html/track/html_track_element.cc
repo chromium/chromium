@@ -50,7 +50,7 @@ static String UrlForLoggingTrack(const KURL& url) {
   if (url_string.length() < kMaximumURLLengthForLogging) {
     return url_string;
   }
-  return StrCat({url_string.Substring(0, kMaximumURLLengthForLogging), "..."});
+  return StrCat({url_string.subview(0, kMaximumURLLengthForLogging), "..."});
 }
 
 HTMLTrackElement::HTMLTrackElement(Document& document)
