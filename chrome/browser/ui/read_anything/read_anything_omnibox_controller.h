@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_OMNIBOX_CONTROLLER_H_
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_OMNIBOX_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
@@ -35,6 +37,7 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
                 std::optional<ReadAnythingOpenTrigger> open_trigger) override;
   void OnDestroyed() override;
   void OnReadingModePresenterChanged() override;
+  void OnWillClose(ReadAnythingCloseReason reason) override;
 
   void SetDwellTimeForTesting(base::TimeTicks test_time) {
     candidate_check_triggered_time_ms_ = test_time;
@@ -96,6 +99,11 @@ class ReadAnythingOmniboxController : public content::WebContentsObserver,
 
   // The cached result of CheckIfShouldSuggestReadingMode.
   bool was_last_checked_page_distillable_ = false;
+
+  // The last reason Immersive RM was closed. Used to determine whether to show
+  // the omnibox entrypoint after RM is closed. This needs to be stored because
+  // the ReadingModePresenterChanged callback happens asynchronously.
+  std::optional<ReadAnythingCloseReason> last_close_reason_;
 
   // A timer for logging whether the user opened RM after seeing the IPH.
   std::unique_ptr<base::OneShotTimer> iph_response_timer_;
