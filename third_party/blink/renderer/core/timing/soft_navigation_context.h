@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -43,7 +44,8 @@ class CORE_EXPORT SoftNavigationContext
   // differentiate new interactions from previous ones.
   static uint64_t NextContextId() { return last_context_id_ + 1; }
 
-  explicit SoftNavigationContext(LocalDOMWindow& window);
+  SoftNavigationContext(LocalDOMWindow& window,
+                        PerformanceEventTiming* initial_event_timing);
 
   // LargestContentfulPaintCalculator::Delegate:
   void EmitLcpPerformanceEntry(const DOMPaintTimingInfo& paint_timing_info,
@@ -88,16 +90,8 @@ class CORE_EXPORT SoftNavigationContext
   }
 
   // The time origin is used for calculating soft navigation timings, especially
-  // Soft LCP. It is the earlier of the processing end of the interaction and
-  // the url change time. Once the processing of the interaction has ended, it
-  // is guaranteed to be available; once the URL change time has been set,
-  // it's available and final. When not available it may be null.
+  // Soft LCP. It is the startTime of the first event timing entry.
   base::TimeTicks TimeOrigin() const;
-
-  // Indicates when the interaction processing is finished, which is after the
-  // event handler has finished executing.
-  base::TimeTicks ProcessingEnd() const { return processing_end_; }
-  void SetProcessingEnd(base::TimeTicks value) { processing_end_ = value; }
 
   // This is set to the time of the first URL change and is not updated
   // afterwards.
@@ -145,6 +139,8 @@ class CORE_EXPORT SoftNavigationContext
   // check for sufficient paints to emit a soft-nav entry.
   bool HasDomModification() const { return num_modified_dom_nodes_ > 0; }
 
+  PerformanceTimelineEntryIdInfo GetInteractionIdInfo() const;
+
   uint64_t PaintedArea() const { return painted_area_; }
   uint64_t ContextId() const { return context_id_; }
 
@@ -163,6 +159,9 @@ class CORE_EXPORT SoftNavigationContext
   bool IsRecordingLargestContentfulPaint() const {
     return first_input_or_scroll_time_.is_null();
   }
+
+  LocalDOMWindow* Window() const { return window_.Get(); }
+  SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
 
   // Emits the soft navigation performance entry. The context must not have been
   // previously emitted. `WasEmitted()` returns true after this is called.
@@ -206,7 +205,6 @@ class CORE_EXPORT SoftNavigationContext
 
   base::TimeTicks first_input_or_scroll_time_;
   base::TimeTicks url_change_time_;
-  base::TimeTicks processing_end_;
   base::TimeTicks soft_navigation_slicing_time_;
 
   String initial_url_;
@@ -215,6 +213,7 @@ class CORE_EXPORT SoftNavigationContext
 
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> lcp_calculator_;
+  Member<PerformanceEventTiming> initial_event_timing_;
   Member<PaintTimingRecord> first_image_or_text_;
   Member<InteractionContentfulPaint> largest_icp_entry_;
 

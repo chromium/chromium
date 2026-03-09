@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
@@ -537,6 +538,14 @@ class SoftNavigationPrePaintTreeWalkTest : public RenderingTest {
   SoftNavigationPrePaintTreeWalkTest() = default;
   ~SoftNavigationPrePaintTreeWalkTest() override = default;
 
+  SoftNavigationContext* CreateSoftNavigationContext() {
+    auto* initial_event_timing = CreatePerformanceEventTimingForTest(
+        event_type_names::kClick, base::TimeTicks::Now(), GetDocument().body(),
+        GetDocument().domWindow());
+    return MakeGarbageCollected<SoftNavigationContext>(
+        *GetDocument().domWindow(), initial_event_timing);
+  }
+
  private:
   void SetUp() override {
     EnableCompositing();
@@ -579,8 +588,7 @@ TEST_F(SoftNavigationPrePaintTreeWalkTest,
   EXPECT_TRUE(descendant.ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(content.ShouldInheritSoftNavigationContext());
 
-  auto* context =
-      MakeGarbageCollected<SoftNavigationContext>(*GetDocument().domWindow());
+  auto* context = CreateSoftNavigationContext();
   SoftNavigationHeuristics* heuristics =
       GetDocument().domWindow()->GetSoftNavigationHeuristics();
   ASSERT_TRUE(heuristics);

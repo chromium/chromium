@@ -22,25 +22,38 @@ namespace blink {
 
 uint64_t SoftNavigationContext::last_context_id_ = 0;
 
-SoftNavigationContext::SoftNavigationContext(LocalDOMWindow& window)
+SoftNavigationContext::SoftNavigationContext(
+    LocalDOMWindow& window,
+    PerformanceEventTiming* initial_event_timing)
     : window_(&window),
       lcp_calculator_(MakeGarbageCollected<LargestContentfulPaintCalculator>(
           DOMWindowPerformance::performance(window),
-          this)) {
-  window_->GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
+          this)),
+      initial_event_timing_(initial_event_timing) {
+  CHECK(initial_event_timing_);
+  CHECK(initial_event_timing_->IsKnownToBeAnInteraction());
+
+  TRACE_EVENT_BEGIN("loading", "SoftNavigation",
+                    perfetto::Track::FromPointer(this));
+
+  GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
       [&](InteractionEffectsMonitor& monitor) {
         monitor.OnSoftNavigationContextCreated();
       });
 }
 
+PerformanceTimelineEntryIdInfo SoftNavigationContext::GetInteractionIdInfo()
+    const {
+  return initial_event_timing_->GetInteractionIdInfo().value();
+}
+
+SoftNavigationHeuristics* SoftNavigationContext::GetSoftNavigationHeuristics()
+    const {
+  return window_->GetSoftNavigationHeuristics();
+}
+
 base::TimeTicks SoftNavigationContext::TimeOrigin() const {
-  if (processing_end_.is_null()) {
-    return url_change_time_;
-  }
-  if (url_change_time_.is_null()) {
-    return processing_end_;
-  }
-  return std::min(url_change_time_, processing_end_);
+  return initial_event_timing_->GetStartTime();
 }
 
 void SoftNavigationContext::AddUrl(
@@ -114,13 +127,18 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavNonPaintCriteria() const {
-  if (HasDomModification() && HasUrl() && !ProcessingEnd().is_null()) {
-    CHECK(!UrlChangeTime().is_null());  // Implied by HasUrl()
-    // Implied by !UrlChangeTime().is_null() and !ProcessingEnd().is_null()
-    CHECK(!TimeOrigin().is_null());
-    return true;
+  // TODO(crbug.com/490814752): Event StartTime value seems to be missing in
+  // some unittests.  It should not be missing from any real events.
+  if (TimeOrigin().is_null()) {
+    return false;
   }
-  return false;
+  // These start false, and become true as we observe effects.
+  if (!HasDomModification() || !HasUrl()) {
+    return false;
+  }
+  CHECK(!UrlChangeTime().is_null());
+  CHECK(!TimeOrigin().is_null());
+  return true;
 }
 
 bool SoftNavigationContext::SatisfiesSoftNavPaintCriteria(
@@ -143,7 +161,7 @@ bool SoftNavigationContext::OnPaintFinished() {
   }
 
   if (new_painted_area > 0) {
-    window_->GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
+    GetSoftNavigationHeuristics()->ForEachInteractionEffectsMonitor(
         [&](InteractionEffectsMonitor& monitor) {
           monitor.OnContentfulPaint(this, new_painted_area);
         });
@@ -216,7 +234,8 @@ void SoftNavigationContext::WriteIntoTrace(
   dict.Add("URL", AttributionUrl());
   dict.Add("timeOrigin", TimeOrigin());
   dict.Add("urlChangeTime", url_change_time_);
-  dict.Add("processingEnd", processing_end_);
+  dict.Add("processingEnd", initial_event_timing_->GetEventTimingReportingInfo()
+                                ->processing_end_time);
   dict.Add("firstContentfulPaint", FirstContentfulPaint());
 
   dict.Add("domModifications", num_modified_dom_nodes_);
@@ -228,18 +247,23 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
   visitor->Trace(largest_icp_entry_);
+  visitor->Trace(initial_event_timing_);
 }
 
 void SoftNavigationContext::Shutdown() {
+  TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this));
+
   lcp_calculator_ = nullptr;
   first_image_or_text_ = nullptr;
   window_ = nullptr;
   largest_icp_entry_ = nullptr;
+  initial_event_timing_ = nullptr;
 }
 
 void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(!WasEmitted());
   CHECK(HasFirstContentfulPaint());
+  CHECK(SatisfiesSoftNavNonPaintCriteria());
   was_emitted_ = true;
 
   if (base::FeatureList::IsEnabled(kSoftNavigationTraceEvents)) {
@@ -258,7 +282,7 @@ void SoftNavigationContext::EmitSoftNavigation() {
   performance->AddSoftNavigationEntry(
       AtomicString(AttributionUrl()), TimeOrigin(),
       FirstContentfulPaintTimingInfo(), NavigationId(), NavigationType(),
-      largest_icp_entry_);
+      initial_event_timing_->interactionId(), largest_icp_entry_);
 }
 
 void SoftNavigationContext::Dispose() {
@@ -269,7 +293,7 @@ void SoftNavigationContext::Dispose() {
   // `heuristics` will be null if the `window_` was detached but this context
   // wasn't shut down by the associated `SoftNavigationHeuristics`, which
   // happens in some unit tests where the context isn't created by the SNH.
-  SoftNavigationHeuristics* heuristics = window_->GetSoftNavigationHeuristics();
+  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
   if (!heuristics) {
     return;
   }
@@ -286,16 +310,17 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
   if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
     return;
   }
-
   // This should not be called after we've been shut down.
   CHECK(window_);
+
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
+
   auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
       /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
           TimeOrigin()),
       /*render_time=*/paint_timing_info.presentation_time, paint_size,
       performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
-      element, window_, navigation_id_);
+      element, window_, navigation_id_, initial_event_timing_->interactionId());
   entry->SetPaintTimingInfo(paint_timing_info);
   performance->OnInteractionContentfulPaintUpdated(entry);
 
@@ -303,7 +328,7 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
 }
 
 void SoftNavigationContext::OnLcpMetricsForReportingChanged() {
-  window_->GetSoftNavigationHeuristics()->UpdateSoftLcpMetricsForContext(this);
+  GetSoftNavigationHeuristics()->UpdateSoftLcpMetricsForContext(this);
 }
 
 }  // namespace blink

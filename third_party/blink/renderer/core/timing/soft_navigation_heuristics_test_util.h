@@ -11,15 +11,15 @@ namespace blink {
 class Event;
 class EventTarget;
 class Node;
+class PerformanceEventTiming;
 class ScriptState;
 class TextRecord;
 
-// Creates an `Event` for the corresponding `type`, optionally targeted at
-// `event_target`. `script_state` is needed for all types except kNavigate.
-Event* CreateEventForEventScopeType(
-    SoftNavigationHeuristics::EventScope::Type type,
-    ScriptState* script_state,
-    EventTarget* event_target);
+PerformanceEventTiming* CreatePerformanceEventTimingForTest(
+    const AtomicString& event_type,
+    base::TimeTicks start_time,
+    EventTarget* target,
+    DOMWindow* source);
 
 // Creates a `TextRecord` associated with `context` and `node` with the given
 // dimensions. The `width` and `height` are used for all relevant gfx::Rect

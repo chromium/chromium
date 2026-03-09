@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -22,8 +23,11 @@ class SoftNavigationPaintAttributionTrackerTest : public RenderingTest {
   ~SoftNavigationPaintAttributionTrackerTest() override = default;
 
   SoftNavigationContext* CreateSoftNavigationContext() {
+    auto* initial_event_timing = CreatePerformanceEventTimingForTest(
+        event_type_names::kClick, base::TimeTicks::Now(), GetDocument().body(),
+        GetDocument().domWindow());
     return MakeGarbageCollected<SoftNavigationContext>(
-        *GetDocument().domWindow());
+        *GetDocument().domWindow(), initial_event_timing);
   }
 
   SoftNavigationPaintAttributionTracker* Tracker() { return tracker_.Get(); }

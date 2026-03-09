@@ -24,6 +24,7 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
       DOMWindow* source,
       uint32_t navigation_id,
       V8NavigationType::Enum navigation_type,
+      uint64_t interaction_id,
       InteractionContentfulPaint* largest_interaction_contentful_paint);
   ~SoftNavigationEntry() override;
 
@@ -33,6 +34,8 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
   V8NavigationType navigationType() const {
     return V8NavigationType(navigation_type_);
   }
+
+  uint64_t interactionId() const { return interaction_id_; }
 
   InteractionContentfulPaint* largestInteractionContentfulPaint() const {
     return largest_interaction_contentful_paint_.Get();
@@ -44,6 +47,7 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
   const V8NavigationType::Enum navigation_type_;
+  const uint64_t interaction_id_;
   Member<InteractionContentfulPaint> largest_interaction_contentful_paint_;
 };
 

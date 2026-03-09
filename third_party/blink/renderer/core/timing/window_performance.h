@@ -177,6 +177,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
       const DOMPaintTimingInfo& paint_timing_info,
       uint32_t navigation_id,
       V8NavigationType::Enum navigation_type,
+      uint64_t interaction_id,
       InteractionContentfulPaint* largest_interaction_contentful_paint);
 
   // For soft navigations and back-forward cache restoration. This increments
@@ -265,9 +266,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                                            Callback callback);
 
   void ApplyContextMenuFallbackToPendingEvents(base::TimeTicks fallback_time);
-
-  void SchedulePendingRenderCoarsenedEntries(base::TimeTicks target_time);
-  void FlushPendingRenderCoarsenedEntries();
 
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;

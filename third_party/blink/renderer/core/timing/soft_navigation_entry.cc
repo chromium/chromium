@@ -18,6 +18,7 @@ SoftNavigationEntry::SoftNavigationEntry(
     DOMWindow* source,
     uint32_t navigation_id,
     V8NavigationType::Enum navigation_type,
+    uint64_t interaction_id,
     InteractionContentfulPaint* largest_interaction_contentful_paint)
     : PerformanceEntry(
           /*duration=*/paint_timing_info.presentation_time - start_time,
@@ -26,6 +27,7 @@ SoftNavigationEntry::SoftNavigationEntry(
           source,
           navigation_id),
       navigation_type_(navigation_type),
+      interaction_id_(interaction_id),
       largest_interaction_contentful_paint_(
           largest_interaction_contentful_paint) {
   SetPaintTimingInfo(paint_timing_info);
@@ -49,6 +51,7 @@ void SoftNavigationEntry::Trace(Visitor* visitor) const {
 void SoftNavigationEntry::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("navigationType", navigationType().AsStringView());
+  builder.AddNumber("interactionId", interaction_id_);
   builder.Add("largestInteractionContentfulPaint",
               largest_interaction_contentful_paint_.Get());
 }

@@ -865,9 +865,9 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // Save interactionId for async `NavigateEvent::CommitNow()` use case.
     // Note: we don't use this to measure the navigate event continuation
     // (yet!), but to match `popstate` and `hashchange` events to this one.
-    if (auto* entry = event_timing_scope.GetEntry();
-        entry && entry->IsKnownToBeAnInteraction()) {
-      params->interaction_id = *entry->GetInteractionIdInfo();
+    if (std::optional<PerformanceTimelineEntryIdInfo> id =
+            event_timing_scope.GetInteractionIdInfo()) {
+      params->interaction_id = *id;
     }
 
     DispatchEvent(*navigate_event);

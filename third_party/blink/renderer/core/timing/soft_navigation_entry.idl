@@ -5,6 +5,7 @@
 [Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
 interface SoftNavigationEntry : PerformanceEntry {
     readonly attribute NavigationType navigationType;
+    readonly attribute unsigned long long interactionId;
     readonly attribute InteractionContentfulPaint largestInteractionContentfulPaint;
 };
 

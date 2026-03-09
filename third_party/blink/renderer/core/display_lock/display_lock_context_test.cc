@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -3556,7 +3557,16 @@ TEST_F(DisplayLockContextTest, ShouldForceUnlockObjectWithFallbackContent) {
   EXPECT_FALSE(target->GetDisplayLockContext()->IsLocked());
 }
 
-class SoftNavigationDisplayLockContextTest : public DisplayLockContextTest {};
+class SoftNavigationDisplayLockContextTest : public DisplayLockContextTest {
+ public:
+  SoftNavigationContext* CreateSoftNavigationContext() {
+    auto* initial_event_timing = CreatePerformanceEventTimingForTest(
+        event_type_names::kClick, base::TimeTicks::Now(), GetDocument().body(),
+        GetDocument().domWindow());
+    return MakeGarbageCollected<SoftNavigationContext>(
+        *GetDocument().domWindow(), initial_event_timing);
+  }
+};
 
 TEST_F(SoftNavigationDisplayLockContextTest, AncestorSoftNavigationContext) {
   SetHtmlInnerHTML(R"HTML(
@@ -3615,8 +3625,7 @@ TEST_F(SoftNavigationDisplayLockContextTest, AncestorSoftNavigationContext) {
   EXPECT_TRUE(locked_object->ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(lockedchild_object->ShouldInheritSoftNavigationContext());
 
-  SoftNavigationContext* context =
-      MakeGarbageCollected<SoftNavigationContext>(*GetDocument().domWindow());
+  SoftNavigationContext* context = CreateSoftNavigationContext();
   SoftNavigationHeuristics* heuristics =
       GetDocument().domWindow()->GetSoftNavigationHeuristics();
   ASSERT_TRUE(heuristics);
@@ -3760,8 +3769,7 @@ TEST_F(SoftNavigationDisplayLockContextTest, DescendantSoftNavigationContext) {
   EXPECT_TRUE(target_object->ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
 
-  auto* context =
-      MakeGarbageCollected<SoftNavigationContext>(*GetDocument().domWindow());
+  auto* context = CreateSoftNavigationContext();
   SoftNavigationHeuristics* heuristics =
       GetDocument().domWindow()->GetSoftNavigationHeuristics();
   ASSERT_TRUE(heuristics);

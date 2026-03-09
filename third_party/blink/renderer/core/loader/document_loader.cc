@@ -144,6 +144,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -1005,6 +1006,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     FirePopstate fire_popstate,
     bool should_skip_screenshot,
     UserNavigationInvolvement involvement,
+    PerformanceTimelineEntryIdInfo interaction_id,
     bool is_browser_initiated,
     bool is_synchronously_committed) {
   // We use the security origin of this frame since callers of this method must
@@ -1017,7 +1019,8 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
       LocalFrame::HasTransientUserActivation(frame_), involvement,
-      /*has_ua_visual_transition*/ false, should_skip_screenshot);
+      /*has_ua_visual_transition*/ false, should_skip_screenshot,
+      interaction_id);
 }
 
 void DocumentLoader::UpdateForSameDocumentNavigation(
@@ -1033,7 +1036,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool has_transient_user_activation,
     UserNavigationInvolvement involvement,
     bool has_ua_visual_transition,
-    bool should_skip_screenshot) {
+    bool should_skip_screenshot,
+    PerformanceTimelineEntryIdInfo interaction_id) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
   TRACE_EVENT1("blink", "FrameLoader::updateForSameDocumentNavigation", "url",
                new_url.GetString().Ascii());
@@ -1173,14 +1177,12 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
 
   if (SoftNavigationHeuristics* heuristics =
           frame_->DomWindow()->GetSoftNavigationHeuristics()) {
-    if (new_url != old_url) {
-      // if `heuristics` exists it means we're in an outermost main frame.
-      //
-      // TODO(crbug.com/41494072): `heuristics` existing does not imply this
-      // navigation was initiated in the main world.
-      heuristics->SameDocumentNavigationCommitted(new_url, type,
-                                                  same_document_metrics_token);
-    }
+    // if `heuristics` exists it means we're in an outermost main frame.
+    //
+    // TODO(crbug.com/41494072): `heuristics` existing does not imply this
+    // navigation was initiated in the main world.
+    heuristics->SameDocumentNavigationCommitted(
+        old_url, new_url, type, same_document_metrics_token, interaction_id);
   }
 }
 
@@ -1692,18 +1694,11 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
         continuation_state, TaskScopeType::kPopState);
   }
 
-  // If this is a browser-initiated navigation, e.g. the user clicked the back
-  // button, set up a soft navigation event scope to handle the interaction.
-  std::optional<SoftNavigationHeuristics::EventScope>
-      soft_navigation_event_scope;
-  if (SoftNavigationHeuristics* heuristics =
-          frame_->DomWindow()->GetSoftNavigationHeuristics();
-      heuristics && is_browser_initiated && !is_prerendering_) {
-    // This is considered a new interaction, so this should not be the
-    // continuation of a renderer-initiated navivation.
-    CHECK(!task_state_id);
-    soft_navigation_event_scope = heuristics->CreateNavigationEventScope();
-  }
+  // We are about to dispatch `navigate`, `popstate`, and `hashchange`, then
+  // eventually we commit the URL for soft-navigation-heuristics.  This value
+  // ensures they all use the same id.
+  PerformanceTimelineEntryIdInfo interaction_id =
+      PerformanceTimelineEntryIdInfo::kNone;
 
   // If the item sequence number didn't change, there's no need to trigger
   // the navigate event. It's possible to get a same-document navigation
@@ -1725,6 +1720,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     params->should_skip_screenshot = should_skip_screenshot;
     auto dispatch_result =
         frame_->DomWindow()->navigation()->DispatchNavigateEvent(params);
+    interaction_id = params->interaction_id;
     if (dispatch_result == NavigationApi::DispatchResult::kAbort) {
       return mojom::blink::CommitResult::Aborted;
     } else if (dispatch_result == NavigationApi::DispatchResult::kIntercept) {
@@ -1751,13 +1747,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 client_redirect_policy, has_transient_user_activation,
                 blink::RetainedRef(initiator_origin), is_browser_initiated,
                 is_synchronously_committed, triggering_event_info, involvement,
-                has_ua_visual_transition, should_skip_screenshot));
+                has_ua_visual_transition, should_skip_screenshot,
+                interaction_id));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        involvement, has_ua_visual_transition, should_skip_screenshot);
+        involvement, has_ua_visual_transition, should_skip_screenshot,
+        interaction_id);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1775,7 +1773,8 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     mojom::blink::TriggeringEventInfo triggering_event_info,
     UserNavigationInvolvement involvement,
     bool has_ua_visual_transition,
-    bool should_skip_screenshot) {
+    bool should_skip_screenshot,
+    PerformanceTimelineEntryIdInfo interaction_id) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
   if (!frame_)
@@ -1828,7 +1827,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
       has_transient_user_activation, involvement, has_ua_visual_transition,
-      should_skip_screenshot);
+      should_skip_screenshot, interaction_id);
   if (!frame_)
     return;
 

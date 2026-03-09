@@ -397,7 +397,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
       std::move(data), type, FirePopstate::kNo, should_skip_screenshot,
-      params->involvement);
+      params->involvement, params->interaction_id);
 }
 
 }  // namespace blink

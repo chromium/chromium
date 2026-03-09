@@ -519,7 +519,7 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
       state_object, ToWebFrameLoadType(navigation_type_), fire_popstate,
       dispatch_params_->should_skip_screenshot, dispatch_params_->involvement,
-      dispatch_params_->is_browser_initiated,
+      dispatch_params_->interaction_id, dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document);
 
   React(script_state);

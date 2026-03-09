@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
@@ -26,7 +27,6 @@ namespace blink {
 
 using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
 using TaskScopeType = scheduler::TaskAttributionTracker::TaskScopeType;
-using EventScopeType = SoftNavigationHeuristics::EventScope::Type;
 
 namespace {
 
@@ -80,13 +80,19 @@ class InteractionEffectsMonitorTest : public testing::Test {
   // Simulates an interaction with the given `type`, returning the
   // `SoftNavigationContext` associated with the interaction if one was created.
   SoftNavigationContext* SimulateInteraction(
-      EventScopeType type = EventScopeType::kClick,
+      const AtomicString& event_type = event_type_names::kClick,
       Node* node = nullptr) {
-    auto* event =
-        CreateEventForEventScopeType(type, GetScriptStateForTest(), node);
-    std::optional<SoftNavigationHeuristics::EventScope> event_scope(
-        GetSoftNavigationHeuristics()->MaybeCreateEventScopeForInputEvent(
-            *event));
+    auto* entry = blink::CreatePerformanceEventTimingForTest(
+        event_type, base::TimeTicks::Now(), node, GetDocument().domWindow());
+
+    // We still need to manually increment the interaction id generator since
+    // CreatePerformanceEventTimingForTest just uses (1, 1) currently, but
+    // interaction_effects_monitor_test needs distinct interaction IDs.
+    entry->SetInteractionIdInfo(id_generator_.IncrementId());
+
+    auto task_scope =
+        GetSoftNavigationHeuristics()->MaybeCreateTaskScopeForEvent(entry);
+
     scheduler::TaskAttributionInfo* task_state =
         scheduler::TaskAttributionTracker::From(GetIsolate())
             ->CurrentTaskState();
@@ -94,6 +100,7 @@ class InteractionEffectsMonitorTest : public testing::Test {
   }
 
  private:
+  PerformanceTimelineEntryIdGenerator id_generator_;
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
@@ -214,7 +221,7 @@ TEST_F(InteractionEffectsMonitorTest, ObserveNonBodyKeyEvents) {
 
   Node* node = CreateNodeForTest();
   SoftNavigationContext* context =
-      SimulateInteraction(EventScopeType::kKeydown, node);
+      SimulateInteraction(event_type_names::kKeydown, node);
   ASSERT_TRUE(context);
   EXPECT_EQ(monitor.InteractionCount(), 1);
 

@@ -11,6 +11,7 @@ interface InteractionContentfulPaint : PerformanceEntry {
     readonly attribute DOMString id;
     readonly attribute DOMString url;
     readonly attribute Element? element;
+    readonly attribute unsigned long long interactionId;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

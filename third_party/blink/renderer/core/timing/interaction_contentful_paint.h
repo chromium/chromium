@@ -27,7 +27,8 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
                              const String& url,
                              Element* element,
                              DOMWindow* source,
-                             uint32_t navigation_id);
+                             uint32_t navigation_id,
+                             uint64_t interaction_id);
   ~InteractionContentfulPaint() override;
 
   const AtomicString& entryType() const override;
@@ -39,6 +40,7 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
   const AtomicString& id() const { return id_; }
   const String& url() const { return url_; }
   Element* element() const;
+  uint64_t interactionId() const { return interaction_id_; }
 
   void Trace(Visitor*) const override;
 
@@ -51,6 +53,7 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
   AtomicString id_;
   String url_;
   WeakMember<Element> element_;
+  uint64_t interaction_id_;
 };
 
 template <>

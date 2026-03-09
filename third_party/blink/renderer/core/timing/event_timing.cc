@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigate_event.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -68,7 +69,9 @@ bool IsStandardEventType(const Event& event) {
   }
 
   // 2. Reject all other untrusted events for standard types.
-  if (!event.isTrusted()) {
+  // Note: FullyTrusted instead of Trusted, because some untrusted events
+  // synthetically generate trusted events.
+  if (!event.IsFullyTrusted()) {
     return false;
   }
 
@@ -179,6 +182,10 @@ EventTiming::EventTiming(LocalFrame* frame,
   entry_ = performance->EventTimingProcessingStart(event, processing_start,
                                                    hit_test_target);
   CHECK(entry_);
+
+  if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
+    task_scope_ = heuristics->MaybeCreateTaskScopeForEvent(entry_);
+  }
 }
 
 EventTiming::~EventTiming() {

@@ -20,7 +20,8 @@ InteractionContentfulPaint::InteractionContentfulPaint(
     const String& url,
     Element* element,
     DOMWindow* source,
-    uint32_t navigation_id)
+    uint32_t navigation_id,
+    uint64_t interaction_id)
     : PerformanceEntry(/*duration=*/render_time - start_time,
                        g_empty_atom,
                        start_time,
@@ -31,7 +32,8 @@ InteractionContentfulPaint::InteractionContentfulPaint(
       load_time_(load_time),
       id_(id),
       url_(url),
-      element_(element) {}
+      element_(element),
+      interaction_id_(interaction_id) {}
 
 InteractionContentfulPaint::~InteractionContentfulPaint() = default;
 
@@ -65,6 +67,7 @@ void InteractionContentfulPaint::BuildJSONValue(
   builder.AddNumber("loadTime", load_time_);
   builder.AddString("id", id_);
   builder.AddString("url", url_);
+  builder.AddNumber("interactionId", interaction_id_);
 }
 
 void InteractionContentfulPaint::Trace(Visitor* visitor) const {

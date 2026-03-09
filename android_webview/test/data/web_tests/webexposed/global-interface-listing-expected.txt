@@ -5571,6 +5571,7 @@ interface InteractionContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
     getter id
+    getter interactionId
     getter loadTime
     getter paintTime
     getter presentationTime
@@ -9407,6 +9408,7 @@ interface SnapEvent : Event
     method constructor
 interface SoftNavigationEntry : PerformanceEntry
     attribute @@toStringTag
+    getter interactionId
     getter largestInteractionContentfulPaint
     getter navigationType
     getter paintTime

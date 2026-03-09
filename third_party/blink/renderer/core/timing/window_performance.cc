@@ -94,7 +94,9 @@
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -628,10 +630,9 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, reporting_info, event.cancelable(), hit_test_target,
       DomWindow(), NavigationId());
-  event_timing_entries_.push_back(entry);
-
-  current_event_ = &event;
   active_event_timing_entries_.push_back(entry);
+  event_timing_entries_.push_back(entry);
+  current_event_ = &event;
 
   responsiveness_metrics_->TryAssignInteractionId(entry);
 
@@ -1533,12 +1534,13 @@ void WindowPerformance::AddSoftNavigationEntry(
     const DOMPaintTimingInfo& paint_timing_info,
     uint32_t navigation_id,
     V8NavigationType::Enum navigation_type,
+    uint64_t interaction_id,
     InteractionContentfulPaint* largest_interaction_contentful_paint) {
   CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
       GetExecutionContext()));
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
       name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      DomWindow(), navigation_id, navigation_type,
+      DomWindow(), navigation_id, navigation_type, interaction_id,
       largest_interaction_contentful_paint);
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {

@@ -164,6 +164,10 @@ bool PerformanceEventTiming::IsReadyForReportingForIssue328902994() const {
   return !reporting_info_.processing_end_time.is_null() && HasKnownEndTime();
 }
 
+base::TimeTicks PerformanceEventTiming::GetStartTime() const {
+  return reporting_info_.creation_time;
+}
+
 base::TimeTicks PerformanceEventTiming::GetEndTime() const {
   CHECK(HasKnownEndTime());
   if (!reporting_info_.fallback_time.is_null()) {

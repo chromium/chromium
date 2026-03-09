@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
@@ -25,6 +26,7 @@ namespace blink {
 class Element;
 class InteractionEffectsMonitor;
 class HTMLVideoElement;
+class PerformanceEventTiming;
 class QualifiedName;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
@@ -37,42 +39,10 @@ class CORE_EXPORT SoftNavigationHeuristics
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
 
-  // This class defines a scope that would cover click or navigation related
-  // events, in order for the SoftNavigationHeuristics class to be able to keep
-  // track of them and their descendant tasks.
-  class CORE_EXPORT EventScope {
-    STACK_ALLOCATED();
-
-   public:
-    enum class Type {
-      kKeydown,
-      kKeypress,
-      kKeyup,
-      kClick,
-      kNavigate,
-      kLast = kNavigate
-    };
-
-    ~EventScope();
-
-    EventScope(EventScope&&);
-    EventScope& operator=(EventScope&&);
-
-   private:
-    using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
-
-    friend class SoftNavigationHeuristics;
-
-    EventScope(SoftNavigationHeuristics*,
-               std::optional<TaskScope>,
-               Type,
-               bool is_nested);
-
-    SoftNavigationHeuristics* heuristics_;
-    std::optional<TaskScope> task_scope_;
-    Type type_;
-    bool is_nested_;
-  };
+  // Returns a TaskScope for the given EventTiming entry if it has an
+  // interactionId.
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
+  MaybeCreateTaskScopeForEvent(PerformanceEventTiming* entry);
 
   explicit SoftNavigationHeuristics(LocalDOMWindow* window);
   virtual ~SoftNavigationHeuristics() = default;
@@ -112,9 +82,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   // continuation. In either case, the appropriate TaskAttribution task state
   // will be set before this is called.
   void SameDocumentNavigationCommitted(
-      const String& url,
+      const KURL& old_url,
+      const KURL& new_url,
       WebFrameLoadType,
-      base::UnguessableToken same_document_metrics_token);
+      base::UnguessableToken same_document_metrics_token,
+      PerformanceTimelineEntryIdInfo interaction_id);
 
   bool ModifiedDOM(Node* node);
   uint64_t SoftNavigationCount() { return soft_navigation_count_; }
@@ -124,22 +96,12 @@ class CORE_EXPORT SoftNavigationHeuristics
   void OnInputOrScroll();
   void UpdateSoftLcpCandidate();
 
-  // Returns an `EventScope` suitable for navigation. Used for navigations not
-  // yet associated with an event.
-  EventScope CreateNavigationEventScope() {
-    return CreateEventScope(EventScope::Type::kNavigate);
-  }
-
-  // Returns an `EventScope` for the given input `Event` if the event is
-  // relevant to soft navigation tracking, otherwise it returns nullopt.
-  std::optional<EventScope> MaybeCreateEventScopeForInputEvent(const Event&);
-
   SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
     return paint_attribution_tracker_.Get();
   }
 
   bool IsTrackingSoftNavigationsForTest() const {
-    return !potential_soft_navigations_.empty();
+    return !interaction_id_to_context_.empty();
   }
 
   void RegisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
@@ -151,16 +113,26 @@ class CORE_EXPORT SoftNavigationHeuristics
   void UpdateSoftLcpMetricsForContext(SoftNavigationContext*);
 
  private:
+  // For new Interactions, we unconditionally use the Interaction id to map to
+  // the right Context for this interaction id.  If a Context has not yet been
+  // created (or has already been gc-ed) this will create a new context.
+  SoftNavigationContext* GetSoftNavigationContextForInteractionId(
+      PerformanceTimelineEntryIdInfo interaction_id) const;
+
+  // For continuations, we unconditionally use the Context for the current task.
+  SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
+
+  // For SameDocumentNavigationCommit, we may be observing a new Interaction or
+  // running a continuation.  Sometimes we may be running a continuation but
+  // still have access to a navigate's Interaction id and so have both.  This
+  // uses either available method to get the right Context-- and checks that
+  // its the same Context if both methods are available to use.
+  SoftNavigationContext* GetRelevantContextForNavigation(
+      std::optional<PerformanceTimelineEntryIdInfo> interaction_id =
+          std::nullopt) const;
+
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
   void SetIsTrackingSoftNavigationHeuristicsOnDocument(bool value) const;
-
-  // We can grab a context from the "running task", or sometimes from other
-  // scheduling sources-- but these can leak across windows.
-  // Any time we retrieve a context, we should check to ensure that these were
-  // created for this window (i.e. by this SNH instance).
-  SoftNavigationContext* EnsureContextForCurrentWindow(
-      SoftNavigationContext*) const;
-  SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
 
   // Commits the navigation, assigning the context a new navigation ID, if the
   // context has met all of the criteria for a soft navigation and it has not
@@ -174,38 +146,14 @@ class CORE_EXPORT SoftNavigationHeuristics
   // this is called, and it must not have already been emitted.
   void EmitSoftNavigationEntry(SoftNavigationContext*);
 
-  void OnSoftNavigationEventScopeDestroyed(const EventScope&);
-  EventScope CreateEventScope(EventScope::Type type);
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;
 
   Member<LocalDOMWindow> window_;
 
-  // The set of ongoing potential soft navigations. `SoftNavigationContext`
-  // objects are added when they are the active context during an event handler
-  // running in an `EventScope`.
-  HeapHashSet<WeakMember<SoftNavigationContext>> potential_soft_navigations_;
-
-  // The `SoftNavigationContext` of the "active interaction", if any.
-  //
-  // This is set to a new `SoftNavigationContext` when
-  //   1. an `EventScope` is created for a new interaction (click, navigation,
-  //      and keydown) and there isn't already an active `EventScope` on the
-  //      stack for this `SoftNavigationHeuristics`. Note that the latter
-  //      restriction causes the same context to be reused for nested
-  //      `EventScope`s, which occur when the navigate event occurs within the
-  //      scope of the input event.
-  //
-  //   2. an `EventScope` is created for a non-new interaction (keypress, keyup)
-  //      and `active_interaction_context_` isn't set. These events typically
-  //      follow a keydown, in which case the context created for that will be
-  //      reused, but the context can be cleared if, for example, a click
-  //      happens while a key is held.
-  //
-  // This is cleared when the outermost `EventScope` is destroyed if the scope
-  // type is click or navigate. For keyboard events, which have multiple related
-  // events, this remains alive until the next interaction.
-  Member<SoftNavigationContext> active_interaction_context_;
+  // Map from interaction ID to the associated SoftNavigationContext.
+  HeapHashMap<uint64_t, WeakMember<SoftNavigationContext>>
+      interaction_id_to_context_;
 
   // Save a strong reference to the most recent context that changed URL.  This
   // context could still be pending (not emitted) as we wait to observe more
@@ -231,8 +179,6 @@ class CORE_EXPORT SoftNavigationHeuristics
   // frame client for reporting, so that it will be monotonically increasing
   // as it arrives in the browser process.
   uint64_t soft_navigation_count_ = 0;
-
-  bool has_active_event_scope_ = false;
 
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
   // which should happen before the tracker is destroyed, since its lifetime is

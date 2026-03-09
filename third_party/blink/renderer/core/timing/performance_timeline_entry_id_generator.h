@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_TIMELINE_ENTRY_ID_GENERATOR_H_
 
 #include <cstdint>
+#include <ostream>
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -41,6 +42,13 @@ struct PerformanceTimelineEntryIdInfo {
 
   static const PerformanceTimelineEntryIdInfo kNone;
 };
+
+// This is needed to support EXPECT_EQ(id1, id2), since it prints when they
+// dont match.
+inline std::ostream& operator<<(std::ostream& os,
+                                const PerformanceTimelineEntryIdInfo& info) {
+  return os << "{id: " << info.id << ", offset: " << info.offset << "}";
+}
 
 inline constexpr PerformanceTimelineEntryIdInfo
     PerformanceTimelineEntryIdInfo::kNone = {
