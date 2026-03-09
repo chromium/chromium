@@ -1203,7 +1203,8 @@ int LensOverlaySidePanelCoordinator::GetPreferredDefaultWidth() {
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
 LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
-  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled(
+          lens_search_controller_->GetProfile())) {
     return base::BindRepeating(
         &LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel,
         base::Unretained(this));

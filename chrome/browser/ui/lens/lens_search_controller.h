@@ -227,6 +227,9 @@ class LensSearchController {
   // Whether the user has selected a region on the overlay.
   bool HasRegionSelection();
 
+  // Returns the profile for the tab.
+  Profile* GetProfile();
+
   // Returns the weak pointer to this class.
   base::WeakPtr<LensSearchController> GetWeakPtr();
 

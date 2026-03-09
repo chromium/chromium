@@ -21,6 +21,9 @@
 namespace {
 constexpr char kUnitedStatesCountryCode[] = "us";
 constexpr char kEnglishUSLocale[] = "en-US";
+constexpr char kEnglishLanguageCode[] = "en";
+constexpr std::string kEnglishExpansionCountryCodes[] = {"au", "ca", "gb",
+                                                         "nz", "us", "za"};
 
 bool IsEnUs() {
   // Safety check since this is a CP'd change.
@@ -44,11 +47,42 @@ bool IsEnUs() {
          features->application_locale_storage() &&
          features->application_locale_storage()->Get() == kEnglishUSLocale;
 }
+
+bool IsEnExpansion() {
+  if (!g_browser_process) {
+    DCHECK(g_browser_process) << "g_browser_process is null";
+    return false;
+  }
+
+  // VariationsService and Features should exist.
+  auto* variations_service = g_browser_process->variations_service();
+  auto* features = g_browser_process->GetFeatures();
+
+  if (!variations_service || !features) {
+    return false;
+  }
+
+  // Otherwise, enable it in the expansion countries to en locales via
+  // client-side code.
+  return std::ranges::contains(
+             kEnglishExpansionCountryCodes,
+             variations_service->GetStoredPermanentCountry()) &&
+         features->application_locale_storage() &&
+         features->application_locale_storage()->Get().starts_with(
+             kEnglishLanguageCode);
+}
 }  // namespace
 
 namespace lens {
 
-bool IsLensOverlayContextualSearchboxEnabled() {
+bool IsLensOverlayContextualSearchboxEnabled(Profile* profile) {
+  // If not AIM eligible, return false.
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible()) {
+    return false;
+  }
+
   // If the feature is overridden (e.g. via server-side config or command-line),
   // use that state.
   auto* feature_list = base::FeatureList::GetInstance();
@@ -63,8 +97,8 @@ bool IsLensOverlayContextualSearchboxEnabled() {
         lens::features::kLensOverlayContextualSearchbox);
   }
 
-  // Otherwise, enable it to en-US users in US.
-  return IsEnUs();
+  // Otherwise, enable it to en-* users.
+  return IsEnExpansion();
 }
 
 bool IsAimM3Enabled(Profile* profile) {
@@ -125,30 +159,32 @@ void RecordLensOverlayEduActionChipShown(Profile* profile) {
   service->ResetActionChipLastShownTime();
 }
 
-bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service) {
+bool DidUserGrantLensOverlayNeededPermissions(Profile* profile) {
+  auto* pref_service = profile->GetPrefs();
   if (!CanSharePageScreenshotWithLensOverlay(pref_service)) {
     return false;
   }
-  if (IsLensOverlayContextualSearchboxEnabled()) {
+  if (IsLensOverlayContextualSearchboxEnabled(profile)) {
     return CanSharePageContentWithLensOverlay(pref_service);
   }
   return true;
 }
 
-void GrantLensOverlayNeededPermissions(PrefService* pref_service) {
-  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
+void GrantLensOverlayNeededPermissions(Profile* profile) {
+  auto* pref_service = profile->GetPrefs();
+  if (lens::IsLensOverlayContextualSearchboxEnabled(profile)) {
     pref_service->SetBoolean(prefs::kLensSharingPageContentEnabled, true);
   }
   pref_service->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
 }
 
 bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
-    PrefService* pref_service) {
+    Profile* profile) {
   // This function should not be called if the non-blocking privacy notice is
   // not enabled.
   CHECK(lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled());
 
-  if (DidUserGrantLensOverlayNeededPermissions(pref_service)) {
+  if (DidUserGrantLensOverlayNeededPermissions(profile)) {
     // User has already granted permissions. Do not show the privacy notice.
     return true;
   }
@@ -160,12 +196,13 @@ bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
     return false;
   }
 
+  auto* pref_service = profile->GetPrefs();
   int shown_count = pref_service->GetInteger(
       prefs::kLensOverlayNonBlockingPrivacyNoticeShownCount);
   if (shown_count >= impression_cap) {
     // Shown count has reached impression cap. Grant permissions and do not show
     // the privacy notice.
-    GrantLensOverlayNeededPermissions(pref_service);
+    GrantLensOverlayNeededPermissions(profile);
     return true;
   }
 

@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -31,6 +32,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/variations.mojom.h"
@@ -40,6 +42,7 @@
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -58,6 +61,18 @@
 #include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "url/gurl.h"
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
+    content::BrowserContext* context) {
+  auto* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<MockAimEligibilityService>(
+      *profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile),
+      /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
+}
+
+}  // namespace
 
 namespace lens {
 
@@ -459,6 +474,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
     profile_builder.AddTestingFactory(
         TemplateURLServiceFactory::GetInstance(),
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    profile_builder.AddTestingFactory(
+        AimEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildMockAimEligibilityService));
     profile_ = profile_builder.Build();
     g_browser_process->SetApplicationLocale(kLocale);
     gen204_controller_ =
@@ -471,7 +489,10 @@ class LensOverlayQueryControllerTest : public testing::Test {
     PrefService* prefs = profile_->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
-
+    auto* aim_eligibility_service = static_cast<MockAimEligibilityService*>(
+        AimEligibilityServiceFactory::GetForProfile(profile()));
+    EXPECT_CALL(*aim_eligibility_service, IsAimEligible())
+        .WillRepeatedly(testing::Return(true));
     feature_list_.InitWithFeaturesAndParameters(
         {kDefaultLensOverlayContextualSearchboxParams}, {});
     testing::Test::SetUp();

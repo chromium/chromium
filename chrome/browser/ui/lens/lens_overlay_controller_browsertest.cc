@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -28,6 +29,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -110,6 +112,7 @@
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
@@ -646,6 +649,25 @@ ui::UserDataFactory::ScopedOverride UseFakeLensSearchController() {
       }));
 }
 
+std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service =
+      std::make_unique<MockAimEligibilityService>(
+          CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
+          /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
+          AimEligibilityService::Configuration{});
+
+  EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  return std::move(mock_aim_eligibility_service);
+}
+
 }  // namespace
 
 class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
@@ -718,6 +740,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
             lens::features::kLensAimSuggestions,
             lens::features::kLensOverlaySuggestionsMigration,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce(BuildMockAimServiceEligibilityServiceInstance));
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -5257,6 +5287,14 @@ class LensOverlayControllerBrowserPDFTest
     disabled.emplace_back(lens::features::kLensOverlayKeyboardSelection);
     disabled.emplace_back(lens::features::kLensSearchZeroStateCsb);
     return disabled;
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce(BuildMockAimServiceEligibilityServiceInstance));
   }
 
   LensSearchController* GetLensSearchController() {

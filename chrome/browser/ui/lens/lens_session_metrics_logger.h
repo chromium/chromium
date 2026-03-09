@@ -167,6 +167,9 @@ class LensSessionMetricsLogger {
   // session.
   AimSessionEndMetrics aim_session_end_metrics_;
 
+  // Whether CSB is enabled for the session.
+  bool is_csb_enabled_ = false;
+
   // Must be the last member.
   base::WeakPtrFactory<LensSessionMetricsLogger> weak_factory_{this};
 };

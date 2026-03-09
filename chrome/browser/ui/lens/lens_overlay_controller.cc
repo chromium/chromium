@@ -264,8 +264,10 @@ void LensOverlayController::CloseUI() {
   // Update the entrypoints now that the controller is closed.
   UpdateEntryPointsState();
 
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_) &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile) &&
       !user_interacted_without_accepting_privacy_notice) {
     lens::RecordNonBlockingPrivacyNoticeAccepted(
         lens::LensOverlayNonBlockingPrivacyNoticeUserAction::
@@ -707,8 +709,10 @@ void LensOverlayController::ShowUI(
     return;
   }
 
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
     lens::RecordNonBlockingPrivacyNoticeToBeShown(invocation_source);
   }
 
@@ -726,8 +730,6 @@ void LensOverlayController::ShowUI(
   // Store reference for later use.
   invocation_source_ = invocation_source;
 
-  Profile* profile =
-      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   // Create the languages controller.
   languages_controller_ =
       std::make_unique<lens::LensOverlayLanguagesController>(profile);
@@ -1007,7 +1009,9 @@ void LensOverlayController::IssueSearchBoxRequest(
   // on each query is disabled, if the live page is not being displayed, or if
   // the user is not in the contextual search flow (aka, issues an image request
   // already).
-  if (!lens::IsLensOverlayContextualSearchboxEnabled() ||
+  if (!lens::IsLensOverlayContextualSearchboxEnabled(
+          Profile::FromBrowserContext(
+              tab_->GetContents()->GetBrowserContext())) ||
       !lens::features::ShouldLensOverlayRecontextualizeOnQuery() ||
       state() != State::kHidden || !IsContextualSearchbox()) {
     IssueSearchBoxRequestPart2(query_start_time, search_box_text, match_type,
@@ -1482,7 +1486,8 @@ void LensOverlayController::FinishedWaitingForReflow(
 }
 
 void LensOverlayController::NotifyTabForegrounded() {
-  if (lens::IsLensOverlayContextualSearchboxEnabled()) {
+  if (lens::IsLensOverlayContextualSearchboxEnabled(Profile::FromBrowserContext(
+          tab_->GetContents()->GetBrowserContext()))) {
     SuppressGhostLoader();
   }
   UpdateEntryPointsState();
@@ -2228,13 +2233,15 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
     std::optional<lens::LensOverlayInvocationSource> invocation_source) {
   lens::LensOverlayInvocationSource effective_invocation_source =
       invocation_source.value_or(invocation_source_);
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   // The Omnibox contextual query flow does not require the user to accept the
   // Lens privacy notice. This can be removed once the non-blocking privacy
   // notice is launched as it will be handled in the case below.
   if (effective_invocation_source ==
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery &&
       !lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
     GetLensOverlayQueryController()->GrantPermissionForSession();
     GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
     user_interacted_without_accepting_privacy_notice = true;
@@ -2242,7 +2249,7 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
   }
 
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      !lens::DidUserGrantLensOverlayNeededPermissions(pref_service_)) {
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile)) {
     GetLensOverlayQueryController()->GrantPermissionForSession();
     GetLensQueryFlowRouter()->MaybeResumeQueryFlow();
     user_interacted_without_accepting_privacy_notice = true;
@@ -2255,7 +2262,9 @@ void LensOverlayController::MaybeGrantLensOverlayPermissionsForSession(
 void LensOverlayController::AcceptPrivacyNotice() {
   // Permanently grant permissions, then restart the query flow and upload page
   // content for contextualization.
-  lens::GrantLensOverlayNeededPermissions(pref_service_);
+  Profile* profile =
+      Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+  lens::GrantLensOverlayNeededPermissions(profile);
   lens::RecordNonBlockingPrivacyNoticeAccepted(
       lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kAccepted,
       invocation_source_);

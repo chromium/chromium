@@ -240,7 +240,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       lens::LensOverlayShouldUseDarkMode(
           ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))));
   html_source->AddBoolean("enableOverlayContextualSearchbox",
-                          lens::IsLensOverlayContextualSearchboxEnabled());
+                          lens::IsLensOverlayContextualSearchboxEnabled(
+                              Profile::FromWebUI(web_ui)));
   html_source->AddBoolean(
       "enableGhostLoader",
       lens::features::EnableContextualSearchboxGhostLoader());
@@ -364,8 +365,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enablePrivacyNotice",
       lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-          !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
-              profile->GetPrefs()));
+          !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(profile));
 }
 
 void LensOverlayUntrustedUI::BindInterface(

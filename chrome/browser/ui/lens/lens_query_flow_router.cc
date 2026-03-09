@@ -123,8 +123,7 @@ void LensQueryFlowRouter::StartQueryFlow(
             pdf_current_page, ui_scale_factor, invocation_time));
 
     if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-        !lens::DidUserGrantLensOverlayNeededPermissions(
-            profile()->GetPrefs())) {
+        !lens::DidUserGrantLensOverlayNeededPermissions(profile())) {
       pending_upload_request_ = std::move(upload_task);
     } else {
       std::move(upload_task).Run();

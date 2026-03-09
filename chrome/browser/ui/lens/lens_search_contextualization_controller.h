@@ -179,6 +179,9 @@ class LensSearchContextualizationController {
       std::vector<optimization_guide::FrameMetadata> frame_metadata,
       LensSearchPageContextEligibilityCallback callback);
 
+  // Returns whether the protected page feature is enabled.
+  bool IsProtectedPageFeatureEnabled();
+
   // Override these methods to be able to track calls made to the page context
   // eligibility API.
   virtual void CreatePageContextEligibilityAPI();

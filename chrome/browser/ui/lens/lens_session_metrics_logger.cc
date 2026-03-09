@@ -37,6 +37,8 @@ void LensSessionMetricsLogger::OnSessionStart(
       tab_web_contents->GetContentsMimeType());
   csb_session_end_metrics_ = {};
   aim_session_end_metrics_ = {};
+  is_csb_enabled_ = lens::IsLensOverlayContextualSearchboxEnabled(
+      Profile::FromBrowserContext(tab_web_contents->GetBrowserContext()));
 }
 
 void LensSessionMetricsLogger::OnPageNavigation() {
@@ -164,10 +166,10 @@ void LensSessionMetricsLogger::RecordEndOfSessionMetrics(
 
   // UMA and UKM end of session metrics for the CSB. Only recorded if CSB is
   // shown in session.
-  if(lens::IsLensOverlayContextualSearchboxEnabled()) {
-  lens::RecordContextualSearchboxSessionEndMetrics(
-      ukm_source_id_, csb_session_end_metrics_, initial_page_content_type_,
-      initial_document_type_);
+  if (is_csb_enabled_) {
+    lens::RecordContextualSearchboxSessionEndMetrics(
+        ukm_source_id_, csb_session_end_metrics_, initial_page_content_type_,
+        initial_document_type_);
   }
 
   if (lens::features::GetAimSearchboxEnabled()) {

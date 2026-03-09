@@ -807,7 +807,7 @@ bool LensSearchController::RunLensEligibilityChecks(
   // If the user hasn't granted permission, request user permission before
   // showing the UI.
   if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
-      (lens::IsLensOverlayContextualSearchboxEnabled() &&
+      (lens::IsLensOverlayContextualSearchboxEnabled(GetProfile()) &&
        !lens::CanSharePageContentWithLensOverlay(pref_service_))) {
     if (!lens_permission_bubble_controller_) {
       lens_permission_bubble_controller_ =
@@ -1138,3 +1138,6 @@ void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
   }
 }
 
+Profile* LensSearchController::GetProfile() {
+  return Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+}

@@ -957,7 +957,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // cluster info handshake.
   if (!cluster_info_ &&
       (lens::features::IsLensOverlayClusterInfoOptimizationEnabled() ||
-       lens::IsLensOverlayContextualSearchboxEnabled())) {
+       lens::IsLensOverlayContextualSearchboxEnabled(profile_))) {
     FetchClusterInfoRequest();
     return;
   }
@@ -2026,7 +2026,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
       std::make_optional(encoded_analytics_id),
       *latest_interaction_request_data_->request_id_.get());
 
-  if (!(lens::IsLensOverlayContextualSearchboxEnabled() &&
+  if (!(lens::IsLensOverlayContextualSearchboxEnabled(profile_) &&
         !lens::features::GetLensOverlaySendImageSignalsForLensSuggest())) {
     // Always include the image signals unless the contextual searchbox is
     // enabled and the image signals feature flag is disabled.
@@ -2467,6 +2467,6 @@ void LensOverlayQueryController::GrantPermissionForSession() {
 
 bool LensOverlayQueryController::HasPermissionForSession() {
   return has_permission_for_session_ ||
-         DidUserGrantLensOverlayNeededPermissions(profile_->GetPrefs());
+         DidUserGrantLensOverlayNeededPermissions(profile_);
 }
 }  // namespace lens

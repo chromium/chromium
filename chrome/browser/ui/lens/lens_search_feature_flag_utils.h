@@ -7,14 +7,12 @@
 
 #include "chrome/browser/profiles/profile.h"
 
-class PrefService;
-
 // Utility functions for checking if Lens Search features are enabled. Separated
 // from lens_features.h to allow dependencies on chrome/browser.
 namespace lens {
 
 // Whether to show the contextual searchbox in the Lens Overlay.
-bool IsLensOverlayContextualSearchboxEnabled();
+bool IsLensOverlayContextualSearchboxEnabled(Profile* profile);
 
 // Whether or not to enable the AIM M3 (side panel searchbox) experience.
 bool IsAimM3Enabled(Profile* profile);
@@ -30,20 +28,19 @@ void RecordLensOverlayEduActionChipShown(Profile* profile);
 // or, if the non-blocking privacy notice is being used, for contextualization.
 // The needed permissions vary depending on if the contextual searchbox is
 // enabled.
-bool DidUserGrantLensOverlayNeededPermissions(PrefService* pref_service);
+bool DidUserGrantLensOverlayNeededPermissions(Profile* profile);
 
 // Grants the permissions needed for the overlay to appear or, if the
 // non-blocking privacy notice is being used, for contextualization. The granted
 // permissions vary depending on if the contextual searchbox is enabled.
-void GrantLensOverlayNeededPermissions(PrefService* pref_service);
+void GrantLensOverlayNeededPermissions(Profile* profile);
 
 // If the non-blocking privacy notice is enabled and an impression cap is set,
 // will call GrantLensOverlayNeededPermissions() after the impression cap has
 // been reached and return true. Otherwise, will return the value of calling
 // DidUserGrantLensOverlayNeededPermissions(). Should not be called if the
 // non-blocking privacy notice is not enabled.
-bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
-    PrefService* pref_service);
+bool MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(Profile* profile);
 
 }  // namespace lens
 
