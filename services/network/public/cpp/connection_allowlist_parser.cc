@@ -19,8 +19,9 @@ namespace {
 constexpr char kResponseOriginToken[] = "response-origin";
 
 constexpr char kReportToParam[] = "report-to";
-constexpr char kRedirectionAllowedParam[] = "redirection-allowed";
-constexpr char kWebRtcAllowedParam[] = "webrtc-allowed";
+
+constexpr char kRedirectsParam[] = "redirects";
+constexpr char kWebRtcParam[] = "webrtc";
 
 std::optional<std::string> ParsePattern(
     const net::structured_headers::ParameterizedItem& pattern,
@@ -100,10 +101,16 @@ std::optional<ConnectionAllowlist> ParseHeader(const std::string& header_string,
         parsed.issues.push_back(
             mojom::ConnectionAllowlistIssue::kReportingEndpointNotToken);
       }
-    } else if (param.first == kRedirectionAllowedParam) {
-      parsed.redirection_allowed = true;
-    } else if (param.first == kWebRtcAllowedParam) {
-      parsed.webrtc_allowed = true;
+    } else if (param.first == kRedirectsParam) {
+      parsed.redirect_behavior =
+          (param.second.is_token() && param.second.GetString() != "block")
+              ? ConnectionAllowlist::RedirectBehavior::kAllow
+              : ConnectionAllowlist::RedirectBehavior::kBlock;
+    } else if (param.first == kWebRtcParam) {
+      parsed.webrtc_behavior =
+          (param.second.is_token() && param.second.GetString() != "block")
+              ? ConnectionAllowlist::WebRtcBehavior::kAllow
+              : ConnectionAllowlist::WebRtcBehavior::kBlock;
     }
   }
   return parsed;

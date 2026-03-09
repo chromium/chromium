@@ -19,6 +19,18 @@ enum ConnectionAllowlistIssue {
   kInvalidUrlPattern,
 };
 
+// Global behavior for redirects when an allowlist is active.
+enum RedirectBehavior {
+  kAllow,
+  kBlock,
+};
+
+// Global behavior for WebRTC when an allowlist is active.
+enum WebRtcBehavior {
+  kAllow,
+  kBlock,
+};
+
 // The result of parsing an allowlist header,
 //
 // https://github.com/mikewest/anti-exfil
@@ -32,8 +44,8 @@ struct ConnectionAllowlist {
   array<string> allowlist;
   string? reporting_endpoint;
   array<ConnectionAllowlistIssue> issues;
-  bool redirection_allowed;
-  bool webrtc_allowed;
+  RedirectBehavior redirect_behavior;
+  WebRtcBehavior webrtc_behavior;
 };
 
 // The set of allowlists associated with a given response.

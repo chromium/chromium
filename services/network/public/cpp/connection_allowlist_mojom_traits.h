@@ -6,11 +6,17 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CONNECTION_ALLOWLIST_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
 
 namespace mojo {
+
+namespace {
+using RedirectBehavior = network::ConnectionAllowlist::RedirectBehavior;
+using WebRtcBehavior = network::ConnectionAllowlist::WebRtcBehavior;
+}  // namespace
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
@@ -31,13 +37,28 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
     return allowlist.issues;
   }
 
-  static bool redirection_allowed(
+  static network::mojom::RedirectBehavior redirect_behavior(
       const network::ConnectionAllowlist& allowlist) {
-    return allowlist.redirection_allowed;
+    switch (allowlist.redirect_behavior) {
+      case RedirectBehavior::kAllow:
+        return network::mojom::RedirectBehavior::kAllow;
+      case RedirectBehavior::kBlock:
+        return network::mojom::RedirectBehavior::kBlock;
+      default:
+        NOTREACHED();
+    }
   }
 
-  static bool webrtc_allowed(const network::ConnectionAllowlist& allowlist) {
-    return allowlist.webrtc_allowed;
+  static network::mojom::WebRtcBehavior webrtc_behavior(
+      const network::ConnectionAllowlist& allowlist) {
+    switch (allowlist.webrtc_behavior) {
+      case WebRtcBehavior::kAllow:
+        return network::mojom::WebRtcBehavior::kAllow;
+      case WebRtcBehavior::kBlock:
+        return network::mojom::WebRtcBehavior::kBlock;
+      default:
+        NOTREACHED();
+    }
   }
 
   static bool Read(network::mojom::ConnectionAllowlistDataView data,
