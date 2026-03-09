@@ -181,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
   bubble_manager()->ShowBubble();
   EXPECT_TRUE(bubble_manager()->GetBubbleWidget());
 
-  EXPECT_EQ(
-      browser(),
-      webui::GetBrowserWindowInterface(
-          bubble_manager()->GetContentsWrapperForTesting()->web_contents()));
+  EXPECT_EQ(browser(),
+            webui::GetBrowserWindowInterface(
+                bubble_manager()->GetContentsWrapper()->web_contents()));
 }

@@ -838,6 +838,10 @@ bool TabSearchPageHandler::IsWebContentsVisible() {
          visibility == content::Visibility::OCCLUDED;
 }
 
+void TabSearchPageHandler::BeforeBubbleWidgetShowed() {
+  NotifyTabsChanged();
+}
+
 bool TabSearchPageHandler::ShouldTrackBrowser(BrowserWindowInterface* browser) {
   return browser->GetProfile() == Profile::FromWebUI(web_ui_) &&
          browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;

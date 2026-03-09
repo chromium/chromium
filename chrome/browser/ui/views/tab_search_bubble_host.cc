@@ -181,6 +181,13 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
   bubble_widget_observation_.Observe(widget);
   widget_open_timer_.Reset(widget);
 
+  // Notify the TabSearchUI that the bubble widget is shown. Since the bubble
+  // manager can preload the page, this allows the UI to force refresh the
+  // contents of the page.
+  if (auto* tab_search_ui = GetTabSearchUI()) {
+    tab_search_ui->BeforeBubbleWidgetShowed();
+  }
+
   widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
       base::BindOnce(
           [](base::TimeTicks button_pressed_time,
@@ -285,4 +292,23 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     return;
   }
   CloseTabSearchBubble();
+}
+
+TabSearchUI* TabSearchBubbleHost::GetTabSearchUI() {
+  auto* wrapper = webui_bubble_manager_->GetContentsWrapper();
+  if (!wrapper) {
+    return nullptr;
+  }
+
+  auto* web_contents = wrapper->web_contents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  auto* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+
+  return web_ui->GetController()->GetAs<TabSearchUI>();
 }

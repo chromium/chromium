@@ -124,10 +124,6 @@ void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
   disable_close_bubble_helper_ = true;
 }
 
-WebUIContentsWrapper* WebUIBubbleManager::GetContentsWrapperForTesting() {
-  return GetContentsWrapper();
-}
-
 void WebUIBubbleManager::ResetContentsWrapper() {
   if (!cached_contents_wrapper_) {
     return;

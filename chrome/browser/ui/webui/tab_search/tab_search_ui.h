@@ -45,6 +45,8 @@ class TabSearchUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver);
 
+  void BeforeBubbleWidgetShowed();
+
   TabSearchPageHandler* page_handler_for_testing() {
     return page_handler_.get();
   }
@@ -63,7 +65,6 @@ class TabSearchUI : public TopChromeWebUIController,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
 
   bool ShowTabOrganizationFRE();
-  int TabIndex();
 
   std::unique_ptr<TabSearchPageHandler> page_handler_;
 

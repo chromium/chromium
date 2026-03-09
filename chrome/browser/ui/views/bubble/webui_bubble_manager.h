@@ -89,7 +89,10 @@ class WebUIBubbleManager : public views::WidgetObserver {
   }
   void ResetContentsWrapperForTesting();
   void DisableCloseBubbleHelperForTesting();
-  WebUIContentsWrapper* GetContentsWrapperForTesting();
+
+  // Gets the WebUIContentsWrapper. This is available after calling
+  // ShowBubble().
+  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
 
  protected:
   WebUIBubbleManager();
@@ -97,10 +100,6 @@ class WebUIBubbleManager : public views::WidgetObserver {
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const std::optional<gfx::Rect>& anchor,
       views::BubbleBorder::Arrow arrow) = 0;
-
-  // Gets the WebUIContentsWrapper. This is available after calling
-  // ShowBubble().
-  virtual WebUIContentsWrapper* GetContentsWrapper() = 0;
 
   WebUIContentsWrapper* cached_contents_wrapper() {
     return cached_contents_wrapper_.get();

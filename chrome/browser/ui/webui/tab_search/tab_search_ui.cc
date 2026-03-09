@@ -222,6 +222,14 @@ void TabSearchUI::BindInterface(
   page_factory_receiver_.Bind(std::move(receiver));
 }
 
+void TabSearchUI::BeforeBubbleWidgetShowed() {
+  if (page_handler_) {
+    // Notify the page handler that tab search bubble widget is shown.
+    // This allows it to force a refresh of the tabs.
+    page_handler_->BeforeBubbleWidgetShowed();
+  }
+}
+
 void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {

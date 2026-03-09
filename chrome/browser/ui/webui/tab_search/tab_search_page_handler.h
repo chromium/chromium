@@ -92,6 +92,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
 
+  void BeforeBubbleWidgetShowed();
+
   void disable_last_active_elapsed_text_for_testing() {
     disable_last_active_time_for_testing_ = true;
   }

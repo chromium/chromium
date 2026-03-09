@@ -79,6 +79,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
  private:
   void ButtonPressed(const ui::Event& event);
 
+  TabSearchUI* GetTabSearchUI();
+
   // The anchor button for the tab search bubble.
   const raw_ptr<views::Button> button_;
 
