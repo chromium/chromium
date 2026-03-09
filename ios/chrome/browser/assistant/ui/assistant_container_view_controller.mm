@@ -592,16 +592,13 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   // Pin the container inside the wrapper (these constraints mutate during
   // morphing).
   _leadingConstraint = [_assistantContainerView.leadingAnchor
-      constraintEqualToAnchor:self.view.leadingAnchor
-                     constant:0.0];
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor];
   _trailingConstraint = [_assistantContainerView.trailingAnchor
-      constraintEqualToAnchor:self.view.trailingAnchor
-                     constant:0.0];
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor];
 
   // Anchor to bottom of the wrapper.
   _bottomConstraint = [_assistantContainerView.bottomAnchor
-      constraintEqualToAnchor:self.view.bottomAnchor
-                     constant:0.0];
+      constraintEqualToAnchor:self.view.bottomAnchor];
 
   _leadingConstraint.active = YES;
   _trailingConstraint.active = YES;
