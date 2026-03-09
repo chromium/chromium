@@ -525,6 +525,12 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableClientCertificateProvisioningOnIOSName[] =
+    "Enable client certificate provisioning on iOS";
+const char kEnableClientCertificateProvisioningOnIOSDescription[] =
+    "When enabled, client certificate provisioning from the cloud is allowed "
+    "for enterprise users on iOS.";
+
 const char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 const char kEnableCompromisedPasswordsMutingDescription[] =

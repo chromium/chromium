@@ -41,6 +41,7 @@
 #import "components/download/public/background_service/features.h"
 #import "components/enterprise/browser/enterprise_switches.h"
 #import "components/enterprise/buildflags/buildflags.h"
+#import "components/enterprise/client_certificates/core/features.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
@@ -2738,6 +2739,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-cobalt", flag_descriptions::kIOSCobaltName,
      flag_descriptions::kIOSCobaltDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kIOSCobalt)},
+    {"enable-client-certificate-provisioning-on-ios",
+     flag_descriptions::kEnableClientCertificateProvisioningOnIOSName,
+     flag_descriptions::kEnableClientCertificateProvisioningOnIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(client_certificates::features::
+                            kEnableClientCertificateProvisioningOnIOS)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -321,6 +321,9 @@ extern const char kEnableACPrefetchDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
+extern const char kEnableClientCertificateProvisioningOnIOSName[];
+extern const char kEnableClientCertificateProvisioningOnIOSDescription[];
+
 extern const char kEnableCompromisedPasswordsMutingName[];
 extern const char kEnableCompromisedPasswordsMutingDescription[];
 

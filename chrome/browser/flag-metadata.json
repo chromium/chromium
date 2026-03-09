@@ -3037,6 +3037,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "enable-client-certificate-provisioning-on-ios",
+    "owners": [ "antoli@google.com", "cbe-cep-eng@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "enable-clipboard-data-controls-android",
     "owners": ["clhager@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 145
