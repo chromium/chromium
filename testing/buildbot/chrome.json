@@ -654,7 +654,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -736,7 +735,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1157,7 +1155,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -1239,7 +1236,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,
@@ -1832,7 +1828,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "vaapi_unittest",
         "test_id_prefix": "ninja://media/gpu/vaapi:vaapi_unittest/",
         "use_lkgm": true,
@@ -1914,7 +1909,6 @@
         "resultdb": {
           "result_format": "gtest"
         },
-        "shard_level_retries_on_ctp": 1,
         "test": "video_decode_accelerator_tests",
         "test_id_prefix": "ninja://media/gpu/test:video_decode_accelerator_tests/",
         "use_lkgm": true,

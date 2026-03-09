@@ -735,6 +735,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     skylab = test.pop('skylab', {})
     if skylab.get('cros_board'):
+      if test.get('experiment_percentage') != 100:
+        skylab.setdefault('shard_level_retries_on_ctp', 1)
+
       for k, v in skylab.items():
         test[k] = v
 
@@ -924,8 +927,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result.setdefault('test', test_name)
 
     skylab = result.setdefault('skylab', {})
-    if result.get('experiment_percentage') != 100:
-      skylab.setdefault('shard_level_retries_on_ctp', 1)
 
     for src, dst in (
         ('cros_board', 'cros_board'),

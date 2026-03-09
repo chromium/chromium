@@ -28,6 +28,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -66,6 +67,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -94,6 +96,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -122,6 +125,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -154,6 +158,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -192,6 +197,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -221,6 +227,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -249,6 +256,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -277,6 +285,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -307,6 +316,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "shards": 20,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -337,6 +347,7 @@
           "has_native_resultdb_integration": true,
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "shards": 6,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
@@ -372,6 +383,7 @@
         "resultdb": {
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -406,6 +418,7 @@
         "resultdb": {
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -440,6 +453,7 @@
         "resultdb": {
           "result_format": "native"
         },
+        "shard_level_retries_on_ctp": 1,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
