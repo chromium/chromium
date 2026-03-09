@@ -6,12 +6,13 @@ import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, addTab, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, generateZeroId, getInputForFileType, getMockFileChangeEventForType, getSubmitContainer, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, addTab, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, generateZeroId, getInputForFileType, getMockFileChangeEventForType, getSubmitContainer, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
 
 suite('NewTabPageComposeboxUploadTest', () => {
   const testProxy = setupComposeboxTest();
@@ -1029,4 +1030,213 @@ suite('NewTabPageComposeboxUploadTest', () => {
         testProxy.element.getNumOfFilesForTesting() === 1,
         'Ghost file should not be added');
   });
+
+  test(
+      'regular auto chip de-duplication logic resets when clearing' +
+          ' all (entering new thread, mode, etc.)',
+      async () => {
+        createComposeboxElement(testProxy);
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Should be 0 starting test');
+        const tab = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        // Initiate regular de-duplication logic by properly mocking
+        // `addTabContext` return value.
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 1,
+            'Attached files should be 1 after adding first tab.');
+
+        testProxy.element.clearAllInputs(
+            /*querySubmitted*/ false,
+            /*shouldBlockAutoSuggestedTabs=*/ false);
+
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Should be 0 after clearing all.');
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 1,
+            'Attached files should be 1 after adding a second auto ' +
+                'chip, and having cleared the first one.');
+      });
+
+  test(
+      'auto chip de-duplication logic does not rely on callback states',
+      async () => {
+        createComposeboxElement(testProxy);
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Attached files should be 0 at start.');
+
+        const tab = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        // Do not mock `addTabContext` return value so callback does not
+        // update current held auto chip context properly.
+        // Relying purely on callback auto chip context states is incorrect
+        // and will result in depending on this bad mock return value.
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        testProxy.searchboxHandler.setPromiseResolveFor(ADD_TAB_CONTEXT_FN, '');
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Attached files should be 0 after failed callback' +
+                'does not return for an auto chip.');
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+        // Should not duplicate auto chip, even with the same tab
+        // being called (same tab id, url) since pending auto chip context
+        // is updated synchronously from the last
+        // `updateAutoSuggestedTabContext` call, and does not rely on the
+        // callback result.
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Attached files should still be 0 since the first' +
+                'callback corrupted, but the same auto chip' +
+                'context is added again.');
+
+        const tab2 = {
+          tabId: 2,
+          title: 'Tab 2',
+          url: 'https://example2.com',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(4)},
+        } as any as TabInfo;
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        // Proper mock for tab2.
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING_2);
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab2);
+
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        // New auto chip added since is different from tab 1.
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 1,
+            'Attached files should be 1 after adding a second auto ' +
+                'chip, and having the first one be corrupted.');
+      });
+
+  test(
+      'pending auto chip de-duplication logic resets when clearing' +
+          ' all (entering new thread, mode, etc.)',
+      async () => {
+        createComposeboxElement(testProxy);
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Should be 0 starting test');
+        const tab = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        // Do not mock `addTabContext` return value so callback does not
+        // update current held auto chip context properly. This simulates
+        // relying on pending auto chip context state.
+        testProxy.searchboxHandler.setPromiseResolveFor(ADD_TAB_CONTEXT_FN, '');
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'First tab should not be added since callback fails');
+
+        testProxy.element.clearAllInputs(
+            /*querySubmitted*/ false,
+            /*shouldBlockAutoSuggestedTabs=*/ false);
+
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 0,
+            'Should be 0 after clearing all.');
+
+        testProxy.searchboxHandler.resetResolver(ADD_TAB_CONTEXT_FN);
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+
+        await testProxy.element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.element.getNumOfFilesForTesting(), 1,
+            'Same tab should be added back after clearing all.');
+      });
 });
