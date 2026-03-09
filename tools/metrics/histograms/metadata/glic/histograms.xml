@@ -658,10 +658,10 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(LoadingStage) -->
 
   <token key="LoadingStage">
-    <variant name="AwaitingCookieSync"/>
-    <variant name="AwaitingNotifyPanelWillOpen"/>
-    <variant name="AwaitingProfileReady"/>
-    <variant name="LoadingWebClient"/>
+    <variant name="AWAITING_COOKIE_SYNC"/>
+    <variant name="AWAITING_NOTIFY_PANEL_WILL_OPEN"/>
+    <variant name="AWAITING_PROFILE_READY"/>
+    <variant name="LOADING_WEB_CLIENT"/>
   </token>
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_app_controller.ts:LoadingStage) -->
 
