@@ -1064,8 +1064,9 @@ class AvatarButtonPromoManagerTest : public testing::Test {
       case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         break;
       case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-        // TODO(crbug.com/486109449): Use a feature param instead.
-        task_environment_.FastForwardBy(base::Days(7) + base::Days(1));
+        task_environment_.FastForwardBy(
+            switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() +
+            base::Days(1));
         break;
     }
   }
@@ -1255,8 +1256,9 @@ TEST_F(AvatarButtonPromoManagerTest,
 
   // Fast forward by less than expected.
   base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
-  // TODO(crbug.com/486109449): Use a feature param instead.
-  FastForwardBy(base::Days(7) - time_remaining_for_promo_to_show);
+  FastForwardBy(
+      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      time_remaining_for_promo_to_show);
   // Promo shown time check should still not allow the promo to show yet.
   ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
 
@@ -1290,8 +1292,9 @@ TEST_F(AvatarButtonPromoManagerTest,
 
   // Fast forward by less than expected.
   base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
-  // TODO(crbug.com/486109449): Use a feature param instead.
-  FastForwardBy(base::Days(7) - time_remaining_for_promo_to_show);
+  FastForwardBy(
+      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      time_remaining_for_promo_to_show);
   // Promo shown time check should still not allow the promo to show yet.
   ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
 

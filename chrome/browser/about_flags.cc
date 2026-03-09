@@ -4757,6 +4757,18 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+const FeatureEntry::FeatureParam kSigninPromoOnAvatarPillShortDelays[] = {
+    {"startup_delay_for_promo_show", "3s"},
+    {"delay_for_next_promo_allowed", "15s"},
+};
+
+const FeatureEntry::FeatureVariation kSigninPromoOnAvatarPillVariation[] = {
+    {"Short delays (for testing)", kSigninPromoOnAvatarPillShortDelays,
+     nullptr},
+};
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13119,6 +13131,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch1Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch1)},
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"signin-promo-on-avatar-pill",
+     flag_descriptions::kSigninPromoOnAvatarPillName,
+     flag_descriptions::kSigninPromoOnAvatarPillDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kSigninPromoOnAvatarPill,
+                                    kSigninPromoOnAvatarPillVariation,
+                                    "SigninPromoOnAvatarPillVariation")},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

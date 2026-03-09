@@ -197,8 +197,7 @@ base::TimeDelta GetMinimumThresholdSinceLastShownTime(
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "The promo does not support shown time checking.";
     case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-      // TODO(crbug.com/486109449): Use a feature param instead.
-      return base::Days(7);
+      return switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get();
   }
 }
 

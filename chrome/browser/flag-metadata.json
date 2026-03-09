@@ -8990,6 +8990,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "signin-promo-on-avatar-pill",
+    "owners": ["rsult@google.com", "chrome-signin-desktop-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "single-ca-cert-verification-phase-0",
     "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
     "expiry_milestone": 150

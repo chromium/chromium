@@ -98,7 +98,6 @@ std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 constexpr base::TimeDelta kPromoDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_promo_duration_for_testing;
 
-constexpr base::TimeDelta kSignedOutPromoTriggerDelay = base::Seconds(30);
 std::optional<base::TimeDelta> g_signed_out_promo_trigger_delay_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -878,7 +877,7 @@ class PromoStateProviderCoordinator
       signed_out_trigger_delay_timer_.Start(
           FROM_HERE,
           g_signed_out_promo_trigger_delay_for_testing.value_or(
-              kSignedOutPromoTriggerDelay),
+              switches::kSigninPromoOnAvatarPillStartupDelayForPromoShow.Get()),
           base::BindOnce(&PromoStateProviderCoordinator::Trigger,
                          base::Unretained(this)));
     }

@@ -551,6 +551,16 @@ BASE_FEATURE(kSignInPromoMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kSigninPromoOnAvatarPill, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSigninPromoOnAvatarPillStartupDelayForPromoShow,
+                   &kSigninPromoOnAvatarPill,
+                   "startup_delay_for_promo_show",
+                   base::Seconds(30));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSigninPromoOnAvatarPillDelayForNextPromoAllowed,
+                   &kSigninPromoOnAvatarPill,
+                   "delay_for_next_promo_allowed",
+                   base::Days(7));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BASE_FEATURE(kSigninWindows10DepreciationStateForTesting,

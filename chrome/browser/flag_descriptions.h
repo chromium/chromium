@@ -5796,6 +5796,11 @@ inline constexpr char kSigninLevelUpButtonName[] = "Signin Level Up Button";
 inline constexpr char kSigninLevelUpButtonDescription[] =
     "Replaces signed out avatar with signin button on Android.";
 
+inline constexpr char kSigninPromoOnAvatarPillName[] =
+    "Sign in promo on avatar pill";
+inline constexpr char kSigninPromoOnAvatarPillDescription[] =
+    "Feature that shows a Sign in promo on the avatar pill at startup";
+
 inline constexpr char kSiteIsolationForPasswordSitesName[] =
     "Site Isolation For Password Sites";
 inline constexpr char kSiteIsolationForPasswordSitesDescription[] =

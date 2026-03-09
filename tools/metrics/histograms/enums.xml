@@ -14571,6 +14571,7 @@ from previous Chrome versions.
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:disabled"/>
   <int value="36585844" label="AndroidWindowPopupPredictFinalBounds:disabled"/>
   <int value="37024318" label="disable-affiliation-based-matching"/>
+  <int value="37197395" label="SigninPromoOnAvatarPill:enabled"/>
   <int value="38213894" label="PrivacySettingsRedesign:enabled"/>
   <int value="38904620" label="TabSwitcherLongpressMenu:enabled"/>
   <int value="39035791"
@@ -18265,6 +18266,7 @@ from previous Chrome versions.
   <int value="1289670142" label="ArcAccountRestrictions:disabled"/>
   <int value="1290343279" label="SafetyCheckNotificationPermissions:disabled"/>
   <int value="1290434276" label="FedCmAutofill:enabled"/>
+  <int value="1290593255" label="SigninPromoOnAvatarPill:disabled"/>
   <int value="1290904214" label="DiagnosticsAppNavigation:enabled"/>
   <int value="1291174435" label="ForceHistoryOptInScreen:enabled"/>
   <int value="1291257442" label="TabsInCBD:disabled"/>
