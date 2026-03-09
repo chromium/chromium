@@ -45,9 +45,6 @@ class ContentAnnotatorTabHelper
 
   // ContentAnnotatorService to forward language detection events to.
   const raw_ref<ContentAnnotatorService> content_annotator_service_;
-
-  // ChromeTranslateClient to observe for language detection events.
-  const raw_ptr<ChromeTranslateClient> chrome_translate_client_;
 };
 }  // namespace accessibility_annotator
 

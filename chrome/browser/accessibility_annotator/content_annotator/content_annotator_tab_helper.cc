@@ -14,12 +14,11 @@ ContentAnnotatorTabHelper::ContentAnnotatorTabHelper(
     ContentAnnotatorService& content_annotator_service,
     ChromeTranslateClient* chrome_translate_client)
     : ContentsObservingTabFeature(tab),
-      content_annotator_service_(content_annotator_service),
-      chrome_translate_client_(chrome_translate_client) {
+      content_annotator_service_(content_annotator_service) {
   // A translate client is not always attached to web contents (e.g. tests).
-  if (chrome_translate_client_) {
+  if (chrome_translate_client) {
     translate_observation_.Observe(
-        chrome_translate_client_->GetTranslateDriver());
+        chrome_translate_client->GetTranslateDriver());
   }
 }
 
