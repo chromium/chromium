@@ -384,7 +384,6 @@ class AutocompleteMediator
 
         if (OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled() && mAutocomplete == null) {
             serveCachedZeroSuggest(mAutocompleteInput);
-            return;
         }
 
         postAutocompleteRequest(this::fetchZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
