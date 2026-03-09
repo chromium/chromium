@@ -13,7 +13,6 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
@@ -22,6 +21,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsUtil.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_HINT;
@@ -338,7 +338,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     private void onDone() {
         assert isShowingEditPrompt();
         if (!validateForm(mEditorModel.get(EDITOR_FIELDS))) {
-            scrollToFieldWithErrorMessage(mEditorModel);
+            scrollToFieldWithErrorMessage(mEditorModel.get(EDITOR_FIELDS));
             return;
         }
         mEditorModel.set(VISIBLE, false);

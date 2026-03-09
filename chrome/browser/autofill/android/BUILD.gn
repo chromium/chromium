@@ -59,6 +59,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/autofill_ai/EntityEditorViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditTextNoAutofillView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorComponentsProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorComponentsUtil.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorComponentsViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorDialogToolbar.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorObserverForTest.java",

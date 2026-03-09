@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsUtil.scrollToFieldWithErrorMessage;
 import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
@@ -143,6 +144,7 @@ class EntityEditorMediator {
 
     private void onDone() {
         if (!validateForm(mEditorModel.get(EDITOR_FIELDS))) {
+            scrollToFieldWithErrorMessage(mEditorModel.get(EDITOR_FIELDS));
             return;
         }
         assumeNonNull(mEditorModel).set(EntityEditorProperties.VISIBLE, false);
