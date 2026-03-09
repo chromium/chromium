@@ -75,6 +75,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kRecordReplay:
     case PageActionIconType::kPriceInsights:
     case PageActionIconType::kDiscounts:
+    case PageActionIconType::kFederation:
       return true;
     default:
       break;

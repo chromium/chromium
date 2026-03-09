@@ -19192,6 +19192,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_FILTERED_ACCOUNT_MESSAGE" desc="Message shown to the user when the account they are trying to sign in with has been filtered out by one of the filters passed by the RP.">
       You can't sign in using this account
     </message>
+    <message name="IDS_FEDERATION_TITLE_STATIC" desc="Title of the UI shown in the omnibox to remind users that they can sign in with an identity provider." translateable="false">
+      Sign-in
+    </message>
 
     <!-- Input overlay strings -->
     <if expr="is_chromeos">

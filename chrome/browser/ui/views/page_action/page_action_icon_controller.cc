@@ -222,6 +222,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kFederation:
+        // Do nothing as these actions were added after the migration.
+        break;
       default:
         NOTREACHED();
     }

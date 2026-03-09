@@ -107,7 +107,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, DidCreateBrowserActions) {
       kActionNewIncognitoWindow, kActionPrint,
       kActionClearBrowsingData,  kActionTaskManager,
       kActionDevTools,           kActionSendTabToSelf,
-      kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage};
+      kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage,
+      kActionFederation};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 

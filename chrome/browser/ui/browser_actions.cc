@@ -400,6 +400,23 @@ void BrowserActions::InitializeBrowserActions() {
           .SetEnabled(true)
           .Build());
 
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                // TODO(crbug.com/393246237): Show FedCM bubble on click.
+              },
+              bwi))
+          .SetActionId(kActionFederation)
+          .SetTooltipText(
+              l10n_util::GetStringUTF16(IDS_FEDERATION_TITLE_STATIC))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kAccountCircleChromeRefreshIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .SetEnabled(true)
+          .Build());
+
   if (base::FeatureList::IsEnabled(
           content_settings::features::
               kBlockV8OptimizerOnUnfamiliarSitesSetting)) {

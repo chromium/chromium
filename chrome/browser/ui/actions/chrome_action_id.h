@@ -604,6 +604,7 @@
   E(kActionTabGroupsMenu, IDC_SAVED_TAB_GROUPS_MENU) \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionSplitTab, IDC_SPLIT_TAB) \
+  E(kActionFederation) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \
