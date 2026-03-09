@@ -23,7 +23,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
  public:
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
-  void Init(std::string consumer_id,
+  void Init(std::string consumer_name,
             std::optional<MemoryConsumerTraits> traits,
             CheckUnregister check_unregister,
             CheckRegistryExists check_registry_exists,
@@ -32,7 +32,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     consumer_task_runner_ = std::move(consumer_task_runner);
     parent_ = std::move(parent);
-    registration_.emplace(consumer_id, traits, this, check_unregister,
+    registration_.emplace(consumer_name, traits, this, check_unregister,
                           check_registry_exists);
   }
 
@@ -71,7 +71,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
 // AsyncMemoryConsumerRegistration ---------------------------------------------
 
 AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
-    std::string_view consumer_id,
+    std::string_view consumer_name,
     std::optional<MemoryConsumerTraits> traits,
     MemoryConsumer* consumer,
     CheckUnregister check_unregister,
@@ -81,7 +81,7 @@ AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
   main_thread_ = std::make_unique<MainThread>();
   main_thread_task_runner_->PostTask(
       FROM_HERE, BindOnce(&MainThread::Init, Unretained(main_thread_.get()),
-                          std::string(consumer_id), traits, check_unregister,
+                          std::string(consumer_name), traits, check_unregister,
                           check_registry_exists, weak_ptr_factory_.GetWeakPtr(),
                           SequencedTaskRunner::GetCurrentDefault()));
 }

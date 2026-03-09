@@ -28,7 +28,7 @@ class BASE_EXPORT AsyncMemoryConsumerRegistration {
   using CheckRegistryExists = MemoryConsumerRegistration::CheckRegistryExists;
 
   AsyncMemoryConsumerRegistration(
-      std::string_view consumer_id,
+      std::string_view consumer_name,
       std::optional<MemoryConsumerTraits> traits,
       MemoryConsumer* consumer,
       CheckUnregister check_unregister = CheckUnregister::kEnabled,

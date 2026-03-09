@@ -26,9 +26,9 @@ namespace {
 
 class TestAsyncMemoryConsumer : public MemoryConsumer {
  public:
-  explicit TestAsyncMemoryConsumer(std::string_view consumer_id,
+  explicit TestAsyncMemoryConsumer(std::string_view consumer_name,
                                    std::optional<MemoryConsumerTraits> traits)
-      : async_memory_consumer_registration_(consumer_id, traits, this) {}
+      : async_memory_consumer_registration_(consumer_name, traits, this) {}
 
   MOCK_METHOD(void, OnUpdateMemoryLimit, (), (override));
   MOCK_METHOD(void, OnReleaseMemory, (), (override));
