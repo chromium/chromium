@@ -438,8 +438,9 @@ struct QueryOptions {
   // If nullopt, search doesn't take app_id into consideration.
   std::optional<std::string> app_id;
 
-  // If true, visits with a source of SOURCE_ACTOR are included.
-  // Defaults to false, filtering them out.
+  // Includes GLIC actor visits with SOURCE_ACTOR (e.g., overwritten to `true`
+  // for chrome://history auditing). Defaults to false to minimize noise in
+  // other history surfaces.
   bool include_actor_visits = false;
 
   // If true, visits with a source other than SOURCE_ACTOR are included.

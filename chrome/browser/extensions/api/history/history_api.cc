@@ -297,6 +297,7 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
   // TODO: crbug.com/443117133 - Change to `kInclude404s` after
   //   `history::kVisitedLinksOn404` is enabled everywhere.
   options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
+  // Show GLIC actor visits with SOURCE_ACTOR as part of history.
   options.include_actor_visits = true;
 
   if (params->query.start_time) {
