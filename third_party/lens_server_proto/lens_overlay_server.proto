@@ -87,6 +87,9 @@ message LensOverlayServerRequest {
   // A flag to indicate that the request corresponds to an upload from
   // a flow where the user has expressed clear user intent to use Lens.
   bool has_lens_intent = 6;
+
+  // A flag to indicate whether or not to process the image for AIM.
+  bool process_image_for_aim = 7;
 }
 
 // Response details for an LensOverlay request.
