@@ -46,9 +46,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Test mojom conversion path.
     std::vector<uint8_t> mojom_serialized =
         blink::mojom::StorageKey::Serialize(&*maybe_storage_key);
-    blink::Vector<uint8_t> mojom_serialized_as_wtf;
-    mojom_serialized_as_wtf.AppendRange(mojom_serialized.begin(),
-                                        mojom_serialized.end());
+    blink::Vector<uint8_t> mojom_serialized_as_wtf(mojom_serialized);
     blink::BlinkStorageKey mojom_blink_storage_key;
     CHECK(blink::mojom::blink::StorageKey::Deserialize(
         mojom_serialized_as_wtf, &mojom_blink_storage_key));

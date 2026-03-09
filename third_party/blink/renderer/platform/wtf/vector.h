@@ -1533,10 +1533,6 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   void Append(const U*, wtf_size_t);
   template <typename Iterator>
   void Append(Iterator begin, Iterator end);
-  // TODO(crbug.com/487938766): Delete this when all callsites are migrated to
-  // `Append()`.
-  template <typename Iterator>
-  void AppendRange(Iterator begin, Iterator end) { Append(begin, end); }
   template <typename R>
     requires(std::ranges::input_range<R>)
   void append_range(R&& range);
