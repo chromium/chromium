@@ -15,9 +15,6 @@ constexpr float kShadowOpacity = 0.1f;
 constexpr CGFloat kShadowRadius = 10.0;
 constexpr CGSize kShadowOffset = {0, 5};
 
-// Corner styling.
-const CGFloat kCornerRadius = 22.0;
-
 // Grabber styling.
 constexpr CGFloat kGrabberWidth = 33.0;
 constexpr CGFloat kGrabberHeight = 4.0;
@@ -34,11 +31,15 @@ constexpr CGFloat kContentTopMargin = 16.0;
   UIScrollView* _scrollView;
   UIView* _grabberView;
   CAGradientLayer* _maskLayer;
+  CGFloat _cornerRadius;
+  CACornerMask _maskedCorners;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _maskedCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+                     kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
     [self configureContainerStyling];
     [self setUpSubviews];
   }
@@ -49,10 +50,31 @@ constexpr CGFloat kContentTopMargin = 16.0;
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  // Update shadow path to match the view's bounds and corner radius.
-  self.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
-                                                     cornerRadius:kCornerRadius]
-                              .CGPath;
+
+  // Translate CACornerMask to UIRectCorner for the bezier path.
+  // Mapping the active mask to `UIRectCorner` ensures the shadow perfectly
+  // matches the layer's actual geometry.
+  UIRectCorner rectCorners = 0;
+  if (_maskedCorners & kCALayerMinXMinYCorner) {
+    rectCorners |= UIRectCornerTopLeft;
+  }
+  if (_maskedCorners & kCALayerMaxXMinYCorner) {
+    rectCorners |= UIRectCornerTopRight;
+  }
+  if (_maskedCorners & kCALayerMinXMaxYCorner) {
+    rectCorners |= UIRectCornerBottomLeft;
+  }
+  if (_maskedCorners & kCALayerMaxXMaxYCorner) {
+    rectCorners |= UIRectCornerBottomRight;
+  }
+
+  // Update shadow path to match the view's bounds and specific corner masking.
+  self.layer.shadowPath =
+      [UIBezierPath
+          bezierPathWithRoundedRect:self.bounds
+                  byRoundingCorners:rectCorners
+                        cornerRadii:CGSizeMake(_cornerRadius, _cornerRadius)]
+          .CGPath;
 
   [self updateScrollContainerMask];
 }
@@ -68,7 +90,21 @@ constexpr CGFloat kContentTopMargin = 16.0;
   self.layer.shadowOpacity = kShadowOpacity;
   self.layer.shadowOffset = kShadowOffset;
   self.layer.shadowRadius = kShadowRadius;
-  self.layer.cornerRadius = kCornerRadius;
+  self.layer.cornerRadius = _cornerRadius;
+  self.layer.maskedCorners = _maskedCorners;
+}
+
+// Allows the controller to dynamically morph the container radius.
+- (void)updateCornerRadius:(CGFloat)cornerRadius
+             maskedCorners:(CACornerMask)maskedCorners {
+  if (_cornerRadius == cornerRadius && _maskedCorners == maskedCorners) {
+    return;
+  }
+  _cornerRadius = cornerRadius;
+  _maskedCorners = maskedCorners;
+  self.layer.cornerRadius = _cornerRadius;
+  self.layer.maskedCorners = _maskedCorners;
+  [self setNeedsLayout];
 }
 
 // Sets up the view hierarchy by creating and adding subviews.

@@ -4,4 +4,4 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 
-const NSInteger kAssistantContainerMinimizedDetentHeight = 60;
+const NSInteger kAssistantContainerMinimizedDetentHeight = 72;

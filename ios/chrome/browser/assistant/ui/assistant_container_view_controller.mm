@@ -11,20 +11,17 @@
 #import "base/check.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
-// Margin for the container content relative to the screen edges.
-constexpr CGFloat kContainerMargin = 5.0;
-
 // The height assigned to a detent that isn't in the list.
 constexpr NSInteger kInvalidDetentHeight = -1;
 
 // Constants used for the container resizing animation.
-constexpr CGFloat kRubberBandCoefficient = 0.15;
 constexpr CGFloat kSpringDuration = 0.3;
 constexpr CGFloat kSpringDamping = 0.85;
 constexpr CGFloat kMomentumProjectionSeconds = 0.2;
@@ -32,24 +29,19 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 // The height of the top area that responds to the pan gesture.
 constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
-// Computes the rubber banding distance.
-NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
-  CGFloat float_offset = static_cast<CGFloat>(offset);
-  CGFloat float_dimension = static_cast<CGFloat>(dimension);
-  CGFloat distance =
-      (1.0 - (1.0 / ((float_offset * kRubberBandCoefficient / float_dimension) +
-                     1.0))) *
-      float_dimension;
-  return round(distance);
-}
-
 }  // namespace
 
 @interface AssistantContainerViewController () <UIGestureRecognizerDelegate>
 @end
 
 @implementation AssistantContainerViewController {
+  // Layout constraints for the container.
   NSLayoutConstraint* _heightConstraint;
+  NSLayoutConstraint* _leadingConstraint;
+  NSLayoutConstraint* _trailingConstraint;
+  NSLayoutConstraint* _bottomConstraint;
+
+  // The view that holds the child view controller.
   AssistantContainerView* _assistantContainerView;
 
   // State storage for configuration before view load.
@@ -123,6 +115,26 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   [super viewDidLayoutSubviews];
   [self updateDetentHeights];
   [self updateHeightConstraint];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size
+       withTransitionCoordinator:
+           (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+  __weak __typeof(self) weakSelf = self;
+  [coordinator
+      animateAlongsideTransition:^(
+          id<UIViewControllerTransitionCoordinatorContext> context) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        if (strongSelf->_hasAppeared) {
+          [strongSelf updateHeightConstraint];
+        }
+      }
+                      completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -239,6 +251,25 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
 
 #pragma mark - Private
 
+// Dynamically updates the bounding constraints and border radius based on
+// scale.
+- (void)updateContainerStylingForHeight:(CGFloat)height {
+  CGFloat minimizedHeight =
+      _detentHeights[AssistantContainerDetent::kMinimized];
+  CGFloat mediumHeight = _detentHeights[AssistantContainerDetent::kMedium];
+  CGFloat largeHeight = _detentHeights[AssistantContainerDetent::kLarge];
+
+  ContainerMorphingConstraints constraints = CalculateMorphingConstraints(
+      height, minimizedHeight, mediumHeight, largeHeight);
+
+  _heightConstraint.constant = constraints.actual_height;
+  _leadingConstraint.constant = constraints.side_margin;
+  _trailingConstraint.constant = -constraints.side_margin;
+  _bottomConstraint.constant = -constraints.bottom_margin;
+  [_assistantContainerView updateCornerRadius:constraints.corner_radius
+                                maskedCorners:constraints.masked_corners];
+}
+
 // Notifies the delegate of a detent change if it differs from the previously
 // notified active detent.
 - (void)notifyDelegateOfDetentChangeIfNeeded:
@@ -269,6 +300,7 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
 
 // Executes the layout pass and notifies the delegate of the transition.
 - (void)executeAlongsideAnimationWithPercentage:(CGFloat)percentage {
+  [self updateContainerStylingForHeight:round(_heightConstraint.constant)];
   [self.view.superview layoutIfNeeded];
 
   if ([self.delegate
@@ -372,6 +404,7 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   }
 
   _heightConstraint.constant = newHeight;
+  [self updateContainerStylingForHeight:newHeight];
 
   CGFloat percentage = [self expandPercentageForHeight:newHeight];
   if ([self.delegate respondsToSelector:@selector(assistantContainer:
@@ -394,6 +427,7 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
                                                      velocity:velocity];
 
   _heightConstraint.constant = targetHeight;
+  [self updateContainerStylingForHeight:targetHeight];
 
   // Current height from visual frame (approximate start of animation).
   CGFloat currentFrameHeight = self.view.frame.size.height;
@@ -477,6 +511,7 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
 
   if (round(_heightConstraint.constant) != nearestDetentValue) {
     _heightConstraint.constant = nearestDetentValue;
+    [self updateContainerStylingForHeight:nearestDetentValue];
     // Animate only if visible.
     if (_hasAppeared && !self.isAnimating) {
       [self animateLayoutIfNeededWithInitialVelocity:0];
@@ -499,7 +534,7 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   CGFloat bottomY = CGRectGetMaxY(self.view.frame);
   CGFloat safeAreaTop = superview.safeAreaInsets.top;
 
-  return round(bottomY - safeAreaTop - kContainerMargin);
+  return round(bottomY - safeAreaTop);
 }
 
 // Lays out the view anchored to the guide/view within the parent view.
@@ -507,6 +542,10 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   if (!parentView) {
     return;
   }
+
+  _leadingConstraint.active = NO;
+  _trailingConstraint.active = NO;
+  _bottomConstraint.active = NO;
 
   NSLayoutYAxisAnchor* bottomAnchor = nil;
   if (self.anchorView) {
@@ -518,20 +557,29 @@ NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
     bottomAnchor = parentView.safeAreaLayoutGuide.bottomAnchor;
   }
 
-  AddSameConstraintsToSidesWithInsets(
-      self.view, parentView, LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(0, kContainerMargin, 0, kContainerMargin));
+  // Use variables for horizontal constraints to update them during animation.
+  _leadingConstraint =
+      [self.view.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor
+                                              constant:0.0];
+  _trailingConstraint = [self.view.trailingAnchor
+      constraintEqualToAnchor:parentView.trailingAnchor
+                     constant:0.0];
 
   // Anchor to bottom.
-  [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor
-                                         constant:-kContainerMargin]
-      .active = YES;
+  _bottomConstraint =
+      [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor
+                                             constant:0.0];
+
+  _leadingConstraint.active = YES;
+  _trailingConstraint.active = YES;
+  _bottomConstraint.active = YES;
 
   [self updateDetentHeights];
 
   // Update its value with the initial height based on detents.
   _heightConstraint.constant =
       MAX(_detentHeights[self.detents.front()], self.minimizedDetentHeight);
+  [self updateContainerStylingForHeight:round(_heightConstraint.constant)];
 }
 
 // Animates layout changes with standard spring parameters.
