@@ -6,11 +6,15 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "cc/slim/delayed_scheduler.h"
 #include "cc/slim/frame_sink_impl.h"
+#include "cc/slim/simple_scheduler.h"
 
 namespace cc::slim {
+
+BASE_FEATURE(kUseSimpleScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<FrameSink> FrameSink::Create(
@@ -22,11 +26,17 @@ std::unique_ptr<FrameSink> FrameSink::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     // Parameters below only used when wrapping cc.
     base::PlatformThreadId io_thread_id) {
+  std::unique_ptr<Scheduler> scheduler;
+  if (base::FeatureList::IsEnabled(kUseSimpleScheduler)) {
+    scheduler = std::make_unique<SimpleScheduler>();
+  } else {
+    scheduler = std::make_unique<DelayedScheduler>();
+  }
   return base::WrapUnique<FrameSink>(
       new FrameSinkImpl(std::move(task_runner),
                         std::move(compositor_frame_sink_associated_remote),
                         std::move(client_receiver), std::move(context_provider),
-                        io_thread_id, std::make_unique<DelayedScheduler>()));
+                        io_thread_id, std::move(scheduler)));
 }
 
 }  // namespace cc::slim
