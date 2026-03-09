@@ -9658,12 +9658,6 @@ crbug.com/40615943 [ Mac ] external/wpt/html/browsers/the-window-object/navigate
 # Gardener 2026-02-10: flaky.
 crbug.com/483128036 [ Linux ] external/wpt/webdriver/tests/classic/new_session/create_firstMatch.py [ Failure Pass ]
 crbug.com/483222770 [ Linux ] external/wpt/webdriver/tests/classic/new_session/create_alwaysMatch.py [ Failure Pass ]
-crbug.com/478186112 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Pass Timeout ]
-crbug.com/478186112 [ Win11 ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Pass Timeout ]
-crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Pass Timeout ]
-crbug.com/478186112 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
-crbug.com/478186112 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
-crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
 crbug.com/483104784 [ Win11 ] virtual/lna-webrtc/fast/peerconnection/RTCPeerConnection-iframe-gc.html [ Failure Pass ]
 crbug.com/482121289 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Crash Pass Timeout ]
 crbug.com/482121289 [ Win ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Pass Timeout ]
