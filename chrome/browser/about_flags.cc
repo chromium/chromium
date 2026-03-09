@@ -10052,10 +10052,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 
-    {"mahi-debugging", flag_descriptions::kMahiDebuggingName,
-     flag_descriptions::kMahiDebuggingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kMahiDebugging)},
-
     {"mahi-panel-resizable", flag_descriptions::kMahiPanelResizableName,
      flag_descriptions::kMahiPanelResizableDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kMahiPanelResizable)},

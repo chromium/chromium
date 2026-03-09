@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
@@ -78,10 +76,6 @@ class MahiContentExtractionDelegate {
       remote_content_extraction_service_factory_;
   mojo::Remote<mojom::ContentExtractionService>
       remote_content_extraction_service_;
-
-  // This task runner is used to save the extracted content to disk. It meant to
-  // be used for debugging purposes only, and should not be used in production.
-  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<MahiContentExtractionDelegate> weak_pointer_factory_{
       this};

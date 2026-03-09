@@ -6563,11 +6563,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "mahi-debugging",
-    "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "mahi-panel-resizable",
     "owners": [
       "jaydenz@chromium.org",

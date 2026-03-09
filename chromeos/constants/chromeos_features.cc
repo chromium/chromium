@@ -87,9 +87,6 @@ BASE_FEATURE(kMahiPanelResizable, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether mahi sends url when making request to the server.
 BASE_FEATURE(kMahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the mahi debugging.
-BASE_FEATURE(kMahiDebugging, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the pompano feature.
 BASE_FEATURE(kPompano, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -363,10 +360,6 @@ bool IsMahiEnabled() {
 // Mahi requests are composed & sent from ash.
 bool IsMahiSendingUrl() {
   return base::FeatureList::IsEnabled(kMahiSendingUrl);
-}
-
-bool IsMahiDebuggingEnabled() {
-  return base::FeatureList::IsEnabled(kMahiDebugging);
 }
 
 bool IsPlatformKeysChangesWave1Enabled() {
