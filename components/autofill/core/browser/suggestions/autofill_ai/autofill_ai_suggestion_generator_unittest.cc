@@ -945,6 +945,7 @@ class AutofillAiSuggestionGeneratorSplitManageSuggestionTest
     auto features = GetDefaultEnabledFeatures();
     features.push_back(
         autofill::features::kSuggestionManageButtonSplitForEnhancedAutofill);
+    features.push_back(autofill::features::kYourSavedInfoSettingsPage);
     return features;
   }
 };
