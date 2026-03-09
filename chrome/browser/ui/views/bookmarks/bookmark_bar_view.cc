@@ -47,6 +47,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
@@ -1532,14 +1533,51 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
       context_menu_source = apps_page_shortcut_;
     }
   }
+
+  std::vector<int64_t> node_ids;
+  node_ids.reserve(nodes.size());
+  for (const auto* node : nodes) {
+    node_ids.push_back(node->id());
+  }
+  auto parent_folder = BookmarkContextMenuController::GetParentForNewNodes(
+      ToRawPtrVector(nodes));
+  BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
+                                           parent_folder.get())
+      .CanPasteFromClipboard(base::BindOnce(
+          &BookmarkBarView::RunContextMenuAt, weak_ptr_factory_.GetWeakPtr(),
+          std::move(node_ids), point, source_type,
+          context_menu_source ? context_menu_source->GetWeakPtr() : nullptr));
+}
+
+void BookmarkBarView::RunContextMenuAt(
+    std::vector<int64_t> node_ids,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    base::WeakPtr<views::Button> context_menu_source,
+    bool can_paste) {
   // |close_on_remove| only matters for nested menus. We're not nested at this
   // point, so this value has no effect.
   const bool close_on_remove = true;
 
+  auto* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser_->profile());
+  std::vector<const BookmarkNode*> nodes;
+  for (int64_t node_id : node_ids) {
+    const BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+    if (node) {
+      nodes.push_back(node);
+    }
+  }
+  if (nodes.empty()) {
+    return;
+  }
+
+  context_menu_observation_.Reset();
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       GetWidget(), browser_, browser_->profile(),
       BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
-      close_on_remove);
+      close_on_remove, can_paste);
   context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(point, source_type);
   if (context_menu_source) {

@@ -285,6 +285,8 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   View* ink_drop_view() const { return ink_drop_view_; }
   void SetInkDropView(View* view);
 
+  base::WeakPtr<Button> GetWeakPtr();
+
  protected:
   explicit Button(PressedCallback callback = PressedCallback());
 
@@ -345,8 +347,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   // Getter used by metadata only.
   const PressedCallback& GetCallback() const { return callback_; }
-
-  base::WeakPtr<Button> GetWeakPtr();
 
   virtual void OnEnabledChanged();
 

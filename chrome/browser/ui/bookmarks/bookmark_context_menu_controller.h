@@ -63,7 +63,8 @@ class BookmarkContextMenuController
       Profile* profile,
       BookmarkLaunchLocation opened_from,
       const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& selection);
+                                VectorExperimental>>& selection,
+      bool can_paste);
 
   BookmarkContextMenuController(const BookmarkContextMenuController&) = delete;
   BookmarkContextMenuController& operator=(
@@ -88,9 +89,6 @@ class BookmarkContextMenuController
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsItemForCommandIdDynamic(int command_id) const override;
   std::u16string GetLabelForCommandId(int command_id) const override;
-
-  // Updates the `can_paste_` cache and runs `callback` when finished.
-  void UpdateCanPaste(base::OnceClosure callback);
 
   // Public for testing.
   // Returns index at which the newly added nodes will be added.
@@ -142,8 +140,8 @@ class BookmarkContextMenuController
   const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   const std::unique_ptr<BookmarkParentFolder> new_nodes_parent_;
-  // Cached value for IDC_PASTE.
-  bool can_paste_ = false;
+  // Whether IDC_PASTE is enabled.
+  const bool can_paste_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};
 };

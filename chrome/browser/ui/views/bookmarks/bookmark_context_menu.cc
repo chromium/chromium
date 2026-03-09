@@ -51,7 +51,8 @@ BookmarkContextMenu::BookmarkContextMenu(
     BookmarkLaunchLocation opened_from,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         selection,
-    bool close_on_remove)
+    bool close_on_remove,
+    bool can_paste)
     : controller_(new BookmarkContextMenuController(
           parent_widget ? parent_widget->GetNativeWindow()
                         : gfx::NativeWindow(),
@@ -59,7 +60,8 @@ BookmarkContextMenu::BookmarkContextMenu(
           browser,
           profile,
           opened_from,
-          selection)),
+          selection,
+          can_paste)),
       parent_widget_(parent_widget),
       menu_(new views::MenuItemView(this)),
       close_on_remove_(close_on_remove) {
@@ -87,27 +89,14 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
     return;
   }
 
-  UpdateCanPaste(base::BindOnce(
-      [](base::WeakPtr<BookmarkContextMenu> self, const gfx::Point& point,
-         ui::mojom::MenuSourceType source_type) {
-        if (!self) {
-          return;
-        }
-        if (!PreRunCallback().is_null()) {
-          std::move(PreRunCallback()).Run();
-        }
+  if (!PreRunCallback().is_null()) {
+    std::move(PreRunCallback()).Run();
+  }
 
-        // width/height don't matter here.
-        self->menu_runner_->RunMenuAt(self->parent_widget_, nullptr,
-                                      gfx::Rect(point.x(), point.y(), 0, 0),
-                                      views::MenuAnchorPosition::kTopLeft,
-                                      source_type);
-      },
-      weak_factory_.GetWeakPtr(), point, source_type));
-}
-
-void BookmarkContextMenu::UpdateCanPaste(base::OnceClosure callback) {
-  controller_->UpdateCanPaste(std::move(callback));
+  // width/height don't matter here.
+  menu_runner_->RunMenuAt(parent_widget_, nullptr,
+                          gfx::Rect(point.x(), point.y(), 0, 0),
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void BookmarkContextMenu::AddObserver(BookmarkContextMenuObserver* observer) {
