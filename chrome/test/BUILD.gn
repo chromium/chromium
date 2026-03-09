@@ -12074,6 +12074,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/frame/browser_view_focus_uitest.cc",
         "../browser/ui/views/frame/browser_view_interactive_uitest.cc",
         "../browser/ui/views/frame/horizontal_tab_strip_region_view_interactive_uitest.cc",
+        "../browser/ui/views/frame/layout/browser_view_tabbed_layout_impl_interactive_uitest.cc",
         "../browser/ui/views/frame/multi_contents_view_interactive_uitest.cc",
         "../browser/ui/views/frame/multi_contents_view_tab_drag_interactive_uitest.cc",
         "../browser/ui/views/frame/picture_in_picture_browser_frame_view_interactive_uitest.cc",

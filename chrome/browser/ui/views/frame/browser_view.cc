@@ -908,6 +908,9 @@ BrowserView::BrowserView(Browser* browser)
 
   main_background_region_ =
       AddChildView(std::make_unique<MainBackgroundRegionView>(*this));
+  main_background_region_->SetProperty(
+      views::kElementIdentifierKey,
+      BrowserViewLayoutViews::kMainBackgroundRegionElementId);
 
   top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
   top_container_insertion_index_ = GetIndexOf(top_container_.get());
@@ -973,6 +976,9 @@ BrowserView::BrowserView(Browser* browser)
   // It must render after those elements.
   main_shadow_overlay_ =
       AddChildView(std::make_unique<ShadowOverlayView>(*this));
+  main_shadow_overlay_->SetProperty(
+      views::kElementIdentifierKey,
+      BrowserViewLayoutViews::kShadowOverlayElementId);
 
   // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
 
@@ -1004,12 +1010,18 @@ BrowserView::BrowserView(Browser* browser)
             views::ShapeContextTokens::kContentSeparatorRadius,
             CustomFloatingCorner::FrameTheme(), kColorVerticalTabStripShadow,
             /*is_vertical_window_edge=*/true));
+    vertical_tab_strip_top_corner_->SetProperty(
+        views::kElementIdentifierKey,
+        BrowserViewLayoutViews::kVerticalTabStripTopCornerElementId);
     vertical_tab_strip_bottom_corner_ =
         AddChildView(std::make_unique<CustomFloatingCorner>(
             *this, CustomFloatingCorner::CornerOrientation::kBottomLeading,
             views::ShapeContextTokens::kContentSeparatorRadius,
             CustomFloatingCorner::FrameTheme(), kColorVerticalTabStripShadow,
             /*is_vertical_window_edge=*/true));
+    vertical_tab_strip_bottom_corner_->SetProperty(
+        views::kElementIdentifierKey,
+        BrowserViewLayoutViews::kVerticalTabStripBottomCornerElementId);
   } else {
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }

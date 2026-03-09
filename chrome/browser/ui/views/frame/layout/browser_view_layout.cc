@@ -26,6 +26,15 @@
 using web_modal::ModalDialogHostObserver;
 using web_modal::WebContentsModalDialogHost;
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserViewLayoutViews,
+                                      kVerticalTabStripTopCornerElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserViewLayoutViews,
+                                      kVerticalTabStripBottomCornerElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserViewLayoutViews,
+                                      kShadowOverlayElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserViewLayoutViews,
+                                      kMainBackgroundRegionElementId);
+
 BrowserViewLayoutViews::BrowserViewLayoutViews() = default;
 BrowserViewLayoutViews::BrowserViewLayoutViews(
     BrowserViewLayoutViews&&) noexcept = default;
