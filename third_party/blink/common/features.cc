@@ -2417,14 +2417,6 @@ BASE_FEATURE_PARAM(bool,
                    "prioritize_restore",
                    false);
 
-// Bypasses the enforcement of fetch() requests that set HTTP forbidden headers
-// (https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_request_header)
-// when the context has origin access to the fetch() target.
-// TODO(crbug.com/418811955): This only controls the renderer side now. Expand
-// to also have this control the browser side.
-BASE_FEATURE(kBypassRequestForbiddenHeadersCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,

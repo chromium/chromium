@@ -13,7 +13,6 @@
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -1088,8 +1087,7 @@ Request::Request(ScriptState* script_state,
   // extension
   // (https://www.chromium.org/developers/design-documents/extensions/) script
   // contexts are an example of a context depending on their configuration.
-  if (base::FeatureList::IsEnabled(
-          features::kBypassRequestForbiddenHeadersCheck)) {
+  if (cors::IsBypassRequestForbiddenHeadersCheckEnabled()) {
     bool bypass_forbidden_fetch_request_headers =
         SecurityPolicy::IsOriginAccessToURLAllowed(
             ExecutionContext::From(script_state)->GetSecurityOrigin(),

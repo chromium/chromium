@@ -23,8 +23,8 @@ class OriginAccessList;
 //   - `request_initiator`: is the initiator origin of the request.
 //   - `url`: is the target URL of the request.
 //
-// Returns `true` if `kBypassRequestForbiddenHeadersCheck` feature is enabled
-// and `request_initiator` is allowed to access `url` according to
+// Returns `true` if `kBypassRequestForbiddenHeadersCheck` feature is
+// enabled and `request_initiator` is allowed to access `url` according to
 // `origin_access_list`.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 bool ShouldAllowUnsafeHeaders(

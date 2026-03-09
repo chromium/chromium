@@ -1810,18 +1810,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kBoostRenderProcessForLoadingPrioritizeRestore);
 
-// If enabled, the forbidden header checks for requests are bypassed. This is
-// the renderer side of the feature. The network service side feature is
-// `network::features::kBypassRequestForbiddenHeadersCheck`. Both features must
-// be enabled for the bypass to work end-to-end.
-//
-// This feature allows specific contexts to bypass the standard forbidden header
-// restrictions (currently just the 'Origin' header) if they have explicit
-// permission to access the target URL. The bypass occurs only if the request's
-// initiator origin is allowed to access the target URL via the security
-// policy's origin access lists.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBypassRequestForbiddenHeadersCheck);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStreamlineRendererInit);

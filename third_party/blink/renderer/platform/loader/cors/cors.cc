@@ -9,6 +9,7 @@
 #include "base/functional/function_ref.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -239,6 +240,11 @@ bool IsNoCorsAllowedContext(mojom::blink::RequestContextType context) {
     default:
       return false;
   }
+}
+
+bool IsBypassRequestForbiddenHeadersCheckEnabled() {
+  return base::FeatureList::IsEnabled(
+      network::features::kBypassRequestForbiddenHeadersCheck);
 }
 
 }  // namespace cors

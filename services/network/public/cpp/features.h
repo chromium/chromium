@@ -418,9 +418,8 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(int, kDurableMessagesGlobalBufferSize);
 
 // If enabled, the forbidden header checks for requests can be bypassed. This is
-// the network service side of the feature. The renderer side feature is
-// `blink::features::kBypassRequestForbiddenHeadersCheck`. Both features must be
-// enabled for the bypass to work end-to-end.
+// the network service side of the feature. The renderer side uses this same
+// feature via the cors::IsBypassRequestForbiddenHeadersCheckEnabled() function.
 //
 // This feature allows specific contexts to bypass the standard forbidden header
 // restrictions (currently only for the 'Origin' header) if they have explicit

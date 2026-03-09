@@ -30,7 +30,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace extensions {
 
@@ -380,34 +379,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, ExtensionResourceShouldNotBeOpaque) {
             ExecuteScriptInBackgroundPage(extension->id(), script));
 }
 
-class ExtensionFetchHeadersTest : public ExtensionApiTest,
-                                  public testing::WithParamInterface<bool> {
+class ExtensionFetchHeadersTest : public base::test::WithFeatureOverride,
+                                  public ExtensionApiTest {
  public:
-  ExtensionFetchHeadersTest() = default;
+  ExtensionFetchHeadersTest()
+      : base::test::WithFeatureOverride(
+            network::features::kBypassRequestForbiddenHeadersCheck) {}
 
   ExtensionFetchHeadersTest(const ExtensionFetchHeadersTest&) = delete;
   ExtensionFetchHeadersTest& operator=(const ExtensionFetchHeadersTest&) =
       delete;
   ~ExtensionFetchHeadersTest() override = default;
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (GetParam()) {
-      enabled_features.push_back(
-          network::features::kBypassRequestForbiddenHeadersCheck);
-      enabled_features.push_back(
-          blink::features::kBypassRequestForbiddenHeadersCheck);
-    } else {
-      disabled_features.push_back(
-          network::features::kBypassRequestForbiddenHeadersCheck);
-      disabled_features.push_back(
-          blink::features::kBypassRequestForbiddenHeadersCheck);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-    ExtensionApiTest::SetUp();
-  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -515,7 +497,6 @@ class ExtensionFetchHeadersTest : public ExtensionApiTest,
   // RunLoop to quit when a request for `url_to_wait_for_` is observed.
   std::unique_ptr<base::RunLoop> wait_for_request_run_loop_;
   base::Lock requests_to_server_lock_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the behavior of a privileged (background) context when it
@@ -548,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 
   // Confirm if headers that are forbidden are allowed (based on feature state)
   // on a POST request. This verifies the network service does not
@@ -559,8 +540,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=fetchPostAndSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname"
-                 : extension->origin().Serialize()));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname"
+                              : extension->origin().Serialize()));
 
   // Confirm if headers that are forbidden are allowed using Headers.set().
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
@@ -568,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=headersApiSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 
   // Confirm if headers that are forbidden are not allowed to be
   // Headers.delete()-ed. Even if the feature is enabled, the deletion is
@@ -580,7 +561,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=headersApiRemove"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 }
 
 // Tests the behavior of a privileged (extension resource) context when it
@@ -617,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 
   // Confirm if headers that are forbidden are allowed on a POST request (based
   // on feature state). This verifies the network service does not
@@ -628,8 +609,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=fetchPostAndSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname"
-                 : extension->origin().Serialize()));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname"
+                              : extension->origin().Serialize()));
 
   // Confirm if headers that are forbidden are allowed (based on feature state)
   // using Headers.set().
@@ -638,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=headersApiSet"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 
   // Confirm if headers that are forbidden are not allowed to be
   // Headers.delete()-ed. Even if the feature is enabled, the deletion is
@@ -650,7 +631,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
           "/fetch_forbidden.html?test=headersApiRemove"),
       /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakescheme://fakehostname" : ""));
+      IsParamFeatureEnabled() ? "fakescheme://fakehostname" : ""));
 }
 
 // Tests the behavior of an unprivileged (content script) context when it
@@ -783,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       /*expected_header_value=*/""));
 }
 
-// Toggle `(network|blink)::features::kBypassRequestForbiddenHeadersCheck`.
+// Toggle `network::features::kNetworkBypassRequestForbiddenHeadersCheck`.
 INSTANTIATE_TEST_SUITE_P(All, ExtensionFetchHeadersTest, testing::Bool());
 
 }  // namespace

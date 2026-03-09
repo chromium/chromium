@@ -68,6 +68,10 @@ PLATFORM_EXPORT bool IsCorsSafelistedResponseHeader(const String&);
 // Checks whether request mode 'no-cors' is allowed for a certain context.
 PLATFORM_EXPORT bool IsNoCorsAllowedContext(mojom::blink::RequestContextType);
 
+// Checks if the `network::features::kBypassRequestForbiddenHeadersCheck`
+// feature is enabled.
+PLATFORM_EXPORT bool IsBypassRequestForbiddenHeadersCheckEnabled();
+
 }  // namespace cors
 
 }  // namespace blink
