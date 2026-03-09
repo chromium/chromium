@@ -780,6 +780,23 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
+// Checks whether it's possible to do a copy of a SharedImage to a GL texture
+// via CopyTexture().
+bool CanCopySharedImageToGLTextureViaTextureCopy(
+    scoped_refptr<gpu::ClientSharedImage> shared_image) {
+  const auto si_format = shared_image->format();
+  const bool si_format_has_single_texture =
+      si_format.is_single_plane() || si_format.PrefersExternalSampler();
+  const bool si_usable_by_gles2_interface =
+      shared_image->GetTextureTarget() != 0;
+
+  // Copying the shared image to the destination texture via a direct
+  // texture-to-texture copy requires being able to obtain a client-side GL
+  // texture for the shared image, which in turn requires that the shared image
+  // be either single-plane or use external sampler and that it be usable by GL.
+  return si_format_has_single_texture && si_usable_by_gles2_interface;
+}
+
 // Checks support before attempting a service-side copy of a SharedImage to a
 // GL texture via Skia.
 bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
@@ -836,19 +853,7 @@ bool CopyVideoFrameDirectlyToGLTexture(
   }
 
   const auto shared_image = video_frame->shared_image();
-  const auto si_format = shared_image->format();
-  const bool si_format_has_single_texture =
-      si_format.is_single_plane() || si_format.PrefersExternalSampler();
-  const bool si_usable_by_gles2_interface =
-      shared_image->GetTextureTarget() != 0;
-
-  // Copying the shared image to the destination texture via a direct
-  // texture-to-texture copy requires being able to obtain a client-side GL
-  // texture for the shared image, which in turn requires that the shared image
-  // be either single-plane or use external sampler and that it be usable by GL.
-  bool can_obtain_texture_from_shared_image =
-      si_format_has_single_texture && si_usable_by_gles2_interface;
-  if (can_obtain_texture_from_shared_image) {
+  if (CanCopySharedImageToGLTextureViaTextureCopy(shared_image)) {
     CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
