@@ -23,13 +23,18 @@ class CORE_EXPORT Intervention {
   ~Intervention() = default;
 
   // Generates a intervention report, to be routed to the Reporting API and any
-  // ReportingObservers. Also sends the intervention message to the console.
-  // `message` will be used for both the console and intervention report unless
-  // `console_message` is specified.
+  // ReportingObservers. It also sends the intervention message to the console.
   static void GenerateReport(LocalFrame*,
                              const String& id,
-                             const String& message,
-                             const String& console_message = "");
+                             const String& message);
+
+  // Generates an intervention report, to be routed to the Reporting API and any
+  // ReportingObservers. Since intervention reports already have a console
+  // warning of their own, this does not add a second.
+  static void GenerateReportWithoutAdditionalConsoleWarning(
+      LocalFrame*,
+      const String& id,
+      const String& message);
 };
 
 }  // namespace blink

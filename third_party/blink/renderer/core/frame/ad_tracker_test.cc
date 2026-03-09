@@ -2133,12 +2133,10 @@ TEST_F(AdTrackerSimTest, SelectivePermissionsInterventionOn) {
      navigator.geolocation.getCurrentPosition(() => {}, () => {console.log("Failed")});
   )SCRIPT");
   EXPECT_TRUE(
-      base::test::RunUntil([&]() { return ConsoleMessages().size() == 3; }));
+      base::test::RunUntil([&]() { return ConsoleMessages().size() == 2; }));
   EXPECT_TRUE(ConsoleMessages()[0].starts_with(
-      "Blocked call to geolocation because ad-script"));
-  EXPECT_TRUE(ConsoleMessages()[1].starts_with(
       "Permissions policy violation: Geolocation"));
-  EXPECT_EQ("Failed", ConsoleMessages()[2]);
+  EXPECT_EQ("Failed", ConsoleMessages()[1]);
 }
 
 TEST_F(AdTrackerSimTest, SelectivePermissionsInterventionOff) {

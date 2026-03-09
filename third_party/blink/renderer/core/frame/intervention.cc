@@ -21,20 +21,30 @@ namespace blink {
 // static
 void Intervention::GenerateReport(LocalFrame* frame,
                                   const String& id,
-                                  const String& message,
-                                  const String& console_message) {
+                                  const String& message) {
   if (!frame || !frame->Client()) {
     return;
   }
 
   // Send the message to the console.
-  auto* window = frame->DomWindow();
-  window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+  frame->DomWindow()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kIntervention,
-      mojom::blink::ConsoleMessageLevel::kError,
-      console_message.empty() ? message : console_message));
+      mojom::blink::ConsoleMessageLevel::kError, message));
+
+  GenerateReportWithoutAdditionalConsoleWarning(frame, id, message);
+}
+
+// static
+void Intervention::GenerateReportWithoutAdditionalConsoleWarning(
+    LocalFrame* frame,
+    const String& id,
+    const String& message) {
+  if (!frame || !frame->Client()) {
+    return;
+  }
 
   // Construct the intervention report.
+  auto* window = frame->DomWindow();
   InterventionReportBody* body =
       MakeGarbageCollected<InterventionReportBody>(id, message);
   Report* report = MakeGarbageCollected<Report>(

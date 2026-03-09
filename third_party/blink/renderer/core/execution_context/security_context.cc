@@ -225,12 +225,8 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
                  "of the call. See http://crbug.com/435223477 for more "
                  "information about this intervention."});
 
-            // Add debugging cross-site data to the devtools console that
-            // shouldn't be in the intervention report.
-            String console_message =
-                StrCat({intervention_message, " ", ad_ancestry.ToString()});
-            Intervention::GenerateReport(frame, "SelectivePermissions",
-                                         intervention_message, console_message);
+            Intervention::GenerateReportWithoutAdditionalConsoleWarning(
+                frame, "SelectivePermissions", intervention_message);
 
             AuditsIssue::ReportSelectivePermissionsInterventionIssue(
                 execution_context_.Get(), feature_name, ad_ancestry,
