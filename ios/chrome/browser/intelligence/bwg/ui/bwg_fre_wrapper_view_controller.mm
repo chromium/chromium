@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -35,7 +35,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 }  // namespace
 
-@interface BWGFREWrapperViewController () <BWGPromoViewControllerDelegate>
+@interface BWGFREWrapperViewController () <GeminiPromoViewControllerDelegate>
 
 // The main scroll view for the content.
 @property(nonatomic, strong) UIScrollView* contentScrollView;
@@ -43,8 +43,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 @end
 
 @implementation BWGFREWrapperViewController {
-  // The BWG Promo View Controller.
-  BWGPromoViewController* _promoViewController;
+  // The Gemini Promo View Controller.
+  GeminiPromoViewController* _promoViewController;
   // The Gemini Consent View Controller.
   GeminiConsentViewController* _consentViewController;
   // If YES, `_showPromo` will show the promo view. Otherwise, it will skip the
@@ -296,8 +296,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 // Instantiates and configures the child view controllers.
 - (void)setupChildViewControllers {
   if (_showPromo) {
-    _promoViewController = [[BWGPromoViewController alloc] init];
-    _promoViewController.BWGPromoDelegate = self;
+    _promoViewController = [[GeminiPromoViewController alloc] init];
+    _promoViewController.geminiPromoDelegate = self;
     _promoViewController.mutator = self.mutator;
   }
 
@@ -365,7 +365,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
       (_currentChildViewController != _consentViewController);
 }
 
-#pragma mark - BWGPromoViewControllerDelegate
+#pragma mark - GeminiPromoViewControllerDelegate
 
 // Handles the primary action from the promo screen. It transitions the view
 // to the consent screen and animates the content scroll view horizontally.

@@ -1,12 +1,12 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -67,10 +67,10 @@ const CGFloat kBaselineAdjustment = 10.0;
 
 }  // namespace
 
-@interface BWGPromoViewController ()
+@interface GeminiPromoViewController ()
 @end
 
-@implementation BWGPromoViewController {
+@implementation GeminiPromoViewController {
   // Main stack view. This view itself does not scroll.
   UIStackView* _mainStackView;
   // View that contains the main title.
@@ -459,7 +459,7 @@ const CGFloat kBaselineAdjustment = 10.0;
 // Did tap Primary Button.
 - (void)didTapPrimaryButton:(UIButton*)sender {
   RecordFREPromoAction(IOSGeminiFREAction::kAccept);
-  [self.BWGPromoDelegate didAcceptPromo];
+  [self.geminiPromoDelegate didAcceptPromo];
 }
 
 // Did tap Secondary Button.
