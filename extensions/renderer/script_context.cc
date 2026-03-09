@@ -204,7 +204,7 @@ void ScriptContext::Invalidate() {
   for (base::OnceClosure& observer : observers) {
     std::move(observer).Run();
   }
-  CHECK(invalidate_observers_.empty())
+  DCHECK(invalidate_observers_.empty())
       << "Invalidation observers cannot be added during invalidation";
 
   v8_context_.Reset();
@@ -214,7 +214,7 @@ void ScriptContext::AddInvalidationObserver(base::OnceClosure observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   // `Invalidate()` assumes that an `observer` is not added while it's notifying
   // observers so let's be sure of that.
-  CHECK(is_valid_);
+  DCHECK(is_valid_);
   invalidate_observers_.push_back(std::move(observer));
 }
 

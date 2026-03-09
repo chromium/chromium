@@ -1019,6 +1019,9 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
     OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,
                                              const PortId& port_id,
                                              CallbackID callback_id) {
+  // TODO(crbug.com/475029699): Can probably remove this check after this is
+  // resolved because then we'll know that the script context will be valid when
+  // this is called.
   // The ScriptContext may have been invalidated (and the `v8::Context`
   // released) if this callback was created during context invalidation. In that
   // case, the `OneTimeMessageContextData` will be destroyed when the
