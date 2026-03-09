@@ -6353,13 +6353,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.PendingStreamsWaitTime" units="ms"
-    expires_after="2023-02-12">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2026-09-08">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The wait time of the pending stream when it is finally serviced. Pending
     streams are those which could not be created immediately because there were
-    too many active streams.
+    too many active streams. Recorded when a QUIC session is ready open a new
+    stream on top of the session.
+
+    Warning: this histogram was expired from 2023-02-12 to 2026-03-09; data may
+    be missing.
   </summary>
 </histogram>
 
