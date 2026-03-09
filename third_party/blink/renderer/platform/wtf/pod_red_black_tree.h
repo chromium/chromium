@@ -87,28 +87,12 @@ template <class T>
 struct ValueToString;
 #endif
 
-enum UninitializedTreeEnum { kUninitializedTree };
-
 template <class T>
 class PodRedBlackTree {
   DISALLOW_NEW();
 
  public:
   class Node;
-
-  // Constructs a new red-black tree without allocating an arena.
-  // isInitialized will return false in this case. initIfNeeded can be used
-  // to init the structure. This constructor is usefull for creating
-  // lazy initialized tree.
-  explicit PodRedBlackTree(UninitializedTreeEnum)
-      : root_(nullptr),
-        needs_full_ordering_comparisons_(false)
-#ifndef NDEBUG
-        ,
-        verbose_debugging_(false)
-#endif
-  {
-  }
 
   // Constructs a new red-black tree, allocating temporary objects
   // from a newly constructed PodFreeListArena.
@@ -138,35 +122,13 @@ class PodRedBlackTree {
 
   virtual ~PodRedBlackTree() = default;
 
-  // Clearing will delete the contents of the tree. After this call
-  // isInitialized will return false.
-  void Clear() {
-    MarkFree(root_);
-    arena_ = nullptr;
-    root_ = nullptr;
-  }
-
-  bool IsInitialized() const { return arena_.get(); }
-
-  void InitIfNeeded() {
-    if (!arena_)
-      arena_ = PodFreeListArena<Node>::Create();
-  }
-
-  void InitIfNeeded(PodFreeListArena<Node>* arena) {
-    if (!arena_)
-      arena_ = arena;
-  }
-
   void Add(const T& data) {
-    DCHECK(IsInitialized());
     Node* node = arena_->template AllocateObject<T>(data);
     InsertNode(node);
   }
 
   // Returns true if the datum was found in the tree.
   bool Remove(const T& data) {
-    DCHECK(IsInitialized());
     Node* node = TreeSearch(data);
     if (node) {
       DeleteNode(node);
@@ -176,7 +138,6 @@ class PodRedBlackTree {
   }
 
   bool Contains(const T& data) const {
-    DCHECK(IsInitialized());
     return TreeSearch(data);
   }
 
@@ -186,7 +147,6 @@ class PodRedBlackTree {
   }
 
   virtual bool CheckInvariants() const {
-    DCHECK(IsInitialized());
     int black_count;
     return CheckInvariantsFromNode(root_, &black_count);
   }
@@ -194,10 +154,7 @@ class PodRedBlackTree {
 #ifndef NDEBUG
   // Dumps the tree's contents to the logging info stream for
   // debugging purposes.
-  void Dump() const {
-    if (arena_)
-      DumpFromNode(root_, 0);
-  }
+  void Dump() const { DumpFromNode(root_, 0); }
 
   // Turns on or off verbose debugging of the tree, causing many
   // messages to be logged during insertion and other operations in
