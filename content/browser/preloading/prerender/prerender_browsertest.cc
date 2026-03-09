@@ -1147,6 +1147,7 @@ INSTANTIATE_TEST_SUITE_P(
 // - `PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction`: See the
 //   test.
 // - `CancelAllPrerenderUponActivationRequestArrival`: See the test.
+// - `PrerenderWhenInitiatorInBackground_Queue_Processing`: See the test.
 class PrerenderBrowserTestFallbackDisabled : public PrerenderBrowserTest {
  public:
   PrerenderBrowserTestFallbackDisabled()
@@ -9837,6 +9838,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
 }
 
 // TODO(b/40234240): Flaky on win.
+//
+// Rationale for `PrerenderBrowserTestFallbackDisabled`: If
+// `kPreneder2FallbackPrefetchSpecRules` is enabled, prefetch ahead of prerender
+// is triggered and it blocks prerender. Prefetch in a background tab is not
+// scheduled. So, the prerender is never unblocked. Skip the test as it is not
+// testable.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_PrerenderWhenInitiatorInBackground_Queue_Processing \
   DISABLED_PrerenderWhenInitiatorInBackground_Queue_Processing
@@ -9845,7 +9852,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
   PrerenderWhenInitiatorInBackground_Queue_Processing
 #endif
 IN_PROC_BROWSER_TEST_F(
-    PrerenderBrowserTest,
+    PrerenderBrowserTestFallbackDisabled,
     MAYBE_PrerenderWhenInitiatorInBackground_Queue_Processing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
