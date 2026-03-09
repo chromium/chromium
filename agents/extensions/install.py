@@ -330,7 +330,7 @@ def _check_for_workspace_extensions(project_root: Path | None) -> None:
 def check_gemini_version() -> None:
     """Checks if the Gemini CLI version is sufficient."""
     required_version = (0, 8, 0)
-    version_str = gemini_helpers.get_gemini_version()
+    version_str = gemini_helpers.get_gemini_version(use_alias=True)
     if not version_str:
         raise Error('Could not determine Gemini CLI version. Please ensure '
                     "'gemini' is in your PATH and working correctly.")
@@ -400,7 +400,7 @@ def main() -> None:
     """Installs and manages extension."""
     try:
         check_gemini_version()
-        gemini_cmd = gemini_helpers.get_gemini_command()
+        gemini_cmd = gemini_helpers.get_gemini_command(use_alias=True)
         project_root = get_project_root()
         _check_for_workspace_extensions(project_root)
 
