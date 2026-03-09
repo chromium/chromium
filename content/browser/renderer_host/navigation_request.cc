@@ -6510,6 +6510,13 @@ void NavigationRequest::CommitErrorPage(
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ =
       net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+
+  // Before sending the commit parameters to the renderer process, sanitize
+  // the redirect URLs to avoid leaking potentially sensitive data into
+  // processes which are cross-site. There is no dependency on the
+  // cross-site-ness, therefore just sanitize unilaterally.
+  SanitizeRedirectsForCommit(commit_params_);
+
   GetRenderFrameHost()->FailedNavigation(
       this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
       net_error_, extended_error_code_, error_page_content, *document_token_);

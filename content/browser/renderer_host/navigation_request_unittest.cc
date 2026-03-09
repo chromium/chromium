@@ -876,6 +876,39 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommit) {
   EXPECT_EQ(GURL("https://c.com"), commit_params->redirects[2]);
 }
 
+// Test to ensure that SanitizeRedirectsForCommit is called when a navigation
+// fails and commits an error page.
+TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitErrorPage) {
+  const GURL start_url("https://a.com?param=1");
+  const GURL url_2("https://b.com?param=2#foo");
+  const GURL final_url("https://d.com?param=4");
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, main_test_rfh());
+  navigation->Start();
+  navigation->Redirect(url_2);
+  navigation->Redirect(final_url);
+  navigation->Fail(net::ERR_CONNECTION_RESET);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  // We expect the redirects in the NavigationRequest's commit_params_ to be
+  // sanitized.
+  const auto& commit_params = request->commit_params();
+
+  // redirects contains entries for A and B.
+  EXPECT_EQ(2u, commit_params.redirects.size());
+  EXPECT_EQ(GURL("https://a.com"), commit_params.redirects[0]);
+  EXPECT_EQ(GURL("https://b.com"), commit_params.redirects[1]);
+
+  // redirect_infos contains entries for B and D.
+  // The last entry (D) should NOT be sanitized.
+  EXPECT_EQ(2u, commit_params.redirect_infos.size());
+  EXPECT_EQ(GURL("https://b.com"), commit_params.redirect_infos[0].new_url);
+  EXPECT_EQ(final_url, commit_params.redirect_infos[1].new_url);
+}
+
 TEST_F(NavigationRequestTest, AbortsDeletedNavigationInProgress) {
   const GURL kUrl1 = GURL("http://a.com");
   std::unique_ptr<NavigationSimulator> navigation =
