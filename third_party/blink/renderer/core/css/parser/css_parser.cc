@@ -200,6 +200,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
   const CSSValue* value =
       CSSParserFastPaths::MaybeParseValue(resolved_property, string, context);
   if (value) {
+    context->Count(unresolved_property);
     return declaration->SetLonghandProperty(CSSPropertyValue(
         CSSPropertyName(resolved_property), *value, important));
   }
@@ -219,6 +220,7 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
     value =
         CSSPropertyParser::ParseSingleValue(resolved_property, stream, context);
     if (value != nullptr) {
+      context->Count(unresolved_property);
       return declaration->SetLonghandProperty(CSSPropertyValue(
           CSSPropertyName(resolved_property), *value, important));
     }

@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
@@ -43,7 +45,8 @@ bool InlineStylePropertyMap::SetShorthandProperty(
   DCHECK(CSSProperty::Get(property_id).IsShorthand());
   const auto result =
       owner_element_->EnsureMutableInlineStyle().ParseAndSetProperty(
-          property_id, value, false /* important */, secure_context_mode);
+          property_id, value, false /* important */, secure_context_mode,
+          owner_element_->GetDocument().ElementSheet().Contents());
   return result != MutableCSSPropertyValueSet::kParseError;
 }
 

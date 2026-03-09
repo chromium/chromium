@@ -108,10 +108,31 @@
   }, "Parsed constructed sheet property counted");
 
   test(() => {
-    constructed_style.paddintBottom = "10px";
+    constructed_style.paddingBottom = "10px";
     assert_used([
       ["padding-bottom", true]
     ]);
   }, "Setting constructed sheet style property value counted");
+
+  test(() => {
+    assert_used([
+      ["margin", false]
+    ]);
+    element.attributeStyleMap.set("margin", "10px");
+    assert_used([
+      ["margin", true]
+    ]);
+  }, "Setting inline style shorthand via CSS Typed OM counted");
+
+  test(() => {
+    assert_used([
+      ["outline", false]
+    ]);
+    const rule_style = style_tag.sheet.cssRules[0];
+    rule_style.styleMap.set("outline", "2px dashed blue");
+    assert_used([
+      ["outline", true]
+    ]);
+  }, "Setting style rule shorthand via CSS Typed OM counted");
 
 </script>
