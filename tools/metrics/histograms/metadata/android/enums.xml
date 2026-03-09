@@ -1451,7 +1451,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="MDoc scheme"/>
   <int value="5" label="openid4vp"/>
   <int value="6" label="OpenId4Vci"/>
-  <int value="7" label="Haip"/>
+  <int value="7" label="Haip (Deprecated)"/>
+  <int value="8" label="haip-vp"/>
+  <int value="9" label="haip-vci"/>
 </enum>
 
 <enum name="NewWindowAppSource">

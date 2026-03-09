@@ -6024,7 +6024,8 @@ chromium-metrics-reviews@google.com.
     to cancel the external app launch.)
   </summary>
   <token key="Scheme">
-    <variant name="Haip" summary="haip://"/>
+    <variant name="HaipVci" summary="haip-vci://"/>
+    <variant name="HaipVp" summary="haip-vp://"/>
     <variant name="Mdoc" summary="mdoc://"/>
     <variant name="OpenId4Vci" summary="openid-credential-offer://"/>
     <variant name="OpenId4Vp" summary="openid4vp://"/>

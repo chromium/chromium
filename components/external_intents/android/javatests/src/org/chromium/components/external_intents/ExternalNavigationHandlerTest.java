@@ -177,6 +177,10 @@ public class ExternalNavigationHandlerTest {
 
     private static final String SELF_SCHEME = "selfscheme";
     private static final String DIGITAL_CREDENTIALS_URL = "openid4vp-v1-unsigned://authorize";
+    private static final String HAIP_VP_URL = "haip-vp://authorize";
+    private static final String HAIP_VCI_URL = "haip-vci://authorize";
+    private static final String MDOC_URL = "mdoc://authorize";
+    private static final String OPENID4VCI_URL = "openid-credential-offer://authorize";
     private static final String DIGITAL_CREDENTIALS_PACKAGE_NAME = "pkg.dcc";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -1679,6 +1683,44 @@ public class ExternalNavigationHandlerTest {
             activity.finish();
             InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
         }
+    }
+
+    private void checkDigitalCredentialsWarningDialogShow(String scheme, String url) {
+        mDelegate.add(new IntentActivity(scheme, DIGITAL_CREDENTIALS_PACKAGE_NAME));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    checkUrl(url, redirectHandlerForLinkClick())
+                            .withHasUserGesture(true)
+                            .expecting(
+                                    OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                                    IGNORE);
+                    mUrlHandler.mDigitalCredentialsWarningDialogDelegate.onClick(
+                            null, ModalDialogProperties.ButtonType.NEGATIVE);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testDigitalCredentialsWarningDialog_HaipVp() {
+        checkDigitalCredentialsWarningDialogShow("haip-vp", HAIP_VP_URL);
+    }
+
+    @Test
+    @MediumTest
+    public void testDigitalCredentialsWarningDialog_HaipVci() {
+        checkDigitalCredentialsWarningDialogShow("haip-vci", HAIP_VCI_URL);
+    }
+
+    @Test
+    @MediumTest
+    public void testDigitalCredentialsWarningDialog_Mdoc() {
+        checkDigitalCredentialsWarningDialogShow("mdoc", MDOC_URL);
+    }
+
+    @Test
+    @MediumTest
+    public void testDigitalCredentialsWarningDialog_OpenId4Vci() {
+        checkDigitalCredentialsWarningDialogShow("openid-credential-offer", OPENID4VCI_URL);
     }
 
     @Test

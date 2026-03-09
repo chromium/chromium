@@ -105,8 +105,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     @VisibleForTesting public static final String PLAY_APP_PACKAGE = "com.android.vending";
 
     private static final String MDOC_SCHEME = "mdoc";
-    private static final String HAIP_SCHEME = "haip";
+    private static final String HAIP_VP_SCHEME = "haip-vp";
+    private static final String HAIP_VCI_SCHEME = "haip-vci";
     private static final String OPENID4VP_SCHEME_PREFIX_SUFFIX = "openid4vp";
+    private static final String OPENID4VCI_SCHEME = "openid-credential-offer";
 
     private static final String PDF_EXTENSION = "pdf";
     private static final String PDF_VIEWER = "com.google.android.apps.docs";
@@ -2089,7 +2091,9 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                 && (scheme.startsWith(OPENID4VP_SCHEME_PREFIX_SUFFIX)
                         || scheme.endsWith(OPENID4VP_SCHEME_PREFIX_SUFFIX)
                         || scheme.equals(MDOC_SCHEME)
-                        || scheme.equals(HAIP_SCHEME))) {
+                        || scheme.equals(OPENID4VCI_SCHEME)
+                        || scheme.equals(HAIP_VP_SCHEME)
+                        || scheme.equals(HAIP_VCI_SCHEME))) {
             if (debug()) Log.i(TAG, "Digital Credentials intent detected");
             Context context = mDelegate.getContext();
             assumeNonNull(context);
