@@ -17,10 +17,10 @@ class BoundaryEventDispatcher {
   STACK_ALLOCATED();
 
  public:
-  BoundaryEventDispatcher(AtomicString over_event,
-                          AtomicString out_event,
-                          AtomicString enter_event,
-                          AtomicString leave_event)
+  BoundaryEventDispatcher(const AtomicString& over_event,
+                          const AtomicString& out_event,
+                          const AtomicString& enter_event,
+                          const AtomicString& leave_event)
       : over_event_(over_event),
         out_event_(out_event),
         enter_event_(enter_event),
@@ -38,10 +38,10 @@ class BoundaryEventDispatcher {
                         bool check_for_listener) = 0;
 
  private:
-  AtomicString over_event_;
-  AtomicString out_event_;
-  AtomicString enter_event_;
-  AtomicString leave_event_;
+  const AtomicString& over_event_;
+  const AtomicString& out_event_;
+  const AtomicString& enter_event_;
+  const AtomicString& leave_event_;
 };
 
 }  // namespace blink
