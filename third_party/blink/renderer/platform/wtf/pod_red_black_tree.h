@@ -96,15 +96,6 @@ class PodRedBlackTree {
  public:
   class Node;
 
-  // Visitor interface for walking all of the tree's elements.
-  class Visitor {
-   public:
-    virtual void Visit(const T& data) = 0;
-
-   protected:
-    virtual ~Visitor() = default;
-  };
-
   // Constructs a new red-black tree without allocating an arena.
   // isInitialized will return false in this case. initIfNeeded can be used
   // to init the structure. This constructor is usefull for creating
@@ -187,20 +178,6 @@ class PodRedBlackTree {
   bool Contains(const T& data) const {
     DCHECK(IsInitialized());
     return TreeSearch(data);
-  }
-
-  void VisitInorder(Visitor* visitor) const {
-    DCHECK(IsInitialized());
-    if (!root_)
-      return;
-    VisitInorderImpl(root_, visitor);
-  }
-
-  int size() const {
-    DCHECK(IsInitialized());
-    Counter counter;
-    VisitInorder(&counter);
-    return counter.Count();
   }
 
   // See the class documentation for an explanation of this property.
@@ -681,15 +658,6 @@ class PodRedBlackTree {
     arena_->FreeObject(y);
   }
 
-  // Visits the subtree rooted at the given node in order.
-  void VisitInorderImpl(Node* node, Visitor* visitor) const {
-    if (node->Left())
-      VisitInorderImpl(node->Left(), visitor);
-    visitor->Visit(node->Data());
-    if (node->Right())
-      VisitInorderImpl(node->Right(), visitor);
-  }
-
   void MarkFree(Node* node) {
     if (!node)
       return;
@@ -700,25 +668,6 @@ class PodRedBlackTree {
       MarkFree(node->Right());
     arena_->FreeObject(node);
   }
-
-  //----------------------------------------------------------------------
-  // Helper class for size()
-
-  // A Visitor which simply counts the number of visited elements.
-  class Counter final : public Visitor {
-    DISALLOW_NEW();
-
-   public:
-    Counter() : count_(0) {}
-    Counter(const Counter&) = delete;
-    Counter& operator=(const Counter&) = delete;
-
-    void Visit(const T&) override { ++count_; }
-    int Count() const { return count_; }
-
-   private:
-    int count_;
-  };
 
   //----------------------------------------------------------------------
   // Verification and debugging routines

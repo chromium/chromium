@@ -116,7 +116,6 @@ TEST(PodIntevalTreeTest, TestDuplicateElementInsertion) {
   EXPECT_TRUE(tree.Contains(interval2));
   EXPECT_FALSE(tree.Contains(interval1));
   EXPECT_TRUE(tree.Remove(interval2));
-  EXPECT_EQ(0, tree.size());
 }
 
 namespace {
