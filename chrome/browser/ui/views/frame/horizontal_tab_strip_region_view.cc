@@ -227,8 +227,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     BrowserView* browser_view)
     : profile_(browser_view->GetProfile()),
       render_tab_search_before_tab_strip_(
-          tabs::GetTabSearchPosition(browser_view->browser()) ==
-          tabs::TabSearchPosition::kLeadingHorizontalTabstrip),
+          !tabs::GetDefaultTabSearchRightAligned() ||
+          base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)),
       tab_search_position_metrics_logger_(
           std::make_unique<TabSearchPositionMetricsLogger>(
               browser_view->browser())),
