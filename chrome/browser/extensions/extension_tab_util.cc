@@ -442,18 +442,15 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
     tab_object.fav_icon_url = visible_entry->GetFavicon().url.spec();
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  TabStripModel* tab_strip = nullptr;
-  GetTabStripModel(contents, &tab_strip, &tab_index);
-  if (tab_strip) {
-    tabs::TabInterface* opener = tab_strip->GetOpenerOfTabAt(tab_index);
+  if (tab_list && tab_interface) {
+    tabs::TabInterface* opener =
+        tab_list->GetOpenerForTab(tab_interface->GetHandle());
     if (opener) {
       content::WebContents* opener_contents = opener->GetContents();
       CHECK(opener_contents);
       tab_object.opener_tab_id = GetTabIdForExtensions(*opener_contents);
     }
   }
-#endif
 
   ScrubTabForExtension(extension, contents, &tab_object, scrub_tab_behavior);
   return tab_object;
