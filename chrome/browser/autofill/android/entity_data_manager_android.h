@@ -86,6 +86,15 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   std::vector<EntityTypeAndroid> GetSortedEntityTypesForListDisplay(
       JNIEnv* env) const;
 
+  // Checks whether Autofill AI is disabled by enterprise policy.
+  // TODO(crbug.com/468236777): Return `ModelExecutionEnterprisePolicyValue`
+  // enum instead of having a specific method to check the policy pref state.
+  bool GetIsAutofillAiDisabledByEnterprisePolicy(JNIEnv* env);
+
+  // Checks whether Autofill AI is enabled by enterprise policy but without
+  // logging.
+  bool GetIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(JNIEnv* env);
+
  private:
   ~EntityDataManagerAndroid() override;
 

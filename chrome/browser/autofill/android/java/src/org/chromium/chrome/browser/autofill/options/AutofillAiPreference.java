@@ -32,7 +32,6 @@ public class AutofillAiPreference extends ChromeSwitchPreference {
     /** Constructor for inflating from XML. */
     public AutofillAiPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setLayoutResource(R.layout.autofill_ai_preference);
     }
 
     @Override

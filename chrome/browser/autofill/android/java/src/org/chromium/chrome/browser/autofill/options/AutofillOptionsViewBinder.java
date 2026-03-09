@@ -20,6 +20,9 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import androidx.preference.Preference;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -77,6 +80,35 @@ class AutofillOptionsViewBinder {
                                 model.get(ON_AUTOFILL_AI_SETTING_TOGGLED)
                                         .onResult((boolean) newValue);
                                 return true;
+                            });
+            view.getAutofillAiSwitch()
+                    .setManagedPreferenceDelegate(
+                            new ChromeManagedPreferenceDelegate(view.getProfile()) {
+                                @Override
+                                public boolean isPreferenceControlledByPolicy(
+                                        Preference preference) {
+                                    EntityDataManager manager =
+                                            EntityDataManagerFactory.getForProfile(
+                                                    view.getProfile());
+                                    if (manager == null) {
+                                        return false;
+                                    }
+                                    boolean disabled =
+                                            manager.getIsAutofillAiDisabledByEnterprisePolicy();
+                                    boolean allowedWithoutLogging =
+                                            manager
+                                                    .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+                                    return disabled || allowedWithoutLogging;
+                                }
+
+                                @Override
+                                public boolean isPreferenceClickDisabled(Preference preference) {
+                                    EntityDataManager manager =
+                                            EntityDataManagerFactory.getForProfile(
+                                                    view.getProfile());
+                                    return manager != null
+                                            && manager.getIsAutofillAiDisabledByEnterprisePolicy();
+                                }
                             });
         } else if (key == AUTOFILL_AI_REAUTH_SETTING_ON) {
             view.getAutofillAiAuthenticationSwitch()

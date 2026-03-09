@@ -76,6 +76,15 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat implements Co
                 /* hasCustomLayout= */ mHasCustomLayout);
     }
 
+    /**
+     * Returns the ManagedPreferenceDelegate which will determine whether this preference is
+     * managed.
+     */
+    @VisibleForTesting
+    public @Nullable ManagedPreferenceDelegate getManagedPreferenceDelegate() {
+        return mManagedPrefDelegate;
+    }
+
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);

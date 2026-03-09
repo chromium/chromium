@@ -171,6 +171,15 @@ bool SetAutofillAiOptInStatus(
     const PrefService* prefs,
     const signin::IdentityManager* identity_manager);
 
+// Checks whether Autofill AI is disabled by enterprise policy.
+[[nodiscard]] bool IsAutofillAiDisabledByEnterprisePolicy(
+    const PrefService* prefs);
+
+// Checks whether Autofill AI is enabled by enterprise policy but without
+// logging.
+[[nodiscard]] bool IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
+    const PrefService* prefs);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_AI_AUTOFILL_AI_PERMISSION_UTILS_H_

@@ -33,6 +33,7 @@ found in the LICENSE file.
         app:isPreferenceVisible="false">
         <org.chromium.chrome.browser.autofill.options.AutofillAiPreference
             android:key="autofill_ai_switch"
+            android:layout="@layout/autofill_ai_preference"
             android:order="0"
             android:title="@string/settings_autofill_ai_page_title"
             android:summary="@string/settings_autofill_ai_description" />

@@ -192,6 +192,21 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testIsAutofillAiDisabledByEnterprisePolicy() {
+        when(mEntityDataManagerJniMock.getIsAutofillAiDisabledByEnterprisePolicy(NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.getIsAutofillAiDisabledByEnterprisePolicy());
+    }
+
+    @Test
+    public void testIsAutofillAIEnabledByEnterprisePolicyWithoutLogging() {
+        when(mEntityDataManagerJniMock.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(
+                        NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging());
+    }
+
+    @Test
     public void testObservers() {
         EntityDataManager.EntityDataManagerObserver observer =
                 mock(EntityDataManager.EntityDataManagerObserver.class);

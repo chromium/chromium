@@ -228,6 +228,16 @@ void EntityDataManagerAndroid::OnEntityInstancesChanged() {
   Java_EntityDataManager_onEntityInstancesChanged(env, java_obj);
 }
 
+bool EntityDataManagerAndroid::GetIsAutofillAiDisabledByEnterprisePolicy(
+    JNIEnv* env) {
+  return autofill::IsAutofillAiDisabledByEnterprisePolicy(prefs_);
+}
+
+bool EntityDataManagerAndroid::
+    GetIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(JNIEnv* env) {
+  return autofill::IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(prefs_);
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(EntityDataManager)

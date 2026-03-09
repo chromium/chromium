@@ -761,6 +761,60 @@ public class AutofillOptionsTest {
         assertFalse(mFragment.getAutofillAiAuthenticationSwitch().isVisible());
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiManagedByPolicy_Disabled() {
+        doReturn(true).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
+        doReturn(false)
+                .when(mMockEntityDataManager)
+                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
+        assertNotNull(delegate);
+        assertTrue(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertTrue(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiManagedByPolicy_EnabledWithoutLogging() {
+        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
+        doReturn(true)
+                .when(mMockEntityDataManager)
+                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
+        assertNotNull(delegate);
+        assertTrue(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiNotManagedByPolicy() {
+        doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
+        doReturn(false)
+                .when(mMockEntityDataManager)
+                .getIsAutofillAiEnabledByEnterprisePolicyWithoutLogging();
+
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+
+        var delegate = mFragment.getAutofillAiSwitch().getManagedPreferenceDelegate();
+        assertNotNull(delegate);
+        assertFalse(delegate.isPreferenceControlledByPolicy(mFragment.getAutofillAiSwitch()));
+        assertFalse(delegate.isPreferenceClickDisabled(mFragment.getAutofillAiSwitch()));
+    }
+
     private ModalDialogManager assertModalNotUsed() {
         fail("The modal dialog manager shouldn't have been used yet!");
         return null;
