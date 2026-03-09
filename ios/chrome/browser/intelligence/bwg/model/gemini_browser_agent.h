@@ -92,6 +92,14 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                      PageContextWrapperError> expected_page_context);
 
+  // Updates the page context for the floaty after cancelling the timeout.
+  // TODO(crbug.com/465535924): Deprecated, new callers should use
+  // `StartGeminiFlow` instead (and let this be handled internally within the
+  // browser agent).
+  void CancelTimeoutAndUpdateFloatyPageContext(
+      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
+                     PageContextWrapperError> expected_page_context);
+
   // Called when the Gemini view state expands.
   void OnGeminiViewStateExpanded();
 
@@ -235,6 +243,15 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // expect the source to re-show the floaty after hiding it.
   bool ShouldSourceReshowFloaty(gemini::FloatyUpdateSource source) const;
 
+  // Called when keyboard state changes.
+  void OnKeyboardStateChanged(bool is_visible);
+
+  // Called for the fullscreen update animation.
+  void FullscreenProgressUpdatedForAnimation();
+
+  // Called when the page content sharing preference changes.
+  void OnPageContentPrefChanged();
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -275,9 +292,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // floaty is considered temporarily hidden.
   std::set<gemini::FloatyUpdateSource> active_hiding_sources_;
 
-  // Called when keyboard state changes.
-  void OnKeyboardStateChanged(bool is_visible);
-
   // Used to track the last shown view state of an invoked floaty. Used to show
   // a hidden floaty with the previous view state.
   ios::provider::GeminiViewState last_shown_view_state_ =
@@ -315,9 +329,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Called when the page content sharing preference changes.
-  void OnPageContentPrefChanged();
 
   // Timer to force page context generation if page load takes too long.
   base::OneShotTimer page_context_timeout_timer_;
