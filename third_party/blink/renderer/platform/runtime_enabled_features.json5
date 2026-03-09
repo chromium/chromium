@@ -5495,7 +5495,7 @@
     },
     {
       name: "SyntheticMouseHoverOverInactivePage",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "SystemDefaultAccentColors",
