@@ -146,17 +146,18 @@ def _ReportEnumXmlIssues(input_api: Type, output_api: Type,
     return
 
   testable_script = tests_helpers.TestableScript.CreatePythonScript(
-      Path('metrics/ukm/validate_format.py'), ['--presubmit'])
-  commands_failed = script_checker.check_scripts([testable_script],
-                                                 input_api.PresubmitLocalPath())
+      Path('tools/metrics/ukm/validate_format.py'), ['--presubmit'])
+  commands_failed = script_checker.check_scripts(
+      [testable_script], cwd=str(_ChromiumSrcPath(input_api)))
 
   if not commands_failed:
     return
 
-  yield output_api.PresubmitError(
-      f'{UKM_XML} does not pass format validation; run '
-      f'{input_api.PresubmitLocalPath()}/ukm/validate_format.py and fix the '
-      'reported error(s) or warning(s).')
+  for res in commands_failed:
+    yield output_api.PresubmitError(
+        f'{UKM_XML} does not pass format validation; run '
+        f'{input_api.PresubmitLocalPath()}/ukm/validate_format.py and fix the '
+        f'reported error(s) or warning(s).\n\n{res.error_message()}')
 
 
 def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
