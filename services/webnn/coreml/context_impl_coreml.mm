@@ -82,7 +82,7 @@ void ContextImplCoreml::CreateGraphImpl(
         constant_tensor_operands,
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(
-      std::move(receiver), this, std::move(graph_info),
+      std::move(receiver), *this, std::move(graph_info),
       std::move(compute_resource_info), std::move(constant_operands),
       std::move(constant_tensor_operands), options().Clone(), properties(),
       std::move(callback));

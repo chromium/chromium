@@ -503,7 +503,7 @@ void ContextImplOrt::CreateGraphImpl(
   GraphImplOrt::CreateAndBuild(
       std::move(receiver), std::move(graph_info),
       std::move(compute_resource_info), std::move(constant_operands),
-      std::move(constant_tensor_operands), this, std::move(callback));
+      std::move(constant_tensor_operands), *this, std::move(callback));
 }
 
 base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -23,6 +24,15 @@ class WebNNContextImpl;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
+// GPU process implementation of the `MLGraph` interface. While this class is
+// reference-counted a `WebNNGraphImpl` is guaranteed not to outlive the
+// `WebNNContextImpl` that created it because references are only held by the
+// context itself or by tasks scheduled to its `gpu::Scheduler` sequence which
+// is shut down when the context is destroyed.
+//
+// This invariant is checked by the `raw_ref<WebNNContextImpl>` member, which
+// will trigger dangling pointer warnings in debug builds and safe crashes in
+// release builds.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     : public WebNNObjectImpl<mojom::WebNNGraph,
                              blink::WebNNGraphToken,
@@ -57,7 +67,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   // Constructs a graph where the receiever and implementation is owned by the
   // context.
   WebNNGraphImpl(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-                 base::WeakPtr<WebNNContextImpl> context,
+                 WebNNContextImpl& context,
                  ComputeResourceInfo compute_resource_info,
                  std::vector<mojom::Device> devices);
 
@@ -68,14 +78,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     return compute_resource_info_;
   }
 
-  WebNNContextImpl* context() const { return context_.get(); }
-
   const std::vector<mojom::Device>& devices() { return devices_; }
 
  protected:
   ~WebNNGraphImpl() override;
 
-  base::WeakPtr<WebNNContextImpl> context_;
+  // The `WebNNContextImpl` which owns and will outlive this object.
+  const base::raw_ref<WebNNContextImpl> context_;
 
  private:
   void OnDisconnect() override;

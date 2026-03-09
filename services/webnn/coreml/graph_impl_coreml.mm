@@ -315,7 +315,7 @@ struct GraphImplCoreml::Params {
 // static
 void GraphImplCoreml::CreateAndBuild(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-    ContextImplCoreml* context,
+    ContextImplCoreml& context,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -327,7 +327,7 @@ void GraphImplCoreml::CreateAndBuild(
     WebNNContextImpl::CreateGraphImplCallback callback) {
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&GraphImplCoreml::DidCreateAndBuild, std::move(receiver),
-                     context->AsWeakPtr(), std::move(callback)));
+                     context.AsWeakPtr(), std::move(callback)));
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -581,7 +581,7 @@ void GraphImplCoreml::DidCreateAndBuild(
   }
 
   std::move(callback).Run(base::MakeRefCounted<GraphImplCoreml>(
-      std::move(receiver), std::move(context), *std::move(result)));
+      std::move(receiver), *context, *std::move(result)));
 }
 
 GraphImplCoreml::ScopedModelPath::ScopedModelPath(base::ScopedTempDir file_dir)
@@ -616,10 +616,10 @@ GraphImplCoreml::ScopedModelPath::~ScopedModelPath() {
 
 GraphImplCoreml::GraphImplCoreml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     std::unique_ptr<Params> params)
     : WebNNGraphImpl(std::move(receiver),
-                     std::move(context),
+                     context,
                      std::move(params->compute_resource_info),
                      std::move(params->devices)),
       compute_resources_(base::MakeRefCounted<ComputeResources>(

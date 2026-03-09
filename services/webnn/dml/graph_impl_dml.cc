@@ -5981,7 +5981,7 @@ GraphImplDml::AllocateGraphResources(Adapter* adapter,
 GraphImplDml::GraphImplDml(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     scoped_refptr<Adapter> adapter,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     std::unique_ptr<CommandRecorder> command_recorder,
     scoped_refptr<PersistentResource> persistent_resource,
     ComPtr<IDMLCompiledOperator> compiled_operator,
@@ -5990,7 +5990,7 @@ GraphImplDml::GraphImplDml(
     std::unique_ptr<GraphResources> graph_resources,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     std::move(context),
+                     context,
                      std::move(compute_resource_info),
                      std::move(devices)),
       persistent_resource_(std::move(persistent_resource)),
@@ -6346,7 +6346,7 @@ void GraphImplDml::CreateWebNNGraphImpl(
 
   // The receiver bound to GraphImplDml.
   std::move(callback).Run(base::MakeRefCounted<GraphImplDml>(
-      std::move(receiver), std::move(adapter), context->AsWeakPtr(),
+      std::move(receiver), std::move(adapter), *context,
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
       std::move(graph_buffer_binding_info), std::move(graph_resources),
@@ -6929,9 +6929,8 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
   // only invoked while the context is alive. A CHECK is appropriate here
   // because DML does not currently support background tasks that outlive the
   // context.
-  CHECK(context_);
-  static_cast<ContextImplDml*>(context_.get())
-      ->HandleContextLostOrCrash(error_message, hr);
+  static_cast<ContextImplDml&>(context_.get())
+      .HandleContextLostOrCrash(error_message, hr);
 }
 
 GraphImplDml::IoBindings::IoBindings(

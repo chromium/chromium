@@ -138,20 +138,20 @@ void GraphImplOrt::CreateAndBuild(
         constant_operands,
     base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
         constant_tensor_operands,
-    ContextImplOrt* context,
+    ContextImplOrt& context,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   ScopedTrace scoped_trace("GraphImplOrt::CreateAndBuild");
 
-  // If the context has been destroyed, the posted task and its reply will be
-  // canceled to avoid doing unnecessary work.
-  context->cancelable_task_tracker().PostTaskAndReplyWithResult(
-      context->env()->graph_compilation_task_runner().get(), FROM_HERE,
+  // Safe to use std::ref because the posted task and its reply will be canceled
+  // if the context is destroyed.
+  context.cancelable_task_tracker().PostTaskAndReplyWithResult(
+      context.env()->graph_compilation_task_runner().get(), FROM_HERE,
       base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), context->session_options(),
-                     context->env(), context->properties(),
+                     std::move(graph_info), context.session_options(),
+                     context.env(), context.properties(),
                      std::move(constant_operands), std::move(scoped_trace)),
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
-                     context->AsWeakPtr(), std::move(compute_resource_info),
+                     std::ref(context), std::move(compute_resource_info),
                      std::move(callback)));
 }
 
@@ -198,15 +198,11 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 // static
 void GraphImplOrt::DidCreateAndBuild(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
     base::expected<std::unique_ptr<GraphImplOrt::ComputeResources>,
                    mojom::ErrorPtr> result) {
-  if (!context) {
-    return;
-  }
-
   if (!result.has_value()) {
     std::move(callback).Run(base::unexpected(std::move(result.error())));
     return;
@@ -215,7 +211,7 @@ void GraphImplOrt::DidCreateAndBuild(
   // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   std::move(callback).Run(base::MakeRefCounted<GraphImplOrt>(
       std::move(receiver), std::move(compute_resource_info),
-      std::move(result.value()), std::move(context),
+      std::move(result.value()), context,
       /*devices=*/std::vector<mojom::Device>()));
 }
 
@@ -225,10 +221,10 @@ GraphImplOrt::GraphImplOrt(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<GraphImplOrt::ComputeResources> compute_resources,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     std::move(context),
+                     context,
                      std::move(compute_resource_info),
                      std::move(devices)),
       compute_resources_(std::move(compute_resources)) {}
@@ -244,9 +240,9 @@ void GraphImplOrt::DispatchImpl(
   ScopedOrtStatus status = compute_resources_->OrtRunSync(
       std::move(named_input_tensors), std::move(named_output_tensors));
   if (status.is_valid()) {
-    static_cast<ContextImplOrt*>(context_.get())
-        ->HandleContextLostOrCrash("Failed to run session.",
-                                   ort_api->GetErrorCode(status.get()));
+    static_cast<ContextImplOrt&>(context_.get())
+        .HandleContextLostOrCrash("Failed to run session.",
+                                  ort_api->GetErrorCode(status.get()));
   }
 }
 

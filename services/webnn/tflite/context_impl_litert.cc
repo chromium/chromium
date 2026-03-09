@@ -125,7 +125,7 @@ void ContextImplLiteRt::DidCreateWeightsFile(
   GraphImplLiteRt::CreateAndBuild(std::move(receiver), std::move(graph_info),
                                   std::move(compute_resource_info),
                                   std::move(constant_operands),
-                                  std::move(constant_tensor_operands), this,
+                                  std::move(constant_tensor_operands), *this,
                                   std::move(weights_file), std::move(callback));
 }
 

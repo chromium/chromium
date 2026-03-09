@@ -396,7 +396,7 @@ void GraphImplLiteRt::CreateAndBuild(
         constant_operands,
     base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
         constant_tensor_operands,
-    ContextImplLiteRt* context,
+    ContextImplLiteRt& context,
     base::File weights_file,
     WebNNContextImpl::CreateGraphImplCallback callback) {
   base::flat_map<OperandId, base::flat_set<OperationId>>
@@ -410,8 +410,8 @@ void GraphImplLiteRt::CreateAndBuild(
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(
           &GraphImplLiteRt::CreateAndBuildOnBackgroundThread,
-          context->properties(), context->options().device,
-          std::move(graph_info), std::move(constant_operands),
+          context.properties(), context.options().device, std::move(graph_info),
+          std::move(constant_operands),
           std::move(operand_to_dependent_operations),
           std::move(operand_to_producing_operation),
           // TODO(crbug.com/454732289): Explicitly pass an invalid file before
@@ -419,7 +419,7 @@ void GraphImplLiteRt::CreateAndBuild(
           // builder to store the weights in the flatbuffer.
           base::File(base::File::FILE_ERROR_NOT_FOUND)),
       base::BindOnce(&GraphImplLiteRt::DidCreateAndBuild, std::move(receiver),
-                     context->AsWeakPtr(), std::move(compute_resource_info),
+                     context.AsWeakPtr(), std::move(compute_resource_info),
                      std::move(callback)));
 }
 
@@ -480,8 +480,7 @@ void GraphImplLiteRt::DidCreateAndBuild(
   std::move(callback).Run(base::MakeRefCounted<GraphImplLiteRt>(
       std::move(receiver), std::move(compute_resource_info),
       std::move(input_name_to_index), std::move(output_name_to_index),
-      std::move(compute_resources_state), std::move(context),
-      std::move(devices)));
+      std::move(compute_resources_state), *context, std::move(devices)));
 }
 
 GraphImplLiteRt::~GraphImplLiteRt() = default;
@@ -495,10 +494,10 @@ GraphImplLiteRt::GraphImplLiteRt(
         output_name_to_descriptor,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
-    base::WeakPtr<WebNNContextImpl> context,
+    WebNNContextImpl& context,
     std::vector<mojom::Device> devices)
     : WebNNGraphImpl(std::move(receiver),
-                     std::move(context),
+                     context,
                      std::move(compute_resource_info),
                      std::move(devices)),
       compute_resources_state_(std::move(compute_resources_state)),

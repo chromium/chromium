@@ -44,7 +44,7 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      ContextImplCoreml* context,
+      ContextImplCoreml& context,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
@@ -57,7 +57,7 @@ class API_AVAILABLE(macos(14.4)) GraphImplCoreml final : public WebNNGraphImpl {
 
   struct Params;
   GraphImplCoreml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-                  base::WeakPtr<WebNNContextImpl> context,
+                  WebNNContextImpl& context,
                   std::unique_ptr<Params> params);
 
   GraphImplCoreml(const GraphImplCoreml&) = delete;

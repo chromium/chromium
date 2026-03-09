@@ -44,7 +44,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
           constant_operands,
       base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
           constant_tensor_operands,
-      ContextImplLiteRt* context,
+      ContextImplLiteRt& context,
       base::File weights_file,
       WebNNContextImpl::CreateGraphImplCallback callback);
 
@@ -57,7 +57,7 @@ class GraphImplLiteRt final : public WebNNGraphImpl {
                       output_name_to_descriptor,
                   scoped_refptr<QueueableResourceState<ComputeResources>>
                       compute_resources_state,
-                  base::WeakPtr<WebNNContextImpl> context,
+                  WebNNContextImpl& context,
                   std::vector<mojom::Device> devices);
 
   GraphImplLiteRt(const GraphImplLiteRt&) = delete;

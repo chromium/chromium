@@ -108,7 +108,7 @@ class GraphImplDml final : public WebNNGraphImpl {
   struct GraphResources;
   GraphImplDml(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                scoped_refptr<Adapter> adapter,
-               base::WeakPtr<WebNNContextImpl> context,
+               WebNNContextImpl& context,
                std::unique_ptr<CommandRecorder> command_recorder,
                scoped_refptr<PersistentResource> persistent_resource,
                Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator,
