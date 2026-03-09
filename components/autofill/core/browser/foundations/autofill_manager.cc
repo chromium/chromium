@@ -188,6 +188,11 @@ void AutofillManager::OnLanguageDetermined(
 
   NotifyObservers(&Observer::OnBeforeLanguageDetermined);
 
+  // TODO(crbug.com/360322019): This will make an additional server query for
+  // server predictions which does not need any update after determining the
+  // page language. This was added to `ParseFormsAsync()` as part of
+  // crbug.com/470949499.
+  // TODO(crbug.com/360322019):  Consider using `ReparseKnownForms()` instead.
   ParseFormsAsync(
       base::ToVector(form_structures_,
                      [](const auto& p) { return p.second->ToFormData(); }),
@@ -266,16 +271,10 @@ void AutofillManager::OnFormsSeen(
                   removed_form_ids);
   erase_removed_forms();
 
-  // TODO(crbug.com/470949499): Remove this timestamp once
-  // features::kAutofillServerQueryPredictionsEarly is launched.
+  // TODO(crbug.com/470949499): Remove `forms_seen_timestamp` once
+  // `AutofillServerQueryPredictionsEarly` is launched.
   // The timestamp is used to measure the time elapsed between OnFormsSeen() and
   // the server predictions response.
-  const base::TimeTicks forms_seen_timestamp = base::TimeTicks::Now();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillServerQueryPredictionsEarly)) {
-    QueryServerPredictions(updated_forms, forms_seen_timestamp);
-  }
-
   auto process_parsed_forms = base::BindOnce(
       [](std::vector<FormGlobalId> updated_form_ids,
          std::vector<FormGlobalId> removed_form_ids,
@@ -292,7 +291,7 @@ void AutofillManager::OnFormsSeen(
                              removed_form_ids);
       },
       std::move(updated_form_ids), std::move(removed_form_ids),
-      forms_seen_timestamp);
+      base::TimeTicks::Now());
 
   ParseFormsAsync(updated_forms, std::move(process_parsed_forms));
 }
@@ -634,6 +633,11 @@ void AutofillManager::ParseFormsAsync(
 
     num_managed_forms += is_new_form;
     parseable_forms.push_back(form);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillServerQueryPredictionsEarly)) {
+    QueryServerPredictions(parseable_forms, base::TimeTicks::Now());
   }
 
   ParseFormsAsyncCommon(
