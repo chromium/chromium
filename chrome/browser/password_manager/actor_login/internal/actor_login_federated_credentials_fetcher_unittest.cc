@@ -60,6 +60,8 @@ scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(
   content::IdentityProviderMetadata idp_metadata;
   idp_metadata.config_url = GURL(idp_config_url);
   idp_metadata.idp_login_url = GURL("https://idp.com/login");
+  idp_metadata.brand_decoded_icon =
+      gfx::Image::CreateFrom1xBitmap(gfx::test::CreateBitmap(56, 78));
 
   content::ClientMetadata client_metadata{GURL(), GURL(), GURL(), gfx::Image()};
 
@@ -128,6 +130,8 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
             url::Origin::Create(GURL("https://idp.com")));
   EXPECT_EQ(credentials[0].federation_detail->account_picture.Size(),
             gfx::Size(12, 34));
+  EXPECT_EQ(credentials[0].federation_detail->brand_icon.Size(),
+            gfx::Size(56, 78));
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_EQ(status, ActorLoginCredentialsFetcher::Status::kSuccess);
 }

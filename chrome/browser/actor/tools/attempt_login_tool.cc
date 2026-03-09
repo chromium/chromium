@@ -269,14 +269,17 @@ void AttemptLoginTool::FetchIcons() {
     return;
   }
 
-  // TODO(https://crbug.com/488443317): For federated credentials, consider
-  // providing to the client `IdentityProviderMetadata::brand_decoded_icon` in
-  // lieu of a favicon.
   base::flat_set<GURL> unique_sites;
   for (const auto& cred : credentials_) {
-    if (cred.type == actor_login::CredentialType::kPassword &&
-        !cred.source_site_or_app.empty()) {
+    if (cred.source_site_or_app.empty()) {
+      continue;
+    }
+    if (cred.type == actor_login::CredentialType::kPassword) {
       unique_sites.insert(GURL(cred.source_site_or_app));
+    } else if (cred.federation_detail &&
+               !cred.federation_detail->brand_icon.IsEmpty()) {
+      fetched_icons_[base::UTF16ToUTF8(cred.source_site_or_app)] =
+          cred.federation_detail->brand_icon;
     }
   }
 

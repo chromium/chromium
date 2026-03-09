@@ -613,6 +613,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
       MakeTestCredentialFederated(u"username2", url);
   cred1.federation_detail->account_picture = blue_image();
   cred2.federation_detail->account_picture = red_image();
+  cred1.federation_detail->brand_icon = red_image();
+  cred2.federation_detail->brand_icon = cred1.federation_detail->brand_icon;
 
   mock_login_service().SetCredentials(std::vector{cred1, cred2});
   // TODO(crbug.com/486835283): Use a more meaningful status.
@@ -652,6 +654,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                                .Set("requestOrigin", expected_request_origin)
                                .Set("displayOrigin", expected_display_origin)
                                .Set("accountPicture", kBlueIconDataUrl.spec())
+                               .Set("icon", kRedIconDataUrl.spec())
                                .Set("type",
                                     actor_login::CredentialType::kFederated))
                    .Append(base::DictValue()
@@ -661,6 +664,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                                .Set("requestOrigin", expected_request_origin)
                                .Set("displayOrigin", expected_display_origin)
                                .Set("accountPicture", kRedIconDataUrl.spec())
+                               .Set("icon", kRedIconDataUrl.spec())
                                .Set("type",
                                     actor_login::CredentialType::kFederated)));
 

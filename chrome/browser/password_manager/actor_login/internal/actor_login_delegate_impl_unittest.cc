@@ -656,9 +656,10 @@ TEST_F(ActorLoginDelegateImplTest,
   url::Origin origin = url::Origin::Create(url);
   Credential credential = CreateTestCredential(u"username", url, origin);
   credential.type = CredentialType::kFederated;
-  credential.federation_detail = FederationDetail{
-      .idp_origin = url::Origin::Create(GURL("https://accounts.google.com")),
-      .account_id = "12345"};
+  FederationDetail& federation_detail = credential.federation_detail.emplace();
+  federation_detail.idp_origin =
+      url::Origin::Create(GURL("https://accounts.google.com"));
+  federation_detail.account_id = "12345";
 
   SetUpActorCredentialFillerDeps();
 

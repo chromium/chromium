@@ -97,11 +97,15 @@ void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(
     credential.display_origin = url_formatter::FormatOriginForSecurityDisplay(
         request_origin_, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
-    credential.federation_detail = FederationDetail{
-        .idp_origin = url::Origin::Create(
-            account->identity_provider->idp_metadata.config_url),
-        .account_id = account->id,
-        .account_picture = account->decoded_picture};
+    FederationDetail& federation_detail =
+        credential.federation_detail.emplace();
+    federation_detail.idp_origin = url::Origin::Create(
+        account->identity_provider->idp_metadata.config_url);
+    federation_detail.account_id = account->id;
+    federation_detail.account_picture = account->decoded_picture;
+    federation_detail.brand_icon =
+        account->identity_provider->idp_metadata.brand_decoded_icon;
+
     credential.immediatelyAvailableToLogin = true;
     result.push_back(std::move(credential));
   }

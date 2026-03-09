@@ -13,6 +13,16 @@ Credential::Id GenerateCredentialId() {
 }
 }  // namespace
 
+FederationDetail::FederationDetail() = default;
+
+FederationDetail::FederationDetail(const FederationDetail&) = default;
+FederationDetail::FederationDetail(FederationDetail&&) = default;
+FederationDetail& FederationDetail::operator=(const FederationDetail&) =
+    default;
+FederationDetail& FederationDetail::operator=(FederationDetail&&) = default;
+
+FederationDetail::~FederationDetail() = default;
+
 Credential::Credential() : id(GenerateCredentialId()) {}
 
 Credential::Credential(const Credential& other) = default;

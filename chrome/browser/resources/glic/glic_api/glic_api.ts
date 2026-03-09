@@ -2190,9 +2190,7 @@ export declare interface Credential {
   // The origin for which this credential was requested.
   requestOrigin?: string;
   // The optional icon for the credential, encoded as a PNG image.
-  // Not provided for federated credentials.
-  // TODO(https://crbug.com/488443317): Consider providing icons for federated
-  // credentials.
+  // For federated credentials, this is the brand icon of the identity provider.
   getIcon?(): Promise<Blob>;
   // The login method for this credential.
   type?: CredentialType;

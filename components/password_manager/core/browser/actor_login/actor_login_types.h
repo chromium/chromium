@@ -26,6 +26,15 @@ enum CredentialType {
 };
 
 struct FederationDetail {
+  FederationDetail();
+
+  FederationDetail(const FederationDetail&);
+  FederationDetail(FederationDetail&&);
+  FederationDetail& operator=(const FederationDetail&);
+  FederationDetail& operator=(FederationDetail&&);
+
+  ~FederationDetail();
+
   // The `Origin` of the identity provider.
   url::Origin idp_origin;
 
@@ -34,6 +43,9 @@ struct FederationDetail {
 
   // The picture for the account provided by the identity provider.
   gfx::Image account_picture;
+
+  // An icon of the identity provider.
+  gfx::Image brand_icon;
 
 #if defined(UNIT_TEST)
   friend bool operator==(const FederationDetail&,
