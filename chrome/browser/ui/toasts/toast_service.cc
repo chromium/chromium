@@ -345,14 +345,6 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kSkillDeleted,
       ToastSpecification::Builder(kDeleteIcon, IDS_SKILL_DELETED_TOAST_BODY)
-          .AddCloseButton()
-          .AddActionButton(IDS_SKILL_UNDO_TOAST_BUTTON,
-                           base::BindRepeating(
-                               [](BrowserWindowInterface* window) {
-                                 skills::SkillsUiWindowController::From(window)
-                                     ->UndoLastSkillRemoval();
-                               },
-                               base::Unretained(browser_window_interface)))
           .Build());
 
   toast_registry_->RegisterToast(

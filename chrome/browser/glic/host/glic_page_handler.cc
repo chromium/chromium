@@ -2121,25 +2121,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  // SkillsService::Observer implementation.
-  void OnTemporarySkillDisplay(
-      std::string_view skill_id,
-      skills::SkillsService::DisplayState display_state) override {
-    if (!web_client_) {
-      return;
-    }
-    switch (display_state) {
-      case skills::SkillsService::DisplayState::kDeleted:
-        web_client_->NotifySkillDeleted(skill_id.data());
-        break;
-      case skills::SkillsService::DisplayState::kReshown:
-        mojom::SkillPtr skill = GetSkillById(skill_id);
-        CHECK(skill);
-        web_client_->NotifySkillPreviewChanged(std::move(skill->preview));
-        break;
-    }
-  }
-
   void OnStatusChanged() override {
     if (!web_client_) {
       return;

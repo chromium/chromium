@@ -63,14 +63,6 @@ void SkillsServiceImpl::NotifySkillChanged(std::string_view skill_id,
   }
 }
 
-void SkillsServiceImpl::NotifyTemporarySkillDisplayChanged(
-    std::string_view skill_id,
-    DisplayState display_state) {
-  for (Observer& observer : observers_) {
-    observer.OnTemporarySkillDisplay(skill_id, display_state);
-  }
-}
-
 const Skill* SkillsServiceImpl::AddSkill(const std::string& source_skill_id,
                                          const std::string& name,
                                          const std::string& icon,

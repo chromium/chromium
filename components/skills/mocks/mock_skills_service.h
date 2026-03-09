@@ -58,9 +58,6 @@ class MockSkillsService : public SkillsService {
               ());
   MOCK_METHOD(void, SyncStatusChanged, ());
   MOCK_METHOD(void, SetServiceStatusForTesting, (ServiceStatus));
-  MOCK_METHOD(void,
-              NotifyTemporarySkillDisplayChanged,
-              (std::string_view, DisplayState));
 };
 
 }  // namespace skills

@@ -108,11 +108,15 @@ void SkillsDialogHandler::SubmitSkill(
 }
 
 void SkillsDialogHandler::DeleteSkill(const std::string& skill_id) {
-  if (!delegate_) {
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!delegate_ || !service) {
     return;
   }
+  // TODO(crbug.com/488408730): Remove once we have undo functionality.
+  service->DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
   // Triggers toast
-  delegate_->OnSkillDeleted(skill_id);
+  delegate_->OnSkillDeleted();
   delegate_->CloseDialog();
   RecordSkillsDialogAction(SkillsDialogAction::kDeleted, entrypoint_,
                            /*is_edit_mode=*/true);

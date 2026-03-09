@@ -7,9 +7,6 @@
   <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved">
     Deleted skill
   </message>
-  <message name="IDS_SKILL_UNDO_TOAST_BUTTON" desc="Text on the toast action button after a user undoes a skill deletion" translateable="false">
-    Undo
-  </message>
 
   <!-- a11y strings -->
   <message name="IDS_SKILL_CARD_ACTION_MENU_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label for button that opens a dropdown on a skill card with options for deleting or copying the text of a skill.">
