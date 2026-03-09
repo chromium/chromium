@@ -3751,12 +3751,6 @@
   <message name="IDS_ARC_PLAYSTORE_SETTING_UP_TITLE" desc="The text tile which is shown when Play Store is initializing.">
     Setting up Google Play...
   </message>
-  <message name="IDS_ARC_OPEN_PLAY_STORE_NOTIFICATION_BUTTON" desc="Label for the button in the first-run notification that enables Android apps.">
-    Open Play Store
-  </message>
-  <message name="IDS_ARC_CANCEL_NOTIFICATION_BUTTON" desc="Label for the button in the first-run notification that cancel running Android apps.">
-    No thanks
-  </message>
   <message name="IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE" desc="Agree button of the opt-in dialog for Android apps.">
     Accept
   </message>
@@ -3786,9 +3780,6 @@
   </message>
   <message name="IDS_ARC_OPT_IN_DIALOG_TERMS_OF_SERVICE" desc="Terms of service caption in the opt-in dialog for Android apps.">
     Terms of Service
-  </message>
-  <message name="IDS_ARC_OPT_IN_DIALOG_LEARN_MORE_LINK_TEXT" desc="Text for learn more link in opt-in dialog for Android apps.">
-    Learn More
   </message>
   <message name="IDS_ARC_OPT_IN_DIALOG_METRICS_MANAGED_ENABLED" desc="Message in the opt-in dialog for Android apps in case metrics are managed on the device and on.">
     Send usage and diagnostic data. This device is currently automatically sending diagnostic, device, and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1">&lt;a href="#" id="settings-link"&gt;</ph>setting<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> is enforced by the owner. If your additional Web &#38; App Activity setting is turned on, this data may be saved to your Google account. <ph name="BEGIN_LINK2">&lt;a href="#" id="learn-more-link-metrics" aria-label="</ph>Learn more about metrics<ph name="BEGIN_LINK2_END">"&gt;</ph>Learn More<ph name="END_LINK2">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
@@ -3826,39 +3817,6 @@
   <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD_LABEL" desc="This string is spoken when ChromeVox focuses the checkbox to enable Backup and Restore for Android apps in the opt-in dialog, and a child account is in use." is_accessibility_with_no_ui="true">
     Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.
   </message>
-  <message name="IDS_ARC_OOBE_BACKUP_RESTORE" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps.">
-    Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.
-  </message>
-  <message name="IDS_ARC_OOBE_BACKUP_RESTORE_CHILD" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps, and a child account is in use.">
-    Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_MANAGED_ENABLED" desc="Message in the Arc Terms OOBE dialog in case metrics are managed on the device and on.">
-    Send usage and diagnostic data. This device is currently automatically sending diagnostic, device, and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &#38; App Activity setting is turned on, this data may be saved to your Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_MANAGED_ENABLED_CHILD" desc="Message in the Arc Terms OOBE dialog in case metrics are managed on the device and on, and a child account is in use.">
-    Send usage and diagnostic data. This device is currently automatically sending diagnostic, device, and app usage data to Google. This won't be used to identify your child and  will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If additional Web &#38; App Activity is turned on for your child, this data may be saved to their Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_MANAGED_DISABLED" desc="Message in the Arc Terms OOBE dialog in case metrics are managed on the device and off.">
-    Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device, and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If your additional Web &#38; App Activity setting is turned on, this data may be saved to your Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_MANAGED_DISABLED_CHILD" desc="Message in the Arc Terms OOBE dialog in case metrics are managed on the device and off, and a child account is in use.">
-    Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device, and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &#38; App Activity setting is turned on for your child, this data may be saved to their Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_ENABLED" desc="Message in the Arc Terms OOBE dialog in case metrics are already enabled on the device.">
-    Send usage and diagnostic data. This device is currently automatically sending diagnostic, device, and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &#38; App Activity setting is turned on, this data may be saved to your Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_ENABLED_CHILD" desc="Message in the Arc Terms OOBE dialog in case metrics are already enabled on the device, and a child account is in use.">
-    Send usage and diagnostic data. This device is currently automatically sending diagnostic, device, and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &#38; App Activity setting is turned on for your child, this data may be saved to their Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_DISABLED" desc="Message in the Arc Terms OOBE dialog in case metrics are disabled on the device.">
-    Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device, and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &#38; App Activity setting is turned on, this data may be saved to your Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_METRICS_DISABLED_CHILD" desc="Message in the Arc Terms OOBE dialog in case metrics disabled on the device, and a child account is in use.">
-    Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device, and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &#38; App Activity setting is turned on for your child, this data may be saved to their Google Account.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DIALOG_DEMO_APPS" desc="Addendum to the metrics disclaimer in the Arc Terms OOBE dialog during Demo Mode setup explaining that demo apps have their own policies for data collection.">
-    Note that Android, Play, and associated apps are governed by their own data collection and use policies.
-  </message>
   <message name="IDS_ARC_OPT_IN_LOCATION_SETTING" desc="Message in the opt-in dialog for Android apps for the user to turn on Google location services.">
     Use location. Allow apps and services with location permission to use your device’s location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-location-service" aria-label="</ph>Learn more about location<ph name="BEGIN_LINK1_END">"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
@@ -3874,17 +3832,8 @@
   <message name="IDS_ARC_OPT_IN_PAI" desc="Message in the opt-in dialog for Play auto install.">
     Install updates &#38; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your carrier, and your device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-pai" aria-label="</ph>Learn more about play auto install<ph name="BEGIN_LINK1_END">"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
-  <message name="IDS_ARC_OOBE_PAI" desc="Message in the opt-in dialog for Play auto install.">
-    Install updates &#38; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your carrier, and your device's manufacturer, possibly using cellular data. Some of these apps may offer in-app purchases.
-  </message>
   <message name="IDS_ARC_OPT_IN_GOOGLE_SERVICE_CONFIRMATION" desc="Message in the opt-in dialog for Accepting Google services.">
    Tap “Accept” to confirm your selection of these Google services settings.
-  </message>
-  <message name="IDS_ARC_OPT_IN_ACCEPT_AND_CONTINUE_GOOGLE_SERVICE_CONFIRMATION" desc="Message in the opt-in dialog for accepting Google services and continuing the setup.">
-    By clicking the "Accept and continue" button, you agree to the processing described above for these Google services.
-  </message>
-  <message name="IDS_ARC_REVIEW_SETTINGS" desc="The label to the checkbox in the opt-in dialog explaining that when checked, it will trigger user settings screen opened after session start">
-    Review Google Play options following setup
   </message>
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_CLOSE" desc="Text for close button in learn more dialog">
     Close
@@ -3898,35 +3847,11 @@
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. You can see your data, delete it, and change your account settings at account.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_P1" desc="First paragraph of message shown in pop up overlay dialog when user clicks learn more UMA">
-    This is general information about your device and how you use it (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_P2" desc="Second paragraph of message shown in pop up overlay dialog when user clicks learn more UMA">
-    Turning off this feature doesn't affect your device's ability to send the information needed for essential services such as system updates and security.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_P3" desc="Third paragraph of message shown in pop up overlay dialog when user clicks learn more UMA">
-    The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_P4" desc="Fourth paragraph of message shown in pop up overlay dialog when user clicks learn more UMA">
-    If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. You can see your data, delete it, and change your account settings at account.google.com.
-  </message>
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD" desc="Message shown in pop up overlay dialog when user clicks learn more UMA, and a child account is in use">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>This is general information about this device and how it's used (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH4">&lt;p&gt;</ph>If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD_P1" desc="First paragraph of message shown in pop up overlay dialog when user clicks learn more UMA, and a child account is in use">
-    This is general information about this device and how it's used (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD_P2" desc="Second paragraph of message shown in pop up overlay dialog when user clicks learn more UMA, and a child account is in use">
-    Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD_P3" desc="Third paragraph of message shown in pop up overlay dialog when user clicks learn more UMA, and a child account is in use">
-    The owner can control this feature from Settings &gt; Advanced &gt; Automatically send diagnostic and usage data to Google.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_STATISTICS_CHILD_P4" desc="Fourth paragraph of message shown in pop up overlay dialog when user clicks learn more UMA, and a child account is in use">
-    If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.
   </message>
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_TITLE" desc="Title for pop up overlay dialog when user clicks learn more backup and restore">
     Back up to Google Drive
@@ -3942,30 +3867,6 @@
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Backup data will not count toward your child's Drive storage quota.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can turn this service off in Settings.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_P1" desc="First paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore">
-    Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_P2" desc="Second paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore">
-    Your backups are uploaded to Google and encrypted using your Google Account password.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_P3" desc="Third paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore">
-    App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_P4" desc="Fourth paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore">
-    Backup data will not count toward your Drive storage quota.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_P5" desc="Fifth paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore">
-    You can turn this service off in Settings.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_CHILD_P1" desc="First paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore, and a child account is in use">
-    App data can be any data that an app has saved (based on developer settings), including data such as contacts, messages, and photos.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_CHILD_P2" desc="Second paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore, and a child account is in use">
-    Backup data will not count toward your child's Drive storage quota.
-  </message>
-  <message name="IDS_ARC_OPT_IN_LEARN_MORE_BACKUP_AND_RESTORE_CHILD_P3" desc="Third paragraph of message shown in pop up overlay dialog when user clicks learn more backup and restore, and a child account is in use">
-    You can turn this service off in Settings.
   </message>
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_LOCATION_SERVICES_TITLE" desc="Title for pop up overlay dialog when user clicks learn more location services">
     Location Services
@@ -3996,9 +3897,6 @@
   <message name="IDS_ARC_OPT_IN_LEARN_MORE_PAI_SERVICE" desc="Message shown in pop up overlay dialog when user clicks learn more play auto install services.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
   </message>
-  <message name="IDS_ARC_OOBE_LEARN_MORE_PAI_SERVICE" desc="Message shown in pop up overlay dialog when user clicks learn more play auto install services.">
-    To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.
-  </message>
   <message name="IDS_ARC_OPT_IN_CONTACT_ADMIN_TITLE" desc="Title of dialog shown when user tries to launch ARC app but ARC is diabled by admin">
     This app requires access to the Play Store
   </message>
@@ -4007,9 +3905,6 @@
   </message>
   <message name="IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK" desc="Text of the Link to Goolge Privacy Policy in opt-in dialog">
     Google privacy policy
-  </message>
-  <message name="IDS_ARC_OPT_OUT_TAB_TITLE" desc="Tab title when viewing opt-out setting dialog for android apps.">
-    Settings - Remove Android apps
   </message>
   <message name="IDS_ARC_SIGN_IN_NETWORK_ERROR" desc="Android sign-in error because of network error">
     Network connection was lost. Check your network connection or try another Wi-Fi network.
@@ -4086,44 +3981,14 @@
   <message name="IDS_ARC_OOBE_TERMS_HEADING" desc="Heading of the Arc Terms OOBE dialog.">
     Google Play apps and services
   </message>
-  <message name="IDS_ARC_OOBE_TERMS_HEADING_CHILD" desc="Heading of the Arc Terms OOBE dialog, when a child account is in use.">
-    Review Google Play apps and services
-  </message>
   <message name="IDS_ARC_OOBE_TERMS_DESCRIPTION" desc="Description of the Arc Terms OOBE dialog.">
     Use Google Play to install Android apps
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_DESCRIPTION_CHILD" desc="Description of the Arc Terms OOBE dialog, when a child account is in use.">
-    With your permission, your child can use Google Play to install apps
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_LOADING" desc="Loading message of the Arc Terms OOBE dialog.">
-    Loading...
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_LOAD_ERROR" desc="Load error message of the Arc Terms OOBE dialog.">
-    Google Play Terms of Service cannot be loaded. Please check your network connection and retry.
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT_AND_CONTINUE" desc="Accept and continue button of the Arc Terms OOBE dialog.">
-    Accept and continue
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT" desc="Accept button of the Arc Terms OOBE dialog.">
-    Accept
-  </message>
-  <message name="IDS_ARC_OOBE_TERMS_BUTTON_RETRY" desc="Retry button of the Arc Terms OOBE dialog that reloads Play Store terms.">
-    Retry
   </message>
   <message name="IDS_ARC_OOBE_TERMS_POPUP_HELP_CLOSE_BUTTON" desc="Close button of the popup local help of Arc Play Store Terms OOBE dialog.">
     Close
   </message>
   <message name="IDS_ARC_POPUP_HELP_LOADING" desc="Loading message of the Arc popup help.">
     Loading...
-  </message>
-  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_TITLE" desc="Title of the notification shown to the user when ARC data snapshot must be updated">
-    Restart to update organization’s apps
-  </message>
-  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_MESSAGE" desc="Message in the notification shown to the user when ARC data snapshot must be updated">
-    This update from your administrator will make your organization’s apps open faster. This may take a few minutes.
-  </message>
-  <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_RESTART_BUTTON" desc="Label on button in the notification shown to the user when ARC data snapshot must be updated">
-    Restart
   </message>
   <message name="IDS_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are low on disk space.">
     Device is low on disk space
@@ -4166,9 +4031,6 @@
   </message>
   <message name="IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_LOW_BATTERY_MESSAGE" desc="Main message of the notification to navigate the user to first update the device encryption before running Android apps.">
     To use Android apps, charge &amp; update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_RESTART_BUTTON" desc="Label for the button in the notification that navigates the user to sign-out for completing the encryption update step.">
-    Sign out &amp; sign back in
   </message>
   <message name="IDS_ARC_USB_PERMISSION_TITLE" desc="Titlebar of Android app USB permissions prompt window">
     Confirm USB Permission
