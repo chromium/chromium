@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -75,6 +76,14 @@ const DeepQuery kComposeboxInput = {"ntp-app", "#composebox", "#input"};
 const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
                                            "#submitContainer"};
 const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
+const DeepQuery kCreateImagesItem = {"ntp-app", "cr-searchbox", "#context",
+                                     "#menu", ".dropdown-item[data-mode='4']"};
+const DeepQuery kCanvasItem = {"ntp-app", "cr-searchbox", "#context", "#menu",
+                               ".dropdown-item[data-mode='2']"};
+const DeepQuery kCanvasChip = {"ntp-app", "cr-composebox", "#context",
+                               "#canvasChip"};
+const DeepQuery kCreateImagesChip = {"ntp-app", "cr-composebox", "#context",
+                                     "#nanoBananaChip"};
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -120,6 +129,10 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
   for (const auto tool : {omnibox::ToolMode::TOOL_MODE_CANVAS,
                           omnibox::ToolMode::TOOL_MODE_IMAGE_GEN}) {
     rule_set->add_allowed_tools(tool);
+    auto* tool_rule = rule_set->add_tool_rules();
+    tool_rule->set_tool(tool);
+    tool_rule->set_allow_all_input_types(true);
+    tool_rule->set_allow_all_models(true);
   }
   for (const auto model : {omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
                            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO}) {
@@ -210,6 +223,55 @@ std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
 }
 
 }  // namespace
+
+class NtpRealboxNextUiTestBase
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  NtpRealboxNextUiTestBase() = default;
+  ~NtpRealboxNextUiTestBase() override = default;
+
+ protected:
+  static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
+      RealboxLayoutMode layout_mode) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    base::FieldTrialParams realbox_params;
+    realbox_params[ntp_realbox::kRealboxLayoutMode.name] = [=]() {
+      switch (layout_mode) {
+        case RealboxLayoutMode::kTallBottomContext:
+          return ntp_realbox::kRealboxLayoutModeTallBottomContext;
+        case RealboxLayoutMode::kTallTopContext:
+          return ntp_realbox::kRealboxLayoutModeTallTopContext;
+        case RealboxLayoutMode::kCompact:
+          return ntp_realbox::kRealboxLayoutModeCompact;
+      }
+    }();
+    enabled_features.emplace_back(ntp_realbox::kNtpRealboxNext, realbox_params);
+    enabled_features.emplace_back(omnibox::kAimEnabled,
+                                  base::FieldTrialParams());
+    enabled_features.emplace_back(omnibox::kAimServerEligibilityEnabled,
+                                  base::FieldTrialParams());
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
+
+    base::FieldTrialParams composebox_params;
+    composebox_params[ntp_composebox::kShowRecentTabChip.name] = "true";
+    composebox_params[ntp_composebox::kContextMenuEnableMultiTabSelection
+                          .name] = "true";
+    enabled_features.emplace_back(ntp_composebox::kNtpComposebox,
+                                  composebox_params);
+
+    return enabled_features;
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce(BuildMockAimServiceEligibilityServiceInstance));
+    ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce(BuildMockContextualSearchServiceInstance));
+  }
+};
 
 class NtpRealboxUiTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest>,
@@ -453,26 +515,10 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
                                      "#context",
                                      "#menu",
                                      "#fileUpload"};
-  const DeepQuery kCreateImagesItem = {"ntp-app",
-                                       "cr-searchbox",
-                                       "#context",
-                                       "#menu",
-                                       "button[data-mode='4']"};
-  const DeepQuery kCanvasItem = {"ntp-app",
-                                 "cr-searchbox",
-                                 "#context",
-                                 "#menu",
-                                 "button[data-mode='2']"};
-  const DeepQuery kFastModelItem = {"ntp-app",
-                                    "cr-searchbox",
-                                    "#context",
-                                    "#menu",
-                                    "button[data-model='1']"};
-  const DeepQuery kProModelItem = {"ntp-app",
-                                   "cr-searchbox",
-                                   "#context",
-                                   "#menu",
-                                   "button[data-model='2']"};
+  const DeepQuery kFastModelItem = {"ntp-app", "cr-searchbox", "#context",
+                                    "#menu", ".dropdown-item[data-model='1']"};
+  const DeepQuery kProModelItem = {"ntp-app", "cr-searchbox", "#context",
+                                   "#menu", ".dropdown-item[data-model='2']"};
 
   RunTestSequence(
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
@@ -587,4 +633,80 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
           },
           testing::StartsWith(
               "https://www.google.com/search?q=Summarize+this+page")));
+}
+
+struct NtpRealboxNextToolUiTestParams {
+  RealboxLayoutMode layout_mode = RealboxLayoutMode::kCompact;
+  DeepQuery tool_context_menu_item;
+  DeepQuery tool_chip;
+  std::string tool_label;
+
+  std::string ToString() const {
+    std::string name = tool_label;
+    base::ReplaceChars(name, " ", "", &name);
+    return name;
+  }
+};
+
+class NtpRealboxNextToolUiTest
+    : public NtpRealboxNextUiTestBase,
+      public testing::WithParamInterface<NtpRealboxNextToolUiTestParams> {
+ public:
+  NtpRealboxNextToolUiTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        GetEnabledFeatures(GetParam().layout_mode), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NtpRealboxNextToolUiTest,
+    ValuesIn(std::vector<NtpRealboxNextToolUiTestParams>{
+        {
+            .tool_context_menu_item = kCanvasItem,
+            .tool_chip = kCanvasChip,
+            .tool_label = std::string(kToolCanvas),
+        },
+        {
+            .tool_context_menu_item = kCreateImagesItem,
+            .tool_chip = kCreateImagesChip,
+            .tool_label = std::string(kToolCreateImages),
+        },
+    }),
+    [](const testing::TestParamInfo<NtpRealboxNextToolUiTestParams>& info) {
+      return info.param.ToString();
+    });
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextToolUiTest,
+                       ContextualEntrypointOpenComposeboxWithChip) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
+
+  WebContentsInteractionTestUtil::StateChange context_menu_open;
+  context_menu_open.event = kContextMenuOpenEvent;
+  context_menu_open.where = kContextMenuDialog;
+  context_menu_open.test_function = "(el) => el && el.open";
+
+  RunTestSequence(
+      // 1. Open NTP Tab.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // 2. Wait for Realbox and Contextual Entrypoint Button to render.
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      // 3. Click on Contextual Entrypoint Button.
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      // 4. Wait for the context menu to open.
+      WaitForStateChange(kNtpElementId, context_menu_open),
+      // 5. Wait for the tool button to render in context menu.
+      WaitForElementToRender(kNtpElementId, GetParam().tool_context_menu_item),
+      // 6. Click on tool button in context menu.
+      ClickElement(kNtpElementId, GetParam().tool_context_menu_item),
+      // 7. Wait for composebox to open with toolchip.
+      WaitForElementToRender(kNtpElementId, GetParam().tool_chip),
+      // 8. Assert the toolchip text corresponds to selected tool.
+      CheckJsResultAt(kNtpElementId, GetParam().tool_chip,
+                      "(el) => el.getAttribute('label')",
+                      GetParam().tool_label));
 }
