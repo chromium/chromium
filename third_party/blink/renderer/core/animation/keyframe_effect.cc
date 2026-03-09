@@ -703,7 +703,8 @@ void KeyframeEffect::ApplyEffects() {
     return;
 
   if (GetAnimation() && HasIncompatibleStyle()) {
-    GetAnimation()->CancelAnimationOnCompositor();
+    GetAnimation()->SetCompositorPending(
+        Animation::CompositorPendingReason::kPendingCancel);
   }
 
   std::optional<double> iteration = CurrentIteration();

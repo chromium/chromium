@@ -685,7 +685,8 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
 
 /* ----------------------------------------- */
 /*     SPECIAL ANIMATION FALLBACK TESTS      */
-/* For anims that fall back during pre-paint */
+/* For animation fallback outside the usual  */
+/* flow of rechecking status on pending.     */
 /* ----------------------------------------- */
 
 // These cases primarily are here to prevent broken painting or stuck
@@ -1032,6 +1033,102 @@ TEST_F(ClipPathPaintDefinitionTest,
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNotComposited, element, animation,
       UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+}
+
+// Offset-path/offset-position technically don't belong here as they do result
+// in the animation being set pending commit, however, this occurs as a special
+// behavior in KeyframeEffect::ApplyEffect. Offset-position on its own doesn't
+// do anything, however it's easiest to test since offset-path almost always
+// invalidates paint when it is added.
+TEST_F(ClipPathPaintDefinitionTest, CoincidentTransformWithOffsetPosition) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+                transform: translateX(0px);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+                transform: translateX(100px);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+
+        .offsetposition {
+            offset-position: left top;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation offsetposition"));
+
+  StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+}
+
+// This is a variation of the above test. will-change: contents is added later,
+// rather than immediately. This ensures the animation is still functioning
+// properly in this case. As implied above - this fallback could in theory be
+// removed, but we keep it around for now to avoid potentially weird situations
+// where will-change contents is added later and then something is done to get
+// the animation to restart on the compositor (maybe a bounds change of a tf
+// anim). In this case, paint status will be COMPOSITED but the failure reasons
+// will not be kNoFailure, causing a stuck animation. In the future, we should
+// explicitly handle this rather than hitting it with a hammer in the pre-paint
+// tree walk.
+TEST_F(ClipPathPaintDefinitionTest,
+       CoincidentTransformDelayedWithOffsetPosition) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+                transform: translateX(0px);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+                transform: translateX(100px);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .offsetposition {
+            offset-position: left top;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Advance the animation time and add offset-position.
+  UpdateAndAdvanceTimeTo(1250);
+
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation offsetposition"));
+
+  // Nothing except the property update caused by offset-position happens until
+  // the next call to KeyframeEffect::ApplyEffect
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate);
+
+  // Next frame, the animation falls back immediately.
+  UpdateAndAdvanceTimeTo(2001);
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
 }
 
 // Will-change: contents is a very old disqualifier for composited animations.
