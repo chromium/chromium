@@ -13,14 +13,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The Java copy of //chrome/common/chrome_isolated_world_ids.
- * Please check there for details about each id.
+ * The Java copy of //chrome/common/chrome_isolated_world_ids. Please check there for details about
+ * each id.
  *
- * Both files must be kept in sync.
+ * <p>Both files must be kept in sync.
  */
 // LINT.IfChange
 @IntDef({
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_TRANSLATE,
+    ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_INDIGO,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_CHROME_INTERNAL,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_UNUSED_MAC,
     ChromeIsolatedWorldIds.ISOLATED_WORLD_ID_UNUSED_EXTENSIONS
@@ -29,8 +30,9 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public @interface ChromeIsolatedWorldIds {
     int ISOLATED_WORLD_ID_TRANSLATE = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 1;
-    int ISOLATED_WORLD_ID_CHROME_INTERNAL = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 2;
-    int ISOLATED_WORLD_UNUSED_MAC = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 3;
-    int ISOLATED_WORLD_ID_UNUSED_EXTENSIONS = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 4;
+    int ISOLATED_WORLD_ID_INDIGO = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 2;
+    int ISOLATED_WORLD_ID_CHROME_INTERNAL = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 3;
+    int ISOLATED_WORLD_UNUSED_MAC = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 4;
+    int ISOLATED_WORLD_ID_UNUSED_EXTENSIONS = IsolatedWorldIds.ISOLATED_WORLD_ID_CONTENT_END + 5;
 }
 // LINT.ThenChange(//chrome/common/chrome_isolated_world_ids.h)

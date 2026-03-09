@@ -13,6 +13,9 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for Chrome Translate.
   ISOLATED_WORLD_ID_TRANSLATE = content::ISOLATED_WORLD_ID_CONTENT_END + 1,
 
+  // Isolated world ID for Indigo.
+  ISOLATED_WORLD_ID_INDIGO,
+
   // Isolated world ID for internal Chrome features.
   ISOLATED_WORLD_ID_CHROME_INTERNAL,
 

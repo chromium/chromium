@@ -433,4 +433,11 @@ static_library("renderer") {
       "//ash/webui/file_manager:constants",
     ]
   }
+
+  if (!is_android) {
+    sources += [
+      "indigo/indigo_agent.cc",
+      "indigo/indigo_agent.h",
+    ]
+  }
 }

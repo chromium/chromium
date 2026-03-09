@@ -755,6 +755,10 @@ mojom("mojo_bindings") {
     ]
   }
 
+  if (!is_android) {
+    sources += [ "indigo/indigo.mojom" ]
+  }
+
   if (safe_browsing_mode == 1) {
     public_deps += [ "//chrome/services/file_util/public/mojom" ]
   }

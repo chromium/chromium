@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "mojo/public/mojom/base/big_string.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Browser -> renderer interface for Indigo. This exists on the main frame only.
+interface IndigoAgent {
+  // Injects the Indigo content script, which can analyze page content to
+  // determine which elements ought to be replaced by Indigo.
+  InjectScript(mojo_base.mojom.BigString script_content,
+               url.mojom.Url script_url,
+               url.mojom.Origin origin) => ();
+};
