@@ -42,7 +42,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -120,8 +119,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
     public void testAccessorySheetHiddenUntilManuallyTriggered() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -272,7 +269,6 @@ public class ManualFillingIntegrationTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
-    @DisabledTest(message = "https://crbug.com/473803610")
     public void testInvokingTabSwitcherHidesAccessory() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -302,9 +298,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
-    @DisabledTest(message = "https://crbug.com/420290639")
     public void testResumingTheAppDismissesAllInputMethods() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -358,9 +351,6 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // See https://crbug.com/480913329.
     public void testPressingBackButtonHidesAccessorySheet() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 

@@ -97,9 +97,8 @@ public class CreditCardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/1182626
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/420290639")
-    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/420290639")
+    // https://crbug.com/1182626, https://crbug.com/399081829
+    @DisableIf.Device({DeviceFormFactor.ONLY_TABLET, DeviceFormFactor.DESKTOP})
     public void testDisplaysEmptyStateMessageWithoutSavedCards() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
