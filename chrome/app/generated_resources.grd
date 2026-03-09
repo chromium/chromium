@@ -12712,6 +12712,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           You can now manage your tab groups here. Unpin this at any time.
         </message>
 
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_TITLE" desc="The title text of an IPH that educates users about accessing Gemini and AI Mode threads via the Resumption Rail entrypoint.">
+          Pick up where you left off on Gemini and AI Mode
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_BODY" desc="The body text of an IPH that educates users about accessing Gemini and AI Mode threads via the Resumption Rail entrypoint.">
+          You can now directly resume Gemini chats and AI Mode threads here. Unpin this at any time.
+        </message>
+
         <if expr="use_titlecase">
           <message name="IDS_RESUMPTION_RAIL_IPH_OK_BUTTON" desc="In Title Case: The acknowledgement button text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
             Got It
