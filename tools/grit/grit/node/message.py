@@ -263,7 +263,9 @@ class MessageNode(base.ContentNode):
     msg = self.clique.MessageForLanguageAndGender(
         lang, gender, self.PseudoIsAllowed(),
         self.ShouldFallbackToEnglish()).GetRealContent()
-    if self._replace_ellipsis:
+    # Optimization: Avoid the overhead of regular expression substitution if the
+    # string clearly does not contain the target '...'.
+    if self._replace_ellipsis and '...' in msg:
       msg = _ELLIPSIS_PATTERN.sub(_ELLIPSIS_SYMBOL, msg)
     # Always remove all byte order marks (\uFEFF) https://crbug.com/1033305
     msg = msg.replace('\uFEFF','')
