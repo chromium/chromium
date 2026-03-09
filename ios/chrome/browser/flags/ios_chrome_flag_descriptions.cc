@@ -56,6 +56,10 @@ const char kApplyClientsideModelPredictionsForPasswordTypesName[] =
 const char kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
     "Enable using clientside model predictions to fill password forms.";
 
+const char kAskAboutThisPageName[] = "AskAboutThisPage";
+const char kAskAboutThisPageDescription[] =
+    "Enables the AskAboutThisPage feature.";
+
 const char kAskGeminiChipName[] = "Ask Gemini Chip";
 const char kAskGeminiChipDescription[] = "Enables the Ask Gemini Chip feature.";
 

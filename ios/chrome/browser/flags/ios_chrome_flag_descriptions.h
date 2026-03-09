@@ -50,6 +50,9 @@ extern const char kAppleCalendarExperienceKitDescription[];
 extern const char kApplyClientsideModelPredictionsForPasswordTypesName[];
 extern const char kApplyClientsideModelPredictionsForPasswordTypesDescription[];
 
+extern const char kAskAboutThisPageName[];
+extern const char kAskAboutThisPageDescription[];
+
 extern const char kAskGeminiChipName[];
 extern const char kAskGeminiChipDescription[];
 

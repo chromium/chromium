@@ -1180,3 +1180,10 @@ BASE_FEATURE(kFullscreenRefactoring, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsFullscreenRefactoringEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenRefactoring);
 }
+
+BASE_FEATURE(kAskAboutThisPage, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAskAboutThisPageEnabled() {
+  return IsAimCobrowseEnabled() &&
+         base::FeatureList::IsEnabled(kAskAboutThisPage);
+}

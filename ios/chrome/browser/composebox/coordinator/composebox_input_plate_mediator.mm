@@ -2004,7 +2004,7 @@ CreateInputDataFromAnnotatedPageContent(
 
 // Whether the user can ask about the current Tab.
 - (BOOL)canAskAboutCurrentTab {
-  return IsAimCobrowseEnabled() && [self canAttachActiveTab];
+  return IsAskAboutThisPageEnabled() && [self canAttachActiveTab];
 }
 
 // Whether the current tab is attachable.

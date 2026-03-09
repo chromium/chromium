@@ -989,4 +989,10 @@ BASE_DECLARE_FEATURE(kFullscreenRefactoring);
 // Returns true if the FullscreenRefactoring feature is enabled.
 bool IsFullscreenRefactoringEnabled();
 
+// Enables the AskAboutThisPage feature.
+BASE_DECLARE_FEATURE(kAskAboutThisPage);
+
+// Returns true if the AskAboutThisPage feature is enabled.
+bool IsAskAboutThisPageEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

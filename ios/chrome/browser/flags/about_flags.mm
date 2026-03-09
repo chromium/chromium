@@ -2745,6 +2745,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(client_certificates::features::
                             kEnableClientCertificateProvisioningOnIOS)},
+    {"ask-about-this-page", flag_descriptions::kAskAboutThisPageName,
+         flag_descriptions::kAskAboutThisPageDescription, flags_ui::kOsIos,
+         FEATURE_VALUE_TYPE(kAskAboutThisPage)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

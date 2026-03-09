@@ -632,6 +632,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "ask-about-this-page",
+    "owners": [ "ameurhosni@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "ask-gemini-chip",
     "owners": [
       "joemerramos@google.com",
