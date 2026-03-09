@@ -13,7 +13,6 @@
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
-#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -39,7 +38,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -54,21 +52,9 @@
 
 @end
 
-@implementation ContentSuggestionsMediator {
-  // Local State prefs.
-  raw_ptr<PrefService, DanglingUntriaged> _localState;
-}
+@implementation ContentSuggestionsMediator
 
 #pragma mark - Public
-
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _localState = GetApplicationContext()->GetLocalState();
-  }
-
-  return self;
-}
 
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(prefs::kIosDiscoverFeedLastRefreshTime, 0);
@@ -76,7 +62,6 @@
 }
 
 - (void)disconnect {
-  _localState = nullptr;
 }
 
 #pragma mark - MagicStackRankingModelDelegate
