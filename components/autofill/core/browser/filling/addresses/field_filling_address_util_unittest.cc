@@ -674,9 +674,8 @@ INSTANTIATE_TEST_SUITE_P(
                 u"+13124568754",
                 u"uuid3",  // This is undesired default behavior w/o the fix.
                 u"uuid5"},
-            // This is undesired behavior but documents the status quo. If the
-            // phone country code matches a number in the options, it gets
-            // picked.
+            // If the values are set randomly, make sure Autofill still
+            // prioritizes relevant information.
             FillAugmentedPhoneCountryCodeTestCase{
                 {
                     {u"1", u"Afghanistan (+93)"},
@@ -687,7 +686,7 @@ INSTANTIATE_TEST_SUITE_P(
                 },
                 u"+13124568754",
                 u"1",
-                u"1"},
+                u"5"},
             // Test that everything works if no phone country code can be
             // identified and only country names are presented.
             FillAugmentedPhoneCountryCodeTestCase{
@@ -700,7 +699,19 @@ INSTANTIATE_TEST_SUITE_P(
                 },
                 u"+13124568754",
                 u"",  // This is undesired default behavior w/o the fix.
-                u"US"})));
+                u"US"},
+            // Test that when the select options match in value, autofill
+            // chooses the correct option based on the labels.
+            FillAugmentedPhoneCountryCodeTestCase{
+                {
+                    {u"1", u"Canada (+1)"},
+                    {u"1", u"United States (+1)"},
+                    {u"49", u"Germany (+49)"},
+                },
+                u"+13124568754",
+                // TODO(crbug.com/485546288): Also add expected labels.
+                u"1",
+                u"1"})));
 
 // Tests that the abbreviated state names are selected correctly.
 TEST_F(FieldFillingAddressUtilTest, FillSelectAbbreviatedState) {

@@ -92,8 +92,6 @@ std::u16string GetAlternativeNameForInput(
 //
 // If kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes is enabled,
 // Autofill will
-// - pick an option whose value or content MATCHES EXACTLY the phone country
-//   code (e.g. "1" for US) (old behavior as above), else
 // - pick an option whose value or content CONTAINS with prefix (e.g. "+1" or
 //   "001" for US) the phone country code if it's unambiguous, else
 // - pick an option whose value or content MATCHES the address country code or
@@ -118,7 +116,11 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
   // Find the option that exactly matches the |phone_country_code|.
   if (std::optional<std::u16string> select_control_value =
           GetSelectControlValue(phone_country_code, field_options,
-                                failure_to_fill)) {
+                                failure_to_fill);
+      select_control_value &&
+      !base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
     return *select_control_value;
   }
 
@@ -168,6 +170,17 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
   }
   if (first_match != field_options.end()) {
     return first_match->value;
+  }
+
+  // Find the option that exactly matches the |phone_country_code|.
+  if (std::optional<std::u16string> select_control_value =
+          GetSelectControlValue(phone_country_code, field_options,
+                                failure_to_fill);
+      select_control_value &&
+      base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
+    return *select_control_value;
   }
 
   if (failure_to_fill) {

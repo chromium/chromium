@@ -2512,27 +2512,6 @@
             ]
         }
     ],
-    "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableMandatoryReauthAndFpanRiskBasedAuthenticationChromeOs": [
         {
             "platforms": [
