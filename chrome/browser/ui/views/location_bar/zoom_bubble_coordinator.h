@@ -32,7 +32,7 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
   ZoomBubbleCoordinator& operator=(const ZoomBubbleCoordinator&) = delete;
   ~ZoomBubbleCoordinator() override;
 
-  // Retrieves from the a browser window interface, or null if none.
+  // Retrieves the instance from a browser window interface, or null if none.
   // Note: May return null in unit_tests, even for a valid `browser`.
   static ZoomBubbleCoordinator* From(BrowserWindowInterface* browser);
 
@@ -46,8 +46,8 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
             LocationBarBubbleDelegateView::DisplayReason reason);
 
   // Hides the currently showing zoom bubble, if one exists.
-  // NOTE: This is async, as a result, the hide is not immediate. Callers should
-  // ensure to wait to widget destruction.
+  // NOTE: This is async so the hide is not immediate. Callers should ensure to
+  // wait for widget destruction.
   void Hide();
 
   // Refreshes the existing bubble if it's already showing for `contents`.
@@ -78,7 +78,7 @@ class ZoomBubbleCoordinator : public views::WidgetObserver,
 
   ui::ScopedUnownedUserData<ZoomBubbleCoordinator> scoped_unowned_user_data_;
 
-  // Unowned reference to the  browser view that whole this coordinator.
+  // Unowned reference to the browser view associated with this coordinator.
   const raw_ref<BrowserView> browser_view_;
 
   // Observes the widget of the zoom bubble to be notified of its destruction.
