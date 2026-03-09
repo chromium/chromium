@@ -75,15 +75,6 @@ void SetRuntimeFeatureDefaultsForPlatform(
   WebRuntimeFeatures::EnableCompositedSelectionUpdate(true);
 #endif
 
-#if BUILDFLAG(IS_APPLE)
-  const bool enable_web_gl_image_chromium = command_line.HasSwitch(
-      blink::switches::kEnableGpuMemoryBufferCompositorResources);
-#else
-  const bool enable_web_gl_image_chromium =
-      command_line.HasSwitch(blink::switches::kEnableWebGLImageChromium);
-#endif
-  WebRuntimeFeatures::EnableWebGLImageChromium(enable_web_gl_image_chromium);
-
 #if BUILDFLAG(IS_ANDROID)
   if (command_line.HasSwitch(switches::kDisableMediaSessionAPI)) {
     WebRuntimeFeatures::EnableMediaSession(false);

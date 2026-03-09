@@ -444,7 +444,16 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
     return g_webgl_image_chromium_enabled_for_testing.value();
   }
 
-  return RuntimeEnabledFeatures::WebGLImageChromiumEnabled();
+#if BUILDFLAG(IS_APPLE)
+  static const bool enable_web_gl_image_chromium =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kEnableGpuMemoryBufferCompositorResources);
+#else
+  static const bool enable_web_gl_image_chromium =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kEnableWebGLImageChromium);
+#endif
+  return enable_web_gl_image_chromium;
 }
 
 void SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(bool enable) {

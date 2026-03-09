@@ -6277,11 +6277,6 @@
       status: "stable",
     },
     {
-      name: "WebGLImageChromium",
-      base_feature: "none",
-      public: true,
-    },
-    {
       // Switch WebGL to use an experimental implementation where WebGL calls
       // are translated in Blink, via ANGLE, to WebGPU calls. Note that this
       // is not marked as "experimental" because it is not an incremental
