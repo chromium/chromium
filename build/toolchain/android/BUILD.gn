@@ -84,10 +84,14 @@ android_clang_toolchain("android_clang_arm64") {
 android_clang_toolchain("android_clang_arm64_webview") {
   toolchain_args = {
     current_cpu = "arm64"
-    # TODO(crbug.com/393058910): Change this back to
-    # "//android_webview/tools/orderfiles/arm64/pgo_profile.arm64.profdata"
-    # once the Webview-specific PGO profile is ready to use.
-    pgo_data_path = "//chrome/android/orderfiles/arm64/pgo_profile.arm64.profdata"
+    if (pgo_override_filename != "") {
+      pgo_data_path = "//chrome/build/pgo_profiles/$pgo_override_filename"
+    } else {
+      # TODO(crbug.com/393058910): Change this back to
+      # "//android_webview/tools/orderfiles/arm64/pgo_profile.arm64.profdata"
+      # once the Webview-specific PGO profile is ready to use.
+      pgo_data_path = "//chrome/android/orderfiles/arm64/pgo_profile.arm64.profdata"
+    }
     is_high_end_android_secondary_toolchain = true
   }
 }
