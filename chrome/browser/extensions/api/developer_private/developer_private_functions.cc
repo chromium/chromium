@@ -1918,6 +1918,12 @@ ExtensionFunction::ResponseAction DeveloperPrivateChoosePathFunction::Run() {
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, although we are not actually writing to the file, we still need
+  // to set this flag to trigger ACTION_OPEN_DOCUMENT intent to bypass the
+  // file chooser dialog.
+  select_file_dialog_->SetOpenWritable(true);
+#endif  // BUILDFLAG(IS_ANDROID)
   select_file_dialog_->SelectFile(file_type, select_title, last_directory,
                                   &file_type_info, file_type_index,
                                   base::FilePath::StringType(), owning_window);
