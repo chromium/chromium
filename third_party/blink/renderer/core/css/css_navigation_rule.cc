@@ -51,7 +51,9 @@ String CSSNavigationRule::ConditionTextInternal() const {
 
 void CSSNavigationRule::SetConditionText(ExecutionContext* execution_context,
                                          const String& text) {
+  StyleSheetContents* parent_contents =
+      parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
-  navigation_rule_->SetConditionText(execution_context, text);
+  navigation_rule_->SetConditionText(execution_context, parent_contents, text);
 }
 }  // namespace blink

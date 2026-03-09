@@ -525,7 +525,7 @@ class StyleRuleSupports : public StyleRuleCondition {
                     HeapVector<Member<StyleRuleBase>> rules);
 
   bool ConditionIsSupported() const { return condition_is_supported_; }
-  void SetConditionText(const ExecutionContext*, String);
+  void SetConditionText(const ExecutionContext*, StyleSheetContents*, String);
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     StyleRuleCondition::TraceAfterDispatch(visitor);
@@ -564,7 +564,7 @@ class StyleRuleNavigation : public StyleRuleCondition {
 
   void TraceAfterDispatch(Visitor*) const;
 
-  void SetConditionText(const ExecutionContext*, String);
+  void SetConditionText(const ExecutionContext*, StyleSheetContents*, String);
 
   const NavigationQuery& GetNavigationQuery() const {
     return *navigation_query_;
@@ -828,7 +828,8 @@ struct DowncastTraits<StyleRuleGroup> {
     return rule.IsMediaRule() || rule.IsSupportsRule() ||
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
            rule.IsScopeRule() || rule.IsStartingStyleRule() ||
-           rule.IsFunctionRule() || rule.IsPageRule();
+           rule.IsFunctionRule() || rule.IsPageRule() ||
+           rule.IsNavigationRule();
   }
 };
 

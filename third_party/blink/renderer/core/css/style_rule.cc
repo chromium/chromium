@@ -1016,6 +1016,7 @@ StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& other,
 
 void StyleRuleSupports::SetConditionText(
     const ExecutionContext* execution_context,
+    StyleSheetContents* parent_sheet_contents,
     String value) {
   CSSParserTokenStream stream(value);
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
@@ -1025,6 +1026,9 @@ void StyleRuleSupports::SetConditionText(
       CSSSupportsParser::ConsumeSupportsCondition(stream, parser);
   condition_text_ = value;
   condition_is_supported_ = result == CSSSupportsParser::Result::kSupported;
+  if (parent_sheet_contents) {
+    parent_sheet_contents->NotifyRuleChanged(this);
+  }
 }
 
 StyleRuleContainer::StyleRuleContainer(ContainerQuery& container_query,
@@ -1082,6 +1086,7 @@ void StyleRuleNavigation::TraceAfterDispatch(Visitor* v) const {
 
 void StyleRuleNavigation::SetConditionText(
     const ExecutionContext* execution_context,
+    StyleSheetContents* parent_sheet_contents,
     String value) {
   CSSParserTokenStream stream(value);
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
@@ -1090,6 +1095,9 @@ void StyleRuleNavigation::SetConditionText(
 
   if (query) {
     navigation_query_ = query;
+    if (parent_sheet_contents) {
+      parent_sheet_contents->NotifyRuleChanged(this);
+    }
   }
 }
 

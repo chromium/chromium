@@ -52,9 +52,11 @@ String CSSSupportsRule::cssText() const {
 void CSSSupportsRule::SetConditionText(
     const ExecutionContext* execution_context,
     String value) {
+  StyleSheetContents* parent_contents =
+      parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   CSSStyleSheet::RuleMutationScope mutation_scope(this);
   To<StyleRuleSupports>(group_rule_.Get())
-      ->SetConditionText(execution_context, value);
+      ->SetConditionText(execution_context, parent_contents, value);
 }
 
 }  // namespace blink
