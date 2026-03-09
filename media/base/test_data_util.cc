@@ -229,10 +229,6 @@ const char kErrorTitle[] = "error";
 const base::FilePath::CharType kTestDataPath[] =
     FILE_PATH_LITERAL("media/test/data");
 
-const base::span<const uint8_t> ExternalMemoryAdapterForTesting::Span() const {
-  return span_;
-}
-
 base::FilePath GetTestDataFilePath(std::string_view name) {
   base::FilePath file_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));

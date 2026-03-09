@@ -38,12 +38,17 @@ source_set("remoting") {
 source_set("unit_tests") {
   testonly = true
   public = []
-  sources = [ "rpc_demuxer_stream_handler_unittest.cc" ]
+  sources = [
+    "remoting_decoder_buffer_factory_unittest.cc",
+    "rpc_demuxer_stream_handler_unittest.cc",
+  ]
   deps = [
     ":remoting",
     "//base",
     "//base/test:test_support",
+    "//components/cast_streaming/browser/common",
     "//media",
+    "//media/cast/openscreen:remoting_utils",
     "//third_party/openscreen/src/cast/streaming:common",
   ]
 }

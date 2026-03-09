@@ -18,6 +18,7 @@ source_set("frame") {
     "//base",
     "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
+    "//third_party/openscreen/src/cast/streaming:receiver",
   ]
   deps = [
     "//base",
@@ -29,7 +30,6 @@ source_set("frame") {
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
-    "//third_party/openscreen/src/cast/streaming:receiver",
   ]
 }
 
@@ -37,12 +37,16 @@ source_set("frame") {
 source_set("unit_tests") {
   testonly = true
   public = []
-  sources = [ "demuxer_stream_data_provider_unittest.cc" ]
+  sources = [
+    "demuxer_stream_data_provider_unittest.cc",
+    "stream_consumer_unittest.cc",
+  ]
   deps = [
     ":frame",
     "//base",
     "//base/test:test_support",
     "//components/cast_streaming/browser/common",
+    "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",

@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
@@ -25,9 +27,11 @@ MirroringDecoderBufferFactory::~MirroringDecoderBufferFactory() = default;
 scoped_refptr<media::DecoderBuffer>
 MirroringDecoderBufferFactory::ToDecoderBuffer(
     const openscreen::cast::EncodedFrame& encoded_frame,
-    FrameContents& frame_contents) {
+    base::span<const uint8_t> frame_data) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      base::MakeRefCounted<media::DecoderBuffer>(frame_contents.Size());
+      media::DecoderBuffer::FromExternalMemory(
+          std::make_unique<media::DecoderBuffer::UnownedExternalMemory>(
+              frame_data));
 
   decoder_buffer->set_duration(frame_duration_);
   decoder_buffer->set_is_key_frame(

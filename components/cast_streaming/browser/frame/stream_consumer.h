@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_CAST_STREAMING_BROWSER_FRAME_STREAM_CONSUMER_H_
 #define COMPONENTS_CAST_STREAMING_BROWSER_FRAME_STREAM_CONSUMER_H_
 
-#include <array>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -20,11 +20,11 @@
 namespace cast_streaming {
 
 // Attaches to an Open Screen Receiver to receive buffers of encoded data and
-// invokes |frame_received_cb_| with each buffer.
+// invokes `frame_received_cb_` with each buffer.
 //
 // Internally, this class writes buffers of encoded data directly to
-// |data_pipe_| rather than using a helper class like MojoDecoderBufferWriter.
-// This allows us to use |data_pipe_| as an end-to-end buffer to cap memory
+// `data_pipe_` rather than using a helper class like MojoDecoderBufferWriter.
+// This allows us to use `data_pipe_` as an end-to-end buffer to cap memory
 // usage. Receiving new buffers is delayed until the pipe has free memory again.
 // The Open Screen library takes care of discarding buffers that are too old and
 // requesting new key frames as needed.
@@ -33,10 +33,10 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   using FrameReceivedCB =
       base::RepeatingCallback<void(media::mojom::DecoderBufferPtr)>;
 
-  // |receiver| sends frames to this object. It must outlive this object.
-  // |frame_received_cb| is called on every new frame, after a new frame has
-  // been written to |data_pipe|. On error, |data_pipe| will be closed.
-  // On every new frame, |on_new_frame| will be called.
+  // `receiver` sends frames to this object. It must outlive this object.
+  // `frame_received_cb` is called on every new frame, after a new frame has
+  // been written to `data_pipe`. On error, `data_pipe` will be closed.
+  // On every new frame, `on_new_frame` will be called.
   StreamConsumer(openscreen::cast::Receiver* receiver,
                  mojo::ScopedDataPipeProducerHandle data_pipe,
                  FrameReceivedCB frame_received_cb,
@@ -48,58 +48,55 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   StreamConsumer& operator=(const StreamConsumer&) = delete;
 
   // Informs the StreamConsumer that a new frame should be read asynchronously.
-  // Eventually, the |frame_received_cb_| will be called with the data for this
-  // frame. |no_frames_available_cb| will be called if no frames are immediately
+  // Eventually, the `frame_received_cb_` will be called with the data for this
+  // frame. `no_frames_available_cb` will be called if no frames are immediately
   // available when this callback first tries to read them.
   void ReadFrame(base::OnceClosure no_frames_available_cb);
 
   // Cancels any ongoing read call, then skips reading of all future frames with
-  // an id less than |frame_id|.
+  // an id less than `frame_id`.
   void FlushUntil(uint32_t frame_id);
 
  private:
-  // Wrapper around a data buffer used for storing the data of a DecoderBuffer
+  // Manages a frame buffer used for storing `media::DecoderBuffer` payloads
   // received from Openscreen.
-  class BufferDataWrapper : public DecoderBufferFactory::FrameContents {
+  class FrameBuffer {
    public:
-    ~BufferDataWrapper() override;
+    FrameBuffer();
+    FrameBuffer(const FrameBuffer&) = delete;
+    FrameBuffer(FrameBuffer&&);
+    FrameBuffer& operator=(const FrameBuffer&) = delete;
+    FrameBuffer& operator=(FrameBuffer&&);
+    ~FrameBuffer();
 
-    // Returns up to |max_size| more bytes of the underlying array, invalidating
-    // these bytes in the underlying buffer.
-    base::span<uint8_t> Consume(uint32_t max_size);
+    // Resizes the internal buffer, allocating 50% extra capacity up to
+    // `kMaxFrameSize` to avoid frequent re-allocations during streaming.
+    bool Resize(size_t new_size);
 
-    // DecoderBufferFactory::FrameContents overrides.
-    base::span<uint8_t> Get() override;
-    bool Reset(uint32_t new_size) override;
-    void Clear() override;
-    uint32_t Size() const override;
+    base::span<uint8_t> as_span();
 
    private:
+    // Initial frame size, chosen to avoid unnecessary re-allocations as much as
+    // possible.
+    static constexpr size_t kInitialFrameSize = 512 * 1024;
+
     // Maximum frame size that OnFramesReady() can accept.
-    static constexpr size_t kMaxFrameSize = 512 * 1024;
+    static constexpr size_t kMaxFrameSize = 10 * 1024 * 1024;
 
     // Buffer backing the spans created by this class.
-    std::array<uint8_t, kMaxFrameSize> pending_buffer_;
-
-    // Current offset for data in |pending_buffer_|.
-    uint32_t pending_buffer_offset_ = 0;
-
-    // Remaining bytes to write from |pending_buffer_|.
-    uint32_t pending_buffer_remaining_bytes_ = 0;
+    std::vector<uint8_t> pending_buffer_;
   };
 
-  // Closes |data_pipe_| and resets the Consumer in |receiver_|. No frames will
+  // Closes `data_pipe_` and resets the Consumer in `receiver_`. No frames will
   // be received after this call.
   void CloseDataPipeOnError();
 
-  // Callback when |data_pipe_| can be written to again after it was full.
+  // Callback when `data_pipe_` can be written to again after it was full.
   void OnPipeWritable(MojoResult result);
 
   // Processes a ready frame, if both one is ready and a read callback is
   // pending.
   void MaybeSendNextFrame();
-
-  bool WriteBufferToDataPipe();
 
   // openscreen::cast::Receiver::Consumer implementation.
   void OnFramesReady(int next_frame_buffer_size) override;
@@ -112,10 +109,16 @@ class StreamConsumer final : public openscreen::cast::Receiver::Consumer {
   mojo::ScopedDataPipeProducerHandle data_pipe_;
   const FrameReceivedCB frame_received_cb_;
 
-  BufferDataWrapper data_wrapper_;
+  FrameBuffer frame_buffer_;
 
-  // Provides notifications about |data_pipe_| readiness.
   mojo::SimpleWatcher pipe_watcher_;
+
+  // Buffer used to hold the payload as it's being written to `data_pipe_` in
+  // chunks.
+  scoped_refptr<media::DecoderBuffer> pending_buffer_;
+
+  // Current offset for data in `pending_buffer_`.
+  size_t pending_buffer_offset_ = 0;
 
   bool is_read_pending_ = false;
 

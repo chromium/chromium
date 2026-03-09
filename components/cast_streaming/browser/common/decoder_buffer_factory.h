@@ -22,37 +22,19 @@ namespace cast_streaming {
 // by Openscreen.
 class DecoderBufferFactory {
  public:
-  // Wrapper around a data buffer used for storing the data of a DecoderBuffer
-  // received from Openscreen.
-  class FrameContents {
-   public:
-    virtual ~FrameContents() = default;
-
-    // Returns the span associated with all remaining data for this instance.
-    virtual base::span<uint8_t> Get() = 0;
-
-    // Resets the underlying array to size |new_size|.
-    virtual bool Reset(uint32_t new_size) = 0;
-
-    // Empties the underlying array.
-    virtual void Clear() = 0;
-
-    // Returns the current size of the buffer.
-    virtual uint32_t Size() const = 0;
-
-    // Returns whether this instance is empty.
-    bool empty() const { return !Size(); }
-  };
-
   virtual ~DecoderBufferFactory() = default;
 
-  // Creates a new DecoderBuffer using the |encoded_frame| and |frame_contents|
+  // Creates a new DecoderBuffer using the `encoded_frame` and `frame_data`
   // received from Openscreen. On success, this function is expected to
-  // return the associated DecoderBuffer with its contents written to
-  // |frame_contents|. On failure, nullptr is returned.
+  // return the associated DecoderBuffer. On failure, nullptr is returned.
+  //
+  // Note: the returned DecoderBuffer does not copy or own the frame data,
+  // and its lifetime is tied to the `frame_data` span. Since the frame is
+  // synchronously sent over mojo, which performs a copy, this is safe and
+  // avoids an extra copy.
   virtual scoped_refptr<media::DecoderBuffer> ToDecoderBuffer(
       const openscreen::cast::EncodedFrame& encoded_frame,
-      FrameContents& frame_contents) = 0;
+      base::span<const uint8_t> frame_data) = 0;
 };
 
 }  // namespace cast_streaming

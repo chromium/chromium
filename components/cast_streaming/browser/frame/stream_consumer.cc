@@ -19,46 +19,6 @@
 
 namespace cast_streaming {
 
-StreamConsumer::BufferDataWrapper::~BufferDataWrapper() = default;
-
-base::span<uint8_t> StreamConsumer::BufferDataWrapper::Get() {
-  return UNSAFE_TODO(
-      base::span<uint8_t>(&pending_buffer_[pending_buffer_offset_],
-                          pending_buffer_remaining_bytes_));
-}
-
-base::span<uint8_t> StreamConsumer::BufferDataWrapper::Consume(
-    uint32_t max_size) {
-  const uint32_t current_offset = pending_buffer_offset_;
-  const uint32_t current_remaining_bytes = pending_buffer_remaining_bytes_;
-
-  const uint32_t read_size = std::min(max_size, current_remaining_bytes);
-
-  pending_buffer_offset_ += read_size;
-  pending_buffer_remaining_bytes_ -= read_size;
-  return UNSAFE_TODO(
-      base::span<uint8_t>(&pending_buffer_[current_offset], read_size));
-}
-
-bool StreamConsumer::BufferDataWrapper::Reset(uint32_t new_size) {
-  if (new_size > kMaxFrameSize) {
-    return false;
-  }
-
-  pending_buffer_offset_ = 0;
-  pending_buffer_remaining_bytes_ = new_size;
-  return true;
-}
-
-void StreamConsumer::BufferDataWrapper::Clear() {
-  bool success = Reset(uint32_t{0});
-  DCHECK(success);
-}
-
-uint32_t StreamConsumer::BufferDataWrapper::Size() const {
-  return pending_buffer_remaining_bytes_;
-}
-
 StreamConsumer::StreamConsumer(
     openscreen::cast::Receiver* receiver,
     mojo::ScopedDataPipeProducerHandle data_pipe,
@@ -87,7 +47,7 @@ StreamConsumer::StreamConsumer(
   }
 }
 
-// NOTE: Do NOT call into |receiver_| methods here, as the object may no longer
+// NOTE: Do NOT call into `receiver_` methods here, as the object may no longer
 // be valid at time of this object's destruction.
 StreamConsumer::~StreamConsumer() = default;
 
@@ -113,20 +73,27 @@ void StreamConsumer::OnPipeWritable(MojoResult result) {
     return;
   }
 
+  DCHECK(pending_buffer_);
   size_t bytes_written = 0;
-  result = data_pipe_->WriteData(data_wrapper_.Get(), MOJO_WRITE_DATA_FLAG_NONE,
+  base::span<const uint8_t> remaining_data =
+      base::span<const uint8_t>(*pending_buffer_)
+          .subspan(pending_buffer_offset_);
+
+  result = data_pipe_->WriteData(remaining_data, MOJO_WRITE_DATA_FLAG_NONE,
                                  bytes_written);
   if (result != MOJO_RESULT_OK) {
     CloseDataPipeOnError();
     return;
   }
 
-  data_wrapper_.Consume(base::checked_cast<uint32_t>(bytes_written));
-  if (!data_wrapper_.empty()) {
+  pending_buffer_offset_ += base::checked_cast<size_t>(bytes_written);
+  if (pending_buffer_offset_ < pending_buffer_->size()) {
     pipe_watcher_.ArmOrNotify();
     return;
   }
 
+  pending_buffer_.reset();
+  pending_buffer_offset_ = 0;
   MaybeSendNextFrame();
 }
 
@@ -143,8 +110,43 @@ void StreamConsumer::FlushUntil(uint32_t frame_id) {
   }
 }
 
+StreamConsumer::FrameBuffer::FrameBuffer() {
+  pending_buffer_.reserve(kInitialFrameSize);
+}
+
+StreamConsumer::FrameBuffer::FrameBuffer(StreamConsumer::FrameBuffer&&) =
+    default;
+StreamConsumer::FrameBuffer& StreamConsumer::FrameBuffer::operator=(
+    StreamConsumer::FrameBuffer&&) = default;
+
+StreamConsumer::FrameBuffer::~FrameBuffer() = default;
+
+base::span<uint8_t> StreamConsumer::FrameBuffer::as_span() {
+  return base::span<uint8_t>(pending_buffer_);
+}
+
+bool StreamConsumer::FrameBuffer::Resize(size_t new_size) {
+  if (new_size > kMaxFrameSize) {
+    return false;
+  }
+
+  // If we need to grow, reserve extra capacity to avoid frequent reallocations
+  // for slightly larger frames (e.g. X followed by X+1).
+  if (pending_buffer_.capacity() < new_size) {
+    // Grow by 50% extra up to the max frame size.
+    const size_t to_reserve =
+        std::min(kMaxFrameSize, static_cast<size_t>(new_size + (new_size / 2)));
+    pending_buffer_.reserve(to_reserve);
+  }
+
+  // Ensure the buffer size exactly matches the extent of the incoming frame.
+  pending_buffer_.resize(new_size);
+
+  return true;
+}
+
 void StreamConsumer::MaybeSendNextFrame() {
-  if (!is_read_pending_ || !data_wrapper_.empty()) {
+  if (!is_read_pending_ || pending_buffer_) {
     return;
   }
 
@@ -158,9 +160,10 @@ void StreamConsumer::MaybeSendNextFrame() {
 
   on_new_frame_.Run();
 
-  if (!data_wrapper_.Reset(current_frame_buffer_size)) {
+  if (!frame_buffer_.Resize(current_frame_buffer_size)) {
     LOG(ERROR) << "[ssrc:" << receiver_->ssrc() << "] "
-               << "Frame size too big: " << current_frame_buffer_size;
+               << "Frame size too big: " << current_frame_buffer_size
+               << " (implies corrupt or malicious stream)";
     CloseDataPipeOnError();
     return;
   }
@@ -168,9 +171,7 @@ void StreamConsumer::MaybeSendNextFrame() {
   openscreen::cast::EncodedFrame encoded_frame;
 
   // Write to temporary storage in case we need to drop this frame.
-  base::span<uint8_t> span = data_wrapper_.Get();
-  encoded_frame = receiver_->ConsumeNextFrame(
-      openscreen::ByteBuffer(span.data(), span.size()));
+  encoded_frame = receiver_->ConsumeNextFrame(frame_buffer_.as_span());
 
   // If the frame occurs before the id we want to flush until, drop it and try
   // again.
@@ -179,26 +180,29 @@ void StreamConsumer::MaybeSendNextFrame() {
       openscreen::cast::FrameId(int64_t{skip_until_frame_id_})) {
     VLOG(1) << "Skipping Frame " << encoded_frame.frame_id;
 
-    data_wrapper_.Clear();
     MaybeSendNextFrame();
     return;
   }
 
   // Create the buffer, retrying if this fails.
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      decoder_buffer_factory_->ToDecoderBuffer(encoded_frame, data_wrapper_);
+      decoder_buffer_factory_->ToDecoderBuffer(encoded_frame,
+                                               frame_buffer_.as_span());
   if (!decoder_buffer) {
-    data_wrapper_.Clear();
     MaybeSendNextFrame();
+    return;
   }
 
   // At this point, the frame is known to be "good".
   skip_until_frame_id_ = 0;
   no_frames_available_cb_.Reset();
 
+  pending_buffer_ = std::move(decoder_buffer);
+  pending_buffer_offset_ = 0;
+
   // Write the frame's data to Mojo.
   size_t bytes_written = 0;
-  auto result = data_pipe_->WriteData(data_wrapper_.Get(),
+  auto result = data_pipe_->WriteData(*pending_buffer_,
                                       MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     pipe_watcher_.ArmOrNotify();
@@ -207,16 +211,19 @@ void StreamConsumer::MaybeSendNextFrame() {
     CloseDataPipeOnError();
     return;
   }
-  data_wrapper_.Consume(base::checked_cast<uint32_t>(bytes_written));
+  pending_buffer_offset_ += base::checked_cast<size_t>(bytes_written);
 
   // Return the frame.
   is_read_pending_ = false;
-  frame_received_cb_.Run(media::mojom::DecoderBuffer::From(*decoder_buffer));
+  frame_received_cb_.Run(media::mojom::DecoderBuffer::From(*pending_buffer_));
 
   // Wait for the mojo pipe to be writable if there is still pending data to
   // write.
-  if (!data_wrapper_.empty()) {
+  if (pending_buffer_offset_ < pending_buffer_->size()) {
     pipe_watcher_.ArmOrNotify();
+  } else {
+    pending_buffer_.reset();
+    pending_buffer_offset_ = 0;
   }
 }
 

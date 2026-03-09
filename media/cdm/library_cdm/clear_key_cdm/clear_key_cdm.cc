@@ -51,39 +51,20 @@ static base::AtExitManager g_at_exit_manager;
 #endif
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
 
-const char kClearKeyCdmVersion[] = "0.1.0.1";
+constexpr char kClearKeyCdmVersion[] = "0.1.0.1";
 
 // Variants of External Clear Key key system to test different scenarios.
 
-const int64_t kMaxTimerDelayMs = base::Seconds(5).InMilliseconds();
+constexpr int64_t kMaxTimerDelayMs = base::Seconds(5).InMilliseconds();
 
 // CDM unit test result header. Must be in sync with UNIT_TEST_RESULT_HEADER in
 // media/test/data/eme_player_js/globals.js.
-const char kUnitTestResultHeader[] = "UNIT_TEST_RESULT";
+constexpr char kUnitTestResultHeader[] = "UNIT_TEST_RESULT";
 
-const char kDummyIndividualizationRequest[] = "dummy individualization request";
+constexpr char kDummyIndividualizationRequest[] =
+    "dummy individualization request";
 
 static bool g_is_cdm_module_initialized = false;
-
-namespace {
-
-class CdmInputBufferExternalMemory
-    : public media::DecoderBuffer::ExternalMemory {
- public:
-  explicit CdmInputBufferExternalMemory(base::span<const uint8_t> data)
-      : data_(data) {}
-  CdmInputBufferExternalMemory() = delete;
-  CdmInputBufferExternalMemory(const CdmInputBufferExternalMemory&) = delete;
-  CdmInputBufferExternalMemory& operator=(const CdmInputBufferExternalMemory&) =
-      delete;
-
-  const base::span<const uint8_t> Span() const override { return data_; }
-
- private:
-  base::raw_span<const uint8_t> data_;
-};
-
-}  // namespace
 
 // Creates a DecoderBuffer from |input_buffer|. If the |input_buffer| is empty,
 // an empty (end-of-stream) DecoderBuffer is returned.
@@ -100,7 +81,8 @@ static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
   // called synchronously and |input_buffer| and |output_buffer| will get
   // destroyed when Decrypt() goes out of scope.
   auto external_memory =
-      std::make_unique<CdmInputBufferExternalMemory>(input_buffer_span);
+      std::make_unique<media::DecoderBuffer::UnownedExternalMemory>(
+          input_buffer_span);
   scoped_refptr<media::DecoderBuffer> output_buffer =
       media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));

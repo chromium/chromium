@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//components/cast_streaming/features.gni")
+import("//testing/test.gni")
 
 # This file is in a separate target so all targets in the build can refer to the
 # buildflag header to get the necessary preprocessor defines without bringing in
@@ -11,13 +12,20 @@ import("//components/cast_streaming/features.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "CAST_STREAMING_ENABLE_REMOTING=$cast_streaming_enable_remoting" ]
-  visibility = [ "//components/cast_streaming/*" ]
+  visibility = [ "./*" ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
   testonly = true
+  public_deps = [
+    "browser:unit_tests",
+    "renderer:unit_tests",
+  ]
+}
+
+test("cast_streaming_unittests") {
   deps = [
-    "//components/cast_streaming/browser:unit_tests",
-    "//components/cast_streaming/renderer:unit_tests",
+    ":unit_tests",
+    "//media/test:run_all_unittests",
   ]
 }

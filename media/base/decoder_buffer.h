@@ -51,6 +51,21 @@ class MEDIA_EXPORT DecoderBuffer
     virtual const base::span<const uint8_t> Span() const = 0;
   };
 
+  // ExternalMemory implementation that wraps a span but does not own the
+  // underlying data. The caller must ensure the data remains valid for the
+  // lifetime of this object to avoid access violations or other errors. If
+  // the memory is not guaranteed to outlive the DecoderBuffer, use CopyFrom()
+  // instead.
+  class MEDIA_EXPORT UnownedExternalMemory : public ExternalMemory {
+   public:
+    explicit UnownedExternalMemory(base::span<const uint8_t> span);
+    ~UnownedExternalMemory() override = default;
+    const base::span<const uint8_t> Span() const override;
+
+   private:
+    base::raw_span<const uint8_t> span_;
+  };
+
   using DiscardPadding = DecoderBufferSideData::DiscardPadding;
 
   // Allocates buffer with |size| > 0. |is_key_frame_| will default to false.

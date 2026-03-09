@@ -17,10 +17,11 @@ class RemotingDecoderBufferFactory : public DecoderBufferFactory {
   RemotingDecoderBufferFactory();
   ~RemotingDecoderBufferFactory() override;
 
-  // DecoderBufferFactory implementation.
+  // DecoderBufferFactory implementation. The returned DecoderBuffer does not
+  // own the media data, and its lifetime is tied to the `frame_data` span.
   scoped_refptr<media::DecoderBuffer> ToDecoderBuffer(
       const openscreen::cast::EncodedFrame& encoded_frame,
-      FrameContents& frame_contents) override;
+      base::span<const uint8_t> frame_data) override;
 };
 
 }  // namespace cast_streaming
