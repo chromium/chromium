@@ -190,6 +190,29 @@
             ]
         }
     ],
+    "AccessibilityAnnotatorContentAnnotatorPipeline": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ContentAnnotatorEnabledFullAnnotationDisabled",
+                    "params": {
+                        "content_annotator_classifier_relevance_values": "{\"ShoppingCart\":2}",
+                        "content_annotator_classifier_title_keyword_rules": "{\"ShoppingCart\":[\"\\\\\\\\bcart\\\\\\\\b\",\"\\\\\\\\bbag\\\\\\\\b\",\"\\\\\\\\bbasket\\\\\\\\b\",\"\\\\\\\\bpac\\\\\\\\b\"]}",
+                        "content_annotator_classifier_url_match_rules": "{\"ShoppingCart\":[\".*/cart(?:[/?#].*|$)\",\".*/bag(?:[/?#].*|$)\",\".*/basket(?:[/?#].*|$)\",\".*/pac(?:[/?#].*|$)\"]}"
+                    },
+                    "enable_features": [
+                        "ContentAnnotator"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityCheckJavaNodeCacheFreshness": [
         {
             "platforms": [
