@@ -613,7 +613,13 @@ class ActorClickToolPDFBrowserTest
 };
 
 // Ensure clicks can rotate on a PDF.
-IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, Click) {
+// TODO(crbug.com/485814156): Re-enable the test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Click DISABLED_Click
+#else
+#define MAYBE_Click Click
+#endif
+IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, MAYBE_Click) {
   const GURL url = embedded_test_server()->GetURL("/pdf/test.pdf");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
