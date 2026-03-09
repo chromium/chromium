@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -32,8 +33,9 @@ TEST_F(BwgSnapshotUtilsTest, ReturnsNilForViewWithoutWindow) {
 // content area guide.
 TEST_F(BwgSnapshotUtilsTest, ReturnsNilForViewWithoutContentAreaGuide) {
   // Set up window and view.
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 300, 500)];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, 300, 500);
   UIView* view = [[UIView alloc] initWithFrame:window.bounds];
   [window addSubview:view];
   [window makeKeyAndVisible];
@@ -48,7 +50,8 @@ TEST_F(BwgSnapshotUtilsTest, SuccessfulSnapshotAndCrop) {
   CGFloat window_width = 300;
   CGFloat window_height = 500;
   UIWindow* window = [[UIWindow alloc]
-      initWithFrame:CGRectMake(0, 0, window_width, window_height)];
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = CGRectMake(0, 0, window_width, window_height);
   UIView* view = [[UIView alloc] initWithFrame:window.bounds];
   [window addSubview:view];
   [window makeKeyAndVisible];

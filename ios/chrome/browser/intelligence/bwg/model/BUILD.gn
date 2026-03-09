@@ -267,6 +267,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging:java_script_feature_manager_header",
