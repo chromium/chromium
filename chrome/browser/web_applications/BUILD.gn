@@ -1310,6 +1310,10 @@ source_set("web_applications_browser_tests") {
     ]
   }
 
+  if (is_win || is_linux || is_mac) {
+    sources += [ "os_integration/shortcut_sub_manager_browsertest.cc" ]
+  }
+
   if (is_mac) {
     sources += [ "system_media_controls_bridge_browsertest.cc" ]
   }
