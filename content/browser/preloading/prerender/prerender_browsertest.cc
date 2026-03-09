@@ -14978,17 +14978,56 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 }
 
 class PrerenderSpeculationRulesHoldbackBrowserTest
-    : public PrerenderBrowserTest {
+    : public PrerenderBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  PrerenderSpeculationRulesHoldbackBrowserTest() {
+  PrerenderSpeculationRulesHoldbackBrowserTest()
+      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+    if (GetParam()) {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {
+              {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+                  {
+                      {
+                          features::
+                              kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                  .name,
+                          "false",
+                      },
+                      {
+                          features::kPrerender2FallbackPrefetchSchedulerPolicy
+                              .name,
+                          "NotUse",
+                      },
+                  },
+              },
+          },
+          {});
+    } else {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {}, {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+              });
+    }
+
     prerender_helper()->SetHoldback(
         PreloadingType::kPrerender,
         content_preloading_predictor::kSpeculationRules, true);
   }
   ~PrerenderSpeculationRulesHoldbackBrowserTest() override = default;
+
+  bool IsPrerender2FallbackPrefetchSpecRulesEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderSpeculationRulesHoldbackBrowserTest,
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PrerenderSpeculationRulesHoldbackBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrerenderSpeculationRulesHoldbackBrowserTest,
                        PrerenderHoldbackTest) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
@@ -15012,14 +15051,35 @@ IN_PROC_BROWSER_TEST_F(PrerenderSpeculationRulesHoldbackBrowserTest,
 
   // Cross-check that PreloadingHoldbackStatus is correctly set.
   ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
-  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-      ukm_source_id, PreloadingType::kPrerender,
-      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified,
-      /*accurate=*/true,
-      /*ready_time=*/std::nullopt,
-      blink::mojom::SpeculationEagerness::kImmediate)});
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    ExpectPreloadingAttemptUkm(
+        {attempt_ukm_entry_builder().BuildEntry(
+             ukm_source_id, PreloadingType::kPrefetch,
+             PreloadingEligibility::kEligible,
+             PreloadingHoldbackStatus::kAllowed,
+             PreloadingTriggeringOutcome::kSuccess,
+             PreloadingFailureReason::kUnspecified,
+             /*accurate=*/true, /*ready_time=*/kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kImmediate),
+         attempt_ukm_entry_builder().BuildEntry(
+             ukm_source_id, PreloadingType::kPrerender,
+             PreloadingEligibility::kEligible,
+             PreloadingHoldbackStatus::kHoldback,
+             PreloadingTriggeringOutcome::kUnspecified,
+             PreloadingFailureReason::kUnspecified,
+             /*accurate=*/true,
+             /*ready_time=*/std::nullopt,
+             blink::mojom::SpeculationEagerness::kImmediate)});
+  } else {
+    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kHoldback,
+        PreloadingTriggeringOutcome::kUnspecified,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/std::nullopt,
+        blink::mojom::SpeculationEagerness::kImmediate)});
+  }
 }
 
 class PrerenderFencedFrameBrowserTest : public PrerenderBrowserTest {
