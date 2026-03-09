@@ -258,4 +258,27 @@ TEST_F(AndroidBrowserWindowUnitTest, GetProfileReturnsCorrectProfile) {
   EXPECT_EQ(expected_profile, actual_profile);
 }
 
+TEST_F(AndroidBrowserWindowUnitTest, NotifiesBrowserDidClose) {
+  // Arrange: Ensure the native pointer is created.
+  AndroidBrowserWindow* android_browser_window =
+      InvokeJavaGetOrCreateNativePtr();
+
+  bool callback_run = false;
+  // Register a callback to be notified when the window closes.
+  base::CallbackListSubscription subscription =
+      android_browser_window->RegisterBrowserDidClose(base::BindRepeating(
+          [](bool* run_flag, BrowserWindowInterface* window) {
+            *run_flag = true;
+          },
+          base::Unretained(&callback_run)));
+
+  EXPECT_FALSE(callback_run);
+
+  // Act: Trigger destruction via the Java-facing API.
+  InvokeJavaResetAndDestroy();
+
+  // Assert: Verify the notification was sent.
+  EXPECT_TRUE(callback_run);
+}
+
 DEFINE_JNI(AndroidBrowserWindowNativeUnitTestSupport)

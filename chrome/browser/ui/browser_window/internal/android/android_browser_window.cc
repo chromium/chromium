@@ -65,6 +65,7 @@ AndroidBrowserWindow::AndroidBrowserWindow(
 }
 
 AndroidBrowserWindow::~AndroidBrowserWindow() {
+  browser_did_close_callback_list_.Notify(this);
   Java_AndroidBrowserWindow_clearNativePtr(AttachCurrentThread(),
                                            java_android_browser_window_);
 }
