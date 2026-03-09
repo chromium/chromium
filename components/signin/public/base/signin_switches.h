@@ -295,6 +295,11 @@ extern const base::FeatureParam<SeamlessSigninPromoType>
     kSeamlessSigninPromoType;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableSearchAIModeSigninPromo);
+#endif
+
 #if BUILDFLAG(IS_IOS)
 // Feature flag controlling whether the CanSignInToChrome account capability
 // should be used to determine whether an account is eligible for sign-in.

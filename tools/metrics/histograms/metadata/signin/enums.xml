@@ -974,6 +974,7 @@ chromium-metrics-reviews@google.com.
   <int value="95" label="Ash user session manager (ChromeOS only)"/>
   <int value="96" label="Ash Chrome session manager (ChromeOS only)"/>
   <int value="97" label="AvatarPill expanding on startup"/>
+  <int value="98" label="Search AI Mode (Desktop only)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

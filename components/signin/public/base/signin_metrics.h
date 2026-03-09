@@ -331,7 +331,11 @@ enum class AccessPoint : int {
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kAvatarPillExpandPromo,  // This must be last.
+  kSearchAIModeBubble = 98,
+  // Add values above this line with a corresponding label to the
+  // "SigninAccessPoint" enum in
+  // tools/metrics/histograms/metadata/signin/enums.xml.
+  kMaxValue = kSearchAIModeBubble,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

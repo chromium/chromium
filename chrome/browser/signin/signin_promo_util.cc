@@ -328,6 +328,10 @@ syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
       return syncer::BOOKMARKS;
     case SignInPromoType::kExtension:
       return syncer::EXTENSIONS;
+    case SignInPromoType::kSearchAIMode:
+      // Search AI Mode sign-in promo is not related to any
+      // synced data type.
+      NOTREACHED();
   }
 }
 
@@ -386,6 +390,9 @@ int GetContextualPromoDismissCountPerSignedOutProfile(Profile& profile,
           prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
     case SignInPromoType::kExtension:
       NOTREACHED();
+    case SignInPromoType::kSearchAIMode:
+      // TODO(crbug.com4/86858498): Implement rate limits.
+      NOTREACHED();
   }
 }
 
@@ -404,6 +411,9 @@ int GetContextualPromoDismissCountPerAccount(Profile& profile,
     case SignInPromoType::kPassword:
       return SigninPrefs(*profile.GetPrefs())
           .GetPasswordSigninPromoDismissCount(gaia_id);
+    case SignInPromoType::kSearchAIMode:
+      // TODO(crbug.com4/86858498): Implement rate limits.
+      NOTREACHED();
     case SignInPromoType::kBookmark:
       return SigninPrefs(*profile.GetPrefs())
           .GetBookmarkSigninPromoDismissCount(gaia_id);
@@ -432,6 +442,9 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
     case SignInPromoType::kPassword:
       show_count = GetPasswordPromoShownCount(profile, account.gaia);
       break;
+    case SignInPromoType::kSearchAIMode:
+      NOTREACHED();
+      // TODO(crbug.com4/86858498): Implement rate limits.
     case SignInPromoType::kBookmark:
       if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
         NOTREACHED();
@@ -674,6 +687,9 @@ bool IsBubbleSigninPromo(signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   return access_point == signin_metrics::AccessPoint::kPasswordBubble ||
          access_point == signin_metrics::AccessPoint::kAddressBubble ||
+         (base::FeatureList::IsEnabled(
+              switches::kEnableSearchAIModeSigninPromo) &&
+          access_point == signin_metrics::AccessPoint::kSearchAIModeBubble) ||
          (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
           access_point == signin_metrics::AccessPoint::kBookmarkBubble);
 #else
@@ -707,6 +723,8 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
       return SignInPromoType::kAddress;
     case signin_metrics::AccessPoint::kBookmarkBubble:
       return SignInPromoType::kBookmark;
+    case signin_metrics::AccessPoint::kSearchAIModeBubble:
+      return SignInPromoType::kSearchAIMode;
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
       return SignInPromoType::kExtension;
     default:
@@ -742,6 +760,9 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                       kAddressSignInPromoShownCountPerProfileForLimitsExperiment
                 : prefs::kAddressSignInPromoShownCountPerProfile;
         break;
+      case SignInPromoType::kSearchAIMode:
+        // TODO(crbug.com4/86858498): Implement rate limits.
+        return;
       case SignInPromoType::kBookmark:
         if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
           return;
@@ -771,6 +792,9 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
     case SignInPromoType::kAddress:
       SigninPrefs(*profile->GetPrefs())
           .IncrementAddressSigninPromoImpressionCount(account.gaia);
+      return;
+    case SignInPromoType::kSearchAIMode:
+      // TODO(crbug.com4/86858498): Implement rate limits.
       return;
     case SignInPromoType::kBookmark:
       if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {

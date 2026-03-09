@@ -72,6 +72,7 @@ enum class SignInPromoType {
   kAddress,
   kBookmark,
   kExtension,
+  kSearchAIMode,
   // Add other types here if other access points will show a signin promo.
 };
 

@@ -162,6 +162,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAshUserSessionManager:
     case signin_metrics::AccessPoint::kAshChromeSessionManager:
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
+    case signin_metrics::AccessPoint::kSearchAIModeBubble:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

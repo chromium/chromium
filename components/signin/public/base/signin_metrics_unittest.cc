@@ -238,6 +238,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AshUserSessionManager";
       case AccessPoint::kAvatarPillExpandPromo:
         return "AvatarPillExpandPromo";
+      case AccessPoint::kSearchAIModeBubble:
+        return "SearchAIModeBubble";
     }
   }
 };

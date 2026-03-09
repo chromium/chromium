@@ -44864,6 +44864,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromSearchAIModeBubble">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded when the signin promo is shown from interracting with Search AI
+    Mode results.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromSearchCompanion">
   <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
   <owner>shaktisahu@google.com</owner>
@@ -45887,6 +45896,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromSearchAIModeBubble">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded on sign in start from the Search AI Mode signin promo.
   </description>
 </action>
 

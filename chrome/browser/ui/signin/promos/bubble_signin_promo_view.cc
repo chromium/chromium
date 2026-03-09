@@ -87,6 +87,10 @@ int GetSubtitleID(bool is_signin_promo,
             break;
         }
       } break;
+      case signin::SignInPromoType::kSearchAIMode: {
+        // TODO(crbug.com/486858498): Provide text.
+        break;
+      }
       case signin::SignInPromoType::kBookmark: {
         if (!is_signin_promo) {
           return IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE;
@@ -220,6 +224,9 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
               prefs::
                   kAddressSignInPromoDismissCountPerProfileForLimitsExperiment) +
               1);
+    case signin::SignInPromoType::kSearchAIMode:
+      // TODO(crbug.com/486858498): Implement prefs for rate limiting.
+      return;
     case signin::SignInPromoType::kBookmark:
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       return profile->GetPrefs()->SetInteger(
@@ -258,6 +265,9 @@ void IncrementContextualPromoDismissCountPerAccount(
       CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       SigninPrefs(*profile->GetPrefs())
           .IncrementBookmarkSigninPromoDismissCount(account.gaia);
+      break;
+    case signin::SignInPromoType::kSearchAIMode:
+      // TODO(crbug.com/486858498): Implement prefs for rate limiting.
       break;
     case signin::SignInPromoType::kExtension:
       NOTREACHED();
