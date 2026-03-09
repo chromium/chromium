@@ -56,7 +56,7 @@ class SkBitmap;
 // Callback type alias for the file upload request body proto created.
 using RequestBodyProtoCreatedCallback = base::OnceCallback<void(
     lens::LensOverlayServerRequest,
-    std::optional<contextual_search::FileUploadErrorType>)>;
+    std::optional<contextual_search::ContextUploadErrorType>)>;
 
 // Callback type alias for the interaction request body proto created.
 using InteractionRequestBodyProtoCreatedCallback =
@@ -396,8 +396,8 @@ class ComposeboxQueryController
   // observers with an optional error type if the upload failed.
   void UpdateFileUploadStatus(
       base::UnguessableToken file_token,
-      contextual_search::FileUploadStatus status,
-      std::optional<contextual_search::FileUploadErrorType> error_type);
+      contextual_search::ContextUploadStatus status,
+      std::optional<contextual_search::ContextUploadErrorType> error_type);
 
   // Handler for when the image from an image file upload is decoded. Creates
   // the request body proto and calls the callback with the request.
@@ -420,7 +420,7 @@ class ComposeboxQueryController
       std::optional<size_t> pdf_page_index,
       RequestBodyProtoCreatedCallback callback,
       lens::LensOverlayServerRequest request,
-      std::optional<contextual_search::FileUploadErrorType> error_type);
+      std::optional<contextual_search::ContextUploadErrorType> error_type);
 
   // Callback that takes the request body proto and adds the
   // has_lens_usage_intent bool to it.
@@ -428,14 +428,14 @@ class ComposeboxQueryController
       bool has_lens_usage_intent,
       RequestBodyProtoCreatedCallback callback,
       lens::LensOverlayServerRequest request,
-      std::optional<contextual_search::FileUploadErrorType> error_type);
+      std::optional<contextual_search::ContextUploadErrorType> error_type);
 
   // Asynchronous handler for when an upload request body is ready.
   void OnUploadRequestBodyReady(
       const base::UnguessableToken& file_token,
       size_t request_index,
       lens::LensOverlayServerRequest request,
-      std::optional<contextual_search::FileUploadErrorType> error_type);
+      std::optional<contextual_search::ContextUploadErrorType> error_type);
 
   // Asynchronous handler for when the request headers for uploading file and
   // viewport data are ready.

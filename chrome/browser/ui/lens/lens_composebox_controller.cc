@@ -238,7 +238,7 @@ void LensComposeboxController::ClearVisualSelectionContext() {
   if (vsc_image_data_ && composebox_handler_) {
     composebox_handler_->OnContextualInputStatusChanged(
         vsc_image_data_->id,
-        contextual_search::FileUploadStatus::kUploadReplaced, std::nullopt);
+        contextual_search::ContextUploadStatus::kUploadReplaced, std::nullopt);
   }
   vsc_image_data_.reset();
 }

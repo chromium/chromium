@@ -343,8 +343,9 @@ ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ComposeboxQueryControllerBridge_onFileUploadStatusChanged(
       env, java_obj_,
@@ -360,8 +361,8 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
       page_content_data->context_input->size() <= 0) {
     OnFileUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,
-        contextual_search::FileUploadStatus::kValidationFailed,
-        contextual_search::FileUploadErrorType::kBrowserProcessingError);
+        contextual_search::ContextUploadStatus::kValidationFailed,
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError);
     return;
   }
 
@@ -385,8 +386,8 @@ void ComposeboxQueryControllerBridge::OnGetPageContentFromCache(
   if (!page_context.has_value()) {
     OnFileUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,
-        contextual_search::FileUploadStatus::kValidationFailed,
-        contextual_search::FileUploadErrorType::kBrowserProcessingError);
+        contextual_search::ContextUploadStatus::kValidationFailed,
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError);
     return;
   }
 

@@ -887,8 +887,8 @@ void SearchboxHandler::AddFileContextFromBrowser(
 
 void SearchboxHandler::OnContextualInputStatusChanged(
     base::UnguessableToken token,
-    contextual_search::FileUploadStatus status,
-    std::optional<contextual_search::FileUploadErrorType> error_type) {
+    contextual_search::ContextUploadStatus status,
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
   if (page_ && IsRemoteBound()) {
     page_->OnContextualInputStatusChanged(token, status, error_type);
   }

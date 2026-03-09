@@ -43,11 +43,11 @@ mojom("mojo_bindings") {
         },
         {
           mojom = "composebox_query.mojom.ContextUploadStatus"
-          cpp = "::contextual_search::FileUploadStatus"
+          cpp = "::contextual_search::ContextUploadStatus"
         },
         {
           mojom = "composebox_query.mojom.ContextUploadErrorType"
-          cpp = "::contextual_search::FileUploadErrorType"
+          cpp = "::contextual_search::ContextUploadErrorType"
         },
       ]
       traits_headers = [ "contextual_search_mojom_traits.h" ]

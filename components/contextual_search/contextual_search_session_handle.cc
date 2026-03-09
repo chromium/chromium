@@ -284,9 +284,9 @@ bool ContextualSearchSessionHandle::DeleteFile(
     }
     lens::MimeType file_type =
         file_info ? file_info->mime_type : lens::MimeType::kUnknown;
-    contextual_search::FileUploadStatus file_status =
+    contextual_search::ContextUploadStatus file_status =
         file_info ? file_info->upload_status
-                  : contextual_search::FileUploadStatus::kNotUploaded;
+                  : contextual_search::ContextUploadStatus::kNotUploaded;
 
     bool success = context_controller->DeleteFile(file_token);
     if (auto* metrics_recorder = GetMetricsRecorder()) {

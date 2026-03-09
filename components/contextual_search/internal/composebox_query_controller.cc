@@ -202,13 +202,14 @@ void CreateFileUploadRequestProtoWithPayloadAndContinue(
 // Returns true if the file upload status is valid to include in the multimodal
 // request.
 bool IsValidFileUploadStatusForMultimodalRequest(
-    contextual_search::FileUploadStatus upload_status) {
-  return upload_status == contextual_search::FileUploadStatus::kProcessing ||
-         upload_status == contextual_search::FileUploadStatus::
+    contextual_search::ContextUploadStatus upload_status) {
+  return upload_status == contextual_search::ContextUploadStatus::kProcessing ||
+         upload_status == contextual_search::ContextUploadStatus::
                               kProcessingSuggestSignalsReady ||
-         upload_status == contextual_search::FileUploadStatus::kUploadStarted ||
          upload_status ==
-             contextual_search::FileUploadStatus::kUploadSuccessful;
+             contextual_search::ContextUploadStatus::kUploadStarted ||
+         upload_status ==
+             contextual_search::ContextUploadStatus::kUploadSuccessful;
 }
 
 // Returns true if the request id corresponds to an image upload.
@@ -770,7 +771,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // this level, this counts as uploading.
   // But when delayed tabs come into consideration,
   // `kNotUploaded` should not be considered uploading.
-  file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
+  file_info->upload_status =
+      contextual_search::ContextUploadStatus::kNotUploaded;
   file_info->tab_url = contextual_input_data->page_url;
   file_info->tab_title = contextual_input_data->page_title;
   file_info->tab_session_id = contextual_input_data->tab_session_id;
@@ -792,7 +794,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
     current_file_info.input_data->modality_chip_props =
         std::move(contextual_input_data->modality_chip_props.value());
     UpdateFileUploadStatus(
-        file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+        file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);
     return;
   }
@@ -884,7 +886,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
   // Update the file upload status to processing.
   UpdateFileUploadStatus(file_token,
-                         contextual_search::FileUploadStatus::kProcessing,
+                         contextual_search::ContextUploadStatus::kProcessing,
                          std::nullopt);
 
   // If the cluster info is available, update the file upload status to ready
@@ -896,7 +898,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
     // TODO(crbug.com/452401443): Listen for this new status from the webui.
     UpdateFileUploadStatus(
         file_token,
-        contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+        contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady,
         std::nullopt);
   }
 
@@ -905,8 +907,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
       !contextual_input_data->is_page_context_eligible.value()) {
     // TODO(crbug.com/444276947): Consider adding a new error type for this.
     UpdateFileUploadStatus(
-        file_token, contextual_search::FileUploadStatus::kValidationFailed,
-        contextual_search::FileUploadErrorType::kBrowserProcessingError);
+        file_token, contextual_search::ContextUploadStatus::kValidationFailed,
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError);
     return;
   }
 
@@ -1147,9 +1149,9 @@ void ComposeboxQueryController::ResetRequestClusterInfoState() {
       }
     }
     if (file_info->upload_status !=
-        contextual_search::FileUploadStatus::kValidationFailed) {
+        contextual_search::ContextUploadStatus::kValidationFailed) {
       UpdateFileUploadStatus(
-          file_token, contextual_search::FileUploadStatus::kUploadExpired,
+          file_token, contextual_search::ContextUploadStatus::kUploadExpired,
           std::nullopt);
     }
   }
@@ -1340,11 +1342,11 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   for (const auto& [file_token, file_info] : active_files_) {
     // If the file is processing, set its state to suggest signals ready.
     if (file_info->upload_status ==
-        contextual_search::FileUploadStatus::kProcessing) {
-      UpdateFileUploadStatus(
-          file_token,
-          contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
-          std::nullopt);
+        contextual_search::ContextUploadStatus::kProcessing) {
+      UpdateFileUploadStatus(file_token,
+                             contextual_search::ContextUploadStatus::
+                                 kProcessingSuggestSignalsReady,
+                             std::nullopt);
     }
 
     // Trigger pending upload requests.
@@ -1399,8 +1401,8 @@ void ComposeboxQueryController::MarkFileUploadAsInTerminalState(
 
 void ComposeboxQueryController::UpdateFileUploadStatus(
     base::UnguessableToken file_token,
-    contextual_search::FileUploadStatus status,
-    std::optional<contextual_search::FileUploadErrorType> error_type) {
+    contextual_search::ContextUploadStatus status,
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
   auto* file_info = GetMutableFileInfo(file_token);
   if (!file_info) {
     return;
@@ -1411,7 +1413,7 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
                                        error_type);
   }
   if (!IsValidFileUploadStatusForMultimodalRequest(status) &&
-      status != contextual_search::FileUploadStatus::kUploadExpired) {
+      status != contextual_search::ContextUploadStatus::kUploadExpired) {
     active_files_.erase(file_token);
     // Once we start uploading a file in `StartFileUploadFlow`, if
     // we get `kNotUploaded` status outside of `StartFileUploadFlow`,
@@ -1439,7 +1441,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
   if (bitmap.isNull() || bitmap.empty()) {
     std::move(callback).Run(
         lens::LensOverlayServerRequest(),
-        contextual_search::FileUploadErrorType::kImageProcessingError);
+        contextual_search::ContextUploadErrorType::kImageProcessingError);
     return;
   }
 
@@ -1546,8 +1548,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
       if (contextual_input_data->context_input->size() == 0) {
         UpdateFileUploadStatus(
             file_info->file_token,
-            contextual_search::FileUploadStatus::kValidationFailed,
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadStatus::kValidationFailed,
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
         return;
       }
       [[fallthrough]];
@@ -1607,8 +1609,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     default:
       UpdateFileUploadStatus(
           file_info->file_token,
-          contextual_search::FileUploadStatus::kValidationFailed,
-          contextual_search::FileUploadErrorType::kBrowserProcessingError);
+          contextual_search::ContextUploadStatus::kValidationFailed,
+          contextual_search::ContextUploadErrorType::kBrowserProcessingError);
       break;
   }
 }
@@ -1617,7 +1619,7 @@ void ComposeboxQueryController::AddLensUsageIntentToUploadRequestAndContinue(
     bool has_lens_usage_intent,
     RequestBodyProtoCreatedCallback callback,
     lens::LensOverlayServerRequest request,
-    std::optional<contextual_search::FileUploadErrorType> error_type) {
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
   if (!error_type.has_value()) {
     request.set_has_lens_intent(has_lens_usage_intent);
   }
@@ -1629,7 +1631,7 @@ void ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue(
     std::optional<size_t> pdf_page_index,
     RequestBodyProtoCreatedCallback callback,
     lens::LensOverlayServerRequest request,
-    std::optional<contextual_search::FileUploadErrorType> error_type) {
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
   if (!error_type.has_value() && pdf_page_index.has_value()) {
     request.mutable_objects_request()
         ->mutable_viewport_request_context()
@@ -1643,7 +1645,7 @@ void ComposeboxQueryController::OnUploadRequestBodyReady(
     const base::UnguessableToken& file_token,
     size_t request_index,
     lens::LensOverlayServerRequest request,
-    std::optional<contextual_search::FileUploadErrorType> error_type) {
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
   auto* file_info = GetMutableFileInfo(file_token);
   if (!file_info) {
     return;
@@ -1652,7 +1654,7 @@ void ComposeboxQueryController::OnUploadRequestBodyReady(
   if (error_type.has_value()) {
     UpdateFileUploadStatus(
         file_info->file_token,
-        contextual_search::FileUploadStatus::kValidationFailed, error_type);
+        contextual_search::ContextUploadStatus::kValidationFailed, error_type);
     return;
   }
 
@@ -1801,12 +1803,12 @@ void ComposeboxQueryController::OnUploadEndpointFetcherCreated(
   upload_request->start_time = base::Time::Now();
   upload_request->endpoint_fetcher_ = std::move(endpoint_fetcher);
   if (file_info->upload_status ==
-          contextual_search::FileUploadStatus::kProcessing ||
-      file_info->upload_status ==
-          contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady) {
-    UpdateFileUploadStatus(file_info->file_token,
-                           contextual_search::FileUploadStatus::kUploadStarted,
-                           std::nullopt);
+          contextual_search::ContextUploadStatus::kProcessing ||
+      file_info->upload_status == contextual_search::ContextUploadStatus::
+                                      kProcessingSuggestSignalsReady) {
+    UpdateFileUploadStatus(
+        file_info->file_token,
+        contextual_search::ContextUploadStatus::kUploadStarted, std::nullopt);
   }
 }
 
@@ -1832,10 +1834,10 @@ void ComposeboxQueryController::HandleUploadResponse(
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     file_info->upload_error_type =
-        contextual_search::FileUploadErrorType::kServerError;
+        contextual_search::ContextUploadErrorType::kServerError;
     UpdateFileUploadStatus(
-        file_token, contextual_search::FileUploadStatus::kUploadFailed,
-        contextual_search::FileUploadErrorType::kServerError);
+        file_token, contextual_search::ContextUploadStatus::kUploadFailed,
+        contextual_search::ContextUploadErrorType::kServerError);
     return;
   }
 
@@ -1847,10 +1849,10 @@ void ComposeboxQueryController::HandleUploadResponse(
   // would have been set to ServerError if the response code for any prior
   // request was not successful.
   if (file_info->upload_status ==
-          contextual_search::FileUploadStatus::kUploadStarted &&
+          contextual_search::ContextUploadStatus::kUploadStarted &&
       file_info->num_outstanding_network_requests_ == 0) {
     UpdateFileUploadStatus(
-        file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+        file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);
   }
 }

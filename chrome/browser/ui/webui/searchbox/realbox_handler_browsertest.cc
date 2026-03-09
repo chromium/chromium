@@ -79,8 +79,8 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
                     bool is_deletable) override {}
   void OnContextualInputStatusChanged(
       const base::UnguessableToken& token,
-      contextual_search::FileUploadStatus status,
-      std::optional<contextual_search::FileUploadErrorType> error_type)
+      contextual_search::ContextUploadStatus status,
+      std::optional<contextual_search::ContextUploadErrorType> error_type)
       override {}
   void OnInputStateChanged(const omnibox::InputState& input_state) override {}
   void OnTabStripChanged() override {}

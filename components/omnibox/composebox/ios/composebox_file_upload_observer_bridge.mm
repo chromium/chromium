@@ -20,8 +20,9 @@ ComposeboxFileUploadObserverBridge::~ComposeboxFileUploadObserverBridge() =
 void ComposeboxFileUploadObserverBridge::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   [observer_ onFileUploadStatusChanged:file_token
                               mimeType:mime_type
                       fileUploadStatus:file_upload_status

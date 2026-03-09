@@ -203,8 +203,9 @@ void ContextualTasksComposeboxHandler::MarkDelayedTabUploadFinished(
 void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   // If the file token corresponds to the token uploaded via Lens when the
   // overlay is opened, then there is no need to do anything about the file
   // upload status.
@@ -220,18 +221,18 @@ void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
       file_token, mime_type, file_upload_status, error_type);
   // Associate tab with task.
 
-  using FileUploadStatus = contextual_search::FileUploadStatus;
+  using ContextUploadStatus = contextual_search::ContextUploadStatus;
   bool is_terminal_upload_status =
-      file_upload_status == FileUploadStatus::kUploadSuccessful ||
-      file_upload_status == FileUploadStatus::kUploadFailed ||
-      file_upload_status == FileUploadStatus::kUploadExpired ||
-      file_upload_status == FileUploadStatus::kValidationFailed ||
-      file_upload_status == FileUploadStatus::kUploadReplaced;
+      file_upload_status == ContextUploadStatus::kUploadSuccessful ||
+      file_upload_status == ContextUploadStatus::kUploadFailed ||
+      file_upload_status == ContextUploadStatus::kUploadExpired ||
+      file_upload_status == ContextUploadStatus::kValidationFailed ||
+      file_upload_status == ContextUploadStatus::kUploadReplaced;
 
   if (is_terminal_upload_status) {
     MarkContextUploadFinished(file_token);
   }
-  if (file_upload_status == FileUploadStatus::kUploadSuccessful) {
+  if (file_upload_status == ContextUploadStatus::kUploadSuccessful) {
     auto* contextual_session_handle = GetContextualSessionHandle();
     if (!contextual_session_handle) {
       return;
@@ -634,7 +635,7 @@ bool ContextualTasksComposeboxHandler::ShouldUploadTabContext(
   }
 
   if (matching_file_info->upload_status ==
-      contextual_search::FileUploadStatus::kUploadExpired) {
+      contextual_search::ContextUploadStatus::kUploadExpired) {
     return true;
   }
 
@@ -921,13 +922,13 @@ void ContextualTasksComposeboxHandler::AddFileContext(
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto* session_handle = GetContextualSessionHandle();
   if (!session_handle) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto token = session_handle->CreateContextToken();
@@ -953,7 +954,7 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -999,7 +1000,7 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto token = contextual_session_handle->CreateContextToken();
@@ -1072,13 +1073,13 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
   if (visual_selection_token_) {
     OnFileUploadStatusChanged(
         *visual_selection_token_, lens::MimeType::kImage,
-        contextual_search::FileUploadStatus::kUploadReplaced, std::nullopt);
+        contextual_search::ContextUploadStatus::kUploadReplaced, std::nullopt);
   }
 
   // Lens will handle the creation of the interaction request needed for this
-  // context. Add the visual selection to the composebox UI. The overlay token is
-  // needed to ensure that the visual selection is associated with the correct
-  // viewport upload.
+  // context. Add the visual selection to the composebox UI. The overlay token
+  // is needed to ensure that the visual selection is associated with the
+  // correct viewport upload.
   auto* controller = GetLensSearchController();
   CHECK(controller);
   CHECK(controller->query_router());
@@ -1097,7 +1098,7 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
 void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
     base::UnguessableToken overlay_token,
     base::expected<base::UnguessableToken,
-                   contextual_search::FileUploadErrorType> token) {
+                   contextual_search::ContextUploadErrorType> token) {
   // Remove old visual selection if it exists.
   if (visual_selection_token_.has_value()) {
     ComposeboxHandler::DeleteContext(visual_selection_token_.value(),
@@ -1115,9 +1116,10 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
     // purpose of UI representation, this needs to call the
     // OnFileUploadStatusChanged() to avoid the visual selection being
     // considered as pending upload. Assume it is kUploadSuccessful.
-    OnFileUploadStatusChanged(*visual_selection_token_, lens::MimeType::kImage,
-                              contextual_search::FileUploadStatus::kUploadSuccessful,
-                              std::nullopt);
+    OnFileUploadStatusChanged(
+        *visual_selection_token_, lens::MimeType::kImage,
+        contextual_search::ContextUploadStatus::kUploadSuccessful,
+        std::nullopt);
   } else {
     visual_selection_token_ = std::nullopt;
     visual_selection_overlay_token_ = std::nullopt;
@@ -1171,7 +1173,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   if (was_delayed) {
     OnFileUploadStatusChanged(
         file_token, lens::MimeType::kUnknown,
-        contextual_search::FileUploadStatus::kUploadExpired, std::nullopt);
+        contextual_search::ContextUploadStatus::kUploadExpired, std::nullopt);
   }
 
   // Hide the underline for the tab if it was associated with the deleted

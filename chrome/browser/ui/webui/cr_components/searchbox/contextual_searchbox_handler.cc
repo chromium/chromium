@@ -424,14 +424,14 @@ void ContextualSearchboxHandler::AddFileContext(
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -456,14 +456,14 @@ void ContextualSearchboxHandler::AddFileContextFromBrowser(
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -489,7 +489,7 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -510,13 +510,13 @@ void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
   if (!contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto* contextual_session_handle = GetContextualSessionHandle();
   if (!contextual_session_handle) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto context_token = contextual_session_handle->CreateContextToken();
@@ -767,8 +767,9 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
 void ContextualSearchboxHandler::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   if (IsRemoteBound()) {
     page_->OnContextualInputStatusChanged(file_token, file_upload_status,
                                           error_type);
@@ -882,7 +883,7 @@ void ContextualSearchboxHandler::SnapshotTabContext(
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
 
   page_->OnContextualInputStatusChanged(
-      context_token, contextual_search::FileUploadStatus::kProcessing,
+      context_token, contextual_search::ContextUploadStatus::kProcessing,
       std::nullopt);
 }
 

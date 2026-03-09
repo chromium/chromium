@@ -97,9 +97,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type)
-      override;
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
 
   void CreateAndSendQueryMessage(const std::string& query);
 
@@ -206,7 +206,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnVisualSelectionAdded(
       base::UnguessableToken overlay_token,
       base::expected<base::UnguessableToken,
-                     contextual_search::FileUploadErrorType> token);
+                     contextual_search::ContextUploadErrorType> token);
 
   LensSearchController* GetLensSearchController() const;
 

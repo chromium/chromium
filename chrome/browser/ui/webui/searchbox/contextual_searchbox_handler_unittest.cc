@@ -378,7 +378,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyDisabled) {
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::expected<base::UnguessableToken,
-                 contextual_search::FileUploadErrorType>
+                 contextual_search::ContextUploadErrorType>
       callback_result =
           base::ok(base::UnguessableToken());  // Initialize with dummy
 
@@ -389,7 +389,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyDisabled) {
 
   EXPECT_FALSE(callback_result.has_value());
   EXPECT_EQ(callback_result.error(),
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
@@ -409,7 +409,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback_1;
   base::expected<base::UnguessableToken,
-                 contextual_search::FileUploadErrorType>
+                 contextual_search::ContextUploadErrorType>
       callback_result_1 =
           base::ok(base::UnguessableToken());  // Initialize with dummy
 
@@ -421,7 +421,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_PolicyToggled) {
 
   EXPECT_FALSE(callback_result_1.has_value());
   EXPECT_EQ(callback_result_1.error(),
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 
   // Enable policy.
   profile()->GetPrefs()->SetInteger(
@@ -466,7 +466,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
 
   base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
   base::expected<base::UnguessableToken,
-                 contextual_search::FileUploadErrorType>
+                 contextual_search::ContextUploadErrorType>
       callback_result =
           base::ok(base::UnguessableToken());  // Initialize with dummy
 
@@ -478,7 +478,7 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyDisabled) {
 
   EXPECT_FALSE(callback_result.has_value());
   EXPECT_EQ(callback_result.error(),
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
@@ -933,7 +933,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   base::expected<base::UnguessableToken,
-                 contextual_search::FileUploadErrorType>
+                 contextual_search::ContextUploadErrorType>
       callback_result =
           base::ok(base::UnguessableToken());  // Initialize with dummy
 
@@ -946,7 +946,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
 
   EXPECT_FALSE(callback_result.has_value());
   EXPECT_EQ(callback_result.error(),
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_PolicyDisabled) {
@@ -962,7 +962,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_PolicyDisabled) {
   EXPECT_CALL(query_controller(), StartFileUploadFlow).Times(0);
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   base::expected<base::UnguessableToken,
-                 contextual_search::FileUploadErrorType>
+                 contextual_search::ContextUploadErrorType>
       callback_result =
           base::ok(base::UnguessableToken());  // Initialize with dummy
 
@@ -976,7 +976,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_PolicyDisabled) {
 
   EXPECT_FALSE(callback_result.has_value());
   EXPECT_EQ(callback_result.error(),
-            contextual_search::FileUploadErrorType::kBrowserProcessingError);
+            contextual_search::ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
@@ -985,7 +985,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
   tabs::TabInterface* tab = AddTab(sample_url);
   const int sample_tab_id = tab->GetHandle().raw_value();
 
-  contextual_search::FileUploadStatus status;
+  contextual_search::ContextUploadStatus status;
 
   tabs::TabFeatures* tab_features = tab->GetTabFeatures();
   MockTabContextualizationController* tab_contextualization_controller =
@@ -1011,8 +1011,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
       .Times(1)
       .WillOnce(
           [&status](const base::UnguessableToken& file_token,
-                    contextual_search::FileUploadStatus file_upload_status,
-                    std::optional<contextual_search::FileUploadErrorType>
+                    contextual_search::ContextUploadStatus file_upload_status,
+                    std::optional<contextual_search::ContextUploadErrorType>
                         file_upload_error_type) {
             status = file_upload_status;
           });
@@ -1033,7 +1033,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
   // Assert
   ASSERT_TRUE(handler().tab_context_snapshot_.has_value());
   ASSERT_TRUE(handler().context_input_data().has_value());
-  ASSERT_EQ(contextual_search::FileUploadStatus::kProcessing, status);
+  ASSERT_EQ(contextual_search::ContextUploadStatus::kProcessing, status);
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
@@ -1061,8 +1061,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(0);
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(2);
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future;
   auto sample_contextual_input_data =
       std::make_unique<lens::ContextualInputData>();
@@ -1129,8 +1129,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   EXPECT_CALL(query_controller(),
               StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
       .Times(1);
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future;
   handler().AddTabContext(tab_id2, /*delay_upload=*/false,
                           future.GetCallback());
@@ -1174,8 +1174,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
           metrics_recorder_ptr,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
 
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future;
   handler().NotifySessionStarted();
   handler().AddTabContext(tab_id, false, future.GetCallback());
@@ -1291,8 +1291,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
 
   // Click on a tab with a duplicate title.
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future1;
   handler().NotifySessionStarted();
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
@@ -1301,8 +1301,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   EXPECT_TRUE(future1.Get().has_value());
 
   // Click on a tab with a unique title.
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future2;
   handler().AddTabContext(tab_b1->GetHandle().raw_value(), false,
                           future2.GetCallback());
@@ -1349,8 +1349,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
 
   // Click on a tab with a unique title.
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future;
   handler().NotifySessionStarted();
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
@@ -1396,8 +1396,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextRecencyRankingMetric) {
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   // Click on the first tab.
-  base::test::TestFuture<base::expected<base::UnguessableToken,
-                                        contextual_search::FileUploadErrorType>>
+  base::test::TestFuture<base::expected<
+      base::UnguessableToken, contextual_search::ContextUploadErrorType>>
       future;
   handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
                           future.GetCallback());
@@ -1596,24 +1596,23 @@ class ContextualSearchboxHandlerFileUploadStatusTest
 
 TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
        OnFileUploadStatusChanged) {
-  contextual_search::FileUploadStatus status;
+  contextual_search::ContextUploadStatus status;
   EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
       .Times(1)
       .WillOnce(
           [&status](const base::UnguessableToken& file_token,
-                    contextual_search::FileUploadStatus file_upload_status,
-                    std::optional<contextual_search::FileUploadErrorType>
+                    contextual_search::ContextUploadStatus file_upload_status,
+                    std::optional<contextual_search::ContextUploadErrorType>
                         file_upload_error_type) {
             status = file_upload_status;
           });
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   const auto expected_status = GetParam();
-  contextual_search::FileUploadStatus status_cpp;
-  EXPECT_TRUE((mojo::EnumTraits<
-               composebox_query::mojom::ContextUploadStatus,
-               contextual_search::FileUploadStatus>::FromMojom(expected_status,
-                                                               &status_cpp)));
+  contextual_search::ContextUploadStatus status_cpp;
+  EXPECT_TRUE((mojo::EnumTraits<composebox_query::mojom::ContextUploadStatus,
+                                contextual_search::ContextUploadStatus>::
+                   FromMojom(expected_status, &status_cpp)));
   base::UnguessableToken token = base::UnguessableToken::Create();
   handler().OnFileUploadStatusChanged(token, lens::MimeType::kPdf, status_cpp,
                                       std::nullopt);

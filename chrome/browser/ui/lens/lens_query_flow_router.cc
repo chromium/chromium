@@ -380,8 +380,9 @@ LensQueryFlowRouter::GetTabContextualizationController() const {
 void LensQueryFlowRouter::OnFileUploadStatusChangedForTesting(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   OnFileUploadStatusChanged(file_token, mime_type, file_upload_status,
                             error_type);
 }
@@ -419,8 +420,9 @@ void LensQueryFlowRouter::RemoveContextualSearchContextIfNecessary(
 void LensQueryFlowRouter::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   const auto& suggest_inputs = GetSuggestInputs();
   if (suggest_inputs.has_value() &&
       AreLensSuggestInputsReady(*suggest_inputs)) {
@@ -433,7 +435,7 @@ void LensQueryFlowRouter::OnFileUploadStatusChanged(
   if (session_handle && overlay_tab_context_file_token_.has_value() &&
       file_token == overlay_tab_context_file_token_.value() &&
       file_upload_status ==
-          contextual_search::FileUploadStatus::kUploadSuccessful) {
+          contextual_search::ContextUploadStatus::kUploadSuccessful) {
     // Pass any text that was returned as part of the file upload response to
     // to the overlay.
     auto* file_info = session_handle->GetController()->GetFileInfo(file_token);
@@ -676,7 +678,7 @@ bool LensQueryFlowRouter::IsActiveTabContextEligible() const {
       bool is_eligible =
           file_info &&
           file_info->upload_status !=
-              contextual_search::FileUploadStatus::kValidationFailed;
+              contextual_search::ContextUploadStatus::kValidationFailed;
       if (is_eligible) {
         return true;
       }

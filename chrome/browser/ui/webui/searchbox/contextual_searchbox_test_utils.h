@@ -98,7 +98,8 @@ class MockQueryController
     for (auto& observer : observers_) {
       observer.OnFileUploadStatusChanged(
           file_token, lens::MimeType::kHtml,
-          contextual_search::FileUploadStatus::kUploadSuccessful, std::nullopt);
+          contextual_search::ContextUploadStatus::kUploadSuccessful,
+          std::nullopt);
     }
   }
 

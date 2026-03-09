@@ -42,9 +42,9 @@ class ContextualSearchSessionEntry
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type)
-      override;
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
 
   std::unique_ptr<ContextualSearchContextController> controller_;
   std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder_;

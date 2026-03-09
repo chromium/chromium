@@ -174,7 +174,7 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     std::string file_name,
     std::string mime_string,
     base::expected<base::UnguessableToken,
-                   contextual_search::FileUploadErrorType> result) {
+                   contextual_search::ContextUploadErrorType> result) {
   if (!result.has_value()) {
     return;
   }

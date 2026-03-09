@@ -78,8 +78,9 @@ class ContextualSearchContextController {
     virtual void OnFileUploadStatusChanged(
         const base::UnguessableToken& file_token,
         lens::MimeType mime_type,
-        FileUploadStatus file_upload_status,
-        const std::optional<FileUploadErrorType>& error_type) = 0;
+        ContextUploadStatus file_upload_status,
+        const std::optional<ContextUploadErrorType>& error_type) = 0;
+
    protected:
     ~FileUploadStatusObserver() override = default;
   };

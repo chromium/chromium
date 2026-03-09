@@ -1261,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   EXPECT_CALL(
       mock_searchbox_page,
       OnContextualInputStatusChanged(
-          first_id, contextual_search::FileUploadStatus::kUploadReplaced,
+          first_id, contextual_search::ContextUploadStatus::kUploadReplaced,
           testing::_))
       .Times(1);
 

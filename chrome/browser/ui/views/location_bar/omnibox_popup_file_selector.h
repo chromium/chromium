@@ -61,7 +61,7 @@ class OmniboxPopupFileSelector : public ui::SelectFileDialog::Listener {
       std::string file_name,
       std::string mime_string,
       base::expected<base::UnguessableToken,
-                     contextual_search::FileUploadErrorType> result);
+                     contextual_search::ContextUploadErrorType> result);
 
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;

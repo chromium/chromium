@@ -98,8 +98,8 @@ namespace contextual_search {
 
 using FileUploadStatusTuple = std::tuple<base::UnguessableToken,
                                          lens::MimeType,
-                                         FileUploadStatus,
-                                         std::optional<FileUploadErrorType>>;
+                                         ContextUploadStatus,
+                                         std::optional<ContextUploadErrorType>>;
 using CreateSearchUrlRequestInfo =
     ComposeboxQueryController::CreateSearchUrlRequestInfo;
 using CreateClientToAimRequestInfo =
@@ -283,14 +283,15 @@ class ComposeboxQueryControllerTest
   void WaitForFileUpload(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      FileUploadStatus expected_status = FileUploadStatus::kUploadSuccessful,
-      std::optional<FileUploadErrorType> expected_error_type = std::nullopt,
+      ContextUploadStatus expected_status =
+          ContextUploadStatus::kUploadSuccessful,
+      std::optional<ContextUploadErrorType> expected_error_type = std::nullopt,
       bool expect_suggest_signals_ready = true) {
     FileUploadStatusTuple processing_file_upload_status =
         file_upload_status_future_.Take();
     EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
     EXPECT_EQ(mime_type, std::get<1>(processing_file_upload_status));
-    EXPECT_EQ(FileUploadStatus::kProcessing,
+    EXPECT_EQ(ContextUploadStatus::kProcessing,
               std::get<2>(processing_file_upload_status));
     EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
 
@@ -299,20 +300,20 @@ class ComposeboxQueryControllerTest
           file_upload_status_future_.Take();
       EXPECT_EQ(file_token, std::get<0>(processing_suggest_file_upload_status));
       EXPECT_EQ(mime_type, std::get<1>(processing_suggest_file_upload_status));
-      EXPECT_EQ(FileUploadStatus::kProcessingSuggestSignalsReady,
+      EXPECT_EQ(ContextUploadStatus::kProcessingSuggestSignalsReady,
                 std::get<2>(processing_suggest_file_upload_status));
       EXPECT_EQ(std::nullopt,
                 std::get<3>(processing_suggest_file_upload_status));
     }
 
-    if (expected_status != FileUploadStatus::kValidationFailed) {
+    if (expected_status != ContextUploadStatus::kValidationFailed) {
       // For client-side validation failures, the state will never change to
       // kUploadStarted.
       FileUploadStatusTuple upload_started_file_upload_status =
           file_upload_status_future_.Take();
       EXPECT_EQ(file_token, std::get<0>(upload_started_file_upload_status));
       EXPECT_EQ(mime_type, std::get<1>(upload_started_file_upload_status));
-      EXPECT_EQ(FileUploadStatus::kUploadStarted,
+      EXPECT_EQ(ContextUploadStatus::kUploadStarted,
                 std::get<2>(upload_started_file_upload_status));
       EXPECT_EQ(std::nullopt, std::get<3>(upload_started_file_upload_status));
     }
@@ -324,7 +325,7 @@ class ComposeboxQueryControllerTest
     EXPECT_EQ(expected_status, std::get<2>(final_file_upload_status));
     EXPECT_EQ(expected_error_type, std::get<3>(final_file_upload_status));
 
-    if (expected_status == FileUploadStatus::kValidationFailed) {
+    if (expected_status == ContextUploadStatus::kValidationFailed) {
       // For client-side validation failures, the file upload request will not
       // be sent.
       EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
@@ -411,8 +412,8 @@ class ComposeboxQueryControllerTest
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      FileUploadStatus file_upload_status,
-      const std::optional<FileUploadErrorType>& error_type) override {
+      ContextUploadStatus file_upload_status,
+      const std::optional<ContextUploadErrorType>& error_type) override {
     file_upload_status_future_.AddValue(file_token, mime_type,
                                         file_upload_status, error_type);
   }
@@ -548,8 +549,8 @@ class ComposeboxQueryControllerTest
       controller_state_future_;
   base::test::RepeatingTestFuture<base::UnguessableToken,
                                   lens::MimeType,
-                                  FileUploadStatus,
-                                  std::optional<FileUploadErrorType>>
+                                  ContextUploadStatus,
+                                  std::optional<ContextUploadErrorType>>
       file_upload_status_future_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -636,9 +637,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
                          /*file_data=*/std::vector<uint8_t>());
 
   // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(file_token, lens::MimeType::kPdf,
-                    /*expected_status=*/FileUploadStatus::kUploadFailed,
-                    /*expected_error_type=*/FileUploadErrorType::kServerError);
+  WaitForFileUpload(
+      file_token, lens::MimeType::kPdf,
+      /*expected_status=*/ContextUploadStatus::kUploadFailed,
+      /*expected_error_type=*/ContextUploadErrorType::kServerError);
 
   // Assert: The suggest inputs are empty.
   auto suggest_inputs = controller().CreateSuggestInputs({file_token});
@@ -1179,7 +1181,7 @@ TEST_F(ComposeboxQueryControllerTest,
   FileUploadStatusTuple processing_file_upload_status =
       file_upload_status_future_.Take();
   EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kProcessing,
+  EXPECT_EQ(ContextUploadStatus::kProcessing,
             std::get<2>(processing_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
 
@@ -1368,7 +1370,7 @@ TEST_F(ComposeboxQueryControllerTest,
   ASSERT_TRUE(controller().GetFileInfoForTesting(file_token));
   // The file status should be kUploadExpired.
   EXPECT_EQ(controller().GetFileInfoForTesting(file_token)->upload_status,
-            FileUploadStatus::kUploadExpired);
+            ContextUploadStatus::kUploadExpired);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_SetsContextId) {
@@ -1614,8 +1616,8 @@ TEST_F(ComposeboxQueryControllerTest, UploadEmptyImageFileRequestFailure) {
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token, lens::MimeType::kImage,
-                    FileUploadStatus::kValidationFailed,
-                    FileUploadErrorType::kImageProcessingError);
+                    ContextUploadStatus::kValidationFailed,
+                    ContextUploadErrorType::kImageProcessingError);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -2477,8 +2479,8 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(file_token, lens::MimeType::kAnnotatedPageContent,
-                    FileUploadStatus::kValidationFailed,
-                    FileUploadErrorType::kBrowserProcessingError);
+                    ContextUploadStatus::kValidationFailed,
+                    ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
@@ -2500,8 +2502,9 @@ TEST_F(ComposeboxQueryControllerTest, UploadInvalidMimeTypeFileRequestFailure) {
                                    /*image_options=*/std::nullopt);
 
   // Assert: Validate file upload request and status changes.
-  WaitForFileUpload(file_token, mime_type, FileUploadStatus::kValidationFailed,
-                    FileUploadErrorType::kBrowserProcessingError);
+  WaitForFileUpload(file_token, mime_type,
+                    ContextUploadStatus::kValidationFailed,
+                    ContextUploadErrorType::kBrowserProcessingError);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadUnknownMimeTypeFileRequestSuccess) {
@@ -2603,7 +2606,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileAndWaitForClusterInfoExpire) {
       file_upload_status_future_.Take();
   EXPECT_EQ(file_token, std::get<0>(expired_file_upload_status));
   EXPECT_EQ(lens::MimeType::kPdf, std::get<1>(expired_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kUploadExpired,
+  EXPECT_EQ(ContextUploadStatus::kUploadExpired,
             std::get<2>(expired_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(expired_file_upload_status));
 }
@@ -2632,7 +2635,7 @@ TEST_F(ComposeboxQueryControllerTest,
       file_upload_status_future_.Take();
   EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
   EXPECT_EQ(lens::MimeType::kPdf, std::get<1>(processing_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kProcessing,
+  EXPECT_EQ(ContextUploadStatus::kProcessing,
             std::get<2>(processing_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
 
@@ -2665,7 +2668,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(file_token, std::get<0>(suggest_ready_file_upload_status));
   EXPECT_EQ(lens::MimeType::kPdf,
             std::get<1>(suggest_ready_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kProcessingSuggestSignalsReady,
+  EXPECT_EQ(ContextUploadStatus::kProcessingSuggestSignalsReady,
             std::get<2>(suggest_ready_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(suggest_ready_file_upload_status));
 
@@ -2675,7 +2678,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(file_token, std::get<0>(upload_started_file_upload_status));
   EXPECT_EQ(lens::MimeType::kPdf,
             std::get<1>(upload_started_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kUploadStarted,
+  EXPECT_EQ(ContextUploadStatus::kUploadStarted,
             std::get<2>(upload_started_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(upload_started_file_upload_status));
 
@@ -2684,7 +2687,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(file_token, std::get<0>(upload_successful_file_upload_status));
   EXPECT_EQ(lens::MimeType::kPdf,
             std::get<1>(upload_successful_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kUploadSuccessful,
+  EXPECT_EQ(ContextUploadStatus::kUploadSuccessful,
             std::get<2>(upload_successful_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(upload_successful_file_upload_status));
 
@@ -4874,7 +4877,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadModalityChipSuccess) {
       file_upload_status_future_.Take();
   EXPECT_EQ(file_token, std::get<0>(final_file_upload_status));
   EXPECT_EQ(lens::MimeType::kUnknown, std::get<1>(final_file_upload_status));
-  EXPECT_EQ(FileUploadStatus::kUploadSuccessful,
+  EXPECT_EQ(ContextUploadStatus::kUploadSuccessful,
             std::get<2>(final_file_upload_status));
 
   // Assert: Check that the modality chip props are correctly set in the file

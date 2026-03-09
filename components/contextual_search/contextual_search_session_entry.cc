@@ -48,8 +48,9 @@ ContextualSearchSessionEntry::~ContextualSearchSessionEntry() = default;
 void ContextualSearchSessionEntry::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,
-    contextual_search::FileUploadStatus file_upload_status,
-    const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+    contextual_search::ContextUploadStatus file_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
   if (metrics_recorder_) {
     metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
                                                  error_type);

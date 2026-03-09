@@ -122,8 +122,9 @@ class LensQueryFlowRouter
   void OnFileUploadStatusChangedForTesting(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type);
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type);
 
   // Handles the interaction response from the server.
   void HandleInteractionResponse(
@@ -161,9 +162,9 @@ class LensQueryFlowRouter
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type)
-      override;
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
 
   LensOverlayQueryController* lens_overlay_query_controller() const {
     return lens_search_controller_->lens_overlay_query_controller();

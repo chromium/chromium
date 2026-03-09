@@ -16,10 +16,11 @@
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
                          mimeType:(lens::MimeType)mimeType
                  fileUploadStatus:
-                     (contextual_search::FileUploadStatus)fileUploadStatus
-                        errorType:(const std::optional<
-                                      contextual_search::FileUploadErrorType>&)
-                                      errorType;
+                     (contextual_search::ContextUploadStatus)fileUploadStatus
+                        errorType:
+                            (const std::optional<
+                                contextual_search::ContextUploadErrorType>&)
+                                errorType;
 @end
 
 // Bridge class that forwards file upload status changes from a C++
@@ -37,9 +38,9 @@ class ComposeboxFileUploadObserverBridge
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type)
-      override;
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
 
  private:
   __weak id<ComposeboxFileUploadObserver> observer_;

@@ -30,8 +30,9 @@ class TestContextualSearchContextController
   void TriggerFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      contextual_search::FileUploadStatus file_upload_status,
-      const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+      contextual_search::ContextUploadStatus file_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) {
     for (auto& observer : observers_) {
       observer.OnFileUploadStatusChanged(file_token, mime_type,
                                          file_upload_status, error_type);
@@ -59,8 +60,8 @@ class MockContextualSearchMetricsRecorder
   MOCK_METHOD(void,
               OnFileUploadStatusChanged,
               (lens::MimeType,
-               contextual_search::FileUploadStatus,
-               const std::optional<contextual_search::FileUploadErrorType>&),
+               contextual_search::ContextUploadStatus,
+               const std::optional<contextual_search::ContextUploadErrorType>&),
               (override));
 };
 
@@ -95,9 +96,10 @@ class ContextualSearchSessionEntryTest : public testing::Test {
 TEST_F(ContextualSearchSessionEntryTest, ForwardsFileUploadStatusChanged) {
   base::UnguessableToken file_token = base::UnguessableToken::Create();
   lens::MimeType mime_type = lens::MimeType::kPdf;
-  contextual_search::FileUploadStatus status =
-      contextual_search::FileUploadStatus::kUploadSuccessful;
-  std::optional<contextual_search::FileUploadErrorType> error_type = std::nullopt;
+  contextual_search::ContextUploadStatus status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  std::optional<contextual_search::ContextUploadErrorType> error_type =
+      std::nullopt;
 
   EXPECT_CALL(*metrics_recorder_ptr_,
               OnFileUploadStatusChanged(mime_type, status, error_type))

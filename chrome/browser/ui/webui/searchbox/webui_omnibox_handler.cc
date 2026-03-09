@@ -174,7 +174,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
 
@@ -182,7 +182,7 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
       browser_window_interface->GetFeatures().searchbox_context_data();
   if (!searchbox_context_data) {
     std::move(callback).Run(base::unexpected(
-        contextual_search::FileUploadErrorType::kBrowserProcessingError));
+        contextual_search::ContextUploadErrorType::kBrowserProcessingError));
     return;
   }
   auto context = searchbox_context_data->TakePendingContext();

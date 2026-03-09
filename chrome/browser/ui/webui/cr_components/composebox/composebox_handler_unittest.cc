@@ -168,7 +168,8 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
       std::make_unique<contextual_search::FileInfo>();
   file_info->file_name = "test.png";
   file_info->mime_type = lens::MimeType::kImage;
-  file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
+  file_info->upload_status =
+      contextual_search::ContextUploadStatus::kNotUploaded;
   file_info->tab_session_id = SessionID::FromSerializedValue(123);
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;

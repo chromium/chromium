@@ -1046,10 +1046,11 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
                          mimeType:(lens::MimeType)mimeType
                  fileUploadStatus:
-                     (contextual_search::FileUploadStatus)fileUploadStatus
-                        errorType:(const std::optional<
-                                      contextual_search::FileUploadErrorType>&)
-                                      errorType {
+                     (contextual_search::ContextUploadStatus)fileUploadStatus
+                        errorType:
+                            (const std::optional<
+                                contextual_search::ContextUploadErrorType>&)
+                                errorType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   ComposeboxInputItem* item = [_items itemForServerToken:fileToken];
   if (!item) {
@@ -1057,21 +1058,21 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   switch (fileUploadStatus) {
-    case contextual_search::FileUploadStatus::kUploadSuccessful:
+    case contextual_search::ContextUploadStatus::kUploadSuccessful:
       [self setState:ComposeboxInputItemState::kLoaded onItem:item];
       break;
-    case contextual_search::FileUploadStatus::kUploadFailed:
-    case contextual_search::FileUploadStatus::kValidationFailed:
-    case contextual_search::FileUploadStatus::kUploadExpired:
+    case contextual_search::ContextUploadStatus::kUploadFailed:
+    case contextual_search::ContextUploadStatus::kValidationFailed:
+    case contextual_search::ContextUploadStatus::kUploadExpired:
       [self handleFailedAttachment:item.identifier];
       break;
-    case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
+    case contextual_search::ContextUploadStatus::kProcessingSuggestSignalsReady:
       [self reloadSuggestions];
       break;
-    case contextual_search::FileUploadStatus::kNotUploaded:
-    case contextual_search::FileUploadStatus::kProcessing:
-    case contextual_search::FileUploadStatus::kUploadStarted:
-    case contextual_search::FileUploadStatus::kUploadReplaced:
+    case contextual_search::ContextUploadStatus::kNotUploaded:
+    case contextual_search::ContextUploadStatus::kProcessing:
+    case contextual_search::ContextUploadStatus::kUploadStarted:
+    case contextual_search::ContextUploadStatus::kUploadReplaced:
       // No-op, as the state is already `Uploading`.
       return;
   }
@@ -1451,8 +1452,8 @@ CreateInputDataFromAnnotatedPageContent(
     task = base::BindOnce(^{
       [weakSelf onFileUploadStatusChanged:identifier
                                  mimeType:lens::MimeType::kImage
-                         fileUploadStatus:contextual_search::FileUploadStatus::
-                                              kUploadFailed
+                         fileUploadStatus:contextual_search::
+                                              ContextUploadStatus::kUploadFailed
                                 errorType:std::nullopt];
     });
   } else {

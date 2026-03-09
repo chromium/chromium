@@ -66,7 +66,7 @@ struct SessionMetrics {
   // Number of file upload failures per file type.
   std::map<lens::MimeType, int> file_upload_failure_count_per_type;
   // Number of file validation errors per file type.
-  std::map<lens::MimeType, std::map<FileUploadErrorType, int>>
+  std::map<lens::MimeType, std::map<ContextUploadErrorType, int>>
       file_validation_failure_count_per_type;
   // In most cases `num_query_submissions` will equal 1 except in the case
   // where a user navigates to the AIM page on a new window or tab and the
@@ -109,11 +109,11 @@ class ContextualSearchMetricsRecorder {
 
   virtual void OnFileUploadStatusChanged(
       lens::MimeType file_mime_type,
-      FileUploadStatus file_upload_status,
-      const std::optional<FileUploadErrorType>& error_type);
+      ContextUploadStatus file_upload_status,
+      const std::optional<ContextUploadErrorType>& error_type);
 
   // Maps file errors to its string version for histogram naming.
-  std::string FileErrorToString(FileUploadErrorType error);
+  std::string FileErrorToString(ContextUploadErrorType error);
   // Maps mime types to its string version for histogram naming.
   std::string MimeTypeToString(lens::MimeType mime_type);
   // Maps contextual search sources to its string version for histogram naming.
@@ -130,7 +130,7 @@ class ContextualSearchMetricsRecorder {
   // Should be called when a file has been deleted.
   void RecordFileDeletedMetrics(bool success,
                                 lens::MimeType file_type,
-                                FileUploadStatus file_status);
+                                ContextUploadStatus file_status);
 
   void RecordTabAddedMetrics(bool has_duplicate_title,
                                std::optional<int> recency_ranking,
