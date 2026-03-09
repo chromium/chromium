@@ -314,8 +314,8 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 
   if (display_mode_ == DisplayMode::kNormal) {
     if (base::FeatureList::IsEnabled(features::kGlassToolbar)) {
-      auto background = std::make_unique<LiveToolbarBackground>(browser_);
-      background->SetView(this);
+      auto background =
+          std::make_unique<LiveToolbarBackground>(browser_view_, this);
       SetBackground(std::move(background));
     }
 

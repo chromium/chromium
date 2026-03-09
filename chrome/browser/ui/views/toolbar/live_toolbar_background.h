@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_LIVE_TOOLBAR_BACKGROUND_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_LIVE_TOOLBAR_BACKGROUND_H_
 
+#include <memory>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -25,19 +31,28 @@ namespace views {
 class View;
 }
 
-// A background that captures the active tab's content using
-// ClientFrameSinkVideoCapturer and paints it onto the toolbar.
-class LiveToolbarBackground : public views::Background,
-                              public TabStripModelObserver,
-                              public content::WebContentsObserver {
+class BrowserView;
+
+class BrowserLiveBackgroundController : public base::SupportsUserData::Data,
+                                        public TabStripModelObserver,
+                                        public content::WebContentsObserver {
  public:
-  explicit LiveToolbarBackground(Browser* browser);
-  ~LiveToolbarBackground() override;
+  explicit BrowserLiveBackgroundController(BrowserView* browser_view);
+  ~BrowserLiveBackgroundController() override;
 
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override;
+  static BrowserLiveBackgroundController* GetOrCreate(
+      BrowserView* browser_view);
 
-  void SetView(views::View* view);
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnFrameCaptured() = 0;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  SkBitmap current_frame() const { return current_frame_; }
+  content::WebContents* active_web_contents() const { return web_contents(); }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -53,14 +68,13 @@ class LiveToolbarBackground : public views::Background,
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
 
-  // Starts capturing using ClientFrameSinkVideoCapturer.
   void StartVideoCapture();
   void StopVideoCapture();
 
  private:
   class VideoConsumer : public viz::mojom::FrameSinkVideoConsumer {
    public:
-    explicit VideoConsumer(LiveToolbarBackground* background);
+    explicit VideoConsumer(BrowserLiveBackgroundController* controller);
     ~VideoConsumer() override;
 
     // viz::mojom::FrameSinkVideoConsumer:
@@ -77,14 +91,13 @@ class LiveToolbarBackground : public views::Background,
     void OnLog(const std::string& message) override {}
 
    private:
-    raw_ptr<LiveToolbarBackground> background_;
+    raw_ptr<BrowserLiveBackgroundController> controller_;
   };
 
   void RetryStartCapture();
   void OnFrameCaptured(SkBitmap bitmap);
 
   raw_ptr<Browser> browser_;
-  raw_ptr<views::View> associated_view_ = nullptr;
   SkBitmap current_frame_;
 
   // For VideoCapturer
@@ -94,7 +107,28 @@ class LiveToolbarBackground : public views::Background,
 
   base::RepeatingTimer retry_timer_;
 
-  base::WeakPtrFactory<LiveToolbarBackground> weak_factory_{this};
+  base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<BrowserLiveBackgroundController> weak_factory_{this};
+};
+
+// A background that paints the live frame captured by
+// BrowserLiveBackgroundController.
+class LiveToolbarBackground : public views::Background,
+                              public BrowserLiveBackgroundController::Observer {
+ public:
+  explicit LiveToolbarBackground(BrowserView* browser_view, views::View* view);
+  ~LiveToolbarBackground() override;
+
+  // views::Background:
+  void Paint(gfx::Canvas* canvas, views::View* view) const override;
+
+  // BrowserLiveBackgroundController::Observer:
+  void OnFrameCaptured() override;
+
+ private:
+  raw_ptr<BrowserLiveBackgroundController> controller_;
+  raw_ptr<views::View> view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_LIVE_TOOLBAR_BACKGROUND_H_
