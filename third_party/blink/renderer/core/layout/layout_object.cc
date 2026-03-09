@@ -4593,7 +4593,7 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
   if (LocalFrameView* frame_view = GetFrameView())
     frame_view->GetPaintTimingDetector().NotifyImageFinished(*this, image);
 
-  if (!image->ErrorOccurred() && image->IsAdResource()) {
+  if (!image->ErrorOccurred() && image->GetAdProvenance()) {
     if (auto* element = DynamicTo<Element>(GetNode())) {
       // Skip setting the ad status for `HTMLFrameOwnerElement`, as frame owners
       // manage their ad status separately (i.e., requires content frame

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
@@ -70,7 +71,11 @@ class NullImageResourceInfo final
 
   void LoadDeferredImage(ResourceFetcher* fetcher) override {}
 
-  bool IsAdResource() const override { return false; }
+  const std::optional<AdProvenance>& GetAdProvenance() const override {
+    static const base::NoDestructor<std::optional<AdProvenance>>
+        kNullProvenance;
+    return *kNullProvenance;
+  }
 
   const HashSet<String>* GetUnsupportedImageMimeTypes() const override {
     return nullptr;
@@ -753,8 +758,9 @@ void ImageResourceContent::LoadDeferredImage(ResourceFetcher* fetcher) {
   info_->LoadDeferredImage(fetcher);
 }
 
-bool ImageResourceContent::IsAdResource() const {
-  return info_->IsAdResource();
+const std::optional<AdProvenance>& ImageResourceContent::GetAdProvenance()
+    const {
+  return info_->GetAdProvenance();
 }
 
 void ImageResourceContent::RecordDecodedImageType(UseCounter* use_counter) {

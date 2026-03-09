@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -58,7 +59,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
 
   virtual void LoadDeferredImage(ResourceFetcher* fetcher) = 0;
 
-  virtual bool IsAdResource() const = 0;
+  virtual const std::optional<AdProvenance>& GetAdProvenance() const = 0;
 
   virtual const HashSet<String>* GetUnsupportedImageMimeTypes() const = 0;
 

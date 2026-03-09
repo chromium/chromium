@@ -239,8 +239,8 @@ class ImageResource::ImageResourceInfoImpl final
     }
   }
 
-  bool IsAdResource() const override {
-    return resource_->GetResourceRequest().IsAdResource();
+  const std::optional<AdProvenance>& GetAdProvenance() const override {
+    return resource_->GetResourceRequest().GetAdProvenance();
   }
 
   const HashSet<String>* GetUnsupportedImageMimeTypes() const override {
