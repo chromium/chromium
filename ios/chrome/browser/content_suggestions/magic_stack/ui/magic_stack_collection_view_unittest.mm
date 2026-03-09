@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -37,7 +38,8 @@ class MagicStackCollectionViewControllerTest : public PlatformTest {
     // Create and initialize PrefService
     RegisterProfilePrefs(pref_service_.registry());
 
-    _window = [[UIWindow alloc] init];
+    _window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     UIView.animationsEnabled = NO;
     view_controller_ = [[MagicStackCollectionViewController alloc] init];
     audience_ = OCMStrictProtocolMock(
