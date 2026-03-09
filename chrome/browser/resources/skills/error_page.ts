@@ -10,6 +10,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './error_page.css.js';
 import {getHtml} from './error_page.html.js';
+import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
+import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 
 export enum ErrorType {
   GLIC_NOT_ENABLED = 'glic-not-enabled',
@@ -35,8 +37,17 @@ export class ErrorPageElement extends CrLitElement {
     };
   }
   accessor errorType: ErrorType = ErrorType.GLIC_NOT_ENABLED;
+  private proxy_: SkillsPageBrowserProxy = SkillsPageBrowserProxy.getInstance();
 
-  protected shouldShowErrorIcon(): boolean {
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.isGlicNotEnabledError()) {
+      this.proxy_.handler.recordSkillsManagementAction(
+          SkillsManagementPage.kErrorPage, SkillsManagementAction.kPageOpened);
+    }
+  }
+
+  protected isGlicNotEnabledError(): boolean {
     return this.errorType === ErrorType.GLIC_NOT_ENABLED;
   }
 

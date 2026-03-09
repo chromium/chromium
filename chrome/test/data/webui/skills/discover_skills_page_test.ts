@@ -11,6 +11,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {DiscoverSkillsPageElement} from 'chrome://skills/discover_skills_page.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -204,6 +205,12 @@ suite('DiscoverSkillsPage', function() {
 
     const callCount = browserProxy.handler.getCallCount('openSkillsDialog');
     assertEquals(1, callCount);
+
+    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
+        .then((args) => {
+          assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+          assertEquals(SkillsManagementAction.kClickedAddSkill, args[1]);
+        });
   });
 
   test('SaveButtonFailureShowsToast', async function() {

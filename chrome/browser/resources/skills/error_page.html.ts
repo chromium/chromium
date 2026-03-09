@@ -12,7 +12,7 @@ export function getHtml(this: ErrorPageElement) {
   return html`<!--_html_template_start_-->
 <div id="mainContent">
   <div id="header">
-    ${this.shouldShowErrorIcon() ? html`
+    ${this.isGlicNotEnabledError() ? html`
       <cr-icon icon="cr:error-outline"></cr-icon>` : ''}
     <h1 class="headline">${this.errorTitle()}</h1>
   </div>

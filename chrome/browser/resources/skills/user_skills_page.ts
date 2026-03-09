@@ -14,6 +14,7 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
 import {SkillsDialogType} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 import {getCss} from './user_skills_page.css.js';
@@ -113,6 +114,9 @@ export class UserSkillsPageElement extends CrLitElement {
   }
 
   protected onExploreButtonClick_() {
+    this.proxy_.handler.recordSkillsManagementAction(
+        SkillsManagementPage.kYourSkills,
+        SkillsManagementAction.kClickedBrowseSkills);
     const path = '/browse';
     this.fire('route-click', {path});
   }
@@ -121,6 +125,9 @@ export class UserSkillsPageElement extends CrLitElement {
     if (this.addSkillButtonDisabled_) {
       return;
     }
+    this.proxy_.handler.recordSkillsManagementAction(
+        SkillsManagementPage.kYourSkills,
+        SkillsManagementAction.kClickedAddSkill);
     this.addSkillButtonDisabled_ = true;
     SkillsPageBrowserProxy.getInstance().handler.openSkillsDialog(
         SkillsDialogType.kAdd, /*skill=*/ null);

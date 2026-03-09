@@ -5,6 +5,7 @@
 module skills.mojom;
 
 import "components/skills/public/skill.mojom";
+import "components/skills/public/skill_metrics.mojom";
 
 // The type of skills dialog to open.
 enum SkillsDialogType {
@@ -61,6 +62,10 @@ interface PageHandler {
   // `success` is true if the skill still exists, false if it was deleted.
   // If fetching the new set of 1P skills fails, `success` will be false.
   MaybeSave1PSkill(string skill_id) => (bool success);
+
+  // Records user actions on the Skills management pages.
+  RecordSkillsManagementAction(skills.mojom.SkillsManagementPage page,
+                               skills.mojom.SkillsManagementAction action);
 };
 
 // Called from C++ side of chrome://skills (Browser -> Renderer)

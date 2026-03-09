@@ -67,6 +67,10 @@ class SkillsPageHandler : public skills::mojom::PageHandler,
     return first_party_download_timer_.IsRunning();
   }
 
+  void RecordSkillsManagementAction(
+      skills::mojom::SkillsManagementPage page,
+      skills::mojom::SkillsManagementAction action) override;
+
  private:
   // Triggered if a first party skills download was requested but didn't
   // complete within kMax1PDownloadTimeout seconds.

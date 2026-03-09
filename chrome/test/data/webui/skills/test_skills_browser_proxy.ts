@@ -22,5 +22,7 @@ export class TestSkillsBrowserProxy {
         'getInitial1PSkills', Promise.resolve({skillMap: {}}));
     this.handler.setResultFor(
         'maybeSave1PSkill', Promise.resolve({success: true}));
+    this.handler.setResultFor(
+        'recordSkillsManagementAction', Promise.resolve());
   }
 }

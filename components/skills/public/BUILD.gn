@@ -4,7 +4,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [ "skill.mojom" ]
+  sources = [
+    "skill.mojom",
+    "skill_metrics.mojom",
+  ]
   webui_module_path = "/"
   cpp_typemaps = [
     {
@@ -59,6 +62,8 @@ source_set("metrics") {
   public_deps = [
     ":skill",
     "//base",
+    "//components/skills/public:mojo_bindings",
+    "//components/skills/public:mojo_bindings__generator",
   ]
 }
 

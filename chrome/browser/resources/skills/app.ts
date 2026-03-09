@@ -15,6 +15,7 @@ import './sidebar.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToolbarElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import {assertNotReached} from '//resources/js/assert.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -26,6 +27,7 @@ import {getHtml} from './app.html.js';
 import type {DiscoverSkillsPageElement} from './discover_skills_page.js';
 import type {SkillsSidebarElement} from './sidebar.js';
 import {Page} from './sidebar.js';
+import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 import type {UserSkillsPageElement} from './user_skills_page.js';
 
@@ -156,6 +158,21 @@ export class SkillsAppElement extends CrLitElement {
       menuItem = this.$.menu.menuItems[0];
     }
     this.selectedPage_ = menuItem!.page;
+
+    // Record metrics
+    let pageType = SkillsManagementPage.kYourSkills;
+    switch (this.selectedPage_) {
+      case Page.DISCOVER_SKILLS:
+        pageType = SkillsManagementPage.kBrowseSkills;
+        break;
+      case Page.USER_SKILLS:
+        pageType = SkillsManagementPage.kYourSkills;
+        break;
+      default:
+        assertNotReached('Action for unknown page type');
+    }
+    this.proxy_.handler.recordSkillsManagementAction(
+        pageType, SkillsManagementAction.kPageOpened);
   }
 }
 

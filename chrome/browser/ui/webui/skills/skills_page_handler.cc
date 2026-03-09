@@ -219,4 +219,10 @@ void SkillsPageHandler::On1PDownloadTimeout() {
   }
 }
 
+void SkillsPageHandler::RecordSkillsManagementAction(
+    skills::mojom::SkillsManagementPage page,
+    skills::mojom::SkillsManagementAction action) {
+  skills::RecordSkillsManagementAction(page, action);
+}
+
 }  // namespace skills

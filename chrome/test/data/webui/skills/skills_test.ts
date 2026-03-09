@@ -7,6 +7,7 @@ import 'chrome://skills/app.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
+import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -33,13 +34,19 @@ suite('SkillsAppPage', function() {
     window.dispatchEvent(new CustomEvent('popstate'));
   }
 
-  test('InitialPageLoadsCorrectly', function() {
+  test('InitialPageLoadsCorrectly', async function() {
     assertEquals(loadTimeData.getString('skillsTitle'), app.$.toolbar.pageName);
 
     const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
         '.cr-nav-menu-item');
     assertTrue(!!tabs);
     assertEquals(2, tabs.length);
+
+    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
+        .then((args) => {
+          assertEquals(SkillsManagementPage.kYourSkills, args[0]);
+          assertEquals(SkillsManagementAction.kPageOpened, args[1]);
+        });
   });
 
   test('SkillMenuTabsNavigateCorrectly', async function() {
@@ -68,6 +75,7 @@ suite('SkillsAppPage', function() {
   });
 
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
+    browserProxy.handler.resetResolver('recordSkillsManagementAction');
     navigateTo('/browse');
     await eventToPromise('iron-select', app.$.menu);
     assertEquals('chrome://skills/browse', window.location.href);
@@ -77,6 +85,11 @@ suite('SkillsAppPage', function() {
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
         selectedTab!.querySelector('.name')!.textContent.trim());
+    await browserProxy.handler.whenCalled('recordSkillsManagementAction')
+        .then((args) => {
+          assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
+          assertEquals(SkillsManagementAction.kPageOpened, args[1]);
+        });
   });
 
   test('UserSkillsPageLoadsCorrectly', async function() {
@@ -152,5 +165,21 @@ suite('SkillsAppPage', function() {
   test('Request1PSkillsOnDiscoverSkillsNavigation', async function() {
     navigateTo('/browse');
     await browserProxy.handler.whenCalled('request1PSkills');
+  });
+
+  test('LogsErrorMetricWhenGlicDisabled', async function() {
+    await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    browserProxy.handler.resetResolver('recordSkillsManagementAction');
+
+    loadTimeData.overrideValues({isGlicEnabled: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('skills-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const args =
+        await browserProxy.handler.whenCalled('recordSkillsManagementAction');
+    assertEquals(SkillsManagementPage.kErrorPage, args[0]);
+    assertEquals(SkillsManagementAction.kPageOpened, args[1]);
   });
 });

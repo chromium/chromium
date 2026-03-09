@@ -5,6 +5,7 @@
 #include "components/skills/public/skills_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/skills/public/skill_metrics.mojom.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 
 namespace skills {
@@ -41,6 +42,19 @@ constexpr const char* GetSkillsDialogActionHistogramName(
   }
   return is_edit_mode ? "Skills.Dialog.Edit.Unknown.Action"
                       : "Skills.Dialog.Creation.Unknown.Action";
+}
+
+constexpr const char* GetSkillsPageHistogramName(
+    skills::mojom::SkillsManagementPage page) {
+  switch (page) {
+    case skills::mojom::SkillsManagementPage::kErrorPage:
+      return "Skills.Management.ErrorPage.Action";
+    case skills::mojom::SkillsManagementPage::kYourSkills:
+      return "Skills.Management.YourSkills.Action";
+    case skills::mojom::SkillsManagementPage::kBrowseSkills:
+      return "Skills.Management.BrowseSkills.Action";
+  }
+  return "Skills.Management.UnknownPage.Action";
 }
 
 }  // namespace
@@ -124,6 +138,12 @@ void RecordSkillsRefineResult(SkillsRefineResult result) {
 void RecordUserSkillCount(size_t skill_count) {
   base::UmaHistogramCounts1000("Skills.UserSkills.Count",
                                base::checked_cast<int>(skill_count));
+}
+
+void RecordSkillsManagementAction(
+    skills::mojom::SkillsManagementPage page,
+    skills::mojom::SkillsManagementAction action) {
+  base::UmaHistogramEnumeration(GetSkillsPageHistogramName(page), action);
 }
 
 void RecordSkillsFetchResult(SkillsFetchResult result) {

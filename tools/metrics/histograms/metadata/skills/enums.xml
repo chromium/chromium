@@ -80,6 +80,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeResult) -->
 
+<!-- LINT.IfChange(SkillsManagementAction) -->
+
+<enum name="SkillsManagementAction">
+  <int value="0" label="Page Opened"/>
+  <int value="1" label="Clicked Add Skill"/>
+  <int value="2" label="Clicked Edit Skill"/>
+  <int value="3" label="Clicked Delete Skill"/>
+  <int value="4" label="Clicked Copy Instructions"/>
+  <int value="5" label="Clicked Browse Skills"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skill_metrics.mojom:SkillsManagementAction) -->
+
 <!-- LINT.IfChange(SkillsManagementError) -->
 
 <enum name="SkillsManagementError">

@@ -10,6 +10,11 @@
 #include "components/skills/public/skill.h"
 namespace skills {
 
+namespace mojom {
+enum class SkillsManagementPage;
+enum class SkillsManagementAction;
+}  // namespace mojom
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 
@@ -159,6 +164,10 @@ void RecordSkillsRefineResult(SkillsRefineResult result);
 // This is called periodically by the SkillsMetricsProvider to capture
 // the user's status throughout the session.
 void RecordUserSkillCount(size_t skill_count);
+
+// Records user actions on the Skills management pages.
+void RecordSkillsManagementAction(skills::mojom::SkillsManagementPage page,
+                                  skills::mojom::SkillsManagementAction action);
 
 // Records the result of a first-party skill list download attempt from
 // static content server link.

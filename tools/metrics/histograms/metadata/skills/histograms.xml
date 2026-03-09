@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(SkillsManagementPage) -->
+
+<variants name="Page">
+  <variant name="BrowseSkills" summary="Browse skills page"/>
+  <variant name="ErrorPage" summary="Error page"/>
+  <variant name="YourSkills" summary="Your skills page"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/skills/public/skill_metrics.mojom:SkillsManagementPage) -->
+
 <!-- LINT.IfChange(SkillsDialogEntryPointAndState) -->
 
 <variants name="SkillsDialogEntryPointAndState">
@@ -114,6 +124,17 @@ chromium-metrics-reviews@google.com.
     Records the status of a skills download request (success, already running,
     timeout).
   </summary>
+</histogram>
+
+<histogram name="Skills.Management.{Page}.Action" enum="SkillsManagementAction"
+    expires_after="2027-02-01">
+  <owner>aashnas@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records user actions on the Skills {Page}, such as adding, editing, or
+    deleting skills.
+  </summary>
+  <token key="Page" variants="Page"/>
 </histogram>
 
 <histogram name="Skills.Refine.Result" enum="SkillsRefineResult"

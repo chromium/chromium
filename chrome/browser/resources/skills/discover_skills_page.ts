@@ -17,6 +17,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './discover_skills_page.css.js';
 import {getHtml} from './discover_skills_page.html.js';
 import type {Skill} from './skill.mojom-webui.js';
+import {SkillsManagementAction, SkillsManagementPage} from './skill_metrics.mojom-webui.js';
 import {SkillsDialogType} from './skills.mojom-webui.js';
 import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 
@@ -91,6 +92,9 @@ export class DiscoverSkillsPageElement extends CrLitElement {
   }
 
   protected onSkillSave_(savedSkill: Skill) {
+    this.proxy_.handler.recordSkillsManagementAction(
+        SkillsManagementPage.kBrowseSkills,
+        SkillsManagementAction.kClickedAddSkill);
     this.is1PSkillSaving_ = true;
     this.proxy_.handler.maybeSave1PSkill(savedSkill.id).then(({success}) => {
       if (success) {

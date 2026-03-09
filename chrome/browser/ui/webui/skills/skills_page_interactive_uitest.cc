@@ -24,6 +24,7 @@
 #include "components/skills/features.h"
 #include "components/skills/internal/skills_downloader.h"
 #include "components/skills/internal/skills_service_impl.h"
+#include "components/skills/public/skill_metrics.mojom.h"
 #include "components/skills/public/skills_metrics.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_type_store_service.h"
@@ -152,6 +153,15 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorStatePage) {
                              /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
+IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorPageMetrics) {
+  // Opening the skills page without Glic should show the Error Page and log the
+  // metric.
+  RunTestSequence(OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)));
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.ErrorPage.Action",
+      skills::mojom::SkillsManagementAction::kPageOpened, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
   std::string screenshot_name =
       IsDarkMode() ? "zero_state_dark" : "zero_state_light";
@@ -253,6 +263,9 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.YourSkills.Action",
+      skills::mojom::SkillsManagementAction::kPageOpened, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
@@ -297,4 +310,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.BrowseSkills.Action",
+      skills::mojom::SkillsManagementAction::kPageOpened, 1);
 }

@@ -5,12 +5,15 @@
 #include "components/skills/public/skills_metrics.h"
 
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/skills/public/skill_metrics.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace skills {
@@ -34,6 +37,21 @@ class SkillsMetricsTest : public testing::Test {
         return ".ManagementPage.Remix";
       case SkillsDialogEntryPoint::kUnknown:
         return ".Unknown";
+    }
+    NOTREACHED();
+  }
+
+  // Helper function to map the enum to the expected XML string for page
+  // variants.
+  std::string_view GetSkillsManagementPageString(
+      mojom::SkillsManagementPage page) {
+    switch (page) {
+      case mojom::SkillsManagementPage::kErrorPage:
+        return "ErrorPage";
+      case mojom::SkillsManagementPage::kYourSkills:
+        return "YourSkills";
+      case mojom::SkillsManagementPage::kBrowseSkills:
+        return "BrowseSkills";
     }
     NOTREACHED();
   }
@@ -207,5 +225,36 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_entrypoint =
                 SkillsDialogEntryPoint::kManagementPagePrefilled}),
     GenerateSkillsMetricsTestName);
+
+TEST_F(SkillsMetricsTest, CheckSkillsManagementPageVariants) {
+  std::optional<base::HistogramVariantsEntryMap> page_variants;
+  std::vector<std::string> missing_variants;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    page_variants = base::ReadVariantsFromHistogramsXml("Page", "skills");
+    ASSERT_TRUE(page_variants.has_value());
+  }
+
+  for (int i = 0; i <= static_cast<int>(mojom::SkillsManagementPage::kMaxValue);
+       ++i) {
+    auto page = static_cast<mojom::SkillsManagementPage>(i);
+    std::string expected_variant(GetSkillsManagementPageString(page));
+
+    if (!page_variants->contains(expected_variant)) {
+      missing_variants.push_back(expected_variant);
+    }
+  }
+
+  ASSERT_TRUE(missing_variants.empty())
+      << "SkillsManagementPage variants:\n"
+      << base::JoinString(missing_variants, ", ")
+      << "\nconfigured in skills_metrics.cc but no "
+         "corresponding variants were added to the Page token in "
+         "//tools/metrics/histograms/metadata/skills/histograms.xml";
+
+  EXPECT_EQ(static_cast<size_t>(mojom::SkillsManagementPage::kMaxValue) + 1,
+            page_variants->size())
+      << "The number of variants in histograms.xml does not match the enum.";
+}
 
 }  // namespace skills
