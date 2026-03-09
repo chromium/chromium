@@ -1377,7 +1377,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sOnDemandBackgroundTabContextCapture =
             newMutableFlagWithSafeDefault(ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE, false);
     public static final MutableFlagWithSafeDefault sRecentlyClosedTabsAndWindows =
-            newMutableFlagWithSafeDefault(RECENTLY_CLOSED_TABS_AND_WINDOWS, false);
+            newMutableFlagWithSafeDefault(RECENTLY_CLOSED_TABS_AND_WINDOWS, true);
     public static final MutableFlagWithSafeDefault sRecordIncognitoNtpTimeToFirstNavigationMetric =
             newMutableFlagWithSafeDefault(
                     RECORD_INCOGNITO_NTP_TIME_TO_FIRST_NAVIGATION_METRIC, true);

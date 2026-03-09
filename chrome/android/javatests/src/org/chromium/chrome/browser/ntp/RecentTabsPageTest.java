@@ -50,6 +50,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -96,6 +97,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -353,7 +355,7 @@ public class RecentTabsPageTest {
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
         mPage = loadRecentTabsPage();
-        long time = 904881600000L;
+        long time = getValidTimestampForEntry();
         // Set a recently closed group and confirm a view is rendered for it.
         final RecentlyClosedGroup group = new RecentlyClosedGroup(2, time, null, COLOR_ID);
         Token tabGroupId = new Token(798L, 4389L);
@@ -444,7 +446,7 @@ public class RecentTabsPageTest {
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedBulkEvent() throws Exception {
         mPage = loadRecentTabsPage();
-        long time = 904881600000L;
+        long time = getValidTimestampForEntry();
         // Set a recently closed bulk event and confirm a view is rendered for it.
         final RecentlyClosedBulkEvent event = new RecentlyClosedBulkEvent(3, time);
         Token tabGroupId = new Token(1L, 2L);
@@ -527,7 +529,7 @@ public class RecentTabsPageTest {
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedWindows() throws Exception {
         mPage = loadRecentTabsPage();
-        long time = 904881600000L;
+        long time = getValidTimestampForEntry();
         String title1 = "Window 1";
         String activeTabTitle1 = "Google";
         String activeTabUrl1 = "https://www.google.com";
@@ -593,7 +595,7 @@ public class RecentTabsPageTest {
         MultiWindowUtils.setMaxInstancesForTesting(3);
 
         mPage = loadRecentTabsPage();
-        long time = 904881600000L;
+        long time = getValidTimestampForEntry();
         String title1 = "Window 1";
         String activeTabTitle1 = "Google";
         String activeTabUrl1 = "https://www.google.com";
@@ -902,5 +904,9 @@ public class RecentTabsPageTest {
                 view.dispatchTouchEvent(downEvent);
             }
         };
+    }
+
+    private static long getValidTimestampForEntry() {
+        return TimeUtils.currentTimeMillis() - TimeUnit.DAYS.toMillis(/* duration= */ 2);
     }
 }
