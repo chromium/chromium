@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] After page down, the scroll padding is also taken into account
+  assert_equals: expected 200 but got 175
+Harness: the test ran to completion.
+

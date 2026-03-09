@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example example.com> against <http://other.com/>
   assert_throws_js: function "function() {\n          new URL(expected.input, base);\n        }" did not throw
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
@@ -74,5 +74,7 @@ Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <materialized-view://x:0/a> without base
   assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <data:text/plain,test#\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé> without base
+  assert_equals: href expected "data:text/plain,test#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "data:text/plain,test#%00%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 Harness: the test ran to completion.
 

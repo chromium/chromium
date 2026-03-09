@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" queryCommandState("stylewithcss") before
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["defaultparagraphseparator","div"],["inserthtml","<p>abc"]] "<p>foo[bar]baz" compare innerHTML
@@ -118,5 +118,9 @@ Found 59 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<pre contenteditable=\\"false\\"><span contenteditable=\\"\\"><pre>abc</pre></span></pre>" not in array ["<pre contenteditable=\\"false\\"><span contenteditable=\\"\\">abc</span></pre>", "<pre contenteditable=\\"false\\"><span contenteditable=\\"\\">abc</span></pre>"]
 [FAIL] [["inserthtml","<span></span>"]] "<div>a[]b</div>" compare innerHTML
   assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div>" not in array ["<div>a<span></span>b</div>", "<div>a<span></span>b<br></div>"]
+[FAIL] [["inserthtml","X"]] "<div style=white-space:pre>[]\\n</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:pre\\">X</div>" but got "<div style=\\"white-space:pre\\">X\\n</div>"
+[FAIL] [["inserthtml","X"]] "<div style=white-space:pre-line>[]\\n</div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"white-space:pre-line\\">X</div>" but got "<div style=\\"white-space:pre-line\\">X\\n</div>"
 Harness: the test ran to completion.
 

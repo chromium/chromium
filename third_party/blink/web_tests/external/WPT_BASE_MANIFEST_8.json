@@ -201807,6 +201807,19 @@
        ],
        {}
       ]
+     ],
+     "registered-property-computation-color-006.html": [
+      "a66f72d1f7e412d95242ba50f2eb8b7bd3db924f",
+      [
+       null,
+       [
+        [
+         "/css/css-properties-values-api/registered-property-computation-color-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
      ]
     },
     "css-pseudo": {
@@ -326403,6 +326416,19 @@
          ],
          {}
         ]
+       ],
+       "type-change-to-password.html": [
+        "b8d0e1887c04e4efe29b9a74e0ec942825a2d33f",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-input-element/type-change-to-password-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "the-meter-element": {
@@ -331044,7 +331070,7 @@
    },
    "html-ruby-extensions": {
     "html-ruby-001.html": [
-     "a8cb57aae0eca002c1f82d164b23bd5445318f09",
+     "35a06228b768cfabc414594569df4da2be650232",
      [
       null,
       [
@@ -331074,6 +331100,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331089,7 +331119,7 @@
      ]
     ],
     "html-ruby-002.html": [
-     "374ba65084517500e6a12cd18778dfb922a22eb4",
+     "e30bcf7691437ec69b16ab68574baa25260dba5a",
      [
       null,
       [
@@ -331119,6 +331149,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331134,7 +331168,7 @@
      ]
     ],
     "html-ruby-003.html": [
-     "c039816a89701fbce55d7805526c81f8c9d67865",
+     "144f08c4d6406600fcd2a9a1417efeee20b9a98f",
      [
       null,
       [
@@ -331164,6 +331198,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331179,7 +331217,7 @@
      ]
     ],
     "html-ruby-004.html": [
-     "212c4397b3ece6a378e38b8341697d53830865a9",
+     "1cd948cd3ea4a608901c94f69dc3c7ca42fd21ea",
      [
       null,
       [
@@ -331209,6 +331247,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331224,7 +331266,7 @@
      ]
     ],
     "html-ruby-005.html": [
-     "29cefb02d43f2c6a4ed3fc25c6310051e065330d",
+     "4e715767332b06fbd263f7be38c2fcadbbf81367",
      [
       null,
       [
@@ -331254,6 +331296,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331269,7 +331315,7 @@
      ]
     ],
     "html-ruby-006.html": [
-     "ffb108a41d285923f61de39ba32ee4ad2d009024",
+     "2f41710f5485d7d451e86ffc9c31b546c518e768",
      [
       null,
       [
@@ -331299,6 +331345,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331314,7 +331364,7 @@
      ]
     ],
     "html-ruby-007.html": [
-     "06299df87fd11f48647c4cda927ae260c54a0e06",
+     "3b774c3bee31ff24a2559a1bcb85e120280588e7",
      [
       null,
       [
@@ -331344,6 +331394,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331412,7 +331466,7 @@
      ]
     ],
     "html-ruby-009.html": [
-     "65901a1ead9a955fc2a2a513a050a27a940fb6ed",
+     "374cb9c473996d541ffba82636e286c254634b97",
      [
       null,
       [
@@ -331450,6 +331504,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -331584,7 +331642,7 @@
      ]
     ],
     "html-ruby-013.html": [
-     "b4b79662e2b7c4d52e796cdf403c7fb6a11778b9",
+     "f7002050e78b4bc8c3a442d9e174849496817974",
      [
       null,
       [
@@ -331610,6 +331668,14 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-013-f-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-013-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-013-h-ref.html",
         "!="
        ],
        [
@@ -331772,7 +331838,7 @@
      ]
     ],
     "html-ruby-101.html": [
-     "b38608f667ac5bda0307798684ecd4c6d455f4d2",
+     "688dceabe77601a58e86661c6d895028cbf81ac0",
      [
       null,
       [
@@ -331802,6 +331868,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331817,7 +331887,7 @@
      ]
     ],
     "html-ruby-102.html": [
-     "a991fadc75813124d866d52d105a93bc6c11cdd1",
+     "3d1b3af78c6fc9174065d770787a813bf36fd794",
      [
       null,
       [
@@ -331847,6 +331917,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331862,7 +331936,7 @@
      ]
     ],
     "html-ruby-103.html": [
-     "fffd31ce468135ec07dd7e6f4cc9d3763bfd6d9c",
+     "60e30c885837b82afea7bbdf1f19b1578fb459ee",
      [
       null,
       [
@@ -331892,6 +331966,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331907,7 +331985,7 @@
      ]
     ],
     "html-ruby-104.html": [
-     "0c1acceee29c767f5403de25b98e5dbf9ee27d77",
+     "8c9571075182d964a87ce9f434a2d2ef5ecaf187",
      [
       null,
       [
@@ -331937,6 +332015,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331952,7 +332034,7 @@
      ]
     ],
     "html-ruby-105.html": [
-     "f1d1c77982115e496d408e9455af3f78fa508d3d",
+     "12642eee2ac95175d85c22aaf95da6b8cafdfbe8",
      [
       null,
       [
@@ -331982,6 +332064,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -331997,7 +332083,7 @@
      ]
     ],
     "html-ruby-106.html": [
-     "7f5b1d0b0b65560157570a87c9f726d02e7439b4",
+     "a502e88e11d6b879a23592b838f2b061557d44ac",
      [
       null,
       [
@@ -332027,6 +332113,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332042,7 +332132,7 @@
      ]
     ],
     "html-ruby-107.html": [
-     "ec1523d0897bec0c53e353498fd9513e9bd75c97",
+     "d2f04915002673df6363058a33ea640444e97c62",
      [
       null,
       [
@@ -332075,6 +332165,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-001-y-ref.html",
         "!="
        ],
@@ -332087,7 +332181,7 @@
      ]
     ],
     "html-ruby-108.html": [
-     "9ac37b58682d988ab46ed06171209a6d359aa6e1",
+     "93c242f0d76bfe36fdda6a61a0180f7e6a61faf4",
      [
       null,
       [
@@ -332125,6 +332219,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -332140,7 +332238,7 @@
      ]
     ],
     "html-ruby-109.html": [
-     "e197c4034775abfc9808e73f83ab4e760bb6d93b",
+     "06d6a7af2af082f440099d8c90c1eda27700e506",
      [
       null,
       [
@@ -332178,6 +332276,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -332312,7 +332414,7 @@
      ]
     ],
     "html-ruby-201.html": [
-     "14cd2634fc133e8da3a9dbeb29e4106ecd7e02ae",
+     "a62189885fdbc69907184afe8ca44bc71d478bca",
      [
       null,
       [
@@ -332342,6 +332444,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332357,7 +332463,7 @@
      ]
     ],
     "html-ruby-202.html": [
-     "922f5f09f693d815874d60a8672eeec3fbf3f71f",
+     "5f6abbaef9c64b714e4bf591b046649f92a437bf",
      [
       null,
       [
@@ -332387,6 +332493,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332402,7 +332512,7 @@
      ]
     ],
     "html-ruby-203.html": [
-     "7c81aef202ff9a810d97d47768508b65b532e6f5",
+     "15a53bf93fd4a2ef69b75b8128b4ed2a1c3c8b89",
      [
       null,
       [
@@ -332432,6 +332542,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332447,7 +332561,7 @@
      ]
     ],
     "html-ruby-204.html": [
-     "15c36d1ed4d243e1d80c558d2f449ab6856c80e6",
+     "64f1d840face71572d1af3d13fad69ef69f0cfd1",
      [
       null,
       [
@@ -332477,6 +332591,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332492,7 +332610,7 @@
      ]
     ],
     "html-ruby-205.html": [
-     "e9911739aaed9ec37b1d9cb2471324ff854a0aa4",
+     "180db25d33ea1770fd2db4eded6f9f7a8f3b83bf",
      [
       null,
       [
@@ -332522,6 +332640,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332537,7 +332659,7 @@
      ]
     ],
     "html-ruby-206.html": [
-     "01658179b3d3bed9fe57cae260bffd92e588b6f7",
+     "58114ab6642ccfef50da475d5bca6b9d21d499fb",
      [
       null,
       [
@@ -332567,6 +332689,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332582,7 +332708,7 @@
      ]
     ],
     "html-ruby-207.html": [
-     "1e4b56f24ea183d599ae6111ad2e8c29ab55036e",
+     "65fe5ff8ffd3f59d133bf68893d2c6ccc4a75254",
      [
       null,
       [
@@ -332615,6 +332741,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-001-y-ref.html",
         "!="
        ],
@@ -332627,7 +332757,7 @@
      ]
     ],
     "html-ruby-208.html": [
-     "fb7ce3d24359a0346b984939d2549c79f56cb8d6",
+     "4adf5133ed4ad80ce8ccbc38cd15f8e4b6f484ef",
      [
       null,
       [
@@ -332665,6 +332795,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -332680,7 +332814,7 @@
      ]
     ],
     "html-ruby-209.html": [
-     "4037dd710aa83a9817eff98b64f9f87d638fe5fe",
+     "ddbcebf8a9f09ba2502d8fb2237d8f42ae9fb829",
      [
       null,
       [
@@ -332718,6 +332852,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -332852,7 +332990,7 @@
      ]
     ],
     "html-ruby-301.html": [
-     "f50b215d01d4587dcf0f7526d1237a735119e809",
+     "6eef61fc99d06246f35966ea39bc801344035710",
      [
       null,
       [
@@ -332882,6 +333020,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332897,7 +333039,7 @@
      ]
     ],
     "html-ruby-302.html": [
-     "f37f75600664c5536a2367d1e50e7c5a2f4875ac",
+     "2a9f45f50739fc7a383973504e1d18530926ad71",
      [
       null,
       [
@@ -332927,6 +333069,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332942,7 +333088,7 @@
      ]
     ],
     "html-ruby-303.html": [
-     "7ffa434734d3a9826631a380d111e43f225b5a18",
+     "973c5b0a363f943563c8e6a1817487af657a4371",
      [
       null,
       [
@@ -332972,6 +333118,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -332987,7 +333137,7 @@
      ]
     ],
     "html-ruby-304.html": [
-     "aedc7364301acb1e8ff19fbdd335e3ad9c94d495",
+     "4bc5daf86d86ae5477c9c09e5e48d5d336e20634",
      [
       null,
       [
@@ -333017,6 +333167,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333032,7 +333186,7 @@
      ]
     ],
     "html-ruby-305.html": [
-     "00c272cffcb7de094c6b17ded2be0cfc77d5c393",
+     "d5c6a35235816a4a36d4a0b25a37bab07e7eb8b8",
      [
       null,
       [
@@ -333062,6 +333216,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333077,7 +333235,7 @@
      ]
     ],
     "html-ruby-306.html": [
-     "7951bccdbe845e3547bf1c7a65826c7a661e9fef",
+     "b2bb46047235d8361a2542e438825504c6dbc519",
      [
       null,
       [
@@ -333107,6 +333265,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333122,7 +333284,7 @@
      ]
     ],
     "html-ruby-307.html": [
-     "b000ebcd2a65466a6cd516bb214ee42eac762fce",
+     "d087167d8d469c893ea258e7fccb69f0fea83af3",
      [
       null,
       [
@@ -333155,6 +333317,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-001-y-ref.html",
         "!="
        ],
@@ -333167,7 +333333,7 @@
      ]
     ],
     "html-ruby-308.html": [
-     "1db26c91d2b36dee3499fff1149400c2fbde06a5",
+     "7821a745fb2af4541617abb043c4f7ddb35596be",
      [
       null,
       [
@@ -333205,6 +333371,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -333220,7 +333390,7 @@
      ]
     ],
     "html-ruby-309.html": [
-     "6d00bc1c3b431c7f23af6313b80df8383a1f51af",
+     "6fdf614bfdbe63a21ea2703925792950ee353161",
      [
       null,
       [
@@ -333258,6 +333428,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -333392,7 +333566,7 @@
      ]
     ],
     "html-ruby-313.html": [
-     "c3ba8d107855ba52e68c1fa6f18957d64fd9b778",
+     "e0327f3e72b49ff3b9ef56878a6da2cd2e52d8c9",
      [
       null,
       [
@@ -333422,6 +333596,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333437,7 +333615,7 @@
      ]
     ],
     "html-ruby-314.html": [
-     "feac2ea9f7f13b59b2925b2edd010292e1573ede",
+     "8c52667349ff0899942361047a446dd83c0131e4",
      [
       null,
       [
@@ -333467,6 +333645,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333482,7 +333664,7 @@
      ]
     ],
     "html-ruby-315.html": [
-     "e38e74544457d21dd498b83f697f465df7c7d89d",
+     "0ca825208765076162c870878897bd8d537a99ee",
      [
       null,
       [
@@ -333512,6 +333694,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333527,7 +333713,7 @@
      ]
     ],
     "html-ruby-316.html": [
-     "074a72a03a820f3d62e54bb3b6026727558be25b",
+     "87bc0433314fe650d3827e540835e742856d41db",
      [
       null,
       [
@@ -333557,6 +333743,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333572,7 +333762,7 @@
      ]
     ],
     "html-ruby-401.html": [
-     "a4c29a5dd751cd5721c09e091b977eade04bd45b",
+     "3d894c8180d5040934eb2edfb7b1e543dd363388",
      [
       null,
       [
@@ -333602,6 +333792,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333617,7 +333811,7 @@
      ]
     ],
     "html-ruby-402.html": [
-     "359a6f34d6189fc7c6c2b1f375e980650f59d54c",
+     "26c8b94dd2ca48ad3d945fb20e858944bff92290",
      [
       null,
       [
@@ -333647,6 +333841,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333662,7 +333860,7 @@
      ]
     ],
     "html-ruby-403.html": [
-     "edaaeeb4b5ac709a36c1bbcc6532f2d950657cd2",
+     "7c4268ed0dca7fe654aed2a41c910dad40e1df65",
      [
       null,
       [
@@ -333692,6 +333890,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333707,7 +333909,7 @@
      ]
     ],
     "html-ruby-404.html": [
-     "8fb3be48261158cc2584fbebc6991a84b920c815",
+     "b4fc5959c65bdea4a3dd68926fb9ec50678f60c8",
      [
       null,
       [
@@ -333737,6 +333939,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333752,7 +333958,7 @@
      ]
     ],
     "html-ruby-405.html": [
-     "84f41fe8b9980da12a626c3321195f8e9635c51a",
+     "b975155819c6f276e2175e35fb9394386f081de8",
      [
       null,
       [
@@ -333782,6 +333988,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333797,7 +334007,7 @@
      ]
     ],
     "html-ruby-406.html": [
-     "d744edf39d521908cd0497d194905c3242201f4d",
+     "a5cf0799b5afa8bd314f941164b3156af6f17279",
      [
       null,
       [
@@ -333827,6 +334037,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -333842,7 +334056,7 @@
      ]
     ],
     "html-ruby-407.html": [
-     "8d27095d923bb61e4c9692072ec9069ef337ef29",
+     "262e50b88297ef2f01efd7d59a0eda826c4184c3",
      [
       null,
       [
@@ -333875,6 +334089,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-001-y-ref.html",
         "!="
        ],
@@ -333887,7 +334105,7 @@
      ]
     ],
     "html-ruby-408.html": [
-     "42a104b948b5a8c2544510279ddd9352c0f57415",
+     "28d8f9a2f0bc612868a6a251df1984aad22c7ce8",
      [
       null,
       [
@@ -333925,6 +334143,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -333940,7 +334162,7 @@
      ]
     ],
     "html-ruby-409.html": [
-     "72b50353f375bd09e52d3b390903c6be285c4ba6",
+     "e143adb98c0c52e53be5d5147041e346bf2e8760",
      [
       null,
       [
@@ -333978,6 +334200,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-008-i-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-008-j-ref.html",
         "!="
        ],
        [
@@ -334112,7 +334338,7 @@
      ]
     ],
     "html-ruby-413.html": [
-     "9aa244cb758bb985a185d30983aa074f55fa07cf",
+     "5cc50f265aa745e2b8b4c41b698e45a93df13b18",
      [
       null,
       [
@@ -334142,6 +334368,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -334157,7 +334387,7 @@
      ]
     ],
     "html-ruby-414.html": [
-     "9d7c95999e8ed8fdde3eabfc90f9903173dfc5a6",
+     "e1578b3c22890b8013445bf0e438468006010d47",
      [
       null,
       [
@@ -334187,6 +334417,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -334202,7 +334436,7 @@
      ]
     ],
     "html-ruby-415.html": [
-     "13e00202691eba69daa30854f0fec26d678466f0",
+     "e762aba71c751a02994795a5b8fb47bd1d31e2b1",
      [
       null,
       [
@@ -334232,6 +334466,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -334247,7 +334485,7 @@
      ]
     ],
     "html-ruby-416.html": [
-     "5121a9e0165bc7cc551948bc2485dacb985f03eb",
+     "7f85c694315eeecc091c8eb2b2b6c9415f12145f",
      [
       null,
       [
@@ -334277,6 +334515,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-001-g-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-001-h-ref.html",
         "!="
        ],
        [
@@ -334329,7 +334571,7 @@
      ]
     ],
     "html-ruby-502.html": [
-     "01f7afb7136d8179d372e0e47e390f5b3130a750",
+     "42708fe5935ac1d585ca88bc58ed6bfee14facf3",
      [
       null,
       [
@@ -334354,6 +334596,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-502-f-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-502-y-ref.html",
         "!="
        ],
@@ -334366,7 +334612,7 @@
      ]
     ],
     "html-ruby-503.html": [
-     "ef8f946c638673dbbaa2787a48046107a8c93084",
+     "588c9a400118d4f92f15d1f5a3a0986c95eb1998",
      [
       null,
       [
@@ -334391,6 +334637,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-503-f-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-503-y-ref.html",
         "!="
        ],
@@ -334403,7 +334653,7 @@
      ]
     ],
     "html-ruby-504.html": [
-     "534f384518b5dcd7eaa54aa3da6a3028f0937b8d",
+     "ad4a4ccdced1cbd2fa6b356bf5c150abfc041b66",
      [
       null,
       [
@@ -334425,6 +334675,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-504-e-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-504-f-ref.html",
         "!="
        ],
        [
@@ -334477,7 +334731,7 @@
      ]
     ],
     "html-ruby-602.html": [
-     "0bd39776dd36acdbe0212111ada71b6d45edf652",
+     "70f257fde12195b2fa18f43fda611c68de622052",
      [
       null,
       [
@@ -334502,6 +334756,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-502-f-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-502-y-ref.html",
         "!="
        ],
@@ -334514,7 +334772,7 @@
      ]
     ],
     "html-ruby-603.html": [
-     "a2d9217cea1c8eeca7d013f7434fbdbdab80bcaf",
+     "ad3f8a177db30f4de8d3eb74531d2efb959e5fe6",
      [
       null,
       [
@@ -334539,6 +334797,10 @@
         "!="
        ],
        [
+        "/html-ruby-extensions/reference/html-ruby-503-f-ref.html",
+        "!="
+       ],
+       [
         "/html-ruby-extensions/reference/html-ruby-503-y-ref.html",
         "!="
        ],
@@ -334551,7 +334813,7 @@
      ]
     ],
     "html-ruby-604.html": [
-     "d85393cdb44c066d769f7e83b6822375ca87d9e1",
+     "aceb9318545f3912562f6703229c3dc203d6abb4",
      [
       null,
       [
@@ -334573,6 +334835,10 @@
        ],
        [
         "/html-ruby-extensions/reference/html-ruby-504-e-ref.html",
+        "!="
+       ],
+       [
+        "/html-ruby-extensions/reference/html-ruby-504-f-ref.html",
         "!="
        ],
        [
@@ -342928,6 +343194,19 @@
        {}
       ]
      ],
+     "inner-outer-svg-overflow-auto.html": [
+      "24b50a8106e491da28a61803bd728202f6f6fe0d",
+      [
+       null,
+       [
+        [
+         "/svg/painting/inner-outer-svg-overflow-auto-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-001.svg": [
       "dbcfd5b43206e030860a8f53af4a54fac40622be",
       [
@@ -345147,7 +345426,7 @@
        ]
       ],
       "pathlength-002.svg": [
-       "fc0abf3be4195bbce3106dbaf9a27d7b896b7979",
+       "3340c5d2edaa870137d5c2b0edbdcaf4f4ac96bb",
        [
         null,
         [
@@ -345167,7 +345446,7 @@
             ],
             [
              0,
-             20
+             50
             ]
            ]
           ]
@@ -374108,7 +374387,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "3b764200c4588b3e9940e35f4167d8e4beee464b",
+      "d5576bc3c790b1a9f52504ed3303db99a1a48fb7",
       []
      ],
      "linear-timing-functions-syntax-expected.txt": [
@@ -396817,6 +397096,10 @@
       "77e2d2817f66adb707e506c46a1eed948a2e92e3",
       []
      ],
+     "after-with-animation-removed.html": [
+      "bf5576a37aaf3020ae4229e7b64402388f7452d7",
+      []
+     ],
      "backdrop-animate-002-ref.html": [
       "b4f0ebd4b8072368a336942fe9cf24c6d56c6c4a",
       []
@@ -416190,7 +416473,7 @@
       []
      ],
      "filter-invalid-ref.html": [
-      "086dfe97a0dffb8d0e84fc717d865f3b97ba1b84",
+      "0509e0c0668bfa3d590c646f36c87ef47c04b736",
       []
      ],
      "filter-invert-001-ref.html": [
@@ -419473,6 +419756,10 @@
       "cb89704f1f7e3b4ec008e3fabba4a8a2dce51c6b",
       []
      ],
+     "DOMImplementation-createDocument-expected.txt": [
+      "a660eff90f8aa86a64626b569ae81f5a7da4a600",
+      []
+     ],
      "DOMImplementation-createHTMLDocument.js": [
       "3e7e9aa9b787a1f628043b43dc187c406eb33e7f",
       []
@@ -419701,8 +419988,12 @@
        []
       ]
      },
+     "Document-createElementNS-expected.txt": [
+      "46f66b29baf7f49d064a1ee8767a2fdb63c9445e",
+      []
+     ],
      "Document-createElementNS.js": [
-      "21902ec504e76f775ac36b9655b4c54e87e8c762",
+      "14b22220ad91c724a9a4119ed3e269a3d7896a0f",
       []
      ],
      "Document-createEvent.https-expected.txt": [
@@ -420220,7 +420511,7 @@
       []
      ],
      "inserthtml.js": [
-      "777371b2358cdedd7ce2fdc464ef4634dd4780e6",
+      "24a9db6bdfc237f4b9f57a34fea4d2d8a657faca",
       []
      ],
      "insertimage.js": [
@@ -420240,7 +420531,7 @@
       []
      ],
      "inserttext.js": [
-      "d19ccfda9b47e6063ac2a889165d803cd00fb263",
+      "8ee5282ed8946f93cfdd0f288ea3816e1eee0730",
       []
      ],
      "insertunorderedlist.js": [
@@ -420910,7 +421201,7 @@
       []
      ],
      "inserthtml-expected.txt": [
-      "59425c79614279dcc17529d0c81afb206c564a5d",
+      "564652494664dcd7042224c2425856bcf6931b52",
       []
      ],
      "insertimage-expected.txt": [
@@ -443442,7 +443733,11 @@
          "4030ea1d3ddb186a2b5361eb1a3f2404a45531fc",
          []
         ]
-       }
+       },
+       "type-change-to-password-ref.html": [
+        "bbce33b08f14fa2832b76428a0a1422855eae067",
+        []
+       ]
       },
       "the-label-element": {
        "DIR_METADATA": [
@@ -448899,6 +449194,10 @@
       "daf7e7c3d8e07202b4b336ef66bb673fe60a0238",
       []
      ],
+     "html-ruby-001-h-ref.html": [
+      "31d81dd26ce76cdb79be0ca0f2dfe08e6196bba5",
+      []
+     ],
      "html-ruby-001-y-ref.html": [
       "c0dab0d02ff307dd9af0b76d497726f7a2209733",
       []
@@ -448941,6 +449240,10 @@
      ],
      "html-ruby-008-i-ref.html": [
       "0793991d0851665bcb29ebcef8ed4a76138b476e",
+      []
+     ],
+     "html-ruby-008-j-ref.html": [
+      "54f76391229078638a1c08645448985da6b37422",
       []
      ],
      "html-ruby-008-y-ref.html": [
@@ -449033,6 +449336,14 @@
      ],
      "html-ruby-013-f-ref.html": [
       "9b6e977a59120756414df962cce1f3878edd1975",
+      []
+     ],
+     "html-ruby-013-g-ref.html": [
+      "9309179cad6c4dc79afda204128c643f1d39426a",
+      []
+     ],
+     "html-ruby-013-h-ref.html": [
+      "7ba2a3237807e9643788ecccc578eb5cccae60f1",
       []
      ],
      "html-ruby-013-y-ref.html": [
@@ -449207,6 +449518,10 @@
       "f0ac29f0397b75708ba099bf75e77136ed4b091a",
       []
      ],
+     "html-ruby-502-f-ref.html": [
+      "425507db51806318dc7d4db93c35549d172e40f6",
+      []
+     ],
      "html-ruby-502-y-ref.html": [
       "e89eaed007e8f4438464cea8977af170fb53d8f6",
       []
@@ -449235,6 +449550,10 @@
       "9652f7c6703a7d0707b6e27fcbfc2f14065f5ba3",
       []
      ],
+     "html-ruby-503-f-ref.html": [
+      "e5943c681995134c8171ec739a1232fedfab2a39",
+      []
+     ],
      "html-ruby-503-y-ref.html": [
       "0b8b9316a3f4af8eecb6b36093dde3cbf8ff9fc1",
       []
@@ -449261,6 +449580,10 @@
      ],
      "html-ruby-504-e-ref.html": [
       "68ae33f00f1319f59aaefc327de7a9a43a183155",
+      []
+     ],
+     "html-ruby-504-f-ref.html": [
+      "dbd573dca7e401c4de9721c01c2fb844d1c79135",
       []
      ],
      "html-ruby-504-y-ref.html": [
@@ -468085,6 +468408,10 @@
       "8ea596078b8dcd60eddf3815ce43fb15efc74359",
       []
      ],
+     "inner-outer-svg-overflow-auto-ref.html": [
+      "d067a515bd0caac5cfd1ae484e59296f93c4d586",
+      []
+     ],
      "marker-001-ref.svg": [
       "09bc3b7f77cf6a633d48f26df5968f1f799db3ea",
       []
@@ -470652,7 +470979,7 @@
       []
      ],
      "setters_tests.json": [
-      "090598db966df814488308532cd76ca3c88dc928",
+      "fb86654df2196bc53032cc68d7e728f794661d4b",
       []
      ],
      "toascii.json": [
@@ -470664,7 +470991,7 @@
       []
      ],
      "urltestdata.json": [
-      "fd2201cfe3185de36a46b066673c4cb861fb9a47",
+      "ec13a88cef0e8bca54448c1af43724fa06f6716a",
       []
      ]
     },
@@ -548573,6 +548900,34 @@
        {}
       ]
      ],
+     "step-jump-both.html": [
+      "423d2a1642cc2074c32b1c72ce9ee678c3aa92f6",
+      [
+       null,
+       {}
+      ]
+     ],
+     "step-jump-end.html": [
+      "2cf4d7c877ee84ae04b0f7c64c8299519a94f66b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "step-jump-none.html": [
+      "4475456c340a62ddb568af3a92abb758694836a5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "step-jump-start.html": [
+      "5ce225796c1c3540710284c996d4470651b26e54",
+      [
+       null,
+       {}
+      ]
+     ],
      "step-timing-functions-output.html": [
       "978ac25df696dff029614733920a5155d8d96ecf",
       [
@@ -563768,7 +564123,7 @@
       ]
      ],
      "chrome-486467574.html": [
-      "a48ef8b1de98c7c7472a37167131a8da200f5326",
+      "9d8c729c51c8f61496c0ec6ef378036b99ba1d3b",
       [
        null,
        {}
@@ -564884,6 +565239,15 @@
       ],
       "paged.html": [
        "ef5525909b09d800f14dcd24147e8c032e06e630",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "scroll-padding-paged.html": [
+       "537d44932dc108d8c58a603f112e502f3c593b38",
        [
         null,
         {
@@ -567902,6 +568266,13 @@
       ]
      },
      "aspect-ratio": {
+      "box-sizing-aspect-ratio-positioned.html": [
+       "7d389c2196278ea9d02c430e124381e8483c9ec6",
+       [
+        null,
+        {}
+       ]
+      ],
       "box-sizing-dimensions.html": [
        "126c3e30583edc1fb61ed5dab62187e64b597500",
        [
@@ -591871,7 +592242,7 @@
       ]
      ],
      "DOMImplementation-createDocument.html": [
-      "1efea6855fdf232866c10c6b474ba405eb49de12",
+      "7dc29d8e7d9fe24b7cb837bc8262987075f03f06",
       [
        null,
        {}
@@ -592110,7 +592481,7 @@
       ]
      ],
      "Document-createElementNS.html": [
-      "9d0792647d3a1116599504a26edf799fb78bfad6",
+      "9a0a97d879e9c358fd8e94b512985ee29125103e",
       [
        null,
        {}
@@ -597032,6 +597403,33 @@
        {}
       ]
      ],
+     "inserttext-last-mutation.html": [
+      "5325c89f5bea514d15b6492bb7fcf6a853560647",
+      [
+       "editing/other/inserttext-last-mutation.html?whiteSpace=normal",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/inserttext-last-mutation.html?whiteSpace=pre",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/inserttext-last-mutation.html?whiteSpace=pre-line",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/inserttext-last-mutation.html?whiteSpace=pre-wrap",
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "join-different-white-space-style-left-line-and-right-paragraph.html": [
       "48fa581115228567660771aa126f133f444159bc",
       [
@@ -599107,7 +599505,7 @@
       ]
      ],
      "insertText.html": [
-      "92b4ad08a439ad71fe59dbdc55e695621ea8464f",
+      "4baf8dbdee7d9833e7785073b866ffe36943dcf3",
       [
        "editing/plaintext-only/insertText.html?white-space=normal",
        {
@@ -702142,6 +702540,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "type-change-in-keypress-listener.html": [
+        "c9219e9d7dbd890f024ea8aa54d8c8a952521ad4",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "type-change-state-weekmonth.html": [
@@ -901384,7 +901791,7 @@
          ]
         ],
         "headers.py": [
-         "2d079c0c5d2fd0c2a8ece0f83e8112846e9c528e",
+         "e03b305bf21d51b5a194eeb14a6ee7dfb0913947",
          [
           null,
           {}
@@ -901437,7 +901844,7 @@
          ]
         ],
         "headers.py": [
-         "a37589b66dd872b932046eb7b64c204bc9b39592",
+         "173fd13f99c152c7a865ad66bf6e02b88aee5db6",
          [
           null,
           {}
@@ -901747,7 +902154,7 @@
          ]
         ],
         "headers_name_standard_tentative.py": [
-         "e52df36f975e9508a6c9216f2ad5bb4297a613ba",
+         "417929376c137fa5ac7325046dcf3900fa1cebad",
          [
           null,
           {}

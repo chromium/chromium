@@ -2792,6 +2792,9 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/dom/nodes/DOMImplementation-createDocument.html [ Pass Timeout ]
+external/wpt/svg/painting/inner-outer-svg-overflow-auto.html [ Failure ]
+virtual/rust-xml/external/wpt/svg/painting/inner-outer-svg-overflow-auto.html [ Failure ]
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label.html [ Failure ]
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection.html [ Failure ]
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text.html [ Failure ]

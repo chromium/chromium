@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <a:	 foo.com> against <http://example.org/foo/bar>
   assert_equals: href expected "a: foo.com" but got "file:///A:/%20foo.com"
 [FAIL] Parsing: <\\\\x\\hello> against <http://example.org/foo/bar>
@@ -100,6 +100,8 @@ Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: host expected "x:0" but got ""
 [FAIL] Parsing: <materialized-view://x:0/a> against <about:blank>
   assert_equals: host expected "x:0" but got ""
+[FAIL] Parsing: <data:text/plain,test#\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé> against <about:blank>
+  assert_equals: href expected "data:text/plain,test#%00%01%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9" but got "data:text/plain,test#%00%01%09%0A%0D%1F%20!%22#$%&'()*+,-./09:;%3C=%3E?@AZ[\\\\]^_%60az{|}~%7F%C2%80%C2%81%C3%89%C3%A9"
 [FAIL] Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank>
   assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff?U+d800𐟾U+dfff﷐﷏﷯ﷰ\\ufffe\\uffff"
 Harness: the test ran to completion.
