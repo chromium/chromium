@@ -6,11 +6,7 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
-  sources = [
-    "features.cc",
-    "features.h",
-    "photo_picker_sandbox_bridge.cc",
-  ]
+  sources = [ "photo_picker_sandbox_bridge.cc" ]
   deps = [
     ":photo_picker_jni_headers",
     "//base",
@@ -27,9 +23,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/photo_picker/DecoderServiceHost.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/FileEnumWorkerTask.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoder.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDelegateBase.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerDialog.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerFeatures.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerToolbar.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerAdapter.java",
     "java/src/org/chromium/components/browser_ui/photo_picker/PickerBitmap.java",
@@ -65,10 +59,7 @@ android_library("java") {
 }
 
 generate_jni("photo_picker_jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoder.java",
-    "java/src/org/chromium/components/browser_ui/photo_picker/PhotoPickerFeatures.java",
-  ]
+  sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/ImageDecoder.java" ]
 }
 
 android_aidl("photo_picker_aidl") {

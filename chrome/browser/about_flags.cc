@@ -270,7 +270,6 @@
 #include "chrome/browser/contextmenu/context_menu_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
-#include "components/browser_ui/photo_picker/android/features.h"
 #include "components/credential_management/android/features.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/external_intents/android/external_intents_features.h"
@@ -2662,28 +2661,6 @@ const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-
-const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionGetContent[] = {
-    {"use_action_get_content", "true"}};
-const FeatureEntry::FeatureParam kPhotoPickerAdoptionStudyActionPickImages[] = {
-    {"use_action_pick_images", "true"}};
-const FeatureEntry::FeatureParam
-    kPhotoPickerAdoptionStudyActionPickImagesPlus[] = {
-        {"use_action_pick_images_plus", "true"}};
-const FeatureEntry::FeatureParam
-    kPhotoPickerAdoptionStudyChromePickerWithoutBrowse[] = {
-        {"chrome_picker_suppress_browse", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kPhotoPickerAdoptionStudyFeatureVariations[] = {
-        {"(Android Picker w/ACTION_GET_CONTENT)",
-         kPhotoPickerAdoptionStudyActionGetContent, nullptr},
-        {"(Android Picker w/ACTION_PICK_IMAGES)",
-         kPhotoPickerAdoptionStudyActionPickImages, nullptr},
-        {"(Android Picker w/ACTION_PICK_IMAGES Plus)",
-         kPhotoPickerAdoptionStudyActionPickImagesPlus, nullptr},
-        {"(Chrome Picker without Browse)",
-         kPhotoPickerAdoptionStudyChromePickerWithoutBrowse, nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationModule_ForceCardShown_Pixel[] = {
@@ -8670,15 +8647,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(printing::features::kEnableOopPrintDrivers)},
 #endif
-
-#if BUILDFLAG(IS_ANDROID)
-    {"media-picker-adoption", flag_descriptions::kMediaPickerAdoptionStudyName,
-     flag_descriptions::kMediaPickerAdoptionStudyDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         photo_picker::features::kAndroidMediaPickerAdoption,
-         kPhotoPickerAdoptionStudyFeatureVariations,
-         "MediaPickerAdoption")},
-#endif  // BUILDFLAG(IS_ANDROID)
 
     {"privacy-sandbox-internals",
      flag_descriptions::kPrivacySandboxInternalsName,

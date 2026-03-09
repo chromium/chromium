@@ -25,28 +25,4 @@ public interface PhotoPickerDelegate {
             PhotoPickerListener listener,
             boolean allowMultiple,
             List<String> mimeTypes);
-
-    /**
-     * Returns whether the Android media picker, launched indirectly (via ACTION_GET_CONTENT), is
-     * preferred over the Chrome media picker.
-     */
-    boolean launchViaActionGetContent();
-
-    /**
-     * Returns whether the Android Media Picker, launched directly (via ACTION_PICK_IMAGE), is
-     * preferred over the Chrome Media Picker.
-     */
-    boolean launchViaActionPickImages();
-
-    /**
-     * Returns whether the Android Media Picker, launched directly (via ACTION_PICK_IMAGE with more
-     * complex MIME type support), is preferred over the Chrome Media Picker.
-     */
-    boolean launchViaActionPickImagesPlus();
-
-    /**
-     * Returns whether the Chrome Media Picker, without Browse, is the preferred Media Picker
-     * flavor.
-     */
-    boolean launchRegularWithoutBrowse();
 }

@@ -263,6 +263,6 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
 
     /** Returns whether to include the Browse tile also. */
     protected boolean shouldShowBrowseTile() {
-        return !PhotoPickerFeatures.launchRegularWithoutBrowse();
+        return true;
     }
 }
