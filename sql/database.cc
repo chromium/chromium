@@ -417,9 +417,11 @@ int Database::WalCheckpointImpl(base::cstring_view db_name,
   scoped_blocking_call.reset();
 
   // Expected result codes, among others:
-  // - SQLITE_BUSY if the lock could not be acquired. Not possible if the
-  //   database is in exclusive mode.
-  // - SQLITE_LOCKED if a transaction is open.
+  // - SQLITE_BUSY if the lock could not be acquired due to use by another
+  //   connection. Not possible if the database is in exclusive mode.
+  // - SQLITE_LOCKED if a b-tree transaction is open, i.e. the database is in
+  //   use by *this* connection, which can be due to an active database
+  //   transaction, prepared statement, or open blob handle.
   // - SQLITE_READONLY if the db is in read-only mode.
   UmaHistogramSqliteResult(
       base::StrCat({"Sql.Database.", (is_auto_checkpoint ? "Auto" : "Manual"),
