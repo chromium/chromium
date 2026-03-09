@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/scanned_card_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -150,4 +151,50 @@ TEST_F(SaveCardBottomSheetCoordinatorTest, OnViewDisappeared) {
       "NoFixFlow.SavingWithoutCvc",
       autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
       /*expected_count=*/1);
+}
+
+// Tests that starting the coordinator for a scan-and-save flow presents the
+// ScannedCardBottomSheetViewController and executes the completion block.
+TEST_F(SaveCardBottomSheetCoordinatorTest,
+       ScanAndSaveFlowPresentsScannedCardBottomSheet) {
+  web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(0);
+
+  autofill::AutofillSaveCardUiInfo ui_info = autofill::AutofillSaveCardUiInfo();
+  autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+
+  options.source_feature = autofill::payments::PaymentsAutofillClient::
+      SourceFeature::kScanCardSaveAndFill;
+
+  AutofillBottomSheetTabHelper::FromWebState(web_state)
+      ->ShowSaveCardBottomSheet(
+          std::make_unique<autofill::SaveCardBottomSheetModel>(
+              std::move(ui_info),
+              std::make_unique<autofill::AutofillSaveCardDelegate>(
+                  static_cast<autofill::payments::PaymentsAutofillClient::
+                                  CardSaveAndFillDialogCallback>(
+                      base::DoNothing()),
+                  options)));
+
+  id mock_base_view_controller = OCMClassMock([UIViewController class]);
+  coordinator_ = [[SaveCardBottomSheetCoordinator alloc]
+      initWithBaseViewController:mock_base_view_controller
+                         browser:browser_.get()];
+
+  OCMExpect([mock_base_view_controller
+                presentViewController:
+                    [OCMArg isKindOfClass:[ScannedCardBottomSheetViewController
+                                              class]]
+                             animated:YES
+                           completion:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        void (^completionBlock)(void);
+        [invocation getArgument:&completionBlock atIndex:4];
+        if (completionBlock) {
+          completionBlock();
+        }
+      });
+
+  [coordinator_ start];
+
+  EXPECT_OCMOCK_VERIFY(mock_base_view_controller);
 }

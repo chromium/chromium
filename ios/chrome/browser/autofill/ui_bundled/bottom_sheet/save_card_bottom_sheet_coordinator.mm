@@ -13,13 +13,18 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/scanned_card_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+
+@interface SaveCardBottomSheetCoordinator () <SaveCardBottomSheetDelegate>
+@end
 
 @implementation SaveCardBottomSheetCoordinator {
   // The model providing resources and callbacks for save card bottomsheet.
@@ -30,7 +35,13 @@
   SaveCardBottomSheetMediator* _mediator;
 
   // The view controller to display save card bottomsheet.
-  SaveCardBottomSheetViewController* _viewController;
+  SaveCardBottomSheetViewController* _saveCardViewController;
+
+  // The view controller for the Scan and Save flow
+  ScannedCardBottomSheetViewController* _scannedCardViewController;
+
+  // The coordinator for the credit card scanner
+  CreditCardScannerCoordinator* _creditCardScannerCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -54,22 +65,65 @@
       autofillCommandsHandler:HandlerForProtocol(
                                   self.browser->GetCommandDispatcher(),
                                   AutofillCommands)];
-  _viewController = [[SaveCardBottomSheetViewController alloc] init];
-  _viewController.mutator = _mediator;
-  _viewController.dataSource = _mediator;
-  _viewController.delegate = self;
-  _mediator.consumer = _viewController;
-  __weak __typeof(self) weakSelf = self;
-  [self.baseViewController presentViewController:_viewController
-                                        animated:YES
-                                      completion:^{
-                                        [weakSelf setInitialVoiceOverFocus];
-                                      }];
+  SaveCardActionType actionType = [_mediator actionType];
+
+  if (actionType == SaveCardActionType::kUpload ||
+      actionType == SaveCardActionType::kLocal) {
+    _saveCardViewController = [[SaveCardBottomSheetViewController alloc] init];
+    _saveCardViewController.mutator = _mediator;
+    _saveCardViewController.dataSource = _mediator;
+    _saveCardViewController.delegate = self;
+    _mediator.consumer = _saveCardViewController;
+    __weak __typeof(self) weakSelf = self;
+    [self.baseViewController presentViewController:_saveCardViewController
+                                          animated:YES
+                                        completion:^{
+                                          [weakSelf setInitialVoiceOverFocus];
+                                        }];
+  } else {
+    _scannedCardViewController =
+        [[ScannedCardBottomSheetViewController alloc] init];
+
+    _scannedCardViewController.dataSource = _mediator;
+    _scannedCardViewController.mutator = _mediator;
+    _scannedCardViewController.delegate = self;
+
+    _mediator.consumer = _scannedCardViewController;
+
+    __weak __typeof(self) weakSelf = self;
+    // The ScannedCardBottomSheetViewController must already be in the view
+    // hierarchy to serve as the baseViewController for the
+    // CreditCardScannerCoordinator. Therefore, we present the bottom sheet
+    // first and immediately start the scanner in the completion block to launch
+    // the camera UI over it. Once the scan finishes and the camera dismisses,
+    // the recognized data is fed back to the view controller, leaving the user
+    // with a pre-populated, editable form.
+    [self.baseViewController presentViewController:_scannedCardViewController
+                                          animated:YES
+                                        completion:^{
+                                          [weakSelf setInitialVoiceOverFocus];
+                                          [weakSelf startCreditCardScanner];
+                                        }];
+  }
 }
 
 - (void)stop {
-  [_viewController dismissViewControllerAnimated:YES completion:nil];
-  _viewController = nil;
+  if (_saveCardViewController) {
+    [_saveCardViewController dismissViewControllerAnimated:YES completion:nil];
+    _saveCardViewController = nil;
+  }
+
+  if (_creditCardScannerCoordinator) {
+    [_creditCardScannerCoordinator stop];
+    _creditCardScannerCoordinator = nil;
+  }
+
+  if (_scannedCardViewController) {
+    [_scannedCardViewController dismissViewControllerAnimated:YES
+                                                   completion:nil];
+    _scannedCardViewController = nil;
+  }
+
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
@@ -95,8 +149,23 @@
 #pragma mark - Private
 
 - (void)setInitialVoiceOverFocus {
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  _viewController.titleLabel);
+  if (_saveCardViewController) {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    _saveCardViewController.titleLabel);
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    _scannedCardViewController.view);
+  }
+}
+
+// Helper to start the credit card scanner
+- (void)startCreditCardScanner {
+  _creditCardScannerCoordinator = [[CreditCardScannerCoordinator alloc]
+      initWithBaseViewController:_scannedCardViewController
+                         browser:self.browser
+                        consumer:_scannedCardViewController];
+
+  [_creditCardScannerCoordinator start];
 }
 
 @end

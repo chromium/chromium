@@ -192,11 +192,13 @@ source_set("save_card_bottom_sheet_coordinator") {
     ":save_card_bottom_sheet_delegate",
     ":save_card_bottom_sheet_mediator",
     ":save_card_bottom_sheet_view_controller",
+    ":scanned_card_bottom_sheet_view_controller",
     "//base",
     "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -212,6 +214,7 @@ source_set("save_card_bottom_sheet_coordinator_unittest") {
   deps = [
     ":save_card_bottom_sheet_coordinator",
     ":save_card_bottom_sheet_mediator",
+    ":scanned_card_bottom_sheet_view_controller",
     "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
@@ -498,6 +501,21 @@ source_set("virtual_card_enrollment_bottom_sheet_egtest") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("scanned_card_bottom_sheet_view_controller") {
+  sources = [
+    "scanned_card_bottom_sheet_view_controller.h",
+    "scanned_card_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":save_card_bottom_sheet_consumer",
+    "//base",
+    "//ios/chrome/browser/settings/ui_bundled/credit_card_scanner",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/colors",
   ]
   frameworks = [ "UIKit.framework" ]
 }
