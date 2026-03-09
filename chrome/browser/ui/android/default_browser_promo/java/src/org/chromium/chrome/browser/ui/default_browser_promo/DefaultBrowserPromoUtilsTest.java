@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
+import org.chromium.chrome.browser.util.ChromePackageNameVariant;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.components.feature_engagement.Tracker;
@@ -261,8 +262,7 @@ public class DefaultBrowserPromoUtilsTest {
     public void testNoPromo_isOtherChromeDefault() {
         when(mProvider.getDefaultWebBrowserActivityResolveInfo())
                 .thenReturn(
-                        createResolveInfo(
-                                DefaultBrowserStateProvider.CHROME_STABLE_PACKAGE_NAME, 1));
+                        createResolveInfo(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME, 1));
         Assert.assertFalse(
                 "Should not promo when another chrome channel browser has been default.",
                 mUtils.shouldShowRoleManagerPromo(

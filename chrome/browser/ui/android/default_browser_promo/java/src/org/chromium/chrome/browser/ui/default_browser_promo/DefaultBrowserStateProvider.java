@@ -12,6 +12,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.util.ChromePackageNameVariant;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
@@ -21,16 +22,6 @@ import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
  */
 @NullMarked
 public class DefaultBrowserStateProvider {
-    static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
-
-    // TODO(crbug.com/40697015): move to some util class for reuse.
-    static final String[] CHROME_PACKAGE_NAMES = {
-        CHROME_STABLE_PACKAGE_NAME,
-        "org.chromium.chrome",
-        "com.chrome.canary",
-        "com.chrome.beta",
-        "com.chrome.dev"
-    };
 
     /**
      * This decides whether the promo should be promoted base on the current default browser state.
@@ -92,10 +83,8 @@ public class DefaultBrowserStateProvider {
         // default).
         if (ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
                 || needIdentifyOtherChromeDefault) {
-            for (String chromePackage : CHROME_PACKAGE_NAMES) {
-                if (chromePackage.equals(defaultPackage)) {
-                    return DefaultBrowserState.OTHER_CHROME_DEFAULT;
-                }
+            if (ChromePackageNameVariant.CHROME_PACKAGE_NAMES.contains(defaultPackage)) {
+                return DefaultBrowserState.OTHER_CHROME_DEFAULT;
             }
         }
 
@@ -105,14 +94,14 @@ public class DefaultBrowserStateProvider {
     boolean isChromeStable() {
         return ContextUtils.getApplicationContext()
                 .getPackageName()
-                .equals(CHROME_STABLE_PACKAGE_NAME);
+                .equals(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME);
     }
 
     boolean isChromePreStableInstalled() {
         for (ResolveInfo info : PackageManagerUtils.queryAllWebBrowsersInfo()) {
-            for (String name : CHROME_PACKAGE_NAMES) {
-                if (name.equals(CHROME_STABLE_PACKAGE_NAME)) continue;
-                if (name.equals(info.activityInfo.packageName)) return true;
+            if (ChromePackageNameVariant.CHROME_PRE_STABLE_PACKAGE_NAMES.contains(
+                    info.activityInfo.packageName)) {
+                return true;
             }
         }
         return false;

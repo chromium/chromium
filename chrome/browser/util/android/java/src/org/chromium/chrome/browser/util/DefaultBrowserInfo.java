@@ -34,12 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /** A utility class for querying information about the default browser setting. */
 @NullMarked
 public final class DefaultBrowserInfo {
-    static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
-
-    // TODO(crbug.com/40697015): move to some util class for reuse.
-    static final String[] CHROME_PRE_STABLE_PACKAGE_NAMES = {
-        "org.chromium.chrome", "com.chrome.canary", "com.chrome.beta", "com.chrome.dev"
-    };
 
     //  LINT.IfChange(AndroidDefaultBrowserState)
     @IntDef({
@@ -220,7 +214,7 @@ public final class DefaultBrowserInfo {
             if (defaultRi != null && defaultRi.match != 0) {
                 if (isSamePackage(context, defaultRi)) {
                     defaultBrowserState = DefaultBrowserState.CHROME_DEFAULT;
-                } else if (CHROME_STABLE_PACKAGE_NAME.equals(
+                } else if (ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME.equals(
                                 defaultRi.activityInfo.applicationInfo.packageName)
                         || isChromePreStable(defaultRi)) {
                     defaultBrowserState = DefaultBrowserState.OTHER_CHROME_DEFAULT;
@@ -289,9 +283,7 @@ public final class DefaultBrowserInfo {
     }
 
     private static boolean isChromePreStable(ResolveInfo info) {
-        for (String name : CHROME_PRE_STABLE_PACKAGE_NAMES) {
-            if (name.equals(info.activityInfo.applicationInfo.packageName)) return true;
-        }
-        return false;
+        return ChromePackageNameVariant.CHROME_PRE_STABLE_PACKAGE_NAMES.contains(
+                info.activityInfo.applicationInfo.packageName);
     }
 }

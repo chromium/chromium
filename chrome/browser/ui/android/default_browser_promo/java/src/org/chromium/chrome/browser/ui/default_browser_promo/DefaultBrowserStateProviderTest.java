@@ -19,6 +19,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.util.ChromePackageNameVariant;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class DefaultBrowserStateProviderTest {
         // appear in the PackageManager.
         packageManager.deletePackage(RuntimeEnvironment.application.getPackageName());
 
-        infoList.add(createResolveInfo(DefaultBrowserStateProvider.CHROME_STABLE_PACKAGE_NAME, 1));
+        infoList.add(createResolveInfo(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME, 1));
         packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, infoList);
         Assert.assertFalse(
                 "Chrome stable should not be counted as a pre-stable channel",
@@ -82,8 +83,8 @@ public class DefaultBrowserStateProviderTest {
                 "A random package should not be counted as a pre-stable channel",
                 mProvider.isChromePreStableInstalled());
 
-        for (String name : DefaultBrowserStateProvider.CHROME_PACKAGE_NAMES) {
-            if (name.equals(DefaultBrowserStateProvider.CHROME_STABLE_PACKAGE_NAME)) continue;
+        for (String name : ChromePackageNameVariant.CHROME_PACKAGE_NAMES) {
+            if (name.equals(ChromePackageNameVariant.CHROME_STABLE_PACKAGE_NAME)) continue;
             List<ResolveInfo> list = new ArrayList<>(infoList);
             list.add(createResolveInfo(name, 1));
             packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, list);
