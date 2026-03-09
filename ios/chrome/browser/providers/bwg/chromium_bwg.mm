@@ -57,4 +57,12 @@ void RequestUIChange(GeminiUIElementType ui_element_type) {}
 
 void AttachImage(UIImage* image) {}
 
+GeminiClientMode GetCurrentClientMode() {
+  return GeminiClientMode::kUnknown;
+}
+
+GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
+  return GeminiPageContextAttachmentState::kUnknown;
+}
+
 }  // namespace ios::provider

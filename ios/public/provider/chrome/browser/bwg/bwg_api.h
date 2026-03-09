@@ -114,6 +114,24 @@ enum class GeminiUIElementType {
   kZeroState,
 };
 
+// Enum representing the Gemini client mode.
+// This needs to stay in sync with GCRGeminiClientMode (and its SDK
+// counterpart).
+enum class GeminiClientMode {
+  // The Gemini client is unknown.
+  kUnknown,
+  // The Gemini client is dormant.
+  kDormant,
+  // The Gemini client is listening.
+  kListening,
+  // The Gemini client is thinking.
+  kThinking,
+  // The Gemini client is responding.
+  kResponding,
+  // The Gemini client is loading the previous conversation.
+  kPreviousConversationLoading,
+};
+
 // Configures Gemini with the given startup configuration.
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* startup_configuration);
@@ -175,6 +193,12 @@ void RequestUIChange(GeminiUIElementType ui_element_type);
 
 // Attaches an image to the Gemini floaty.
 void AttachImage(UIImage* image);
+
+// Returns the current `GeminiClientMode` of the floaty.
+GeminiClientMode GetCurrentClientMode();
+
+// Returns the current `GeminiPageContextAttachmentState` of the floaty.
+GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState();
 
 }  // namespace ios::provider
 
