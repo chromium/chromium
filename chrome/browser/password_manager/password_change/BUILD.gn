@@ -61,8 +61,11 @@ source_set("password_change") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/actor",
       "//chrome/browser/glic",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/tabs:public",
     ]
   }
 }
