@@ -784,13 +784,8 @@ export class AppElement extends AppElementBase {
   // Called to update the OGB of relevant NTP state changes.
   private updateOneGoogleBarAppearance_() {
     if (this.oneGoogleBarLoaded_) {
-      let isNtpDarkTheme;
-      if (this.showComposebox_) {
-        isNtpDarkTheme = this.theme_ && this.theme_.isDark;
-      } else {
-        isNtpDarkTheme = this.theme_ &&
+      const isNtpDarkTheme = this.theme_ &&
             (!!this.theme_.backgroundImage || this.theme_.isDark);
-      }
       $$<IframeElement>(this, '#oneGoogleBar')!.postMessage({
         type: 'updateAppearance',
         // We should be using a light OGB for dark themes and vice versa.
