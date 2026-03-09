@@ -39,8 +39,6 @@ using base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Pointee;
 namespace safe_browsing {
-using SuccessCallback = NotificationTelemetryStore::SuccessCallback;
-using LoadEntriesCallback = NotificationTelemetryStore::LoadEntriesCallback;
 
 namespace {
 CSBRR::ServiceWorkerBehavior MakeServiceWorkerRegistrationBehavior(
@@ -104,64 +102,6 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
  protected:
   ~MockSafeBrowsingUIManager() override = default;
 };
-class MockNotificationTelemetryStore
-    : public NotificationTelemetryStoreInterface {
- public:
-  MockNotificationTelemetryStore() = default;
-  ~MockNotificationTelemetryStore() override = default;
-
-  void AddServiceWorkerRegistrationBehavior(
-      const GURL& scope_url,
-      const std::vector<GURL>& import_script_urls,
-      SuccessCallback success_callback) override {
-    add_service_worker_registration_behavior_called_ = true;
-    entries_.push_back(
-        MakeServiceWorkerRegistrationBehavior(scope_url, import_script_urls));
-    std::move(success_callback).Run(true);
-  }
-  void AddServiceWorkerPushBehavior(const GURL& script_url,
-                                    const std::vector<GURL>& requested_urls,
-                                    SuccessCallback success_callback) override {
-    add_service_worker_push_behavior_called_ = true;
-    requested_urls_ = requested_urls;
-    entries_.push_back(
-        MakeServiceWorkerPushBehavior(script_url, requested_urls));
-    std::move(success_callback).Run(true);
-  }
-  void GetServiceWorkerBehaviors(LoadEntriesCallback load_entries_callback,
-                                 SuccessCallback success_callback) override {
-    get_service_worker_behaviors_called_ = true;
-    std::move(load_entries_callback)
-        .Run(true, std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
-                       entries_));
-  }
-
-  MOCK_METHOD1(DeleteAll, void(SuccessCallback success_callback));
-
-  bool get_service_worker_behaviors_called() {
-    return get_service_worker_behaviors_called_;
-  }
-  bool add_service_worker_registration_behavior_called() {
-    return add_service_worker_registration_behavior_called_;
-  }
-  bool add_service_worker_push_behavior_called() {
-    return add_service_worker_push_behavior_called_;
-  }
-
-  std::vector<GURL> requested_urls() { return requested_urls_; }
-
-  std::vector<CSBRR::ServiceWorkerBehavior> GetEntries() { return entries_; }
-  void SetEntries(std::vector<CSBRR::ServiceWorkerBehavior> entries) {
-    entries_ = entries;
-  }
-
- private:
-  bool get_service_worker_behaviors_called_ = false;
-  bool add_service_worker_registration_behavior_called_ = false;
-  bool add_service_worker_push_behavior_called_ = false;
-  std::vector<GURL> requested_urls_;
-  std::vector<CSBRR::ServiceWorkerBehavior> entries_;
-};
 }  // namespace
 
 const char kSbIncidentReportUrl[] =
@@ -186,7 +126,7 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
       notification_telemetry_service_ =
           std::make_unique<NotificationTelemetryService>(
               &profile_, test_url_loader_factory_.GetSafeWeakWrapper(), nullptr,
-              std::make_unique<MockNotificationTelemetryStore>(), ui_manager_);
+              ui_manager_);
 
     } else {
       database_manager_ = new MockSafeBrowsingDatabaseManager();
@@ -194,32 +134,26 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
       notification_telemetry_service_ =
           std::make_unique<NotificationTelemetryService>(
               &profile_, test_url_loader_factory_.GetSafeWeakWrapper(),
-              database_manager_,
-              std::make_unique<MockNotificationTelemetryStore>(), ui_manager_);
+              database_manager_, ui_manager_);
     }
   }
 
   void TearDown() override { notification_telemetry_service_.reset(); }
-
-  void AssertServiceWorkerBehaviorsEqual(
-      std::vector<CSBRR::ServiceWorkerBehavior>
-          expected_service_worker_behaviors,
-      std::vector<CSBRR::ServiceWorkerBehavior> service_worker_behaviors) {
-    ASSERT_EQ(expected_service_worker_behaviors.size(),
-              service_worker_behaviors.size());
-    for (size_t i = 0; i < expected_service_worker_behaviors.size(); i++) {
-      EXPECT_THAT(service_worker_behaviors[i],
-                  EqualsProto(expected_service_worker_behaviors[i]));
-    }
-  }
 
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager() {
     return database_manager_;
   }
 
   void SetAllowlistInfoForUrl(const GURL& scope, bool allowlisted) {
-    if (IsGlobalCacheListFeatureEnabled() && allowlisted) {
-      SetNotificationsGlobalCacheListDomainsForTesting({scope.GetHost()});
+    if (IsGlobalCacheListFeatureEnabled()) {
+      if (allowlisted) {
+        SetNotificationsGlobalCacheListDomainsForTesting({scope.GetHost()});
+      } else {
+        // Populate with a dummy value because an empty list will cause scope
+        // to be on the allowlist.
+        SetNotificationsGlobalCacheListDomainsForTesting({"dummy.value.com"});
+      }
+
     } else if (!IsGlobalCacheListFeatureEnabled()) {
       database_manager()->SetAllowlistLookupDetailsForUrl(scope, allowlisted);
     }
@@ -237,10 +171,6 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
   }
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager() { return ui_manager_; }
   TestingProfile& profile() { return profile_; }
-  MockNotificationTelemetryStore* GetNotificationTelemetryStore() {
-    return static_cast<MockNotificationTelemetryStore*>(
-        notification_telemetry_service_->GetTelemetryStoreForTest());
-  }
 
  private:
   std::unique_ptr<NotificationTelemetryService> notification_telemetry_service_;
@@ -256,39 +186,6 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
 
 TEST_P(NotificationTelemetryServiceTest, Initializes) {
   ASSERT_NE(notification_telemetry_service(), nullptr);
-}
-
-TEST_P(NotificationTelemetryServiceTest, NonEmptyTelemetryStoreAtConstruction) {
-  auto mock_store = std::make_unique<MockNotificationTelemetryStore>();
-  std::vector<CSBRR::ServiceWorkerBehavior> existing_entry = {
-      MakeServiceWorkerPushBehavior(
-          GURL("https://origin.com"),
-          std::vector<GURL>{GURL("https://request1.com")})};
-  mock_store->SetEntries(existing_entry);
-
-  // A non-empty database at construction time should trigger a report being
-  // sent.
-  auto expected_report = MakeCSBRR(existing_entry);
-  EXPECT_CALL(*ui_manager(),
-              SendThreatDetails(_, Pointee(EqualsProto(expected_report))));
-  std::unique_ptr<NotificationTelemetryService> notification_telemetry_service;
-  if (IsGlobalCacheListFeatureEnabled()) {
-    notification_telemetry_service =
-        std::make_unique<NotificationTelemetryService>(
-            &profile(), test_url_loader_factory().GetSafeWeakWrapper(), nullptr,
-            std::move(mock_store), ui_manager());
-
-  } else {
-    // Create service.
-    notification_telemetry_service =
-        std::make_unique<NotificationTelemetryService>(
-            &profile(), test_url_loader_factory().GetSafeWeakWrapper(),
-            database_manager(), std::move(mock_store), ui_manager());
-  }
-
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return notification_telemetry_service->GetEmptyDbFoundCountForTest() == 0;
-  }));
 }
 
 TEST_P(NotificationTelemetryServiceTest, SendsTelemetryReport) {
@@ -395,216 +292,52 @@ TEST_P(NotificationTelemetryServiceTest, EnforcesServiceWorkerInfoCacheSize) {
 }
 
 TEST_P(NotificationTelemetryServiceTest,
-       ServiceWorkerSubscriptionRecordsServiceWorkerBehavior) {
+       ServiceWorkerSubscriptionSendsServiceWorkerBehavior) {
   const GURL scope("https://nonallowlisted_url.com/");
-  const GURL scope2("https://allowlisted_url.com/");
-  const GURL scope3("https://nonallowlisted_url_2.com/");
   const GURL import_URL("https://import_script.com/script.js");
 
   int64_t registration_id_1 = 0451;
-  int64_t registration_id_2 = 0452;
-  int64_t registration_id_3 = 0453;
 
   // This service worker will be fully reported.
   content::ServiceWorkerRegistrationInformation service_worker_info_1;
   service_worker_info_1.resources.push_back(import_URL);
 
-  // This service worker will not be reported because it's scope is in
-  // the allowlist.
-  content::ServiceWorkerRegistrationInformation service_worker_info_2;
-  service_worker_info_2.resources.push_back(import_URL);
-
-  // This service worker will not be reported because it does not
-  // import scripts from a different origin.
-  content::ServiceWorkerRegistrationInformation service_worker_info_3;
-  service_worker_info_3.resources.push_back(scope3);
-
-  SetAllowlistInfoForUrl(scope2, /*allowlisted=*/true);
-  notification_telemetry_service()->OnRegistrationStored(
-      registration_id_2, scope2, service_worker_info_2);
   SetAllowlistInfoForUrl(scope, /*allowlisted=*/false);
   notification_telemetry_service()->OnRegistrationStored(
       registration_id_1, scope, service_worker_info_1);
-  SetAllowlistInfoForUrl(scope3, /*allowlisted=*/false);
-  notification_telemetry_service()->OnRegistrationStored(
-      registration_id_3, scope3, service_worker_info_3);
+
+  CSBRR::ServiceWorkerBehavior expected_behavior =
+      MakeServiceWorkerRegistrationBehavior(scope,
+                                            std::vector<GURL>{import_URL});
+  auto expected_report = MakeCSBRR({expected_behavior});
+  EXPECT_CALL(*ui_manager(),
+              SendThreatDetails(_, Pointee(EqualsProto(expected_report))));
 
   notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
       registration_id_1);
-  notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
-      registration_id_2);
-  notification_telemetry_service()->OnNewNotificationServiceWorkerSubscription(
-      registration_id_3);
-
-  ASSERT_TRUE(GetNotificationTelemetryStore()
-                  ->add_service_worker_registration_behavior_called());
-
-  std::vector<CSBRR::ServiceWorkerBehavior> expected_service_worker_behaviors =
-      {MakeServiceWorkerRegistrationBehavior(scope,
-                                             std::vector<GURL>{import_URL})};
-  AssertServiceWorkerBehaviorsEqual(
-      expected_service_worker_behaviors,
-      GetNotificationTelemetryStore()->GetEntries());
 }
 
 TEST_P(NotificationTelemetryServiceTest, OnPushEventFinished) {
+  const GURL script_url("http://scope.com");
   std::vector<GURL> requested_urls = {
       GURL("http://dest.com?a=1&b=2"), GURL("http://dest.com?a=1&b=2"),
       GURL("http://dest.com"),         GURL("http://dest.com"),
       GURL("invalidurl.ini"),          GURL("")};
-  notification_telemetry_service()->OnPushEventFinished(
-      GURL("http://scope.com"), requested_urls);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return notification_telemetry_service()->GetEmptyDbFoundCountForTest() == 0;
-  }));
 
-  ASSERT_TRUE(GetNotificationTelemetryStore()
-                  ->add_service_worker_push_behavior_called());
   // Duplicate requested URLs should be deduped and normalized.
   // Invalid requested URLs should be ignored.
-  EXPECT_THAT(GetNotificationTelemetryStore()->requested_urls(),
-              testing::UnorderedElementsAreArray(
-                  {GURL("http://dest.com?a&b"), GURL("http://dest.com")}));
-}
-
-// TODO(crbug.com/434325703): Deflake.
-// TEST_P(NotificationTelemetryServiceTest, NoEmptyDbFoundOverTime) {
-//   std::vector<GURL> requested_urls = {GURL("dest.com")};
-//   // This callback triggers the timer.
-//   notification_telemetry_service()->OnPushEventFinished(
-//       GURL("scope.com"), requested_urls);
-//   EXPECT_TRUE(base::test::RunUntil([&]() {
-//     return notification_telemetry_service()->GetEmptyDbFoundCountForTest() ==
-//     0;
-//   }));
-
-//   EXPECT_CALL(*ui_manager(), SendThreatDetails(_, _)).Times(2);
-//   EXPECT_CALL(*(GetNotificationTelemetryStore()), DeleteAll(_)).Times(2);
-
-//   // Advance time enough to allow for one polling interval to elapse.
-//   task_environment().FastForwardBy(base::Minutes(61));
-//   EXPECT_TRUE(base::test::RunUntil([&]() {
-//     return notification_telemetry_service()->GetEmptyDbFoundCountForTest() ==
-//     0;
-//   }));
-
-//   ASSERT_EQ(0,
-//   notification_telemetry_service()->GetEmptyDbFoundCountForTest());
-// }
-
-TEST_P(NotificationTelemetryServiceTest, EmptyDbFoundOverTime) {
-  std::vector<GURL> requested_urls = {GURL("https://dest.com")};
-  // This callback triggers the timer.
-  notification_telemetry_service()->OnPushEventFinished(
-      GURL("https://scope.com"), requested_urls);
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return notification_telemetry_service()->GetEmptyDbFoundCountForTest() == 0;
-  }));
-
-  // Empty the telemetry store.
-  GetNotificationTelemetryStore()->SetEntries(
-      std::vector<CSBRR::ServiceWorkerBehavior>());
-
-  // Forward enough time to pass the max number of consecutive empty db checks.
-  task_environment().FastForwardBy(base::Minutes(361));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return notification_telemetry_service()->GetEmptyDbFoundCountForTest() == 3;
-  }));
-}
-
-// TODO(crbug.com/434325703): Deflake.
-// TEST_P(NotificationTelemetryServiceTest, NoReportSentForNonEsbUser) {
-//   profile().GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
-//   std::vector<GURL> requested_urls = {GURL("dest.com")};
-//   // This callback triggers the timer.
-//   notification_telemetry_service()->OnPushEventFinished(
-//       GURL("scope.com"), requested_urls);
-//   EXPECT_TRUE(base::test::RunUntil([&]() {
-//     return notification_telemetry_service()->GetEmptyDbFoundCountForTest() ==
-//     0;
-//   }));
-
-//   EXPECT_CALL(*ui_manager(), SendThreatDetails(_, _)).Times(0);
-//   EXPECT_CALL(*(GetNotificationTelemetryStore()), DeleteAll(_)).Times(2);
-
-//   // Advance time enough to allow for one polling interval to elapse.
-//   task_environment().FastForwardBy(base::Minutes(61));
-//   EXPECT_TRUE(base::test::RunUntil([&]() {
-//     return notification_telemetry_service()->GetEmptyDbFoundCountForTest() ==
-//     0;
-//   }));
-// }
-
-TEST_P(NotificationTelemetryServiceTest, OnGetServiceWorkerBehaviors) {
-  CSBRR::ServiceWorkerBehavior swb_push_1 = MakeServiceWorkerPushBehavior(
-      GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request1.com"),
-                        GURL("https://request2.com")});
-  // `ServiceWorkerBehavior` with the same script_url as `swb_push_1`.
-  CSBRR::ServiceWorkerBehavior swb_push_2 = MakeServiceWorkerPushBehavior(
-      GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request1.com"),
-                        GURL("https://request2.com"),
-                        GURL("https://request3.com")});
-  CSBRR::ServiceWorkerBehavior swb_push_3 = MakeServiceWorkerPushBehavior(
-      GURL("https://other_script.com"),
-      std::vector<GURL>{GURL("https://other_request.com")});
-  CSBRR::ServiceWorkerBehavior swb_registration_1 =
-      MakeServiceWorkerRegistrationBehavior(
-          GURL("https://scope.com"),
-          std::vector<GURL>{GURL("https://import1.com")});
-  CSBRR::ServiceWorkerBehavior swb_registration_2 =
-      MakeServiceWorkerRegistrationBehavior(
-          GURL("https://scope.com"),
-          std::vector<GURL>{GURL("https://import2.com")});
-
-  auto entries = std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
-      std::vector<CSBRR::ServiceWorkerBehavior>{swb_push_1, swb_push_2,
-                                                swb_push_3, swb_registration_1,
-                                                swb_registration_2});
-
-  // Push event reports are expected to be deduplicated by `script_url` while
-  // registration reports should remain the same.
-  CSBRR::ServiceWorkerBehavior swb_push_merged = MakeServiceWorkerPushBehavior(
-      GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request1.com"),
-                        GURL("https://request2.com"),
-                        GURL("https://request3.com")});
-  auto merged_entries =
-      std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
-          std::vector<CSBRR::ServiceWorkerBehavior>{swb_push_merged, swb_push_3,
-                                                    swb_registration_1,
-                                                    swb_registration_2});
-  auto expected_report = MakeCSBRR(*merged_entries);
+  CSBRR::ServiceWorkerBehavior expected_behavior =
+      MakeServiceWorkerPushBehavior(
+          script_url, std::vector<GURL>{GURL("http://dest.com"),
+                                        GURL("http://dest.com?a&b")});
+  auto expected_report = MakeCSBRR({expected_behavior});
   EXPECT_CALL(*ui_manager(),
               SendThreatDetails(_, Pointee(EqualsProto(expected_report))));
-
-  notification_telemetry_service()->OnGetServiceWorkerBehaviors(
-      true, std::move(entries));
+  notification_telemetry_service()->SetShouldSendReportForTest(true);
+  notification_telemetry_service()->OnPushEventFinished(script_url,
+                                                        requested_urls);
 }
 
-TEST_P(NotificationTelemetryServiceTest,
-       OnGetServiceWorkerBehaviors_Downsampled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams params;
-  params["NotificationTelemetrySwbReportingProbability"] =
-      "0.0";  // Never send a report
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kNotificationTelemetrySwb, params);
-
-  CSBRR::ServiceWorkerBehavior swb_push = MakeServiceWorkerPushBehavior(
-      GURL("https://script.com"),
-      std::vector<GURL>{GURL("https://request1.com")});
-
-  auto entries = std::make_unique<std::vector<CSBRR::ServiceWorkerBehavior>>(
-      std::vector<CSBRR::ServiceWorkerBehavior>{swb_push});
-
-  EXPECT_CALL(*ui_manager(), SendThreatDetails(_, _)).Times(0);
-  EXPECT_CALL(*(GetNotificationTelemetryStore()), DeleteAll(_)).Times(1);
-
-  notification_telemetry_service()->OnGetServiceWorkerBehaviors(
-      true, std::move(entries));
-}
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          NotificationTelemetryServiceTest,
                          ::testing::Bool());
