@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.toolbar.R;
 
 /**
  * A {@link RecyclerView} for extension action buttons. This container will automatically hide any
@@ -40,24 +41,24 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
 
     public ExtensionActionListRecyclerView(Context context) {
         super(context);
-        setupRecyclerView(context);
+        setupRecyclerView();
     }
 
     public ExtensionActionListRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setupRecyclerView(context);
+        setupRecyclerView();
     }
 
     public ExtensionActionListRecyclerView(
             Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setupRecyclerView(context);
+        setupRecyclerView();
     }
 
-    private void setupRecyclerView(Context context) {
+    private void setupRecyclerView() {
         LinearLayoutManager layoutManager =
                 new LinearLayoutManager(
-                        context, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false) {
+                        getContext(), LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false) {
                     @Override
                     public boolean canScrollHorizontally() {
                         return false;
@@ -103,41 +104,16 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
     }
 
     private void updateRecyclerViewWidth() {
-        int newWidth = calculateContentWidth();
+        int itemWidth =
+                getContext().getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+        assert getAdapter() != null;
+        int newWidth = itemWidth * getAdapter().getItemCount();
+
         if (getLayoutParams().width != newWidth) {
             final var lp = getLayoutParams();
-            lp.width = calculateContentWidth();
+            lp.width = newWidth;
             setLayoutParams(lp);
         }
-    }
-
-    private int calculateContentWidth() {
-        if (getAdapter() == null || getAdapter().getItemCount() == 0) return 0;
-
-        RecyclerView.ViewHolder startViewHolder = findViewHolderForAdapterPosition(0);
-        int lastIndex = getAdapter().getItemCount() - 1;
-        RecyclerView.ViewHolder endViewHolder = findViewHolderForAdapterPosition(lastIndex);
-
-        if (startViewHolder == null || endViewHolder == null) {
-            return 0;
-        }
-
-        View startView = startViewHolder.itemView;
-        View endView = endViewHolder.itemView;
-
-        float startPosition;
-        float endPosition;
-
-        boolean rtl = getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-        if (rtl) {
-            startPosition = startView.getRight();
-            endPosition = endView.getLeft();
-        } else {
-            startPosition = startView.getLeft();
-            endPosition = endView.getRight();
-        }
-
-        return Math.round(Math.abs(endPosition - startPosition));
     }
 
     /**
@@ -147,6 +123,7 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
      */
     private class ActionListItemAnimator extends DefaultItemAnimator {
         private boolean mHasPendingRemovals;
+        private boolean mHasPendingAdditions;
 
         @Override
         public boolean animateRemove(ViewHolder holder) {
@@ -155,11 +132,20 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
         }
 
         @Override
-        public void runPendingAnimations() {
-            long startDelay = mHasPendingRemovals ? getRemoveDuration() : 0;
-            long duration = getMoveDuration();
+        public boolean animateAdd(ViewHolder holder) {
+            mHasPendingAdditions = true;
+            return super.animateAdd(holder);
+        }
 
-            if (mTransitionRoot != null) {
+        @Override
+        public void runPendingAnimations() {
+            assert mTransitionRoot != null;
+            if (mHasPendingRemovals || mHasPendingAdditions) {
+                TransitionManager.endTransitions(mTransitionRoot);
+
+                long startDelay = mHasPendingRemovals ? getRemoveDuration() : 0;
+                long duration = getMoveDuration();
+
                 Transition matchRecyclerView = new ChangeBounds();
                 matchRecyclerView.setDuration(duration);
                 matchRecyclerView.setStartDelay(startDelay);
@@ -170,8 +156,8 @@ public class ExtensionActionListRecyclerView extends RecyclerView {
             }
 
             super.runPendingAnimations();
-
             mHasPendingRemovals = false;
+            mHasPendingAdditions = false;
         }
     }
 }
