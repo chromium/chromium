@@ -151,6 +151,7 @@ class AudioManagerBase::DeviceLogHelper {
     }
 
     int removed = 0;
+    AudioDeviceNames removed_devices;
     for (const auto& prev : *prev_snapshot) {
       auto it = std::ranges::find_if(devices,
                                      [&](const AudioDeviceDescription& curr) {
@@ -158,6 +159,7 @@ class AudioManagerBase::DeviceLogHelper {
                                      });
       if (it == devices.end()) {
         removed++;
+        removed_devices.push_back(prev);
       }
     }
 
@@ -180,6 +182,7 @@ class AudioManagerBase::DeviceLogHelper {
          base::NumberToString(removed), " removed, ",
          base::NumberToString(modified), " modified)"}));
 
+    // Print new and modified devices.
     for (const auto& device : devices) {
       auto it = std::ranges::find_if(
           *prev_snapshot, [&](const AudioDeviceName& prev) {
@@ -201,6 +204,19 @@ class AudioManagerBase::DeviceLogHelper {
       }
       log_callback_.Run(
           base::StrCat({func_name, " => (device_name=[", name, "])", suffix}));
+    }
+
+    // Print the removed devices.
+    for (const auto& prev : removed_devices) {
+      std::string name = prev.device_name;
+      if (AudioDeviceDescription::IsDefaultDevice(prev.unique_id)) {
+        name = "Default - " + name;
+      } else if (AudioDeviceDescription::IsCommunicationsDevice(
+                     prev.unique_id)) {
+        name = "Communications - " + name;
+      }
+      log_callback_.Run(base::StrCat(
+          {func_name, " => (device_name=[", name, "]) [REMOVED]"}));
     }
 
     *prev_snapshot = std::move(new_snapshot);
