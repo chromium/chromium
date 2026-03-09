@@ -189,6 +189,11 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
         mProfileImpl.setMaxPrerenders(prefetchTtlSeconds);
     }
 
+    /**
+     * @deprecated Can be removed along with {@link
+     *     org.chromium.support_lib_boundary.util.Features#SPECULATIVE_LOADING_CONFIG}
+     */
+    @Deprecated
     @Override
     public void setSpeculativeLoadingConfig(
             /* SpeculativeLoadingConfig */ InvocationHandler config) {

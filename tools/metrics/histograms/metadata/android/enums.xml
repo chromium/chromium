@@ -670,7 +670,7 @@ chromium-metrics-reviews@google.com.
   <int value="116" label="WebViewCompat.prerenderUrlWithParams"/>
   <int value="117" label="WebStorageCompat.deleteBrowsingData"/>
   <int value="118" label="WebStorageCompat.deleteBrowsingDataForSite"/>
-  <int value="119" label="Profile.setSpeculativeLoadingConfig"/>
+  <int value="119" label="Profile.setSpeculativeLoadingConfig (deprecated)"/>
   <int value="120" label="WebViewCompat.saveState"/>
   <int value="121" label="WebViewCompat.getNavigationClient"/>
   <int value="122" label="WebViewCompat.setNavigationClient"/>

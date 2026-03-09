@@ -455,7 +455,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int PRERENDER_URL_WITH_PARAMS = 116;
         int WEB_STORAGE_DELETE_BROWSING_DATA = 117;
         int WEB_STORAGE_DELETE_BROWSING_DATA_FOR_SITE = 118;
-        int SET_SPECULATIVE_LOADING_CONFIG = 119;
+        @Deprecated int SET_SPECULATIVE_LOADING_CONFIG = 119;
         int SAVE_STATE = 120;
         @Deprecated int GET_WEBVIEW_NAVIGATION_CLIENT = 121;
         @Deprecated int SET_WEBVIEW_NAVIGATION_CLIENT = 122;
