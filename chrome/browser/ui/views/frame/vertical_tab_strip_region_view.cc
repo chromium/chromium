@@ -11,6 +11,8 @@
 #include "base/callback_list.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/i18n/number_formatting.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -43,10 +45,12 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -54,6 +58,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -68,6 +73,7 @@ namespace {
 constexpr int kRegionVerticalPadding = 5;
 constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
+constexpr int kKeyboardResizeWidth = 50;
 }  // namespace
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
@@ -120,6 +126,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   resize_area_ = AddChildView(std::make_unique<views::ResizeArea>(this));
   resize_area_->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  resize_area_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  views::FocusRing::Install(resize_area_);
+  resize_area_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_VERTICAL_RESIZE_AREA));
+  resize_area_->GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
 
   resize_animation_.SetSlideDuration(gfx::Animation::RichAnimationDuration(
       features::UseSidePanelFlyoverAnimation() ? base::Milliseconds(350)
@@ -290,6 +301,39 @@ gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
                        : target_collapse_state_.uncollapsed_width);
   }
   return size;
+}
+
+bool VerticalTabStripRegionView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (resize_area_->HasFocus()) {
+    int resize_amount = 0;
+
+    if (event.key_code() == ui::VKEY_LEFT) {
+      resize_amount =
+          base::i18n::IsRTL() ? kKeyboardResizeWidth : -kKeyboardResizeWidth;
+    } else if (event.key_code() == ui::VKEY_RIGHT) {
+      resize_amount =
+          base::i18n::IsRTL() ? -kKeyboardResizeWidth : kKeyboardResizeWidth;
+    }
+
+    if (resize_amount != 0) {
+      OnResize(resize_amount, /*done_resizing=*/true);
+
+      float tab_strip_width = width();
+      float total_width = GetWidget()->GetRootView()->width();
+
+      int tab_strip_percentage = (tab_strip_width / total_width) * 100;
+      int content_percentage = 100 - tab_strip_percentage;
+
+      resize_area_->GetViewAccessibility().AnnounceText(
+          l10n_util::GetStringFUTF16(IDS_VERTICAL_TAB_RESIZE_ACCESSIBLE_ALERT,
+                                     base::FormatPercent(tab_strip_percentage),
+                                     base::FormatPercent(content_percentage)));
+
+      return true;
+    }
+  }
+
+  return TabStripRegionView::OnKeyPressed(event);
 }
 
 bool VerticalTabStripRegionView::IsTabStripEditable() const {

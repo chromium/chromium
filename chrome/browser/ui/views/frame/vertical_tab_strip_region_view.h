@@ -109,6 +109,7 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // TabStripRegionView
   void InitializeTabStrip() override;

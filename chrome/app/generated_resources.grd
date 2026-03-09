@@ -10379,9 +10379,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that expands the vertical tab strip.">
             Expand Tabs
           </message>
-          <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="In Title Case: The accessibility label for the button in the tab group header that opens the editor bubble.">
-            More Options
-          </message>
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="In Title Case: The button in context menu that allows users to send feedback about vertical tabs.">
             Send Feedback About the Tab Strip
           </message>
@@ -10408,9 +10405,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_EXPAND_VERTICAL_TABS" desc="The tooltip for the button in the top container that expands the vertical tab strip.">
             Expand tabs
           </message>
-          <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true"  desc="The accessibility label for the button in the tab group header that opens the editor bubble.">
-            More options
-          </message>
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="The button in context menu that allows users to send feedback about vertical tabs.">
             Send feedback about the tab strip
           </message>
@@ -10430,6 +10424,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_VERTICAL_TABS_IPH_BODY" desc="The body for the vertical tabs IPH tutorial.">
         See entire tab titles, easily manage tab groups, and free up vertical space by moving your tabs to the side.
+      </message>
+      <message name="IDS_VERTICAL_RESIZE_AREA" is_accessibility_with_no_ui="true" desc="The accessibility label for the resize area in the vertical tab strip.">
+            Vertical Tab Strip Resize Handle (Draggable)
+      </message>
+      <message name="IDS_VERTICAL_TAB_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true" desc="Accessible alert announced after resizing the vertical tab strip.">
+            Tab Strip now <ph name="TAB_STRIP_PERCENT">$1<ex>25%</ex></ph> wide, Content Area now <ph name="CONTENT_AREA_PERCENT">$2<ex>75%</ex></ph> wide.
+      </message>
+      <message name="IDS_VERTICAL_TAB_GROUP_MORE_OPTIONS" is_accessibility_with_no_ui="true" desc="The accessibility label for the button in the tab group header that opens the editor bubble.">
+            More Options
       </message>
       <!-- /Vertical Tab Strings -->
 
