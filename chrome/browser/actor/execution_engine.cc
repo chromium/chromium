@@ -82,6 +82,11 @@ namespace actor {
 
 namespace {
 
+static constexpr std::string_view kPermissionGrantedHistogram =
+    "Actor.NavigationGating.PermissionGranted";
+static constexpr std::string_view kActionNavigationsApprovedByServerHistogram =
+    "Actor.NavigationGating.ActionNavigationsApprovedByServer";
+
 BASE_FEATURE(kActorReloadCrashedTabBeforeAct, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const RenderFrameHost* GetPrimaryMainFrame(
@@ -318,7 +323,7 @@ void ExecutionEngine::LogNavigationGating(
     base::optional_ref<const url::Origin> initiator,
     const url::Origin& destination,
     bool applied_gate) const {
-  UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.AppliedGate", applied_gate);
+  base::UmaHistogramBoolean("Actor.NavigationGating.AppliedGate", applied_gate);
 
   base::UmaHistogramBoolean("Actor.NavigationGating.SameOriginSource",
                             source.IsSameOriginWith(destination));
@@ -500,8 +505,8 @@ void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
   }
 
   if (is_pre_approved) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Actor.NavigationGating.ActionNavigationsApprovedByServer", true);
+    base::UmaHistogramBoolean(kActionNavigationsApprovedByServerHistogram,
+                              true);
     return;
   }
 
@@ -513,8 +518,8 @@ void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
       base::BindOnce(
           [](webui::mojom::NavigationConfirmationResponsePtr response) {
             if (response->result->is_permission_granted()) {
-              UMA_HISTOGRAM_BOOLEAN(
-                  "Actor.NavigationGating.ActionNavigationsApprovedByServer",
+              base::UmaHistogramBoolean(
+                  kActionNavigationsApprovedByServerHistogram,
                   response->result->get_permission_granted());
             }
           }));
@@ -529,8 +534,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     bool permission_granted = response->result->get_permission_granted();
     // TODO(dylancutler): Separate Actor.NavigationGating.PermissionGranted into
     // separate histograms for different confirmation types.
-    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
-                          permission_granted);
+    base::UmaHistogramBoolean(kPermissionGrantedHistogram, permission_granted);
     if (permission_granted) {
       origin_checker_.AllowNavigationTo(std::move(destination),
                                         /*is_user_confirmed=*/false);
@@ -568,8 +572,7 @@ void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
     webui::mojom::UserConfirmationDialogResponsePtr response) {
   if (response->result->is_permission_granted()) {
     bool permission_granted = response->result->get_permission_granted();
-    UMA_HISTOGRAM_BOOLEAN("Actor.NavigationGating.PermissionGranted",
-                          permission_granted);
+    base::UmaHistogramBoolean(kPermissionGrantedHistogram, permission_granted);
     if (permission_granted) {
       // See the comment on `OriginOrPrecursorIfOpaque` for why we do not store
       // `destination` directly here.
