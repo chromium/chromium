@@ -146,6 +146,16 @@ std::pair<std::unique_ptr<TemplateURLData>,
           ReconcilingTemplateURLDataHolder::ReconciliationType>
 ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     const TemplateURLData& data_to_match) const {
+  // Search for potential migrations. It is prioritised over the regional
+  // engines, which can change across runs. That's a very strict check (see
+  // `Resolver::MatchesEngineUnderMigration`), so there is no risk to  match the
+  // wrong engine.
+  if (std::unique_ptr<TemplateURLData> engine =
+          prepopulate_data_resolver_->TryGetMigratedEngine(data_to_match);
+      engine != nullptr) {
+    return {std::move(engine), ReconciliationType::kByMigrateToId};
+  }
+
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
       prepopulate_data_resolver_->GetPrepopulatedEngines();
 
@@ -155,13 +165,6 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
       engine_iter != prepopulated_urls.end()) {
     return {std::move(*engine_iter),
             ReconciliationType::kByIdFromRegionalEngines};
-  }
-
-  // Search for potential migrations
-  if (std::unique_ptr<TemplateURLData> engine =
-          prepopulate_data_resolver_->TryGetMigratedEngine(data_to_match);
-      engine != nullptr) {
-    return {std::move(engine), ReconciliationType::kByMigrateToId};
   }
 
   // Search the entire search engine database to find matching entry.

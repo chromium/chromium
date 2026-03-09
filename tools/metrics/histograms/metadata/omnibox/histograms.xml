@@ -4232,6 +4232,58 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TemplateUrl.DBRefresh.DefaultSearchMatchCountById"
+    units="count" expires_after="2026-07-01">
+  <owner>dgn@google.com</owner>
+  <owner>ender@google.com</owner>
+  <owner>chrome-regionalcapabiltiies@google.com</owner>
+  <summary>
+    At the beginning of the process of merging prepopulated engines into the
+    keywords database, records the number of entries that match the current
+    default search engine. Matching is done by preopulate ID or by ID of the
+    DSE's pre-migration ID, if relevant. There may be more than one engine
+    matching due to some unexpected behaviour associated with migrations, sync
+    or changes in the profile's assigned country.
+
+    Recorded once per keywords database merging, which gets triggered on startup
+    if the built-in search engines data has been updated, or the profile's
+    assigned country changed.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.DBRefresh.EntryPreservationReason"
+    enum="EntryPreservationReason" expires_after="2026-07-01">
+  <owner>dgn@google.com</owner>
+  <owner>ender@google.com</owner>
+  <owner>chrome-regionalcapabiltiies@google.com</owner>
+  <summary>
+    During the process of merging prepopulated engines into the keywords
+    database, records a reason why an existing entry might be preserved after it
+    did not match any of the regional prepopulated engines.
+
+    Recorded once per keywords database merging, which gets triggered on startup
+    if the built-in search engines data has been updated, or the profile's
+    assigned country changed.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.DBRefresh.UnmatchedDefaultSearchCount"
+    units="count" expires_after="2026-07-01">
+  <owner>dgn@google.com</owner>
+  <owner>ender@google.com</owner>
+  <owner>chrome-regionalcapabiltiies@google.com</owner>
+  <summary>
+    At the end of the process of merging prepopulated engines into the keywords
+    database, records the number of entries that match the current default
+    search engine but that did not get reconciled with some existing entry and
+    will be discarded.
+
+    Recorded once per keywords database merging, which gets triggered on startup
+    if the built-in search engines data has been updated, or the profile's
+    assigned country changed.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.TemplateUrl.Reconciliation.Type"
     enum="ReconciliationType" expires_after="2026-08-30">
   <owner>ender@google.com</owner>

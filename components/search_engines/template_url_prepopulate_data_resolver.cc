@@ -150,7 +150,7 @@ std::unique_ptr<TemplateURLData> Resolver::TryGetMigratedEngine(
       regional_capabilities::GetMigratingPrepopulatedEngines();
   for (const auto& [new_engine_id, deprecated_engine] : migrating_engines) {
     if (MatchesEngineUnderMigration(pre_migration_engine, deprecated_engine)) {
-      auto new_engine = GetPrepopulatedEngine(new_engine_id);
+      auto new_engine = GetEngineFromFullList(new_engine_id);
 
       // By design there should be an entry for this ID, see
       // `regional_capabilities::ComputeMigratedEnginesMapping`.

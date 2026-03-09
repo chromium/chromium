@@ -178,6 +178,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Served then served"/>
 </enum>
 
+<!-- LINT.IfChange(EntryPreservationReason) -->
+
+<enum name="EntryPreservationReason">
+  <int value="1" label="MatchesDefaultSearchProvider"/>
+  <int value="2" label="MatchesOtherDefaultSearchProvider"/>
+  <int value="3" label="NotSafeForAutoreplace"/>
+  <int value="4" label="NonPrepopulatedFromRegulatoryProgram"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/util.cc:EntryPreservationReason) -->
+
 <!-- LINT.IfChange(FocusResultedInNavigationTypes) -->
 
 <enum name="FocusResultedInNavigationTypes">
