@@ -60,6 +60,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -191,7 +192,11 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     : browser_(browser),
       root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()),
-      resize_animation_(this) {
+      resize_animation_(this),
+      focus_search_(std::make_unique<views::FocusSearch>(this,
+                                                         /*cycle=*/true,
+                                                         /*accessibility_mode=*/
+                                                         true)) {
   // The vertical tab strip contains ScrollViews that paint to a layer. This
   // view must also paint to a layer to ensure it overlays those components.
   SetPaintToLayer();
@@ -362,6 +367,11 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
+  auto& accessibility = GetViewAccessibility();
+  accessibility.SetRole(ax::mojom::Role::kPane);
+  accessibility.SetName(l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL));
+  SetFocusBehavior(FocusBehavior::NEVER);
+
   SetVisible(false);
   SetPreferredSize(gfx::Size(projects_panel::kProjectsPanelMinWidth, 0));
   SetProperty(views::kElementIdentifierKey, kProjectsPanelViewElementId);
@@ -398,6 +408,11 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
           {ui::EventType::kMousePressed, ui::EventType::kGestureTapDown});
     }
 
+    if (!observing_focus_manager_ && GetFocusManager()) {
+      GetFocusManager()->AddFocusChangeListener(this);
+      observing_focus_manager_ = true;
+    }
+
     // TODO(crbug.com/477602874): Have the panel view observe the controller and
     // pipe updates to the list.
     tab_groups_view_->SetTabGroups(panel_controller_->GetTabGroups());
@@ -411,6 +426,10 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
       separator_->SetVisible(show_threads);
     }
   } else {
+    if (observing_focus_manager_ && GetFocusManager()) {
+      GetFocusManager()->RemoveFocusChangeListener(this);
+      observing_focus_manager_ = false;
+    }
     event_monitor_.reset();
   }
 
@@ -423,16 +442,19 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
     if (!visible) {
       AnimationEnded(&resize_animation_);
     }
-    return;
+  } else {
+    if (visible) {
+      SetVisible(true);
+      resize_animation_.SetSlideDuration(kPanelShowAnimationDuration);
+      resize_animation_.Show();
+    } else {
+      resize_animation_.SetSlideDuration(kPanelHideAnimationDuration);
+      resize_animation_.Hide();
+    }
   }
 
-  if (visible) {
-    SetVisible(true);
-    resize_animation_.SetSlideDuration(kPanelShowAnimationDuration);
-    resize_animation_.Show();
-  } else {
-    resize_animation_.SetSlideDuration(kPanelHideAnimationDuration);
-    resize_animation_.Hide();
+  if (visible && GetFocusManager()) {
+    GetFocusManager()->SetFocusedView(this);
   }
 }
 
@@ -491,12 +513,35 @@ void ProjectsPanelView::Layout(PassKey) {
   layer()->SetClipRect(clip_rect);
 }
 
+void ProjectsPanelView::RemovedFromWidget() {
+  if (observing_focus_manager_ && GetFocusManager()) {
+    GetFocusManager()->RemoveFocusChangeListener(this);
+    observing_focus_manager_ = false;
+  }
+}
+
 bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (accelerator.key_code() == ui::VKEY_ESCAPE) {
     ClosePanel();
     return true;
   }
   return false;
+}
+
+views::FocusTraversable* ProjectsPanelView::GetPaneFocusTraversable() {
+  return this;
+}
+
+views::FocusSearch* ProjectsPanelView::GetFocusSearch() {
+  return focus_search_.get();
+}
+
+views::FocusTraversable* ProjectsPanelView::GetFocusTraversableParent() {
+  return parent() ? parent()->GetFocusTraversable() : nullptr;
+}
+
+views::View* ProjectsPanelView::GetFocusTraversableParentView() {
+  return this;
 }
 
 void ProjectsPanelView::AnimationProgressed(const gfx::Animation* animation) {
@@ -602,7 +647,7 @@ void ProjectsPanelView::OnTabGroupMoreButtonPressed(
   tab_group_menu_runner_->RunMenuAt(
       button.GetWidget(), button.button_controller(),
       button.GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopRight,
-      ui::mojom::MenuSourceType::kMouse);
+      ui::mojom::MenuSourceType::kNone);
 }
 
 void ProjectsPanelView::OnTabGroupMoved(const base::Uuid& group_guid,
@@ -721,6 +766,18 @@ void ProjectsPanelView::MouseEventHandler::OnEvent(const ui::Event& event) {
       owning_view_->ClosePanel();
     }
   }
+}
+
+void ProjectsPanelView::OnWillChangeFocus(views::View* focused_before,
+                                          views::View* focused_now) {}
+
+void ProjectsPanelView::OnDidChangeFocus(views::View* focused_before,
+                                         views::View* focused_now) {
+  if (!GetVisible() || Contains(focused_now)) {
+    return;
+  }
+
+  ClosePanel();
 }
 
 BEGIN_METADATA(ProjectsPanelView)

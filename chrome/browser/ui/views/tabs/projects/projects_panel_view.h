@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
@@ -19,6 +20,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -49,6 +51,8 @@ class ProjectsPanelTabGroupsView;
 // hierarchy including Tab Groups and AI threads.
 class ProjectsPanelView : public views::View,
                           public ui::SimpleMenuModel::Delegate,
+                          public views::FocusChangeListener,
+                          public views::FocusTraversable,
                           gfx::AnimationDelegate,
                           ProjectsPanelController::Observer {
   METADATA_HEADER(ProjectsPanelView, views::View)
@@ -80,7 +84,20 @@ class ProjectsPanelView : public views::View,
 
   // views::View:
   void Layout(PassKey) override;
+  void RemovedFromWidget() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  views::FocusTraversable* GetPaneFocusTraversable() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* focused_before,
+                         views::View* focused_now) override;
+  void OnDidChangeFocus(views::View* focused_before,
+                        views::View* focused_now) override;
+
+  // views::FocusTraversable:
+  views::FocusSearch* GetFocusSearch() override;
+  views::FocusTraversable* GetFocusTraversableParent() override;
+  views::View* GetFocusTraversableParentView() override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -180,6 +197,8 @@ class ProjectsPanelView : public views::View,
   std::unique_ptr<ui::SimpleMenuModel> threads_activity_menu_model_;
   std::unique_ptr<views::MenuRunner> threads_activity_menu_runner_;
 
+  std::unique_ptr<views::FocusSearch> focus_search_;
+
   // The target width of the panel when expanded. Used when vertical tabs is
   // enabled since the panel width needs to match when expanded.
   int target_width_ = projects_panel::kProjectsPanelMinWidth;
@@ -192,6 +211,10 @@ class ProjectsPanelView : public views::View,
   // Handles auto-scrolling the tab groups view as a group is held near the top
   // or bottom of the list.
   ProjectsPanelTabGroupsDragScrollHandler tab_groups_drag_scroll_handler_;
+
+  // Prevents attempting to (un)observe the focus manager more than once if
+  // OnProjectsPanelStateChanged is called twice with the same visibility value.
+  bool observing_focus_manager_ = false;
 
   base::ScopedObservation<ProjectsPanelController,
                           ProjectsPanelController::Observer>

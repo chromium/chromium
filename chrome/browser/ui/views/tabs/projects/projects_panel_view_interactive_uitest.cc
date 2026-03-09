@@ -134,6 +134,29 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CloseOnClickOutside) {
           false));
 }
 
+// This test checks that the projects panel grabs focus when opened.
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, GrabsFocusOnOpen) {
+  RunTestSequence(OpenProjectsPanel(),
+                  CheckViewProperty(kProjectsPanelViewElementId,
+                                    &views::View::HasFocus, true));
+}
+
+// This test checks that the projects panel closes when focus is switched to
+// another UI element like the omnibox.
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, ClosesOnFocusLost) {
+  RunTestSequence(
+      OpenProjectsPanel(),
+      // Focus the omnibox.
+      FocusElement(kOmniboxElementId),
+      // Verify Projects Panel is hidden.
+      WaitForHide(kProjectsPanelViewElementId),
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          false));
+}
+
 // This is a regression test that checks that the panel stays open when clicking
 // inside (but not on a button or other interactive element).
 IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, StaysOpenOnClickInside) {
@@ -168,8 +191,7 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, StaysOpenOnClickInside) {
 }
 
 // This test checks that the projects panel closes when pressing Esc.
-// TODO(crbug.com/479270567): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, DISABLED_CloseOnEsc) {
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest, CloseOnEsc) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
