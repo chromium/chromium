@@ -258,6 +258,10 @@
           "group": "tryserver.chromium.mac"
         },
         {
+          "builder": "mac-rel",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "mac12-arm64-rel",
           "group": "tryserver.chromium.mac"
         },

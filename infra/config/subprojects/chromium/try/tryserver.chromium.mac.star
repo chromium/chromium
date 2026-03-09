@@ -161,11 +161,8 @@ try_.orchestrator_builder(
     name = "mac-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
-        "ci/Mac Builder",
-        "ci/mac15-x64-rel-tests",
-        "ci/GPU Mac Builder",
-        "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
+        "ci/mac-arm64-rel",
+        "ci/mac15-arm64-rel-tests",
     ],
     gn_args = gn_args.config(
         configs = [
@@ -178,7 +175,7 @@ try_.orchestrator_builder(
             "enable_dangling_raw_ptr_feature_flag",
             "enable_backup_ref_ptr_feature_flag",
             "mac",
-            "x64",
+            "arm64",
         ],
     ),
     compilator = "mac-rel-compilator",
@@ -238,10 +235,7 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(
-        # Remove this once confirmed it's green
-        experiment_percentage = 30,
-    ),
+    tryjob = try_.job(),
     use_clang_coverage = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
