@@ -2418,7 +2418,7 @@ class Port(object):
         # CGIs are run directory-relative so they need an absolute TMPDIR
         self.host.environ['TMPDIR'] = self._filesystem.abspath(
             self.host.environ['TMPDIR'])
-        if self.host.platform.is_linux() or self.host.platform.is_freebsd():
+        if self.host.platform.is_linux():
             variables_to_copy += [
                 'XAUTHORITY', 'HOME', 'LANG', 'LD_LIBRARY_PATH',
                 'DBUS_SESSION_BUS_ADDRESS', 'XDG_DATA_DIRS', 'XDG_RUNTIME_DIR'

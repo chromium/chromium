@@ -76,9 +76,7 @@ class MacPort(base.Port):
             # Maybe add an architecture suffix.
             # In this context, 'arm64' refers to Apple M1.
             # No suffix is appended for Intel-based ports.
-            if (host.platform.get_machine() == 'arm64'
-                    or host.platform.is_running_rosetta()):
-                # TODO(crbug.com/1253659): verify this under native arm.
+            if host.platform.get_machine() == 'arm64':
                 parts.append('arm64')
             return '-'.join(parts)
         return port_name

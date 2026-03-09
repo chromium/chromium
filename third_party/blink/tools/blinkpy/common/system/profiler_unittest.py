@@ -44,7 +44,6 @@ class ProfilerFactoryTest(unittest.TestCase):
         self._assert_default_profiler_name('mac', 'iprofiler')
         self._assert_default_profiler_name('linux', 'perf')
         self._assert_default_profiler_name('win32', None)
-        self._assert_default_profiler_name('freebsd', None)
 
     def test_default_profiler_output(self):
         host = MockSystemHost()

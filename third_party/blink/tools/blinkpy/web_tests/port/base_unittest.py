@@ -2335,10 +2335,8 @@ class PortTest(LoggingTestCase):
             port._apache_config_file_name_for_platform(),  # pylint: disable=protected-access
             config_file)
 
-    def _assert_config_file_for_linux_distribution(self, port, distribution,
-                                                   config_file):
-        port.host.platform = MockPlatformInfo(
-            os_name='linux', linux_distribution=distribution)
+    def _assert_config_file_for_linux(self, port, config_file):
+        port.host.platform = MockPlatformInfo(os_name='linux')
         self.assertEqual(
             port._apache_config_file_name_for_platform(),  # pylint: disable=protected-access
             config_file)
@@ -2348,8 +2346,7 @@ class PortTest(LoggingTestCase):
         port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
         self._assert_config_file_for_platform(port, 'linux',
                                               'apache2-httpd-2.4-php7.conf')
-        self._assert_config_file_for_linux_distribution(
-            port, 'arch', 'apache2-httpd-2.4-php7.conf')
+        self._assert_config_file_for_linux(port, 'apache2-httpd-2.4-php7.conf')
 
         self._assert_config_file_for_platform(port, 'mac',
                                               'apache2-httpd-2.4-php7.conf')

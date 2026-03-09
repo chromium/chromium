@@ -55,9 +55,6 @@ def fake_platform(mac_version_string='12.3.1',
         def mac_ver(self):
             return tuple([mac_version_string, tuple(['', '', '']), 'i386'])
 
-        def linux_distribution(self):
-            return 'unknown'
-
         def platform(self):
             return 'foo'
 
@@ -95,12 +92,8 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertNotEquals(info.os_name, '')
         self.assertNotEquals(info.os_version, '')
         self.assertNotEquals(info.display_name(), '')
-        self.assertTrue(info.is_mac() or info.is_win() or info.is_linux()
-                        or info.is_freebsd())
+        self.assertTrue(info.is_mac() or info.is_win() or info.is_linux())
         self.assertIsNotNone(info.terminal_width())
-
-        if info.is_linux():
-            self.assertIsNotNone(info.linux_distribution())
 
         if info.is_mac():
             self.assertTrue(info.total_bytes_memory() > 0)
@@ -112,35 +105,24 @@ class TestPlatformInfo(unittest.TestCase):
         self.assertTrue(info.is_linux())
         self.assertFalse(info.is_mac())
         self.assertFalse(info.is_win())
-        self.assertFalse(info.is_freebsd())
 
         info = self.make_info(fake_sys('linux3'))
         self.assertTrue(info.is_linux())
         self.assertFalse(info.is_mac())
         self.assertFalse(info.is_win())
-        self.assertFalse(info.is_freebsd())
 
         info = self.make_info(fake_sys('darwin'), fake_platform('12.3.1'))
         self.assertEqual(info.os_name, 'mac')
         self.assertFalse(info.is_linux())
         self.assertTrue(info.is_mac())
         self.assertFalse(info.is_win())
-        self.assertFalse(info.is_freebsd())
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
-                              fake_platform(win_version_string="6.1.7600"))
+        info = self.make_info(fake_sys('win32', tuple([10, 0, 22000])),
+                              fake_platform(win_version_string="10.0.22000"))
         self.assertEqual(info.os_name, 'win')
         self.assertFalse(info.is_linux())
         self.assertFalse(info.is_mac())
         self.assertTrue(info.is_win())
-        self.assertFalse(info.is_freebsd())
-
-        info = self.make_info(fake_sys('freebsd8'))
-        self.assertEqual(info.os_name, 'freebsd')
-        self.assertFalse(info.is_linux())
-        self.assertFalse(info.is_mac())
-        self.assertFalse(info.is_win())
-        self.assertTrue(info.is_freebsd())
 
         with self.assertRaises(AssertionError):
             self.make_info(fake_sys('vms'))
@@ -160,15 +142,6 @@ class TestPlatformInfo(unittest.TestCase):
                            fake_platform('15.0.0')).os_version, 'mac15')
         with self.assertRaises(AssertionError):
             self.make_info(fake_sys('darwin'), fake_platform('10.20.0'))
-
-        self.assertEqual(
-            self.make_info(
-                fake_sys('freebsd8'), fake_platform(
-                    '', '8.3-PRERELEASE')).os_version, '8.3-PRERELEASE')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('freebsd9'),
-                fake_platform('', '9.0-RELEASE')).os_version, '9.0-RELEASE')
 
         with self.assertRaises(AssertionError):
             self.make_info(fake_sys('win32', tuple([5, 0, 1234])),
@@ -196,74 +169,24 @@ class TestPlatformInfo(unittest.TestCase):
                 fake_sys('win32', tuple([10, 0, 23000])),
                 fake_platform(win_version_string="10.0.23000")).os_version,
             '11')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([6, 3, 1234])),
-                fake_platform(win_version_string="6.3.1234")).os_version,
-            '8.1')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([6, 2, 1234])),
-                fake_platform(win_version_string="6.2.1234")).os_version, '8')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([6, 1, 7601])),
-                fake_platform(win_version_string="6.1.7601")).os_version,
-            '7sp1')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([6, 1, 7600])),
-                fake_platform(win_version_string="6.1.7600")).os_version,
-            '7sp0')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([6, 0, 1234])),
-                fake_platform(win_version_string="6.0.1234")).os_version,
-            'vista')
-        self.assertEqual(
-            self.make_info(
-                fake_sys('win32', tuple([5, 1, 1234])),
-                fake_platform(win_version_string="5.1.1234")).os_version, 'xp')
 
         with self.assertRaises(AssertionError):
             self.make_info(
                 fake_sys('win32'), executive=fake_executive('5.0.1234'))
         with self.assertRaises(AssertionError):
-            self.make_info(
-                fake_sys('win32'), executive=fake_executive('6.1.1234'))
-
-    def _assert_files_imply_linux_distribution(self, file_paths, distribution):
-        fs_module = MockFileSystem({file_path: '' for file_path in file_paths})
-        info = self.make_info(
-            sys_module=fake_sys('linux2'), filesystem_module=fs_module)
-        self.assertEqual(info.linux_distribution(), distribution)
-
-    def test_linux_distro_detection(self):
-        self._assert_files_imply_linux_distribution(['/etc/arch-release'],
-                                                    'arch')
-        self._assert_files_imply_linux_distribution(['/etc/debian_version'],
-                                                    'debian')
-        self._assert_files_imply_linux_distribution(['/etc/fedora-release'],
-                                                    'fedora')
-        self._assert_files_imply_linux_distribution(
-            ['/etc/fedora-release', '/etc/redhat-release'], 'fedora')
-        self._assert_files_imply_linux_distribution(['/etc/redhat-release'],
-                                                    'redhat')
-        self._assert_files_imply_linux_distribution(['/etc/mock-release'],
-                                                    'unknown')
+            # Windows 8.1
+            self.make_info(fake_sys('win32'),
+                           executive=fake_executive('6.3.9600'))
 
     def test_display_name(self):
         info = self.make_info(fake_sys('darwin'))
         self.assertNotEquals(info.display_name(), '')
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
-                              fake_platform(win_version_string="6.1.7600"))
+        info = self.make_info(fake_sys('win32', tuple([10, 0, 22000])),
+                              fake_platform(win_version_string="10.0.22000"))
         self.assertNotEquals(info.display_name(), '')
 
         info = self.make_info(fake_sys('linux2'))
-        self.assertNotEquals(info.display_name(), '')
-
-        info = self.make_info(fake_sys('freebsd9'))
         self.assertNotEquals(info.display_name(), '')
 
     def test_total_bytes_memory(self):
@@ -272,14 +195,11 @@ class TestPlatformInfo(unittest.TestCase):
                               executive=fake_executive('1234'))
         self.assertEqual(info.total_bytes_memory(), 1234)
 
-        info = self.make_info(fake_sys('win32', tuple([6, 1, 7600])),
-                              fake_platform(win_version_string="6.1.7600"))
+        info = self.make_info(fake_sys('win32', tuple([10, 0, 22000])),
+                              fake_platform(win_version_string="10.0.22000"))
         self.assertIsNone(info.total_bytes_memory())
 
         info = self.make_info(fake_sys('linux2'))
-        self.assertIsNone(info.total_bytes_memory())
-
-        info = self.make_info(fake_sys('freebsd9'))
         self.assertIsNone(info.total_bytes_memory())
 
     def test_unsupported_platform(self):

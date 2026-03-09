@@ -31,18 +31,12 @@ class MockPlatformInfo(object):
     def __init__(self,
                  os_name='mac',
                  os_version='mac15',
-                 linux_distribution=None,
-                 is_highdpi=False,
-                 is_running_rosetta=False,
                  machine=None,
                  interactive=True,
                  processor=''):
         self.os_name = os_name
         self.os_version = os_version
         self.interactive = interactive
-        self._linux_distribution = linux_distribution
-        self._is_highdpi = is_highdpi
-        self._is_running_rosetta = is_running_rosetta
         self._machine = machine or 'x86_64'
         self._processor = processor
 
@@ -58,20 +52,8 @@ class MockPlatformInfo(object):
     def processor(self):
         return self._processor or ''
 
-    def is_highdpi(self):
-        return self._is_highdpi
-
-    def is_running_rosetta(self):
-        return self._is_running_rosetta
-
-    def is_freebsd(self):
-        return self.os_name == 'freebsd'
-
     def display_name(self):
         return 'MockPlatform 1.0'
-
-    def linux_distribution(self):
-        return self._linux_distribution if self.is_linux() else None
 
     def total_bytes_memory(self):
         return 3 * 1024 * 1024 * 1024  # 3GB is a reasonable amount of ram to mock.

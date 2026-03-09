@@ -53,9 +53,10 @@ class PlatformInfo:
         self._platform_module = platform_module
         self.os_name = self._determine_os_name(sys_module.platform)
         if self.os_name == 'linux':
-            self.os_version = self._determine_linux_version(platform_module)
-        if self.os_name == 'freebsd':
-            self.os_version = platform_module.release()
+            # Assume we only test against one Linux version at a time (see
+            # crbug.com/40277076). Therefore, there's no need to name that
+            # version.
+            self.os_version = 'linux'
         if self.os_name.startswith('mac'):
             self.os_version = self._determine_mac_version(
                 self._raw_mac_version(platform_module))
@@ -76,37 +77,8 @@ class PlatformInfo:
     def is_linux(self):
         return self.os_name == 'linux'
 
-    def is_freebsd(self):
-        return self.os_name == 'freebsd'
-
     def processor(self):
         return self._processor
-
-    @memoized
-    def is_highdpi(self):
-        if self.is_mac():
-            output = self._executive.run_command(
-                ['system_profiler', 'SPDisplaysDataType'],
-                error_handler=self._executive.ignore_error)
-            if output and re.search(r'Resolution:.*Retina$', output,
-                                    re.MULTILINE):
-                return True
-        return False
-
-    @memoized
-    def is_running_rosetta(self):
-        if self.is_mac():
-            # If we are running under Rosetta, platform.machine() is
-            # 'x86_64'; we need to use a sysctl to see if we're being
-            # translated.
-            import ctypes
-            libSystem = ctypes.CDLL("libSystem.dylib")
-            ret = ctypes.c_int(0)
-            size = ctypes.c_size_t(4)
-            e = libSystem.sysctlbyname(ctypes.c_char_p(b'sysctl.proc_translated'),
-                                       ctypes.byref(ret), ctypes.byref(size), None, 0)
-            return e == 0 and ret.value == 1
-        return False
 
     def display_name(self):
         # platform.platform() returns Darwin information for Mac, which is just confusing.
@@ -157,22 +129,6 @@ class PlatformInfo:
     def get_machine(self):
         return self._platform_module.machine()
 
-    def linux_distribution(self):
-        if not self.is_linux():
-            return None
-
-        # Fedora also has /etc/redhat-release, this check must go first.
-        if self._filesystem.exists('/etc/fedora-release'):
-            return 'fedora'
-        if self._filesystem.exists('/etc/redhat-release'):
-            return 'redhat'
-        if self._filesystem.exists('/etc/debian_version'):
-            return 'debian'
-        if self._filesystem.exists('/etc/arch-release'):
-            return 'arch'
-
-        return 'unknown'
-
     @memoized
     def _raw_mac_version(self, platform_module):
         """Read this Mac's version string (starts with "<major>.<minor>")."""
@@ -193,8 +149,6 @@ class PlatformInfo:
             return 'linux'
         if sys_platform == 'win32':
             return 'win'
-        if sys_platform.startswith('freebsd'):
-            return 'freebsd'
         raise AssertionError(
             'unrecognized platform string "%s"' % sys_platform)
 
@@ -205,11 +159,6 @@ class PlatformInfo:
         return 'mac{major_release}'.format(
             major_release=min(15, major_release))
 
-    def _determine_linux_version(self, _):
-        # Assume we only test against one Linux version at a time (see
-        # crbug.com/1468322). Therefore, there's no need to name that version.
-        return 'linux'
-
     def _determine_win_version(self, win_version_tuple):
         if win_version_tuple[:2] == (10, 0):
             # For win11 platform.win32_ver() returns (10, 0, 22000)
@@ -217,18 +166,6 @@ class PlatformInfo:
                 return '11'
             else:
                 return '10.20h2'
-        if win_version_tuple[:2] == (6, 3):
-            return '8.1'
-        if win_version_tuple[:2] == (6, 2):
-            return '8'
-        if win_version_tuple[:3] == (6, 1, 7601):
-            return '7sp1'
-        if win_version_tuple[:3] == (6, 1, 7600):
-            return '7sp0'
-        if win_version_tuple[:2] == (6, 0):
-            return 'vista'
-        if win_version_tuple[:2] == (5, 1):
-            return 'xp'
         assert (win_version_tuple[0] > 10
                 or win_version_tuple[0] == 10 and win_version_tuple[1] > 0), (
                     'Unrecognized Windows version tuple: "%s"' %
