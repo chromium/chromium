@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/content_suggestions/safety_check/ui/safety_check_item_type.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 
 // Tests the SafetyCheckView and subviews.
@@ -21,7 +22,8 @@ class SafetyCheckViewTest : public PlatformTest {
   SafetyCheckViewTest() {
     _superview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
 
-    _window = [[UIWindow alloc] init];
+    _window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
 
     [_window addSubview:_superview];
 
