@@ -8727,9 +8727,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ViewportFit) {
 // End: Tests for feature restrictions in prerendered pages ====================
 
 // Tests prerendering for low-end devices.
-class PrerenderLowMemoryBrowserTest : public PrerenderBrowserTest {
+class PrerenderLowMemoryBrowserTest
+    : public PrerenderBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  PrerenderLowMemoryBrowserTest() {
+  PrerenderLowMemoryBrowserTest()
+      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
     // Set the value of memory threshold more than the physical memory.  The
     // test will expect that prerendering does not occur.
     std::string memory_threshold = base::NumberToString(
@@ -8739,14 +8742,48 @@ class PrerenderLowMemoryBrowserTest : public PrerenderBrowserTest {
           {{blink::features::kPrerender2MemoryThresholdParamName,
             memory_threshold}}}},
         {});
+
+    if (GetParam()) {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {
+              {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+                  {
+                      {
+                          features::
+                              kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                  .name,
+                          "false",
+                      },
+                      {
+                          features::kPrerender2FallbackPrefetchSchedulerPolicy
+                              .name,
+                          "NotUse",
+                      },
+                  },
+              },
+          },
+          {});
+    } else {
+      scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+          {}, {
+                  features::kPrerender2FallbackPrefetchSpecRules,
+              });
+    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    PrerenderLowMemoryBrowserTest,
+    ::testing::Bool());
+
 // Tests that prerendering doesn't run for low-end devices.
-IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
+IN_PROC_BROWSER_TEST_P(PrerenderLowMemoryBrowserTest, NoPrerender) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
@@ -8764,14 +8801,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
   NavigatePrimaryPage(kPrerenderingUrl);
   // Cross-check that in case of low memory the eligibility reason points to
   // kLowMemory.
-  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-      PrimaryPageSourceId(), PreloadingType::kPrerender,
-      PreloadingEligibility::kLowMemory, PreloadingHoldbackStatus::kUnspecified,
-      PreloadingTriggeringOutcome::kUnspecified,
-      PreloadingFailureReason::kUnspecified,
-      /*accurate=*/true,
-      /*ready_time=*/std::nullopt,
-      blink::mojom::SpeculationEagerness::kImmediate)});
+  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
+    ExpectPreloadingAttemptUkm(
+        {attempt_ukm_entry_builder().BuildEntry(
+             PrimaryPageSourceId(), PreloadingType::kPrefetch,
+             PreloadingEligibility::kEligible,
+             PreloadingHoldbackStatus::kAllowed,
+             PreloadingTriggeringOutcome::kSuccess,
+             PreloadingFailureReason::kUnspecified,
+             /*accurate=*/true,
+             /*ready_time=*/kMockElapsedTime,
+             blink::mojom::SpeculationEagerness::kImmediate),
+         attempt_ukm_entry_builder().BuildEntry(
+             PrimaryPageSourceId(), PreloadingType::kPrerender,
+             PreloadingEligibility::kLowMemory,
+             PreloadingHoldbackStatus::kUnspecified,
+             PreloadingTriggeringOutcome::kUnspecified,
+             PreloadingFailureReason::kUnspecified,
+             /*accurate=*/true,
+             /*ready_time=*/std::nullopt,
+             blink::mojom::SpeculationEagerness::kImmediate)});
+
+  } else {
+    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+        PrimaryPageSourceId(), PreloadingType::kPrerender,
+        PreloadingEligibility::kLowMemory,
+        PreloadingHoldbackStatus::kUnspecified,
+        PreloadingTriggeringOutcome::kUnspecified,
+        PreloadingFailureReason::kUnspecified,
+        /*accurate=*/true,
+        /*ready_time=*/std::nullopt,
+        blink::mojom::SpeculationEagerness::kImmediate)});
+  }
 }
 
 namespace {
