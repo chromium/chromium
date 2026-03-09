@@ -863,10 +863,7 @@ bool CopyVideoFrameDirectlyToGLTexture(
   DCHECK(video_frame);
   CHECK(video_frame->HasSharedImage());
   CHECK(destination_gl);
-
-  if (!raster_context_provider) {
-    return false;
-  }
+  CHECK(raster_context_provider);
 
   if (!CanCopyVideoFrameDirectlyToGLTexture(
           video_frame, target, internal_format, type, level, dst_alpha_type)) {
