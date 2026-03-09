@@ -99,11 +99,13 @@ s! {
         pub modtime: time_t,
     }
 
+    #[derive(Default)]
     pub struct timeval {
         pub tv_sec: time_t,
         pub tv_usec: suseconds_t,
     }
 
+    #[derive(Default)]
     pub struct timespec {
         pub tv_sec: time_t,
         pub tv_nsec: c_long,

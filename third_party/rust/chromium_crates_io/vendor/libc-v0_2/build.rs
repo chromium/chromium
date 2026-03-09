@@ -52,7 +52,7 @@ const CHECK_CFG_EXTRA: &[(&str, &[&str])] = &[
 ];
 
 /// Musl architectures that set `#define _REDIR_TIME64 1`.
-const MUSL_REDIR_TIME64_ARCHES: &[&str] = &["arm", "mips", "powerpc", "x86"];
+const MUSL_REDIR_TIME64_ARCHES: &[&str] = &["arm", "hexagon", "mips", "powerpc", "x86"];
 
 fn main() {
     // Avoid unnecessary re-building.
@@ -110,8 +110,8 @@ fn main() {
     // OpenHarmony uses a fork of the musl libc
     let musl = target_env == "musl" || target_env == "ohos";
 
-    // loongarch64 and ohos only exist with recent musl
-    if target_arch == "loongarch64" || target_env == "ohos" {
+    // loongarch64, hexagon, and ohos only exist with recent musl
+    if target_arch == "loongarch64" || target_arch == "hexagon" || target_env == "ohos" {
         musl_v1_2_3 = true;
     }
 

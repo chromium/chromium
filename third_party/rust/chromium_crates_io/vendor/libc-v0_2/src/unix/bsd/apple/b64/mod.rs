@@ -3,6 +3,7 @@
 use crate::prelude::*;
 
 s! {
+    #[derive(Default)]
     pub struct timeval32 {
         pub tv_sec: i32,
         pub tv_usec: i32,

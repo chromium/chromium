@@ -27,6 +27,7 @@
 // Attributes needed when building as part of the standard library
 #![cfg_attr(feature = "rustc-dep-of-std", feature(link_cfg, no_core))]
 #![cfg_attr(feature = "rustc-dep-of-std", allow(internal_features))]
+#![cfg_attr(feature = "rustc-dep-of-std", allow(unused_features))]
 // DIFF(1.0): The thread local references that raise this lint were removed in 1.0
 #![cfg_attr(feature = "rustc-dep-of-std", allow(static_mut_refs))]
 #![cfg_attr(not(feature = "rustc-dep-of-std"), no_std)]

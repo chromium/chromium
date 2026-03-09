@@ -319,6 +319,7 @@ s! {
 
     // linux x32 compatibility
     // See https://sourceware.org/bugzilla/show_bug.cgi?id=16437
+    #[derive(Default)]
     pub struct timespec {
         pub tv_sec: time_t,
         #[cfg(all(gnu_time_bits64, target_endian = "big"))]

@@ -184,6 +184,7 @@ cfg_if! {
         pub use linux::keyctl::*;
         pub use linux::membarrier::*;
         pub use linux::netlink::*;
+        pub use linux::pidfd::*;
         #[cfg(target_env = "gnu")]
         pub use net::route::*;
     } else if #[cfg(target_vendor = "apple")] {
@@ -195,7 +196,9 @@ cfg_if! {
         pub use signal::*;
     } else if #[cfg(target_os = "netbsd")] {
         pub use net::if_::*;
+        pub use sys::file::*;
         pub use sys::ipc::*;
+        pub use sys::socket::*;
         pub use sys::statvfs::*;
         pub use sys::time::*;
         pub use sys::timex::*;

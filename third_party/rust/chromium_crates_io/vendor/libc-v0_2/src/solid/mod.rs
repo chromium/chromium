@@ -169,6 +169,7 @@ s! {
         pub iov_len: size_t,
     }
 
+    #[derive(Default)]
     pub struct timeval {
         pub tv_sec: c_long,
         pub tv_usec: c_long,

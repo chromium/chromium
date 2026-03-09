@@ -108,6 +108,7 @@ s! {
         pub st_ctim: timespec,
     }
 
+    #[derive(Default)]
     pub struct timespec {
         pub tv_sec: time_t,
         pub tv_nsec: i32,

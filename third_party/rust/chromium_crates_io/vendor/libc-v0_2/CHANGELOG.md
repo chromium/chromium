@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.183](https://github.com/rust-lang/libc/compare/0.2.182...0.2.183) - 2026-03-08
+
+### Added
+
+- ESP-IDF: Add `SOMAXCONN` ([#4993](https://github.com/rust-lang/libc/pull/4993))
+- Linux: Add `name_to_handle_at` and `open_by_handle_at` ([#4988](https://github.com/rust-lang/libc/pull/4988))
+- NetBSD: Add `kinfo_file`, `kinfo_pcb`, and related constants ([#4985](https://github.com/rust-lang/libc/pull/4985))
+- OpenBSD: Add `kinfo_file` and related constants ([#4991](https://github.com/rust-lang/libc/pull/4991))
+- VxWorks: Add additional structs and defines ([#5003](https://github.com/rust-lang/libc/pull/5003))
+- Various: Implement `Default` for `timeval` and `timespec` ([#4976](https://github.com/rust-lang/libc/pull/4976))
+
+### Fixed
+
+- Hexagon musl: Enable unstable 64-bit `time_t` support and `musl_v1_2_3` ([#4992](https://github.com/rust-lang/libc/pull/4992))
+- Nintendo Switch: Fix target support ([#4982](https://github.com/rust-lang/libc/pull/4982))
+- OpenBSD: Wrap an unused field in `Padding` ([#4997](https://github.com/rust-lang/libc/pull/4997))
+- Redox: Change `sigaction.sa_flags` to `c_int` ([#4986](https://github.com/rust-lang/libc/pull/4986))
+- Redox: Fix `blkcnt_t` type ([#4994](https://github.com/rust-lang/libc/pull/4994))
+
 ## [0.2.182](https://github.com/rust-lang/libc/compare/0.2.181...0.2.182) - 2026-02-13
 
 ### Added

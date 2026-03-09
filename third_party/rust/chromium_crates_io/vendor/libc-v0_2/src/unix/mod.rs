@@ -57,6 +57,7 @@ s! {
         pub modtime: time_t,
     }
 
+    #[derive(Default)]
     pub struct timeval {
         pub tv_sec: time_t,
         #[cfg(not(gnu_time_bits64))]
@@ -69,6 +70,7 @@ s! {
 
     // linux x32 compatibility
     // See https://sourceware.org/bugzilla/show_bug.cgi?id=16437
+    #[derive(Default)]
     #[cfg(not(target_env = "gnu"))]
     pub struct timespec {
         pub tv_sec: time_t,

@@ -72,11 +72,13 @@ s! {
         pub tm_isdst: c_int,
     }
 
+    #[derive(Default)]
     pub struct timeval {
         pub tv_sec: c_long,
         pub tv_usec: c_long,
     }
 
+    #[derive(Default)]
     pub struct timespec {
         pub tv_sec: time_t,
         pub tv_nsec: c_long,

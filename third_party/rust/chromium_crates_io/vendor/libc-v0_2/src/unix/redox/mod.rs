@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 pub type wchar_t = i32;
 
-pub type blkcnt_t = c_ulong;
+pub type blkcnt_t = c_longlong;
 pub type blksize_t = c_long;
 pub type clock_t = c_long;
 pub type clockid_t = c_int;
@@ -153,7 +153,7 @@ s! {
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_sigaction: crate::sighandler_t,
-        pub sa_flags: c_ulong,
+        pub sa_flags: c_int,
         pub sa_restorer: Option<extern "C" fn()>,
         pub sa_mask: crate::sigset_t,
     }

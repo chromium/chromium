@@ -158,6 +158,7 @@ s! {
     }
 
     // b_struct_timeval.h
+    #[derive(Default)]
     pub struct timeval {
         pub tv_sec: crate::time_t,
         pub tv_usec: crate::suseconds_t,
@@ -238,6 +239,22 @@ s! {
         st_reserved2: Padding<c_int>,
         st_reserved3: Padding<c_int>,
         st_reserved4: Padding<c_int>,
+    }
+
+    pub struct fsid_t {
+        val: [c_long; 2],
+    }
+
+    pub struct statfs {
+        pub f_type: c_long,
+        pub f_bsize: c_long,
+        pub f_blocks: c_long,
+        pub f_bfree: c_long,
+        pub f_bavail: c_long,
+        pub f_files: c_long,
+        pub f_ffree: c_long,
+        pub f_fsid: crate::fsid_t,
+        f_spare: Padding<[c_long; 7]>,
     }
 
     //b_struct__Timespec.h
@@ -332,6 +349,7 @@ s! {
     }
 
     // b_struct_timespec.h
+    #[derive(Default)]
     pub struct timespec {
         pub tv_sec: crate::time_t,
         pub tv_nsec: c_long,
@@ -1372,6 +1390,9 @@ pub const O_ACCMODE: c_int = 3;
 pub const O_CLOEXEC: c_int = 0x100000; // fcntlcom
 pub const O_EXCL: c_int = 0x0800;
 pub const O_CREAT: c_int = 0x0200;
+pub const O_SYNC: c_int = 0x2000;
+pub const O_ASYNC: c_int = 0x0040;
+pub const O_DSYNC: c_int = 0x10000;
 pub const O_TRUNC: c_int = 0x0400;
 pub const O_APPEND: c_int = 0x0008;
 pub const O_RDWR: c_int = 0x0002;
@@ -1558,6 +1579,15 @@ extern "C" {
         flags: c_int,
     ) -> c_int;
 
+    pub fn mkdirat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
+
+    pub fn readlinkat(
+        dirfd: c_int,
+        pathname: *const c_char,
+        buf: *mut c_char,
+        bufsiz: size_t,
+    ) -> ssize_t;
+
     pub fn unlinkat(dirfd: c_int, pathname: *const c_char, flags: c_int) -> c_int;
 
     // netdb.h
@@ -1604,6 +1634,7 @@ extern "C" {
     pub fn pause() -> c_int;
     pub fn seteuid(uid: uid_t) -> c_int;
     pub fn setegid(gid: gid_t) -> c_int;
+    pub fn statfs(path: *const c_char, buf: *mut statfs) -> c_int;
     pub fn sleep(secs: c_uint) -> c_uint;
     pub fn ttyname(fd: c_int) -> *mut c_char;
     pub fn wait(status: *mut c_int) -> pid_t;
@@ -1816,6 +1847,9 @@ extern "C" {
     // stat.h
     pub fn fstat(fildes: c_int, buf: *mut stat) -> c_int;
 
+    // sys/statfs.h
+    pub fn fstatfs(fd: c_int, buf: *mut statfs) -> c_int;
+
     // stat.h
     pub fn lstat(path: *const c_char, buf: *mut stat) -> c_int;
 
@@ -1832,9 +1866,18 @@ extern "C" {
     // dirent.h
     pub fn readdir(pDir: *mut crate::DIR) -> *mut crate::dirent;
 
+    // dirent.h
+    pub fn fdopendir(fd: c_int) -> *mut crate::DIR;
+
+    // dirent.h
+    pub fn dirfd(dirp: *mut crate::DIR) -> c_int;
+
     // fcntl.h or
     // ioLib.h
     pub fn open(path: *const c_char, oflag: c_int, ...) -> c_int;
+
+    // fcntl.h
+    pub fn openat(dirfd: c_int, pathname: *const c_char, flags: c_int, ...) -> c_int;
 
     // poll.h
     pub fn poll(fds: *mut pollfd, nfds: nfds_t, timeout: c_int) -> c_int;
@@ -2172,6 +2215,9 @@ extern "C" {
 
     // unistd.h
     pub fn fsync(fd: c_int) -> c_int;
+
+    // unistd.h
+    pub fn fdatasync(fd: c_int) -> c_int;
 
     // dirent.h
     pub fn closedir(ptr: *mut crate::DIR) -> c_int;

@@ -97,6 +97,8 @@ pub const SIGHUP: c_int = 1;
 pub const SIGQUIT: c_int = 3;
 pub const NSIG: size_t = 32;
 
+pub const SOMAXCONN: c_int = 128;
+
 extern "C" {
     pub fn pthread_create(
         native: *mut crate::pthread_t,
