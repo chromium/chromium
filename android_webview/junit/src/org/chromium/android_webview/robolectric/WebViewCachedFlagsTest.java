@@ -200,4 +200,28 @@ public class WebViewCachedFlagsTest {
         Assert.assertTrue(newCachedFlags.isCachedFeatureOverridden("Foo"));
         Assert.assertFalse(newCachedFlags.isCachedFeatureOverridden("Bar"));
     }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void testResetToDefaults() {
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        sharedPrefs
+                .edit()
+                .putStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of("Foo", "Bar"))
+                .putStringSet(CACHED_DISABLED_FLAGS_PREF, Set.of("Baz"))
+                .commit();
+        WebViewCachedFlags cachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.DISABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.DISABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED));
+        cachedFlags.resetToDefaults();
+        // Should have default values.
+        Assert.assertFalse(cachedFlags.isCachedFeatureEnabled("Foo"));
+        Assert.assertFalse(cachedFlags.isCachedFeatureEnabled("Bar"));
+        Assert.assertTrue(cachedFlags.isCachedFeatureEnabled("Baz"));
+    }
 }

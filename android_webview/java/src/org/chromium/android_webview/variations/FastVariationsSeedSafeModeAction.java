@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +46,10 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
     private final String mWebViewPackageName;
     private static boolean sHasRun;
-    private static File sSeedFile = VariationsUtils.getSeedFile();
+
+    private static class LazyHolder {
+        private static File sSeedFile = VariationsUtils.getSeedFile();
+    }
 
     @VisibleForTesting
     public FastVariationsSeedSafeModeAction(String webViewPackageName) {
@@ -60,7 +62,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
 
     @VisibleForTesting
     public static void setAlternateSeedFilePath(File seedFile) {
-        sSeedFile = seedFile;
+        LazyHolder.sSeedFile = seedFile;
     }
 
     /**
@@ -79,12 +81,13 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     @Override
     public boolean execute() {
         sHasRun = true;
-        long currDateTime = new Date().getTime();
+        long currDateTime = System.currentTimeMillis();
         SeedParser parser = new SeedParser();
-        long stampTime = sSeedFile.lastModified();
+        // This will return 0 if the file doesn't exist.
+        long stampTime = LazyHolder.sSeedFile.lastModified();
         long ageInMillis = currDateTime - stampTime;
 
-        if (sSeedFile.exists() && ageInMillis > 0) {
+        if (LazyHolder.sSeedFile.exists() && ageInMillis > 0) {
             logSeedFileAge(ageInMillis);
         }
         // If we see that the local seed file has not exceeded the
@@ -189,7 +192,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
             if (success) {
                 Log.i(TAG, "Successfully parsed and loaded new seed!");
                 recordLoadSeedResult(LoadSeedResult.SUCCESS);
-                VariationsSeedLoader.maybeRecordSeedFileTime(sSeedFile.lastModified());
+                VariationsSeedLoader.maybeRecordSeedFileTime(LazyHolder.sSeedFile.lastModified());
             } else {
                 Log.i(TAG, "Failure parsing and loading seed!");
                 recordLoadSeedResult(LoadSeedResult.LOAD_OTHER_FAILURE);
@@ -198,11 +201,11 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
         }
 
         public boolean parseAndSaveSeedFile() {
-            boolean success = VariationsSeedLoader.parseAndSaveSeedFile(sSeedFile);
+            boolean success = VariationsSeedLoader.parseAndSaveSeedFile(LazyHolder.sSeedFile);
             if (success) {
                 Log.i(TAG, "Successfully parsed and loaded new seed!");
                 recordLoadSeedResult(LoadSeedResult.SUCCESS);
-                VariationsSeedLoader.maybeRecordSeedFileTime(sSeedFile.lastModified());
+                VariationsSeedLoader.maybeRecordSeedFileTime(LazyHolder.sSeedFile.lastModified());
             } else {
                 Log.i(TAG, "Seed fetch not successful.");
                 recordLoadSeedResult(LoadSeedResult.LOAD_OTHER_FAILURE);
@@ -233,7 +236,7 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
         }
 
         private boolean writeToSeedFile() {
-            String filePath = sSeedFile.getPath();
+            String filePath = LazyHolder.sSeedFile.getPath();
             try (FileOutputStream out = new FileOutputStream(filePath, false)) {
                 out.write(mProtoAsByteArray);
                 out.flush();
