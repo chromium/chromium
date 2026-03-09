@@ -92,9 +92,7 @@ import java.util.function.Supplier;
  * There are no separate phone and tablet UIs; this layout adapts based on the available space.
  */
 @NullMarked
-public class NewTabPageLayout extends LinearLayout
-        implements SearchEngineUtils.SearchBoxHintTextObserver,
-                SearchEngineUtils.SearchEngineIconObserver {
+public class NewTabPageLayout extends LinearLayout {
     private static final String TAG = "NewTabPageLayout";
 
     private int mSearchBoxTwoSideMargin;
@@ -117,10 +115,12 @@ public class NewTabPageLayout extends LinearLayout
     private UiConfig mUiConfig;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private CallbackController mCallbackController = new CallbackController();
+    private SearchEngineUtils.@Nullable SearchEngineIconObserver mSearchEngineIconObserver;
+    private SearchEngineUtils.@Nullable SearchBoxHintTextObserver mSearchBoxHintTextObserver;
 
     /**
-     * Whether the tiles shown in the layout have finished loading.
-     * With {@link #mHasShownView}, it's one of the 2 flags used to track initialisation progress.
+     * Whether the tiles shown in the layout have finished loading. With {@link #mHasShownView},
+     * it's one of the 2 flags used to track initialisation progress.
      */
     private boolean mTilesLoaded;
 
@@ -302,7 +302,12 @@ public class NewTabPageLayout extends LinearLayout
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
+
         initializeDseIconView();
+        mSearchEngineIconObserver = this::onSearchEngineIconChanged;
+        mSearchEngineUtils.addIconObserver(mSearchEngineIconObserver);
+        setSearchBoxTextAppearance();
+
         initializeSearchBoxTextView();
         initializeVoiceSearchButton();
         initializeLensButton();
@@ -327,7 +332,8 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         // Initialize Searchbox observers
-        mSearchEngineUtils.addSearchBoxHintTextObserver(this);
+        mSearchBoxHintTextObserver = this::onSearchBoxHintTextChanged;
+        mSearchEngineUtils.addSearchBoxHintTextObserver(mSearchBoxHintTextObserver);
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
         mInitialized = true;
@@ -421,12 +427,10 @@ public class NewTabPageLayout extends LinearLayout
                                                 R.dimen.omnibox_search_engine_logo_composed_size)
                                 / 2));
         mDseIconView.setClipToOutline(true);
-        mSearchEngineUtils.addIconObserver(this);
         ImageViewCompat.setImageTintList(mDseIconView, null);
         setDseIconViewVisibility();
     }
 
-    @Override
     public void onSearchEngineIconChanged(StatusProperties.@Nullable StatusIconResource newIcon) {
         if (mDseIconView == null) return;
         if (newIcon == null) {
@@ -445,7 +449,6 @@ public class NewTabPageLayout extends LinearLayout
         mDseIconView.setImageDrawable(newIcon.getDrawable(mContext, mContext.getResources()));
     }
 
-    @Override
     public void onSearchBoxHintTextChanged() {
         mSearchBoxCoordinator.setSearchBoxHintText(
                 mSearchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
@@ -457,10 +460,13 @@ public class NewTabPageLayout extends LinearLayout
         if (mDseIconView.getVisibility() == VISIBLE) return;
 
         mDseIconView.setVisibility(VISIBLE);
+        mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPaddingWithDseLogo);
+    }
+
+    private void setSearchBoxTextAppearance() {
         boolean shouldApplyWhiteBackground =
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
 
-        mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPaddingWithDseLogo);
         if (shouldApplyWhiteBackground) {
             mSearchBoxCoordinator.setSearchBoxTextAppearance(
                     R.style.TextAppearance_FakeSearchBoxTextMediumDark);
@@ -808,6 +814,7 @@ public class NewTabPageLayout extends LinearLayout
         // visibility of Logo is handled by LogoCoordinator.
         if (mDseIconView != null) {
             setDseIconViewVisibility();
+            setSearchBoxTextAppearance();
         }
 
         // Skips if the flag hasn't been initialized since the initialization of the following
@@ -1138,8 +1145,6 @@ public class NewTabPageLayout extends LinearLayout
 
     @SuppressWarnings("NullAway")
     private void onDestroy() {
-        SearchEngineUtils.getForProfile(mProfile).removeSearchBoxHintTextObserver(this);
-
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -1164,8 +1169,14 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         if (mSearchEngineUtils != null) {
-            mSearchEngineUtils.removeSearchBoxHintTextObserver(this);
-            mSearchEngineUtils.removeIconObserver(this);
+            if (mSearchBoxHintTextObserver != null) {
+                mSearchEngineUtils.removeSearchBoxHintTextObserver(mSearchBoxHintTextObserver);
+                mSearchBoxHintTextObserver = null;
+            }
+            if (mSearchEngineIconObserver != null) {
+                mSearchEngineUtils.removeIconObserver(mSearchEngineIconObserver);
+                mSearchEngineIconObserver = null;
+            }
             mSearchEngineUtils = null;
         }
 
