@@ -19,6 +19,7 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -121,7 +122,11 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
 
                             @Override
                             protected void onPostExecute(ResolveResult result) {
-                                onResolveInfosFetched(result, targetIntent, url);
+                                onResolveInfosFetched(
+                                        result,
+                                        targetIntent,
+                                        url,
+                                        navigationHandle.getNavigationId());
                             }
                         }.executeWithTaskTraits(TaskTraits.UI_DEFAULT);
                     }
@@ -174,7 +179,8 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
     }
 
     @VisibleForTesting
-    void onResolveInfosFetched(ResolveResult result, Intent targetIntent, GURL url) {
+    void onResolveInfosFetched(
+            ResolveResult result, Intent targetIntent, GURL url, long navigationId) {
         if (result instanceof ResolveResult.None) {
             updateOpenInAppInfo(null);
             return;
@@ -216,14 +222,29 @@ public abstract class OpenInAppEntryPoint implements OpenInAppMenuItemProvider {
                     if (helper != null) {
                         var openInAppInfo = mOpenInAppDelegate.getCurrentOpenInAppInfo();
                         if (openInAppInfo != null) {
-                            helper.launchExternalApp(targetIntent, mContext);
+                            Runnable closeTab =
+                                    () -> {
+                                        if (mCurrentTab == null) return;
+                                        var tabModelSelector = mTabModelSelector.get();
+                                        if (tabModelSelector == null) return;
+                                        tabModelSelector.tryCloseTab(
+                                                TabClosureParams.closeTab(mCurrentTab)
+                                                        .allowUndo(false)
+                                                        .build(),
+                                                /* allowDialog= */ false);
+                                    };
+                            // This is posted to prevent a crash as a result of the WebContents
+                            // being destroyed before the intent can be reported to safe browsing.
+                            Runnable postClose =
+                                    () -> PostTask.postTask(TaskTraits.UI_DEFAULT, closeTab);
 
-                            if (mCurrentTab == null) return;
-                            var tabModelSelector = mTabModelSelector.get();
-                            if (tabModelSelector == null) return;
-                            tabModelSelector.tryCloseTab(
-                                    TabClosureParams.closeTab(mCurrentTab).allowUndo(false).build(),
-                                    /* allowDialog= */ false);
+                            if (mCurrentTab != null && mCurrentTab.isOffTheRecord()) {
+                                helper.launchExternalAppWithIncognitoConfirmation(
+                                        targetIntent, navigationId, mContext, postClose);
+                            } else {
+                                helper.launchExternalApp(targetIntent, mContext);
+                                postClose.run();
+                            }
                         }
                     }
                 };

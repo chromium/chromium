@@ -19,4 +19,15 @@ public interface ExternalNavigationHelper {
      * @param context The {@link Context} needed to launch the app.
      */
     void launchExternalApp(Intent intent, Context context);
+
+    /**
+     * Launches an external app based on user confirmation to leave incognito.
+     *
+     * @param intent The {@link Intent} used to launch the app.
+     * @param navigationId The navigation id of the current navigation.
+     * @param context The {@link Context} needed to launch the app.
+     * @param onUserConfirmation A {@link Runnable} to run if the user decides to launch the app.
+     */
+    void launchExternalAppWithIncognitoConfirmation(
+            Intent intent, long navigationId, Context context, Runnable onUserConfirmation);
 }

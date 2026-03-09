@@ -132,7 +132,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl);
+        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 0);
 
         // Resolve infos received: app info should be updated.
         var appInfo = mEntryPoint.getOpenInAppInfoForMenuItem();
@@ -145,7 +145,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         // Empty resolve infos: app info should be null.
         mEntryPoint.onResolveInfosFetched(
-                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl);
+                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl, /* navigationId= */ 0);
         assertNull(mEntryPoint.getOpenInAppInfoForMenuItem());
         assertNull(delegate.getCurrentOpenInAppInfo());
     }
@@ -158,7 +158,7 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl);
+        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 0);
 
         // Verify it is set.
         assertNonNull(mEntryPoint.getOpenInAppInfoForMenuItem());

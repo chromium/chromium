@@ -49,7 +49,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.components.external_intents.ExternalNavigationHandler.IncognitoDialogDelegate;
+import org.chromium.components.external_intents.ExternalNavigationHandler.IncognitoDialogDelegateWithFallback;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams.AsyncActionTakenParams;
@@ -185,7 +185,7 @@ public class ExternalNavigationHandlerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private IncognitoDialogDelegate mIncognitoDialogDelegateMock;
+    @Mock private IncognitoDialogDelegateWithFallback mIncognitoDialogDelegateMock;
     @Mock private WindowAndroid mWindowAndroidMock;
 
     private Context mContext;
@@ -1578,7 +1578,8 @@ public class ExternalNavigationHandlerTest {
                         Assert.assertNull(mUrlHandler.mStartActivityIntent);
                         Assert.assertNull(mUrlHandler.mNewUrlAfterClobbering);
                     });
-            IncognitoDialogDelegate delegateSpy = mUrlHandler.spyIncognitoDialogDelegate();
+            IncognitoDialogDelegateWithFallback delegateSpy =
+                    mUrlHandler.spyIncognitoDialogDelegate();
             Mockito.doReturn(true).when(delegateSpy).isShowing();
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
@@ -3496,9 +3497,10 @@ public class ExternalNavigationHandlerTest {
             return OverrideUrlLoadingResult.forAsyncAction();
         }
 
-        public IncognitoDialogDelegate spyIncognitoDialogDelegate() {
-            mIncognitoDialogDelegate = Mockito.spy(mIncognitoDialogDelegate);
-            return mIncognitoDialogDelegate;
+        public IncognitoDialogDelegateWithFallback spyIncognitoDialogDelegate() {
+            mIncognitoDialogDelegate =
+                    Mockito.spy((IncognitoDialogDelegateWithFallback) mIncognitoDialogDelegate);
+            return (IncognitoDialogDelegateWithFallback) mIncognitoDialogDelegate;
         }
 
         public ExternalNavigationHandler.DigitalCredentialsWarningDialogDelegate

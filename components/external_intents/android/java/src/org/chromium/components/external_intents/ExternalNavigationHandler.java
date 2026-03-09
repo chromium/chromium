@@ -225,7 +225,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      */
     abstract class InterstitialDialogDelegate implements ModalDialogProperties.Controller {
         protected final Context mContext;
-        protected final ExternalNavigationParams mParams;
+        protected final long mNavigationId;
         protected final Intent mIntent;
 
         // https://crbug.com/1412842, https://crbug.com/1474846: It seems dialogs sometimes end up
@@ -236,13 +236,12 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
         /**
          * @param context The {@link Context} for creating the dialog.
-         * @param params The {@link ExternalNavigationParams} for the navigation being intercepted.
+         * @param navigationId The navigation id for the navigation being intercepted.
          * @param intent The {@link Intent} that will be launched if the user confirms.
          */
-        InterstitialDialogDelegate(
-                Context context, ExternalNavigationParams params, Intent intent) {
+        InterstitialDialogDelegate(Context context, long navigationId, Intent intent) {
             mContext = context;
-            mParams = params;
+            mNavigationId = navigationId;
             mIntent = intent;
         }
 
@@ -344,7 +343,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
          * @param navigationId The ID of the navigation that started.
          */
         void onNavigationStarted(long navigationId) {
-            if (navigationId == mParams.getNavigationId()) return;
+            if (navigationId == mNavigationId) return;
             // Cancel the dialog if a different navigation is started.
             cancelDialog();
         }
@@ -356,7 +355,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
          * @param navigationId The ID of the navigation that finished.
          */
         void onNavigationFinished(long navigationId) {
-            if (navigationId == mParams.getNavigationId()) return;
+            if (navigationId == mNavigationId) return;
             // Cancel the dialog if a different navigation is finished.
             cancelDialog();
         }
@@ -375,26 +374,34 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         }
     }
 
-    @VisibleForTesting
     // A delegate responsible for showing a confirmation dialog in Incognito session, which upon
     // positive user confirmation would result in navigations outside of Incognito.
     class IncognitoDialogDelegate extends InterstitialDialogDelegate {
-        private final GURL mFallbackUrl;
+        private final @Nullable Runnable mOnUserConfirmation;
 
         IncognitoDialogDelegate(
-                Context context, ExternalNavigationParams params, Intent intent, GURL fallbackUrl) {
-            super(context, params, intent);
-            mFallbackUrl = fallbackUrl;
+                Context context,
+                long navigationId,
+                Intent intent,
+                @Nullable Runnable onUserConfirmation) {
+            super(context, navigationId, intent);
+
+            mOnUserConfirmation = onUserConfirmation;
         }
 
         @Override
         protected void onConfirmed() {
-            onUserDecidedWhetherToLaunchIncognitoIntent(true, mParams, mIntent, mFallbackUrl);
+            doStartActivity(mIntent, mContext);
+            if (mOnUserConfirmation != null) mOnUserConfirmation.run();
         }
 
         @Override
-        protected void onCancelled() {
-            onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
+        protected void onCancelled() {}
+
+        @Override
+        public void onDismiss(PropertyModel model, int dismissalCause) {
+            super.onDismiss(model, dismissalCause);
+            mIncognitoDialogDelegate = null;
         }
 
         @Override
@@ -408,11 +415,39 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     @VisibleForTesting
+    // On top of IncognitoDialogDelegate, this delegate allows passing a fallback URL to navigate to
+    // if the user cancels the dialog.
+    class IncognitoDialogDelegateWithFallback extends IncognitoDialogDelegate {
+        private final ExternalNavigationParams mParams;
+        private final GURL mFallbackUrl;
+
+        IncognitoDialogDelegateWithFallback(
+                Context context, ExternalNavigationParams params, Intent intent, GURL fallbackUrl) {
+            super(context, params.getNavigationId(), intent, null);
+            mParams = params;
+            mFallbackUrl = fallbackUrl;
+        }
+
+        @Override
+        protected void onConfirmed() {
+            onUserDecidedWhetherToLaunchIncognitoIntent(true, mParams, mIntent, mFallbackUrl);
+        }
+
+        @Override
+        protected void onCancelled() {
+            onUserDecidedWhetherToLaunchIncognitoIntent(false, mParams, mIntent, mFallbackUrl);
+        }
+    }
+
+    @VisibleForTesting
     // A delegate responsible for showing a warning dialog for Digital Credentials navigations.
     class DigitalCredentialsWarningDialogDelegate extends InterstitialDialogDelegate {
+        private final ExternalNavigationParams mParams;
+
         DigitalCredentialsWarningDialogDelegate(
                 Context context, ExternalNavigationParams params, Intent intent) {
-            super(context, params, intent);
+            super(context, params.getNavigationId(), intent);
+            mParams = params;
         }
 
         @Override
@@ -741,6 +776,14 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     @Override
     public void launchExternalApp(Intent intent, Context context) {
         doStartActivity(intent, context);
+    }
+
+    @Override
+    public void launchExternalAppWithIncognitoConfirmation(
+            Intent intent, long navigationId, Context context, Runnable onUserConfirmation) {
+        mIncognitoDialogDelegate =
+                new IncognitoDialogDelegate(context, navigationId, intent, onUserConfirmation);
+        mIncognitoDialogDelegate.showDialog();
     }
 
     private OverrideUrlLoadingResult handleFallbackUrl(
@@ -1583,7 +1626,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             final ExternalNavigationParams params,
             final Intent intent,
             final GURL fallbackUrl) {
-        return new IncognitoDialogDelegate(context, params, intent, fallbackUrl);
+        return new IncognitoDialogDelegateWithFallback(context, params, intent, fallbackUrl);
     }
 
     private void onUserDecidedWhetherToLaunchIncognitoIntent(

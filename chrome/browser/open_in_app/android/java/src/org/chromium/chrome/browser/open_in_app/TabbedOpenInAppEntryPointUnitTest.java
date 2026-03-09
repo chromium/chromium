@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.open_in_app;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,6 +39,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -46,6 +49,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.external_intents.ExternalNavigationHelper;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
@@ -76,6 +80,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
     @Mock private PackageManager mPackageManager;
     @Spy private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private ExternalNavigationHelper mExternalNavigationHelper;
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private TabbedOpenInAppEntryPoint mEntryPoint;
@@ -125,25 +130,29 @@ public class TabbedOpenInAppEntryPointUnitTest {
     }
 
     @Test
-    public void placeAndDismissChip() {
+    public void placeClickDismissChip() {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
+        delegate.setExternalNavigationHelper(mExternalNavigationHelper);
 
         var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
         verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
         captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+
+        ShadowLooper.idleMainLooper();
 
         // New navigation committed; the app info should be null.
         assertNull(delegate.getCurrentOpenInAppInfo());
 
         // Simulate receiving resolve infos.
         var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
-        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl);
+        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 123L);
 
         // Resolve infos received; the app info should be non-null.
         assertNonNull(delegate.getCurrentOpenInAppInfo());
 
         ArgumentCaptor<OmniboxChipManager.ChipCallback> callbackCaptor =
                 ArgumentCaptor.forClass(OmniboxChipManager.ChipCallback.class);
+        ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
         String chipTitle = mContext.getString(R.string.open_in_app);
         String chipDescription = mContext.getString(R.string.open_in_app_desc, LABEL);
         verify(mOmniboxChipManager)
@@ -151,8 +160,15 @@ public class TabbedOpenInAppEntryPointUnitTest {
                         eq(chipTitle),
                         eq(mIcon),
                         eq(chipDescription),
-                        any(Runnable.class),
+                        actionCaptor.capture(),
                         callbackCaptor.capture());
+
+        // Simulate chip click.
+        actionCaptor.getValue().run();
+        verify(mExternalNavigationHelper).launchExternalApp(eq(mIntent), eq(mContext));
+        ShadowLooper.idleMainLooper();
+        verify(mTabModelSelector).tryCloseTab(any(), eq(false));
+
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
 
         // When chip is shown, it shouldn't be in the menu.
@@ -162,7 +178,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         // When chip is hidden, it should be in the menu.
         callbackCaptor.getValue().onChipHidden();
         var appInfo = mEntryPoint.getOpenInAppInfoForMenuItem();
-        assertNonNull(mEntryPoint.getOpenInAppInfoForMenuItem());
+        assertNonNull(appInfo);
         assertEquals(LABEL, appInfo.appName);
         assertEquals(mIcon, appInfo.appIcon);
 
@@ -171,8 +187,43 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
         // Empty resolve infos; the app info should be null.
         mEntryPoint.onResolveInfosFetched(
-                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl);
+                new OpenInAppEntryPoint.ResolveResult.None(), mIntent, mUrl, /* navigationId= */ 0);
         assertNull(delegate.getCurrentOpenInAppInfo());
         verify(mOmniboxChipManager, times(2)).dismissChip();
+    }
+
+    @Test
+    public void placeClickDismissChip_incognito() {
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
+        delegate.setExternalNavigationHelper(mExternalNavigationHelper);
+
+        var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(((WebContentsObserver.Observable) mWebContents)).addObserver(captor.capture());
+        captor.getValue().didFinishNavigationInPrimaryMainFrame(mNavigationHandle);
+
+        ShadowLooper.idleMainLooper();
+
+        var infos = new OpenInAppEntryPoint.ResolveResult.Info(mResolveInfo);
+        mEntryPoint.onResolveInfosFetched(infos, mIntent, mUrl, /* navigationId= */ 123L);
+
+        ArgumentCaptor<Runnable> actionCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mOmniboxChipManager).placeChip(any(), any(), any(), actionCaptor.capture(), any());
+
+        // Simulate chip click.
+        actionCaptor.getValue().run();
+
+        ArgumentCaptor<Runnable> confirmationCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mExternalNavigationHelper)
+                .launchExternalAppWithIncognitoConfirmation(
+                        eq(mIntent), eq(123L), eq(mContext), confirmationCaptor.capture());
+
+        // Tab should not be closed yet.
+        verify(mTabModelSelector, never()).tryCloseTab(any(), anyBoolean());
+
+        // Simulate user confirmation in the dialog.
+        confirmationCaptor.getValue().run();
+        ShadowLooper.idleMainLooper();
+        verify(mTabModelSelector).tryCloseTab(any(), eq(false));
     }
 }
