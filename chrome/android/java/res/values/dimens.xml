@@ -468,6 +468,7 @@ found in the LICENSE file.
     <dimen name="tips_notifications_bottom_sheet_step_content_margin_start">16dp</dimen>
     <dimen name="tips_notifications_bottom_sheet_step_number_width">25dp</dimen>
     <dimen name="tips_notifications_bottom_sheet_title_padding">24dp</dimen>
+    <dimen name="tips_notifications_bottom_sheet_vertical_margin">20dp</dimen>
 
     <!-- View list background dimensions -->
     <dimen name="view_list_item_large_radius">24dp</dimen>

@@ -374,6 +374,13 @@ public class TipsPromoCoordinator {
                 logoView.setImageResource(logoViewRes);
                 break;
             case TipsNotificationsFeatureType.RECENT_TABS:
+                // Due to constraints with the image, provide top padding to center it.
+                int topPadding =
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.tips_notifications_bottom_sheet_vertical_margin);
+                logoView.setPadding(0, topPadding, 0, 0);
+
                 logoView.setImageResource(logoViewRes);
                 break;
             default:
