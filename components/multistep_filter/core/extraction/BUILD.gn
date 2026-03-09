@@ -1,0 +1,24 @@
+import("//testing/test.gni")
+
+source_set("extraction") {
+  sources = [
+    "filter_extractor.cc",
+    "filter_extractor.h",
+  ]
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "filter_extractor_unittest.cc" ]
+
+  deps = [
+    ":extraction",
+    "//base",
+    "//testing/gtest",
+  ]
+}
