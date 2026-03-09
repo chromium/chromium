@@ -235,14 +235,24 @@ class IOWatcherImpl : public IOWatcher {
     // Any event dispatch can stop any number of watches, so we're careful to
     // set up destruction observation before dispatching anything.
     bool read_watch_destroyed = false;
-    bool write_watch_destroyed = false;
+    // Don't use this variable directly, see write_watch_destroyed function
+    // below.
+    bool write_watch_destroyed_helper = false;
     bool fd_removed = false;
     if (read_watch) {
       read_watch->set_destruction_flag(&read_watch_destroyed);
     }
     if (write_watch && read_watch != write_watch) {
-      write_watch->set_destruction_flag(&write_watch_destroyed);
+      write_watch->set_destruction_flag(&write_watch_destroyed_helper);
     }
+    auto write_watch_destroyed = [&]() {
+      // Following the rule in the 'if' above, if the objects are the same,
+      // then the observer boolean is read_watch_destroyed for the write_watch
+      if (read_watch == write_watch) {
+        return read_watch_destroyed;
+      }
+      return write_watch_destroyed_helper;
+    };
     watches.removed_flag = &fd_removed;
 
     bool did_observe_one_shot_read = false;
@@ -255,19 +265,19 @@ class IOWatcherImpl : public IOWatcher {
       }
     }
 
-    // If the read and write watches are the same object, it may have been
-    // destroyed; or it may have been a one-shot watch already consumed by a
-    // read above. In either case we inhibit write dispatch.
-    if (read_watch == write_watch &&
-        (read_watch_destroyed || did_observe_one_shot_read)) {
+    // If the read and write watches are the same object, it may have been  a
+    // one-shot watch already consumed by a read above, so we inhibit the
+    // write dispatch.
+    if (read_watch == write_watch && did_observe_one_shot_read) {
       write_watch = nullptr;
     }
 
-    if (write_watch && is_writable && !write_watch_destroyed) {
+    if (write_watch && is_writable && !write_watch_destroyed()) {
       DCHECK_EQ(write_watch->fd(), fd);
+      DCHECK(!(read_watch == write_watch && read_watch_destroyed));
       const bool is_persistent = write_watch->is_persistent();
       write_watch->fd_watcher().OnFdWritable(fd);
-      if (!write_watch_destroyed && !is_persistent) {
+      if (!write_watch_destroyed() && !is_persistent) {
         write_watch->Stop();
       }
     }
@@ -275,7 +285,7 @@ class IOWatcherImpl : public IOWatcher {
     if (read_watch && !read_watch_destroyed) {
       read_watch->set_destruction_flag(nullptr);
     }
-    if (write_watch && !write_watch_destroyed) {
+    if (write_watch && !write_watch_destroyed()) {
       write_watch->set_destruction_flag(nullptr);
     }
 
