@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2619,6 +2620,18 @@ Error SqlPersistentStore::Backend::UpdateStoreStatusAndCommitTransaction(
   const int64_t actual_total_size = CalculateTotalSize();
   if (store_status_.entry_count != actual_entry_count ||
       store_status_.total_size != actual_total_size) {
+    // For debugging crbug.com/488877236.
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "entry_count_delta",
+                            entry_count_delta);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "entry_count",
+                            store_status_.entry_count);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "actual_entry_count",
+                            actual_entry_count);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "total_size_delta", total_size_delta);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "total_size",
+                            store_status_.total_size);
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "actual_total_size",
+                            actual_total_size);
     base::debug::DumpWithoutCrashing();
     store_status_.entry_count = actual_entry_count;
     meta_table_.SetValue(kSqlBackendMetaTableKeyEntryCount,
