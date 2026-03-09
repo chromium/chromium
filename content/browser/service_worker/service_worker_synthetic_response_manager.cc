@@ -413,7 +413,8 @@ void ServiceWorkerSyntheticResponseManager::CloneBufferInBackground(
 }
 
 void ServiceWorkerSyntheticResponseManager::TransferResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle consumer,
+    mojo::ScopedDataPipeProducerHandle producer) {
   if (IsServiceWorkerSyntheticResponseOffMainThread()) {
     // Offload the buffer cloning to a background thread.
     base::OnceCallback<void()> callback = base::BindPostTaskToCurrentDefault(
@@ -424,21 +425,20 @@ void ServiceWorkerSyntheticResponseManager::TransferResponseBody(
             FROM_HERE,
             base::BindOnce(
                 &ServiceWorkerSyntheticResponseManager::CloneBufferInBackground,
-                std::move(body), write_buffer_manager_->ReleaseProducerHandle(),
-                std::move(callback)));
+                std::move(consumer), std::move(producer), std::move(callback)));
     return;
   }
   if (IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering()) {
-    data_pipe_connector_.emplace(std::move(body));
+    data_pipe_connector_.emplace(std::move(consumer));
     data_pipe_connector_->Transfer(
-        write_buffer_manager_->ReleaseProducerHandle(),
+        std::move(producer),
         base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
                        weak_factory_.GetWeakPtr()));
     return;
   }
-  simple_buffer_manager_.emplace(std::move(body));
+  simple_buffer_manager_.emplace(std::move(consumer));
   simple_buffer_manager_->Clone(
-      write_buffer_manager_->ReleaseProducerHandle(),
+      std::move(producer),
       base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
                      weak_factory_.GetWeakPtr()));
 }
@@ -494,9 +494,9 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
       if (version_->GetResponseHeadForSyntheticResponse()) {
         is_header_consistent = CheckHeaderConsistency(response_head->headers);
         if (is_header_consistent) {
-          TransferResponseBody(std::move(body));
-        } else {
-          // Clear the stored header when it's inconsistent with the header from
+          TransferResponseBody(std::move(body),
+                               write_buffer_manager_->ReleaseProducerHandle());
+        } else {          // Clear the stored header when it's inconsistent with the header from
           // the network so that the next navigation won't get the header
           // mismatch and reloading consistently.
           //
