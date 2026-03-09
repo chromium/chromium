@@ -32492,6 +32492,12 @@ should be able to be added at any place in this file.
     <variant name=".MoveTabToOtherWindow.MultiTab"
         summary="User moved multiple tabs to another window via the tab
                  context menu on tab strip on Android."/>
+    <variant name=".MuteSite"
+        summary="User muted a site via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".MuteSite.MultiTab"
+        summary="User muted site(s) from multiple selected tabs via the tab
+                 context menu on tab strip on Android."/>
     <variant name=".NewGroup"
         summary="User created a new tab group via the tab context menu on tab
                  strip on Android."/>
@@ -32518,6 +32524,12 @@ should be able to be added at any place in this file.
     <variant name=".Shown.MultiTab"
         summary="Recorded when the tab context menu is shown with multiple
                  tabs selected."/>
+    <variant name=".UnmuteSite"
+        summary="User unmuted a site via the tab context menu on tab strip on
+                 Android."/>
+    <variant name=".UnmuteSite.MultiTab"
+        summary="User unmuted site(s) from multiple selected tabs via the tab
+                 context menu on tab strip on Android."/>
     <variant name=".UnpinTab"
         summary="User unpinned a tab via the tab context menu on tab strip on
                  Android."/>
