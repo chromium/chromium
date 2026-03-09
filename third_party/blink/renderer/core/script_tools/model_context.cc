@@ -251,7 +251,6 @@ void ModelContext::registerTool(ScriptState* script_state,
   tool_map_.insert(tool->name(), tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
   OnToolsChanged();
-  UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
 }
 
 void ModelContext::unregisterTool(const String& tool_name,
@@ -483,6 +482,9 @@ void ModelContext::RegisterDeclarativeTool(
     String name,
     String description,
     DeclarativeWebMCPTool* declarative_tool) {
+  UseCounter::Count(document_,
+                    WebFeature::kModelContextRegisterDeclarativeTool);
+
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->name = name;
   script_tool->description = description;
@@ -493,8 +495,6 @@ void ModelContext::RegisterDeclarativeTool(
   tool_map_.insert(name, tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
   OnToolsChanged();
-  UseCounter::Count(document_,
-                    WebFeature::kModelContextRegisterDeclarativeTool);
 }
 
 void ModelContext::OnToolExecuted(uint32_t execution_id,
