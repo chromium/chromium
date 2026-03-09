@@ -74,7 +74,8 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
     kErrorConfiguringFramesPerBuffer = 8,
     kErrorCreatingTapDescription = 9,
     kGetDefaultDeviceUidEmpty = 10,
-    kMaxValue = kGetDefaultDeviceUidEmpty
+    kCreateIoProcIdTimeout = 11,
+    kMaxValue = kCreateIoProcIdTimeout
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

@@ -78,6 +78,12 @@ BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 // will report an error if the sample rate is changed.
 BASE_FEATURE(kMacCatapRestartOnDeviceChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If this feature is enabled, the audio process is restarted if the
+// AudioDeviceCreateIOProcID call times out. This is used to recover from
+// permission dialogs that are not responded to.
+BASE_FEATURE(kMacCatapRestartAudioProcessOnTimeout,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 }  // namespace features

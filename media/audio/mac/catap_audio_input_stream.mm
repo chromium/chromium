@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -643,9 +644,27 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
   }
 
   // Initialization: Step 3.
-  // Attach callback to the aggregate device.
-  status = catap_api_->AudioDeviceCreateIOProcID(
-      aggregate_device_id_, DeviceIoProc, this, &tap_io_proc_id_);
+  // Attach callback to the aggregate device. If this is the first time we're
+  // calling AudioDeviceCreateIOProcID(), this will trigger the macOS permission
+  // dialog. If the user doesn't respond to the dialog, this call will time out
+  // in 60 seconds. When this happens all interactions with CoreAudio will fail
+  // until the audio process is restarted.
+  {
+    constexpr base::TimeDelta kCreateIoProcIdTimeout = base::Seconds(59);
+    base::ElapsedTimer create_io_proc_id_timer;
+    status = catap_api_->AudioDeviceCreateIOProcID(
+        aggregate_device_id_, DeviceIoProc, this, &tap_io_proc_id_);
+    if (base::FeatureList::IsEnabled(
+            features::kMacCatapRestartAudioProcessOnTimeout) &&
+        create_io_proc_id_timer.Elapsed() > kCreateIoProcIdTimeout) {
+      ReportOpenStatus(OpenStatus::kCreateIoProcIdTimeout, timer.Elapsed());
+      SendLogMessage("%s => AudioDeviceCreateIOProcID timed out. Status: %d. "
+                     "Restarting the audio process.",
+                     __func__, status);
+      base::Process::TerminateCurrentProcessImmediately(1);
+    }
+  }
+
   if (status != noErr) {
     ReportOpenStatus(OpenStatus::kErrorCreatingIOProcID, timer.Elapsed());
     SendLogMessage("%s => Error calling AudioDeviceCreateIOProcID. Status: %d",

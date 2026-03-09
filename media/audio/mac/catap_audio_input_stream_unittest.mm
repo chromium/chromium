@@ -18,11 +18,16 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/catap_api.h"
@@ -175,6 +180,9 @@ class FakeCatapApi : public CatapApi {
       AudioDeviceIOProc proc,
       void* in_client_data,
       AudioDeviceIOProcID* out_proc_id) override {
+    if (audio_device_create_io_proc_id_callback) {
+      audio_device_create_io_proc_id_callback.Run();
+    }
     io_proc_id_created_for_device = in_device;
     audio_proc = proc;
     client_data = in_client_data;
@@ -402,6 +410,8 @@ class FakeCatapApi : public CatapApi {
   AudioObjectPropertyAddress last_removed_property_listener_address;
   // If the call to `AudioHardwareCreateAggregateDevice()` will fail.
   bool should_fail_create_aggregate_device = false;
+  // Callback to be run when `AudioDeviceCreateIOProcID()` is called.
+  base::RepeatingClosure audio_device_create_io_proc_id_callback;
 };
 
 }  // namespace
@@ -523,6 +533,8 @@ class CatapAudioInputStreamTest : public testing::Test {
   raw_ptr<AudioInputStream> stream_;
   raw_ptr<FakeCatapApi> fake_catap_api_;
   FakeAudioInputCallback fake_callback_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(CatapAudioInputStreamTest, CreateAndInitializeWithPermissions) {
@@ -1209,6 +1221,47 @@ TEST_F(CatapAudioInputStreamTest, ForceMonoCaptureForMonoDevice) {
               kNumberOfChannelsStereo);
     EXPECT_EQ(fake_callback_.last_number_of_frames(),
               kCatapLoopbackDefaultFramesPerBuffer);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, CreateIOProcIDTimeout) {
+  if (@available(macOS 14.2, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        features::kMacCatapRestartAudioProcessOnTimeout);
+
+    CreateStream();
+    // Simulate timeout when AudioDeviceCreateIOProcID is called.
+    fake_catap_api()->audio_device_create_io_proc_id_callback =
+        base::BindLambdaForTesting(
+            [this]() { task_environment_.FastForwardBy(base::Seconds(60)); });
+
+    // The process should be terminated if AudioDeviceCreateIOProcID takes too
+    // long.
+    EXPECT_DEATH(stream_->Open(), "");
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, CreateIOProcIDTimeoutFeatureDisabled) {
+  if (@available(macOS 14.2, *)) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kMacCatapRestartAudioProcessOnTimeout);
+
+    CreateStream();
+    // Simulate timeout when AudioDeviceCreateIOProcID is called.
+    fake_catap_api()->audio_device_create_io_proc_id_callback =
+        base::BindLambdaForTesting(
+            [this]() { task_environment_.FastForwardBy(base::Seconds(60)); });
+
+    // The process should NOT be terminated so Open() should succeed.
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
   }
 }
 

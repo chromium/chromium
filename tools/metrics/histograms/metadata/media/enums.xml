@@ -382,6 +382,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kErrorConfiguringFramesPerBuffer"/>
   <int value="9" label="kErrorCreatingTapDescription"/>
   <int value="10" label="kGetDefaultDeviceUidEmpty"/>
+  <int value="11" label="kCreateIoProcIdTimeout"/>
 </enum>
 
 <enum name="CdmCapabilityQueryStatus">
