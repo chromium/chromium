@@ -380,10 +380,21 @@ void Tab::Layout(PassKey) {
   if (glic_tab_underline_view_) {
     gfx::Rect glic_bounds =
         contents_rect + gfx::Vector2d(0, kGlicUnderlineYOffset);
-    // Use the full width of the tab in order to accommodate small tab sizes
-    // where the width of the contents bounds is 0.
-    glic_bounds.set_x(0);
-    glic_bounds.set_width(size().width());
+    if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+      // For detached tabs, the glow should align with the bottom of the tab
+      // body.
+      const int tab_bottom =
+          GetLayoutConstant(LayoutConstant::kTabHeight) -
+          GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+      const int glow_height = 8;
+      glic_bounds =
+          gfx::Rect(0, tab_bottom - glow_height, size().width(), glow_height);
+    } else {
+      // Use the full width of the tab in order to accommodate small tab sizes
+      // where the width of the contents bounds is 0.
+      glic_bounds.set_x(0);
+      glic_bounds.set_width(size().width());
+    }
     glic_tab_underline_view_->SetBoundsRect(glic_bounds);
   }
 
