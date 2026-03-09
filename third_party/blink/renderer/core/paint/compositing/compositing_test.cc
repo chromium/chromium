@@ -4144,4 +4144,43 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithAnonymousCaret) {
   EXPECT_FALSE(caret_effect.HasDirectCompositingReasons());
 }
 
+TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrollableDrawnElement) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #scroller {
+        width: 100px;
+        height: 100px;
+        overflow-y: scroll;
+        background: blue;
+      }
+      #scrolled {
+        width: 50px;
+        height: 500px;
+        background: darkblue;
+      }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="scroller">
+        <div id="scrolled"></div>
+      </div>
+    </canvas>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Direct children of canvas get a layer.
+  auto* scroller_layer = CcLayerByDOMElementId("scroller");
+  EXPECT_TRUE(scroller_layer);
+  EXPECT_TRUE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("scroller")->GetDomNodeId()));
+
+  // Main thread hit test regions should be emitted for scrollable content
+  // under canvas, including for direct children of the canvas.
+  EXPECT_FALSE(scroller_layer->main_thread_scroll_hit_test_region().IsEmpty());
+  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
+            scroller_layer->main_thread_scroll_hit_test_region().bounds());
+}
+
 }  // namespace blink
