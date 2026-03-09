@@ -396,6 +396,13 @@ void ApplyPrefChangeToCrossDevice(
     if (cross_device_dict.contains(cache_guid.value())) {
       ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
       update->Remove(cache_guid.value());
+
+      if (base::FeatureList::IsEnabled(
+              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
+        VLOG(1) << "CrossDevicePrefTracker, " << __func__
+                << ": Cleared entry for " << cross_device_pref_name
+                << ", guid: " << cache_guid.value();
+      }
     }
 
     return;
@@ -434,6 +441,13 @@ void ApplyPrefChangeToCrossDevice(
   ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
 
   update->Set(cache_guid.value(), std::move(entry));
+
+  if (base::FeatureList::IsEnabled(
+          sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
+    VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": Wrote entry for "
+            << cross_device_pref_name << ", guid: " << cache_guid.value()
+            << ", value: " << current_value.DebugString();
+  }
 }
 
 // Retrieves, filters, and parses all valid cross-device pref entries that
@@ -1142,6 +1156,13 @@ void CrossDevicePrefTrackerImpl::GarbageCollectStaleCacheGuids() {
     for (const std::string& guid : guids_to_remove) {
       bool removed = update->Remove(guid);
       CHECK(removed);
+
+      if (base::FeatureList::IsEnabled(
+              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
+        VLOG(1) << "CrossDevicePrefTracker, " << __func__
+                << ": Garbage collected stale entry for "
+                << cross_device_pref_name << ", guid: " << guid;
+      }
     }
   }
 }
