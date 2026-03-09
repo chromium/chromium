@@ -47,7 +47,9 @@ std::vector<std::string> GetMacAddresses() {
   if (test_addresses.has_value()) {
     mac_addresses = test_addresses.value();
   } else {
+#if !BUILDFLAG(IS_ANDROID)
     mac_addresses = internal::GetMacAddressesImpl();
+#endif // !BUILDFLAG(IS_ANDROID)
   }
   NormalizeMacAddresses(mac_addresses);
   return mac_addresses;
