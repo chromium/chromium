@@ -33,6 +33,8 @@ static_library("browser") {
     "dice_account_reconcilor_delegate.h",
     "dice_header_helper.cc",
     "dice_header_helper.h",
+    "dice_response_params.cc",
+    "dice_response_params.h",
     "mirror_account_reconcilor_delegate.cc",
     "mirror_account_reconcilor_delegate.h",
     "signin_error_controller.cc",
@@ -90,6 +92,8 @@ static_library("browser") {
       "dice_account_reconcilor_delegate.h",
       "dice_header_helper.cc",
       "dice_header_helper.h",
+      "dice_response_params.cc",
+      "dice_response_params.h",
     ]
   }
 }
@@ -147,7 +151,10 @@ source_set("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "dice_account_reconcilor_delegate_unittest.cc" ]
+    sources += [
+      "dice_account_reconcilor_delegate_unittest.cc",
+      "dice_response_params_unittest.cc",
+    ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
