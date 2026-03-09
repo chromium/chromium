@@ -483,10 +483,18 @@ void HttpUtil::TrimLWS(std::string_view string,
 }
 
 bool HttpUtil::IsTokenChar(char c) {
-  return !(c >= 0x7F || c <= 0x20 || c == '(' || c == ')' || c == '<' ||
-           c == '>' || c == '@' || c == ',' || c == ';' || c == ':' ||
-           c == '\\' || c == '"' || c == '/' || c == '[' || c == ']' ||
-           c == '?' || c == '=' || c == '{' || c == '}');
+  // See RFC 7230 Sec 3.2.6.
+  static constexpr std::array<bool, 256> kIsTokenChar = [] {
+    std::array<bool, 256> table = {};
+    for (int i = 0; i < 256; ++i) {
+      table[i] = !(i >= 0x7F || i <= 0x20 || i == '(' || i == ')' || i == '<' ||
+                   i == '>' || i == '@' || i == ',' || i == ';' || i == ':' ||
+                   i == '\\' || i == '"' || i == '/' || i == '[' || i == ']' ||
+                   i == '?' || i == '=' || i == '{' || i == '}');
+    }
+    return table;
+  }();
+  return kIsTokenChar[static_cast<uint8_t>(c)];
 }
 
 // See RFC 7230 Sec 3.2.6 for the definition of |token|.
