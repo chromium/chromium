@@ -392,6 +392,12 @@ BASE_FEATURE(kDisplaySchedulerAsClient, base::FEATURE_DISABLED_BY_DEFAULT);
 // receives its BeginFrame.
 BASE_FEATURE(kFlingSchedulingImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables optimizations in `DirectRenderer` and `OcclusionCuller` that reuses
+// pre-existing loops to access filter data from `AggregatedRenderPassDrawQuad`.
+// This is a temporary flag to work as a kill switch for the optimization and
+// should be removed as soon as we confirm that the optimization is stable.
+BASE_FEATURE(kRpdqFilterLookupOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.

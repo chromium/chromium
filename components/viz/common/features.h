@@ -155,6 +155,8 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplaySchedulerAsClient);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kFlingSchedulingImprovements);
 
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kRpdqFilterLookupOptimizations);
+
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
 VIZ_COMMON_EXPORT bool IsRenderPassDrawQuadCullingOptimizationEnabled();
 VIZ_COMMON_EXPORT bool IsBackForwardTransitionsSameDocSharedImageEnabled();
