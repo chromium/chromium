@@ -134,32 +134,6 @@ base::optional_ref<const autofill::EntityInstance> GetAutofillAiEntity(
       base::Uuid::ParseCaseInsensitive(guid)));
 }
 
-// Returns whether the suggestion requires reauth.
-BOOL RequiresReauth(FormSuggestion* suggestion, web::WebState* web_state) {
-  if (suggestion.requiresReauth ||
-      suggestion.type != autofill::SuggestionType::kFillAutofillAi) {
-    return suggestion.requiresReauth;
-  }
-
-  base::optional_ref<const autofill::EntityInstance> entity =
-      GetAutofillAiEntity(suggestion.payload, web_state);
-  if (!entity.has_value()) {
-    return NO;
-  }
-
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-  if (!autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
-          profile->GetPrefs())) {
-    return NO;
-  }
-
-  // If any of the fields of an autofill AI suggestion has at least one
-  // obfuscated field, it requires reauth before filling the form.
-  return std::ranges::any_of(entity->type().attributes(),
-                             &autofill::AttributeType::is_obfuscated);
-}
-
 // Returns the default icon for the suggestion type.
 UIImage* DefaultIconForType(FormSuggestion* suggestion,
                             web::WebState* web_state) {
@@ -576,28 +550,20 @@ bool IsRequestDedupingAllowed() {
     // for this suggestion.
     BOOL shouldUpdateIcon = !suggestion.icon && defaultIcon;
 
-    // Check whether the suggestion requires reauthentication.
-    BOOL requiresReauth = RequiresReauth(suggestion, _webState);
-
-    // If the suggestion did not require reauthentication and now requires
-    // reauthentication, the `requiresReauth` parameter must be updated.
-    BOOL shouldUpdateReauth = !suggestion.requiresReauth && requiresReauth;
-
-    if (shouldUpdateIcon || shouldUpdateReauth) {
+    if (shouldUpdateIcon) {
       // If we ever get suggestions with metadata here, we'll need to use a
       // different [FormSuggestion suggestionWithValue:...] to perform the copy.
       CHECK(!suggestion.metadata.is_single_username_form);
 
-      UIImage* icon = shouldUpdateIcon ? defaultIcon : suggestion.icon;
       FormSuggestion* suggestionCopy = [FormSuggestion
                   suggestionWithValue:suggestion.value
                            minorValue:suggestion.minorValue
                    displayDescription:suggestion.displayDescription
-                                 icon:icon
+                                 icon:defaultIcon
                                  type:suggestion.type
                               payload:suggestion.payload
           fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
-                       requiresReauth:requiresReauth
+                       requiresReauth:suggestion.requiresReauth
            acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
       // TODO(crbug.com/452315148): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
