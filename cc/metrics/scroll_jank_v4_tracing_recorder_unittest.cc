@@ -757,5 +757,47 @@ TEST_F(ScrollJankV4RecorderTest,
   ExpectThatAllSubEventsAreDescendantsOfMainTraceEvent();
 }
 
+TEST_F(ScrollJankV4RecorderTest, RealNonDamagingFrameWithInputAfterBeginFrame) {
+  trace_processor_.StartTrace("input");
+
+  // Input generation typically happens before the begin frame, but here we test
+  // the edge case where the input generation (55 ms) happens AFTER the begin
+  // frame (50 ms).
+  ScrollJankV4TracingRecorder::RecordTraceEvents(
+      ScrollUpdates(Real{.first_input_generation_ts = MillisSinceEpoch(55),
+                         .last_input_generation_ts = MillisSinceEpoch(60),
+                         .has_inertial_input = false,
+                         .abs_total_raw_delta_pixels = 5.0f,
+                         .max_abs_inertial_raw_delta_pixels = 0.0f,
+                         .first_input_trace_id = TraceId(99)},
+                    /* synthetic= */ std::nullopt),
+      NonDamagingFrame{},
+      BeginFrameArgsForScrollJank{.frame_time = MillisSinceEpoch(50),
+                                  .interval = base::Milliseconds(16)},
+      ScrollJankV4Result{
+          .first_scroll_update =
+              ScrollJankV4Result::RealFirstScrollUpdate{
+                  .actual_input_generation_ts = MillisSinceEpoch(55)},
+          .presentation =
+              ScrollJankV4Result::NonDamagingPresentation{
+                  .extrapolated_presentation_ts = std::nullopt},
+      });
+
+  absl::Status status = trace_processor_.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  QueryResult scroll_jank_v4_slices_result =
+      QueryTraceProcessor(kScrollJankV4SliceQuery);
+  // The recorder should handle this edge case correctly by starting the slice
+  // at the begin frame timestamp and ending it after the last input generation
+  // timestamp.
+  EXPECT_THAT(scroll_jank_v4_slices_result,
+              QueryResultIs({
+                  {"id", "name", "ts", "dur", "result_id"},
+                  {kSliceIdMatcher, "ScrollJankV4", "50000000", "10001000",
+                   kResultIdMatcher},
+              }));
+}
+
 }  // namespace
 }  // namespace cc
