@@ -46,6 +46,8 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -181,6 +183,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     private @Nullable AddressEditorCoordinator mAddressEditor;
     private @Nullable EntityEditorCoordinator mEntityEditor;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -400,16 +403,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     Instant nowInstant = Instant.ofEpochMilli(TimeUtils.currentTimeMillis());
                     LocalDate modifiedDate =
                             nowInstant.atZone(ZoneId.systemDefault()).toLocalDate();
-                    mEntityEditor =
-                            new EntityEditorCoordinator(
-                                    getActivity(),
-                                    mEntityEditorDelegate,
-                                    getProfile(),
-                                    new EntityInstance.Builder(entityType)
-                                            .setModifiedDate(modifiedDate)
-                                            .setUseCount(0)
-                                            .build());
-                    mEntityEditor.showEditorDialog();
+                    showEntityEditor(
+                            new EntityInstance.Builder(entityType)
+                                    .setModifiedDate(modifiedDate)
+                                    .setUseCount(0)
+                                    .build());
                     return true;
                 });
         screen.addPreference(pref);
@@ -468,14 +466,25 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             }
                             EntityInstance entityInstance =
                                     entityDataManager.getEntityInstance(preference.getKey());
-                            if (entityInstance != null) {
-                                mEntityEditor =
-                                        new EntityEditorCoordinator(
-                                                getActivity(),
-                                                mEntityEditorDelegate,
-                                                getProfile(),
-                                                entityInstance);
-                                mEntityEditor.showEditorDialog();
+                            if (entityInstance == null) {
+                                return true;
+                            }
+                            if (entityInstance.requiresReauthToSee()) {
+                                if (mReauthenticatorBridge == null) {
+                                    mReauthenticatorBridge =
+                                            ReauthenticatorBridge.create(
+                                                    getActivity(),
+                                                    getProfile(),
+                                                    DeviceAuthSource.AUTOFILL);
+                                }
+                                mReauthenticatorBridge.reauthenticate(
+                                        success -> {
+                                            if (success) {
+                                                showEntityEditor(entityInstance);
+                                            }
+                                        });
+                            } else {
+                                showEntityEditor(entityInstance);
                             }
                             return true;
                         });
@@ -486,6 +495,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 addAddEntityButton(category, type);
             }
         }
+    }
+
+    private void showEntityEditor(EntityInstance entityInstance) {
+        mEntityEditor =
+                new EntityEditorCoordinator(
+                        getActivity(), mEntityEditorDelegate, getProfile(), entityInstance);
+        mEntityEditor.showEditorDialog();
     }
 
     @Override
@@ -518,6 +534,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
         if (entityDataManager != null) {
             entityDataManager.unregisterDataObserver(this);
+        }
+        if (mReauthenticatorBridge != null) {
+            mReauthenticatorBridge.destroy();
+            mReauthenticatorBridge = null;
         }
         super.onDestroyView();
     }

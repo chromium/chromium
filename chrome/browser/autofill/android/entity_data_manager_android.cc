@@ -31,6 +31,8 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/webdata/account_settings/account_setting_service.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -114,19 +116,29 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
       entity_data_manager_->GetVariationCountryCode(), opt_in_status);
 }
 
-jni_zero::ScopedJavaLocalRef<jobject>
+std::optional<autofill::EntityInstanceAndroid>
 EntityDataManagerAndroid::GetEntityInstance(JNIEnv* env,
                                             const std::string& guid) {
   base::optional_ref<const EntityInstance> entity =
       entity_data_manager_->GetEntityInstance(EntityInstance::EntityId(guid));
   if (!entity) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  return EntityInstanceAndroid::Create(
-      env, EntityInstanceAndroid(
-               *entity, entity->type().enabled(
-                            entity_data_manager_->GetVariationCountryCode())));
+  const bool requires_reauth_to_see =
+      base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillAiReauthRequired) &&
+      ::autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(prefs_) &&
+      std::ranges::any_of(
+          entity->attributes(),
+          [](const autofill::AttributeInstance& attribute_instance) {
+            return attribute_instance.type().is_obfuscated() &&
+                   !attribute_instance.GetCompleteRawInfo().empty();
+          });
+  return EntityInstanceAndroid(
+      *entity,
+      entity->type().enabled(entity_data_manager_->GetVariationCountryCode()),
+      requires_reauth_to_see);
 }
 
 void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,

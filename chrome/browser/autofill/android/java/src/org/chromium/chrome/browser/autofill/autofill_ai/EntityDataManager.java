@@ -214,7 +214,9 @@ public class EntityDataManager implements Destroyable {
         void removeEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
 
-        @Nullable EntityInstance getEntityInstance(
+        @Nullable
+        @JniType("autofill::EntityInstanceAndroid")
+        EntityInstance getEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
 
         void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);

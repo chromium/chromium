@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
 #include "chrome/browser/autofill/android/entity_type_android.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -64,7 +65,7 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // Removes the entity instance represented by `guid`.
   void RemoveEntityInstance(JNIEnv* env, const std::string& guid);
 
-  base::android::ScopedJavaLocalRef<jobject> GetEntityInstance(
+  std::optional<EntityInstanceAndroid> GetEntityInstance(
       JNIEnv* env,
       const std::string& guid);
 

@@ -15,11 +15,12 @@ namespace autofill {
 
 base::android::ScopedJavaLocalRef<jobject> EntityInstanceAndroid::Create(
     JNIEnv* env,
-    const EntityInstanceAndroid& entity_instance) {
+    const EntityInstanceAndroid& entity_instance,
+    bool requires_reauth_to_see) {
   return Java_EntityInstance_Constructor(
       env, entity_instance.guid, static_cast<int>(entity_instance.record_type),
       entity_instance.entity_type, entity_instance.attribute_instances,
-      entity_instance.metadata);
+      entity_instance.metadata, requires_reauth_to_see);
 }
 
 EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
@@ -39,19 +40,24 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
       EntityMetadataAndroid::FromJavaEntityMetadata(
           env, Java_EntityInstance_getMetadata(env, j_entity_instance));
 
+  bool requires_reauth_to_see =
+      Java_EntityInstance_requiresReauthToSee(env, j_entity_instance);
+
   return EntityInstanceAndroid(std::move(entity_type), std::move(guid),
                                record_type, std::move(attributes),
-                               std::move(metadata));
+                               std::move(metadata), requires_reauth_to_see);
 }
 
 EntityInstanceAndroid::EntityInstanceAndroid(
     const EntityInstance& entity_instance,
-    bool is_enabled)
+    bool is_enabled,
+    bool requires_reauth_to_see)
     : entity_type(entity_instance.type(), is_enabled),
       guid(*entity_instance.guid()),
       record_type(entity_instance.record_type()),
       metadata(entity_instance.date_modified(),
-               static_cast<int>(entity_instance.use_count())) {
+               static_cast<int>(entity_instance.use_count())),
+      requires_reauth_to_see(requires_reauth_to_see) {
   for (const auto& attr : entity_instance.attributes()) {
     attribute_instances.emplace_back(attr);
   }
@@ -62,12 +68,14 @@ EntityInstanceAndroid::EntityInstanceAndroid(
     std::string guid,
     EntityInstance::RecordType record_type,
     std::vector<AttributeInstanceAndroid> attribute_instances,
-    EntityMetadataAndroid metadata)
+    EntityMetadataAndroid metadata,
+    bool requires_reauth_to_see)
     : entity_type(std::move(entity_type)),
       guid(std::move(guid)),
       record_type(record_type),
       attribute_instances(std::move(attribute_instances)),
-      metadata(std::move(metadata)) {}
+      metadata(std::move(metadata)),
+      requires_reauth_to_see(requires_reauth_to_see) {}
 
 EntityInstanceAndroid::EntityInstanceAndroid(const EntityInstanceAndroid&) =
     default;

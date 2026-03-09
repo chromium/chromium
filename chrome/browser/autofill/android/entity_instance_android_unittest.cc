@@ -42,8 +42,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
       passport_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android},
-      EntityMetadataAndroid(base::Time::Now(), 0));
+      {attribute_instance_android}, EntityMetadataAndroid(base::Time::Now(), 0),
+      /*requires_reauth_to_see=*/false);
 
   EntityInstance entity_instance =
       entity_instance_android.ToEntityInstance(std::nullopt);
@@ -86,8 +86,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
       password_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android},
-      EntityMetadataAndroid(base::Time::Now(), 0));
+      {attribute_instance_android}, EntityMetadataAndroid(base::Time::Now(), 0),
+      /*requires_reauth_to_see=*/false);
 
   EntityInstance converted_entity =
       entity_instance_android.ToEntityInstance(existing_entity);
@@ -161,7 +161,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
       entity_type_android, kGuid, EntityInstance::RecordType::kLocal,
       {passport_name_attribute_instance_android,
        passport_number_attribute_instance_android},
-      EntityMetadataAndroid(base::Time::Now(), 0));
+      EntityMetadataAndroid(base::Time::Now(), 0),
+      /*requires_reauth_to_see=*/false);
 
   EntityInstance converted_entity =
       entity_instance_android.ToEntityInstance(existing_entity);

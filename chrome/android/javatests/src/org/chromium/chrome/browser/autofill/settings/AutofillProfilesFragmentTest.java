@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.autofill.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -65,6 +67,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -86,6 +89,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorMediator;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -212,6 +216,7 @@ public class AutofillProfilesFragmentTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SyncService mSyncService;
+    @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
     private static EntityDataManager sEntityDataManager;
 
     private final AutofillTestHelper mHelper = new AutofillTestHelper();
@@ -226,6 +231,7 @@ public class AutofillProfilesFragmentTest {
 
     @Before
     public void setUp() throws TimeoutException {
+        ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         Intents.init();
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
@@ -1500,6 +1506,105 @@ public class AutofillProfilesFragmentTest {
                         sSettingsActivityTestRule
                                 .getActivity()
                                 .getString(R.string.autofill_contact_info_title));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_opensEditorOnSuccessfulReauth() throws Exception {
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        TestUtils.getVehicleEntityType(),
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("guid1")
+                        .setRecordType(
+                                org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 12))
+                        .setUseCount(0)
+                        .setRequiresReauthToSee(true)
+                        .build();
+
+        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference vehicleEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+
+        // Click entity and capture reauth callback.
+        ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
+
+        // Simulate successful reauth.
+        ThreadUtils.runOnUiThreadBlocking(() -> callbackCaptor.getValue().onResult(true));
+
+        onView(withText("Edit Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_doesNotOpenEditorOnFailedReauth() throws Exception {
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        TestUtils.getVehicleEntityType(),
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("guid1")
+                        .setRecordType(
+                                org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 12))
+                        .setUseCount(0)
+                        .setRequiresReauthToSee(true)
+                        .build();
+
+        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference vehicleEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+
+        // Click entity and capture reauth callback.
+        ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        verify(mMockReauthenticatorBridge).reauthenticate(callbackCaptor.capture());
+
+        // Simulate failed reauth.
+        ThreadUtils.runOnUiThreadBlocking(() -> callbackCaptor.getValue().onResult(false));
+
+        // Editor should NOT be displayed.
+        onView(withText("Edit Vehicle")).check(doesNotExist());
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

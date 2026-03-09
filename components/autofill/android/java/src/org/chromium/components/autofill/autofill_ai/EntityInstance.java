@@ -29,6 +29,7 @@ public class EntityInstance {
     private final EntityType mEntityType;
     private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
     private final EntityMetadata mMetadata;
+    private final boolean mRequiresReauthToSee;
 
     /** Builder for the {@link EntityInstance}. */
     public static final class Builder {
@@ -38,6 +39,7 @@ public class EntityInstance {
         private final List<AttributeInstance> mAttributes = new ArrayList<>();
         private @Nullable LocalDate mModifiedDate;
         private @Nullable Integer mUseCount;
+        private boolean mRequiresReauthToSee;
 
         public Builder(EntityType entityType) {
             mEntityType = Objects.requireNonNull(entityType, "Entity type cannot be null");
@@ -68,6 +70,11 @@ public class EntityInstance {
             return this;
         }
 
+        public Builder setRequiresReauthToSee(boolean requiresReauthToSee) {
+            mRequiresReauthToSee = requiresReauthToSee;
+            return this;
+        }
+
         public EntityInstance build() {
             if (mModifiedDate == null) {
                 throw new IllegalStateException("mModifiedDate cannot be null");
@@ -81,7 +88,8 @@ public class EntityInstance {
                             mModifiedDate.getMonthValue(),
                             mModifiedDate.getYear(),
                             mUseCount);
-            return new EntityInstance(mGUID, mRecordType, mEntityType, mAttributes, metadata);
+            return new EntityInstance(
+                    mGUID, mRecordType, mEntityType, mAttributes, metadata, mRequiresReauthToSee);
         }
     }
 
@@ -92,7 +100,8 @@ public class EntityInstance {
             @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::vector<autofill::AttributeInstanceAndroid>")
                     List<AttributeInstance> attributes,
-            @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata) {
+            @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata,
+            boolean requiresReauthToSee) {
         mGUID = guid;
         mRecordType = recordType;
         mEntityType = entityType;
@@ -102,6 +111,7 @@ public class EntityInstance {
                     : "Duplicate attribute: " + attribute.getAttributeType().getTypeName();
             mAttributes.put(attribute.getAttributeType(), attribute);
         }
+        mRequiresReauthToSee = requiresReauthToSee;
     }
 
     @CalledByNative
@@ -155,5 +165,10 @@ public class EntityInstance {
     @CalledByNative
     public EntityMetadata getMetadata() {
         return mMetadata;
+    }
+
+    @CalledByNative
+    public boolean requiresReauthToSee() {
+        return mRequiresReauthToSee;
     }
 }
