@@ -264,7 +264,8 @@ GlicKeyedService::GlicKeyedService(
         prefs::kGlicCompletedFre,
         static_cast<int>(prefs::FreStatus::kNotStarted));
     // or if automation is enabled, skip FRE
-  } else if (command_line->HasSwitch(::switches::kGlicAutomation)) {
+  } else if (command_line->HasSwitch(::switches::kGlicAutomation) ||
+             command_line->HasSwitch(::switches::kGlicAlwaysSkipFre)) {
     profile_->GetPrefs()->SetInteger(
         prefs::kGlicCompletedFre,
         static_cast<int>(prefs::FreStatus::kCompleted));

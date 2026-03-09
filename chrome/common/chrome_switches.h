@@ -301,6 +301,7 @@ extern const char kGuest[];
 
 extern const char kGlicGuestURL[];
 extern const char kGlicAlwaysOpenFre[];
+extern const char kGlicAlwaysSkipFre[];
 extern const char kGlicFreURL[];
 extern const char kGlicShortcutsLearnMoreURL[];
 extern const char kGlicOpenOnStartup[];
