@@ -196,6 +196,24 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePasswordChangeService::StartPasswordChangeFromCheckup(
+    const password_manager::CredentialUIEntry& credential,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  if (!password_change_from_checkup_delegate_) {
+    password_change_from_checkup_delegate_ =
+        std::make_unique<PasswordChangeFromCheckupDelegate>();
+  }
+
+  password_change_from_checkup_delegate_->StartPasswordChangeFlow(
+      credential, web_contents->GetWeakPtr());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 PasswordChangeDelegate* ChromePasswordChangeService::GetPasswordChangeDelegate(
     content::WebContents* web_contents) {
   for (const auto& delegate : password_change_delegates_) {

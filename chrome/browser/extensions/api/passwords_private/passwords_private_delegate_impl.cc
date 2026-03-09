@@ -29,8 +29,10 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/factories/password_sender_service_factory.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -899,21 +901,12 @@ void PasswordsPrivateDelegateImpl::StartPasswordChange(
     return;
   }
 
-  std::optional<GURL> change_password_url = credential->GetChangePasswordURL();
-  if (!change_password_url.has_value() || !change_password_url->is_valid() ||
-      !change_password_url->SchemeIsHTTPOrHTTPS()) {
-    // TODO(crbug.com/485620841): Show error, instead of returning.
-    return;
+  auto* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile_);
+  if (password_change_service) {
+    password_change_service->StartPasswordChangeFromCheckup(*credential,
+                                                            web_contents);
   }
-
-  // TODO(crbug.com/485620841): Invoke Gemini in Chrome instead of just opening
-  // the url.
-  web_contents->OpenURL(
-      content::OpenURLParams(*change_password_url, content::Referrer(),
-                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                             ui::PAGE_TRANSITION_LINK,
-                             /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
 }
 
 api::passwords_private::PasswordCheckStatus

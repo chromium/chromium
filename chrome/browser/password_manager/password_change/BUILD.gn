@@ -30,6 +30,13 @@ source_set("password_change") {
     "typing_helper.h",
   ]
 
+  if (!is_android) {
+    sources += [
+      "password_change_from_checkup_delegate.cc",
+      "password_change_from_checkup_delegate.h",
+    ]
+  }
+
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide",
@@ -51,6 +58,13 @@ source_set("password_change") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/accessibility:ax_base",
   ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
 }
 
 source_set("unit_tests") {
