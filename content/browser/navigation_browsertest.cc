@@ -9425,15 +9425,7 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
   EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorBLUE) << cc::GetPNGDataUrl(bitmap);
 
   // Crash the subframe.
-  {
-    auto* process = subframe_rfh->GetProcess();
-    content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
-
-    RenderProcessHostWatcher watcher(
-        process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    process->Shutdown(content::RESULT_CODE_KILLED);
-    watcher.Wait();
-  }
+  ASSERT_TRUE(CrashFrameProcess(subframe_rfh));
 
   {
     GURL subframe_url(embedded_test_server()->GetURL(

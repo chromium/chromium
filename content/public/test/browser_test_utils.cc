@@ -2616,8 +2616,7 @@ RenderProcessHostWatcher::RenderProcessHostWatcher(
     : type_(type),
       did_exit_normally_(true),
       allow_renderer_crashes_(
-          std::make_unique<ScopedAllowRendererCrashes>(render_process_host)),
-      quit_closure_(run_loop_.QuitClosure()) {
+          std::make_unique<ScopedAllowRendererCrashes>(render_process_host)) {
   observation_.Observe(render_process_host);
 }
 
@@ -2628,24 +2627,24 @@ RenderProcessHostWatcher::RenderProcessHostWatcher(WebContents* web_contents,
           type) {}
 RenderProcessHostWatcher::~RenderProcessHostWatcher() = default;
 
-void RenderProcessHostWatcher::Wait() {
-  run_loop_.Run();
+bool RenderProcessHostWatcher::Wait() {
+  bool result = waiter_helper_.Wait();
 
   DCHECK(allow_renderer_crashes_)
       << "RenderProcessHostWatcher::Wait() may only be called once";
   allow_renderer_crashes_.reset();
   // Call this here just in case something else quits the RunLoop.
   observation_.Reset();
+  return result;
 }
-
-void RenderProcessHostWatcher::QuitRunLoop() {
-  std::move(quit_closure_).Run();
+void RenderProcessHostWatcher::OnEvent() {
+  waiter_helper_.OnEvent();
   observation_.Reset();
 }
 
 void RenderProcessHostWatcher::RenderProcessReady(RenderProcessHost* host) {
   if (type_ == WATCH_FOR_PROCESS_READY) {
-    QuitRunLoop();
+    OnEvent();
   }
 }
 
@@ -2655,14 +2654,14 @@ void RenderProcessHostWatcher::RenderProcessExited(
   did_exit_normally_ =
       info.status == base::TERMINATION_STATUS_NORMAL_TERMINATION;
   if (type_ == WATCH_FOR_PROCESS_EXIT) {
-    QuitRunLoop();
+    OnEvent();
   }
 }
 
 void RenderProcessHostWatcher::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   if (type_ == WATCH_FOR_HOST_DESTRUCTION) {
-    QuitRunLoop();
+    OnEvent();
   }
 }
 
@@ -5207,6 +5206,17 @@ void SimulateCharTyped(WebContents* web_contents, char16_t character) {
   SimulateKeyPress(web_contents, dom_key, dom_code, key_code,
                    /*control=*/false, shift, /*alt=*/false,
                    /*command=*/false);
+}
+
+[[nodiscard]] bool CrashFrameProcess(const ToRenderFrameHost& adapter) {
+  RenderFrameHost* rfh = adapter.render_frame_host();
+  auto* process = rfh->GetProcess();
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(process);
+
+  RenderProcessHostWatcher watcher(
+      process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process->Shutdown(content::RESULT_CODE_KILLED);
+  return watcher.Wait();
 }
 
 }  // namespace content

@@ -1333,7 +1333,8 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
   ~RenderProcessHostWatcher() override;
 
   // Waits until the expected event is triggered. This may only be called once.
-  void Wait();
+  // Returns false if waiting stops for any other reason, e.g. timeout.
+  bool Wait();
 
   // Returns true if a renderer process exited cleanly (without hitting
   // RenderProcessExited with an abnormal TerminationStatus). This should be
@@ -1341,8 +1342,8 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
   bool did_exit_normally() { return did_exit_normally_; }
 
  private:
-  // Quit the run loop and clean up.
-  void QuitRunLoop();
+  // Register the event and clean up.
+  void OnEvent();
 
   // Overridden RenderProcessHost::LifecycleObserver methods.
   void RenderProcessReady(RenderProcessHost* host) override;
@@ -1357,8 +1358,7 @@ class RenderProcessHostWatcher : public RenderProcessHostObserver {
 
   std::unique_ptr<ScopedAllowRendererCrashes> allow_renderer_crashes_;
 
-  base::RunLoop run_loop_;
-  base::OnceClosure quit_closure_;
+  WaiterHelper waiter_helper_;
 };
 
 // Implementation helper for:
@@ -2807,6 +2807,10 @@ class RequestCloseWidgetInterceptor
   mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
       swapped_impl_;
 };
+
+// Crash the process associated with `adapter`. Waits for the crash to be seen
+// by the browser process. Returns `false` if the test times out before that.
+[[nodiscard]] bool CrashFrameProcess(const ToRenderFrameHost& adapter);
 
 }  // namespace content
 
