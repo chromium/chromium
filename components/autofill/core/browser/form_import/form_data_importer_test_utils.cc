@@ -19,6 +19,8 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -321,6 +323,51 @@ FormData ConstructDefaultFormData() {
 FormData ConstructSplitDefaultFormData(int part) {
   return ConstructFormDateFromTypeValuePairs(
       GetSplitDefaultProfileTypeValuePairs(part));
+}
+
+void AddFullCreditCardForm(FormData* form,
+                           const char* name,
+                           const char* number,
+                           const char* month,
+                           const char* year) {
+  std::vector<FormFieldData>& fields = test_api(*form).fields();
+  if (name) {
+    fields.push_back(CreateTestFormField("Name on card:", "name_on_card", name,
+                                         FormControlType::kInputText));
+  }
+  if (number) {
+    fields.push_back(CreateTestFormField("Card Number:", "card_number", number,
+                                         FormControlType::kInputText));
+  }
+  if (month) {
+    fields.push_back(CreateTestFormField("Exp Month:", "exp_month", month,
+                                         FormControlType::kInputText));
+  }
+  if (year) {
+    fields.push_back(CreateTestFormField("Exp Year:", "exp_year", year,
+                                         FormControlType::kInputText));
+  }
+}
+
+ukm::SourceId ukm_source_id() {
+  return 123;
+}
+
+FormDataImporterTestApi::ExtractedFormData
+ExtractFormDataAndProcessAddressCandidates(
+    FormDataImporter& form_data_importer,
+    const FormStructure& form,
+    bool profile_autofill_enabled,
+    bool payment_methods_autofill_enabled) {
+  FormDataImporterTestApi::ExtractedFormData extracted_data =
+      test_api(form_data_importer)
+          .ExtractFormData(form, profile_autofill_enabled,
+                           payment_methods_autofill_enabled);
+  test_api(form_data_importer.GetAddressFormDataImporter())
+      .ProcessExtractedAddressProfiles(
+          extracted_data.extracted_address_profiles,
+          /*allow_prompt=*/true, ukm_source_id());
+  return extracted_data;
 }
 
 }  // namespace autofill

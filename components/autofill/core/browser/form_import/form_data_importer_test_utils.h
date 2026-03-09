@@ -12,6 +12,7 @@
 
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 
 namespace autofill {
 
@@ -126,6 +127,30 @@ FormData ConstructDefaultFormData();
 // Same as `ConstructDefaultFormData()` but split into two parts to test multi-
 // step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
 FormData ConstructSplitDefaultFormData(int part);
+
+// Adds a full credit card form to `form`, given the parameters `name`,
+// `number`, `month`, and `year`. The parameters represent field values and are
+// optional, and the parameters that are passed in will be the ones that are
+// set, and its corresponding field will be created in `form`.
+void AddFullCreditCardForm(FormData* form,
+                           const char* name,
+                           const char* number,
+                           const char* month,
+                           const char* year);
+
+// Returns a dummy UKM source ID for testing purposes.
+ukm::SourceId ukm_source_id();
+
+// Convenience wrapper that calls
+// `FormDataImporter::ExtractFormData()` and subsequently
+// processes the candidates for address profile import. Returns the result of
+// `FormDataImporter::ExtractFormData()`.
+FormDataImporterTestApi::ExtractedFormData
+ExtractFormDataAndProcessAddressCandidates(
+    FormDataImporter& form_data_importer,
+    const FormStructure& form,
+    bool profile_autofill_enabled,
+    bool payment_methods_autofill_enabled);
 
 }  // namespace autofill
 
