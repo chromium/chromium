@@ -2509,7 +2509,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2665394472441560184">Thêm từ mới</translation>
 <translation id="2665647207431876759">Đã hết hạn</translation>
 <translation id="2665919335226618153">Ôi, hỏng! Đã xảy ra lỗi trong khi định dạng.</translation>
-<translation id="2666092431469916601">Trên cùng</translation>
 <translation id="2666247341166669829">Mức pin bên trái <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Những ứng dụng khác cũng được đặt để mở các đường liên kết giống như <ph name="APP_NAME" />. Thao tác này sẽ ngăn <ph name="APP_NAME_2" /> và <ph name="APP_NAME_3" /> mở những đường liên kết được hỗ trợ.</translation>
 <translation id="2667463864537187133">Quản lý kiểm tra lỗi chính tả</translation>
@@ -2578,7 +2577,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2714180132046334502">Nền tối</translation>
 <translation id="2714393097308983682">Cửa hàng Google Play</translation>
 <translation id="2714617928488200509">Mô hình</translation>
-<translation id="2715293433233060993">Chuyển các thẻ sang một bên</translation>
 <translation id="2715751256863167692">Bản nâng cấp này sẽ đặt lại Chromebook và xóa dữ liệu người dùng hiện tại.</translation>
 <translation id="2715934493766003251">Không thể dọn dẹp bộ nhớ khi tính năng đồng bộ hoá tệp đang bật</translation>
 <translation id="2716986496990888774">Tùy chọn cài đặt này do cha mẹ quản lý.</translation>
@@ -3255,7 +3253,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3167562202484086668">Xoá tất cả dữ liệu <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Chọn giao diện phù hợp với nhu cầu của bạn. Để thay đổi giao diện, hình nền, trình bảo vệ màn hình, v.v., bạn chỉ cần chạm và giữ trên màn hình.</translation>
 <translation id="3170072451822350649">Bạn cũng có thể bỏ qua việc đăng nhập và <ph name="LINK_START" />duyệt với tư cách khách<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Chuyển các thẻ lên trên cùng</translation>
 <translation id="3175067642577044620">Nội dung</translation>
 <translation id="3175862692832442091">Rừng</translation>
 <translation id="3176347586396987181">Dùng phím "z" để nhấn và giữ nút chuột</translation>
@@ -5529,7 +5526,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4699473989647132421">Bờ biển</translation>
 <translation id="4701025263201366865">Đăng nhập bằng tài khoản của cha mẹ</translation>
 <translation id="4701335814944566468">Vừa xem hôm qua</translation>
-<translation id="4702504834785592287">Mặt bên</translation>
 <translation id="470644585772471629">Đảo màu</translation>
 <translation id="4707337002099455863">Luôn cho phép trên mọi trang web</translation>
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
@@ -7223,7 +7219,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5888889603768021126">Đã đăng nhập bằng</translation>
 <translation id="5889282057229379085">Số CA gián tiếp tối đa: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Mã hoá dữ liệu đã đồng bộ hoá bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hoá<ph name="END_LINK" /> của riêng bạn. Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
-<translation id="5890072287476934834">Chuyển các thẻ sang một bên</translation>
 <translation id="5891688036610113830">Các mạng Wi-Fi ưu tiên</translation>
 <translation id="5894056653502215961">Bỏ chọn thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
@@ -9313,7 +9308,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7340179705876485790">Để quay lại nhiều trang, hãy nhấp và giữ nút Quay lại.</translation>
 <translation id="7340650977506865820">Trang web đang chia sẻ màn hình của bạn</translation>
 <translation id="7340757554212515731">Tự động gửi báo cáo sự cố cũng như thông tin chẩn đoán và dữ liệu sử dụng cho Google</translation>
-<translation id="7340886226071938450">Vị trí của dải thẻ</translation>
 <translation id="734088800888587319">Chỉ số mạng</translation>
 <translation id="7341834142292923918">Muốn truy cập vào trang web này</translation>
 <translation id="7343372807593926528">Vui lòng mô tả sự cố trước khi gửi ý kiến phản hồi.</translation>
@@ -11319,7 +11313,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8685540043423825702">Hồ sơ của bạn trên Chrome</translation>
 <translation id="8685882652128627032">Nhấp để mở hộp thoại Thêm công cụ tìm kiếm trên trang web</translation>
 <translation id="8686142379631285985">Đã đăng nhập bằng <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Chuyển các thẻ lên trên cùng</translation>
 <translation id="8687103160920393343">Huỷ <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Thiết lập mã PIN</translation>
 <translation id="8687774873995698516">Luôn chặn <ph name="HOST" /> dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>

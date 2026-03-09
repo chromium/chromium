@@ -485,7 +485,6 @@
 <translation id="1748225549612934682">文章作成サポートを使用するには、テキストを短くしてください</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
 <translation id="1753706481035618306">ページ番号</translation>
-<translation id="1755203724116202818">広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます。</translation>
 <translation id="1755621011177747277">養子縁組</translation>
 <translation id="1756026472674246267">新しいタブでリンクを開く</translation>
 <translation id="1756555787993603971">自動入力により、仮想カードを使用してより安全にご購入手続きを行えるようになりました。</translation>
@@ -620,7 +619,6 @@
 <translation id="1999416967035780066">フリーウェア、シェアウェア</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="2001469757375372617">エラーが発生しました。変更は保存されませんでした。</translation>
-<translation id="2002436619517051938">これらの設定は Chrome の設定で変更できます。</translation>
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
 <translation id="2003775180883135320">4 穴パンチ（上）</translation>
 <translation id="2009942480257059311">[予定を作成] ボタンです。実行すると、Google カレンダーで新しい予定をすばやく作成できます</translation>
@@ -648,7 +646,6 @@
 <translation id="2045871135676061132">6 3/4 封筒</translation>
 <translation id="2046951263634619614">書籍販売</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
-<translation id="2056658168519009885">パーソナライズド広告を表示するため、ウェブサイトが Chrome に情報を要求することがあります。</translation>
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2064568741209980952">クレジット、貸付</translation>
@@ -750,6 +747,7 @@
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="218940509700321686">カンマ区切り値</translation>
 <translation id="2191980191135734720">次のステップで画面のロックを解除します（通常は指紋認証を使用します）。<ph name="LINK_TEXT" />こともできます。</translation>
+<translation id="2194856509914051091">留意事項</translation>
 <translation id="2198183835992354675">Known Traveler 番号</translation>
 <translation id="2198215508485017216">予期しないエラーが発生しました。<ph name="BEGIN_LINK" />ドライブへのアップロードの詳細<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">低評価ボタンです。Enter キーを押すとフィードバック フォームが開き、この提案を気に入らない理由を記入して送信できます</translation>
@@ -1266,7 +1264,6 @@
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> です。Tab キー、Enter キーの順に押すと、候補を削除します。</translation>
 <translation id="3019738915977809060">搭乗券をウォレットに保存</translation>
 <translation id="3022959067768579802">入力を続行</translation>
-<translation id="3023165109041533893">ユーザーの閲覧履歴と個人情報を保護しつつ、関連性の高い広告を表示できるようにするウェブサイトによる広告の提案機能。ユーザーの訪れるウェブサイトが、ユーザーの行動に基づき、それ以降のウェブサイト閲覧時に関連する広告を提案します。設定でウェブサイトのリストを確認したり、必要のないサイトをブロックしたりすることができます。</translation>
 <translation id="3024663005179499861">ポリシー タイプが間違っています</translation>
 <translation id="3027915437837548462">SVG 画像</translation>
 <translation id="3030331669969285614">以下は破壊的変更を防止したり元に戻したりするフラグです。期間限定でご利用いただけます。</translation>
@@ -1372,7 +1369,6 @@
 <translation id="3180358318770512945">育児</translation>
 <translation id="3182185041786697613">セキュリティ コードを保存しますか？</translation>
 <translation id="3185635157430775689">パソコンパーツ</translation>
-<translation id="3187472288455401631">広告の測定</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3194765668709099364">Klarna</translation>
@@ -1425,7 +1421,6 @@
 <translation id="3261488570342242926">仮想カードについて</translation>
 <translation id="3262698603497362968">購入のオプション</translation>
 <translation id="3264315627780269177">このタブは共有できません</translation>
-<translation id="3266367459139339908">パーソナライズド広告を表示するウェブサイトがユーザーについて把握できる情報を制限するため、次のような機能を新たに実装します。</translation>
 <translation id="3266793032086590337">値（競合）</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
 <translation id="3270041629388773465">CVC を保存するとすばやくお支払いできます</translation>
@@ -1468,7 +1463,6 @@
 <translation id="333839153442689579">高強度インターバル トレーニング</translation>
 <translation id="3339446062576134663">クラウド（Ash）</translation>
 <translation id="3340978935015468852">設定</translation>
-<translation id="3342018947887487892">その後、ユーザーがアクセスする別のウェブサイトは、この情報（広告のトピックまたはアクセスしたウェブサイトによる広告の提案）を要求することができます。</translation>
 <translation id="334438173029876234">スケートボード用品</translation>
 <translation id="3347146863028219517">スキー、スノーボード</translation>
 <translation id="3349610303043713601">AI を活用してブラウジング</translation>
@@ -1544,7 +1538,6 @@
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Enter キーを押すと、このページについて Google に質問できます</translation>
 <translation id="3465972433695735758">この PDF にアクセスできません。Google AI を使用してテキストが抽出されました</translation>
 <translation id="346601286295919445">化学</translation>
-<translation id="3467081767799433066">広告の測定では、広告のパフォーマンスを測定するため、サイトにアクセスした後に購入したかどうかなど、限定的な種類のデータがサイト間で共有されます。</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> が現在開いています。Tab キー、Enter キーの順に押すと開いているタブに切り替わります</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="3472469028191701821">新しいタブで開く</translation>
@@ -1667,7 +1660,6 @@
 <translation id="3642196846309122856">ファイルをもう一度ダウンロードしてみてください</translation>
 <translation id="3642638418806704195">アプリケーション:</translation>
 <translation id="3644768007456662469">お支払いアイテム アイコン</translation>
-<translation id="3646643500201740985">広告効果の測定</translation>
 <translation id="3647286794400715637">各 urls 文字列エントリには 1 つまたは 2 つの URL を含める必要があります。</translation>
 <translation id="3647400963805615193">Chrome のヒントの閉じるボタンです。閉じるには Enter キーを押します。<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">検証が正常に完了しました</translation>
@@ -1696,7 +1688,6 @@
 <translation id="3678914302246317895"><ph name="OTP_LENGTH" /> 桁の確認コードを入力してください</translation>
 <translation id="3681007416295224113">証明書情報</translation>
 <translation id="3681191721636073359">このサイトでの位置情報の使用をご希望でないと判断されました。ブラウジングの妨げにならないようリクエストは非表示になっています。</translation>
-<translation id="3681421644246505351">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。</translation>
 <translation id="3681841880472207951">QuickTime 動画</translation>
 <translation id="3682094733650754138">住所を入力するオプションが選択されました</translation>
 <translation id="3687920599421452763">バン、ミニバン</translation>
@@ -1838,7 +1829,6 @@
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">保存した情報と <ph name="WEBSITE" /> のページは Google に送信され、この機能を改善するため、人間のレビュアーによって確認される場合があります。</translation>
 <translation id="3910231615117880630">埋め込みコンテンツの詳細</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> 30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。また、Chrome の設定でいつでも、ウェブサイトからの広告の提案をブロックしたり、無効にしたりすることができます。</translation>
 <translation id="3921869355029467742">セキュリティ コードを入力する</translation>
 <translation id="3927538228901078312">比較表はありません</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -2056,7 +2046,6 @@
 <translation id="422722221769396062">出前、デリバリー サービス</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4231448684371260244">8x13 インチ</translation>
-<translation id="4233220688695460165">Chrome では、複数の広告を提案するトピックやウェブサイトが 30 日以内に自動削除されます。また、提案してほしくないトピックやウェブサイトをご自身でブロックすることもできます。</translation>
 <translation id="4235360514405112390">有効</translation>
 <translation id="4239799716689808527">ラベル</translation>
 <translation id="424063167283213501">Known Traveler 番号を保存</translation>
@@ -2098,10 +2087,8 @@
 <translation id="4282346679996504092">この商品のアラートをオフにし、ブックマークを削除しました</translation>
 <translation id="4284885181066817063"><ph name="DOMAIN" /> によりブロックされています</translation>
 <translation id="4285498937028063278">固定を解除</translation>
-<translation id="4287495839370498922">Chrome で表示される広告に対するプライバシー強化について</translation>
 <translation id="4288101205645068104">車両情報の削除</translation>
 <translation id="4290920330097335010">許可しない</translation>
-<translation id="4296207570293932800">新しい広告のプライバシー機能をご利用いただけるようになりました</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ページのサムネイル</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> を更新しました</translation>
 <translation id="4298000214066716287">投資</translation>
@@ -2315,7 +2302,6 @@
 <translation id="4682496302933121474">ページを翻訳しますか？</translation>
 <translation id="468314109939257734">仮想カード番号を表示します</translation>
 <translation id="4686942373615810936">たった今作成</translation>
-<translation id="4687718960473379118">ウェブサイトによる広告の提案</translation>
 <translation id="4690205240253392065">後払いの金融機関を選択</translation>
 <translation id="469028408546145398">[すべてのシークレット ウィンドウを閉じる] ボタンです。実行すると、現在開いているすべてのシークレット ウィンドウを閉じることができます</translation>
 <translation id="4691093235373904540">屋根材、ルーフ修理</translation>
@@ -2497,7 +2483,6 @@
 <translation id="4957080528849277028">[Chrome 履歴を表示] ボタンです。実行すると、Chrome の設定で閲覧履歴を表示、管理できます</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{と 1 件のサイト}other{と # 件のサイト}}</translation>
 <translation id="4958444002117714549">リストを展開する</translation>
-<translation id="4960068118612257147">Chrome の広告プライバシー設定はご自身で変更できます</translation>
 <translation id="4960203958361543136">検索エンジンの選択</translation>
 <translation id="4961708452830821006">マイクを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="4963413887558778009">造園設計</translation>
@@ -3329,7 +3314,6 @@
 <translation id="6292819926564202163">Chrome で使用する検索サービス</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">保存しています...</translation>
 <translation id="629730747756840877">アカウント</translation>
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
@@ -3461,7 +3445,6 @@
 <translation id="6472874020827012601">布（非光沢）</translation>
 <translation id="647330291963761005">アップデートをインストールしています</translation>
 <translation id="6474220430271405609">ポリシーテスト</translation>
-<translation id="6475672344094591109">ユーザーが訪れたウェブサイトから Chrome に対して、広告の効果を測定するための情報を要求されることがあります。Chrome は、関係する事業者間で共有できる情報を制限することでユーザーのプライバシーを保護します。</translation>
 <translation id="6476284679642588870">お支払い方法を管理</translation>
 <translation id="647881094269678013">劇場、映画館</translation>
 <translation id="6480864723214312258">家庭用電池</translation>
@@ -4112,8 +4095,6 @@
 <translation id="7507075214339298899">#9 封筒</translation>
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508577201115425418">コピー、印刷サービス</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />ウェブサイトによるこのデータの使用:<ph name="END_BOLD" /> 多くのウェブサイトでは、アクセスしたユーザーの興味 / 関心を記録して、ユーザー体験をカスタマイズするのが一般的です。そうしたウェブサイトでは、ユーザーの興味 / 関心についての情報を Chrome に保存する場合があります。
-たとえば、ユーザーが長距離ランニング用シューズを販売しているウェブサイトにアクセスすると、ウェブサイトが、そのユーザーはマラソンに興味があると判断するかもしれません。その後、ユーザーがアクセスした別のウェブサイトでは、最初にアクセスしたウェブサイトからの提案によってランニング用シューズの広告を表示することができます。</translation>
 <translation id="7510269639068718544">猫</translation>
 <translation id="7511955381719512146">ご利用の Wi-Fi では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="7512685745044087310">このポリシーは「True」に設定して必須にすることはできません。このため、推奨値に変更されました。</translation>
@@ -4315,7 +4296,6 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798389633136518089">ポリシーがクラウドソースによって設定されていないため、無視されました。</translation>
 <translation id="7800304661137206267">この接続は <ph name="CIPHER" /> で暗号化されており、メッセージ認証には <ph name="MAC" />、鍵交換メカニズムには <ph name="KX" /> が使用されています。</translation>
-<translation id="7800977246388195491">Chrome は、最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。また、アクセスしたウェブサイトの情報からユーザーの好みを判断します。それ以降に訪れる他のウェブサイトは、パーソナライズド広告を表示させるためにこれらの情報をリクエストすることができます。リクエストされた際に提供するトピックやウェブサイトの情報はご自身で選べます。</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
 <translation id="780301667611848630">利用しない</translation>
@@ -4603,7 +4583,6 @@
 <translation id="8279611986089885641">Chrome の通知をオンにする必要があります。[<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />] でオンにできます。</translation>
 <translation id="8280569545097027381"><ph name="HOURS" /> 時間後にファイルを削除</translation>
 <translation id="8280630997017109758">トレイ 11</translation>
-<translation id="8281730697546299650">その他の広告のプライバシー機能がリリースされました</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282292167096638950">運転免許証の削除</translation>
 <translation id="8282409409360764263">庭のメンテナンス</translation>
@@ -4718,7 +4697,6 @@
 <translation id="8456775115498700722"><ph name="CARD_ISSUER_NAME" /> アカウントが Google Pay にリンクされているため、<ph name="CARD_ISSUER_NAME" /> カードを自動入力できるようになりました。</translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8458202188076138974">レター エクストラ</translation>
-<translation id="8460854335417802511">有効にする</translation>
 <translation id="8461289985785035071">Redress 番号の編集</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8461973047386722744">パスワードは見つかりませんでした</translation>
@@ -4803,7 +4781,6 @@
 <translation id="8597726363542221027">中古車</translation>
 <translation id="8600271352425265729">今回のみ</translation>
 <translation id="860043288473659153">カード名義人</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> このデバイスで Chrome を使用してアクセスしたサイトでのアクティビティ。</translation>
 <translation id="8601456038554914806">ウォーター スポーツ用品</translation>
 <translation id="8601782593888534566">SF、ファンタジー</translation>
 <translation id="8604103095921958091">後払い決済の利用規約画面が画面全体に表示されています。</translation>
@@ -4915,6 +4892,7 @@
 <translation id="8796062699363039080"><ph name="OPERATING_SYSTEM" /> の設定</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
+<translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8805819170075074995">リスト項目「<ph name="LANGUAGE_ID" />」: SpellcheckLanguage ポリシーにも含まれているため、この項目は無視されます。</translation>
 <translation id="8806062468703310719">電話サービス プロバイダ</translation>
 <translation id="8806696968588872703">プラスチック（サテン）</translation>
@@ -5029,7 +5007,6 @@
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
-<translation id="9014705027639070815">アクセスしたサイトが Chrome に、広告のパフォーマンスを測定するための情報を要求することがあります。Chrome では、限定的な種類のデータ（サイトにアクセスした後に購入したかどうかなど）をサイトが収集することを許可しています。</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> のセキュリティ コードを入力してください</translation>
 <translation id="901834265349196618">メール</translation>
 <translation id="90196294733273307">クレジット カード情報に関するダイアログが表示されました</translation>
@@ -5061,7 +5038,6 @@
 <translation id="9049981332609050619"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから無効な証明書が提示されました。</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
 <translation id="9051072642122229460">コーヒー メーカー、エスプレッソ マシン</translation>
-<translation id="9053840549256861041">広告の測定という新しい広告プライバシー機能をリリースします。Chrome では、サイトによる広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイト間で共有されます。</translation>
 <translation id="9053955920216300738">アクセスした URL</translation>
 <translation id="90542379288189611">ナンバー プレート</translation>
 <translation id="9054288282721240609">ハンド トラッキングを許可しました</translation>
@@ -5101,7 +5077,6 @@
 <translation id="9114101423898634479">Known Traveler 番号の追加</translation>
 <translation id="9114524666733003316">カードを確認しています…</translation>
 <translation id="9114581008513152754">このブラウザは、会社またはその他の組織によって管理されていません。このデバイスでのアクティビティは、Chrome 以外で管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="9116548361133462832">Chrome で表示される広告の詳細</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> が本人確認を求めています</translation>
@@ -5134,8 +5109,6 @@
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> にはデリケートなコンテンツが含まれている可能性があります}other{<ph name="FILE_COUNT" /> 個のファイルにデリケートなコンテンツが含まれている可能性があります}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – 全画面表示を終了するには、|<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="9163287596625611517">Slack メッセージ</translation>
-<translation id="9165305804774426672">アクセスするウェブサイトによっては、そのウェブサイト上でのアクティビティに基づいてユーザーの好みが判断される場合もあります。たとえば、長距離ランニング シューズを販売するウェブサイトにアクセスすると、そのユーザーはマラソンに興味があるとされるかもしれません。</translation>
-<translation id="9166851138617700776">ウェブサイトによる広告提案と広告測定の詳細</translation>
 <translation id="9167054383925257837">ブラウザとデバイスの OS 情報（ブラウザと OS のバージョンなど）</translation>
 <translation id="9167594211215946097">プリンタへの直接アクセス</translation>
 <translation id="9168814207360376865">お支払い方法を保存しているかどうかの確認をサイトに許可する</translation>
@@ -5220,7 +5193,6 @@
 <translation id="978750072783101994">このカードを Google ウォレットに保存すると、Chromium で購入する際に自動入力されます</translation>
 <translation id="979107176848483472">お使いのブラウザとプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="979189555234810423">展示会、コンベンション</translation>
-<translation id="979503328401807348">広告の有用性が向上</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="984101218975906499">医薬品、バイオテクノロジー</translation>
 <translation id="984275831282074731">お支払い方法</translation>

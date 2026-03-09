@@ -2493,7 +2493,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2665394472441560184">Neues Wort hinzufügen</translation>
 <translation id="2665647207431876759">Abgelaufen</translation>
 <translation id="2665919335226618153">Oh nein! Beim Formatieren ist ein Fehler aufgetreten.</translation>
-<translation id="2666092431469916601">Oben</translation>
 <translation id="2666247341166669829">Akkustand des linken Kopfhörers bei <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Für andere Apps ist festgelegt, dass bei ihnen die gleichen Links wie bei <ph name="APP_NAME" /> geöffnet werden. Dadurch wird deaktiviert, dass bei <ph name="APP_NAME_2" /> und <ph name="APP_NAME_3" /> unterstützte Links geöffnet werden.</translation>
 <translation id="2667463864537187133">Rechtschreibprüfung verwalten</translation>
@@ -2562,7 +2561,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2714180132046334502">Dunkler Hintergrund</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelle</translation>
-<translation id="2715293433233060993">Tabs an die Seite verschieben</translation>
 <translation id="2715751256863167692">Durch dieses Upgrade wird dein Chromebook zurückgesetzt und die aktuellen Nutzerdaten werden entfernt.</translation>
 <translation id="2715934493766003251">Speicherplatz kann nicht freigegeben werden, solange die Dateisynchronisierung aktiv ist</translation>
 <translation id="2716986496990888774">Diese Einstellung wird von einem Elternteil verwaltet.</translation>
@@ -3239,7 +3237,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3167562202484086668">Alle <ph name="BRAND" />-Daten löschen</translation>
 <translation id="3169930038976362151">Wähle ein Design aus, das deinen Anforderungen entspricht. Wenn du das Design, den Hintergrund oder den Bildschirmschoner ändern möchtest, halte einfach eine beliebige Stelle auf dem Desktop gedrückt.</translation>
 <translation id="3170072451822350649">Du kannst die Anmeldung auch überspringen und <ph name="LINK_START" />als Gast surfen<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Tabs nach oben verschieben</translation>
 <translation id="3175067642577044620">Text</translation>
 <translation id="3175862692832442091">Wald</translation>
 <translation id="3176347586396987181">Verwende „z“, um eine Maustaste zu drücken und gedrückt zu halten</translation>
@@ -5508,7 +5505,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4699473989647132421">Küste</translation>
 <translation id="4701025263201366865">Elternanmeldung</translation>
 <translation id="4701335814944566468">Gestern angesehen</translation>
-<translation id="4702504834785592287">Seite</translation>
 <translation id="470644585772471629">Farbumkehr</translation>
 <translation id="4707337002099455863">Immer auf allen Websites</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> beenden</translation>
@@ -7197,7 +7193,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5888889603768021126">Angemeldet mit</translation>
 <translation id="5889282057229379085">Maximal zulässige Anzahl an Zwischenzertifizierungsstellen: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Alle synchronisierten Daten werden mit meiner eigenen <ph name="BEGIN_LINK" />Passphrase für die Synchronisierung verschlüsselt<ph name="END_LINK" />. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
-<translation id="5890072287476934834">Tabs an die Seite verschieben</translation>
 <translation id="5891688036610113830">Bevorzugte WLANs</translation>
 <translation id="5894056653502215961">Auswahl des Ordners „<ph name="FOLDER_TITLE" />“ aufheben</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -9283,7 +9278,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7340179705876485790">Wenn du weiter als eine Seite zurückgehen möchtest, klicke auf „Zurück“ und halte die Taste gedrückt.</translation>
 <translation id="7340650977506865820">Dein Bildschirm wurde von der Website freigegeben</translation>
 <translation id="7340757554212515731">Absturzberichte, Diagnose- und Nutzungsdaten werden automatisch an Google gesendet</translation>
-<translation id="7340886226071938450">Position der Tableiste</translation>
 <translation id="734088800888587319">Netzwerkmesswerte</translation>
 <translation id="7341834142292923918">Möchte auf diese Website zugreifen</translation>
 <translation id="7343372807593926528">Bitte beschreibe das Problem, bevor du Feedback sendest.</translation>
@@ -11288,7 +11282,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8685540043423825702">Mein Chrome-Profil</translation>
 <translation id="8685882652128627032">Klicken, um das Dialogfeld „Website-Suchmaschine hinzufügen“ zu öffnen</translation>
 <translation id="8686142379631285985">Angemeldet als <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Tabs nach oben verschieben</translation>
 <translation id="8687103160920393343">„<ph name="FILE_NAME" />“ abbrechen</translation>
 <translation id="8687527282898211955">PIN einrichten</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> immer daran hindern, Kennungen zum Wiedergeben geschützter Inhalte zu verwenden</translation>

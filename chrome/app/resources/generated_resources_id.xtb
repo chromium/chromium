@@ -2508,7 +2508,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2665394472441560184">Tambahkan kata baru</translation>
 <translation id="2665647207431876759">Sudah berakhir</translation>
 <translation id="2665919335226618153">Waduh! Terjadi error saat proses pemformatan.</translation>
-<translation id="2666092431469916601">Atas</translation>
 <translation id="2666247341166669829">Tingkat daya baterai kiri <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Aplikasi lain disetel untuk membuka link yang sama dengan <ph name="APP_NAME" />. Penyetelan ini akan membuat <ph name="APP_NAME_2" /> dan <ph name="APP_NAME_3" /> tidak dapat membuka link yang didukung.</translation>
 <translation id="2667463864537187133">Kelola pemeriksa ejaan</translation>
@@ -2577,7 +2576,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2714180132046334502">Latar belakang gelap</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Model</translation>
-<translation id="2715293433233060993">Pindahkan Tab ke Samping</translation>
 <translation id="2715751256863167692">Upgrade ini menyetel ulang Chromebook dan menghapus data pengguna saat ini.</translation>
 <translation id="2715934493766003251">Tidak dapat mengosongkan penyimpanan saat sinkronisasi file aktif</translation>
 <translation id="2716986496990888774">Setelan ini dikelola oleh orang tua.</translation>
@@ -3254,7 +3252,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3167562202484086668">Hapus semua data <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Pilih tema yang sesuai dengan kebutuhan Anda. Cukup sentuh lama desktop untuk mengubah tema, wallpaper, screen saver, dan lainnya.</translation>
 <translation id="3170072451822350649">Anda juga dapat melewati proses masuk dan <ph name="LINK_START" />menjelajah sebagai tamu<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Pindahkan tab ke atas</translation>
 <translation id="3175067642577044620">Isi</translation>
 <translation id="3175862692832442091">Hutan</translation>
 <translation id="3176347586396987181">Gunakan “z” untuk menekan lama tombol mouse</translation>
@@ -5525,7 +5522,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4699473989647132421">Garis pantai</translation>
 <translation id="4701025263201366865">Login orang tua</translation>
 <translation id="4701335814944566468">Dilihat kemarin</translation>
-<translation id="4702504834785592287">Sisi</translation>
 <translation id="470644585772471629">Inversi warna</translation>
 <translation id="4707337002099455863">Selalu di Semua Situs</translation>
 <translation id="4708849949179781599">Berhenti <ph name="PRODUCT_NAME" /></translation>
@@ -7218,7 +7214,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5888889603768021126">Login dengan</translation>
 <translation id="5889282057229379085">Jumlah maksimum CA perantara: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Enkripsikan data yang disinkronkan dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> Anda sendiri. Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.</translation>
-<translation id="5890072287476934834">Pindahkan tab ke samping</translation>
 <translation id="5891688036610113830">Jaringan Wi-Fi pilihan</translation>
 <translation id="5894056653502215961">Batalkan pilihan folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
@@ -9305,7 +9300,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7340179705876485790">Untuk kembali ke lebih dari 1 halaman, klik lama tombol Kembali.</translation>
 <translation id="7340650977506865820">Situs sedang membagikan layar</translation>
 <translation id="7340757554212515731">Otomatis mengirimkan laporan kerusakan serta diagnostik dan data penggunaan ke Google</translation>
-<translation id="7340886226071938450">Posisi kolom tab</translation>
 <translation id="734088800888587319">Metrik Jaringan</translation>
 <translation id="7341834142292923918">Ingin mengakses situs ini</translation>
 <translation id="7343372807593926528">Jelaskan masalahnya sebelum mengirim masukan.</translation>
@@ -11309,7 +11303,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8685540043423825702">Profil Chrome Anda</translation>
 <translation id="8685882652128627032">Klik untuk membuka dialog Tambahkan Penelusuran Situs</translation>
 <translation id="8686142379631285985">Login sebagai <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Pindahkan Tab ke Atas</translation>
 <translation id="8687103160920393343">Batalkan <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Siapkan PIN Anda</translation>
 <translation id="8687774873995698516">Selalu blokir <ph name="HOST" /> agar tidak menggunakan ID untuk memutar konten yang dilindungi</translation>

@@ -10,6 +10,7 @@
 
 Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruhen.</translation>
 <translation id="1083934481477628225">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium</translation>
+<translation id="1090946077924227754">Për të kërkuar një veçori ose shtesë specifike të Chromium, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga tasti i zgjedhur i tastierës</translation>
 <translation id="1104942323762546749">Chromium dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="112640046208448578">Identifiko gjërat ose vendet dhe kopjo ose përkthe tekstin. Kur përdor "Kërkimin nëpërmjet imazheve", një pamje ekrani e faqes dërgohet te serveri. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium është shfletuesi yt i parazgjedhur</translation>
@@ -27,6 +28,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1262876892872089030">Kur kjo skedë ishte joaktive, memoria u lirua që Chromium të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>
 <translation id="1265577313130862557">Chromium e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
+<translation id="1287534462498555020">Merr Chromium në telefonin tënd</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfiguro profilin tënd të ri të Chromium</translation>
 <translation id="132092532143527429">Provo me Gemini në Chromium</translation>
@@ -381,6 +383,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5231355151045086930">Dil nga Chromium</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5254739261293693943">Bëj pyetje rreth kësaj videoje</translation>
+<translation id="5276305953263010518">Merr aplikacionin e Chromium për t'i ruajtur fjalëkalimet kur je në lëvizje</translation>
 <translation id="5277894862589591112">Për të zbatuar ndryshimet, rinis Chromium</translation>
 <translation id="5286907366254680517">Zbuluar</translation>
 <translation id="5289287148052354622">Merr aplikacionin e Chromium</translation>
@@ -692,6 +695,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8522801943730206384">Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="8548787790260785208">Merr paralajmërim nëse Chromium gjen një nga fjalëkalimet e tua në një nxjerrje publike të paautorizuar të të dhënave</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Disa veçori dhe shtesa të Chromium vijnë me shkurtore. Mund të zgjedhësh që t'i aktivizosh përsëri.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
 <translation id="8568283329061645092">Chromium mund t'i kontrollojë fjalëkalimet e tua kur të identifikohesh me "Llogarinë tënde të Google"</translation>
@@ -727,6 +731,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>
 <translation id="9019929317751753759">Për ta bërë më të sigurt Chromium, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
 <translation id="904366664621834601">Chromium e bllokoi këtë shkarkim sepse skedari i arkivit përfshin skedarë të tjerë që mund të fshehin softuer keqdashës</translation>
+<translation id="9053882453960391422">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje. Qasu me lehtësi te veçoritë që njeh dhe që të pëlqejnë duke e përditësuar shfletuesin tënd të parazgjedhur në Chromium. Chromium do të gozhdohet te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="9062666675513499497">Identifikohu në Chromium kur identifikohesh në shërbimet e tjera të Google</translation>
 <translation id="9078733879136747090">Chromium u mbyll automatikisht</translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>

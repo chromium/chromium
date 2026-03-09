@@ -2496,7 +2496,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2665394472441560184">Afegeix una paraula nova</translation>
 <translation id="2665647207431876759">Caducat</translation>
 <translation id="2665919335226618153">S'ha produït un error durant la formatació.</translation>
-<translation id="2666092431469916601">Superior</translation>
 <translation id="2666247341166669829">Nivell de bateria de l'auricular esquerre: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestiona el corrector ortogràfic</translation>
@@ -2565,7 +2564,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2714180132046334502">Fons fosc</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Models</translation>
-<translation id="2715293433233060993">Mou les pestanyes al costat</translation>
 <translation id="2715751256863167692">Amb aquesta actualització es restableix el dispositiu Chromebook i se suprimeixen les dades d'usuari actuals.</translation>
 <translation id="2715934493766003251">No es pot alliberar emmagatzematge mentre la sincronització de fitxers està activada</translation>
 <translation id="2716986496990888774">El teu pare o mare gestiona aquesta opció de configuració.</translation>
@@ -3242,7 +3240,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3167562202484086668">Suprimeix totes les dades del <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Tria el tema que s'adapti a les teves necessitats. Per canviar el tema, el fons de pantalla, l'estalvi de pantalla i més, mantén premut l'escriptori.</translation>
 <translation id="3170072451822350649">També podeu <ph name="LINK_START" />navegar com a convidat<ph name="LINK_END" /> sense iniciar sessió.</translation>
-<translation id="3172642937040465677">Mou les pestanyes a la part superior</translation>
 <translation id="3175067642577044620">Cos</translation>
 <translation id="3175862692832442091">Bosc</translation>
 <translation id="3176347586396987181">Utilitza la tecla Z per mantenir premut un botó del ratolí</translation>
@@ -5510,7 +5507,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inici de sessió dels pares</translation>
 <translation id="4701335814944566468">Es va veure ahir</translation>
-<translation id="4702504834785592287">Costat</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
 <translation id="4707337002099455863">Sempre en tots els llocs web</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
@@ -7201,7 +7197,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5888889603768021126">S'ha iniciat la sessió amb</translation>
 <translation id="5889282057229379085">Nombre màxim de CA intermèdies: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encripta les dades sincronitzades amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.</translation>
-<translation id="5890072287476934834">Mou les pestanyes al costat</translation>
 <translation id="5891688036610113830">Xarxes Wi-Fi preferides</translation>
 <translation id="5894056653502215961">Desselecciona la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -9287,7 +9282,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7340179705876485790">Per tornar enrere més d'una pàgina, fes clic i mantén premut el botó Enrere.</translation>
 <translation id="7340650977506865820">El lloc web està compartint la pantalla</translation>
 <translation id="7340757554212515731">Envia automàticament informes d'error i dades de diagnòstic i d'ús a Google</translation>
-<translation id="7340886226071938450">Posició de la barra de pestanyes</translation>
 <translation id="734088800888587319">Mètriques de la xarxa</translation>
 <translation id="7341834142292923918">Vol accedir a aquest lloc web</translation>
 <translation id="7343372807593926528">Descriu el problema abans d'enviar suggeriments.</translation>
@@ -11292,7 +11286,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8685540043423825702">El teu perfil de Chrome</translation>
 <translation id="8685882652128627032">Fes clic per obrir el quadre de diàleg Afegeix una cerca al lloc web</translation>
 <translation id="8686142379631285985">Has iniciat la sessió com a <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mou les pestanyes a la part superior</translation>
 <translation id="8687103160920393343">Cancel·la <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configura el PIN</translation>
 <translation id="8687774873995698516">Impedeix sempre que <ph name="HOST" /> utilitzi identificadors per reproduir contingut protegit</translation>

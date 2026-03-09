@@ -2509,7 +2509,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2665394472441560184">Lägg till ett nytt ord</translation>
 <translation id="2665647207431876759">Upphört att gälla</translation>
 <translation id="2665919335226618153">Ett fel uppstod vid formateringen.</translation>
-<translation id="2666092431469916601">Överst</translation>
 <translation id="2666247341166669829">Vänster batterinivå är <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" /> och <ph name="APP_NAME_3" /> öppnar länkar som stöds.</translation>
 <translation id="2667463864537187133">Hantera stavningskontrollen</translation>
@@ -2578,7 +2577,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2714180132046334502">Mörk bakgrund</translation>
 <translation id="2714393097308983682">Google Play Butik</translation>
 <translation id="2714617928488200509">Modeller</translation>
-<translation id="2715293433233060993">Flytta flikar till sidan</translation>
 <translation id="2715751256863167692">Med den här uppgraderingen återställs Chromebook och nuvarande användardata tas bort.</translation>
 <translation id="2715934493766003251">Det går inte att frigöra lagringsutrymme medan filsynkronisering är aktiverat</translation>
 <translation id="2716986496990888774">Den här inställningen hanteras av en förälder.</translation>
@@ -3255,7 +3253,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3167562202484086668">Radera all data för <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Välj det tema som passar dina behov. Du kan ändra tema, bakgrund, skärmsläckare med mera genom att trycka länge på skrivbordet.</translation>
 <translation id="3170072451822350649">Du kan även hoppa över inloggningen och <ph name="LINK_START" />surfa som gäst<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Flytta flikar högst upp</translation>
 <translation id="3175067642577044620">Brödtext</translation>
 <translation id="3175862692832442091">Skog</translation>
 <translation id="3176347586396987181">Håll ned en musknapp med z</translation>
@@ -5526,7 +5523,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4699473989647132421">Strandlinje</translation>
 <translation id="4701025263201366865">Föräldrainloggning</translation>
 <translation id="4701335814944566468">Visades i går</translation>
-<translation id="4702504834785592287">Sida</translation>
 <translation id="470644585772471629">Inverterade färger</translation>
 <translation id="4707337002099455863">Alltid på alla webbplatser</translation>
 <translation id="4708849949179781599">Avsluta <ph name="PRODUCT_NAME" /></translation>
@@ -7219,7 +7215,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5888889603768021126">Inloggad med</translation>
 <translation id="5889282057229379085">Maximalt antal mellanliggande CU: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Kryptera synkroniserad data med en egen <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" />. Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.</translation>
-<translation id="5890072287476934834">Flytta flikar till sidan</translation>
 <translation id="5891688036610113830">Föredragna wifi-nätverk</translation>
 <translation id="5894056653502215961">Avmarkera mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -9306,7 +9301,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7340179705876485790">Om du vill gå tillbaka fler än en sida klickar du och håller kvar Tillbaka.</translation>
 <translation id="7340650977506865820">Webbplatsen delar din skärm</translation>
 <translation id="7340757554212515731">Felrapporter samt diagnostik- och användningsdata skickas automatiskt till Google</translation>
-<translation id="7340886226071938450">Position för flikhuvud</translation>
 <translation id="734088800888587319">Nätverksstatistik</translation>
 <translation id="7341834142292923918">Begär åtkomst till webbplatsen</translation>
 <translation id="7343372807593926528">Beskriv problemet innan du skickar feedback.</translation>
@@ -11311,7 +11305,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8685882652128627032">Klicka för att öppna dialogrutan Lägg till webbplatssökning</translation>
 <translation id="8686142379631285985">Inloggad som <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Flytta flikar högst upp</translation>
 <translation id="8687103160920393343">Avbryt <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Ställ in en pinkod</translation>
 <translation id="8687774873995698516">Blockera alltid <ph name="HOST" /> från att använda identifierare för att spela upp skyddat innehåll</translation>

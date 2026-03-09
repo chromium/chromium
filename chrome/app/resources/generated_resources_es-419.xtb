@@ -2493,7 +2493,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2665394472441560184">Agregar una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">Se produjo un error durante la aplicación de formato.</translation>
-<translation id="2666092431469916601">Superior</translation>
 <translation id="2666247341166669829">Nivel de batería del Pixel Bud izquierdo <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" /> abran los vínculos compatibles.</translation>
 <translation id="2667463864537187133">Administrar el corrector ortográfico</translation>
@@ -2562,7 +2561,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2714180132046334502">Fondo oscuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelos</translation>
-<translation id="2715293433233060993">Mover las pestañas al lateral</translation>
 <translation id="2715751256863167692">Esta actualización restablece tu Chromebook y quita los datos del usuario actual.</translation>
 <translation id="2715934493766003251">No se puede liberar almacenamiento mientras la sincronización de archivos está activada</translation>
 <translation id="2716986496990888774">Esta configuración la administra uno de tus padres.</translation>
@@ -3239,7 +3237,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3167562202484086668">Borrar todos los datos del <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Elige el tema que se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el protector de pantalla y más, mantén presionado en el escritorio.</translation>
 <translation id="3170072451822350649">También puedes omitir el acceso y <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Mover las pestañas a la parte superior</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa “z” para presionar y mantener presionado un botón del mouse</translation>
@@ -5510,7 +5507,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4699473989647132421">Orilla</translation>
 <translation id="4701025263201366865">Se requiere el acceso del padre o la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
-<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
 <translation id="4707337002099455863">Siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
@@ -7203,7 +7199,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5888889603768021126">Accediste con</translation>
 <translation id="5889282057229379085">Cantidad máxima de certificados intermedios: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encripta los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. No se encriptarán las formas de pago ni las direcciones de Google Pay. No se sincronizará el historial de navegación de Chrome.</translation>
-<translation id="5890072287476934834">Mover las pestañas al lateral</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Anular selección de la carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -9290,7 +9285,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7340179705876485790">Para retroceder más de 1 página, mantén presionado Atrás.</translation>
 <translation id="7340650977506865820">El sitio está compartiendo la pantalla</translation>
 <translation id="7340757554212515731">Envía automáticamente informes de fallas, datos de uso y de diagnóstico a Google</translation>
-<translation id="7340886226071938450">Posición de la barra de pestañas</translation>
 <translation id="734088800888587319">Métricas de red</translation>
 <translation id="7341834142292923918">Requiere acceso a este sitio</translation>
 <translation id="7343372807593926528">Describe el problema antes de enviar los comentarios.</translation>
@@ -11295,7 +11289,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8685882652128627032">Hacer clic para abrir el diálogo Agrega búsquedas en el sitio</translation>
 <translation id="8686142379631285985">Accediste como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mover las pestañas a la parte superior</translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configura el PIN</translation>
 <translation id="8687774873995698516">Impedir siempre que <ph name="HOST" /> use identificadores para reproducir contenido protegido</translation>

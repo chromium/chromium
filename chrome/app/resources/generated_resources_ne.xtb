@@ -2496,7 +2496,6 @@
 <translation id="2665394472441560184">नयाँ शब्द थप्नुहोस्</translation>
 <translation id="2665647207431876759">म्याद सकियो</translation>
 <translation id="2665919335226618153">ओ, तस्बिर! ढाँचाका क्रममा एउटा त्रुटी भयो ।</translation>
-<translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2666247341166669829">बायाँपट्टिको बडमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="2667144577800272420">अन्य एपले पनि <ph name="APP_NAME" /> ले झैँ उही लिंकहरू खोल्ने सेटिङ लागू गरिएको छ। तपाईंले डिफल्ट एप बदल्नुभयो भने <ph name="APP_NAME_2" /> र <ph name="APP_NAME_3" /> ले खोल्न मिल्ने लिंकहरू खोल्न सक्ने छैनन्।</translation>
 <translation id="2667463864537187133">हिज्जे जाँचको व्यवस्थापन गर्नुहोस्</translation>
@@ -2565,7 +2564,6 @@
 <translation id="2714180132046334502">गाढा पृष्ठभूमि</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">मोडेलहरू</translation>
-<translation id="2715293433233060993">ट्याबहरू सारेर छेउमा लैजानुहोस्</translation>
 <translation id="2715751256863167692">यो स्तरवृद्धिले तपाईंको Chromebook लाई रिसेट गरी हालको प्रयोगकर्ताको डेटा हटाउँछ।</translation>
 <translation id="2715934493766003251">फाइल सिंक गर्ने सुविधा अन भएका बेला भण्डारणमा रहेका फाइल मेटाउन सकिँदैन</translation>
 <translation id="2716986496990888774">कुनै अभिभावक यो सेटिङको व्यवस्थापन गर्नुहुन्छ।</translation>
@@ -3243,7 +3241,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> मा भएका सबै डेटा मेटाउनुहोस्</translation>
 <translation id="3169930038976362151">आफूलाई उपयुक्त हुने थिम छनौट गर्नुहोस्। आफ्ना थिम, वालपेपर, स्क्रिन सेभर र थप कुराहरू बदल्न डेस्कटपमा टच एण्ड होल्ड गरे पुग्छ।</translation>
 <translation id="3170072451822350649">तपाइँले साइन इन गर्न पनि छाड्न सक्नुहुन्छ र <ph name="LINK_START" />पाहनुाको रूपाम ब्राउज गर्न सक्नुहुन्छ<ph name="LINK_END" />।</translation>
-<translation id="3172642937040465677">ट्याबहरू सारेर सिरानमा लैजानुहोस्</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3175862692832442091">जङ्गल</translation>
 <translation id="3176347586396987181">माउसको बटन थिचिराख्न “z” प्रयोग गर्नुहोस्</translation>
@@ -5511,7 +5508,6 @@
 <translation id="4699473989647132421">तट रेखा</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
-<translation id="4702504834785592287">सतह</translation>
 <translation id="470644585772471629">कलर इन्भर्सन</translation>
 <translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
@@ -7204,7 +7200,6 @@
 <translation id="5888889603768021126">यसमार्फत साइन इन गरिएको</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA हरूको अधिकतम सङ्ख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">आफ्नै <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> प्रयोग गरेर सिंक गरिएको जानकारी इन्क्रिप्ट गर्नुहोस्। Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैन। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।</translation>
-<translation id="5890072287476934834">ट्याबहरू सारेर छेउमा लैजानुहोस्</translation>
 <translation id="5891688036610113830">रोजाइका Wi-Fi नेटवर्कहरू</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> फोल्डर चयन रद्द गर्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -9289,7 +9284,6 @@
 <translation id="7340179705876485790">१ भन्दा बढी पेज पछाडि जान "पछाडि" मा क्लिक गरी नछोड्नुहोस्।</translation>
 <translation id="7340650977506865820">साइटले तपाईंको स्क्रिन आदान प्रदान गर्दै छ</translation>
 <translation id="7340757554212515731">Google लाई डाइग्नोस्टिक तथा प्रयोगसम्बन्धी डेटाका साथै क्र्यास रिपोर्टहरू स्वतः पठाइयोस्</translation>
-<translation id="7340886226071938450">ट्याब स्ट्रिपको स्थिति</translation>
 <translation id="734088800888587319">नेटवर्क मेट्रिक्स</translation>
 <translation id="7341834142292923918">यो साइटमाथि पहुँच राख्न चाहन्छ</translation>
 <translation id="7343372807593926528">कृपया प्रतिक्रिया पठाउनुअघि आफ्नो समस्या वर्णन गर्नुहोस्।</translation>
@@ -11293,7 +11287,6 @@
 <translation id="8685540043423825702">तपाईंको Chrome प्रोफाइल</translation>
 <translation id="8685882652128627032">साइट सर्च हाल्ने डायलग खोल्न क्लिक गर्नुहोस्</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> मार्फत साइन इन गरिएको छ</translation>
-<translation id="8686578183956518912">ट्याबहरू सारेर सिरानमा लैजानुहोस्</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> डाउनलोड गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8687527282898211955">आफ्नो PIN सेटअप गर्नुहोस्</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> लाई संरक्षित सामग्री प्ले गर्नका निम्ति आइडेन्टिफायरहरू प्रयोग गर्न सधैँ रोक लगाउनुहोस्</translation>

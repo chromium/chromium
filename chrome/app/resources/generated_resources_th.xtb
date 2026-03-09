@@ -2496,7 +2496,6 @@
 <translation id="2665394472441560184">เพิ่มคำใหม่</translation>
 <translation id="2665647207431876759">หมดอายุ</translation>
 <translation id="2665919335226618153">แย่จัง! เกิดข้อผิดพลาดในระหว่างการจัดรูปแบบ</translation>
-<translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2666247341166669829">ระดับแบตเตอรี่ข้างซ้าย <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420">มีแอปอื่นได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> และ <ph name="APP_NAME_3" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="2667463864537187133">จัดการการตรวจตัวสะกด</translation>
@@ -2565,7 +2564,6 @@
 <translation id="2714180132046334502">พื้นหลังสีเข้ม</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">โมเดล</translation>
-<translation id="2715293433233060993">ย้ายแท็บไปด้านข้าง</translation>
 <translation id="2715751256863167692">การอัปเกรดนี้จะรีเซ็ต Chromebook และนำข้อมูลผู้ใช้ปัจจุบันออก</translation>
 <translation id="2715934493766003251">ล้างพื้นที่เก็บข้อมูลไม่ได้ในขณะที่การซิงค์ไฟล์เปิดอยู่</translation>
 <translation id="2716986496990888774">การตั้งค่านี้จัดการโดยผู้ปกครอง</translation>
@@ -3242,7 +3240,6 @@
 <translation id="3167562202484086668">ลบข้อมูล<ph name="BRAND" />ทั้งหมด</translation>
 <translation id="3169930038976362151">เลือกธีมที่ตรงกับความต้องการของคุณ หากต้องการเปลี่ยนธีม วอลเปเปอร์ โปรแกรมรักษาหน้าจอ และอื่นๆ เพียงแตะค้างไว้บนเดสก์ท็อป</translation>
 <translation id="3170072451822350649">คุณสามารถข้ามการลงชื่อเข้าใช้และ<ph name="LINK_START" />เรียกดูในฐานะผู้เยี่ยมชม<ph name="LINK_END" />ได้ด้วย</translation>
-<translation id="3172642937040465677">ย้ายแท็บไปด้านบน</translation>
 <translation id="3175067642577044620">เนื้อความ</translation>
 <translation id="3175862692832442091">ป่า</translation>
 <translation id="3176347586396987181">ใช้ปุ่ม "z" เพื่อกดปุ่มเมาส์ค้างไว้</translation>
@@ -5514,7 +5511,6 @@
 <translation id="4699473989647132421">แนวชายฝั่ง</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
 <translation id="4701335814944566468">ดูเมื่อวานนี้</translation>
-<translation id="4702504834785592287">ด้านข้าง</translation>
 <translation id="470644585772471629">การกลับสี</translation>
 <translation id="4707337002099455863">ตลอดเวลาในทุกเว็บไซต์</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
@@ -7204,7 +7200,6 @@
 <translation id="5888889603768021126">ลงชื่อเข้าใช้ด้วย</translation>
 <translation id="5889282057229379085">จำนวนสูงสุดของ CA ระดับกลาง: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">เข้ารหัสข้อมูลที่ซิงค์ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />ของคุณเอง ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์</translation>
-<translation id="5890072287476934834">ย้ายแท็บไปด้านข้าง</translation>
 <translation id="5891688036610113830">เครือข่าย Wi-Fi ที่ต้องการ</translation>
 <translation id="5894056653502215961">ยกเลิกการเลือกโฟลเดอร์ <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -9291,7 +9286,6 @@
 <translation id="7340179705876485790">หากต้องการย้อนกลับมากกว่า 1 หน้า ให้คลิก "กลับ" ค้างไว้</translation>
 <translation id="7340650977506865820">เว็บไซต์กำลังแชร์หน้าจอของคุณ</translation>
 <translation id="7340757554212515731">ส่งรายงานข้อขัดข้อง รวมถึงข้อมูลการวินิจฉัยและการใช้งานให้ Google โดยอัตโนมัติ</translation>
-<translation id="7340886226071938450">ตำแหน่งแนวแท็บ</translation>
 <translation id="734088800888587319">เมตริกเครือข่าย</translation>
 <translation id="7341834142292923918">ต้องการเข้าถึงเว็บไซต์นี้</translation>
 <translation id="7343372807593926528">โปรดอธิบายปัญหาก่อนส่งความคิดเห็น</translation>
@@ -11296,7 +11290,6 @@
 <translation id="8685540043423825702">โปรไฟล์ Chrome ของคุณ</translation>
 <translation id="8685882652128627032">คลิกเพื่อเปิดกล่องโต้ตอบ "เพิ่มการค้นหาเว็บไซต์"</translation>
 <translation id="8686142379631285985">ลงชื่อเข้าใช้ด้วย <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">ย้ายแท็บไปด้านบน</translation>
 <translation id="8687103160920393343">ยกเลิก <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">ตั้งค่า PIN</translation>
 <translation id="8687774873995698516">บล็อก <ph name="HOST" /> ไม่ให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครองเสมอ</translation>

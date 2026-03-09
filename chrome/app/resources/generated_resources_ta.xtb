@@ -2509,7 +2509,6 @@
 <translation id="2665394472441560184">புதிய சொல்லைச் சேர்க்கவும்</translation>
 <translation id="2665647207431876759">காலாவதியாகிவிட்டது</translation>
 <translation id="2665919335226618153">அச்சச்சோ! வடிவமைக்கும்போது பிழை ஏற்பட்டது.</translation>
-<translation id="2666092431469916601">மேலே</translation>
 <translation id="2666247341166669829">இடதுபக்க பட் பேட்டரி நிலை <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ஆப்ஸ் திறக்கும் அதே இணைப்புகளைப் பிற ஆப்ஸும் திறக்கும் வகையில் அமைக்கப்பட்டுள்ளன. இதை மாற்றினால், ஆதரிக்கப்படும் இணைப்புகளைத் திறப்பதில் இருந்து <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ஆகியவை முடக்கப்படும்.</translation>
 <translation id="2667463864537187133">எழுத்துப் பிழை சரிபார்ப்பானை நிர்வகி</translation>
@@ -2578,7 +2577,6 @@
 <translation id="2714180132046334502">அடர்த்தியான பின்புலம்</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">மாடல்கள்</translation>
-<translation id="2715293433233060993">பக்கங்களைப் பக்கவாட்டிற்கு நகர்த்து</translation>
 <translation id="2715751256863167692">இந்தப் புதுப்பிப்பை நிறுவினால், உங்கள் Chromebook மீட்டமைக்கப்பட்டு, தற்போதைய பயனர் தரவு அகற்றப்படும்.</translation>
 <translation id="2715934493766003251">ஃபைல் ஒத்திசைவு இயக்கப்பட்டிருக்கும்போது சேமிப்பகத்தைக் காலியாக்க முடியாது</translation>
 <translation id="2716986496990888774">பெற்றோர் இந்த அமைப்பை நிர்வகிக்கிறார்கள்.</translation>
@@ -3255,7 +3253,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> தரவு முழுவதையும் நீக்குதல்</translation>
 <translation id="3169930038976362151">உங்கள் தேவைகளுக்கு ஏற்ப தீமினைத் தேர்வுசெய்யலாம். உங்கள் தீம், வால்பேப்பர், ஸ்கிரீன் சேவர் மற்றும் பலவற்றை மாற்ற டெஸ்க்டாப்பில் தொட்டுப் பிடிக்கவும்.</translation>
 <translation id="3170072451822350649">உள்நுழைவதைத் தவிர்த்துவிட்டு <ph name="LINK_START" />கெஸ்டாக உலாவலாம்<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">பக்கங்களை மேலே நகர்த்து</translation>
 <translation id="3175067642577044620">உள்ளடக்கம்</translation>
 <translation id="3175862692832442091">காடு</translation>
 <translation id="3176347586396987181">மவுஸ் பட்டனை அழுத்திப் பிடிக்க “z” பட்டனைப் பயன்படுத்தவும்</translation>
@@ -5526,7 +5523,6 @@
 <translation id="4699473989647132421">கரை</translation>
 <translation id="4701025263201366865">பெற்றோர் உள்நுழைதல்</translation>
 <translation id="4701335814944566468">நேற்று பார்வையிடப்பட்டது</translation>
-<translation id="4702504834785592287">சைடு</translation>
 <translation id="470644585772471629">கலர் இன்வெர்ஷன்</translation>
 <translation id="4707337002099455863">அனைத்துத் தளங்களுக்கும் எப்போதும் அனுமதி</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
@@ -7220,7 +7216,6 @@
 <translation id="5888889603768021126">இதன் மூலம் உள்நுழைந்துள்ளீர்கள்:</translation>
 <translation id="5889282057229379085">அதிகபட்ச எண்ணிக்கையிலான இடைப்பட்ட CAகள்: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">எனது சொந்த <ph name="BEGIN_LINK" />ஒத்திசைவுக் கடவுச்சொற்றொடர்<ph name="END_LINK" /> மூலம் ஒத்திசைக்கப்பட்ட தரவை என்கிரிப்ட் செய். Google Payயிலுள்ள பேமெண்ட் முறைகளும் முகவரிகளும் என்க்ரிப்ஷன் செய்யப்படாது. Chrome உலாவியில் இதுவரை இணையத்தில் பார்த்தவை ஒத்திசைக்கப்படாது.</translation>
-<translation id="5890072287476934834">பக்கங்களைப் பக்கவாட்டிற்கு நகர்த்து</translation>
 <translation id="5891688036610113830">விருப்பமான வைஃபை நெட்வொர்க்குகள்</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ஃபோல்டரைத் தேர்வுநீக்கும்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
@@ -9307,7 +9302,6 @@
 <translation id="7340179705876485790">ஒரு பக்கத்திற்கு மேல் பின்செல்ல, பின்செல் பட்டனைக் கிளிக் செய்து அழுத்திப் பிடிக்கவும்.</translation>
 <translation id="7340650977506865820">தளமானது உங்கள் திரையைப் பகிர்கிறது</translation>
 <translation id="7340757554212515731">சிதைவு அறிக்கைகள், பிழை அறிக்கைத் தரவு, உபயோகத் தரவு ஆகியவற்றை Googleளுக்குத் தானாக அனுப்பும்</translation>
-<translation id="7340886226071938450">உலாவிப்பக்கப் பட்டியின் இடம்</translation>
 <translation id="734088800888587319">நெட்வொர்க் அளவீடுகள்</translation>
 <translation id="7341834142292923918">இந்தத் தளத்திற்கு அணுகலைக் கோருகிறது</translation>
 <translation id="7343372807593926528">கருத்தை அனுப்புவதற்கு முன், சிக்கல் குறித்து விளக்கவும்.</translation>
@@ -11312,7 +11306,6 @@
 <translation id="8685540043423825702">உங்கள் Chrome சுயவிவரம்</translation>
 <translation id="8685882652128627032">‘தளத் தேடலைச் சேர்த்தல்’ உரையாடலைத் திறக்க கிளிக் செய்யவும்</translation>
 <translation id="8686142379631285985">உள்நுழைந்துள்ள கணக்கு: <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">பக்கங்களை மேலே நகர்த்து</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ஃபைலை ரத்துசெய்</translation>
 <translation id="8687527282898211955">உங்கள் பின்னை அமையுங்கள்</translation>
 <translation id="8687774873995698516">பாதுகாக்கப்பட்ட உள்ளடக்கத்தைப் பிளே செய்வதற்கு அடையாளங்காட்டிகளைப் பயன்படுத்த முடியாதபடி <ph name="HOST" /> தளத்தை எப்போதும் தடு</translation>

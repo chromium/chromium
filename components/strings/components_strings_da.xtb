@@ -485,7 +485,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1748225549612934682">Forkort din tekst for at få hjælp til at skrive</translation>
 <translation id="1752021286346845558">Postkasse 8</translation>
 <translation id="1753706481035618306">Sidetal</translation>
-<translation id="1755203724116202818">Med henblik på at måle en annonces effektivitet deles der begrænsede typer data mellem websites, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="1755621011177747277">Adoption</translation>
 <translation id="1756026472674246267">Åbn link på ny fane</translation>
 <translation id="1756555787993603971">Nu kan du bruge et virtuelt kort til at betale mere sikkert ved hjælp af autofyld.</translation>
@@ -620,7 +619,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1999416967035780066">Freeware og shareware</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
 <translation id="2001469757375372617">Noget gik galt. Din ændring blev ikke gemt.</translation>
-<translation id="2002436619517051938">Du kan foretage ændringer i Chrome-indstillingerne.</translation>
 <translation id="2003709556000175978">Nulstil din adgangskode nu</translation>
 <translation id="2003775180883135320">Fire huller øverst</translation>
 <translation id="2009942480257059311">Knappen Opret begivenhed, aktivér for hurtigt at oprette en ny begivenhed i Google Kalender</translation>
@@ -648,7 +646,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2045871135676061132">Konvolut Personlig</translation>
 <translation id="2046951263634619614">Boghandlere</translation>
 <translation id="2048261947532620704">Oversætter siden</translation>
-<translation id="2056658168519009885">Websites kan anmode Chrome om oplysninger med henblik på at personligt tilpasse de annoncer, du ser.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
 <translation id="2064568741209980952">Kredit og udlån</translation>
@@ -750,6 +747,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2188375229972301266">Flere huller nederst</translation>
 <translation id="218940509700321686">Kommaseparerede værdier</translation>
 <translation id="2191980191135734720">Lås din skærm op i næste trin – typisk ved hjælp af dit fingeraftryk. Du kan også <ph name="LINK_TEXT" />.</translation>
+<translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2198183835992354675">Known Traveler-nummer</translation>
 <translation id="2198215508485017216">Der skete noget uventet. <ph name="BEGIN_LINK" />Få flere oplysninger om Drev-uploads<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Dislike-knap, tryk på Enter for at åbne en formular, hvor du kan indsende detaljeret feedback om, hvorfor du ikke kan lide dette forslag</translation>
@@ -1266,7 +1264,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tryk på Tab-tasten og derefter Enter for at fjerne forslaget.</translation>
 <translation id="3019738915977809060">Gem boardingkortet i Wallet</translation>
 <translation id="3022959067768579802">Fortsæt med at skrive</translation>
-<translation id="3023165109041533893">Foreslåede annoncer fra websites hjælper med at beskytte din browserhistorik og identitet og giver websites mulighed for at vise dig relevante annoncer. Baseret på din aktivitet kan et website, du har besøgt, foreslå relaterede annoncer, når du fortsætter med at browse. Du kan se en liste over disse websites og blokere dem, du ikke er interesseret i, ved at gå til indstillingerne.</translation>
 <translation id="3024663005179499861">Forkert politiktype</translation>
 <translation id="3027915437837548462">SVG-billede</translation>
 <translation id="3030331669969285614">Disse demofunktioner forhindrer eller fortryder en fejlskabende ændring og er kun tilgængelige i en begrænset periode.</translation>
@@ -1372,7 +1369,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3180358318770512945">Børn og forældre</translation>
 <translation id="3182185041786697613">Vil du gemme sikkerhedskoden?</translation>
 <translation id="3185635157430775689">Computerkomponenter</translation>
-<translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="3194737229810486521"><ph name="URL" /> anmoder om at gemme data permanent på din enhed</translation>
 <translation id="3194765668709099364">Klarna</translation>
@@ -1425,7 +1421,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3261488570342242926">Få flere oplysninger om virtuelle kort</translation>
 <translation id="3262698603497362968">Købsmuligheder</translation>
 <translation id="3264315627780269177">Denne fane kan ikke deles</translation>
-<translation id="3266367459139339908">Vi lancerer nye metoder til at begrænse, hvad websites kan lære om dig, når de viser dig personligt tilpassede annoncer, f.eks.:</translation>
 <translation id="3266793032086590337">Værdi (modstridende)</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
 <translation id="3270041629388773465">Betal hurtigere, når du har gemt dine CVC'er</translation>
@@ -1468,7 +1463,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="333839153442689579">Højintensiv intervaltræning</translation>
 <translation id="3339446062576134663">Skyen (Ash)</translation>
 <translation id="3340978935015468852">indstillinger</translation>
-<translation id="3342018947887487892">Senere kan et website, du besøger, bede om disse oplysninger – enten dine annonceemner eller annoncer, der er foreslået af de websites, du har besøgt.</translation>
 <translation id="334438173029876234">Skateboardudstyr</translation>
 <translation id="3347146863028219517">Ski og snowboarding</translation>
 <translation id="3349610303043713601">Browse med AI</translation>
@@ -1544,7 +1538,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Enter for at spørge Google om denne side</translation>
 <translation id="3465972433695735758">Denne PDF er ikke tilgængelig. Tekst udtrukket, leveret af Google AI</translation>
 <translation id="346601286295919445">Kemi</translation>
-<translation id="3467081767799433066">Med annoncemåling deles begrænsede typer data mellem websites for at måle, hvor effektive deres annoncer er, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> er i øjeblikket åben. Tryk på Tab-tasten og derefter på Enter for at skifte til den åbne fane</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />– tryk på Tab-tasten efterfulgt af Enter for at lukke alle inkognitovinduer, der i øjeblikket er åbne.</translation>
 <translation id="3472469028191701821">Åbner på en ny fane</translation>
@@ -1667,7 +1660,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3642196846309122856">Prøv at downloade dine filer igen</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3644768007456662469">Ikon for betalingselement</translation>
-<translation id="3646643500201740985">Måling af en annonces effektivitet</translation>
 <translation id="3647286794400715637">Hver webadressestreng skal indeholde mellem 1 og 2 webadresser.</translation>
 <translation id="3647400963805615193">Knappen Luk Chrome-tip, tryk på Enter for at lukke, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Valideringen er fuldført</translation>
@@ -1696,7 +1688,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3678914302246317895">Angiv den <ph name="OTP_LENGTH" />-cifrede verificeringskode</translation>
 <translation id="3681007416295224113">Certifikatoplysninger</translation>
 <translation id="3681191721636073359">Chrome vurderer ikke, at du vil bruge din lokation på dette website. Derfor skjules anmodninger for at reducere afbrydelser.</translation>
-<translation id="3681421644246505351">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik.</translation>
 <translation id="3681841880472207951">QuickTime-video</translation>
 <translation id="3682094733650754138">Valgmuligheden for udfyldelse af adresse blev valgt</translation>
 <translation id="3687920599421452763">Kassevogne og minibusser</translation>
@@ -1838,7 +1829,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Gemte oplysninger og siden fra <ph name="WEBSITE" /> sendes til Google og kan blive gennemgået af menneskelige kontrollanter med henblik på at forbedre denne funktion.</translation>
 <translation id="3910231615117880630">Få flere oplysninger om indlejret indhold</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Sådan administrerer du dine data:<ph name="END_BOLD" /> Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan komme tilbage på listen. Du kan også til enhver tid blokere et website, så det ikke foreslår annoncer til dig, og deaktivere foreslåede annoncer fra websites i Chrome-indstillingerne.</translation>
 <translation id="3921869355029467742">Angiv din sikkerhedskode</translation>
 <translation id="3927538228901078312">Der er ingen sammenligningstabeller</translation>
 <translation id="3927692899758076493">Sans serif</translation>
@@ -2056,7 +2046,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="422722221769396062">Takeaway</translation>
 <translation id="4230204356098880324">Websitet kan anmode om tilladelse til at bruge og bevæge dit kamera</translation>
 <translation id="4231448684371260244">8 x 13 tommer</translation>
-<translation id="4233220688695460165">Chrome sletter automatisk emner og websites, der foreslår annoncer, inden for 30 dage. Du kan også blokere bestemte emner og websites, du ikke er interesseret i.</translation>
 <translation id="4235360514405112390">Gyldig</translation>
 <translation id="4239799716689808527">Etiketter</translation>
 <translation id="424063167283213501">Gem Known Traveler-nummer</translation>
@@ -2098,10 +2087,8 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
 <translation id="4284885181066817063">Blokeret af <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Frigør</translation>
-<translation id="4287495839370498922">Forbedret privatliv vedrørende annoncering i Chrome</translation>
 <translation id="4288101205645068104">Slet køretøj</translation>
 <translation id="4290920330097335010">Tillad aldrig</translation>
-<translation id="4296207570293932800">En ny privatlivsfunktion for annoncer er nu tilgængelig</translation>
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> er opdateret</translation>
 <translation id="4298000214066716287">Investering</translation>
@@ -2315,7 +2302,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4682496302933121474">Vil du oversætte siden?</translation>
 <translation id="468314109939257734">Se dit virtuelle kortnummer</translation>
 <translation id="4686942373615810936">Oprettet lige nu</translation>
-<translation id="4687718960473379118">Foreslåede annoncer fra websites</translation>
 <translation id="4690205240253392065">Vælg en udbyder af Betal senere</translation>
 <translation id="469028408546145398">Knappen Luk inkognitovinduer, aktivér for at lukke alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="4691093235373904540">Tagdækning</translation>
@@ -2497,7 +2483,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4957080528849277028">Knappen Se din Chrome-historik, aktivér for at se og administrere din browserhistorik i Chrome-indstillingerne</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 website}one{+ # website}other{+ # websites}}</translation>
 <translation id="4958444002117714549">Udvid liste</translation>
-<translation id="4960068118612257147">Du kan foretage ændringer i Chromes indstillinger for privatliv vedrørende annoncering</translation>
 <translation id="4960203958361543136">Vælg din søgemaskine</translation>
 <translation id="4961708452830821006">Giv Chrome adgang i <ph name="LINK" /> for at bruge mikrofonen.</translation>
 <translation id="4963413887558778009">Landskabsarkitektur</translation>
@@ -3329,7 +3314,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6292819926564202163">Din søgemaskine i Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">Gemmer...</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6300452962057769623">{0,plural, =0{Din enhed genstarter nu}=1{Din enhed genstarter om 1 sekund}one{Din enhed genstarter om # sekund}other{Din enhed genstarter om # sekunder}}</translation>
 <translation id="6301104306974789820">Få notifikationer om prissporing</translation>
@@ -3461,7 +3445,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6472874020827012601">Stof (mat)</translation>
 <translation id="647330291963761005">Installerer opdateringer</translation>
 <translation id="6474220430271405609">Politiktests</translation>
-<translation id="6475672344094591109">De websites, du besøger, kan anmode Chrome om oplysninger for at hjælpe dem med at måle effektiviteten af deres annoncer. Chrome beskytter dit privatliv ved at begrænse de oplysninger, som websites kan dele med hinanden.</translation>
 <translation id="6476284679642588870">Administrer betalingsmetoder</translation>
 <translation id="647881094269678013">Skuespil og teater</translation>
 <translation id="6480864723214312258">Husholdningsbatterier</translation>
@@ -4112,7 +4095,6 @@ Yderligere oplysninger:
 <translation id="7507075214339298899">Konvolut nr. 9</translation>
 <translation id="7508255263130623398">Det returnerede enheds-id for politikken er tomt eller stemmer ikke overens med det nuværende enheds-id</translation>
 <translation id="7508577201115425418">Dokument- og udskrivningstjenester</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Sådan bruger websites disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger i Chrome om de ting, du kan lide. Hvis du f.eks. besøger et website om maratontræning, kan websitet skønne, at du er interesseret i løbesko. Hvis du derefter besøger et andet website, kan websitet vise dig en annonce for løbesko, som det første website har foreslået.</translation>
 <translation id="7510269639068718544">Katte</translation>
 <translation id="7511955381719512146">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Denne politik kan ikke angives som "Sand" og være obligatorisk. Derfor er den ændret til anbefalet.</translation>
@@ -4314,7 +4296,6 @@ Yderligere oplysninger:
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798389633136518089">Politikken blev ignoreret, da den ikke er angivet af en skytjeneste.</translation>
 <translation id="7800304661137206267">Forbindelsen er krypteret ved hjælp af <ph name="CIPHER" /> med <ph name="MAC" /> til meddelelsesgodkendelse og <ph name="KX" /> som hovedudvekslingsmekanisme.</translation>
-<translation id="7800977246388195491">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik. De websites, du besøger, kan også fastslå, hvad du kan lide. Websites kan derefter anmode om disse oplysninger med henblik på at vise dig personligt tilpassede annoncer. Du kan vælge, hvilke emner og websites der skal bruges til at vise dig annoncer.</translation>
 <translation id="7802523362929240268">Websitet er pålideligt</translation>
 <translation id="7802989406998618639">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede sikkerhedskode på <ph name="SIDE_OF_CARD" />, så din bank kan verificere din identitet</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -4602,7 +4583,6 @@ Yderligere oplysninger:
 <translation id="8279611986089885641">Chrome-notifikationer skal være aktiveret. Du kan aktivere dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280569545097027381">Slet filer om <ph name="HOURS" /> t.</translation>
 <translation id="8280630997017109758">Bakke 11</translation>
-<translation id="8281730697546299650">Andre privatlivsfunktioner til annoncer er nu tilgængelige</translation>
 <translation id="8281886186245836920">Spring over</translation>
 <translation id="8282292167096638950">Slet kørekort</translation>
 <translation id="8282409409360764263">Havepleje</translation>
@@ -4717,7 +4697,6 @@ Yderligere oplysninger:
 <translation id="8456775115498700722">Nu kan du autoudfylde dine <ph name="CARD_ISSUER_NAME" />-kort, fordi din <ph name="CARD_ISSUER_NAME" />-konto er knyttet til Google Pay.</translation>
 <translation id="8457125768502047971">Ikke defineret</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8460854335417802511">Aktivér det</translation>
 <translation id="8461289985785035071">Rediger redress-nummer</translation>
 <translation id="8461694314515752532">Kryptér synkroniserede data med din egen adgangssætning til synkronisering</translation>
 <translation id="8461973047386722744">Der blev ikke fundet nogen adgangskoder</translation>
@@ -4802,7 +4781,6 @@ Yderligere oplysninger:
 <translation id="8597726363542221027">Brugte biler</translation>
 <translation id="8600271352425265729">Kun denne gang</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din aktivitet på et website, du besøger via Chrome på denne enhed.</translation>
 <translation id="8601456038554914806">Udstyr til vandsport</translation>
 <translation id="8601782593888534566">Science fiction og fantasy</translation>
 <translation id="8604103095921958091">Skærmen med servicevilkår for Køb nu, betal senere er åbnet i fuld højde.</translation>
@@ -4914,6 +4892,7 @@ Yderligere oplysninger:
 <translation id="8796062699363039080">Indstillinger for <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
+<translation id="8803526663383843427">Når funktionen er aktiveret</translation>
 <translation id="8805819170075074995">Listepost "<ph name="LANGUAGE_ID" />": Posten blev ignoreret, fordi den også er inkluderet i politikken SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Telefonserviceudbydere</translation>
 <translation id="8806696968588872703">Plast (satin)</translation>
@@ -5028,7 +5007,6 @@ Yderligere oplysninger:
 <translation id="9005998258318286617">PDF-dokumentet kunne ikke indlæses.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Ingen}=1{Fra 1 website}one{Fra # website}other{Fra # websites}}</translation>
-<translation id="9014705027639070815">De websites, du besøger, kan anmode Chrome om oplysninger for at hjælpe dem med at måle effektiviteten af deres annoncer. Chrome giver websites mulighed for at indsamle begrænsede typer data, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="9018120810758822233">Angiv din sikkerhedskode til <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">mail</translation>
 <translation id="90196294733273307">Der blev vist en dialogboks med kreditkortoplysninger</translation>
@@ -5060,7 +5038,6 @@ Yderligere oplysninger:
 <translation id="9049981332609050619">Du har forsøgt at nå <ph name="DOMAIN" />, men serveren præsenterede et ugyldigt certifikat.</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
 <translation id="9051072642122229460">Kaffe- og espressomaskiner</translation>
-<translation id="9053840549256861041">Vi lancerer en ny privatlivsfunktion til annoncer ved navn annoncemåling. Chrome deler kun meget begrænsede oplysninger mellem websites, f.eks. hvornår du fik vist en annonce, for at hjælpe websites med at måle annonceeffektiviteten.</translation>
 <translation id="9053955920216300738">Hvilke webadresser du besøger</translation>
 <translation id="90542379288189611">Nummerplade</translation>
 <translation id="9054288282721240609">Registrering af håndbevægelser er tilladt</translation>
@@ -5100,7 +5077,6 @@ Yderligere oplysninger:
 <translation id="9114101423898634479">Tilføj Known Traveler-nummer</translation>
 <translation id="9114524666733003316">Bekræfter kort...</translation>
 <translation id="9114581008513152754">Denne browser administreres ikke af en virksomhed eller en anden organisation. Aktivitet på denne enhed administreres muligvis uden for Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="9116548361133462832">Mere om annoncer i Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten og derefter Enter for at genoptage søgningen og se relevant aktivitet i din Chrome-historik</translation>
 <translation id="9119042192571987207">Uploadet</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vil gerne verificere din identitet</translation>
@@ -5134,8 +5110,6 @@ Yderligere oplysninger:
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> indeholder muligvis følsomt indhold}one{<ph name="FILE_COUNT" /> fil indeholder muligvis følsomt indhold}other{<ph name="FILE_COUNT" /> filer indeholder muligvis følsomt indhold}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Tryk på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm</translation>
 <translation id="9163287596625611517">Slack-besked</translation>
-<translation id="9165305804774426672">De websites, du besøger, kan også skønne hvad du kan lide, baseret på din aktivitet på websitet. Hvis du f.eks. besøger et website, der sælger løbesko til langdistanceløb, kan websitet vurdere, at du er interesseret i at løbe maraton.</translation>
-<translation id="9166851138617700776">Flere oplysninger om foreslåede annoncer fra websites og annoncemåling</translation>
 <translation id="9167054383925257837">Oplysninger om browseren og enhedens OS (f.eks. browser- og OS-versioner)</translation>
 <translation id="9167594211215946097">Have direkte adgang til dine printere</translation>
 <translation id="9168814207360376865">Tillad, at websites kan tjekke, om du har gemte betalingsmetoder</translation>
@@ -5220,7 +5194,6 @@ Yderligere oplysninger:
 <translation id="978750072783101994">Udfyld automatisk disse kortoplysninger ved køb i Chromium, når kortet er gemt i Google Wallet</translation>
 <translation id="979107176848483472">Din browser og profil administreres af <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Udstillinger og messer</translation>
-<translation id="979503328401807348">Mere nyttige annoncer</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="984101218975906499">Lægemidler og bioteknologi</translation>
 <translation id="984275831282074731">Betalingsmetoder</translation>

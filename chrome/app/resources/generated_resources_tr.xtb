@@ -2494,7 +2494,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2665394472441560184">Yeni kelime ekle</translation>
 <translation id="2665647207431876759">Süresi doldu</translation>
 <translation id="2665919335226618153">Hay aksi! Biçimlendirme sırasında bir hata oluştu.</translation>
-<translation id="2666092431469916601">Üst</translation>
 <translation id="2666247341166669829">Sol tarafın pil seviyesi %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">Diğer uygulamalar <ph name="APP_NAME" /> ile aynı bağlantıları açacak şekilde ayarlandı. Bu işlemden sonra <ph name="APP_NAME_2" /> ve <ph name="APP_NAME_3" /> uygulamaları desteklenen bağlantıları açamayacak.</translation>
 <translation id="2667463864537187133">Yazım denetimini yönet</translation>
@@ -2563,7 +2562,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2714180132046334502">Koyu renkli arka plan</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modeller</translation>
-<translation id="2715293433233060993">Sekmeleri Yana Taşı</translation>
 <translation id="2715751256863167692">Bu sürüm güncellemesi, Chromebook'unuzu sıfırlar ve mevcut kullanıcı verilerini kaldırır.</translation>
 <translation id="2715934493766003251">Dosya senkronizasyonu açıkken depolama alanı temizlenemez</translation>
 <translation id="2716986496990888774">Bu ayar, ebeveynler tarafından yönetilir.</translation>
@@ -3240,7 +3238,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3167562202484086668">Tüm <ph name="BRAND" /> verilerini sil</translation>
 <translation id="3169930038976362151">İhtiyaçlarınıza uygun temayı seçin. Temanızı, duvar kağıdınızı, ekran koruyucunuzu ve diğer özellikleri değiştirmek için masaüstüne dokunup basılı tutun.</translation>
 <translation id="3170072451822350649">Ayrıca, oturum açmayı atlayabilir ve <ph name="LINK_START" />misafir olarak göz atabilirsiniz<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Sekmeleri üste taşı</translation>
 <translation id="3175067642577044620">Metin</translation>
 <translation id="3175862692832442091">Orman</translation>
 <translation id="3176347586396987181">Bir fare düğmesini basılı tutmak için "z" tuşunu kullanın</translation>
@@ -5512,7 +5509,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4699473989647132421">Sahil</translation>
 <translation id="4701025263201366865">Ebeveyn oturum açmalı</translation>
 <translation id="4701335814944566468">Dün görüntülendi</translation>
-<translation id="4702504834785592287">Taraf</translation>
 <translation id="470644585772471629">Rengi ters çevirme</translation>
 <translation id="4707337002099455863">Tüm Sitelerde Her Zaman</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> uygulamasından çık</translation>
@@ -7206,7 +7202,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5888889603768021126">Şununla oturum açıldı:</translation>
 <translation id="5889282057229379085">Ara CA sayısı üst sınırı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Senkronize edilen verileri kendi <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifreleyin. Google Pay'deki ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.</translation>
-<translation id="5890072287476934834">Sekmeleri yana taşı</translation>
 <translation id="5891688036610113830">Tercih edilen kablosuz ağlar</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> klasörünün seçimini kaldır</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -9294,7 +9289,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7340179705876485790">Birden fazla sayfadan geri dönmek için Geri'yi tıklayıp basılı tutun.</translation>
 <translation id="7340650977506865820">Site, ekranınızı paylaşıyor</translation>
 <translation id="7340757554212515731">Kilitlenme raporlarının yanı sıra teşhis ve kullanım verilerini Google'a otomatik olarak gönderir</translation>
-<translation id="7340886226071938450">Sekme şeridi konumu</translation>
 <translation id="734088800888587319">Ağ Metrikleri</translation>
 <translation id="7341834142292923918">Bu siteye erişim izni istiyor</translation>
 <translation id="7343372807593926528">Geri bildirim göndermeden önce lütfen sorunu açıklayın.</translation>
@@ -11299,7 +11293,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8685540043423825702">Chrome profiliniz</translation>
 <translation id="8685882652128627032">Site arama ekle iletişim kutusunu açmak için tıklayın</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> olarak oturum açıldı</translation>
-<translation id="8686578183956518912">Sekmeleri Üste Taşı</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> dosyasını iptal et</translation>
 <translation id="8687527282898211955">PIN'inizi oluşturun</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> sitesinin, korumalı içerik oynatmak için kimlik kullanmasını her zaman engelle</translation>

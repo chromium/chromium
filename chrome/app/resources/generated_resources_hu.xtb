@@ -2507,7 +2507,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2665394472441560184">Új szó hozzáadása</translation>
 <translation id="2665647207431876759">Lejárt</translation>
 <translation id="2665919335226618153">Ajjaj! Hiba történt formázás közben.</translation>
-<translation id="2666092431469916601">Felülre</translation>
 <translation id="2666247341166669829">Bal akkumulátorszint: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" /> és <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Helyesírás-ellenőrzés kezelése</translation>
@@ -2576,7 +2575,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2714180132046334502">Sötét háttér</translation>
 <translation id="2714393097308983682">Google Play Áruház</translation>
 <translation id="2714617928488200509">Modellek</translation>
-<translation id="2715293433233060993">Lapok áthelyezése oldalra</translation>
 <translation id="2715751256863167692">Ez a frissítés visszaállítja a Chromebookot, és eltávolítja a jelenlegi felhasználói adatokat.</translation>
 <translation id="2715934493766003251">Nem lehet tárhelyet felszabadítani, amíg be van kapcsolva a fájlszinkronizálás</translation>
 <translation id="2716986496990888774">Ezt a beállítást szülő kezeli.</translation>
@@ -3253,7 +3251,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3167562202484086668"><ph name="BRAND" /> minden adatának törlése</translation>
 <translation id="3169930038976362151">Válassza ki az igényeinek megfelelő témát. A téma, háttérkép, képernyővédő és egyebek módosításához tartsa lenyomva az asztal bármely pontját.</translation>
 <translation id="3170072451822350649">Ki is hagyhatja a bejelentkezést, és <ph name="LINK_START" />böngészhet vendégként<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Lapok áthelyezése felülre</translation>
 <translation id="3175067642577044620">Szöveg</translation>
 <translation id="3175862692832442091">Erdő</translation>
 <translation id="3176347586396987181">A „z” billentyűvel nyomva tarthatja az egérgombot.</translation>
@@ -5523,7 +5520,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4699473989647132421">Partvonal</translation>
 <translation id="4701025263201366865">Szülői bejelentkezés</translation>
 <translation id="4701335814944566468">Tegnap tekintette meg</translation>
-<translation id="4702504834785592287">Oldal</translation>
 <translation id="470644585772471629">Színek invertálása</translation>
 <translation id="4707337002099455863">Mindig, minden webhelyen</translation>
 <translation id="4708849949179781599">Kilépés a <ph name="PRODUCT_NAME" />-ból</translation>
@@ -7217,7 +7213,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5888889603768021126">Bejelentkezve a következővel:</translation>
 <translation id="5889282057229379085">A köztes tanúsítványkibocsátók maximális száma: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">A szinkronizált adatok titkosítása saját <ph name="BEGIN_LINK" />összetett szinkronizálási jelszóval<ph name="END_LINK" />. A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.</translation>
-<translation id="5890072287476934834">Lapok áthelyezése oldalra</translation>
 <translation id="5891688036610113830">Előnyben részesített Wi-Fi-hálózatok</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> mappa kijelölésének megszüntetése</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
@@ -9304,7 +9299,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7340179705876485790">Ha nem csak egy oldalt szeretne visszalépni, tartsa lenyomva a Vissza gombot.</translation>
 <translation id="7340650977506865820">A webhely megosztja a képernyőjét</translation>
 <translation id="7340757554212515731">A hibajelentések, valamint a diagnosztikai és használati adatok automatikus elküldése a Google-nak</translation>
-<translation id="7340886226071938450">Lapsor pozíciója</translation>
 <translation id="734088800888587319">Hálózati mutatók</translation>
 <translation id="7341834142292923918">Hozzáférést kér ehhez a webhelyhez</translation>
 <translation id="7343372807593926528">Visszajelzés küldése előtt ismertesse a problémát.</translation>
@@ -11308,7 +11302,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8685540043423825702">Az Ön Chrome-profilja</translation>
 <translation id="8685882652128627032">Kattintson a Webhelyről indított keresés hozzáadása párbeszédpanel megnyitásához</translation>
 <translation id="8686142379631285985">Bejelentkezve mint <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Lapok áthelyezése felülre</translation>
 <translation id="8687103160920393343">A következő fájl letöltésének megszakítása: <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Állítsa be a PIN-kódot</translation>
 <translation id="8687774873995698516">A(z) <ph name="HOST" /> sosem használhat azonosítókat a védett tartalmak lejátszásához</translation>

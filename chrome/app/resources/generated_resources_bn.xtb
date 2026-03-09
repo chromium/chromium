@@ -2510,7 +2510,6 @@
 <translation id="2665394472441560184">একটি নতুন শব্দ জুড়ুন</translation>
 <translation id="2665647207431876759">মেয়াদ শেষ হয়েছে</translation>
 <translation id="2665919335226618153">ইস! ফরম্যাট করার সময় একটি ত্রুটি হয়েছে৷</translation>
-<translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2666247341166669829">বাঁদিকের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" /> এবং <ph name="APP_NAME_3" />-এর সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="2667463864537187133">বানান পরিক্ষক পরিচালনা করুন</translation>
@@ -2579,7 +2578,6 @@
 <translation id="2714180132046334502">গাঢ় ব্যাকগ্রাউন্ড</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">মডেল</translation>
-<translation id="2715293433233060993">ট্যাব পাশে সরান</translation>
 <translation id="2715751256863167692">এই আপগ্রেডটি আপনার Chromebook রিসেট করে এবং বর্তমান ব্যবহারকারীর ডেটা সরিয়ে দেয়।</translation>
 <translation id="2715934493766003251">ফাইল সিঙ্ক করার প্রসেস চালু থাকাকালীন স্টোরেজ মোছা যাচ্ছে না</translation>
 <translation id="2716986496990888774">এই সেটিং একজন অভিভাবক ম্যানেজ করেন।</translation>
@@ -3256,7 +3254,6 @@
 <translation id="3167562202484086668">সব <ph name="BRAND" /> ডেটা মুছে দিন</translation>
 <translation id="3169930038976362151">প্রয়োজন অনুযায়ী মানানসই থিম বেছে নিন। আপনার থিম, ওয়ালপেপার, স্ক্রিন সেভার ও আরও অনেক কিছু পরিবর্তন করতে, ডেস্কটপের উপরে শুধু টাচ করে ধরে থাকুন।</translation>
 <translation id="3170072451822350649">এছাড়াও আপনি সাইন-ইন এড়িয়ে যেতে ও <ph name="LINK_START" />অতিথি হিসাবে ব্রাউজ<ph name="LINK_END" /> করতে পারেন৷</translation>
-<translation id="3172642937040465677">ট্যাব উপরে সরান</translation>
 <translation id="3175067642577044620">মূল অংশ</translation>
 <translation id="3175862692832442091">ফরেস্ট</translation>
 <translation id="3176347586396987181">মাউসের কোনও বোতাম প্রেস করে ধরে রাখতে “z” ব্যবহার করুন</translation>
@@ -5527,7 +5524,6 @@
 <translation id="4699473989647132421">শোরলাইন</translation>
 <translation id="4701025263201366865">অভিভাবকের সাইন-ইন</translation>
 <translation id="4701335814944566468">গতকাল দেখা হয়েছে</translation>
-<translation id="4702504834785592287">সাইড</translation>
 <translation id="470644585772471629">কালার ইনভার্সন</translation>
 <translation id="4707337002099455863">সব সাইটে সবসময় অ্যাক্সেস পাবে</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> থেকে প্রস্থান করুন</translation>
@@ -7221,7 +7217,6 @@
 <translation id="5888889603768021126">এর মাধ্যমে সাইন-ইন করেছেন</translation>
 <translation id="5889282057229379085">ইন্টারমিডিয়েট CAগুলির সর্বাধিক সংখ্যা: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">আপনার নিজস্ব <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন। Google Pay থেকে পেমেন্ট পদ্ধতি এবং ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।</translation>
-<translation id="5890072287476934834">ট্যাব পাশে সরান</translation>
 <translation id="5891688036610113830">পছন্দের ওয়াই-ফাই নেটওয়ার্ক</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ফোল্ডার বেছে নেবেন না</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
@@ -9310,7 +9305,6 @@
 <translation id="7340179705876485790">১টির বেশি পৃষ্ঠায় ফিরে যেতে হলে, 'ফিরে যান' বোতামে ক্লিক করে ধরে রাখুন।</translation>
 <translation id="7340650977506865820">সাইটটি আপনার স্ক্রিন শেয়ার করছে</translation>
 <translation id="7340757554212515731">ক্র্যাশ রিপোর্ট, ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক Google-কে পাঠানো হয়</translation>
-<translation id="7340886226071938450">ট্যাব বারের অবস্থান</translation>
 <translation id="734088800888587319">নেটওয়ার্ক মেট্রিক্স</translation>
 <translation id="7341834142292923918">এই সাইটে অ্যাক্সেস চায়</translation>
 <translation id="7343372807593926528">মতামত পাঠানোর আগে সমস্যাটি বর্ণনা করুন।</translation>
@@ -11315,7 +11309,6 @@
 <translation id="8685540043423825702">আপনার Chrome প্রোফাইল</translation>
 <translation id="8685882652128627032">সাইট সার্চ যোগ করার ডায়ালগ খুলতে ক্লিক করুন</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> হিসেবে সাইন-ইন করেছেন</translation>
-<translation id="8686578183956518912">ট্যাব উপরে সরান</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> বাতিল করুন</translation>
 <translation id="8687527282898211955">আপনার পিন সেট-আপ করুন</translation>
 <translation id="8687774873995698516">সুরক্ষিত কন্টেন্ট চালানোর জন্য <ph name="HOST" />-কে সবসময় শনাক্তকারী ব্যবহার করা থেকে ব্লক করুন</translation>

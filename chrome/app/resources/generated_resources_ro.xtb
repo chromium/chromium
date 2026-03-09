@@ -2497,7 +2497,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2665394472441560184">Adăugați un cuvânt</translation>
 <translation id="2665647207431876759">Expirat</translation>
 <translation id="2665919335226618153">Of, nu mai merge! A apărut o eroare în timpul formatării.</translation>
-<translation id="2666092431469916601">Sus</translation>
 <translation id="2666247341166669829">Nivelul bateriei din stânga: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="2667463864537187133">Gestionează verificarea ortografiei</translation>
@@ -2566,7 +2565,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2714180132046334502">Fundal întunecat</translation>
 <translation id="2714393097308983682">Magazinul Google Play</translation>
 <translation id="2714617928488200509">Modele</translation>
-<translation id="2715293433233060993">Mută filele în lateral</translation>
 <translation id="2715751256863167692">Acest upgrade resetează Chromebookul și elimină datele actuale ale utilizatorului.</translation>
 <translation id="2715934493766003251">Nu se poate elibera spațiu de stocare în timpul sincronizării fișierelor</translation>
 <translation id="2716986496990888774">Această setare este gestionată de un părinte.</translation>
@@ -3243,7 +3241,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3167562202484086668">Șterge toate datele despre <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Alege tema potrivită pentru nevoile tale. Pentru a schimba tema, imaginea de fundal, screensaverul și altele, atinge lung pe computer.</translation>
 <translation id="3170072451822350649">De asemenea, poți să omiți conectarea și să <ph name="LINK_START" />navighezi ca invitat<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Mută filele în partea de sus</translation>
 <translation id="3175067642577044620">Corp</translation>
 <translation id="3175862692832442091">Pădure</translation>
 <translation id="3176347586396987181">Folosește „z” pentru a apăsa lung un buton al mouse-ului</translation>
@@ -5513,7 +5510,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4699473989647132421">Mal</translation>
 <translation id="4701025263201366865">Conectarea unui părinte</translation>
 <translation id="4701335814944566468">Afișat ieri</translation>
-<translation id="4702504834785592287">Lateral</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
 <translation id="4707337002099455863">Întotdeauna pe toate site-urile</translation>
 <translation id="4708849949179781599">Închide <ph name="PRODUCT_NAME" /></translation>
@@ -7204,7 +7200,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5888889603768021126">Conectat(ă) cu</translation>
 <translation id="5889282057229379085">Număr maxim de Autorități de certificare (CA) intermediare: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Criptează datele sincronizate folosind propria <ph name="BEGIN_LINK" />expresie de acces pentru sincronizare<ph name="END_LINK" />. Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
-<translation id="5890072287476934834">Mută filele în lateral</translation>
 <translation id="5891688036610113830">Rețele Wi-Fi preferate</translation>
 <translation id="5894056653502215961">Debifează dosarul <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reîncepe</translation>
@@ -9293,7 +9288,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7340179705876485790">Pentru a merge înapoi cu mai multe pagini, dă clic lung pe Înapoi.</translation>
 <translation id="7340650977506865820">Site-ul permite accesul la ecranul tău</translation>
 <translation id="7340757554212515731">Trimite automat la Google rapoarte de blocare, precum și date de diagnosticare și de utilizare</translation>
-<translation id="7340886226071938450">Poziția barei de file</translation>
 <translation id="734088800888587319">Valori privind rețeaua</translation>
 <translation id="7341834142292923918">Vrea acces la acest site</translation>
 <translation id="7343372807593926528">Descrie problema înainte de a trimite feedback.</translation>
@@ -11298,7 +11292,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8685540043423825702">Profilul Chrome</translation>
 <translation id="8685882652128627032">Dă clic pentru a deschide caseta de dialog Adaugă o căutare pe site</translation>
 <translation id="8686142379631285985">Te-ai conectat ca <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mută filele în partea de sus</translation>
 <translation id="8687103160920393343">Anulează <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configurează codul PIN</translation>
 <translation id="8687774873995698516">Blochează întotdeauna <ph name="HOST" />, astfel încât să nu poată folosi identificatori pentru a reda conținut protejat</translation>

@@ -2509,7 +2509,6 @@
 <translation id="2665394472441560184">एक नवीन शब्द जोडा</translation>
 <translation id="2665647207431876759">एक्स्पायर झाले</translation>
 <translation id="2665919335226618153">ओहो! फॉरमॅटिंग करताना एरर आली.</translation>
-<translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2666247341166669829">उर्वरित बॅटरी पातळी <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">इतर ॲप्स ही <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केली आहेत. हे <ph name="APP_NAME_2" /> आणि <ph name="APP_NAME_3" /> ला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="2667463864537187133">स्पेल चेक व्यवस्थापित करा</translation>
@@ -2578,7 +2577,6 @@
 <translation id="2714180132046334502">गडद बॅकग्राउंड</translation>
 <translation id="2714393097308983682">Google Play स्टोअर</translation>
 <translation id="2714617928488200509">मॉडेल</translation>
-<translation id="2715293433233060993">टॅब बाजूला हलवा</translation>
 <translation id="2715751256863167692">हे अपडेट तुमचे Chromebook रीसेट करते आणि तुमचा सद्य वापरकर्ता डेटा काढून टाकते.</translation>
 <translation id="2715934493766003251">फाइल सिंक करणे सुरू असताना स्टोरेज साफ करू शकत नाही</translation>
 <translation id="2716986496990888774">हे सेटिंग पालकांकडून व्यवस्थापित केले आहे.</translation>
@@ -3255,7 +3253,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> चा सर्व डेटा हटवा</translation>
 <translation id="3169930038976362151">तुमच्या आवश्यकतांची पूर्तता करणारी थीम निवडा. तुमची थीम, वॉलपेपर, स्क्रीन सेव्हर आणि आणखी बरेच काही बदलण्यासाठी, डेस्कटॉपवर फक्त स्पर्श करून धरून ठेवा.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळून <ph name="LINK_START" />अतिथी म्हणून ब्राउझ करणे<ph name="LINK_END" /> हेदेखील करू शकता.</translation>
-<translation id="3172642937040465677">टॅब सर्वात वरती हलवा</translation>
 <translation id="3175067642577044620">मुख्य भाग</translation>
 <translation id="3175862692832442091">जंगल</translation>
 <translation id="3176347586396987181">माउस बटण प्रेस करून धरून ठेवण्यासाठी “z” वापरा</translation>
@@ -5527,7 +5524,6 @@
 <translation id="4699473989647132421">किनारपट्टी</translation>
 <translation id="4701025263201366865">पालक साइन इन</translation>
 <translation id="4701335814944566468">काल पाहिला होता</translation>
-<translation id="4702504834785592287">साइड</translation>
 <translation id="470644585772471629">कलर इन्व्हर्जन</translation>
 <translation id="4707337002099455863">सर्व साइटना नेहमी अनुमती द्या</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> मधून बाहेर या</translation>
@@ -7221,7 +7217,6 @@
 <translation id="5888889603768021126">यासह साइन इन केले</translation>
 <translation id="5889282057229379085">कमाल इंटरमिजिएट CA संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">तुमच्या स्वतःच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेझ<ph name="END_LINK" /> सह सिंक केलेला डेटा एंक्रिप्ट करा. Google Pay वरील पेमेंट पद्धती आणि अ‍ॅड्रेस एंक्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.</translation>
-<translation id="5890072287476934834">टॅब बाजूला हलवा</translation>
 <translation id="5891688036610113830">प्राधान्य दिलेली वाय-फाय नेटवर्क</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> फोल्डरची निवड रद्द करा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
@@ -9312,7 +9307,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7340179705876485790">१ पेक्षा जास्त पेजवर परत जाण्यासाठी, मागे जा वर क्लिक करून धरून ठेवा.</translation>
 <translation id="7340650977506865820">साइट तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="7340757554212515731">Google ला क्रॅश अहवाल तसेच निदान आणि वापर डेटा आपोआप पाठवते</translation>
-<translation id="7340886226071938450">टॅब स्ट्रिपसंंबंधित स्थान</translation>
 <translation id="734088800888587319">नेटवर्क मेट्रिक</translation>
 <translation id="7341834142292923918">या साइटचा ॲक्सेस हवा आहे</translation>
 <translation id="7343372807593926528">कृपया फीडबॅक पाठवण्यापूर्वी समस्येचे वर्णन करा.</translation>
@@ -11318,7 +11312,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8685540043423825702">तुमची Chrome प्रोफाइल</translation>
 <translation id="8685882652128627032">साइट शोध जोडा डायलॉग उघडण्यासाठी क्लिक करा</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> म्हणून साइन इन केले आहे</translation>
-<translation id="8686578183956518912">टॅब सर्वात वरती हलवा</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> चे डाउनलोड रद्द करा</translation>
 <translation id="8687527282898211955">तुमचा पिन सेट करा</translation>
 <translation id="8687774873995698516">संरक्षित आशय प्ले करण्यासाठी आयडेंटिफायर वापरण्यापासून <ph name="HOST" /> ला नेहमी ब्लॉक करा</translation>

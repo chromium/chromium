@@ -2511,7 +2511,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2665394472441560184">Dodaj novo besedo</translation>
 <translation id="2665647207431876759">Poteklo</translation>
 <translation id="2665919335226618153">Ti, šment! Napaka med formatiranjem.</translation>
-<translation id="2666092431469916601">Na vrh</translation>
 <translation id="2666247341166669829">Raven napolnjenosti leve baterije: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Druge aplikacije so nastavljene tako, da odpirajo iste povezave kot aplikacija <ph name="APP_NAME" />. S tem bo aplikacijama <ph name="APP_NAME_2" /> in <ph name="APP_NAME_3" /> onemogočeno odpiranje podprtih povezav.</translation>
 <translation id="2667463864537187133">Upravljanje preverjanja črkovanja</translation>
@@ -2580,7 +2579,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2714180132046334502">Temno ozadje</translation>
 <translation id="2714393097308983682">Trgovina Google Play</translation>
 <translation id="2714617928488200509">Modeli</translation>
-<translation id="2715293433233060993">Premik zavihkov na stran</translation>
 <translation id="2715751256863167692">S to nadgradnjo bo ponastavljen Chromebook in odstranjeni bodo trenutni uporabniški podatki.</translation>
 <translation id="2715934493766003251">Če je vklopljena sinhronizacija datotek, ni mogoče počistiti shrambe</translation>
 <translation id="2716986496990888774">To nastavitev upravlja starš.</translation>
@@ -3257,7 +3255,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3167562202484086668">Izbris vseh podatkov storitve <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Izberite temo, ki ustreza vašim potrebam. Če želite spremeniti temo, zaslonsko ozadje, ohranjevalnik zaslona in drugo, se dotaknite namizja in ga pridržite.</translation>
 <translation id="3170072451822350649">Prijavo lahko tudi preskočite in <ph name="LINK_START" />brskate kot gost<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Premik zavihkov na vrh</translation>
 <translation id="3175067642577044620">Besedilo</translation>
 <translation id="3175862692832442091">Gozd</translation>
 <translation id="3176347586396987181">Uporabite »z«, če želite pritisniti in pridržati gumb miške</translation>
@@ -5528,7 +5525,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4699473989647132421">Obala</translation>
 <translation id="4701025263201366865">Prijava starša</translation>
 <translation id="4701335814944566468">Ogledano včeraj</translation>
-<translation id="4702504834785592287">Stran</translation>
 <translation id="470644585772471629">Inverzija barv</translation>
 <translation id="4707337002099455863">Vedno na vseh spletnih mestih</translation>
 <translation id="4708849949179781599">Zapri <ph name="PRODUCT_NAME" /></translation>
@@ -7223,7 +7219,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5888889603768021126">Prijavljeni ste s storitvijo</translation>
 <translation id="5889282057229379085">Največje število posrednih overiteljev potrdil: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifriranje sinhroniziranih podatkov z vašim<ph name="BEGIN_LINK" /> geslom za sinhronizacijo<ph name="END_LINK" />. Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.</translation>
-<translation id="5890072287476934834">Premik zavihkov na stran</translation>
 <translation id="5891688036610113830">Prednostna omrežja Wi-Fi</translation>
 <translation id="5894056653502215961">Prekliči izbor mape <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
@@ -9316,7 +9311,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7340179705876485790">Če se želite vrniti za več kot 1 stran, kliknite in pridržite Nazaj.</translation>
 <translation id="7340650977506865820">Spletno mesto souporablja vaš zaslon</translation>
 <translation id="7340757554212515731">Samodejno pošiljanje poročil o zrušitvah, diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
-<translation id="7340886226071938450">Položaj traku z zavihki</translation>
 <translation id="734088800888587319">Omrežne meritve</translation>
 <translation id="7341834142292923918">Želi dostop do tega spletnega mesta</translation>
 <translation id="7343372807593926528">Preden pošljete povratne informacije, opišite težavo.</translation>
@@ -11321,7 +11315,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8685540043423825702">Vaš profil v Chromu</translation>
 <translation id="8685882652128627032">Kliknite, če želite odpreti pogovorno okno za dodajanje iskanja po spletnem mestu</translation>
 <translation id="8686142379631285985">Prijavljeni ste kot <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Premik zavihkov na vrh</translation>
 <translation id="8687103160920393343">Prekliči prenos datoteke <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Nastavite kodo PIN</translation>
 <translation id="8687774873995698516">Spletnemu mestu <ph name="HOST" /> vedno blokiraj uporabo identifikatorjev za predvajanje zaščitene vsebine</translation>

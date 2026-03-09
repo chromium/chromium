@@ -2497,7 +2497,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2665394472441560184">Ajouter un nouveau mot</translation>
 <translation id="2665647207431876759">Arrivé à expiration</translation>
 <translation id="2665919335226618153">Petit problème… Une erreur s'est produite lors du formatage.</translation>
-<translation id="2666092431469916601">En haut</translation>
 <translation id="2666247341166669829">Niveau de batterie côté gauche (<ph name="PERCENTAGE" /> %).</translation>
 <translation id="2667144577800272420">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> d'ouvrir les liens compatibles.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
@@ -2566,7 +2565,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2714180132046334502">Arrière-plan sombre</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modèles</translation>
-<translation id="2715293433233060993">Déplacer les onglets sur le côté</translation>
 <translation id="2715751256863167692">Cette mise à niveau entraîne la réinitialisation de votre Chromebook et la suppression des informations sur l'utilisateur actuelles.</translation>
 <translation id="2715934493766003251">Impossible de libérer de l'espace de stockage lorsque la synchronisation des fichiers est activée</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
@@ -3243,7 +3241,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Choisissez le thème adapté à vos besoins. Pour changer de thème, de fond d'écran, d'économiseur d'écran, etc., appuyez de manière prolongée sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également ignorer l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Déplacer les onglets vers le haut</translation>
 <translation id="3175067642577044620">Corps</translation>
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utiliser "Z" pour appuyer de manière prolongée sur un bouton de la souris</translation>
@@ -5515,7 +5512,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4699473989647132421">Rivage</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
 <translation id="4701335814944566468">Consulté hier</translation>
-<translation id="4702504834785592287">Côté</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4707337002099455863">Toujours sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
@@ -7208,7 +7204,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889282057229379085">Le nombre maximal d'autorités de certification intermédiaires a été dépassé : <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Chiffrer les données synchronisées avec votre propre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" />. Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.</translation>
-<translation id="5890072287476934834">Déplacer les onglets sur le côté</translation>
 <translation id="5891688036610113830">Réseaux Wi-Fi favoris</translation>
 <translation id="5894056653502215961">Désélectionner le dossier <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -9298,7 +9293,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7340179705876485790">Pour revenir en arrière de plus d'une page, cliquez de manière prolongée sur Retour.</translation>
 <translation id="7340650977506865820">Le site partage votre écran</translation>
 <translation id="7340757554212515731">Envoie automatiquement à Google les rapports d'erreur, ainsi que les données d'utilisation et de diagnostic</translation>
-<translation id="7340886226071938450">Position de la barre d'onglets</translation>
 <translation id="734088800888587319">Métriques concernant le réseau</translation>
 <translation id="7341834142292923918">Souhaite accéder à ce site</translation>
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
@@ -11304,7 +11298,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8685882652128627032">Cliquer pour ouvrir la boîte de dialogue "Ajouter une recherche sur un site"</translation>
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Déplacer les onglets vers le haut</translation>
 <translation id="8687103160920393343">Annuler le téléchargement de <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Définir votre code</translation>
 <translation id="8687774873995698516">Toujours empêcher <ph name="HOST" /> d'utiliser des identifiants pour lire du contenu protégé</translation>

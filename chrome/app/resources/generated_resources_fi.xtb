@@ -2508,7 +2508,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2665394472441560184">Lisää uusi sana</translation>
 <translation id="2665647207431876759">Vanhentunut</translation>
 <translation id="2665919335226618153">Harmin paikka! Alustuksen aikana tapahtui virhe.</translation>
-<translation id="2666092431469916601">Yleisin</translation>
 <translation id="2666247341166669829">Vasemmanpuoleisen akun varaus <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" /> ja <ph name="APP_NAME_3" /> eivät enää voi avata tuettuja linkkejä.</translation>
 <translation id="2667463864537187133">Hallitse oikeinkirjoituksen tarkistusta</translation>
@@ -2577,7 +2576,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2714180132046334502">Tumma tausta</translation>
 <translation id="2714393097308983682">Google Play Kauppa</translation>
 <translation id="2714617928488200509">Mallit</translation>
-<translation id="2715293433233060993">Siirrä välilehdet sivuun</translation>
 <translation id="2715751256863167692">Tämä päivitys nollaa Chromebookisi ja poistaa nykyiset käyttäjätiedot.</translation>
 <translation id="2715934493766003251">Tallennustilaa ei voi vapauttaa, kun tiedostojen synkronointi on päällä</translation>
 <translation id="2716986496990888774">Vanhempi ylläpitää tätä asetusta.</translation>
@@ -3254,7 +3252,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3167562202484086668">Poista kaikki data: <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Valitse tarpeisiisi sopiva teema. Vaihda teemaa, taustakuvaa, näytönsäästäjää ja muuta koskettamalla työpöytää pitkään.</translation>
 <translation id="3170072451822350649">Voit myös ohittaa sisäänkirjautumisen ja <ph name="LINK_START" />selata vierailijana<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Siirrä välilehdet yläreunaan</translation>
 <translation id="3175067642577044620">Tekstiosa</translation>
 <translation id="3175862692832442091">Metsä</translation>
 <translation id="3176347586396987181">Paina hiiren painiketta ja pidä sitä painettuna painamalla "z"</translation>
@@ -5525,7 +5522,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4699473989647132421">Rantaviiva</translation>
 <translation id="4701025263201366865">Vanhemman sisäänkirjautuminen</translation>
 <translation id="4701335814944566468">Nähty eilen</translation>
-<translation id="4702504834785592287">Puoli</translation>
 <translation id="470644585772471629">Käänteiset värit</translation>
 <translation id="4707337002099455863">Aina kaikilla sivustoilla</translation>
 <translation id="4708849949179781599">Sulje <ph name="PRODUCT_NAME" /></translation>
@@ -7219,7 +7215,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5888889603768021126">Kirjauduttu palvelulla</translation>
 <translation id="5889282057229379085">Keskitason varmenteiden myöntäjien enimmäismäärä: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Salaa synkronoidut tiedot oman <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseen<ph name="END_LINK" /> avulla. Google Payn maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.</translation>
-<translation id="5890072287476934834">Siirrä välilehdet sivuun</translation>
 <translation id="5891688036610113830">Ensisijaiset Wi-Fi-verkot</translation>
 <translation id="5894056653502215961">Poista kansion valinta: <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
@@ -9307,7 +9302,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7340179705876485790">Voit palata taaksepäin yhtä sivua kauemmas klikkaamalla pitkään Takaisin-painiketta.</translation>
 <translation id="7340650977506865820">Sivusto jakaa näyttösi</translation>
 <translation id="7340757554212515731">Lähettää Googlelle automaattisesti virheraportteja sekä diagnostiikka- ja käyttödataa</translation>
-<translation id="7340886226071938450">Välilehtirivin sijainti</translation>
 <translation id="734088800888587319">Verkon mittarit</translation>
 <translation id="7341834142292923918">Haluaa toimia tällä sivustolla</translation>
 <translation id="7343372807593926528">Kuvaile ongelmaa ennen palautteen lähettämistä.</translation>
@@ -11313,7 +11307,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8685540043423825702">Chrome-profiilisi</translation>
 <translation id="8685882652128627032">Avaa Lisää sivustohaku ‐valintaikkuna klikkaamalla</translation>
 <translation id="8686142379631285985">Kirjautunut tilillä <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Siirrä välilehdet yläreunaan</translation>
 <translation id="8687103160920393343">Peru <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Määritä PIN-koodi</translation>
 <translation id="8687774873995698516">Estä aina, että <ph name="HOST" /> käyttää tunnisteita suojatun sisällön toistamiseen</translation>

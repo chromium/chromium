@@ -2495,7 +2495,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2665394472441560184">Gehitu beste hitz bat</translation>
 <translation id="2665647207431876759">Iraungita</translation>
 <translation id="2665919335226618153">Errore bat gertatu da formateatzean.</translation>
-<translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2666247341166669829">Ezkerreko aurikularraren bateria: % <ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">Esteka berak <ph name="APP_NAME" /> aplikazioarekin irekitzeko konfiguratuta daude beste aplikazio batzuk. <ph name="APP_NAME_2" /> eta <ph name="APP_NAME_3" /> aplikazioek ezingo dute ireki onartzen den estekarik.</translation>
 <translation id="2667463864537187133">Kudeatu ortografia-zuzentzailea</translation>
@@ -2564,7 +2563,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2714180132046334502">Atzeko plano iluna</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modeloak</translation>
-<translation id="2715293433233060993">Eraman fitxak albo batera</translation>
 <translation id="2715751256863167692">Bertsio-berritze honekin berrezarri egingo da Chromebook-a, eta kendu egingo dira bertan dauden erabiltzaile-datuak.</translation>
 <translation id="2715934493766003251">Ezin da garbitu biltegia fitxategiak sinkronizatzeko aukera aktibatuta dagoenean</translation>
 <translation id="2716986496990888774">Guraso batek kudeatzen du ezarpen hau.</translation>
@@ -3241,7 +3239,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3167562202484086668">Ezabatu "<ph name="BRAND" />" zerbitzuko datu guztiak</translation>
 <translation id="3169930038976362151">Aukeratu zure beharretara egokituta gaia. Gaia, horma-papera, pantaila-babeslea eta beste gauza batzuk aldatzeko, eduki sakatuta mahaigaina.</translation>
 <translation id="3170072451822350649">Nahi baduzu, saioa hasi gabe, <ph name="LINK_START" />gonbidatu gisa araka dezakezu<ph name="LINK_END" /> sarea.</translation>
-<translation id="3172642937040465677">Eraman fitxak goialdera</translation>
 <translation id="3175067642577044620">Gorputza</translation>
 <translation id="3175862692832442091">Basoa</translation>
 <translation id="3176347586396987181">Erabili "z" saguaren botoi bat sakatuta edukitzeko</translation>
@@ -5510,7 +5507,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4699473989647132421">Urertza</translation>
 <translation id="4701025263201366865">Gurasoen saio-hasiera</translation>
 <translation id="4701335814944566468">Atzo ikusi zenuen</translation>
-<translation id="4702504834785592287">Aldea</translation>
 <translation id="470644585772471629">Koloreen alderantzikatzea</translation>
 <translation id="4707337002099455863">Webgune guztietan beti</translation>
 <translation id="4708849949179781599">Irten <ph name="PRODUCT_NAME" />-tik</translation>
@@ -7199,7 +7195,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5888889603768021126">Honekin hasi da saioa:</translation>
 <translation id="5889282057229379085">Tarteko autoritate ziurtagiri-emaileen gehieneko kopurua: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Enkriptatu sinkronizatutako datuak <ph name="BEGIN_LINK" />sinkronizazio-pasaesaldiarekin<ph name="END_LINK" />. Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.</translation>
-<translation id="5890072287476934834">Eraman fitxak albo batera</translation>
 <translation id="5891688036610113830">Wifi-sare hobetsiak</translation>
 <translation id="5894056653502215961">Desautatu <ph name="FOLDER_TITLE" /> karpeta</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
@@ -9284,7 +9279,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7340179705876485790">Orri bat baino atzerago itzultzeko, eduki sakatuta Atzera.</translation>
 <translation id="7340650977506865820">Webgunea pantaila partekatzen ari da</translation>
 <translation id="7340757554212515731">Hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak automatikoki bidaltzen dizkio Google-ri</translation>
-<translation id="7340886226071938450">Fitxen zintaren posizioa</translation>
 <translation id="734088800888587319">Sarearen neurketak</translation>
 <translation id="7341834142292923918">Webgunerako sarbidea nahi du</translation>
 <translation id="7343372807593926528">Azaldu arazoa oharra bidali aurretik.</translation>
@@ -11287,7 +11281,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8685540043423825702">Zure Chrome-ko profila</translation>
 <translation id="8685882652128627032">"Gehitu webgune-bilaketa bat" irekitzeko, sakatu hau</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> gisa hasi duzu saioa</translation>
-<translation id="8686578183956518912">Eraman fitxak goialdera</translation>
 <translation id="8687103160920393343">Utzi <ph name="FILE_NAME" /> deskargatzeari</translation>
 <translation id="8687527282898211955">Konfiguratu PINa</translation>
 <translation id="8687774873995698516">Galarazi babestutako edukia erreproduzitzeko identifikatzaileak erabiltzea beti <ph name="HOST" /> webguneari</translation>

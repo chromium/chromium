@@ -2495,7 +2495,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2665394472441560184">Aggiungi una nuova parola</translation>
 <translation id="2665647207431876759">Scaduta</translation>
 <translation id="2665919335226618153">Uffa! Si è verificato un errore durante la formattazione.</translation>
-<translation id="2666092431469916601">In alto</translation>
 <translation id="2666247341166669829">Livello della batteria dell'auricolare sinistro a <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestisci controllo ortografico</translation>
@@ -2564,7 +2563,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2714180132046334502">Sfondo scuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelli</translation>
-<translation id="2715293433233060993">Sposta schede di lato</translation>
 <translation id="2715751256863167692">Questo upgrade ripristina il Chromebook e rimuove i dati utente correnti.</translation>
 <translation id="2715934493766003251">Impossibile liberare spazio di archiviazione mentre è attiva la sincronizzazione dei file</translation>
 <translation id="2716986496990888774">Questa impostazione è gestita da un genitore.</translation>
@@ -3241,7 +3239,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3167562202484086668">Elimina tutti i dati relativi a <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Scegli il tema più adatto alle tue esigenze. Per cambiare tema, sfondo, salvaschermo e altro ancora, tocca e tieni premuto sul desktop.</translation>
 <translation id="3170072451822350649">Puoi anche saltare l'accesso e <ph name="LINK_START" />navigare come ospite<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Sposta schede in alto</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Foresta</translation>
 <translation id="3176347586396987181">Usa il tasto "Z" per tenere premuto un tasto del mouse</translation>
@@ -5512,7 +5509,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4699473989647132421">Lungomare</translation>
 <translation id="4701025263201366865">Accesso per i genitori</translation>
 <translation id="4701335814944566468">Visualizzato ieri</translation>
-<translation id="4702504834785592287">Lato</translation>
 <translation id="470644585772471629">Inversione dei colori</translation>
 <translation id="4707337002099455863">Sempre su tutti i siti</translation>
 <translation id="4708849949179781599">Esci da <ph name="PRODUCT_NAME" /></translation>
@@ -7202,7 +7198,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5888889603768021126">Accesso eseguito con</translation>
 <translation id="5889282057229379085">Numero massimo di CA intermedie: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Cripta i dati sincronizzati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" />. I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.</translation>
-<translation id="5890072287476934834">Sposta schede di lato</translation>
 <translation id="5891688036610113830">Reti Wi-Fi preferite</translation>
 <translation id="5894056653502215961">Deseleziona la cartella <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Riavvia</translation>
@@ -9288,7 +9283,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7340179705876485790">Per tornare indietro di più di una pagina, fai clic su Indietro e tieni premuto.</translation>
 <translation id="7340650977506865820">Il sito sta condividendo lo schermo</translation>
 <translation id="7340757554212515731">Invia automaticamente a Google report sugli arresti anomali e dati diagnostici e sull'utilizzo</translation>
-<translation id="7340886226071938450">Posizione della tabstrip</translation>
 <translation id="734088800888587319">Metriche di rete</translation>
 <translation id="7341834142292923918">Vuole accedere a questo sito</translation>
 <translation id="7343372807593926528">Prima di inviare il feedback, descrivi il problema.</translation>
@@ -11293,7 +11287,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8685540043423825702">Il tuo profilo Chrome</translation>
 <translation id="8685882652128627032">Fai clic per aprire la finestra di dialogo Aggiungi ricerca su sito</translation>
 <translation id="8686142379631285985">Accesso eseguito come <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Sposta schede in alto</translation>
 <translation id="8687103160920393343">Cancella <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Imposta il PIN</translation>
 <translation id="8687774873995698516">Impedisci sempre a <ph name="HOST" /> di usare identificatori per riprodurre contenuti protetti</translation>

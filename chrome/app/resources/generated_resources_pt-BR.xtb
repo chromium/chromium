@@ -2510,7 +2510,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2665394472441560184">Adicionar uma nova palavra</translation>
 <translation id="2665647207431876759">Expirado</translation>
 <translation id="2665919335226618153">Ah, não! Ocorreu um erro durante a formatação.</translation>
-<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nível da bateria do lado esquerdo: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Outros apps estão configurados para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> abram links compatíveis.</translation>
 <translation id="2667463864537187133">Gerenciar a verificação ortográfica</translation>
@@ -2579,7 +2578,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2714180132046334502">Plano de fundo escuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelos</translation>
-<translation id="2715293433233060993">Mover guias para a lateral</translation>
 <translation id="2715751256863167692">Esse upgrade redefine seu Chromebook e remove os dados do usuário atuais.</translation>
 <translation id="2715934493766003251">Não é possível limpar o armazenamento enquanto a sincronização está ativada</translation>
 <translation id="2716986496990888774">Esta configuração é gerenciada por um dos seus pais.</translation>
@@ -3255,7 +3253,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3167562202484086668">Excluir todos os dados do <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Escolha o tema ideal para você. É possível mudar o tema, o plano de fundo, o protetor de tela e muito mais tocando na área de trabalho e a mantendo pressionada.</translation>
 <translation id="3170072451822350649">Também é possível ignorar o login e <ph name="LINK_START" />navegar como visitante<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Mover guias para a parte de cima</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Floresta</translation>
 <translation id="3176347586396987181">Use a tecla “z” para tocar em um botão do mouse e pressionar</translation>
@@ -5527,7 +5524,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4699473989647132421">Litoral</translation>
 <translation id="4701025263201366865">Login do familiar responsável</translation>
 <translation id="4701335814944566468">Visualizado ontem</translation>
-<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
@@ -7221,7 +7217,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5888889603768021126">Login feito com</translation>
 <translation id="5889282057229379085">Número máximo de autoridades de certificação intermediárias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Criptografar dados sincronizados com a <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" />. As formas de pagamento e os endereços do Google Pay não vão ser criptografados. O histórico de navegação do Chrome não será sincronizado.</translation>
-<translation id="5890072287476934834">Mover guias para o lado</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Desmarcar a pasta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -9310,7 +9305,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7340179705876485790">Para voltar mais de uma página, clique e mantenha pressionado o botão "Voltar".</translation>
 <translation id="7340650977506865820">O site está compartilhando sua tela</translation>
 <translation id="7340757554212515731">Envia automaticamente relatórios de erros, assim como dados de uso e diagnósticos ao Google</translation>
-<translation id="7340886226071938450">Posição da barra de guias</translation>
 <translation id="734088800888587319">Métricas da rede</translation>
 <translation id="7341834142292923918">Quer ter acesso a este site</translation>
 <translation id="7343372807593926528">Descreva o problema antes de enviar feedback.</translation>
@@ -11315,7 +11309,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8685540043423825702">Seu perfil do Chrome</translation>
 <translation id="8685882652128627032">Clique para abrir a caixa de diálogo "Adicionar pesquisa do site"</translation>
 <translation id="8686142379631285985">Login feito como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mover guias para cima</translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configure seu PIN</translation>
 <translation id="8687774873995698516">Sempre impedir que <ph name="HOST" /> use identificadores para abrir conteúdo protegido</translation>

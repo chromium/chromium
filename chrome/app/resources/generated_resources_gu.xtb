@@ -2495,7 +2495,6 @@
 <translation id="2665394472441560184">એક નવો શબ્દ ઉમેરો</translation>
 <translation id="2665647207431876759">સમય સમાપ્ત થયો</translation>
 <translation id="2665919335226618153">અરર, કંઈક ભૂલ થઈ! ત્યાં ફોર્મેટિંગ દરમિયાન ભૂલ આવી હતી.</translation>
-<translation id="2666092431469916601">ઉપર</translation>
 <translation id="2666247341166669829">ડાબા વાયરલેસ ઇયરબડમાં બૅટરીનું લેવલ <ph name="PERCENTAGE" />% છે.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" /> અને <ph name="APP_NAME_3" /> સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="2667463864537187133">જોડણીની તપાસ મેનેજ કરો</translation>
@@ -2564,7 +2563,6 @@
 <translation id="2714180132046334502">ઘાટું બૅકગ્રાઉન્ડ</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">મૉડલ</translation>
-<translation id="2715293433233060993">ટૅબને બાજુમાં ખસેડો</translation>
 <translation id="2715751256863167692">આ અપગ્રેડ તમારી Chromebookને રીસેટ કરે છે અને હાલનો વપરાશકર્તા ડેટા કાઢી નાખે છે.</translation>
 <translation id="2715934493766003251">ફાઇલ સિંક થવાનું ચાલુ હોય ત્યારે સ્ટોરેજ સાફ કરી શકાતું નથી</translation>
 <translation id="2716986496990888774">આ સેટિંગને માતાપિતા મેનેજ કરે છે.</translation>
@@ -3241,7 +3239,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />નો તમામ ડેટા ડિલીટ કરો</translation>
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
-<translation id="3172642937040465677">ટૅબને સૌથી ઉપર ખસેડો</translation>
 <translation id="3175067642577044620">મુખ્ય ભાગ</translation>
 <translation id="3175862692832442091">જંગલ</translation>
 <translation id="3176347586396987181">માઉસનું બટન દબાવી રાખવા માટે “z”નો ઉપયોગ કરો</translation>
@@ -5515,7 +5512,6 @@
 <translation id="4699473989647132421">કિનારો</translation>
 <translation id="4701025263201366865">માતાપિતા સાઇન ઇન કરે</translation>
 <translation id="4701335814944566468">ગઈકાલે જોઈ હતી</translation>
-<translation id="4702504834785592287">બાજુ</translation>
 <translation id="470644585772471629">વિપરીત રંગમાં બદલવું</translation>
 <translation id="4707337002099455863">હંમેશાં બધી સાઇટ પર પરવાનગી આપો</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
@@ -7210,7 +7206,6 @@
 <translation id="5888889603768021126">આમના વડે સાઇન ઇન કરેલું</translation>
 <translation id="5889282057229379085">ઇન્ટરમિડિયેટ CA ની મહત્તમ સંખ્યા: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">તમારા પોતાના <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> વડે સિંક કરેલો ડેટા એન્ક્રિપ્ટ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.</translation>
-<translation id="5890072287476934834">ટૅબને બાજુમાં ખસેડો</translation>
 <translation id="5891688036610113830">પસંદ કરેલા વાઇ-ફાઇ નેટવર્ક</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ફોલ્ડર નાપસંદ કરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -9301,7 +9296,6 @@ USB ડિવાઇસ</translation>
 <translation id="7340179705876485790">1 કરતાં વધુ પેજ પાછળ જવા માટે, 'પાછળ' પર ક્લિક કરી રાખો.</translation>
 <translation id="7340650977506865820">સાઇટ તમારી સ્ક્રીન શેર કરી રહી છે</translation>
 <translation id="7340757554212515731">Googleને ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક અને વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલે છે</translation>
-<translation id="7340886226071938450">ટૅબ સ્ટ્રિપની સ્થિતિ</translation>
 <translation id="734088800888587319">નેટવર્ક મેટ્રિક</translation>
 <translation id="7341834142292923918">આ સાઇટને ઍક્સેસ કરવા માગે છે</translation>
 <translation id="7343372807593926528">કૃપા કરીને પ્રતિસાદ મોકલતા પહેલાં સમસ્યાનું વર્ણન કરો.</translation>
@@ -11302,7 +11296,6 @@ USB ડિવાઇસ</translation>
 <translation id="8685540043423825702">તમારી Chrome પ્રોફાઇલ</translation>
 <translation id="8685882652128627032">સાઇટમાં શોધ ઉમેરો સંવાદ ખોલવા માટે ક્લિક કરો</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> તરીકે સાઇન ઇન થયા</translation>
-<translation id="8686578183956518912">ટૅબને સૌથી ઉપર ખસેડો</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> રદ કરો</translation>
 <translation id="8687527282898211955">તમારા પિનનું સેટઅપ કરો</translation>
 <translation id="8687774873995698516"><ph name="HOST" />ને સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે ઓળખકર્તાઓનો ઉપયોગ કરવાનું હંમેશાં માટે બ્લૉક કરો</translation>

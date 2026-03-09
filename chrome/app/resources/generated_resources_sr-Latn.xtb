@@ -2494,7 +2494,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2665394472441560184">Dodajte novu reč</translation>
 <translation id="2665647207431876759">Isteklo</translation>
 <translation id="2665919335226618153">O, ne! Došlo je do greške tokom formatiranja.</translation>
-<translation id="2666092431469916601">Vrh</translation>
 <translation id="2666247341166669829">Nivo napunjenosti baterije za levu <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Druge aplikacije su podešene da otvaraju iste linkove kao aplikacija <ph name="APP_NAME" />. Ovim se aplikacije <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> onemogućavaju da otvaraju podržane linkove.</translation>
 <translation id="2667463864537187133">Upravljanje proverom pravopisa</translation>
@@ -2563,7 +2562,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2714180132046334502">Tamna pozadina</translation>
 <translation id="2714393097308983682">Google Play prodavnica</translation>
 <translation id="2714617928488200509">Modeli</translation>
-<translation id="2715293433233060993">Premesti kartice sa strane</translation>
 <translation id="2715751256863167692">Ovom nadogradnjom Chromebook se resetuje i uklanjaju se aktuelni podaci korisnika.</translation>
 <translation id="2715934493766003251">Memorijski prostor ne može da se očisti dok je sinhronizacija fajlova uključena</translation>
 <translation id="2716986496990888774">Ovim podešavanjem upravlja roditelj.</translation>
@@ -3240,7 +3238,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3167562202484086668">Izbriši sve podatke tipa <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Odaberite temu koja odgovara vašim potrebama. Da biste promenili temu, pozadinu, čuvar ekrana i drugo, samo dodirnite i zadržite radnu površinu.</translation>
 <translation id="3170072451822350649">Možete i da preskočite prijavljivanje i da <ph name="LINK_START" />pregledate kao gost<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Premesti kartice na vrh</translation>
 <translation id="3175067642577044620">Sadržaj</translation>
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Koristite „z“ da biste pritisnuli i zadržali taster miša</translation>
@@ -5514,7 +5511,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4699473989647132421">Obala</translation>
 <translation id="4701025263201366865">Prijavljivanje roditelja</translation>
 <translation id="4701335814944566468">Pregledali ste juče</translation>
-<translation id="4702504834785592287">Strana</translation>
 <translation id="470644585772471629">Inverzija boja</translation>
 <translation id="4707337002099455863">Uvek na svim sajtovima</translation>
 <translation id="4708849949179781599">Zatvori <ph name="PRODUCT_NAME" /></translation>
@@ -7207,7 +7203,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5888889603768021126">Prijavljeni ste pomoću:</translation>
 <translation id="5889282057229379085">Najveći broj posredničkih CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifrujte sinhronizovane podatke pomoću sopstvene <ph name="BEGIN_LINK" />pristupne fraze za sinhronizaciju<ph name="END_LINK" />. Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chrome-a se neće sinhronizovati.</translation>
-<translation id="5890072287476934834">Premesti kartice sa strane</translation>
 <translation id="5891688036610113830">Primarne WiFi mreže</translation>
 <translation id="5894056653502215961">Opozovite izbor foldera <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
@@ -9299,7 +9294,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7340179705876485790">Da biste se vratili za više od 1 stranice, kliknite i zadržite Nazad.</translation>
 <translation id="7340650977506865820">Sajt deli ekran</translation>
 <translation id="7340757554212515731">Automatski šaljite izveštaje o otkazivanju, kao i dijagnostiku i podatke o korišćenju Google-u</translation>
-<translation id="7340886226071938450">Položaj trake sa karticama</translation>
 <translation id="734088800888587319">Pokazatelji mreže</translation>
 <translation id="7341834142292923918">Želi da pristupa ovom sajtu</translation>
 <translation id="7343372807593926528">Opišite problem da biste poslali povratne informacije.</translation>
@@ -11305,7 +11299,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8685540043423825702">Chrome profil</translation>
 <translation id="8685882652128627032">Kliknite da biste otvorili dijalog Dodajte pretragu sajta</translation>
 <translation id="8686142379631285985">Prijavljeni ste kao <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Premesti kartice na vrh</translation>
 <translation id="8687103160920393343">Otkažite fajl <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Podesite PIN</translation>
 <translation id="8687774873995698516">Nikad ne dozvoljavaj da <ph name="HOST" /> koristi identifikatore za puštanje zaštićenog sadržaja</translation>

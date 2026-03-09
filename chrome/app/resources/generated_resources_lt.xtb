@@ -2512,7 +2512,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2665394472441560184">Pridėti naują žodį</translation>
 <translation id="2665647207431876759">Negalioja</translation>
 <translation id="2665919335226618153">Oi! Formatuojant įvyko klaida.</translation>
-<translation id="2666092431469916601">Į viršų</translation>
 <translation id="2666247341166669829">Kairiosios akumuliatoriaus energijos lygis: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atllikus „<ph name="APP_NAME_2" />“ ir „<ph name="APP_NAME_3" />“ negalės atidaryti palaikomų nuorodų.</translation>
 <translation id="2667463864537187133">Rašybos tikrinimo tvarkymas</translation>
@@ -2581,7 +2580,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2714180132046334502">Tamsus fonas</translation>
 <translation id="2714393097308983682">„Google Play“ parduotuvė</translation>
 <translation id="2714617928488200509">Modeliai</translation>
-<translation id="2715293433233060993">Perkelti skirtukus į šoną</translation>
 <translation id="2715751256863167692">Šis naujovinimas iš naujo nustato „Chromebook“ ir pašalina dabartinio naudotojo duomenis.</translation>
 <translation id="2715934493766003251">Negalima išvalyti saugyklos, kai įjungtas failų sinchronizavimas</translation>
 <translation id="2716986496990888774">Šį nustatymą tvarko vienas iš tėvų.</translation>
@@ -3258,7 +3256,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3167562202484086668">Ištrinti visus paslaugos <ph name="BRAND" /> duomenis</translation>
 <translation id="3169930038976362151">Pasirinkite jūsų poreikius atitinkančią temą. Jei norite pakeisti temą, ekrano foną, ekrano užsklandą ir kt., tiesiog palieskite ir palaikykite spustelėkite darbalaukį.</translation>
 <translation id="3170072451822350649">Be to, galite praleisti prisijungimo veiksmą ir <ph name="LINK_START" />naršyti kaip svečias<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Perkelti skirtukus į viršų</translation>
 <translation id="3175067642577044620">Turinys</translation>
 <translation id="3175862692832442091">Miškas</translation>
 <translation id="3176347586396987181">Naudokite „z“, kad paspaustumėte pelės mygtuką ir palaikytumėte</translation>
@@ -5532,7 +5529,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4699473989647132421">Krantas</translation>
 <translation id="4701025263201366865">Vieno iš tėvų prisijungimas</translation>
 <translation id="4701335814944566468">Žiūrėta vakar</translation>
-<translation id="4702504834785592287">Šonas</translation>
 <translation id="470644585772471629">Spalvų inversija</translation>
 <translation id="4707337002099455863">Visada visose svetainėse</translation>
 <translation id="4708849949179781599">Baigti darbą su „<ph name="PRODUCT_NAME" />“</translation>
@@ -7227,7 +7223,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5888889603768021126">Prisijungta naudojant</translation>
 <translation id="5889282057229379085">Didžiausias tarpinių CA skaičius: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifruokite sinchronizuojamus duomenis taikydami savo <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. „Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.</translation>
-<translation id="5890072287476934834">Perkelti skirtukus į šoną</translation>
 <translation id="5891688036610113830">Pageidaujami „Wi-Fi“ tinklai</translation>
 <translation id="5894056653502215961">Panaikinti aplanko „<ph name="FOLDER_TITLE" />“ pasirinkimą</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
@@ -9321,7 +9316,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7340179705876485790">Jei norite grįžti daugiau nei vieną puslapį, spustelėkite ir palaikykite „Atgal“.</translation>
 <translation id="7340650977506865820">Svetainė bendrina jūsų ekrano vaizdą</translation>
 <translation id="7340757554212515731">Automatiškai siunčiamos strigčių ataskaitos ir diagnostikos bei naudojimo duomenys į sistemą „Google“</translation>
-<translation id="7340886226071938450">Skirtuko juostelės padėtis</translation>
 <translation id="734088800888587319">Tinklo metrika</translation>
 <translation id="7341834142292923918">Nori gauti prieigą prie šios svetainės</translation>
 <translation id="7343372807593926528">Prieš išsiųsdami atsiliepimą, kuo išsamiau apibūdinkite problemą.</translation>
@@ -11327,7 +11321,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8685540043423825702">Jūsų „Chrome“ profilis</translation>
 <translation id="8685882652128627032">Spustelėkite, kad atidarytumėte dialogo langą „Pridėti svetainių paiešką“</translation>
 <translation id="8686142379631285985">Prisijungėte kaip <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Perkelti skirtukus į viršų</translation>
 <translation id="8687103160920393343">Atšaukti <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">PIN kodo nustatymas</translation>
 <translation id="8687774873995698516">Visada blokuoti „<ph name="HOST" />“ galimybę naudoti identifikatorius apsaugotam turiniui leisti</translation>

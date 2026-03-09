@@ -2510,7 +2510,6 @@
 <translation id="2665394472441560184">Додај нов збор</translation>
 <translation id="2665647207431876759">Истечен</translation>
 <translation id="2665919335226618153">Аман! Имаше грешка за време на форматирањето.</translation>
-<translation id="2666092431469916601">Горе</translation>
 <translation id="2666247341166669829">Ниво на батерија на левата <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Поставени се други апликации да ги отвораат истите линкови како <ph name="APP_NAME" />. Со ова ќе се оневозможи <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> да ги отвораат линковите за поддршка.</translation>
 <translation id="2667463864537187133">Управувајте со проверката на правописот</translation>
@@ -2579,7 +2578,6 @@
 <translation id="2714180132046334502">Темна заднина</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Модели</translation>
-<translation id="2715293433233060993">Премести ги картичките отстрана</translation>
 <translation id="2715751256863167692">Надградбава го ресетира Chromebook и ги отстранува податоците за тековниот корисник.</translation>
 <translation id="2715934493766003251">Просторот не може да се подзачисти додека е вклучена синхронизацијата на датотеките</translation>
 <translation id="2716986496990888774">Со поставкава управува родител.</translation>
@@ -3256,7 +3254,6 @@
 <translation id="3167562202484086668">Избришете ги сите податоци во <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Изберете ја темата што одговара на вашите потреби. За да промените тема, тапет, штедач на екран и друго, само допрете и задржете на работната површина.</translation>
 <translation id="3170072451822350649">Може да прескокнете и најавување и <ph name="LINK_START" />да прелистувате како Гостин<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Премести ги картичките најгоре</translation>
 <translation id="3175067642577044620">Главен текст</translation>
 <translation id="3175862692832442091">Шума</translation>
 <translation id="3176347586396987181">Користете „Z“ за да притиснете копче на глувчето и да задржите</translation>
@@ -5527,7 +5524,6 @@
 <translation id="4699473989647132421">Крајбрежје</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
 <translation id="4701335814944566468">Прегледано вчера</translation>
-<translation id="4702504834785592287">Странична</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
 <translation id="4707337002099455863">Секогаш вклучено на сите сајтови</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
@@ -7220,7 +7216,6 @@
 <translation id="5888889603768021126">Најавен со</translation>
 <translation id="5889282057229379085">Максимален број посредни ЦА: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифрирајте ги синхронизираните податоци со сопствена <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" />. Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистување од Chrome нема да се синхронизира.</translation>
-<translation id="5890072287476934834">Премести ги картичките отстрана</translation>
 <translation id="5891688036610113830">Претпочитани Wi-Fi мрежи</translation>
 <translation id="5894056653502215961">Поништи го изборот на папката <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Рестартирај</translation>
@@ -9307,7 +9302,6 @@
 <translation id="7340179705876485790">За да се вратите повеќе од 1 страница наназад, кликнете и задржете Back.</translation>
 <translation id="7340650977506865820">Сајтот го споделува вашиот екран</translation>
 <translation id="7340757554212515731">Автоматски испраќа извештаи за падовите, како и дијагностички податоци и податоци за користењето во Google</translation>
-<translation id="7340886226071938450">Позиција на лентата за картички</translation>
 <translation id="734088800888587319">Метрика на мрежата</translation>
 <translation id="7341834142292923918">Сака пристап до сајтов</translation>
 <translation id="7343372807593926528">Опишете го проблемот пред да испратите повратни информации.</translation>
@@ -11313,7 +11307,6 @@
 <translation id="8685540043423825702">Вашиот профил на Chrome</translation>
 <translation id="8685882652128627032">Кликнете за да се отвори дијалогот за додавање пребарување сајтови</translation>
 <translation id="8686142379631285985">Најавени сте како <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Премести ги картичките најгоре</translation>
 <translation id="8687103160920393343">Откажете го преземањето на <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Поставете го вашиот PIN</translation>
 <translation id="8687774873995698516">Секогаш блокирај го сајтот <ph name="HOST" /> да користи идентификатори за да пушта заштитени содржини</translation>

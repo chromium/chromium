@@ -2496,7 +2496,6 @@
 <translation id="2665394472441560184">Дадаць новае слова</translation>
 <translation id="2665647207431876759">Скончыўся тэрмін</translation>
 <translation id="2665919335226618153">На жаль, падчас фармаціравання адбылася памылка.</translation>
-<translation id="2666092431469916601">Зверху</translation>
 <translation id="2666247341166669829">Зарад акумулятара ў левым навушніку: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Іншыя праграмы наладжаны адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграмы "<ph name="APP_NAME_2" />" і "<ph name="APP_NAME_3" />" перастануць адкрываць адпаведныя спасылкі.</translation>
 <translation id="2667463864537187133">Кіраванне праверкай правапісу</translation>
@@ -2565,7 +2564,6 @@
 <translation id="2714180132046334502">Цёмны фон</translation>
 <translation id="2714393097308983682">Крама Google Play</translation>
 <translation id="2714617928488200509">Мадэлі</translation>
-<translation id="2715293433233060993">Перамясціць укладкі на бакавую панэль</translation>
 <translation id="2715751256863167692">Гэта абнаўленне скідае налады Chromebook і выдаляе карыстальніцкія даныя.</translation>
 <translation id="2715934493766003251">Ачышчаць сховішча падчас сінхранізацыі файлаў нельга</translation>
 <translation id="2716986496990888774">Гэтай наладай кіруюць бацькі.</translation>
@@ -3242,7 +3240,6 @@
 <translation id="3167562202484086668">Выдаленне ўсіх даных з праграмы "<ph name="BRAND" />"</translation>
 <translation id="3169930038976362151">Выберыце тэму, якая адпавядае вашым патрэбам. Каб змяніць тэму, шпалеры, застаўку і іншыя параметры, проста дакраніцеся да працоўнага стала і ўтрымлівайце палец.</translation>
 <translation id="3170072451822350649">Таксама можна не ўваходзіць і <ph name="LINK_START" />праглядаць вэб-старонкі як госць<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Перамясціць укладкі ўверх</translation>
 <translation id="3175067642577044620">Асноўны раздзел</translation>
 <translation id="3175862692832442091">Лес</translation>
 <translation id="3176347586396987181">Каб націснуць і ўтрымліваць кнопку мышы, выкарыстайце "z"</translation>
@@ -5514,7 +5511,6 @@
 <translation id="4699473989647132421">Марскі бераг</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
 <translation id="4701335814944566468">Прагледжана ўчора</translation>
-<translation id="4702504834785592287">Бакавы</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
 <translation id="4707337002099455863">Заўсёды на ўсіх сайтах</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
@@ -7206,7 +7202,6 @@
 <translation id="5888889603768021126">Вы ўвайшлі з дапамогай наступнага пастаўшчыка ідэнтыфікацыйнай інфармацыі:</translation>
 <translation id="5889282057229379085">Максімальная колькасць прамежкавых ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шыфраваць сінхранізаваныя даныя з дапамогай <ph name="BEGIN_LINK" />фразы-пароля<ph name="END_LINK" />. Спосабы аплаты і адрасы з Google Pay не будуць шыфравацца. Гісторыя прагляду сайтаў у браўзеры Chrome не будзе сінхранізавацца.</translation>
-<translation id="5890072287476934834">Перамясціць укладкі на бакавую панэль</translation>
 <translation id="5891688036610113830">Прыярытэтныя сеткі Wi-Fi</translation>
 <translation id="5894056653502215961">Скасаваць выбар папкі "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
@@ -9299,7 +9294,6 @@
 <translation id="7340179705876485790">Каб вярнуцца больш чым на адну старонку, націсніце і ўтрымлівайце кнопку "Назад".</translation>
 <translation id="7340650977506865820">Сайт абагульвае ваш экран</translation>
 <translation id="7340757554212515731">Аўтаматычна адпраўляе ў Google справаздачы аб збоях, а таксама даныя пра выкарыстанне і дыягностыку.</translation>
-<translation id="7340886226071938450">Пазіцыя панэлі ўкладак</translation>
 <translation id="734088800888587319">Паказчыкі сеткі</translation>
 <translation id="7341834142292923918">Запытвае доступ да гэтага сайта</translation>
 <translation id="7343372807593926528">Перш чым адправіць водгук, апішыце праблему.</translation>
@@ -11304,7 +11298,6 @@
 <translation id="8685540043423825702">Ваш профіль Chrome</translation>
 <translation id="8685882652128627032">Націсніце, каб адкрыць дыялогавае акно дадавання пошуку па сайце</translation>
 <translation id="8686142379631285985">Вы ўвайшлі як <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Перамясціць укладкі ўверх</translation>
 <translation id="8687103160920393343">Скасаваць спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8687527282898211955">Наладзьце PIN-код</translation>
 <translation id="8687774873995698516">Заўсёды блакіраваць сайту "<ph name="HOST" />" доступ да ідэнтыфікатараў для прайгравання абароненага змесціва</translation>

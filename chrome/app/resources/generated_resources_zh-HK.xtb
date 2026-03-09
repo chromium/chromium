@@ -2509,7 +2509,6 @@
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
 <translation id="2665919335226618153">糟糕！格式化過程中發生錯誤。</translation>
-<translation id="2666092431469916601">返回頁首</translation>
 <translation id="2666247341166669829">左邊嘅電量係 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
 <translation id="2667463864537187133">管理拼字檢查</translation>
@@ -2578,7 +2577,6 @@
 <translation id="2714180132046334502">深色背景</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
 <translation id="2714617928488200509">型號</translation>
-<translation id="2715293433233060993">將分頁移至側邊</translation>
 <translation id="2715751256863167692">此升級操作會重設您的 Chromebook 硬件，並刪除目前的使用者資料。</translation>
 <translation id="2715934493766003251">檔案同步功能已開啟，因此無法清理儲存空間</translation>
 <translation id="2716986496990888774">此設定由家長管理。</translation>
@@ -3254,7 +3252,6 @@
 <translation id="3167562202484086668">刪除所有「<ph name="BRAND" />」資料</translation>
 <translation id="3169930038976362151">選擇切合您需要的主題。如要變更主題、桌布、螢幕保護程式和其他設定，只要輕觸並按住桌面即可。</translation>
 <translation id="3170072451822350649">您也可以略過登入程序，<ph name="LINK_START" />以訪客身分瀏覽<ph name="LINK_END" />。</translation>
-<translation id="3172642937040465677">將分頁移至頂部</translation>
 <translation id="3175067642577044620">內文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下「z」代表按住滑鼠按鍵</translation>
@@ -3414,6 +3411,7 @@
 <translation id="3289668031376215426">自動大寫</translation>
 <translation id="3289856944988573801">如要檢查更新，請使用以太網絡或 Wi-Fi。</translation>
 <translation id="3290249595466894471">同時傳送網頁、下載檔案、擴充程式活動及系統資料的少量抽樣資料，以協助發現新威脅</translation>
+<translation id="3292966601422448005">你授予「<ph name="APP_NAME" />」的權限，也會套用至其所安裝的應用程式。</translation>
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
 <translation id="329324683265785818">播放/暫停，鍵盤快速鍵 K</translation>
 <translation id="3293644607209440645">傳送此頁面</translation>
@@ -3783,6 +3781,7 @@
 <translation id="354060433403403521">充電火牛</translation>
 <translation id="354068948465830244">可讀取及變更網站資料</translation>
 <translation id="3541823293333232175">已指派</translation>
+<translation id="354323442562085715">撰寫內容、規劃活動、編寫程式碼等</translation>
 <translation id="3543296862747913985">用途</translation>
 <translation id="3543298914473315872">更新程式程序</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
@@ -4850,6 +4849,7 @@
 <translation id="4249373718504745892">系統已封鎖這個網頁存取您的相機和麥克風。</translation>
 <translation id="4249785854468467847">AI 為你大幅提升效能，重塑 Chrome 體驗</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
+<translation id="4250596587221570622">選擇設定檔主題</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> 將可查看和複製「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="4251377547188244181">註冊 Kiosk 或標牌裝置</translation>
@@ -5520,7 +5520,6 @@
 <translation id="4699473989647132421">海岸線</translation>
 <translation id="4701025263201366865">家長登入</translation>
 <translation id="4701335814944566468">昨天看過</translation>
-<translation id="4702504834785592287">側邊</translation>
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
@@ -5637,6 +5636,7 @@
 <translation id="4794910597689955457">要將 <ph name="NUM_OF_FILES" /> 個檔案移到 <ph name="CLOUD_PROVIDER" /> 開啟嗎？</translation>
 <translation id="479536056609751218">只限網頁的 HTML 部分</translation>
 <translation id="4795670271446126525">洶湧的海浪</translation>
+<translation id="479664067938200069">「<ph name="APP_NAME" />」安裝的應用程式</translation>
 <translation id="4797314204379834752">嘗試為網上購物等使用分頁群組來規劃工作</translation>
 <translation id="4799574323027833817">沒有生效中的政策。</translation>
 <translation id="479989351350248267">搜尋</translation>
@@ -7209,7 +7209,6 @@
 <translation id="5888889603768021126">目前登入身分</translation>
 <translation id="5889282057229379085">中繼 CA 數目上限：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您的<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />，加密已同步處理的資料。Google Pay 上的付款方法和地址將不會加密。Chrome 上的瀏覽記錄將不會同步。</translation>
-<translation id="5890072287476934834">將分頁移至側邊</translation>
 <translation id="5891688036610113830">偏好的 Wi-Fi 網絡</translation>
 <translation id="5894056653502215961">取消揀資料夾：<ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -8720,6 +8719,7 @@
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕 1 個擴充程式}other{已拒絕 # 個擴充程式}}</translation>
 <translation id="6930337524857202955">有新下載項目</translation>
+<translation id="6930477763029357444">如果你將權限授予「<ph name="APP_NAME" />」，「<ph name="PARENT_APP_NAME" />」及其所安裝的應用程式也會取得同樣的權限。</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">點擊力度</translation>
 <translation id="6933321725007230600">開啟同步功能(&amp;S)…</translation>
@@ -9295,7 +9295,6 @@
 <translation id="7340179705876485790">如果要返回的頁數超過 1 頁，請點選並按住 [返回]。</translation>
 <translation id="7340650977506865820">網站正在分享您的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告、診斷和使用情況資料自動傳送給 Google</translation>
-<translation id="7340886226071938450">分頁列位置</translation>
 <translation id="734088800888587319">網絡數據</translation>
 <translation id="7341834142292923918">需要在此網站上執行</translation>
 <translation id="7343372807593926528">請在傳送意見前說明問題。</translation>
@@ -10817,6 +10816,7 @@
 <translation id="8353420862507374944">投放、儲存和分享</translation>
 <translation id="8353683614194668312">它可以：</translation>
 <translation id="8354034204605718473">已新增您子女的 PIN</translation>
+<translation id="8354125743472063725">如果你將權限授予「<ph name="APP_NAME" />」，這個應用程式也會取得同樣的權限。<ph name="BEGIN_LINK" />管理主應用程式的權限<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /> 個</translation>
 <translation id="8356409598322585307">您已註冊此裝置，因此無需再註冊。</translation>
 <translation id="8357388086258943206">安裝 Linux 時發生錯誤</translation>
@@ -11297,7 +11297,6 @@
 <translation id="8685540043423825702">你的 Chrome 個人檔案</translation>
 <translation id="8685882652128627032">㩒一下打開「新增站內搜尋」對話框</translation>
 <translation id="8686142379631285985">以 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 的身份登入</translation>
-<translation id="8686578183956518912">將分頁移至頂部</translation>
 <translation id="8687103160920393343">取消下載 <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">設定你的 PIN</translation>
 <translation id="8687774873995698516">一律禁止 <ph name="HOST" /> 使用識別碼來播放受保護的內容</translation>

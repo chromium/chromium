@@ -2496,7 +2496,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2665394472441560184">Een nieuw woord toevoegen</translation>
 <translation id="2665647207431876759">Verlopen</translation>
 <translation id="2665919335226618153">Asjemenou! Er is iets misgegaan bij het formatteren.</translation>
-<translation id="2666092431469916601">Boven</translation>
 <translation id="2666247341166669829">Batterijniveau links: <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> ondersteunde links openen.</translation>
 <translation id="2667463864537187133">Spellingcontrole beheren</translation>
@@ -2565,7 +2564,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2714180132046334502">Donkere achtergrond</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modellen</translation>
-<translation id="2715293433233060993">Tabbladen aan de zijkant zetten</translation>
 <translation id="2715751256863167692">Met deze upgrade wordt je Chromebook gereset en worden huidige gebruikersgegevens verwijderd.</translation>
 <translation id="2715934493766003251">Kan opslag niet opschonen als bestandssynchronisatie aanstaat</translation>
 <translation id="2716986496990888774">Deze instelling wordt beheerd door een ouder.</translation>
@@ -3242,7 +3240,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3167562202484086668">Alle gegevens uit <ph name="BRAND" /> verwijderen</translation>
 <translation id="3169930038976362151">Kies het thema dat bij je past. Als je je thema, achtergrond, screensaver en meer wilt wijzigen, tik je op het bureaublad en houd je dit vast.</translation>
 <translation id="3170072451822350649">Je kunt het inloggen ook overslaan en <ph name="LINK_START" />browsen als gast<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Tabbladen bovenaan zetten</translation>
 <translation id="3175067642577044620">Body</translation>
 <translation id="3175862692832442091">Bos</translation>
 <translation id="3176347586396987181">Gebruik z om een muisknop ingedrukt te houden</translation>
@@ -5513,7 +5510,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4699473989647132421">Kustlijn</translation>
 <translation id="4701025263201366865">Inloggen voor ouders</translation>
 <translation id="4701335814944566468">Gisteren bekeken</translation>
-<translation id="4702504834785592287">Team</translation>
 <translation id="470644585772471629">Kleurinversie</translation>
 <translation id="4707337002099455863">Altijd op alle sites</translation>
 <translation id="4708849949179781599">Stop <ph name="PRODUCT_NAME" /></translation>
@@ -7203,7 +7199,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5888889603768021126">Ingelogd met</translation>
 <translation id="5889282057229379085">Maximum aantal tussenliggende certificeringsinstanties: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Versleutel gesynchroniseerde gegevens met je eigen <ph name="BEGIN_LINK" />wachtwoordzin voor synchronisatie<ph name="END_LINK" />. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
-<translation id="5890072287476934834">Tabbladen aan de zijkant zetten</translation>
 <translation id="5891688036610113830">Wifi-netwerken met voorrang</translation>
 <translation id="5894056653502215961">Map <ph name="FOLDER_TITLE" /> deselecteren</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
@@ -9290,7 +9285,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7340179705876485790">Als je meer dan 1 pagina wilt teruggaan, houd je Terug ingedrukt.</translation>
 <translation id="7340650977506865820">Site deelt je scherm</translation>
 <translation id="7340757554212515731">Hiermee stuur je automatisch crashrapporten, diagnostische gegevens en gebruiksgegevens naar Google</translation>
-<translation id="7340886226071938450">Positie van tabbladstrook</translation>
 <translation id="734088800888587319">Netwerkstatistieken</translation>
 <translation id="7341834142292923918">Wil toegang tot deze site</translation>
 <translation id="7343372807593926528">Beschrijf het probleem zo goed mogelijk voordat je feedback stuurt.</translation>
@@ -11295,7 +11289,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="8685540043423825702">Je Chrome-profiel</translation>
 <translation id="8685882652128627032">Klik om het dialoogvenster Zoekopdracht op site toevoegen te openen</translation>
 <translation id="8686142379631285985">Ingelogd als <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Tabbladen bovenaan zetten</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> annuleren</translation>
 <translation id="8687527282898211955">Je pincode instellen</translation>
 <translation id="8687774873995698516">Altijd voorkomen dat <ph name="HOST" /> ID's gebruikt om beveiligde content af te spelen</translation>

@@ -2510,7 +2510,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2665394472441560184">Magdagdag ng bagong salita</translation>
 <translation id="2665647207431876759">Nag-expire</translation>
 <translation id="2665919335226618153">Naku! Nagkaroon ng error habang nagpo-format.</translation>
-<translation id="2666092431469916601">Tuktok</translation>
 <translation id="2666247341166669829"><ph name="PERCENTAGE" />% antas ng baterya ng kaliwa.</translation>
 <translation id="2667144577800272420">May iba pang app na nakatakdang buksan ang mga link na kapareho ng sa <ph name="APP_NAME" />. Idi-disable nito ang kakayahan ng <ph name="APP_NAME_2" /> at <ph name="APP_NAME_3" /> na buksan ang mga sinusuportahang link.</translation>
 <translation id="2667463864537187133">Pamahalaan ang pang-check ng pagbabaybay</translation>
@@ -2579,7 +2578,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2714180132046334502">Madilim na background</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Mga Modelo</translation>
-<translation id="2715293433233060993">Ilipat Ang Mga Tab sa Gilid</translation>
 <translation id="2715751256863167692">Ire-reset ng pag-upgrade na ito ang iyong Chromebook at aalisin nito ang kasalukuyang data ng user.</translation>
 <translation id="2715934493766003251">Hindi malinis ang storage habang naka-on ang pag-sync ng file</translation>
 <translation id="2716986496990888774">Pinapamahalaan ng magulang ang setting na ito.</translation>
@@ -3256,7 +3254,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3167562202484086668">I-delete ang lahat ng data sa <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Piliin ang temang tumutugon sa iyong mga pangangailangan. Para baguhin ang iyong tema, wallpaper, screen saver, at higit pa, pumindot lang nang matagal sa desktop.</translation>
 <translation id="3170072451822350649">Maaari mo ring laktawan ang pag-sign in at <ph name="LINK_START" />mag-browse bilang Bisita<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Ilipat ang mga tab sa itaas</translation>
 <translation id="3175067642577044620">Nilalaman</translation>
 <translation id="3175862692832442091">Gubat</translation>
 <translation id="3176347586396987181">Gamitin ang “z” para pindutin nang matagal ang button ng mouse</translation>
@@ -5530,7 +5527,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4699473989647132421">Baybayin</translation>
 <translation id="4701025263201366865">Pag-sign in ng magulang</translation>
 <translation id="4701335814944566468">Tiningnan kahapon</translation>
-<translation id="4702504834785592287">Gilid</translation>
 <translation id="470644585772471629">Pag-invert ng kulay</translation>
 <translation id="4707337002099455863">Palagi sa Lahat ng Site</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -7224,7 +7220,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5888889603768021126">Naka-sign in gamit ang</translation>
 <translation id="5889282057229379085">Maximum na bilang ng intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">I-encrypt ang naka-sync na data gamit ang iyong sariling <ph name="BEGIN_LINK" />passphrase sa pag-sync<ph name="END_LINK" />. Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.</translation>
-<translation id="5890072287476934834">Ilipat ang mga tab sa gilid</translation>
 <translation id="5891688036610113830">Mga gustong Wi-Fi network</translation>
 <translation id="5894056653502215961">I-deselect ang folder na <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">I-restart</translation>
@@ -9314,7 +9309,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7340179705876485790">Para bumalik nang lampas sa 1 page, i-click at i-hold nang matagal ang Bumalik.</translation>
 <translation id="7340650977506865820">Ibinabahagi ng site ang iyong screen</translation>
 <translation id="7340757554212515731">Awtomatikong nagpapadala sa Google ng mga ulat ng pag-crash pati na rin ng diagnostic na data at data ng paggamit</translation>
-<translation id="7340886226071938450">Posisyon ng tab strip</translation>
 <translation id="734088800888587319">Mga Sukatan ng Network</translation>
 <translation id="7341834142292923918">Gusto ng access sa site na ito</translation>
 <translation id="7343372807593926528">Pakilarawan ang problema bago ipadala ang feedback.</translation>
@@ -11321,7 +11315,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8685540043423825702">Iyong profile sa Chrome</translation>
 <translation id="8685882652128627032">I-click para buksan ang dialog na Magdagdag ng Paghahanap sa Site</translation>
 <translation id="8686142379631285985">Naka-sign in bilang <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Ilipat Ang Mga Tab sa Itaas</translation>
 <translation id="8687103160920393343">Kanselahin ang <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">I-set up ang iyong PIN</translation>
 <translation id="8687774873995698516">Palaging i-block ang <ph name="HOST" /> na gamitin ang mga identifier para mag-play ng pinoprotektahang content</translation>

@@ -2497,7 +2497,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2665394472441560184">Añade una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">¡Vaya! Se ha producido un error dando formato.</translation>
-<translation id="2666092431469916601">Arriba</translation>
 <translation id="2666247341166669829">Nivel de batería del auricular izquierdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Se han configurado otras aplicaciones para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gestionar el corrector ortográfico</translation>
@@ -2566,7 +2565,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2714180132046334502">Fondo oscuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelos</translation>
-<translation id="2715293433233060993">Mover pestañas al lateral</translation>
 <translation id="2715751256863167692">Esta actualización recupera la configuración de tu Chromebook y elimina los datos de usuario actuales.</translation>
 <translation id="2715934493766003251">No se puede liberar espacio de almacenamiento si la sincronización de archivos está activada</translation>
 <translation id="2716986496990888774">Este ajuste está gestionado por un padre o una madre.</translation>
@@ -3243,7 +3241,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3167562202484086668">Eliminar todos los datos de <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Elige el tema que mejor se adapte a tus necesidades. Para cambiar el tema, el fondo de pantalla, el salvapantallas y otras opciones, mantén pulsado el escritorio.</translation>
 <translation id="3170072451822350649">También puedes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sin iniciar sesión.</translation>
-<translation id="3172642937040465677">Mover pestañas a la parte superior</translation>
 <translation id="3175067642577044620">Cuerpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa "z" para mantener pulsado un botón del ratón</translation>
@@ -5513,7 +5510,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
-<translation id="4702504834785592287">Cara</translation>
 <translation id="470644585772471629">Invertir colores</translation>
 <translation id="4707337002099455863">Permitir siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
@@ -7204,7 +7200,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5888889603768021126">Sesión iniciada con</translation>
 <translation id="5889282057229379085">Número máximo de entidades emisoras de certificados intermediarias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Cifra los datos sincronizados con tu propia <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" />. Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.</translation>
-<translation id="5890072287476934834">Mover pestañas al lateral</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5894056653502215961">Desmarcar carpeta <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -9291,7 +9286,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7340179705876485790">Para retroceder más de una página, mantén pulsado el botón para volver.</translation>
 <translation id="7340650977506865820">El sitio web está compartiendo tu pantalla</translation>
 <translation id="7340757554212515731">Automáticamente envía informes sobre fallos, así como datos de diagnóstico y uso, a Google</translation>
-<translation id="7340886226071938450">Posición de la barra de pestañas</translation>
 <translation id="734088800888587319">Métricas de red</translation>
 <translation id="7341834142292923918">Quiere acceder a este sitio web</translation>
 <translation id="7343372807593926528">Describe el problema antes de enviar tus comentarios.</translation>
@@ -11296,7 +11290,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8685540043423825702">Tu perfil de Chrome</translation>
 <translation id="8685882652128627032">Haz clic para abrir el cuadro de diálogo Añadir búsqueda en el sitio</translation>
 <translation id="8686142379631285985">Has iniciado sesión como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mover pestañas a la parte superior</translation>
 <translation id="8687103160920393343">Cancelar <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configura tu PIN</translation>
 <translation id="8687774873995698516">Impedir siempre que <ph name="HOST" /> use identificadores para reproducir contenido protegido</translation>

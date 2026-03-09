@@ -2505,7 +2505,6 @@
 <translation id="2665394472441560184">Шинэ үг нэмэх</translation>
 <translation id="2665647207431876759">Хугацаа дууссан</translation>
 <translation id="2665919335226618153">Гэнэтийн асуудал! Форматлах үед алдаа гарлаа.</translation>
-<translation id="2666092431469916601">Дээд</translation>
 <translation id="2666247341166669829">Зүүн талын батарейн түвшин <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Бусад аппыг <ph name="APP_NAME" />-тай ижил холбоосыг нээхээр тохируулсан. Энэ нь <ph name="APP_NAME_2" /> болон <ph name="APP_NAME_3" />-н тусламж дэмжлэгийн холбоос нээхийг идэвхгүй болгоно.</translation>
 <translation id="2667463864537187133">Алдаа шалгахыг удирдах</translation>
@@ -2574,7 +2573,6 @@
 <translation id="2714180132046334502">Бараан дэвсгэр</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Загварууд</translation>
-<translation id="2715293433233060993">Табуудыг хажуу тийш зөөх</translation>
 <translation id="2715751256863167692">Энэ сайжруулалт таны Chromebook-г шинэчилж хэрэглэгчийн одоогийн өгөгдлийг устгадаг.</translation>
 <translation id="2715934493766003251">Файлыг синк хийх асаалттай үед хадгалах санг цэвэрлэх боломжгүй</translation>
 <translation id="2716986496990888774">Энэ тохиргоог эцэг эх удирддаг.</translation>
@@ -3251,7 +3249,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-н бүх өгөгдлийг устгах</translation>
 <translation id="3169930038976362151">Таны хэрэгцээнд тохирсон загварыг сонгоно уу. Загвар, дэлгэцийн зураг, дэлгэц амраагч болон бусад зүйлээ өөрчлөхийн тулд ердөө дэлгэц дээр удаан дарна уу.</translation>
 <translation id="3170072451822350649">Та нэвтэрч орох ажиллагааг алгасаж болох бөгөөд <ph name="LINK_START" /> зочны хувиар хайлт хийж болно<ph name="LINK_END" /> .</translation>
-<translation id="3172642937040465677">Табуудыг дээш зөөх</translation>
 <translation id="3175067642577044620">Үндсэн хэсэг</translation>
 <translation id="3175862692832442091">Ой мод</translation>
 <translation id="3176347586396987181">Хулганын товчийг удаан дарахын тулд “z”-г ашиглана уу</translation>
@@ -5524,7 +5521,6 @@
 <translation id="4699473989647132421">Эргийн шугам</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
 <translation id="4701335814944566468">Өчигдөр үзсэн</translation>
-<translation id="4702504834785592287">Хажуугийн</translation>
 <translation id="470644585772471629">Өнгө урвуулах</translation>
 <translation id="4707337002099455863">Бүх сайт дээр үргэлж</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
@@ -7219,7 +7215,6 @@
 <translation id="5888889603768021126">Дараахаар нэвтэрсэн</translation>
 <translation id="5889282057229379085">Завсрын Cas-ийн хамгийн их тоо: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Синк хийсэн өгөгдлийг өөрийн <ph name="BEGIN_LINK" />синкийн нэвтрэх үгээр<ph name="END_LINK" /> шифрлээрэй. Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.</translation>
-<translation id="5890072287476934834">Табуудыг хажуу тийш зөөх</translation>
 <translation id="5891688036610113830">Сонгосон Wi-Fi сүлжээнүүд</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> фолдерын сонголтыг цуцлах</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
@@ -9305,7 +9300,6 @@
 <translation id="7340179705876485790">1-ээс олон хуудас буцахын тулд Буцахыг товшоод хүлээнэ үү.</translation>
 <translation id="7340650977506865820">Сайт таны дэлгэцийг хуваалцаж байна</translation>
 <translation id="7340757554212515731">Гэмтлийн тайлан болон оношилгоо, ашиглалтын өгөгдлийг Google-д автоматаар илгээнэ</translation>
-<translation id="7340886226071938450">Таб зурвасын байрлал</translation>
 <translation id="734088800888587319">Сүлжээний хэмжигдэхүүн</translation>
 <translation id="7341834142292923918">Энэ сайтад хандахыг хүсэж байна</translation>
 <translation id="7343372807593926528">Санал хүсэлтийг илгээхийн өмнө асуудлыг тайлбарлана уу.</translation>
@@ -11309,7 +11303,6 @@
 <translation id="8685540043423825702">Таны Chrome профайл</translation>
 <translation id="8685882652128627032">Сайтын хайлт нэмэх харилцах цонхыг нээхийн тулд товшино уу</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" />-р<ph name="END_BOLD" /> нэвтэрсэн</translation>
-<translation id="8686578183956518912">Табуудыг дээш зөөх</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" />-г цуцлах</translation>
 <translation id="8687527282898211955">ПИН-ээ тохируулна уу</translation>
 <translation id="8687774873995698516"><ph name="HOST" />-г хамгаалагдсан контент тоглуулахын тулд танигч ашиглахыг үргэлж блоклох</translation>

@@ -2496,7 +2496,6 @@
 <translation id="2665394472441560184">Ավելացնել նոր բառ</translation>
 <translation id="2665647207431876759">Ժամկետանց է</translation>
 <translation id="2665919335226618153">Ձևաչափման ընթացքում սխալ տեղի ունեցավ:</translation>
-<translation id="2666092431469916601">Վերին</translation>
 <translation id="2666247341166669829">Ձախ մարտկոցի լիցքի մակարդակը՝ <ph name="PERCENTAGE" />%։</translation>
 <translation id="2667144577800272420">Կան այլ հավելվածներ, որոնք կարգավորված են այնպես, որ կարողանան բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" /> և <ph name="APP_NAME_3" /> հավելվածները չեն կարողանա բացել աջակցվող հղումներ։</translation>
 <translation id="2667463864537187133">Կառավարել ուղղագրության ստուգումը</translation>
@@ -2565,7 +2564,6 @@
 <translation id="2714180132046334502">Մուգ ֆոն</translation>
 <translation id="2714393097308983682">Google Play Խանութ</translation>
 <translation id="2714617928488200509">Մոդելներ</translation>
-<translation id="2715293433233060993">Տեղափոխել ներդիրները կողք</translation>
 <translation id="2715751256863167692">Այս թարմացումը կվերակայի ձեր Chromebook-ը և կհեռացնի ընթացիկ օգտատիրոջ տվյալները։</translation>
 <translation id="2715934493766003251">Հնարավոր չէ մաքրել հիշողությունը, երբ ֆայլերի համաժամացումը միացված է</translation>
 <translation id="2716986496990888774">Այս կարգավորումը կառավարվում է ծնողի կողմից:</translation>
@@ -3242,7 +3240,6 @@
 <translation id="3167562202484086668">Ջնջել բոլոր տվյալները «<ph name="BRAND" />» ծառայությունից</translation>
 <translation id="3169930038976362151">Ընտրեք ձեզ հարմար թեմա։ Թեման, պաստառը, էկրանապահը և այլ տարրեր փոխելու համար պարզապես հպեք աշխատասեղանին և պահեք։</translation>
 <translation id="3170072451822350649">Դուք կարող եք նաև մուտք չգործել և <ph name="LINK_START" />սկսել հյուրի աշխատաշրջան<ph name="LINK_END" />:</translation>
-<translation id="3172642937040465677">Տեղափոխել ներդիրները վերև</translation>
 <translation id="3175067642577044620">Հիմնական տեքստ</translation>
 <translation id="3175862692832442091">Անտառ</translation>
 <translation id="3176347586396987181">Օգտագործեք «z» ստեղնը՝ մկնիկի որևէ կոճակ սեղմելու և պահելու համար</translation>
@@ -3404,6 +3401,7 @@
 <translation id="3289668031376215426">Ավտոմատ գլխատառացում</translation>
 <translation id="3289856944988573801">Թարմացումների առկայությունը ստուգելու համար օգտվեք Ethernet կամ Wi-Fi ցանցերից:</translation>
 <translation id="3290249595466894471">Նաև ուղարկում է էջերի, ներբեռնված ֆայլերի, ընդլայնումների գործողությունների և համակարգի մասին տեղեկություններից որոշ հատվածներ, որոնք օգնում են հայտնաբերել օգտատերերին սպառնացող նոր վտանգներ։</translation>
+<translation id="3292966601422448005">Թույլտվությունները, որոնք տրամադրում եք <ph name="APP_NAME" /> հավելվածին, նաև կգործեն այդ հավելվածի կողմից տեղադրված հավելվածների համար։</translation>
 <translation id="3293181007446299124">Ձեր այցելությունների պատմությունը պահվում է ձեր սարքում և հասանելի է միայն ձեզ, իսկ անձնական տվյալները պաշտպանելու նպատակով հաշվետվություններն ուղարկվում են ոչ անմիջապես</translation>
 <translation id="329324683265785818">Ստեղնային դյուրանցում k՝ նվագարկման/դադարեցման համար</translation>
 <translation id="3293644607209440645">Ուղարկել այս էջը</translation>
@@ -3771,6 +3769,7 @@
 <translation id="354060433403403521">AC հարմարիչ</translation>
 <translation id="354068948465830244">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքի տվյալները</translation>
 <translation id="3541823293333232175">Նշանակված է</translation>
+<translation id="354323442562085715">Գրեք, պլանավորեք, կոդավորեք և արեք ավելին</translation>
 <translation id="3543296862747913985">Ինչ է այն անում</translation>
 <translation id="3543298914473315872">Թարմացման ծրագրի գործընթաց</translation>
 <translation id="3543393733900874979">Թարմացումը չհաջողվեց (սխալ՝ <ph name="ERROR_NUMBER" />)</translation>
@@ -4841,6 +4840,7 @@
 <translation id="4249373718504745892">Այս էջին արգելված է օգտագործել ձեր տեսախցիկն ու խոսափողը:</translation>
 <translation id="4249785854468467847">Նորացված Chrome՝ ընդլայնված ԱԲ գործառույթներով</translation>
 <translation id="4250229828105606438">Սքրինշոթ</translation>
+<translation id="4250596587221570622">Ընտրեք թեմա ձեր պրոֆիլի համար</translation>
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> կայքը կարող է դիտել «<ph name="FOLDERNAME" />» պանակի ֆայլերն ու պատճենել դրանք</translation>
 <translation id="4251377547188244181">Սարքի գրանցում կրպակի և ցուցանակի ռեժիմում</translation>
@@ -5511,7 +5511,6 @@
 <translation id="4699473989647132421">Ծովափ</translation>
 <translation id="4701025263201366865">Մուտք ծնողի համար</translation>
 <translation id="4701335814944566468">Դիտել եք երեկ</translation>
-<translation id="4702504834785592287">Կողմ</translation>
 <translation id="470644585772471629">Գունաշրջում</translation>
 <translation id="4707337002099455863">Միշտ բոլոր կայքերում</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -5628,6 +5627,7 @@
 <translation id="4794910597689955457">Տեղափոխե՞լ <ph name="NUM_OF_FILES" /> ֆայլ <ph name="CLOUD_PROVIDER" />՝ բացելու համար</translation>
 <translation id="479536056609751218">Վեբէջ, միայն HTML</translation>
 <translation id="4795670271446126525">Բախվող ալիքներ</translation>
+<translation id="479664067938200069">Տեղադրված հավելվածներ <ph name="APP_NAME" /> հավելվածից</translation>
 <translation id="4797314204379834752">Փորձեք ներդիրների խմբի միջոցով դասավորել առաջադրանքները, կատարել առցանց գնումներ և այլն</translation>
 <translation id="4799574323027833817">Ոչ մի կանոն չի գործում։</translation>
 <translation id="479989351350248267">search</translation>
@@ -7201,7 +7201,6 @@
 <translation id="5888889603768021126">Մուտք եք գործել որպես</translation>
 <translation id="5889282057229379085">Միջանկյալ հավաստագրման կենտրոնների առավելագույն քանակը՝ <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Գաղտնագրել համաժամացված տվյալները սեփական <ph name="BEGIN_LINK" />համաժամացման անցաբառով<ph name="END_LINK" />։ Վճարման եղանակները և Google Pay-ի հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։</translation>
-<translation id="5890072287476934834">Տեղափոխել ներդիրները կողք</translation>
 <translation id="5891688036610113830">Նախընտրած Wi-Fi ցանցեր</translation>
 <translation id="5894056653502215961">Ապընտրել <ph name="FOLDER_TITLE" /> պանակը</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
@@ -8714,6 +8713,7 @@
 <translation id="6929126689972602640">Ծնողական վերահսկողության գործառույթներն այժմ հասանելի են դպրոցական հաշիվների համար։ Մտեք երեխայի հաշիվ, որպեսզի ավելացնեք դպրոցական հաշիվ՝ Google Classroom և դպրոցական տնային աշխատանքների կայքեր մտնելու համար։ Դուք ավելի ուշ կարող եք ավելացնել դպրոցական հաշիվ։</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Ընդլայնումը մերժվել է}one{# ընդլայնում մերժվել է}other{# ընդլայնում մերժվել է}}</translation>
 <translation id="6930337524857202955">Հասանելի է նոր ներբեռնում</translation>
+<translation id="6930477763029357444">Թույլտվությունները, որոնք տրամադրում եք <ph name="APP_NAME" /> հավելվածին, նաև կգործեն <ph name="PARENT_APP_NAME" /> հավելվածի և դրա կողմից տեղադրված հավելվածների համար։</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">Սեղմման ուժգնություն</translation>
 <translation id="6933321725007230600">Միացրեք &amp;համաժամացումը...</translation>
@@ -9288,7 +9288,6 @@
 <translation id="7340179705876485790">Մեկից ավելի էջ վերադառնալու համար սեղմած պահեք «Հետ» կոճակը։</translation>
 <translation id="7340650977506865820">Կայքը ցուցադրում է ձեր սարքի էկրանը</translation>
 <translation id="7340757554212515731">Ավտոմատ կերպով Google-ին է ուղարկում խափանման մասին հաշվետվությունները, ինչպես նաև օգտագործման և դիագնոստիկ տվյալները։</translation>
-<translation id="7340886226071938450">Ներդիրների հատվածի դիրքը</translation>
 <translation id="734088800888587319">Ցանցի ցուցանիշներ</translation>
 <translation id="7341834142292923918">Ընդլայնումն այս կայքի հասանելիություն է հարցում</translation>
 <translation id="7343372807593926528">Կարծիքն ուղարկելուց առաջ նկարագրեք խնդիրը։</translation>
@@ -10812,6 +10811,7 @@
 <translation id="8353420862507374944">Հեռարձակել, պահել և կիսվել</translation>
 <translation id="8353683614194668312">Թույլտվություններ՝</translation>
 <translation id="8354034204605718473">Երեխայի PIN կոդն ավելացվեց</translation>
+<translation id="8354125743472063725">Թույլտվությունները, որոնք տրամադրում եք «<ph name="APP_NAME" />» հավելվածին, նաև կգործեն այս հավելվածի համար։ <ph name="BEGIN_LINK" />Կառավարել հիմնական հավելվածի թույլտվությունները<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">Դուք արդեն գրանցել եք այս սարքը։ Այն նորից գրանցելու կարիք չկա։</translation>
 <translation id="8357388086258943206">Լինուքսը տեղադրելիս սխալ առաջացավ</translation>
@@ -11292,7 +11292,6 @@
 <translation id="8685540043423825702">Ձեր Chrome պրոֆիլը</translation>
 <translation id="8685882652128627032">Սեղմեք՝ «Ավելացնել կայքում որոնումը» պատուհանը բացելու համար</translation>
 <translation id="8686142379631285985">Դուք մուտք եք գործել որպես <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Տեղափոխել ներդիրները վերև</translation>
 <translation id="8687103160920393343">Չեղարկել <ph name="FILE_NAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="8687527282898211955">PIN կոդի սահմանում</translation>
 <translation id="8687774873995698516">Միշտ արգելել <ph name="HOST" /> կայքին օգտագործել նույնացուցիչներ՝ պաշտպանված բովանդակություն նվագարկելու համար</translation>

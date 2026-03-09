@@ -2492,7 +2492,6 @@
 <translation id="2665394472441560184">പുതിയ വാക്ക് ചേർക്കുക</translation>
 <translation id="2665647207431876759">കാലഹരണപ്പെട്ടു</translation>
 <translation id="2665919335226618153">ക്ഷമിക്കണം! ഫോർമാറ്റ് ചെയ്യുന്നതിനിടെ ഒരു പിശക് സംഭവിച്ചു.</translation>
-<translation id="2666092431469916601">മുകളിലേക്ക്</translation>
 <translation id="2666247341166669829">ഇടത് ബാറ്ററി നില <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> പോലെ മറ്റ് ആപ്പുകളും ഇതേ ലിങ്കുകൾ തുറക്കാൻ സജ്ജീകരിച്ചിരിക്കുന്നു. ഇത് <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> എന്നിവയെ പിന്തുണാ ലിങ്കുകൾ തുറക്കുന്നതിൽ നിന്ന് പ്രവർത്തനരഹിതമാക്കും.</translation>
 <translation id="2667463864537187133">സ്പെൽ ചെക്ക് മാനേജ് ചെയ്യുക</translation>
@@ -2561,7 +2560,6 @@
 <translation id="2714180132046334502">ഇരുണ്ട പശ്ചാത്തലം</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">മോഡലുകൾ</translation>
-<translation id="2715293433233060993">ടാബുകൾ വശത്തേക്ക് നീക്കുക</translation>
 <translation id="2715751256863167692">ഈ അപ്‍ഗ്രേഡ്, നിങ്ങളുടെ Chromebook-നെ പുനഃസജ്ജീകരിച്ച് നിലവിലെ ഉപയോക്തൃ ഡാറ്റ നീക്കുന്നു.</translation>
 <translation id="2715934493766003251">ഫയൽ സമന്വയപ്പിക്കൽ ഓണായിരിക്കുമ്പോൾ സ്റ്റോറേജിൽ ഇടം സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="2716986496990888774">ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് ഒരു രക്ഷിതാവാണ്.</translation>
@@ -3238,7 +3236,6 @@
 <translation id="3167562202484086668">എല്ലാ <ph name="BRAND" /> ഡാറ്റയും ഇല്ലാതാക്കുക</translation>
 <translation id="3169930038976362151">നിങ്ങളുടെ ആവശ്യങ്ങൾക്ക് അനുയോജ്യമായ തീം തിരഞ്ഞെടുക്കുക. നിങ്ങളുടെ തീമും വാൾപേപ്പറും സ്ക്രീൻ സേവറും മറ്റും മാറ്റാൻ ഡെസ്‌ക്ടോപ്പിൽ സ്‌പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="3170072451822350649">നിങ്ങൾക്ക് സൈൻ ഇൻ ചെയ്യുന്നത് ഒഴിവാക്കി <ph name="LINK_START" />അതിഥിയായി ബ്രൗസ് ചെയ്യാനുമാകും<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">ടാബുകൾ മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="3175067642577044620">ബോഡി</translation>
 <translation id="3175862692832442091">വനം</translation>
 <translation id="3176347586396987181">മൗസ് ബട്ടൺ അമർത്തിപ്പിടിക്കാൻ “z” ഉപയോഗിക്കുക</translation>
@@ -5508,7 +5505,6 @@
 <translation id="4699473989647132421">തീരം</translation>
 <translation id="4701025263201366865">രക്ഷിതാവിനുള്ള സൈൻ ഇൻ</translation>
 <translation id="4701335814944566468">ഇന്നലെ കണ്ടു</translation>
-<translation id="4702504834785592287">സൈഡ്</translation>
 <translation id="470644585772471629">നിറം വിപരീതമാക്കൽ</translation>
 <translation id="4707337002099455863">എപ്പോഴും എല്ലാ സൈറ്റിലും</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> പുറത്തുകടക്കുക</translation>
@@ -7201,7 +7197,6 @@
 <translation id="5888889603768021126">ഇതുപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തു</translation>
 <translation id="5889282057229379085">ഇന്‍റര്‍‌മീഡിയറ്റ് CAകളുടെ പരമാവധി എണ്ണം: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">നിങ്ങളുടെ സ്വന്തം <ph name="BEGIN_LINK" />പാസ്‌ഫ്രെയ്‌സ് സമന്വയിപ്പിക്കൽ<ph name="END_LINK" /> ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച വിവരങ്ങൾ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക. Google Pay-യിൽ നിന്നുള്ള പേയ്‌മെന്റ് രീതികളും വിലാസങ്ങളും എൻക്രിപ്റ്റ് ചെയ്യപ്പെടില്ല. Chrome-ൽ നിന്നുള്ള ബ്രൗസിംഗ് ചരിത്രം സമന്വയിപ്പിക്കില്ല.</translation>
-<translation id="5890072287476934834">ടാബുകൾ വശത്തേക്ക് നീക്കുക</translation>
 <translation id="5891688036610113830">തിരഞ്ഞെടുത്ത വൈഫൈ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> എന്ന ഫോൾഡർ തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
 <translation id="5895138241574237353">പുനരാരംഭിക്കുക</translation>
@@ -9288,7 +9283,6 @@
 <translation id="7340179705876485790">ഒന്നിൽ കൂടുതൽ പേജുകളിലേക്ക് മടങ്ങാൻ 'മടങ്ങുക' ക്ലിക്ക് ചെയ്ത് പിടിക്കുക.</translation>
 <translation id="7340650977506865820">സൈറ്റ് നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="7340757554212515731">ക്രാഷ് റിപ്പോർട്ടുകളും പ്രശ്നനിർണ്ണയ, ഉപയോഗ ഡാറ്റയും സ്വയമേവ Google-ന് അയയ്ക്കുന്നു</translation>
-<translation id="7340886226071938450">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകളുടെ സ്ഥാനം</translation>
 <translation id="734088800888587319">നെറ്റ്‌വർക്ക് മെട്രിക്കുകൾ</translation>
 <translation id="7341834142292923918">ഈ സൈറ്റിലേക്ക് ആക്‌സസ് ആവശ്യമുണ്ട്</translation>
 <translation id="7343372807593926528">ഫീഡ്ബാക്ക് അയയ്ക്കുന്നതിന് മുമ്പ് പ്രശ്‌നത്തെക്കുറിച്ച് വിവരിക്കുക.</translation>
@@ -11292,7 +11286,6 @@
 <translation id="8685540043423825702">നിങ്ങളുടെ Chrome പ്രൊഫൈൽ</translation>
 <translation id="8685882652128627032">സൈറ്റ് തിരയൽ ചേർക്കുക ഡയലോഗ് തുറക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="8686578183956518912">ടാബുകൾ മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> റദ്ദാക്കുക</translation>
 <translation id="8687527282898211955">നിങ്ങളുടെ പിൻ സജ്ജീകരിക്കുക</translation>
 <translation id="8687774873995698516">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യുന്നതിനായി ഐഡന്റിഫയറുകൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് <ph name="HOST" /> എന്നതിനെ എപ്പോഴും തടയുക</translation>

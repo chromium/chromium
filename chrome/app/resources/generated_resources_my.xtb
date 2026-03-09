@@ -2507,7 +2507,6 @@
 <translation id="2665394472441560184">စာလုံး အသစ်ကို ထည့်ပေးရန်</translation>
 <translation id="2665647207431876759">သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="2665919335226618153">ဪ၊ ဖျောက်! ဖိုင်စီနေစဉ်တွင် မှားယွင်းမှုတစ်ခု ကြုံတွေ့ခဲ့သည်။</translation>
-<translation id="2666092431469916601">ထိပ်</translation>
 <translation id="2666247341166669829">ဘယ်ဘက် ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ကဲ့သို့ အခြားအက်ပ်များကိုလည်း တူညီသောလင့်ခ်များဖွင့်ရန် သတ်မှတ်ထားသည်။ ဤပြောင်းလဲခြင်းက <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို ပံ့ပိုးထားသောလင့်ခ်များ ပေးဖွင့်မည်မဟုတ်ပါ။</translation>
 <translation id="2667463864537187133">စာလုံးပေါင်းသတ်ပုံ စီမံခန့်ခွဲခြင်း</translation>
@@ -2576,7 +2575,6 @@
 <translation id="2714180132046334502">မှောင်သည့်နောက်ခံ</translation>
 <translation id="2714393097308983682">Google Play စတိုး</translation>
 <translation id="2714617928488200509">မိုဒယ်များ</translation>
-<translation id="2715293433233060993">တဘ်များကို ဘေးသို့ရွှေ့ရန်</translation>
 <translation id="2715751256863167692">ဤအဆင့်မြှင့်တင်မှုကို ထည့်သွင်းခြင်းဖြင့် သင့် Chromebook ကို ပြင်ဆင်သတ်မှတ်လိုက်မည်ဖြစ်ပြီး လက်ရှိအသုံးပြုသူ ဒေတာများကို ဖယ်ရှားလိုက်ပါမည်။</translation>
 <translation id="2715934493766003251">ဖိုင်စင့်ခ်လုပ်ခြင်း ဖွင့်ထားချိန်၌ သိုလှောင်ခန်းနေရာ ရှင်း၍မရပါ</translation>
 <translation id="2716986496990888774">ဤဆက်တင်ကို မိဘတစ်ဦးက စီမံခန့်ခွဲသည်။</translation>
@@ -3254,7 +3252,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> ဒေတာအားလုံးကို ဖျက်ခြင်း</translation>
 <translation id="3169930038976362151">လိုအပ်သလို အပြင်အဆင်ကို ရွေးနိုင်သည်။ အပြင်အဆင်၊ နောက်ခံ၊ စကရင်နားချိန်ပုံနှင့် အခြားအရာများပြောင်းရန် ဒက်စ်တော့ကို ထိ၍ဖိထားပါ။</translation>
 <translation id="3170072451822350649">သင် မဝင်ဘဲ ကျော်သွားနိုင်ကာ <ph name="LINK_START" />ဧည့်သည် <ph name="LINK_END" /> အနေဖြင့် အသုံးပြုနိုင်ပါသည်။</translation>
-<translation id="3172642937040465677">တဘ်များကို ထိပ်ပိုင်းသို့ရွှေ့ရန်</translation>
 <translation id="3175067642577044620">စာကိုယ်</translation>
 <translation id="3175862692832442091">သစ်တော</translation>
 <translation id="3176347586396987181">မောက်စ်ခလုတ် နှိပ်ထားရန် “z” ကိုသုံးပါ</translation>
@@ -5527,7 +5524,6 @@
 <translation id="4699473989647132421">ကမ်းရိုးတန်း</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="4701335814944566468">မနေ့က ကြည့်ထားသည်</translation>
-<translation id="4702504834785592287">ဘေး</translation>
 <translation id="470644585772471629">အရောင် ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="4707337002099455863">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
@@ -7222,7 +7218,6 @@
 <translation id="5888889603768021126">အောက်ပါဖြင့် လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="5889282057229379085">ကြားခံ CAများ၏ အများဆုံး အရေအတွက်: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">သင့်ကိုယ်ပိုင် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ရန် စကားဝှက်စာ<ph name="END_LINK" /> ဖြင့် စင့်ခ်လုပ်ထားသည့် ဒေတာများကို အသွင်ဝှက်ရန်။ Google Pay ရှိ ငွေပေးချေနည်းလမ်းနှင့် လိပ်စာများကို အသွင်ဝှက်မည်မဟုတ်ပါ။ Chrome ရှိ ကြည့်ရှုမှုမှတ်တမ်းကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။</translation>
-<translation id="5890072287476934834">တဘ်များကို ဘေးသို့ရွှေ့ရန်</translation>
 <translation id="5891688036610113830">ဦးစားပေး Wi-Fi ကွန်ရက်များ</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ဖိုင်တွဲကို မရွေးရန်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
@@ -9306,7 +9301,6 @@
 <translation id="7340179705876485790">စာမျက်နှာ ၁ ခုထက်ပို၍ နောက်ပြန်သွားရန် ‘နောက်သို့’ ကိုနှိပ်ပြီး ဖိထားပါ။</translation>
 <translation id="7340650977506865820">ဝဘ်ဆိုက်သည် သင့်မျက်နှာပြင်ကို အသုံးပြုနေသည်</translation>
 <translation id="7340757554212515731">အမှားရှာဖွေမှုနှင့် သုံးစွဲမှု ဒေတာများအပြင် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ အလိုအလျောက်ပို့သည်</translation>
-<translation id="7340886226071938450">တဘ်ဘားတန်း နေရာ</translation>
 <translation id="734088800888587319">ကွန်ရက်မက်ထရစ်များ</translation>
 <translation id="7341834142292923918">ဤဝဘ်ဆိုက်သို့ ဝင်လိုသည်</translation>
 <translation id="7343372807593926528">အကြံပြုချက်မပို့မီ ပြဿနာကို ဖော်ပြပါ။</translation>
@@ -11311,7 +11305,6 @@
 <translation id="8685540043423825702">သင်၏ Chrome ပရိုဖိုင်</translation>
 <translation id="8685882652128627032">‘ဝဘ်ဆိုက်ရှာဖွေမှု ထည့်ရန်’ ဒိုင်ယာလော့ကို ဖွင့်ရန် နှိပ်ပါ</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်</translation>
-<translation id="8686578183956518912">တဘ်များကို ထိပ်ပိုင်းသို့ရွှေ့ရန်</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ကို မလုပ်တော့</translation>
 <translation id="8687527282898211955">သင့်ပင်နံပါတ် သတ်မှတ်ပါ</translation>
 <translation id="8687774873995698516">ကာကွယ်ထားသော အကြောင်းအရာ ဖွင့်ရန် သတ်မှတ်မှုစနစ်များ အသုံးပြုခြင်းမှ <ph name="HOST" /> ကို အမြဲပိတ်ထားရန်</translation>

@@ -2496,7 +2496,6 @@
 <translation id="2665394472441560184">ახალი სიტყვის დამატება</translation>
 <translation id="2665647207431876759">ვადაგასულია</translation>
 <translation id="2665919335226618153">უი! დაფორმატების დროს მოხდა შეცდომა.</translation>
-<translation id="2666092431469916601">ზედა</translation>
 <translation id="2666247341166669829">მარცხენა ბატარეის დონეა <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპები. ამ ქმედების შედეგად, <ph name="APP_NAME_2" /> და <ph name="APP_NAME_3" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="2667463864537187133">მართლწერის შემოწმების მართვა</translation>
@@ -2565,7 +2564,6 @@
 <translation id="2714180132046334502">მუქი ფონი</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">მოდელები</translation>
-<translation id="2715293433233060993">ჩანართების გვერდით გადატანა</translation>
 <translation id="2715751256863167692">ეს განახლება გამოიწვევს თქვენი Chromebook-ის გადაყენებას და ამჟამინდელი მომხმარებლის მონაცემების ამოშლას.</translation>
 <translation id="2715934493766003251">მეხსიერების გათავისუფლება ვერ მოხერხდება, როცა ჩართულია ფაილების სინქრონიზაცია</translation>
 <translation id="2716986496990888774">ამ პარამეტრს მართავს მშობელი.</translation>
@@ -3242,7 +3240,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />-ის ყველა მონაცემის წაშლა</translation>
 <translation id="3169930038976362151">აირჩიეთ თქვენი საჭიროებების შესაბამისი თემა. თემის, ფონის, ეკრანმზოგის და სხვა დაკავშირებული პარამეტრების შესაცვლელად ხანგრძლივად შეეხეთ დესკტოპს.</translation>
 <translation id="3170072451822350649">შეგიძლიათ ასევე გამოტოვოთ შესვლის ეტაპი და <ph name="LINK_START" />დაათვალიეროთ სტუმრის სტატუსით<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">ჩანართების ზემოთ გადატანა</translation>
 <translation id="3175067642577044620">ძირითადი ტექსტი</translation>
 <translation id="3175862692832442091">ტყე</translation>
 <translation id="3176347586396987181">გამოიყენეთ „z“, რომ ხანგრძლივად დააჭიროთ მაუსის ღილაკს</translation>
@@ -5516,7 +5513,6 @@
 <translation id="4699473989647132421">სანაპირო ზოლი</translation>
 <translation id="4701025263201366865">შესვლა მშობლისთვის</translation>
 <translation id="4701335814944566468">ნანახია გუშინ</translation>
-<translation id="4702504834785592287">გვერდითი</translation>
 <translation id="470644585772471629">ფერთა ინვერსია</translation>
 <translation id="4707337002099455863">ყოველთვის ყველა საიტზე</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
@@ -7210,7 +7206,6 @@
 <translation id="5888889603768021126">შესვლისთვის გამოყენებული იყო</translation>
 <translation id="5889282057229379085">შუალედური CA-ების მაქსიმალური რაოდენობა: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">დაშიფრეთ სინქრონიზებული მონაცემები თქვენი საკუთარი <ph name="BEGIN_LINK" />საიდუმლო ფრაზის<ph name="END_LINK" /> მეშვეობით. Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.</translation>
-<translation id="5890072287476934834">ჩანართების გვერდით გადატანა</translation>
 <translation id="5891688036610113830">უპირატესი Wi-Fi ქსელები</translation>
 <translation id="5894056653502215961">საქაღალდის <ph name="FOLDER_TITLE" /> არჩევის გაუქმება</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
@@ -9297,7 +9292,6 @@
 <translation id="7340179705876485790">უკან 1 გვერდზე მეტით დასაბრუნებლად ხანგრძლივად დააწკაპუნეთ ღილაკზე „უკან“.</translation>
 <translation id="7340650977506865820">საიტი აზიარებს თქვენს ეკრანს</translation>
 <translation id="7340757554212515731">ავტომატურად უგზავნის Google-ს ავარიულად გათიშვის ანგარიშებს, ასევე, დიაგნოსტიკისა და გამოყენების მონაცემებს</translation>
-<translation id="7340886226071938450">ჩანართების ზოლის პოზიცია</translation>
 <translation id="734088800888587319">ქსელის მეტრიკა</translation>
 <translation id="7341834142292923918">ითხოვს წვდომას ამ საიტზე</translation>
 <translation id="7343372807593926528">გამოხმაურებამდე აღწერეთ პრობლემა.</translation>
@@ -11301,7 +11295,6 @@
 <translation id="8685540043423825702">თქვენი Chrome პროფილი</translation>
 <translation id="8685882652128627032">დააწკაპუნეთ ვებსაიტზე ძიების დიალოგის დასამატებლად</translation>
 <translation id="8686142379631285985">შესული ხართ, როგორც <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">ჩანართების დასაწყისში გადატანა</translation>
 <translation id="8687103160920393343">გაუქმდეს <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">თქვენი PIN-კოდის დაყენება</translation>
 <translation id="8687774873995698516"><ph name="HOST" />-ისთვის იდენტიფიკატორების გამოყენების ყოველთვის დაბლოკვა დაცული კონტენტის დასაკრავად</translation>

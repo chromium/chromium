@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (在已同步的裝置上還有更多網站)}other{# 個網站 (在已同步的裝置上還有更多網站)}}</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2876369937070532032">當網站面臨安全風險時，Chrome 會將您瀏覽的部分網頁網址傳送給 Google</translation>
+<translation id="2877733045396505765">這麼做會刪除儲存在這部裝置和 Google 帳戶 <ph name="USER_EMAIL" /> 中的所選資訊。</translation>
 <translation id="2883151425485251736">查看和編輯您在帳戶中已隱藏的主題</translation>
 <translation id="288655811176831528">關閉分頁</translation>
 <translation id="2888631381369839306">價格追蹤通知已開啟</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798">自動填入到期月份 <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">紫色主題</translation>
 <translation id="7759809451544302770">選用</translation>
+<translation id="7763878244904387570">這麼做會刪除儲存在這部裝置上的所選資訊。</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
 <translation id="7772948288262733182">歡迎回來</translation>

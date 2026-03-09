@@ -2501,7 +2501,6 @@
 <translation id="2665394472441560184">إضافة كلمة جديدة</translation>
 <translation id="2665647207431876759">منتهي الصلاحية</translation>
 <translation id="2665919335226618153">عذرًا، حدث خطأ أثناء التنسيق.</translation>
-<translation id="2666092431469916601">أعلى</translation>
 <translation id="2666247341166669829">مستوى شحن بطارية السماعة اليسرى %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
 <translation id="2667463864537187133">إدارة التدقيق الإملائي</translation>
@@ -2570,7 +2569,6 @@
 <translation id="2714180132046334502">خلفية معتمة</translation>
 <translation id="2714393097308983682">‏متجر Google Play</translation>
 <translation id="2714617928488200509">النماذج</translation>
-<translation id="2715293433233060993">نقل علامات التبويب إلى الجانب</translation>
 <translation id="2715751256863167692">‏تؤدي هذه الترقية إلى إعادة ضبط جهاز Chromebook وإزالة بيانات المستخدمين الحالية.</translation>
 <translation id="2715934493766003251">يتعذّر إخلاء مساحة التخزين أثناء تفعيل مزامنة الملفات.</translation>
 <translation id="2716986496990888774">يتولى إدارة هذا الإعداد أحد الوالدين.</translation>
@@ -3247,7 +3245,6 @@
 <translation id="3167562202484086668">حذف كل بيانات "<ph name="BRAND" />"</translation>
 <translation id="3169930038976362151">اختَر المظهر الذي يناسب احتياجاتك. لتغيير المظهر والخلفية وشاشة الاستراحة وغيرها، كل ما عليك فعله هو النقر مع الاستمرار على سطح المكتب.</translation>
 <translation id="3170072451822350649">يمكنك أيضًا تخطي تسجيل الدخول و<ph name="LINK_START" />التصفح كضيف<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">نقل علامات التبويب إلى الأعلى</translation>
 <translation id="3175067642577044620">القسم العلوي</translation>
 <translation id="3175862692832442091">غابة</translation>
 <translation id="3176347586396987181">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "z"</translation>
@@ -5516,7 +5513,6 @@
 <translation id="4699473989647132421">شاطئ</translation>
 <translation id="4701025263201366865">تسجيل دخول أحد الوالدَين</translation>
 <translation id="4701335814944566468">تم الاطّلاع عليه أمس.</translation>
-<translation id="4702504834785592287">الجانب</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
 <translation id="4707337002099455863">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
@@ -7209,7 +7205,6 @@
 <translation id="5888889603768021126">تم تسجيل الدخول باستخدام</translation>
 <translation id="5889282057229379085">‏أقصى عدد من المراجع المصدقة المتوسطة (CA): <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">‏يمكنك استخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> لتشفير البيانات التي تمت مزامنتها. ولن يتم تشفير طُرق الدفع والعناوين من Google Pay، أو مزامنة سجلّ التصفُّح من Chrome.</translation>
-<translation id="5890072287476934834">نقل علامات التبويب إلى الجانب</translation>
 <translation id="5891688036610113830">‏شبكات Wi-Fi المفضَّلة</translation>
 <translation id="5894056653502215961">إلغاء اختيار مجلد "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
@@ -9305,7 +9300,6 @@
 <translation id="7340179705876485790">للرجوع أكثر من صفحة واحدة، انقر مع الاستمرار على زر الرجوع.</translation>
 <translation id="7340650977506865820">يشارك الموقع الإلكتروني شاشتك.</translation>
 <translation id="7340757554212515731">‏يؤدي تفعيل هذا الخيار إلى إرسال تقارير الأعطال بالإضافة إلى بيانات التشخيص وبيانات الاستخدام إلى Google تلقائيًا.</translation>
-<translation id="7340886226071938450">موضع شريط علامات التبويب</translation>
 <translation id="734088800888587319">مقاييس الشبكة</translation>
 <translation id="7341834142292923918">تريد الإضافة الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="7343372807593926528">يُرجى وصف المشكلة قبل إرسال التعليقات.</translation>
@@ -11310,7 +11304,6 @@
 <translation id="8685540043423825702">‏ملفك الشخصي على Chrome</translation>
 <translation id="8685882652128627032">انقر لفتح مربّع الحوار "إضافة محرّك بحث في المواقع الإلكترونية"</translation>
 <translation id="8686142379631285985">تم تسجيل الدخول بحساب <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">نقل علامات التبويب إلى الأعلى</translation>
 <translation id="8687103160920393343">إلغاء تنزيل "<ph name="FILE_NAME" />"</translation>
 <translation id="8687527282898211955">إعداد رقم التعريف الشخصي</translation>
 <translation id="8687774873995698516">منع <ph name="HOST" /> دائمًا من استخدام المعرّفات لتشغيل المحتوى المحمي</translation>

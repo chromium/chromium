@@ -2498,7 +2498,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2665394472441560184">Ajouter un nouveau mot</translation>
 <translation id="2665647207431876759">Expiré</translation>
 <translation id="2665919335226618153">Oups… Une erreur s'est produite lors du formatage.</translation>
-<translation id="2666092431469916601">Haut</translation>
 <translation id="2666247341166669829">Niveau de la pile gauche : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Gérer le correcteur orthographique</translation>
@@ -2567,7 +2566,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2714180132046334502">Arrière-plan foncé</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modèles</translation>
-<translation id="2715293433233060993">Déplacer les onglets sur le côté</translation>
 <translation id="2715751256863167692">Cette mise à niveau réinitialise votre Chromebook et supprime les données de l'utilisateur actuel.</translation>
 <translation id="2715934493766003251">Impossible de libérer de l'espace de stockage lorsque la synchronisation des fichiers est activée</translation>
 <translation id="2716986496990888774">Ce paramètre est géré par un parent.</translation>
@@ -3245,7 +3243,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3167562202484086668">Supprimer toutes les données du <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Choisissez le thème qui correspond à vos besoins. Pour changer votre thème, votre fond d'écran, votre écran de veille et plus, il suffit de maintenir le doigt sur le bureau.</translation>
 <translation id="3170072451822350649">Vous pouvez également sauter l'étape de connexion et <ph name="LINK_START" />naviguer en tant qu'invité<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Déplacer les onglets vers le haut</translation>
 <translation id="3175067642577044620">Corps</translation>
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utilisez « z » pour appuyer sur un bouton de la souris et le maintenir enfoncé</translation>
@@ -5516,7 +5513,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="4699473989647132421">Rivage</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
 <translation id="4701335814944566468">Consulté hier</translation>
-<translation id="4702504834785592287">Côté</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4707337002099455863">Toujours activée sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
@@ -7207,7 +7203,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889282057229379085">Nombre maximal d'autorités de certification intermédiaires : <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Chiffrer les données synchronisées avec votre propre <ph name="BEGIN_LINK" />phrase de passe de synchronisation<ph name="END_LINK" />. Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.</translation>
-<translation id="5890072287476934834">Déplacer les onglets sur le côté</translation>
 <translation id="5891688036610113830">Réseaux Wi-Fi préférés</translation>
 <translation id="5894056653502215961">Désélectionner le dossier <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -9295,7 +9290,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7340179705876485790">Pour revenir en arrière de plus d'une page, cliquez et maintenez Retour.</translation>
 <translation id="7340650977506865820">Le site partage votre écran</translation>
 <translation id="7340757554212515731">Envoie automatiquement à Google les rapports de plantage ainsi que les données de diagnostic et d'utilisation</translation>
-<translation id="7340886226071938450">Position de la bande d'onglets</translation>
 <translation id="734088800888587319">Mesures du réseau</translation>
 <translation id="7341834142292923918">Souhaite accéder à ce site</translation>
 <translation id="7343372807593926528">Veuillez décrire le problème avant d'envoyer des commentaires.</translation>
@@ -11299,7 +11293,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="8685540043423825702">Votre profil Chrome</translation>
 <translation id="8685882652128627032">Cliquer sur le bouton pour ouvrir la boîte de dialogue Ajouter une recherche de site</translation>
 <translation id="8686142379631285985">Connecté en tant que <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Déplacer les onglets vers le haut</translation>
 <translation id="8687103160920393343">Annuler <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configurer votre NIP</translation>
 <translation id="8687774873995698516">Toujours bloquer <ph name="HOST" /> pour qu'il ne puisse pas utiliser des identifiants pour faire jouer du contenu protégé</translation>

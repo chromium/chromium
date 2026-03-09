@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="263447411082773721">Pastikan kata laluan, penanda halaman dan sejarah anda disegerakkan dengan sempurna merentas peranti. Akses ciri yang anda ketahui dan sukai dengan mudah dengan mengemaskinikan penyemak imbas lalai anda kepada Chrome. Chrome akan disematkan pada bar tugas anda untuk akses pantas.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Kemudian, Chrome boleh bertanya sama ada anda mahu menggunakan maklumat yang disimpan bagi mengisi borang untuk anda secara automatik atau tidak</translation>
 <translation id="3352986031709923790">penjuru atas sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Sesetengah ciri dan sambungan Chrome disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan dilancarkan semula sekarang}=1{Chrome akan dilancarkan semula dalam masa sesaat}other{Chrome akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="3380249972812870825">Untuk membuka Gemini dalam Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Google Chrome semula.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Klik <ph name="BUTTON_LABEL" /> di bawah
 2. Klik <ph name="BUTTON_2" /> dalam tetapan Windows anda
 3. Klik <ph name="BUTTON_3" /> dalam pemberitahuan Windows untuk menyematkan Chrome pada bar tugas anda untuk akses pantas</translation>
+<translation id="8074398340364918139">Untuk mencari ciri atau sambungan Chrome tertentu, taip pintasan carian dalam bar alamat, diikuti dengan kekunci papan kekunci pilihan anda</translation>
 <translation id="8077579734294125741">Profil Chrome Lain</translation>
 <translation id="8086881907087796310">Pemasangan gagal kerana komputer anda tidak menepati keperluan perkakasan minimum.</translation>
 <translation id="8113883687556086139">Sahkan identiti anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Mengenai &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulakan...</translation>
 <translation id="8162006532256575008">Gunakan Chrome Tanpa Akaun</translation>
+<translation id="8172231188687329735">Dapatkan apl Chrome untuk menyimpan kata laluan semasa dalam perjalanan</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan kandungan dalam halaman</translation>
 <translation id="8221491193165283816">Anda biasanya menyekat pemberitahuan. Untuk membenarkan tapak ini memberitahu anda, klik di sini.</translation>
 <translation id="8253851811470049684">Buka pautan dalam Chrome daripada mana-mana apl dan pastikan penyemak imbas boleh diakses pada bar tugas anda</translation>
@@ -726,6 +730,7 @@
 
 Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memadamkan beberapa penanda halaman. Jika anda log keluar sekarang, penanda halaman yang tidak disimpan akan dipadamkan.</translation>
 <translation id="8433638294851456451">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
+<translation id="8458117863387545390">Dapatkan Chrome pada telefon anda</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Kemas kini keselamatan khas untuk Google Chrome baru sahaja diterapkan. Mulakan semula sekarang dan kami akan memulihkan tab anda.</translation>
 <translation id="8516431725144212809">Minat anda seperti yang dianggarkan oleh Chrome</translation>

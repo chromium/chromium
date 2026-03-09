@@ -2498,7 +2498,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2665394472441560184">Pievienot jaunu vārdu</translation>
 <translation id="2665647207431876759">Beidzies derīguma termiņš</translation>
 <translation id="2665919335226618153">Diemžēl formatēšanas laikā radās kļūda.</translation>
-<translation id="2666092431469916601">Augša</translation>
 <translation id="2666247341166669829">Kreisās austiņas akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Citas lietotnes ir iestatītas to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotnes <ph name="APP_NAME_2" /> un <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Pareizrakstības pārbaudes pārvaldība</translation>
@@ -2567,7 +2566,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2714180132046334502">Tumšs fons</translation>
 <translation id="2714393097308983682">Google Play veikals</translation>
 <translation id="2714617928488200509">Modeļi</translation>
-<translation id="2715293433233060993">Pārvietot cilnes uz malu</translation>
 <translation id="2715751256863167692">Šis jauninājums atiestata jūsu Chromebook datoru un noņem pašreizējos lietotāju datus.</translation>
 <translation id="2715934493766003251">Nevar atbrīvot vietu krātuvē, kamēr ir ieslēgta failu sinhronizācija.</translation>
 <translation id="2716986496990888774">Šo iestatījumu pārvalda viens no vecākiem.</translation>
@@ -3244,7 +3242,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3167562202484086668">Dzēst visus datus no pakalpojuma <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Izvēlieties savām vajadzībām atbilstošu motīvu. Lai mainītu motīvu, fona tapeti, ekrānsaudzētāju un citus iestatījumus, vienkārši pieskarieties un turiet darbvirsmā.</translation>
 <translation id="3170072451822350649">Varat arī izlaist pierakstīšanos un <ph name="LINK_START" />veikt pārlūkošanu kā viesis<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Pārvietot cilnes uz augšdaļu</translation>
 <translation id="3175067642577044620">Pamatteksts</translation>
 <translation id="3175862692832442091">Mežs</translation>
 <translation id="3176347586396987181">Lai nospiestu un turētu peles pogu, izmantojiet taustiņu “z”</translation>
@@ -5513,7 +5510,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4699473989647132421">Krasts</translation>
 <translation id="4701025263201366865">Jāpierakstās vienam no vecākiem</translation>
 <translation id="4701335814944566468">Skatīts vakar</translation>
-<translation id="4702504834785592287">sānu</translation>
 <translation id="470644585772471629">Krāsu inversija</translation>
 <translation id="4707337002099455863">Vienmēr ieslēgts visās vietnēs</translation>
 <translation id="4708849949179781599">Aizvērt programmu <ph name="PRODUCT_NAME" /></translation>
@@ -7203,7 +7199,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5888889603768021126">Pierakstījies kā</translation>
 <translation id="5889282057229379085">Vidējā līmeņa CA maksimālais skaits: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Šifrējiet sinhronizētos datus, izmantojot savu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />. Maksājuma veidi un adreses no pakalpojuma Google Pay netiks šifrētas. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.</translation>
-<translation id="5890072287476934834">Pārvietot cilnes uz malu</translation>
 <translation id="5891688036610113830">Vēlamie Wi-Fi tīkli</translation>
 <translation id="5894056653502215961">Noņemt mapes <ph name="FOLDER_TITLE" /> atlasi</translation>
 <translation id="5895138241574237353">Restartēt</translation>
@@ -9293,7 +9288,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7340179705876485790">Lai pārietu atpakaļ vairākas lappuses, noklikšķiniet uz “Atpakaļ” un turiet.</translation>
 <translation id="7340650977506865820">Vietne kopīgo jūsu ekrānu.</translation>
 <translation id="7340757554212515731">Google serveriem tiek automātiski nosūtīti avāriju pārskati, kā arī diagnostikas un lietojuma dati.</translation>
-<translation id="7340886226071938450">Ciļņu joslas novietojums</translation>
 <translation id="734088800888587319">Tīkla rādītāji</translation>
 <translation id="7341834142292923918">Vēlas piekļūt šai vietnei</translation>
 <translation id="7343372807593926528">Pirms atsauksmes nosūtīšanas aprakstiet problēmu.</translation>
@@ -11298,7 +11292,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8685540043423825702">Jūsu Chrome profils</translation>
 <translation id="8685882652128627032">Noklikšķiniet, lai atvērtu dialoglodziņu “Pievienojiet meklēšanu vietnē”</translation>
 <translation id="8686142379631285985">Pierakstījies kā <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Pārvietot cilnes uz augšdaļu</translation>
 <translation id="8687103160920393343">Atcelt lejupielādi: <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">PIN iestatīšana</translation>
 <translation id="8687774873995698516">Vienmēr liegt vietnei <ph name="HOST" /> izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>

@@ -269,6 +269,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3658847490588580244">Helaian bawah penyemak imbas lalai</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="RWS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="RWS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="3676777756440746804">Laman disekat daripada meminta anda menggunakan maklumat yang disimpan tentang anda</translation>
+<translation id="3677897809642449131">Laman boleh meminta untuk menggunakan penderia gerakan</translation>
 <translation id="3678318839615834650">Helaian bawah kad halaman tab baharu dibuka pada ketinggian penuh</translation>
 <translation id="3697164069658504920">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti USB. Apabila dimatikan, laman tidak dapat menggunakan peranti USB.</translation>
 <translation id="3703430731944883733">Urus suapan anda</translation>
@@ -748,6 +749,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8707904142362025782">Laman boleh meminta untuk menggunakan kamera anda</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8715862698998036666">Seret daripada bahagian atas dan leret dari sisi kiri atau kanan untuk keluar daripada skrin penuh.</translation>
+<translation id="8716050156658570300">Laman boleh meminta untuk menggunakan penderia gerakan dan cahaya</translation>
 <translation id="8719283222052720129">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Apabila dihidupkan, laman dapat meminta untuk mencari peranti Bluetooth. Apabila dimatikan, laman tidak dapat mencari peranti Bluetooth.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>

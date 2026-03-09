@@ -2495,7 +2495,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2665394472441560184">Engadir unha palabra nova</translation>
 <translation id="2665647207431876759">Caducado</translation>
 <translation id="2665919335226618153">Produciuse un erro durante o formatado.</translation>
-<translation id="2666092431469916601">Parte superior</translation>
 <translation id="2666247341166669829">Nivel de batería do dispositivo esquerdo: <ph name="PERCENTAGE" /> %.</translation>
 <translation id="2667144577800272420">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> deixarán de ser as aplicacións predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="2667463864537187133">Xestionar corrector ortográfico</translation>
@@ -2564,7 +2563,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2714180132046334502">Fondo escuro</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Modelos</translation>
-<translation id="2715293433233060993">Mover pestanas ao lateral</translation>
 <translation id="2715751256863167692">Esta actualización restablece o teu dispositivo Chromebook e elimina os datos do usuario actual.</translation>
 <translation id="2715934493766003251">Non se pode liberar espazo de almacenamento cando a sincronización de ficheiros está activada</translation>
 <translation id="2716986496990888774">O teu pai ou nai xestiona esta opción de configuración.</translation>
@@ -3241,7 +3239,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3167562202484086668">Eliminar todos os datos de <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Escolle o tema axeitado para as túas necesidades. Se queres cambiar de tema, fondo e protector de pantalla, entre outras cousas, só tes que manter premido o escritorio.</translation>
 <translation id="3170072451822350649">Tamén podes <ph name="LINK_START" />navegar como invitado<ph name="LINK_END" /> sen iniciar sesión.</translation>
-<translation id="3172642937040465677">Mover pestanas á parte superior</translation>
 <translation id="3175067642577044620">Corpo</translation>
 <translation id="3175862692832442091">Bosque</translation>
 <translation id="3176347586396987181">Usa a tecla Z para manter premido un botón do rato</translation>
@@ -5515,7 +5512,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4699473989647132421">Costa</translation>
 <translation id="4701025263201366865">Inicio de sesión do pai ou da nai</translation>
 <translation id="4701335814944566468">Consultouse onte</translation>
-<translation id="4702504834785592287">Lado</translation>
 <translation id="470644585772471629">Inversión da cor</translation>
 <translation id="4707337002099455863">Sempre en todos os sitios</translation>
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
@@ -7206,7 +7202,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5888889603768021126">Iniciouse sesión con</translation>
 <translation id="5889282057229379085">Número máximo de CA intermedias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Encriptar datos sincronizados coa túa propia <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" />. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se sincronizará o historial de navegación de Chrome.</translation>
-<translation id="5890072287476934834">Mover pestanas ao lateral</translation>
 <translation id="5891688036610113830">Redes wifi preferidas</translation>
 <translation id="5894056653502215961">Anular a selección do cartafol <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -9291,7 +9286,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7340179705876485790">Para retroceder máis de 1 páxina, fai clic sen soltar en Atrás.</translation>
 <translation id="7340650977506865820">O sitio está compartindo a túa pantalla</translation>
 <translation id="7340757554212515731">Envía a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico</translation>
-<translation id="7340886226071938450">Posición da franxa de pestanas</translation>
 <translation id="734088800888587319">Métricas da rede</translation>
 <translation id="7341834142292923918">Quere acceder a este sitio</translation>
 <translation id="7343372807593926528">Describe o problema antes de enviar comentarios.</translation>
@@ -11295,7 +11289,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8685540043423825702">O teu perfil de Chrome</translation>
 <translation id="8685882652128627032">Facer clic para abrir o cadro de diálogo Engadir unha busca do sitio</translation>
 <translation id="8686142379631285985">Sesión iniciada como <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Mover pestanas á parte superior</translation>
 <translation id="8687103160920393343">Cancelar descarga de <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Configurar o teu PIN</translation>
 <translation id="8687774873995698516">Impedir sempre que <ph name="HOST" /> use identificadores para reproducir contido protexido</translation>

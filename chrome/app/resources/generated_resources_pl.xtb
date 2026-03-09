@@ -2481,7 +2481,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2665394472441560184">Dodaj nowe słowo</translation>
 <translation id="2665647207431876759">Ważność wygasła</translation>
 <translation id="2665919335226618153">Kurza twarz! Podczas formatowania wystąpił błąd.</translation>
-<translation id="2666092431469916601">Do góry</translation>
 <translation id="2666247341166669829">Poziom naładowania lewej baterii to <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> przestaną otwierać obsługiwane linki.</translation>
 <translation id="2667463864537187133">Zarządzanie sprawdzaniem pisowni</translation>
@@ -2550,7 +2549,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2714180132046334502">Ciemne tło</translation>
 <translation id="2714393097308983682">Sklep Google Play</translation>
 <translation id="2714617928488200509">Modele</translation>
-<translation id="2715293433233060993">Przenieś karty na bok</translation>
 <translation id="2715751256863167692">Ta aktualizacja resetuje Chromebooka i usuwa dane bieżącego użytkownika.</translation>
 <translation id="2715934493766003251">Nie można wyczyścić miejsca na dane, gdy włączona jest synchronizacja plików</translation>
 <translation id="2716986496990888774">Tym ustawieniem zarządza rodzic.</translation>
@@ -3227,7 +3225,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3167562202484086668">Usuń wszystkie dane z aplikacji <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Wybierz motyw, który pasuje do Twoich potrzeb. Aby zmienić motyw, tapetę, wygaszacz ekranu i inne opcje, naciśnij i przytrzymaj pulpit.</translation>
 <translation id="3170072451822350649">Możesz też pominąć logowanie i <ph name="LINK_START" />przeglądać internet jako gość<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Przenieś karty na górę</translation>
 <translation id="3175067642577044620">Treść</translation>
 <translation id="3175862692832442091">Las</translation>
 <translation id="3176347586396987181">Aby nacisnąć i przytrzymać przycisk myszy, użyj klawisza „Z”</translation>
@@ -5495,7 +5492,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4699473989647132421">Linia brzegowa</translation>
 <translation id="4701025263201366865">Logowanie rodzica</translation>
 <translation id="4701335814944566468">Wyświetlono wczoraj</translation>
-<translation id="4702504834785592287">Strona</translation>
 <translation id="470644585772471629">Odwrócenie kolorów</translation>
 <translation id="4707337002099455863">Zawsze na wszystkich stronach</translation>
 <translation id="4708849949179781599">Zamknij przeglądarkę <ph name="PRODUCT_NAME" /></translation>
@@ -7186,7 +7182,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5888889603768021126">Zalogowano za pomocą</translation>
 <translation id="5889282057229379085">Maksymalna liczba pośrednich urzędów certyfikacji: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Szyfruj synchronizowane dane własnym <ph name="BEGIN_LINK" />hasłem wielowyrazowym do synchronizacji<ph name="END_LINK" />. Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.</translation>
-<translation id="5890072287476934834">Przenieś karty na bok</translation>
 <translation id="5891688036610113830">Preferowane sieci Wi-Fi</translation>
 <translation id="5894056653502215961">Odznacz folder <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -9276,7 +9271,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7340179705876485790">Aby cofnąć się o więcej niż 1 stronę, kliknij i przytrzymaj Wstecz.</translation>
 <translation id="7340650977506865820">Strona udostępnia ekran</translation>
 <translation id="7340757554212515731">Automatycznie wysyła do Google raporty o awariach, dane diagnostyczne i dane o korzystaniu</translation>
-<translation id="7340886226071938450">Pozycja paska kart</translation>
 <translation id="734088800888587319">Dane sieci</translation>
 <translation id="7341834142292923918">Chce mieć dostęp do tej strony</translation>
 <translation id="7343372807593926528">Zanim wyślesz opinię, opisz problem.</translation>
@@ -11279,7 +11273,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8685540043423825702">Twój profil Chrome</translation>
 <translation id="8685882652128627032">Kliknij, aby otworzyć okno dodawania wyszukiwarki w witrynie</translation>
 <translation id="8686142379631285985">Zalogowano jako <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Przenieś karty na górę</translation>
 <translation id="8687103160920393343">Anuluj <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Skonfiguruj kod PIN</translation>
 <translation id="8687774873995698516">Nigdy nie zezwalaj witrynie <ph name="HOST" /> na używanie identyfikatorów do odtwarzania treści chronionych</translation>

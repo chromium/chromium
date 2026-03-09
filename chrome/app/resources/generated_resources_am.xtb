@@ -2505,7 +2505,6 @@
 <translation id="2665394472441560184">አዲስ ቃል ያክሉ</translation>
 <translation id="2665647207431876759">ጊዜው አልፏል</translation>
 <translation id="2665919335226618153">ኧረ ቴች! ቅርጸት በሚሰራለት ጊዜ የሆነ ስህተት ነበር።</translation>
-<translation id="2666092431469916601">ላይ</translation>
 <translation id="2666247341166669829">የግራ የባትሪ ደረጃ <ph name="PERCENTAGE" />%።</translation>
 <translation id="2667144577800272420">ሌሎች መተግበሪያዎች ከ<ph name="APP_NAME" /> ጋር ተመሳሳይ የሆኑ አገናኞችን ለመክፈት ተቀናብረዋል። ይህ <ph name="APP_NAME_2" /> እና <ph name="APP_NAME_3" /> የሚደገፉ አገናኞችን እንዳይከፍቱ ያሰናክላቸዋል።</translation>
 <translation id="2667463864537187133">ፊደል አራሚን ያቀናብሩ</translation>
@@ -2574,7 +2573,6 @@
 <translation id="2714180132046334502">ጨለማ ጀርባ</translation>
 <translation id="2714393097308983682">Google Play መደብር</translation>
 <translation id="2714617928488200509">ሞዴሎች</translation>
-<translation id="2715293433233060993">ትሮችን ወደ ጎን አንቀሳቅስ</translation>
 <translation id="2715751256863167692">ይህ ማላቅ የእርስዎን Chromebook ዳግም ያስጀምረውና የአሁኑን ተጠቃሚ ውሂብ ያስወግዳል።</translation>
 <translation id="2715934493766003251">ፋይል ስምረት እየበራ ሳለ ማከማቻ ማጽዳት አልተቻለም።</translation>
 <translation id="2716986496990888774">ይህ ቅንብር በወላጅ የሚተዳደር ነው።</translation>
@@ -3251,7 +3249,6 @@
 <translation id="3167562202484086668">ሁሉም የ<ph name="BRAND" /> ውሂብ ይሰረዝ?</translation>
 <translation id="3169930038976362151">የእርስዎን ፍላጎቶች የሚያሟላውን ገፅታ ይምረጡ። የእርስዎን ገፅታ፣ ልጣፍ፣ የማያ ገፅ ማቆያ እና ሌሎች ለመቀየር በቀላሉ በዴስክቶፑ ላይ ይንኩ እና ይያዙ።</translation>
 <translation id="3170072451822350649">እንዲሁም መግባቱን ትተው <ph name="LINK_START" />እንደ እንግዳ ማሰስ<ph name="LINK_END" /> ይችላሉ።</translation>
-<translation id="3172642937040465677">ትሮችን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="3175067642577044620">አካል</translation>
 <translation id="3175862692832442091">ደን</translation>
 <translation id="3176347586396987181">የመዳፊት አዝራር ለመጫን እና ለመያዝ «z» ይጠቀሙ</translation>
@@ -5523,7 +5520,6 @@
 <translation id="4699473989647132421">የባህር ዳርቻ</translation>
 <translation id="4701025263201366865">የወላጆች መግቢያ</translation>
 <translation id="4701335814944566468">ትላንት ታይቷል</translation>
-<translation id="4702504834785592287">ጎን</translation>
 <translation id="470644585772471629">ተቃራኒ ቀለም</translation>
 <translation id="4707337002099455863">በሁሉም ጣቢያዎችን ላይ ሁልጊዜ በርቷል</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ን አቋርጥ</translation>
@@ -7217,7 +7213,6 @@
 <translation id="5888889603768021126">በሚከተለው በመለያ ተገብቷል</translation>
 <translation id="5889282057229379085">ከፍተኛ የመሃከለኛ CAዎች ብዛት፦ <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">የሰመረ ውሂብ በራስዎ <ph name="BEGIN_LINK" />የስምረት ይለፍ ሐረግ<ph name="END_LINK" /> ያመስጥሩ። የGoogle Pay የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChrome የአሰሳ ታሪክ አይሰምርም።</translation>
-<translation id="5890072287476934834">ትሮችን ወደ ጎን አንቀሳቅስ</translation>
 <translation id="5891688036610113830">ተመራጭ የWi-Fi አውታረ መረቦች</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> አቃፊን አይምረጡ</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
@@ -9307,7 +9302,6 @@
 <translation id="7340179705876485790">ከ1 ገጽ በላይ ወደ ኋላ ለመመለስ ተመለስን ጠቅ አድርገው ይያዙ።</translation>
 <translation id="7340650977506865820">ጣቢያ የእርስዎን ማያ ገፅ በማጋራት ላይ ነው</translation>
 <translation id="7340757554212515731">የብልሽት ሪፖርቶችን እና የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google ይልካል</translation>
-<translation id="7340886226071938450">የትር ድርድር አቀማመጥ</translation>
 <translation id="734088800888587319">የአውታረ መረብ መለኪያዎች</translation>
 <translation id="7341834142292923918">የዚህ ጣቢያ መዳረሻ ይፈልጋል</translation>
 <translation id="7343372807593926528">እባክዎ ግብረመልስ ከመላክዎ በፊት ችግሩን ይግለጹ።</translation>
@@ -11318,7 +11312,6 @@ nil</translation>
 <translation id="8685540043423825702">የChrome መገለጫዎ</translation>
 <translation id="8685882652128627032">የጣቢያ ፍለጋ መገናኛ አክል የሚለውን ለመክፈት ጠቅ ያድርጉ</translation>
 <translation id="8686142379631285985">እንደ <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />ሆነው በመለያ ገብተዋል</translation>
-<translation id="8686578183956518912">ትሮችን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ይቅር</translation>
 <translation id="8687527282898211955">የእርስዎን ፒን ያቀናብሩ</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> ጥበቃ የሚደረግለት ይዘትን ለማጫወት ለዪዎችን እንዳይጠቀም ሁልጊዜ አግድ</translation>

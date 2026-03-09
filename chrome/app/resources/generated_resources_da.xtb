@@ -2511,7 +2511,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2665394472441560184">Tilføj et nyt ord</translation>
 <translation id="2665647207431876759">Udløbet</translation>
 <translation id="2665919335226618153">Øv, surt! Der opstod en fejl under formateringen.</translation>
-<translation id="2666092431469916601">Top</translation>
 <translation id="2666247341166669829">Batteriniveau på <ph name="PERCENTAGE" /> % for venstre.</translation>
 <translation id="2667144577800272420">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> ikke kan åbne understøttede links.</translation>
 <translation id="2667463864537187133">Administrer stavekontrollen</translation>
@@ -2580,7 +2579,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2714180132046334502">Mørk baggrund</translation>
 <translation id="2714393097308983682">Google Play Butik</translation>
 <translation id="2714617928488200509">Modeller</translation>
-<translation id="2715293433233060993">Flyt faner til siden</translation>
 <translation id="2715751256863167692">Denne opgradering nulstiller din Chromebook og fjerner aktuelle brugerdata.</translation>
 <translation id="2715934493766003251">Der kan ikke frigøres lagerplads, når filsynkronisering er aktiveret</translation>
 <translation id="2716986496990888774">Denne indstilling administreres af en forælder.</translation>
@@ -3257,7 +3255,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3167562202484086668">Slet alle data fra <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Vælg det tema, der passer til dine behov. Du kan ændre dit tema, din baggrund, din pauseskærm og meget mere ved at holde fingeren nede på skrivebordet.</translation>
 <translation id="3170072451822350649">Du kan også springe login over og <ph name="LINK_START" />anvende som gæst<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Flyt faner til toppen</translation>
 <translation id="3175067642577044620">Brødtekst</translation>
 <translation id="3175862692832442091">Skov</translation>
 <translation id="3176347586396987181">Brug “z” til at holde en museknap nede</translation>
@@ -5528,7 +5525,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4699473989647132421">Kystlinje</translation>
 <translation id="4701025263201366865">Forældrelogin</translation>
 <translation id="4701335814944566468">Set i går</translation>
-<translation id="4702504834785592287">Side</translation>
 <translation id="470644585772471629">Ombytning af farver</translation>
 <translation id="4707337002099455863">Altid på alle websites</translation>
 <translation id="4708849949179781599">Afslut <ph name="PRODUCT_NAME" /></translation>
@@ -7221,7 +7217,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5888889603768021126">Du er logget ind med</translation>
 <translation id="5889282057229379085">Maksimalt antal mellemliggende CA'er: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Kryptér synkroniserede data med din egen <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" />. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>
-<translation id="5890072287476934834">Flyt faner til siden</translation>
 <translation id="5891688036610113830">Foretrukne Wi-Fi-netværk</translation>
 <translation id="5894056653502215961">Fravælg mappen <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -9310,7 +9305,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7340179705876485790">Klik på Tilbage, hvis du vil gå mere end 1 side tilbage.</translation>
 <translation id="7340650977506865820">Websitet deler din skærm</translation>
 <translation id="7340757554212515731">Sender automatisk nedbrudsrapporter samt diagnostik- og brugsdata til Google</translation>
-<translation id="7340886226071938450">Fanelinjens placering</translation>
 <translation id="734088800888587319">Metrics for netværket</translation>
 <translation id="7341834142292923918">Udvidelsen anmoder om adgang til dette website</translation>
 <translation id="7343372807593926528">Beskriv problemet, før du sender feedback</translation>
@@ -11315,7 +11309,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8685540043423825702">Din Chrome-profil</translation>
 <translation id="8685882652128627032">Klik for at åbne dialogboksen Tilføj Site Search</translation>
 <translation id="8686142379631285985">Logget ind som <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Flyt faner til toppen</translation>
 <translation id="8687103160920393343">Annuller <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Opret din pinkode</translation>
 <translation id="8687774873995698516">Bloker altid brug af id'er til at afspille beskyttet indhold på <ph name="HOST" /></translation>

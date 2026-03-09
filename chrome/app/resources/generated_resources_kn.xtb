@@ -2502,7 +2502,6 @@
 <translation id="2665394472441560184">ಹೊಸ ಪದವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2665647207431876759">ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="2665919335226618153">ಓಹ್, ಹೋಯ್ತು! ಸ್ವರೂಪಣೆ ಸಂದರ್ಭದಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
-<translation id="2666092431469916601">ಮೇಲೆ</translation>
 <translation id="2666247341166669829">ಎಡಬದಿಯ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಆ್ಯಪ್‌ನ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2667463864537187133">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ ನಿರ್ವಹಿಸಿ</translation>
@@ -2571,7 +2570,6 @@
 <translation id="2714180132046334502">ದಟ್ಟ ಬೆಳಕಿನ ಹಿನ್ನೆಲೆ</translation>
 <translation id="2714393097308983682">Google Play Store </translation>
 <translation id="2714617928488200509">ಮಾಡಲ್‌ಗಳು</translation>
-<translation id="2715293433233060993">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಕ್ಕಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2715751256863167692">ಈ ಅಪ್‌ಗ್ರೇಡ್ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಹೊಂದಿಸುತ್ತದೆ ಮತ್ತು ಪ್ರಸ್ತುತ ಬಳಕೆದಾರರ ಡೇಟಾವನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ.</translation>
 <translation id="2715934493766003251">ಫೈಲ್ ಸಿಂಕ್ ಆನ್ ಆಗಿರುವಾಗ ಸಂಗ್ರಹಣೆಯನ್ನು ತೆರವುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2716986496990888774">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಪೋಷಕರು ನಿರ್ವಹಿಸಿರುತ್ತಾರೆ.</translation>
@@ -3248,7 +3246,6 @@
 <translation id="3167562202484086668">ಎಲ್ಲಾ <ph name="BRAND" /> ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="3169930038976362151">ನಿಮ್ಮ ಅಗತ್ಯಗಳಿಗೆ ಸರಿಹೊಂದುವ ಥೀಮ್ ಆಯ್ಕೆಮಾಡಿ. ನಿಮ್ಮ ಥೀಮ್, ವಾಲ್‌ಪೇಪರ್, ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಬದಲಾಯಿಸಲು, ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="3170072451822350649">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವುದನ್ನು ಸ್ಕಿಪ್‌ ಮಾಡಬಹುದು ಹಾಗೂ <ph name="LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="3175067642577044620">ಮುಖ್ಯ ಭಾಗ</translation>
 <translation id="3175862692832442091">ಅರಣ್ಯ</translation>
 <translation id="3176347586396987181">ಮೌಸ್ ಬಟನ್ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಲು “z” ಕೀಯನ್ನು ಬಳಸಿ</translation>
@@ -5521,7 +5518,6 @@
 <translation id="4699473989647132421">ಕಡಲತೀರ</translation>
 <translation id="4701025263201366865">ಪೋಷಕರ ಸೈನ್ ಇನ್</translation>
 <translation id="4701335814944566468">ನಿನ್ನೆ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
-<translation id="4702504834785592287">ಅಂಚು</translation>
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
 <translation id="4707337002099455863">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
@@ -7215,7 +7211,6 @@
 <translation id="5888889603768021126">ಇದನ್ನು ಬಳಸಿ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5889282057229379085">ಮಧ್ಯಂತರ CA ಗಳ ಗರಿಷ್ಠ ಸಂಖ್ಯೆ: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">ನಿಮ್ಮ ಸ್ವಂತ <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್<ph name="END_LINK" /> ಮೂಲಕ ಸಿಂಕ್ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ. Google Pay ನಲ್ಲಿನ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
-<translation id="5890072287476934834">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪಕ್ಕಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="5891688036610113830">ಆದ್ಯತೆಯ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -9306,7 +9301,6 @@
 <translation id="7340179705876485790">1 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಪುಟಕ್ಕೆ ಹಿಂದಿರುಗಲು, ಹಿಂದಕ್ಕೆ ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
 <translation id="7340650977506865820">ನಿಮ್ಮ ಪರದೆಯನ್ನು ಸೈಟ್‌ ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ</translation>
 <translation id="7340757554212515731">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು ಹಾಗೂ ಡಯಾಗ್ನೋಸ್ಟಿಕ್ಸ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
-<translation id="7340886226071938450">ಟ್ಯಾಬ್ ಸ್ಟ್ರೈಪ್ ಸ್ಥಾನ</translation>
 <translation id="734088800888587319">ನೆಟ್‌ವರ್ಕ್ ಮೆಟ್ರಿಕ್‌ಗಳು</translation>
 <translation id="7341834142292923918">ಈ ಸೈಟ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಕೋರುತ್ತಿದೆ</translation>
 <translation id="7343372807593926528">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸುವ ಮೊದಲು ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ.</translation>
@@ -11308,7 +11302,6 @@
 <translation id="8685540043423825702">ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್</translation>
 <translation id="8685882652128627032">ಸೈಟ್ ಹುಡುಕಾಟವನ್ನು ಸೇರಿಸಿ ಡೈಲಾಗ್ ಅನ್ನು ತೆರೆಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="8686578183956518912">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="8687527282898211955">ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="8687774873995698516">ಸುರಕ್ಷಿತ ಕಂಟೆಂಟ್ ಅನ್ನು ಪ್ಲೇ ಮಾಡುವುದಕ್ಕಾಗಿ ಗುರುತಿಸುವಿಕೆಗಳನ್ನು ಬಳಸದಿರುವ ಹಾಗೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>

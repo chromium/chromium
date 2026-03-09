@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">Fleta e poshtme e shfletuesit të parazgjedhur</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="RWS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
 <translation id="3676777756440746804">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
+<translation id="3677897809642449131">Sajtet mund të kërkojnë të përdorin sensorët e lëvizjes</translation>
 <translation id="3678318839615834650">Fleta e poshtme e kartave të faqeve të skedave të reja u hap në lartësi të plotë</translation>
 <translation id="3697164069658504920">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet USB. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet USB.</translation>
 <translation id="3703430731944883733">Menaxho furnizimin tënd</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">Sajtet mund të kërkojnë që të përdorin kamerën</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8715862698998036666">Zvarrit nga pjesa e sipërme ose rrëshqit shpejt nga skaji i majtë ose i djathtë për të dalë nga ekrani i plotë.</translation>
+<translation id="8716050156658570300">Sajtet mund të kërkojnë të përdorin sensorët e lëvizjes dhe të dritës</translation>
 <translation id="8719283222052720129">Aktivizo lejen për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kur cilësimi është aktiv, sajtet mund të kërkojnë leje që të kërkojnë për pajisjet me Bluetooth. Kur cilësimi është joaktiv, sajtet mund të kërkojnë për pajisjet me Bluetooth.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>

@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 web (další na synchronizovaných zařízeních)}few{# weby (další na synchronizovaných zařízeních)}many{# webu (další na synchronizovaných zařízeních)}other{# webů (další na synchronizovaných zařízeních)}}</translation>
 <translation id="2870560284913253234">Weby</translation>
 <translation id="2876369937070532032">Když je ohrožena vaše bezpečnost, odesílá adresy URL některých navštívených stránek do Googlu</translation>
+<translation id="2877733045396505765">Vybrané informace uložené v tomto zařízení a ve vašem účtu Google <ph name="USER_EMAIL" /> budou smazány.</translation>
 <translation id="2883151425485251736">Zobrazení a úprava témat, která jste ve svém účtu skryli</translation>
 <translation id="288655811176831528">Zavřít kartu</translation>
 <translation id="2888631381369839306">Oznámení o sledování cen jsou zapnutá</translation>
@@ -1878,6 +1879,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="775755486779745798">Automaticky vyplnit měsíc vypršení platnosti <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Fialový motiv</translation>
 <translation id="7759809451544302770">Volitelné</translation>
+<translation id="7763878244904387570">Tímto smažete vybrané informace uložené na tomto zařízení.</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7772032839648071052">Potvrďte heslovou frázi</translation>
 <translation id="7772948288262733182">Vítejte zpět</translation>

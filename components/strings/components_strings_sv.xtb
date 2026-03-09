@@ -485,7 +485,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1748225549612934682">Förkorta texten om du vill få hjälp med att skriva</translation>
 <translation id="1752021286346845558">Postfack 8</translation>
 <translation id="1753706481035618306">Sidnummer</translation>
-<translation id="1755203724116202818">För att mäta en annons resultat delas begränsade typer av data mellan webbplatser, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="1755621011177747277">Adoption</translation>
 <translation id="1756026472674246267">Öppna länk i ny flik</translation>
 <translation id="1756555787993603971">Nu kan du använda ett virtuellt kort för att betala säkrare med autofyll.</translation>
@@ -620,7 +619,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1999416967035780066">Freeware och shareware</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{och 1 till}other{och # till}}</translation>
 <translation id="2001469757375372617">Något gick fel. Ändringen sparades inte.</translation>
-<translation id="2002436619517051938">Du kan göra ändringar i inställningarna för Chrome.</translation>
 <translation id="2003709556000175978">Återställ lösenordet nu</translation>
 <translation id="2003775180883135320">Fyra hål högst upp</translation>
 <translation id="2009942480257059311">Knappen Skapa händelse: aktivera om du snabbt vill skapa en ny händelse i Google Kalender</translation>
@@ -648,7 +646,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2045871135676061132">Personal-kuvert</translation>
 <translation id="2046951263634619614">Bokhandlare</translation>
 <translation id="2048261947532620704">Översätter sida</translation>
-<translation id="2056658168519009885">Webbplatser kan be Chrome om information för att anpassa vilka annonser som visas.</translation>
 <translation id="2059166748188874810">Kommun</translation>
 <translation id="2059202684901022309">22 x 34 tum</translation>
 <translation id="2064568741209980952">Krediter och lån</translation>
@@ -750,6 +747,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2188375229972301266">Flera hål längst ned</translation>
 <translation id="218940509700321686">Kommaavgränsade värden</translation>
 <translation id="2191980191135734720">Lås upp skärmen i nästa steg, vanligtvis med fingeravtryck. Du kan även <ph name="LINK_TEXT" />.</translation>
+<translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Något gick fel. <ph name="BEGIN_LINK" />Läs mer om att ladda upp till Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Gillar inte-knappen. Tryck på Retur för att öppna ett formulär där du kan skicka detaljerad feedback om varför du inte gillar det här förslaget</translation>
@@ -1266,7 +1264,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tryck på Tabb och sedan på Retur för att ta bort förslaget.</translation>
 <translation id="3019738915977809060">Spara boardingkortet i Wallet</translation>
 <translation id="3022959067768579802">Fortsätt skriva</translation>
-<translation id="3023165109041533893">Föreslagna annonser på webbplatser bidrar till att skydda din webbhistorik och identitet samtidigt som webbplatser kan visa relevanta annonser. Utifrån din aktivitet kan en webbplats föreslå relaterade annonser när du fortsätter att surfa. I inställningarna kan du se en lista över dessa webbplatser och blockera dem som du inte vill ska ge förslag.</translation>
 <translation id="3024663005179499861">Felaktig policytyp</translation>
 <translation id="3027915437837548462">SVG-bild</translation>
 <translation id="3030331669969285614">Dessa flaggor förhindrar eller återställer en icke-bakåtkompatibel ändring och är endast tillgängliga under en begränsad tid.</translation>
@@ -1372,7 +1369,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3180358318770512945">Föräldraskap</translation>
 <translation id="3182185041786697613">Vill du spara säkerhetskoden?</translation>
 <translation id="3185635157430775689">Datorkomponenter</translation>
-<translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3190736958609431397">Ta bort bevakning</translation>
 <translation id="3194737229810486521"><ph name="URL" /> vill lagra data permanent på din enhet</translation>
 <translation id="3194765668709099364">Klarna</translation>
@@ -1425,7 +1421,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3261488570342242926">Läs mer om virtuella kort</translation>
 <translation id="3262698603497362968">Köpalternativ</translation>
 <translation id="3264315627780269177">Det går inte att dela den här fliken</translation>
-<translation id="3266367459139339908">Vi lanserar nya sätt att begränsa vilken information webbplatser kan få om dig när de visar anpassade annonser, till exempel:</translation>
 <translation id="3266793032086590337">Värde (konflikt)</translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3270041629388773465">Betala snabbare när du har dina CVC-koder sparade</translation>
@@ -1468,7 +1463,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="333839153442689579">Högintensiv intervallträning</translation>
 <translation id="3339446062576134663">Molnet (Ash)</translation>
 <translation id="3340978935015468852">inställningar</translation>
-<translation id="3342018947887487892">Senare kan en webbplats be om denna information – antingen dina annonsämnen eller annonser som föreslås av webbplatser du har besökt.</translation>
 <translation id="334438173029876234">Skateboardutrustning</translation>
 <translation id="3347146863028219517">Skidor och snowboard</translation>
 <translation id="3349610303043713601">Surfa med AI</translation>
@@ -1544,7 +1538,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryck på Retur för att fråga Google om den här sidan</translation>
 <translation id="3465972433695735758">Denna PDF är inte tillgänglig. Texten har extraherats med Google AI</translation>
 <translation id="346601286295919445">Kemi</translation>
-<translation id="3467081767799433066">Med annonsmätning delas begränsade typer av data mellan webbplatser för att mäta annonsernas resultat, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, öppen nu, tryck på Tabb och sedan Retur för att byta till den öppna fliken</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="3472469028191701821">Öppnas i en ny flik</translation>
@@ -1667,7 +1660,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3642196846309122856">Testa att ladda ned filerna igen</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3644768007456662469">Objektikon för betalningar</translation>
-<translation id="3646643500201740985">Mäta hur bra resultatet är för en annons</translation>
 <translation id="3647286794400715637">Varje webbadressträng måste innehålla en till två webbadresser.</translation>
 <translation id="3647400963805615193">Knapp för att stänga Chrome-tips, tryck på Retur för att stänga, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Valideringen har genomförts</translation>
@@ -1696,7 +1688,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3678914302246317895">Ange verifieringskoden på <ph name="OTP_LENGTH" /> siffror</translation>
 <translation id="3681007416295224113">Certifikatinformation</translation>
 <translation id="3681191721636073359">Chrome tror att du inte vill använda din plats på den här webbplatsen. Därför döljs begäranden för att minska störningar.</translation>
-<translation id="3681421644246505351">Chrome registrerar ämnen du är intresserad av baserat på din senaste webbhistorik.</translation>
 <translation id="3681841880472207951">QuickTime-video</translation>
 <translation id="3682094733650754138">Alternativet för att fylla i adress har valts</translation>
 <translation id="3687920599421452763">Skåpbilar och minibussar</translation>
@@ -1838,7 +1829,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Sparad information och sidan från <ph name="WEBSITE" /> skickas till Google och kan ses av mänskliga granskare för att förbättra den här funktionen.</translation>
 <translation id="3910231615117880630">Läs mer om inbäddat innehåll</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Så här kan du hantera din data:<ph name="END_BOLD" /> Chrome raderar webbplatser som är äldre än 30 dagar automatiskt. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera webbplatser från att föreslå annonser för dig och inaktivera föreslagna annonser på webbplatser när som helst i inställningarna för Chrome.</translation>
 <translation id="3921869355029467742">Ange din säkerhetskod</translation>
 <translation id="3927538228901078312">Inga jämförelsetabeller</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -2056,7 +2046,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="422722221769396062">Hemkörning av mat från restauranger</translation>
 <translation id="4230204356098880324">Får begära tillstånd att använda och röra kameran</translation>
 <translation id="4231448684371260244">8 × 13 tum</translation>
-<translation id="4233220688695460165">Chrome raderar automatiskt ämnen och webbplatser som föreslår annonser inom 30 dagar. Du kan även blockera specifika ämnen och webbplatser du inte gillar.</translation>
 <translation id="4235360514405112390">Giltigt</translation>
 <translation id="4239799716689808527">Etiketter</translation>
 <translation id="424063167283213501">Spara ditt Known Traveler Number</translation>
@@ -2098,10 +2087,8 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>
 <translation id="4284885181066817063">Blockeras av <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">Lossa</translation>
-<translation id="4287495839370498922">Förbättrad annonsintegritet i Chrome</translation>
 <translation id="4288101205645068104">Radera fordon</translation>
 <translation id="4290920330097335010">Tillåt aldrig</translation>
-<translation id="4296207570293932800">Nu finns en ny funktion för annonsintegritet</translation>
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> har uppdaterats</translation>
 <translation id="4298000214066716287">Investeringar</translation>
@@ -2315,7 +2302,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4682496302933121474">Vill du översätta sidan?</translation>
 <translation id="468314109939257734">Visa ditt virtuella kortnummer</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
-<translation id="4687718960473379118">Föreslagna annonser på webbplatser</translation>
 <translation id="4690205240253392065">Välj en leverantör för att betala senare</translation>
 <translation id="469028408546145398">Knappen Stäng inkognitofönster: aktivera om du vill stänga alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="4691093235373904540">Takläggning</translation>
@@ -2497,7 +2483,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4957080528849277028">Knappen Visa Chrome-historik: aktivera om du vill se och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
 <translation id="4958444002117714549">Expandera lista</translation>
-<translation id="4960068118612257147">Du kan göra ändringar i Chromes inställningar för annonsintegritet</translation>
 <translation id="4960203958361543136">Välj sökmotor</translation>
 <translation id="4961708452830821006">Ge Chrome åtkomst i <ph name="LINK" /> om du vill använda mikrofonen.</translation>
 <translation id="4963413887558778009">Landskapsarkitektur</translation>
@@ -3329,7 +3314,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6292819926564202163">Din sökmotor i Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">Sparar ...</translation>
 <translation id="629730747756840877">Konto</translation>
 <translation id="6300452962057769623">{0,plural, =0{Enheten startas om nu}=1{Om 1 sekund startas enheten om}other{Om # sekunder startas enheten om}}</translation>
 <translation id="6301104306974789820">Få aviseringar om prisbevakning</translation>
@@ -3461,7 +3445,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6472874020827012601">Tyg (matt)</translation>
 <translation id="647330291963761005">Uppdateringar installeras</translation>
 <translation id="6474220430271405609">Principtester</translation>
-<translation id="6475672344094591109">Webbplatser du besöker kan be Chrome om information som hjälper dem att mäta annonsernas resultat. Chrome skyddar din integritet genom att begränsa informationen som webbplatser kan dela med varandra.</translation>
 <translation id="6476284679642588870">Hantera betalningsmetoder</translation>
 <translation id="647881094269678013">Skådespeleri och teater</translation>
 <translation id="6480864723214312258">Hushållsbatterier</translation>
@@ -4112,7 +4095,6 @@ Mer information.
 <translation id="7507075214339298899">Kuvert nr 9</translation>
 <translation id="7508255263130623398">Enhets-id för returnerad princip är tomt eller matchar inte nuvarande enhets-id</translation>
 <translation id="7508577201115425418">Dokument- och utskriftstjänster</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Så här använder webbplatser denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om saker du gillar i Chrome. Om du till exempel besöker en webbplats om maratonträning kan webbplatsen göra bedömningen att du är intresserad av löparskor. Om du senare besöker en annan webbplats kan den webbplatsen visa en annons för löparskor utifrån den första webbplatsens förslag.</translation>
 <translation id="7510269639068718544">Katter</translation>
 <translation id="7511955381719512146">wifi-nätverket du använder kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Denna princip kan inte vara inställd på Sant och vara obligatorisk. Den har därför ändrats till Rekommenderad.</translation>
@@ -4314,7 +4296,6 @@ Mer information.
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798389633136518089">Ignoreras på grund av att principen inte är inställd via en molnkälla.</translation>
 <translation id="7800304661137206267">Anslutningen är krypterad med <ph name="CIPHER" />, med <ph name="MAC" /> för meddelandeautentisering och <ph name="KX" /> som mekanism för nyckelutbyte.</translation>
-<translation id="7800977246388195491">Chrome registrerar ämnen du är intresserad av baserat på din senaste webbhistorik. Webbplatser du besöker kan också bedöma vad du gillar. Senare kan webbplatser be om denna information för att visa anpassade annonser för dig. Du kan välja vilka ämnen och webbplatser som ska användas för att visa annonser.</translation>
 <translation id="7802523362929240268">Legitim webbplats</translation>
 <translation id="7802989406998618639">Ange den <ph name="NUMBER_OF_DIGITS" />-siffriga säkerhetskoden på <ph name="SIDE_OF_CARD" /> så att banken kan verifiera din identitet</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -4602,7 +4583,6 @@ Mer information.
 <translation id="8279611986089885641">Chrome-aviseringar måste vara aktiverade. Du kan aktivera dem i <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280569545097027381">Radera filer om <ph name="HOURS" /> tim</translation>
 <translation id="8280630997017109758">Fack 11</translation>
-<translation id="8281730697546299650">Andra funktioner för annonsintegritet är nu tillgängliga</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
 <translation id="8282292167096638950">Radera körkort</translation>
 <translation id="8282409409360764263">Trädgårdsunderhåll</translation>
@@ -4717,7 +4697,6 @@ Mer information:
 <translation id="8456775115498700722">Nu kan du fylla i dina <ph name="CARD_ISSUER_NAME" />-kort automatiskt eftersom ditt <ph name="CARD_ISSUER_NAME" />-konto är länkat till Google Pay.</translation>
 <translation id="8457125768502047971">Obestämd</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8460854335417802511">Aktivera</translation>
 <translation id="8461289985785035071">Redigera ditt Redress Number</translation>
 <translation id="8461694314515752532">Kryptera synkroniserad data med en egen lösenfras för synkronisering</translation>
 <translation id="8461973047386722744">Inga lösenord hittades</translation>
@@ -4802,7 +4781,6 @@ Mer information:
 <translation id="8597726363542221027">Begagnade fordon</translation>
 <translation id="8600271352425265729">Bara den här gången</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Vilken data som används:<ph name="END_BOLD" /> Din aktivitet på en webbplats som du besöker i Chrome på den här enheten.</translation>
 <translation id="8601456038554914806">Vattensportsutrustning</translation>
 <translation id="8601782593888534566">Science fiction och fantasy</translation>
 <translation id="8604103095921958091">Användarvillkorsskärmen för Köp nu, betala senare har öppnats över hela skärmen.</translation>
@@ -4914,6 +4892,7 @@ Mer information:
 <translation id="8796062699363039080">Inställningar för <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>
+<translation id="8803526663383843427">När funktionen är aktiverad</translation>
 <translation id="8805819170075074995">Listposten <ph name="LANGUAGE_ID" />: Posten ignorerades eftersom den även ingår i principen SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Teletjänstleverantörer</translation>
 <translation id="8806696968588872703">Plast (satäng)</translation>
@@ -5028,7 +5007,6 @@ Mer information:
 <translation id="9005998258318286617">Det gick inte att läsa in PDF-dokumentet.</translation>
 <translation id="9008201768610948239">Ignorera</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Inga}=1{Från 1 webbplats}other{Från # webbplatser}}</translation>
-<translation id="9014705027639070815">Webbplatser du besöker kan be Chrome om information för att hjälpa dem att mäta annonsernas resultat. Chrome tillåter att webbplatser samlar in begränsade typer av data, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="9018120810758822233">Ange säkerhetskoden för <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-post</translation>
 <translation id="90196294733273307">En dialogruta med kreditkortsuppgifter visades</translation>
@@ -5060,7 +5038,6 @@ Mer information:
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
 <translation id="9051072642122229460">Kaffe- och espressobryggare</translation>
-<translation id="9053840549256861041">Vi lanserar en ny funktion för annonsintegritet som kallas annonsmätning. Chrome delar bara mycket begränsad information mellan webbplatser, till exempel när en annons visades för dig, för att hjälpa webbplatser att mäta annonsernas resultat.</translation>
 <translation id="9053955920216300738">Vilka webbadresser du besöker</translation>
 <translation id="90542379288189611">Registreringsskylt</translation>
 <translation id="9054288282721240609">Handspårning är tillåten</translation>
@@ -5100,7 +5077,6 @@ Mer information:
 <translation id="9114101423898634479">Lägg till ditt Known Traveler Number</translation>
 <translation id="9114524666733003316">Kortet kontrolleras …</translation>
 <translation id="9114581008513152754">Den här webbläsaren hanteras inte av ett företag eller en organisation. Aktiviteter på den här enheten kan hanteras utanför Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="9116548361133462832">Mer om annonser i Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill återuppta sökningen och se relevant aktivitet i Chrome-historiken</translation>
 <translation id="9119042192571987207">Uppladdad</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vill verifiera din identitet</translation>
@@ -5134,8 +5110,6 @@ Mer information:
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> kan ha känsligt innehåll}other{<ph name="FILE_COUNT" /> filer kan ha känsligt innehåll}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Avsluta helskärmsläget genom att trycka på |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack-meddelande</translation>
-<translation id="9165305804774426672">En webbplats du besöker kan också bedöma vad du gillar baserat på din aktivitet på webbplatsen. Om du till exempel besöker en webbplats som säljer löparskor kan webbplatsen göra bedömningen att du är intresserad av att springa maraton.</translation>
-<translation id="9166851138617700776">Mer om föreslagna annonser på webbplatser och annonsmätning</translation>
 <translation id="9167054383925257837">Information om webbläsare och operativsystem (till exempel webbläsar- och operativsystemsversioner)</translation>
 <translation id="9167594211215946097">Ha direktåtkomst till dina skrivare</translation>
 <translation id="9168814207360376865">Tillåt att webbplatser kontrollerar om du har sparade betalningsmetoder</translation>
@@ -5220,7 +5194,6 @@ Mer information:
 <translation id="978750072783101994">Fyll i det här kortet automatiskt vid köp i Chromium när det har sparats i Google Wallet</translation>
 <translation id="979107176848483472">Din webbläsare och profil hanteras av <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Expon och mässor</translation>
-<translation id="979503328401807348">Mer användbara annonser</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="984101218975906499">Läkemedelsindustrin och bioteknik</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>

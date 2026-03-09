@@ -486,7 +486,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1748225549612934682">Paikliin ang iyong text para makatanggap ng tulong sa pagsusulat</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753706481035618306">Numero ng page</translation>
-<translation id="1755203724116202818">Para masukat ang performance ng isang ad, nagshe-share ng mga limitadong uri ng data sa pagitan ng mga site, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="1755621011177747277">Pag-ampon</translation>
 <translation id="1756026472674246267">Buksan ang Link sa Bagong Tab</translation>
 <translation id="1756555787993603971">Puwede ka nang gumamit ng virtual card para mas secure na mag-check out gamit ang autofill.</translation>
@@ -621,7 +620,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1999416967035780066">Freeware at Shareware</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{at 1 pa}one{at # pa}other{at # pa}}</translation>
 <translation id="2001469757375372617">Nagkaproblema. Hindi na-save ang pagbabagong ginawa mo.</translation>
-<translation id="2002436619517051938">Puwede mong baguhin ang mga ito sa mga setting ng Chrome.</translation>
 <translation id="2003709556000175978">I-reset na ang iyong password</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="2009942480257059311">Button na Gumawa ng event, i-activate para mabilis na makagawa ng bagong event sa Google Calendar</translation>
@@ -649,7 +647,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Mga Retailer ng Libro</translation>
 <translation id="2048261947532620704">Isinasalin ang page</translation>
-<translation id="2056658168519009885">Puwedeng humiling ang mga site ng impormasyon sa Chrome para makatulong sa pag-personalize ng mga ad na nakikita mo.</translation>
 <translation id="2059166748188874810">Munisipalidad</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2064568741209980952">Credit at Pagpapautang</translation>
@@ -751,6 +748,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="218940509700321686">Mga Comma-Separated Value</translation>
 <translation id="2191980191135734720">I-unlock ang iyong screen sa susunod na hakbang, karaniwang gamit ang fingerprint mo. Magagawa mo ring <ph name="LINK_TEXT" />.</translation>
+<translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">May nangyaring hindi inaasahan. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga pag-upload sa Drive<ph name="END_LINK" /></translation>
 <translation id="2200678913752027654">Button na thumbs down, pindutin ang Enter para magbukas ng form para sa pagsusumite ng detalyadong feedback kung bakit mo na-dislike ang suhestyong ito</translation>
@@ -1267,7 +1265,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, pindutin ang Tab at pagkatapos ay ang Enter para Alisin ang Suhestyon.</translation>
 <translation id="3019738915977809060">I-save ang boarding pass sa Wallet</translation>
 <translation id="3022959067768579802">Magpatuloy sa pagsusulat</translation>
-<translation id="3023165109041533893">Nakakatulong ang mga ad na iminumungkahi ng site na protektahan ang iyong pagkakakilanlan at history ng pag-browse habang nagbibigay-daan sa mga site na magpakita sa iyo ng mga may kaugnayang ad. Batay sa iyong aktibidad, puwedeng magmungkahi ang site na binisita mo ng mga kaugnay na ad habang patuloy kang nagba-browse. Puwede mong tingnan ang listahan ng mga site na ito at i-block ang mga site na ayaw mo sa mga setting.</translation>
 <translation id="3024663005179499861">Maling uri ng patakaran</translation>
 <translation id="3027915437837548462">Larawang SVG</translation>
 <translation id="3030331669969285614">Pinipigilan o nire-revert ng mga pag-flag na ito ang isang breaking change at magiging available lang ang mga ito sa limitadong panahon.</translation>
@@ -1373,7 +1370,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3180358318770512945">Pagiging magulang</translation>
 <translation id="3182185041786697613">I-save ang panseguridad na code?</translation>
 <translation id="3185635157430775689">Mga Bahagi ng Computer</translation>
-<translation id="3187472288455401631">Pagsukat ng ad</translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="3194737229810486521">Gusto ng <ph name="URL" /> na permanenteng mag-store ng data sa iyong device</translation>
 <translation id="3194765668709099364">Klarna</translation>
@@ -1426,7 +1422,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3261488570342242926">Matuto pa tungkol sa mga virtual card</translation>
 <translation id="3262698603497362968">Mga opsyon sa pagbili</translation>
 <translation id="3264315627780269177">Hindi ma-share ang tab na ito</translation>
-<translation id="3266367459139339908">Maglulunsad kami ng mga bagong paraan para limitahan ang mga bagay na puwedeng malaman ng mga site tungkol sa iyo kapag nagpapakita sila sa iyo ng mga naka-personalize na ad, halimbawa:</translation>
 <translation id="3266793032086590337">Value (hindi tumutugma)</translation>
 <translation id="3268451620468152448">Mga Bukas na Tab</translation>
 <translation id="3270041629388773465">Mas mabilis na mag-check out kapag naka-save ang iyong mga CVC</translation>
@@ -1469,7 +1464,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="333839153442689579">High Intensity Interval Training</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">mga setting</translation>
-<translation id="3342018947887487892">Sa ibang pagkakataon, puwedeng hilingin ng site na binibisita mo ang impormasyong ito — ang iyong mga paksa ng ad o mga ad na iminungkahi ng mga site na binisita mo.</translation>
 <translation id="334438173029876234">Kagamitan sa Skateboarding</translation>
 <translation id="3347146863028219517">Skiing at Snowboarding</translation>
 <translation id="3349610303043713601">Mag-browse gamit ang AI</translation>
@@ -1545,7 +1539,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3462288464915106745"><ph name="CONTEXTUAL_SEARCH_OPEN_LENS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Enter para magtanong sa Google tungkol sa page na ito</translation>
 <translation id="3465972433695735758">Hindi accessible ang PDF na ito. In-extract ang text, pinapagana ng Google AI</translation>
 <translation id="346601286295919445">Chemistry</translation>
-<translation id="3467081767799433066">Sa pagsukat sa ad, nagshe-share ng mga limitadong uri ng data sa pagitan ng mga site para masukat ang performance ng kanilang mga ad, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, kasalukuyang nakabukas, pindutin ang Tab at pagkatapos ay ang Enter para lumipat sa nakabukas na tab</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para isara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>
 <translation id="3472469028191701821">Magbubukas sa bagong tab</translation>
@@ -1668,7 +1661,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3642196846309122856">Subukang i-download ulit ang iyong mga file</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3644768007456662469">Icon na Item ng Mga Pagbabayad</translation>
-<translation id="3646643500201740985">Pagtukoy sa husay ng performance ng ad</translation>
 <translation id="3647286794400715637">Ang bawat entry ng string ng mga url ay dapat na maglaman ng 1 hanggang 2 URL.</translation>
 <translation id="3647400963805615193">Button na I-dismiss ang Tip sa Chrome, pindutin ang Enter para i-dismiss ang <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Matagumpay ang pagpapatunay</translation>
@@ -1697,7 +1689,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3678914302246317895">Ilagay ang code sa pag-verify na may <ph name="OTP_LENGTH" /> (na) digit</translation>
 <translation id="3681007416295224113">Impormasyon sa certificate</translation>
 <translation id="3681191721636073359">Sa tingin ng Chrome ay ayaw mong gamitin ang iyong lokasyon sa site na ito. Kaya naman, naka-hide ang mga request para mabawasan ang mga abala.</translation>
-<translation id="3681421644246505351">Nagtatala ang Chrome ng mga paksa kung saan ka interesado batay sa iyong kamakailang history ng pag-browse.</translation>
 <translation id="3681841880472207951">QuickTime Video</translation>
 <translation id="3682094733650754138">Napili ang opsyong punan ang address</translation>
 <translation id="3687920599421452763">Mga Van at Minivan</translation>
@@ -1839,7 +1830,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3909899182024383590">Ipinapadala sa Google ang naka-save na impormasyon at ang page mula sa <ph name="WEBSITE" /> at puwedeng tingnan ng mga taong tagasuri ang mga ito para pahusayin ang feature na ito.</translation>
 <translation id="3910231615117880630">Matuto pa tungkol sa naka-embed na content</translation>
-<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Paano mo mapapamahalaan ang iyong data:<ph name="END_BOLD" /> Awtomatikong dine-delete ng Chrome ang mga site na mahigit 30 araw na. Posibleng lumabas ulit sa listahan ang site na binisita mo ulit. Puwede ka ring mag-block ng site sa pagmumungkahi ng mga ad para sa iyo at i-off ang mga ad na iminumungkahi ng site anumang oras sa mga setting ng Chrome.</translation>
 <translation id="3921869355029467742">Ilagay ang iyong panseguridad na code</translation>
 <translation id="3927538228901078312">Walang talahanayan sa paghahambing</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -2057,7 +2047,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="422722221769396062">Mga Serbisyo sa Pag-deliver Mula sa Restaurant</translation>
 <translation id="4230204356098880324">Puwedeng hilinging gamitin at igalaw ang iyong camera</translation>
 <translation id="4231448684371260244">8 x 13 in</translation>
-<translation id="4233220688695460165">Awtomatikong nagde-delete ang Chrome ng mga paksa at site na nagmumungkahi ng mga ad sa loob ng 30 araw. O puwede kang mag-block ng mga partikular na paksa at site na ayaw mo.</translation>
 <translation id="4235360514405112390">Wasto</translation>
 <translation id="4239799716689808527">Mga Label</translation>
 <translation id="424063167283213501">I-save ang Known Traveler Number</translation>
@@ -2099,10 +2088,8 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4282346679996504092">Na-off ang mga alerto para sa produktong ito at inalis ang bookmark</translation>
 <translation id="4284885181066817063">Na-block ng <ph name="DOMAIN" /></translation>
 <translation id="4285498937028063278">I-unpin</translation>
-<translation id="4287495839370498922">Pinahusay na privacy sa mga ad sa Chrome</translation>
 <translation id="4288101205645068104">I-delete ang sasakyan</translation>
 <translation id="4290920330097335010">Huwag kailanman payagan</translation>
-<translation id="4296207570293932800">Available na ang bagong feature ng privacy sa mga ad</translation>
 <translation id="4297502707443874121">Thumbnail para sa page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Na-update na ang <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298000214066716287">Pamumuhunan</translation>
@@ -2316,7 +2303,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4682496302933121474">Isalin ang page?</translation>
 <translation id="468314109939257734">Tingnan ang iyong virtual na numero ng card</translation>
 <translation id="4686942373615810936">Kakagawa lang</translation>
-<translation id="4687718960473379118">Mga ad na iminumungkahi ng site</translation>
 <translation id="4690205240253392065">Pumili ng provider ng pay later</translation>
 <translation id="469028408546145398">Button na Isara ang mga Incognito window, i-activate para maisara ang lahat ng Incognito window na kasalukuyang nakabukas</translation>
 <translation id="4691093235373904540">Pag-aayos ng Bubong</translation>
@@ -2499,7 +2485,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4957080528849277028">Button na Tingnan ang iyong history sa Chrome, i-activate para matingnan at mapamahalaan ang history ng pag-browse mo sa mga setting ng Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # na site}}</translation>
 <translation id="4958444002117714549">Palawakin ang listahan</translation>
-<translation id="4960068118612257147">Puwede kang gumawa ng mga pagbabago sa mga setting ng privacy sa ad ng Chrome</translation>
 <translation id="4960203958361543136">Pumili ng Iyong Search Engine</translation>
 <translation id="4961708452830821006">Para gamitin ang iyong mikropono, bigyan ng access ang Chrome sa <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Pagdidisenyo ng Landscape</translation>
@@ -3332,7 +3317,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6292819926564202163">Ang iyong search engine sa Chrome</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
-<translation id="6295855836753816081">Sine-save...</translation>
 <translation id="629730747756840877">Account</translation>
 <translation id="6300452962057769623">{0,plural, =0{Magre-restart na ngayon ang iyong device}=1{Magre-restart ang iyong device pagkalipas ng 1 segundo}one{Magre-restart ang iyong device pagkalipas ng # segundo}other{Magre-restart ang iyong device pagkalipas ng # na segundo}}</translation>
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
@@ -3464,7 +3448,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6472874020827012601">Tela (Matte)</translation>
 <translation id="647330291963761005">Ini-install ang mga update</translation>
 <translation id="6474220430271405609">Mga Pag-test sa Patakaran</translation>
-<translation id="6475672344094591109">Puwedeng humiling ang mga site na binibisita mo ng impormasyon mula sa Chrome na makakatulong sa kanila na sukatin ang performance ng kanilang mga ad. Pinoprotektahan ng Chrome ang iyong privacy sa pamamagitan ng paglilimita sa impormasyong puwedeng i-share ng mga site sa isa't isa.</translation>
 <translation id="6476284679642588870">Pamahalaan ang mga paraan ng pagbabayad</translation>
 <translation id="647881094269678013">Pag-arte at Teatro</translation>
 <translation id="6480864723214312258">Mga Pambahay na Battery</translation>
@@ -4115,7 +4098,6 @@ Mga karagdagang detalye:
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">Walang laman ang ibinalik na device id ng patakaran o hindi ito tumutugma sa kasalukuyang device id</translation>
 <translation id="7508577201115425418">Mga Serbisyo sa Dokumento at Pag-print</translation>
-<translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Paano ginagamit ng mga site ang data na ito:<ph name="END_BOLD" /> Puwedeng mag-store ang mga site ng impormasyon sa Chrome tungkol sa mga bagay na gusto mo. Halimbawa, kung bibisita ka sa isang site tungkol sa marathon training, posibleng tukuyin ng site na interesado ka sa running shoes. Sa ibang pagkakataon, kung bibisita ka sa ibang site, puwedeng magpakita sa iyo ang site na iyon ng ad para sa running shoes na iminungkahi ng unang site.</translation>
 <translation id="7510269639068718544">Mga Pusa</translation>
 <translation id="7511955381719512146">Maaaring hilingin ng Wi-Fi na ginagamit mo na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Hindi puwedeng itakda sa "True" at maging mandatoryo ang patakarang ito, kung kaya naman, ginawa itong inirerekomenda.</translation>
@@ -4317,7 +4299,6 @@ Mga karagdagang detalye:
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7798389633136518089">Binalewala dahil hindi itinakda ng isang cloud source ang patakaran.</translation>
 <translation id="7800304661137206267">Na-encrypt ang koneksyon gamit ang <ph name="CIPHER" />, kasama ang <ph name="MAC" /> para sa pagpapatunay ng mensahe at <ph name="KX" /> bilang mekanismo ng pangunahing pagpapalit.</translation>
-<translation id="7800977246388195491">Nagtatala ang Chrome ng mga paksa kung saan ka interesado batay sa iyong kamakailang history ng pag-browse. Puwede ring tukuyin ng mga site na binibisita mo ang gusto mo. Sa ibang pagkakataon, puwedeng hilingin ng mga site ang impormasyong ito para makapagpakita sa iyo ng mga naka-personalize na ad. Puwede mong piliin kung aling mga paksa at site ang gagamitin para magpakita sa iyo ng mga ad.</translation>
 <translation id="7802523362929240268">Lehitimo ang site</translation>
 <translation id="7802989406998618639">Ilagay ang <ph name="NUMBER_OF_DIGITS" /> (na) digit na panseguridad na code sa <ph name="SIDE_OF_CARD" /> para ma-verify ng iyong bangko na ikaw ito</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -4605,7 +4586,6 @@ Mga karagdagang detalye:
 <translation id="8279611986089885641">Dapat naka-on ang mga notification sa Chrome. Puwede mong i-on ang mga ito sa <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280569545097027381">I-delete ang mga file sa loob ng <ph name="HOURS" /> (na) oras</translation>
 <translation id="8280630997017109758">Tray 11</translation>
-<translation id="8281730697546299650">Available na ang iba pang feature ng privacy sa ad</translation>
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8282292167096638950">I-delete ang lisensya sa pagmamaneho</translation>
 <translation id="8282409409360764263">Maintenance ng Bakuran</translation>
@@ -4721,7 +4701,6 @@ Mga karagdagang detalye:
 <translation id="8456775115498700722">Puwede mo nang i-autofill ang iyong mga <ph name="CARD_ISSUER_NAME" /> card dahil naka-link sa Google Pay ang iyong <ph name="CARD_ISSUER_NAME" /> account.</translation>
 <translation id="8457125768502047971">Walang katiyakan</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8460854335417802511">I-on ito</translation>
 <translation id="8461289985785035071">I-edit ang numero ng pag-redress</translation>
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8461973047386722744">Walang nakitang password</translation>
@@ -4805,7 +4784,6 @@ Mga karagdagang detalye:
 <translation id="8597726363542221027">Mga Gamit Nang Sasakyan</translation>
 <translation id="8600271352425265729">Sa pagkakataong ito lang</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong aktibidad sa site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="8601456038554914806">Kagamitan sa Water Sports</translation>
 <translation id="8601782593888534566">Science Fiction at Fantasy</translation>
 <translation id="8604103095921958091">Nakabukas ang screen ng mga tuntunin ng serbisyo ng Buy-Now-Pay-Later nang sakop ang buong screen.</translation>
@@ -4917,6 +4895,7 @@ Mga karagdagang detalye:
 <translation id="8796062699363039080">Mga setting ng <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8800034312320686233">Hindi gumagana ang site?</translation>
+<translation id="8803526663383843427">Kapag naka-on</translation>
 <translation id="8805819170075074995">Listahan ng entry na "<ph name="LANGUAGE_ID" />": Binalewala ang entry dahil kasama rin ito sa patakarang SpellcheckLanguage.</translation>
 <translation id="8806062468703310719">Mga Service Provider sa Telepono</translation>
 <translation id="8806696968588872703">Plastic (Satin)</translation>
@@ -5031,7 +5010,6 @@ Mga karagdagang detalye:
 <translation id="9005998258318286617">Hindi na-load ang PDF document.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Wala}=1{Mula sa 1 site}one{Mula sa # site}other{Mula sa # na site}}</translation>
-<translation id="9014705027639070815">Puwedeng humingi ang mga site na binibisita mo ng impormasyon mula sa Chrome para matulungan silang sukatin ang performance ng kanilang mga ad. Pinapayagan ng Chrome ang mga site na mangolekta ng mga limitadong uri ng data, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="9018120810758822233">Ilagay ang iyong panseguridad na code para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>
 <translation id="90196294733273307">Ipinakita ang dialog na may mga detalye ng credit card</translation>
@@ -5063,7 +5041,6 @@ Mga karagdagang detalye:
 <translation id="9049981332609050619">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang di-wastong certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9051072642122229460">Mga Coffee at Espresso Maker</translation>
-<translation id="9053840549256861041">Maglulunsad kami ng bagong feature ng privacy sa ad na tinatawag na pagsukat sa ad. Napakalimitado lang ng impormasyong shine-share ng Chrome sa pagitan ng mga site, gaya kapag may ipinakitang ad sa iyo, para matulungan ang mga site na sukatin ang performance ng mga ad.</translation>
 <translation id="9053955920216300738">Kung aling mga URL ang binibisita mo</translation>
 <translation id="90542379288189611">Plaka</translation>
 <translation id="9054288282721240609">Pinapayagan ang pag-track sa kamay</translation>
@@ -5103,7 +5080,6 @@ Mga karagdagang detalye:
 <translation id="9114101423898634479">Magdagdag ng Known Traveler Number</translation>
 <translation id="9114524666733003316">Kinukumpirma ang card...</translation>
 <translation id="9114581008513152754">Hindi pinapamahalaan ng kumpanya o iba pang organisasyon ang browser na ito. Posibleng pinapamahalaan sa labas ng Chrome ang aktibidad sa device na ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
-<translation id="9116548361133462832">Higit pa tungkol sa mga ad sa Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para ipagpatuloy ang iyong paglalakbay para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="9119042192571987207">Na-upload</translation>
 <translation id="9119308212838450857">Gustong i-verify ng <ph name="PROVIDER_ORIGIN" /> na ikaw ito</translation>
@@ -5137,8 +5113,6 @@ Mga karagdagang detalye:
 <translation id="9161794544616754735">{0,plural, =1{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_NAME" />}one{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> file}other{Posibleng naglalaman ng sensitibong content ang <ph name="FILE_COUNT" /> na file}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Para lumabas sa full screen, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Mensahe sa Slack</translation>
-<translation id="9165305804774426672">Puwede ring matukoy ng mga site na binibisita mo ang mga gusto mo batay sa iyong aktibidad sa site. Halimbawa, kung bibisita ka sa isang site na nagbebenta ng long-distance running shoes, posibleng tukuyin ng site na interesado kang tumakbo sa mga marathon.</translation>
-<translation id="9166851138617700776">Higit pa tungkol sa mga ad na iminumungkahi ng site at pagsukat ng ad</translation>
 <translation id="9167054383925257837">Impormasyon ng browser at OS ng device (tulad ng mga bersyon ng browser at OS)</translation>
 <translation id="9167594211215946097">Magkaroon ng direktang access sa mga printer mo</translation>
 <translation id="9168814207360376865">Payagan ang mga site na tingnan kung may mga naka-save kang paraan ng pagbabayad</translation>
@@ -5223,7 +5197,6 @@ Mga karagdagang detalye:
 <translation id="978750072783101994">I-autofill ang card na ito para sa mga pagbiling ginawa sa Chromium kapag na-save ito sa Google Wallet</translation>
 <translation id="979107176848483472">Pinapamahalaan ng <ph name="DOMAIN" /> ang iyong browser at profile</translation>
 <translation id="979189555234810423">Mga Expo at Convention</translation>
-<translation id="979503328401807348">Mga mas kapaki-pakinabang na ad</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="984101218975906499">Mga Parmasyutiko at Biotech</translation>
 <translation id="984275831282074731">Mga paraan ng pagbabayad</translation>

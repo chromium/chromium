@@ -2506,7 +2506,6 @@
 <translation id="2665394472441560184">కొత్త పదాన్ని జోడించండి</translation>
 <translation id="2665647207431876759">గడువు ముగిసింది</translation>
 <translation id="2665919335226618153">అయ్యో! ఫార్మాటింగ్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
-<translation id="2666092431469916601">పైన</translation>
 <translation id="2666247341166669829">ఎడమ వైపు వైర్‌లెస్ బడ్ బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
@@ -2575,7 +2574,6 @@
 <translation id="2714180132046334502">ముదురు నేపథ్యం</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">మోడల్‌లు</translation>
-<translation id="2715293433233060993">ట్యాబ్‌లను పక్కకు తరలించండి</translation>
 <translation id="2715751256863167692">ఈ అప్‌గ్రేడ్ మీ Chromebookను రీసెట్ చేస్తుంది మరియు ప్రస్తుత వినియోగదారు డేటాను తీసివేస్తుంది.</translation>
 <translation id="2715934493766003251">ఫైల్ సింక్ ఆన్‌లో ఉన్నప్పుడు స్టోరేజ్‌ను క్లీన్ చేయడం సాధ్యపడదు</translation>
 <translation id="2716986496990888774">ఈ సెట్టింగ్ తల్లి/తండ్రి ద్వారా నిర్వహించబడింది.</translation>
@@ -3252,7 +3250,6 @@
 <translation id="3167562202484086668">మొత్తం <ph name="BRAND" /> డేటాను తొలగించండి</translation>
 <translation id="3169930038976362151">మీ అవసరాలకు తగిన రూపాన్ని ఎంచుకోండి. మీ రూపాన్ని, వాల్‌పేపర్‌ను, స్క్రీన్ సేవర్‌ను, ఇంకా మరిన్నింటిని మార్చడానికి, డెస్క్‌టాప్‌పై తాకి, నొక్కి ఉంచండి.</translation>
 <translation id="3170072451822350649">మీరు సైన్ ఇన్ చేయడాన్ని కూడా దాట వేయవచ్చు. <ph name="LINK_START" />అతిథిగా బ్రౌజ్ చేయవచ్చు<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">ట్యాబ్‌లను పైకి తరలించండి</translation>
 <translation id="3175067642577044620">విషయం</translation>
 <translation id="3175862692832442091">అడవి</translation>
 <translation id="3176347586396987181">మౌస్ బటన్‌ను నొక్కి పట్టుకోవడానికి “z”ను వినియోగించండి</translation>
@@ -5526,7 +5523,6 @@
 <translation id="4699473989647132421">సముద్రతీరం</translation>
 <translation id="4701025263201366865">తల్లి/తండ్రి సైన్ ఇన్</translation>
 <translation id="4701335814944566468">నిన్న చూశారు</translation>
-<translation id="4702504834785592287">పక్కన</translation>
 <translation id="470644585772471629">కలర్ మార్పిడి</translation>
 <translation id="4707337002099455863">ఎల్లప్పుడూ అన్ని సైట్‌లలో అనుమతించండి</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> నిష్క్రమించండి</translation>
@@ -7219,7 +7215,6 @@
 <translation id="5888889603768021126">దీనితో సైన్ ఇన్ చేశారు</translation>
 <translation id="5889282057229379085">ఇంటర్మీడియట్ CAల అత్యధిక సంఖ్య: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">మీ స్వంత <ph name="BEGIN_LINK" />సింక్ రహస్య పదబంధం<ph name="END_LINK" />తో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి. Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chrome నుండి బ్రౌజింగ్ హిస్టరీ సింక్ చేయబడదు.</translation>
-<translation id="5890072287476934834">ట్యాబ్‌లను పక్కకు తరలించండి</translation>
 <translation id="5891688036610113830">ప్రాధాన్య Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> ఫోల్డర్ ఎంపికను తొలగించండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
@@ -9307,7 +9302,6 @@
 <translation id="7340179705876485790">1 పేజీ కంటే ఎక్కువ వెనుకకు వెళ్లడానికి, వెనుకకు క్లిక్ చేసి అలాగే పట్టుకోండి.</translation>
 <translation id="7340650977506865820">సైట్ మీ స్క్రీన్‌ను షేర్ చేస్తోంది</translation>
 <translation id="7340757554212515731">క్రాష్ రిపోర్ట్‌లు, అలాగే సమస్య విశ్లేషణలు, వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపుతుంది</translation>
-<translation id="7340886226071938450">ట్యాబ్‌ల బార్ పొజిషన్</translation>
 <translation id="734088800888587319">నెట్‌వర్క్ కొలమానాలు</translation>
 <translation id="7341834142292923918">ఈ సైట్‌కు యాక్సెస్ కోరుతోంది</translation>
 <translation id="7343372807593926528">ఫీడ్‌బ్యాక్‌ను పంపేముందు దయచేసి సమస్యను వివరించండి.</translation>
@@ -11310,7 +11304,6 @@
 <translation id="8685540043423825702">మీ Chrome ప్రొఫైల్</translation>
 <translation id="8685882652128627032">సైట్‌ను జోడించండి సెర్చ్ డైలాగ్‌ను తెరవడానికి క్లిక్ చేయండి</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" />‌గా సైన్ ఇన్ చేశారు</translation>
-<translation id="8686578183956518912">ట్యాబ్‌లను పైకి తరలించండి</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" />‌ను రద్దు చేయండి</translation>
 <translation id="8687527282898211955">మీ PINను సెటప్ చేయండి</translation>
 <translation id="8687774873995698516">సురక్షిత కంటెంట్‌ను ప్లే చేయడానికి ఐడెంటిఫయర్‌లను ఉపయోగించకుండా <ph name="HOST" />ను ఎల్లప్పుడూ బ్లాక్ చేయండి</translation>

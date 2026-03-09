@@ -2508,7 +2508,6 @@
 <translation id="2665394472441560184">ເພີ່ມຄໍາ​ສັບ​ໃຫມ່</translation>
 <translation id="2665647207431876759">ໝົດອາຍຸແລ້ວ</translation>
 <translation id="2665919335226618153">ອໍ, ຖ່າຍຮູບ! ມີຄວາມຜິດພາດໃນລະຫວ່າງການຟໍແມັດ.</translation>
-<translation id="2666092431469916601">ດ້ານເທິງ</translation>
 <translation id="2666247341166669829">ລະດັບແບັດເຕີຣີຂ້າງຊ້າຍ <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">ແອັບອື່ນໆຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" /> ແລະ <ph name="APP_NAME_3" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="2667463864537187133">ຈດການການກວດການສະກົດຄຳ</translation>
@@ -2577,7 +2576,6 @@
 <translation id="2714180132046334502">ພື້ນຫຼັງມືດ</translation>
 <translation id="2714393097308983682">ຮ້ານຄ້າ Google Play</translation>
 <translation id="2714617928488200509">ໂມເດວ</translation>
-<translation id="2715293433233060993">ຍ້າຍແຖບໄປທາງຂ້າງ</translation>
 <translation id="2715751256863167692">ການອັບເກຣດນີ້ຣີເຊັດ Chromebook ຂອງທ່ານ ແລະ ລຶບຂໍ້ມູນຜູ້ໃຊ້ປັດຈຸບັນອອກໄປ.</translation>
 <translation id="2715934493766003251">ບໍ່ສາມາດສ້າງພື້ນທີ່ຫວ່າງໄດ້ໃນລະຫວ່າງທີ່ການຊິ້ງໄຟລ໌ເປີດຢູ່</translation>
 <translation id="2716986496990888774">ການຕັ້ງຄ່ານີ້ຖືກຈັດການໂດຍພໍ່ແມ່.</translation>
@@ -3254,7 +3252,6 @@
 <translation id="3167562202484086668">ລຶບຂໍ້ມູນ <ph name="BRAND" /> ທັງໝົດ</translation>
 <translation id="3169930038976362151">ເລືອກຮູບແບບສີສັນທີ່ເໝາະກັບຄວາມຕ້ອງການຂອງທ່ານ. ເພື່ອປ່ຽນຮູບແບບສີສັນ, ຮູບພື້ນຫຼັງ, ພາບພັກໜ້າຈໍ ແລະ ອື່ນໆຂອງທ່ານ, ພຽງແຕະເດັສທັອບຄ້າງໄວ້.</translation>
 <translation id="3170072451822350649">ທ່ານຍັງອາດຈະຂ້າມການລົງຊື່ເຂົ້າ​ໃຊ້ ແລະ <ph name="LINK_START" />ທ່ອງເນັດເປັນແຂກ<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">ຍ້າຍແຖບໄປເທິງສຸດ</translation>
 <translation id="3175067642577044620">ສ່ວນເນື້ອຫາ</translation>
 <translation id="3175862692832442091">ປ່າ</translation>
 <translation id="3176347586396987181">ໃຊ້ປຸ່ມ “z” ເພື່ອກົດປຸ່ມເມົ້າຄ້າງໄວ້</translation>
@@ -5525,7 +5522,6 @@
 <translation id="4699473989647132421">ແຄມຝັ່ງ</translation>
 <translation id="4701025263201366865">ການເຂົ້າສູ່ລະບົບຂອງພໍ່ແມ່</translation>
 <translation id="4701335814944566468">ເບິ່ງແລ້ວມື້ວານນີ້</translation>
-<translation id="4702504834785592287">ດ້ານຂ້າງ</translation>
 <translation id="470644585772471629">ການປີ້ນສີ</translation>
 <translation id="4707337002099455863">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
 <translation id="4708849949179781599">ອອກ <ph name="PRODUCT_NAME" /></translation>
@@ -7217,7 +7213,6 @@
 <translation id="5888889603768021126">ເຂົ້າສູ່ລະບົບດ້ວຍ</translation>
 <translation id="5889282057229379085">ຈໍານວນ CAs ປານກາງສູງສຸດ: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ໄດ້ຊິ້ງດ້ວຍ <ph name="BEGIN_LINK" />ລະຫັດຜ່ານການຊິ້ງ<ph name="END_LINK" /> ຂອງທ່ານ. ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay ຈະບໍ່ໄດ້ຖືກເຂົ້າລະຫັດ. ຈະບໍ່ຊິ້ງປະຫວັດການທ່ອງເວັບຈາກ Chrome.</translation>
-<translation id="5890072287476934834">ຍ້າຍແຖບໄປທາງຂ້າງ</translation>
 <translation id="5891688036610113830">ເຄືອຂ່າຍ Wi-Fi ທີ່ຕ້ອງການ</translation>
 <translation id="5894056653502215961">ເຊົາເລືອກໂຟນເດີ <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
@@ -9303,7 +9298,6 @@
 <translation id="7340179705876485790">ເພື່ອກັບຄືນໄປຫາຫຼາຍກວ່າ 1 ໜ້າ, ໃຫ້ຄລິກກັບຄືນຄ້າງໄວ້.</translation>
 <translation id="7340650977506865820">ເວັບໄຊກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="7340757554212515731">ສົ່ງລາຍງານການຂັດຂ້ອງຮວມທັງການວິນິໄສ ແລະ ຂໍ້ມູນການນຳໃຊ້ໄປໃຫ້ Google ໂດຍອັດຕະໂນມັດ</translation>
-<translation id="7340886226071938450">ຕຳແໜ່ງຂອງລາຍແຖບ</translation>
 <translation id="734088800888587319">ການວັດແທກເຄືອຂ່າຍ</translation>
 <translation id="7341834142292923918">ຕ້ອງການເຂົ້າເຖິງເວັບໄຊນີ້</translation>
 <translation id="7343372807593926528">ກະລຸນາອະທິບາຍບັນຫາກ່ອນທີ່ຈະສົ່ງຄຳຕິຊົມ.</translation>
@@ -11306,7 +11300,6 @@
 <translation id="8685540043423825702">ໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
 <translation id="8685882652128627032">ຄລິກເພື່ອເປີດກ່ອງໂຕ້ຕອບເພີ່ມການຊອກຫາເວັບໄຊ</translation>
 <translation id="8686142379631285985">ເຂົ້າສູ່ລະບົບເປັນ <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">ຍ້າຍແຖບໄປເທິງສຸດ</translation>
 <translation id="8687103160920393343">ຍົກເລີກ <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">ຕັ້ງຄ່າ PIN ຂອງທ່ານ</translation>
 <translation id="8687774873995698516">ບລັອກ <ph name="HOST" /> ບໍ່ໃຫ້ໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງທຸກເທື່ອ</translation>

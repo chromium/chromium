@@ -2505,7 +2505,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2665394472441560184">Добавяне на нова дума</translation>
 <translation id="2665647207431876759">Изтекла валидност</translation>
 <translation id="2665919335226618153">Ужас! При форматирането възникна грешка.</translation>
-<translation id="2666092431469916601">Най-горе</translation>
 <translation id="2666247341166669829">Нивото на батерията на лявата слушалка е <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">За другите приложения е зададено да отварят същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" />.</translation>
 <translation id="2667463864537187133">Управление на проверката на правописа</translation>
@@ -2574,7 +2573,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2714180132046334502">Тъмен фон</translation>
 <translation id="2714393097308983682">Google Play Магазин</translation>
 <translation id="2714617928488200509">Модели</translation>
-<translation id="2715293433233060993">Преместване на разделите отстрани</translation>
 <translation id="2715751256863167692">С тази надстройка ще нулирате настройките на своя Chromebook и ще премахнете текущите потребителски данни.</translation>
 <translation id="2715934493766003251">Изчистването на хранилището не е възможно, докато синхронизирането на файловете е включено</translation>
 <translation id="2716986496990888774">Тази настройка се управлява от родител.</translation>
@@ -3251,7 +3249,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3167562202484086668">Изтриване на всички данни от <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Изберете темата, която отговаря на нуждите ви. За да промените темата, тапета, скрийнсейвъра и др., трябва само да докоснете и да задържите работния плот.</translation>
 <translation id="3170072451822350649">Може също да пропуснете влизането и <ph name="LINK_START" />да сърфирате като гост<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Преместване на разделите в горната част</translation>
 <translation id="3175067642577044620">Основен текст</translation>
 <translation id="3175862692832442091">Гора</translation>
 <translation id="3176347586396987181">Използвайте клавиша z, за да натиснете и задържите бутон на мишката</translation>
@@ -5526,7 +5523,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4699473989647132421">Брегова линия</translation>
 <translation id="4701025263201366865">Влизане в профила на родител</translation>
 <translation id="4701335814944566468">Прегледано вчера</translation>
-<translation id="4702504834785592287">Страна</translation>
 <translation id="470644585772471629">Инвертиране на цветовете</translation>
 <translation id="4707337002099455863">Винаги на всички сайтове</translation>
 <translation id="4708849949179781599">Изход от <ph name="PRODUCT_NAME" /></translation>
@@ -7221,7 +7217,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5888889603768021126">Влезли сте със:</translation>
 <translation id="5889282057229379085">Максимален брой междинни сертифициращи органи: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифроване на синхронизираните данни със собствения ви <ph name="BEGIN_LINK" />пропуск за синхронизиране<ph name="END_LINK" />. Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chrome няма да се синхронизира.</translation>
-<translation id="5890072287476934834">Преместване на разделите отстрани</translation>
 <translation id="5891688036610113830">Предпочитани Wi-Fi мрежи</translation>
 <translation id="5894056653502215961">Премахване на избора от папката „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
@@ -9309,7 +9304,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7340179705876485790">За да се върнете назад с повече от 1 страница, кликнете върху бутона за връщане назад и го задръжте.</translation>
 <translation id="7340650977506865820">Сайтът споделя екрана ви</translation>
 <translation id="7340757554212515731">Автоматично изпращане до Google на сигнали за сривове, диагностична информация и данни за използването</translation>
-<translation id="7340886226071938450">Позиция на лентата с раздели</translation>
 <translation id="734088800888587319">Показатели за мрежата</translation>
 <translation id="7341834142292923918">Иска достъп до този сайт</translation>
 <translation id="7343372807593926528">Моля, опишете проблема, преди да изпратите отзивите</translation>
@@ -11315,7 +11309,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8685540043423825702">Вашият потребителски профил в Chrome</translation>
 <translation id="8685882652128627032">Кликнете, за да отворите диалоговия прозорец за добавяне на функцията за търсене в сайта</translation>
 <translation id="8686142379631285985">Влезли сте като <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Преместване на разделите в горната част</translation>
 <translation id="8687103160920393343">Анулиране на <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Задаване на ПИН кода ви</translation>
 <translation id="8687774873995698516">Използването на идентификатори с цел възпроизвеждане на защитено съдържание да е забранено винаги за <ph name="HOST" /></translation>

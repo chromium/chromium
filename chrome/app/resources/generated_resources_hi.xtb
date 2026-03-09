@@ -2510,7 +2510,6 @@
 <translation id="2665394472441560184">एक नया शब्द जोड़ें</translation>
 <translation id="2665647207431876759">समय खत्म</translation>
 <translation id="2665919335226618153">हे भगवान! फ़ॉर्मेटिंग के दौरान गड़बड़ी आई.</translation>
-<translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2666247341166669829">बाएं वायरलेस बड में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="2667144577800272420">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" /> और <ph name="APP_NAME_3" /> को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="2667463864537187133">स्पेल चेक को मैनेज करें</translation>
@@ -2579,7 +2578,6 @@
 <translation id="2714180132046334502">गहरा बैकग्राउंड</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">मॉडल</translation>
-<translation id="2715293433233060993">टैब को साइड में ले जाएं</translation>
 <translation id="2715751256863167692">यह अपग्रेड (बेहतर बनाना) आपका Chromebook रीसेट कर देता है और मौजूदा 'उपयोगकर्ता डेटा' हटा देता है.</translation>
 <translation id="2715934493766003251">फ़ाइल सिंक करने की सुविधा चालू रहने के दौरान, डिवाइस का स्टोरेज खाली नहीं किया जा सकता</translation>
 <translation id="2716986496990888774">अभिभावक इस सेटिंग को प्रबंधित करते हैं.</translation>
@@ -3256,7 +3254,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" /> का पूरा डेटा मिटाएं</translation>
 <translation id="3169930038976362151">अपनी ज़रूरतों के मुताबिक थीम चुनें. अपनी थीम, वॉलपेपर, स्क्रीन सेवर वगैरह बदलने के लिए, बस डेस्कटॉप पर बटन को दबाकर रखें.</translation>
 <translation id="3170072451822350649">आप प्रवेश करना छोड़ भी सकते हैं और <ph name="LINK_START" />अतिथि के रूप में ब्राउज़<ph name="LINK_END" /> कर सकते हैं.</translation>
-<translation id="3172642937040465677">टैब को सबसे ऊपर ले जाएं</translation>
 <translation id="3175067642577044620">मुख्य हिस्सा</translation>
 <translation id="3175862692832442091">जंगल</translation>
 <translation id="3176347586396987181">माउस बटन को दबाकर रखने के लिए, “z” का इस्तेमाल करें</translation>
@@ -5526,7 +5523,6 @@
 <translation id="4699473989647132421">तटरेखा</translation>
 <translation id="4701025263201366865">माता-पिता साइन इन करें</translation>
 <translation id="4701335814944566468">कल देखा गया</translation>
-<translation id="4702504834785592287">साइड</translation>
 <translation id="470644585772471629">रंग बदलने की सुविधा</translation>
 <translation id="4707337002099455863">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
@@ -7217,7 +7213,6 @@
 <translation id="5888889603768021126">इससे साइन इन किया है</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">सिंक किए गए डेटा को, <ph name="BEGIN_LINK" />सिंक करने से जुड़े अपने लंबे पासवर्ड<ph name="END_LINK" /> से एन्क्रिप्ट (सुरक्षित) करें. Google Pay पर सेव आपके पेमेंट के तरीके और पते, एन्क्रिप्ट (सुरक्षित) नहीं किए जाएंगे. Chrome का ब्राउज़िंग इतिहास सिंक नहीं किया जाएगा.</translation>
-<translation id="5890072287476934834">टैब को साइड में ले जाएं</translation>
 <translation id="5891688036610113830">पसंदीदा वाई-फ़ाई नेटवर्क</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> फ़ोल्डर से चुने हुए का निशान हटाएं</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
@@ -9306,7 +9301,6 @@
 <translation id="7340179705876485790">पिछले पेज से पहले वाले किसी पेज पर जाने के लिए, 'वापस जाएं' पर क्लिक करके रखें.</translation>
 <translation id="7340650977506865820">साइट आपकी स्क्रीन शेयर कर रही है</translation>
 <translation id="7340757554212515731">क्रैश रिपोर्ट, गड़बड़ी की जानकारी, और इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजा जाता है</translation>
-<translation id="7340886226071938450">टैब बार की जगह</translation>
 <translation id="734088800888587319">नेटवर्क मेट्रिक</translation>
 <translation id="7341834142292923918">इस साइट का ऐक्सेस चाहिए</translation>
 <translation id="7343372807593926528">'भेजें' बटन पर क्लिक करने से पहले, समस्या के बारे में बताएं.</translation>
@@ -11310,7 +11304,6 @@
 <translation id="8685540043423825702">आपकी Chrome प्रोफ़ाइल</translation>
 <translation id="8685882652128627032">'साइट खोज जोड़ें' डायलॉग खोलने के लिए क्लिक करें</translation>
 <translation id="8686142379631285985">आपने <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> के तौर पर साइन इन किया है</translation>
-<translation id="8686578183956518912">टैब को सबसे ऊपर ले जाएं</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> रद्द करें</translation>
 <translation id="8687527282898211955">अपना पिन सेट अप करें</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> को आइडेंटिफ़ायर इस्तेमाल करने की अनुमति कभी न दें, ताकि आपको सुरक्षित कॉन्टेंट दिखाया जा सके</translation>

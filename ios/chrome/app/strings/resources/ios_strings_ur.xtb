@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 سائٹ (مطابقت پذیر آلات پر مزید)}other{# سائٹس (مطابقت پذیر آلات پر مزید)}}</translation>
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2876369937070532032">‏آپ کو سیکیورٹی کا خطرہ لاحق ہونے پر، Google کو آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs بھیجتا ہے</translation>
+<translation id="2877733045396505765">‏اس سے اس آلہ اور آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کردہ منتخب معلومات حذف ہو جاتی ہیں۔</translation>
 <translation id="2883151425485251736">ان موضوعات کو دیکھیں اور ان میں ترمیم کریں جنہیں آپ نے اپنے اکاؤنٹ سے چھپایا ہے۔</translation>
 <translation id="288655811176831528">ٹیب بند کریں</translation>
 <translation id="2888631381369839306">قیمت کی ٹریکنگ کی اطلاعات آن ہیں</translation>
@@ -1878,6 +1879,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="775755486779745798">میعاد کے اختتام کا ماہ <ph name="MONTH" /> آٹو فل کریں</translation>
 <translation id="7758789811447313947">بیگنی تھیم</translation>
 <translation id="7759809451544302770">اختیاری</translation>
+<translation id="7763878244904387570">اس سے اس آلہ پر محفوظ کردہ منتخب معلومات حذف ہو جاتی ہیں۔</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7772948288262733182">پھر سے خوش آمدید</translation>

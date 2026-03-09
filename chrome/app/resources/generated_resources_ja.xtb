@@ -2490,7 +2490,6 @@
 <translation id="2665394472441560184">新しい単語を追加</translation>
 <translation id="2665647207431876759">期限切れ</translation>
 <translation id="2665919335226618153">フォーマット中にエラーが発生しました。</translation>
-<translation id="2666092431469916601">上部</translation>
 <translation id="2666247341166669829">左のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
 <translation id="2667463864537187133">スペルチェックの管理</translation>
@@ -2559,7 +2558,6 @@
 <translation id="2714180132046334502">暗い背景</translation>
 <translation id="2714393097308983682">Google Play ストア</translation>
 <translation id="2714617928488200509">モデル</translation>
-<translation id="2715293433233060993">タブを横に移動</translation>
 <translation id="2715751256863167692">このアップグレードを行うと、Chromebook がリセットされ、現在のユーザーデータは削除されます。</translation>
 <translation id="2715934493766003251">ファイルの同期がオンになっている間はストレージをクリーンアップできません</translation>
 <translation id="2716986496990888774">この設定は保護者によって管理されています。</translation>
@@ -3236,7 +3234,6 @@
 <translation id="3167562202484086668"><ph name="BRAND" />のデータをすべて削除</translation>
 <translation id="3169930038976362151">ニーズに合ったテーマを選択します。テーマ、壁紙、スクリーンセーバーなどを変更するには、デスクトップを長押しします。</translation>
 <translation id="3170072451822350649">ログインせずに<ph name="LINK_START" />ゲストとしてブラウジング<ph name="LINK_END" />することもできます。</translation>
-<translation id="3172642937040465677">タブを一番上に移動</translation>
 <translation id="3175067642577044620">本文</translation>
 <translation id="3175862692832442091">森</translation>
 <translation id="3176347586396987181">Z　キーを使用してマウスボタンを長押しする</translation>
@@ -5502,7 +5499,6 @@
 <translation id="4699473989647132421">海岸線</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
 <translation id="4701335814944566468">昨日表示</translation>
-<translation id="4702504834785592287">側面</translation>
 <translation id="470644585772471629">色反転</translation>
 <translation id="4707337002099455863">すべてのサイトで常に許可</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
@@ -7190,7 +7186,6 @@
 <translation id="5888889603768021126">ログインに使用した ID プロバイダ</translation>
 <translation id="5889282057229379085">中間認証局の最大数: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">同期データを<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化します。Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。</translation>
-<translation id="5890072287476934834">タブを横に移動</translation>
 <translation id="5891688036610113830">優先 Wi-Fi ネットワーク</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> フォルダの選択を解除する</translation>
 <translation id="5895138241574237353">再起動</translation>
@@ -9275,7 +9270,6 @@
 <translation id="7340179705876485790">いくつか前のページに戻るには、「戻る」を長押しします。</translation>
 <translation id="7340650977506865820">サイトで画面が共有されています</translation>
 <translation id="7340757554212515731">障害レポート、診断データ、使用状況データを自動的に Google に送信します</translation>
-<translation id="7340886226071938450">タブバーの位置</translation>
 <translation id="734088800888587319">ネットワーク指標</translation>
 <translation id="7341834142292923918">このサイトへのアクセス許可が必要です</translation>
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
@@ -11279,7 +11273,6 @@
 <translation id="8685540043423825702">自分の Chrome プロフィール</translation>
 <translation id="8685882652128627032">クリックすると [サイト内検索を追加] ダイアログが開きます</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> としてログインしています</translation>
-<translation id="8686578183956518912">タブを一番上に移動</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> をキャンセル</translation>
 <translation id="8687527282898211955">PIN の設定</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> による識別子の使用と保護されたコンテンツの再生を常にブロックする</translation>

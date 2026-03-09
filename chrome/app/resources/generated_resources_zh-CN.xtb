@@ -2488,7 +2488,6 @@
 <translation id="2665394472441560184">添加新字词</translation>
 <translation id="2665647207431876759">已过期</translation>
 <translation id="2665919335226618153">糟糕！格式化过程中出现错误。</translation>
-<translation id="2666092431469916601">顶部</translation>
 <translation id="2666247341166669829">左侧耳机的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />和<ph name="APP_NAME_3" />打开受支持的链接。</translation>
 <translation id="2667463864537187133">管理拼写检查</translation>
@@ -2557,7 +2556,6 @@
 <translation id="2714180132046334502">深色背景</translation>
 <translation id="2714393097308983682">Google Play 商店</translation>
 <translation id="2714617928488200509">模型</translation>
-<translation id="2715293433233060993">将标签页移至侧边</translation>
 <translation id="2715751256863167692">此项升级操作会重置您 Chromebook 的硬件并移除当前的用户数据。</translation>
 <translation id="2715934493766003251">正在同步文件，无法清理存储空间</translation>
 <translation id="2716986496990888774">此设置由家长管理。</translation>
@@ -3234,7 +3232,6 @@
 <translation id="3167562202484086668">删除所有 <ph name="BRAND" />数据</translation>
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
-<translation id="3172642937040465677">将标签页移至顶部</translation>
 <translation id="3175067642577044620">正文</translation>
 <translation id="3175862692832442091">森林</translation>
 <translation id="3176347586396987181">按下“z”键表示按住鼠标按键</translation>
@@ -5502,7 +5499,6 @@
 <translation id="4699473989647132421">海岸线</translation>
 <translation id="4701025263201366865">家长登录</translation>
 <translation id="4701335814944566468">昨天看过</translation>
-<translation id="4702504834785592287">侧边</translation>
 <translation id="470644585772471629">颜色反转</translation>
 <translation id="4707337002099455863">在所有网站上始终允许</translation>
 <translation id="4708849949179781599">退出<ph name="PRODUCT_NAME" /></translation>
@@ -7191,7 +7187,6 @@
 <translation id="5888889603768021126">所用登录身份</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">使用您自己的<ph name="BEGIN_LINK" />同步口令<ph name="END_LINK" />加密已同步的数据。Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。</translation>
-<translation id="5890072287476934834">将标签页移至侧边</translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5894056653502215961">取消选择“<ph name="FOLDER_TITLE" />”文件夹</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -9277,7 +9272,6 @@
 <translation id="7340179705876485790">若要返回到多个页面，请点击并按住“返回”。</translation>
 <translation id="7340650977506865820">该网站正在共享您的屏幕</translation>
 <translation id="7340757554212515731">自动向 Google 发送崩溃报告以及诊断数据和使用情况数据</translation>
-<translation id="7340886226071938450">标签栏位置</translation>
 <translation id="734088800888587319">网络指标</translation>
 <translation id="7341834142292923918">想要访问此网站</translation>
 <translation id="7343372807593926528">请先阐明问题，然后再发送反馈。</translation>
@@ -11282,7 +11276,6 @@
 <translation id="8685540043423825702">您的 Chrome 个人资料</translation>
 <translation id="8685882652128627032">点击即可打开“添加网站搜索引擎”对话框</translation>
 <translation id="8686142379631285985">目前登录的账号是 <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">将标签页移至顶部</translation>
 <translation id="8687103160920393343">取消下载 <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">设置 PIN 码</translation>
 <translation id="8687774873995698516">始终禁止 <ph name="HOST" /> 使用标识符播放受保护内容</translation>

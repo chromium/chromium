@@ -2493,7 +2493,6 @@
 <translation id="2665394472441560184">Жаңа сөз қосу</translation>
 <translation id="2665647207431876759">Мерзімі өтті</translation>
 <translation id="2665919335226618153">Қап! Пішімдеу кезінде қате пайда болды.</translation>
-<translation id="2666092431469916601">Жоғары</translation>
 <translation id="2666247341166669829">Сол құлақаспаптың батарея деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданбалар да аша алатын болып реттелді. <ph name="APP_NAME_2" /> және <ph name="APP_NAME_3" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
 <translation id="2667463864537187133">Орфографиялық сөздікті басқару</translation>
@@ -2562,7 +2561,6 @@
 <translation id="2714180132046334502">Қараңғы фон</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Модельдер</translation>
-<translation id="2715293433233060993">Қойындыларды бүйірге қарай жылжыту</translation>
 <translation id="2715751256863167692">Бұл жаңартуда Chromebook құрылғысы бастапқы күйіне қайтарылып, ағымдағы пайдаланушы деректері өшіріледі.</translation>
 <translation id="2715934493766003251">Файлды синхрондау қосулы кезде жадты тазалау мүмкін емес</translation>
 <translation id="2716986496990888774">Бұл параметрді ата-ана басқарады.</translation>
@@ -3239,7 +3237,6 @@
 <translation id="3167562202484086668">Барлық <ph name="BRAND" /> дерегін жою</translation>
 <translation id="3169930038976362151">Қажеттіліктеріңізге сай режимді таңдаңыз. Режимді, тұсқағазды, скринсейверді өзгерту және т. б. әрекеттерді орындау үшін жұмыс үстелінде белгілі бір жерді басып тұрыңыз.</translation>
 <translation id="3170072451822350649">Сонымен қатар жүйеге кіруді өткізіп жіберіп, <ph name="LINK_START" />Қонақ ретінде шолуыңызға<ph name="LINK_END" /> болады.</translation>
-<translation id="3172642937040465677">Қойындыларды жоғарыға жылжыту</translation>
 <translation id="3175067642577044620">Негізгі мәтін</translation>
 <translation id="3175862692832442091">Орман</translation>
 <translation id="3176347586396987181">Тінтуір түймесін басып тұру үшін "z" пернесін басыңыз.</translation>
@@ -5508,7 +5505,6 @@
 <translation id="4699473989647132421">Жағалық сызық</translation>
 <translation id="4701025263201366865">Ата-ананың жүйеге кіруі</translation>
 <translation id="4701335814944566468">Кеше көрілген.</translation>
-<translation id="4702504834785592287">Бүйірлік</translation>
 <translation id="470644585772471629">Түс инверсиясы</translation>
 <translation id="4707337002099455863">Әрдайым барлық сайтта</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> жүйесінен шығу</translation>
@@ -7197,7 +7193,6 @@
 <translation id="5888889603768021126">Кіруге қолданылды:</translation>
 <translation id="5889282057229379085">Аралық CA сертификаттарының максималды саны: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Синхрондалған деректерді өзіңіздің <ph name="BEGIN_LINK" />синхрондау құпия фразаңызбен<ph name="END_LINK" /> шифрлаңыз. Google Pay қызметіндегі төлеу әдістері мен мекенжайлары шифрланбайды. Chrome-ның браузерді қолдану тарихы синхрондалмайды.</translation>
-<translation id="5890072287476934834">Қойындыларды бүйірге жылжыту</translation>
 <translation id="5891688036610113830">Қалаған Wi-Fi желілері</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> қалтасын таңдаудан бас тарту</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -9282,7 +9277,6 @@
 <translation id="7340179705876485790">1-ден аса бет артқа оралу үшін "Артқа" түймесін басып тұрыңыз.</translation>
 <translation id="7340650977506865820">Сайт экраныңызды бөлісуде</translation>
 <translation id="7340757554212515731">Жаңылыс туралы есептерді, сондай-ақ диагностика және пайдалану туралы деректі Google-ға автоматты түрде жібереді.</translation>
-<translation id="7340886226071938450">Қойындылар жолағының орны</translation>
 <translation id="734088800888587319">Желі көрсеткіштері</translation>
 <translation id="7341834142292923918">Осы сайтқа кіргісі келеді</translation>
 <translation id="7343372807593926528">Пікір жіберер алдында мәселені сипаттап жазыңыз.</translation>
@@ -11285,7 +11279,6 @@
 <translation id="8685540043423825702">Chrome профиліңіз</translation>
 <translation id="8685882652128627032">Жаңа сайттан іздеу механизмін қосу диалогтік терезесін ашу үшін басыңыз</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> ретінде кірдіңіз</translation>
-<translation id="8686578183956518912">Қойындыларды үстіге қарай жылжыту</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> файлынан бас тарту</translation>
 <translation id="8687527282898211955">PIN кодын реттеңіз</translation>
 <translation id="8687774873995698516"><ph name="HOST" /> сайтын қорғалған контентті ойнату үшін идентификаторларды пайдаланудан үнемі блоктау</translation>

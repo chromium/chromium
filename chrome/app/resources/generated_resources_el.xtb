@@ -2509,7 +2509,6 @@
 <translation id="2665394472441560184">Προσθήκη νέας λέξης</translation>
 <translation id="2665647207431876759">Έληξε</translation>
 <translation id="2665919335226618153">Ώχ! Κάτι πήγε στραβά! Παρουσιάστηκε ένα σφάλμα κατά τη μορφοποίηση.</translation>
-<translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2666247341166669829">Επίπεδο μπαταρίας αριστερού ακουστικού <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Άλλες εφαρμογές έχουν ρυθμιστεί να ανοίγουν τους ίδιους συνδέσμους με την εφαρμογή <ph name="APP_NAME" />. Με αυτή την ενέργεια, οι εφαρμογές <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> δεν θα μπορούν να ανοίγουν τους υποστηριζόμενους συνδέσμους.</translation>
 <translation id="2667463864537187133">Διαχείριση ορθογραφικού ελέγχου</translation>
@@ -2578,7 +2577,6 @@
 <translation id="2714180132046334502">Σκούρο φόντο</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2714617928488200509">Μοντέλα</translation>
-<translation id="2715293433233060993">Μετακίνηση καρτελών στο πλάι</translation>
 <translation id="2715751256863167692">Με αυτή την αναβάθμιση, γίνεται επαναφορά του Chromebook και καταργούνται τα τρέχοντα δεδομένα χρήστη.</translation>
 <translation id="2715934493766003251">Δεν είναι δυνατή εκκαθάριση του αποθηκευτικού χώρου όταν είναι ενεργοποιημένος ο συγχρονισμός αρχείων</translation>
 <translation id="2716986496990888774">Αυτή η ρύθμιση είναι διαχειριζόμενη από κάποιον γονέα.</translation>
@@ -3255,7 +3253,6 @@
 <translation id="3167562202484086668">Διαγραφή όλων των δεδομένων του <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Επιλέξτε το θέμα που καλύπτει τις ανάγκες σας. Για να αλλάξετε το θέμα, την ταπετσαρία, την προφύλαξη οθόνης και άλλα, απλώς αγγίξτε παρατεταμένα την επιφάνεια εργασίας.</translation>
 <translation id="3170072451822350649">Μπορείτε επίσης να παραλείψετε τη σύνδεση και να <ph name="LINK_START" />πραγματοποιήσετε περιήγηση ως Επισκέπτης<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Μετακίνηση καρτελών στο επάνω μέρος</translation>
 <translation id="3175067642577044620">Σώμα</translation>
 <translation id="3175862692832442091">Δάσος</translation>
 <translation id="3176347586396987181">Χρησιμοποιήστε το πλήκτρο "z" για να πατήσετε παρατεταμένα ένα κουμπί του ποντικιού</translation>
@@ -5529,7 +5526,6 @@
 <translation id="4699473989647132421">Ακτογραμμή</translation>
 <translation id="4701025263201366865">Γονική σύνδεση</translation>
 <translation id="4701335814944566468">Προβλήθηκε χθες</translation>
-<translation id="4702504834785592287">Πλευρά</translation>
 <translation id="470644585772471629">Αντιστροφή χρωμάτων</translation>
 <translation id="4707337002099455863">Πάντα σε όλους τους ιστοτόπους</translation>
 <translation id="4708849949179781599">Έξοδος από το <ph name="PRODUCT_NAME" /></translation>
@@ -7224,7 +7220,6 @@
 <translation id="5888889603768021126">Σε σύνδεση με</translation>
 <translation id="5889282057229379085">Μέγιστος αριθμός ενδιάμεσων CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" />. Οι τρόποι και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.</translation>
-<translation id="5890072287476934834">Μετακίνηση καρτελών στο πλάι</translation>
 <translation id="5891688036610113830">Προτιμώμενα δίκτυα Wi-Fi</translation>
 <translation id="5894056653502215961">Αποεπιλογή φακέλου <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
@@ -9312,7 +9307,6 @@
 <translation id="7340179705876485790">Για μετάβαση προς τα πίσω σε περισσότερες από 1 σελίδες, κάντε παρατεταμένο κλικ στο κουμπί Πίσω.</translation>
 <translation id="7340650977506865820">Ο ιστότοπος μοιράζεται την οθόνη σας</translation>
 <translation id="7340757554212515731">Στέλνει αυτόματα στην Google αναφορές σφαλμάτων, καθώς και διαγνωστικά στοιχεία και δεδομένα χρήσης</translation>
-<translation id="7340886226071938450">Θέση γραμμής καρτελών</translation>
 <translation id="734088800888587319">Μετρήσεις δικτύου</translation>
 <translation id="7341834142292923918">Ζητάει πρόσβαση σε αυτόν τον ιστότοπο</translation>
 <translation id="7343372807593926528">Περιγράψτε το πρόβλημα προτού στείλετε τα σχόλιά σας.</translation>
@@ -11318,7 +11312,6 @@
 <translation id="8685540043423825702">Το προφίλ σας στο Chrome</translation>
 <translation id="8685882652128627032">Κάντε κλικ για να ανοίξετε το παράθυρο διαλόγου "Προσθήκη αναζήτησης ιστότοπου"</translation>
 <translation id="8686142379631285985">Έχετε συνδεθεί ως <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Μετακίνηση καρτελών στο επάνω μέρος</translation>
 <translation id="8687103160920393343">Ακύρωση <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Ρυθμίστε το PIN σας</translation>
 <translation id="8687774873995698516">Να μην επιτρέπεται ποτέ στον ιστότοπο <ph name="HOST" /> να χρησιμοποιεί αναγνωριστικά για την αναπαραγωγή προστατευμένου περιεχομένου</translation>

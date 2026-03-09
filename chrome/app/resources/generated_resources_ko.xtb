@@ -2511,7 +2511,6 @@
 <translation id="2665394472441560184">새 단어 추가</translation>
 <translation id="2665647207431876759">만료됨</translation>
 <translation id="2665919335226618153">포맷 중에 오류가 발생했습니다.</translation>
-<translation id="2666092431469916601">상단</translation>
 <translation id="2666247341166669829">왼쪽 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="2667463864537187133">맞춤법 검사 관리</translation>
@@ -2580,7 +2579,6 @@
 <translation id="2714180132046334502">어두운 배경</translation>
 <translation id="2714393097308983682">Google Play 스토어</translation>
 <translation id="2714617928488200509">모델</translation>
-<translation id="2715293433233060993">탭을 측면으로 이동</translation>
 <translation id="2715751256863167692">이 업그레이드를 설치하면 Chromebook이 재설정되며, 현재 사용자 데이터가 삭제됩니다.</translation>
 <translation id="2715934493766003251">파일 동기화가 사용 설정되어 있는 동안에는 스토리지를 정리할 수 없습니다.</translation>
 <translation id="2716986496990888774">보호자가 관리하는 설정입니다.</translation>
@@ -3257,7 +3255,6 @@
 <translation id="3167562202484086668">모든 <ph name="BRAND" /> 데이터 삭제</translation>
 <translation id="3169930038976362151">나에게 적합한 테마를 선택하세요. 바탕화면에서 길게 터치하면 테마, 배경화면, 화면 보호기 등을 변경할 수 있습니다.</translation>
 <translation id="3170072451822350649">로그인을 건너뛰고 <ph name="LINK_START" />게스트로 로그인<ph name="LINK_END" />할 수도 있습니다.</translation>
-<translation id="3172642937040465677">탭을 상단으로 이동</translation>
 <translation id="3175067642577044620">본문</translation>
 <translation id="3175862692832442091">숲</translation>
 <translation id="3176347586396987181">마우스 버튼을 길게 누르려면 'z' 키를 사용하세요.</translation>
@@ -5527,7 +5524,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4699473989647132421">해안선</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
 <translation id="4701335814944566468">어제 확인함</translation>
-<translation id="4702504834785592287">사이드</translation>
 <translation id="470644585772471629">색상 반전</translation>
 <translation id="4707337002099455863">항상 모든 사이트에서 사용</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
@@ -7220,7 +7216,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5888889603768021126">다음을 사용하여 로그인함</translation>
 <translation id="5889282057229379085">중간 인증기관(CA)의 최대 개수: <ph name="NUM_INTERMEDIATE_CA" />개</translation>
 <translation id="5889629805140803638">나만의 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />로 동기화 데이터를 암호화합니다. Google Pay 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.</translation>
-<translation id="5890072287476934834">탭을 측면으로 이동</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
 <translation id="5894056653502215961"><ph name="FOLDER_TITLE" /> 폴더 선택 해제</translation>
 <translation id="5895138241574237353">다시 시작</translation>
@@ -9307,7 +9302,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7340179705876485790">두 개 이상의 페이지로 돌아가려면 뒤로를 길게 클릭하세요.</translation>
 <translation id="7340650977506865820">사이트에서 화면을 공유하고 있습니다.</translation>
 <translation id="7340757554212515731">진단 및 사용 데이터와 함께 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
-<translation id="7340886226071938450">탭 표시줄 위치</translation>
 <translation id="734088800888587319">네트워크 측정항목</translation>
 <translation id="7341834142292923918">이 사이트의 액세스 권한이 필요합니다.</translation>
 <translation id="7343372807593926528">의견을 보내기 전에 문제를 설명해 주세요.</translation>
@@ -11312,7 +11306,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8685540043423825702">내 Chrome 프로필</translation>
 <translation id="8685882652128627032">클릭하여 사이트 검색 추가 대화상자 열기</translation>
 <translation id="8686142379631285985"><ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /> 계정으로 로그인되었습니다.</translation>
-<translation id="8686578183956518912">탭을 상단으로 이동</translation>
 <translation id="8687103160920393343"><ph name="FILE_NAME" /> 다운로드 취소</translation>
 <translation id="8687527282898211955">PIN을 설정하세요</translation>
 <translation id="8687774873995698516"><ph name="HOST" />에서 보호된 콘텐츠를 재생하기 위해 식별자를 사용하지 못하도록 항상 차단</translation>

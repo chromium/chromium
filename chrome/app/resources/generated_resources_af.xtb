@@ -2509,7 +2509,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2665394472441560184">Voeg 'n nuwe woord by</translation>
 <translation id="2665647207431876759">Verval</translation>
 <translation id="2665919335226618153">Ai tog! Kon nie formateer nie.</translation>
-<translation id="2666092431469916601">Top</translation>
 <translation id="2666247341166669829">Linkerbatteryvlak <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Ander programme is gestel om dieselfde skakels oop te maak as <ph name="APP_NAME" />. Dit sal <ph name="APP_NAME_2" /> en <ph name="APP_NAME_3" /> deaktiveer sodat hulle nie gesteunde skakels kan oopmaak nie.</translation>
 <translation id="2667463864537187133">Bestuur speltoets</translation>
@@ -2578,7 +2577,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2714180132046334502">Donker agtergrond</translation>
 <translation id="2714393097308983682">Google Play Winkel</translation>
 <translation id="2714617928488200509">Modelle</translation>
-<translation id="2715293433233060993">Skuif oortjies na die kant</translation>
 <translation id="2715751256863167692">Hierdie opgradering stel jou Chromebook terug en verwyder huidige gebruikerdata.</translation>
 <translation id="2715934493766003251">Kan nie berging opruim terwyl lêersinkronisering aan is nie</translation>
 <translation id="2716986496990888774">'n Ouer bestuur hierdie instelling.</translation>
@@ -3255,7 +3253,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3167562202484086668">Vee alle <ph name="BRAND" />-data uit</translation>
 <translation id="3169930038976362151">Kies die tema wat by jou behoeftes pas. Raak en hou eenvoudig op die werkskerm om jou tema, muurpapier, sluimerskerm en meer te verander.</translation>
 <translation id="3170072451822350649">Jy kan ook aanmelding oorslaan en <ph name="LINK_START" />as 'n gas blaai<ph name="LINK_END" />.</translation>
-<translation id="3172642937040465677">Skuif oortjies na die bokant</translation>
 <translation id="3175067642577044620">Teksinhoud</translation>
 <translation id="3175862692832442091">Woud</translation>
 <translation id="3176347586396987181">Gebruik “z” om ’n muisknoppie te druk en hou</translation>
@@ -5526,7 +5523,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4699473989647132421">Kuslyn</translation>
 <translation id="4701025263201366865">Oueraanmelding</translation>
 <translation id="4701335814944566468">Gister bekyk</translation>
-<translation id="4702504834785592287">Kant</translation>
 <translation id="470644585772471629">Kleuromkering</translation>
 <translation id="4707337002099455863">Altyd op alle werwe</translation>
 <translation id="4708849949179781599">Maak <ph name="PRODUCT_NAME" /> toe</translation>
@@ -7220,7 +7216,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5888889603768021126">Aangemeld met</translation>
 <translation id="5889282057229379085">Maksimum getal intermediêre CA's: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Enkripteer gesinkroniseerde data met jou eie <ph name="BEGIN_LINK" />sinkroniseringwagfrase<ph name="END_LINK" />. Betaalmetodes en -adresse van Google Pay af sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.</translation>
-<translation id="5890072287476934834">Skuif oortjies na die kant</translation>
 <translation id="5891688036610113830">Voorkeur-Wi-Fi-netwerke</translation>
 <translation id="5894056653502215961">Ontkies vouer <ph name="FOLDER_TITLE" /></translation>
 <translation id="5895138241574237353">Herbegin</translation>
@@ -9306,7 +9301,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7340179705876485790">Klik en hou Terug om meer as 1 bladsy terug te gaan.</translation>
 <translation id="7340650977506865820">Werf deel tans jou skerm</translation>
 <translation id="7340757554212515731">Stuur omvalverslae, asook diagnostiese en gebruiksdata outomaties na Google toe.</translation>
-<translation id="7340886226071938450">Oortjiestrookposisie</translation>
 <translation id="734088800888587319">Netwerkmaatstawwe</translation>
 <translation id="7341834142292923918">Wil toegang tot hierdie werf hê</translation>
 <translation id="7343372807593926528">Beskryf asseblief die probleem voordat jy terugvoer stuur.</translation>
@@ -11310,7 +11304,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8685540043423825702">Jou Chrome-profiel</translation>
 <translation id="8685882652128627032">Klik om Voeg Webwerfsoektog By-dialoog oop te maak</translation>
 <translation id="8686142379631285985">Aangemeld as <ph name="BEGIN_BOLD" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="END_BOLD" /></translation>
-<translation id="8686578183956518912">Skuif oortjies na die bokant</translation>
 <translation id="8687103160920393343">Kanselleer <ph name="FILE_NAME" /></translation>
 <translation id="8687527282898211955">Stel jou PIN op</translation>
 <translation id="8687774873995698516">Keer altyd <ph name="HOST" /> om identifiseerders te gebruik om beskermde inhoud te speel</translation>
