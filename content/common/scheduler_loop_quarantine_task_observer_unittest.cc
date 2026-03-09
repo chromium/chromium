@@ -12,6 +12,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
@@ -102,6 +103,16 @@ TEST_F(SchedulerLoopQuarantineTaskObserverTest, QuarantinePausesBetweenTasks) {
   auto slq_task_observer =
       std::make_unique<SchedulerLoopQuarantineTaskObserver>();
   base::CurrentThread::Get().AddTaskObserver(slq_task_observer.get());
+  // We always install the observer so that we can test the feature regardless
+  // of if the observer feature is installed or not, but if it is installed the
+  // TaskEnvironment will have one additional paused count (functionally the
+  // same behaviour though).
+  const int kExpectedPausedCount =
+      base::FeatureList::IsEnabled(
+          features::
+              kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread)
+          ? 2
+          : 1;
 
   // Initially the branch isn't paused and no tasks are pending, this is just
   // ensuring consistent starting state.
@@ -123,10 +134,10 @@ TEST_F(SchedulerLoopQuarantineTaskObserverTest, QuarantinePausesBetweenTasks) {
     // During this test the PausedCount should decrease and the expectation
     // above will be tested.
     loop.Run();
-    // After the task the PausedCount should be 1 again, since we want to
-    // exclude in-between tasks.
+    // After the task the PausedCount should be incremented again, since we want
+    // to exclude in-between tasks.
     EXPECT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
-    EXPECT_EQ(1, branch.PausedCount());
+    EXPECT_EQ(kExpectedPausedCount, branch.PausedCount());
   }
 
   // Now we check again since the first time it was zero before the task.
@@ -138,12 +149,12 @@ TEST_F(SchedulerLoopQuarantineTaskObserverTest, QuarantinePausesBetweenTasks) {
           loop.Quit();
         }));
 
-    EXPECT_EQ(1, branch.PausedCount());
+    EXPECT_EQ(kExpectedPausedCount, branch.PausedCount());
     EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
     // Again during this test the PausedCount should decrease.
     loop.Run();
-    // After the task the PausedCount should be 1 again.
-    EXPECT_EQ(1, branch.PausedCount());
+    // After the task the PausedCount should be incremented again.
+    EXPECT_EQ(kExpectedPausedCount, branch.PausedCount());
     EXPECT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
   }
   // Clean up the observer to prevent dangling references.
