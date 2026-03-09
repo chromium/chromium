@@ -396,52 +396,83 @@ TemplateURL* FindURLByPrepopulateID(
   return nullptr;
 }
 
-void MergeIntoEngineData(const TemplateURL* original_turl,
-                         TemplateURLData* url_to_update,
+void MergeIntoEngineData(const TemplateURLData& original_turl,
+                         TemplateURLData& data_to_update,
                          TemplateURLMergeOption merge_option) {
-  DCHECK(original_turl->prepopulate_id() == 0 ||
-         original_turl->prepopulate_id() == url_to_update->prepopulate_id ||
-         merge_option == TemplateURLMergeOption::kSplitPrepopulatedEntry);
-  DCHECK(original_turl->starter_pack_id() ==
-             template_url_starter_pack_data::StarterPackId::kNone ||
-         static_cast<int>(original_turl->starter_pack_id()) ==
-             url_to_update->starter_pack_id);
-  // When the user modified search engine's properties or search engine is
-  // imported from regulatory extensions we need to preserve certain search
-  // engine properties from overriding with prepopulated data.
-  bool preserve_user_edits =
-      merge_option != TemplateURLMergeOption::kOverwriteUserEdits &&
-      (!original_turl->safe_for_autoreplace() ||
-       original_turl->CreatedByRegulatoryProgram());
-  if (preserve_user_edits) {
-    url_to_update->safe_for_autoreplace = original_turl->safe_for_autoreplace();
-    url_to_update->SetShortName(original_turl->short_name());
-    url_to_update->SetKeyword(original_turl->keyword());
-    if (original_turl->CreatedByRegulatoryProgram()) {
+  bool is_id_migration =
+      original_turl.prepopulate_id != 0 &&
+      data_to_update.prepopulate_id != original_turl.prepopulate_id &&
+      base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration);
+
+  if (merge_option == TemplateURLMergeOption::kSplitPrepopulatedEntry) {
+    CHECK(is_id_migration);
+  } else if (merge_option ==
+             TemplateURLMergeOption::kSettingAsDefaultProvider) {
+    CHECK(original_turl.prepopulate_id != 0 &&
+              data_to_update.prepopulate_id == original_turl.prepopulate_id ||
+          // The pair of engines to merge was selected based on keywords, but
+          // due to keyword-based migration, they might not be matching. See
+          // `ReconcilingTemplateURLDataHolder::GetOrComputeKeyword`.
+          original_turl.CreatedByRegulatoryProgram() || is_id_migration);
+  } else {
+    CHECK(!is_id_migration);
+    CHECK(original_turl.prepopulate_id == 0 ||
+          original_turl.prepopulate_id == data_to_update.prepopulate_id);
+
+    CHECK(original_turl.starter_pack_id ==
+              static_cast<int>(
+                  template_url_starter_pack_data::StarterPackId::kNone) ||
+          original_turl.starter_pack_id == data_to_update.starter_pack_id);
+  }
+
+  if (merge_option != TemplateURLMergeOption::kOverwriteUserEdits) {
+    // Preserve key fields from being overwritten with prepopulated data.
+
+    data_to_update.safe_for_autoreplace = original_turl.safe_for_autoreplace;
+
+    bool preserve_program_properties =
+        original_turl.CreatedByRegulatoryProgram() &&
+        merge_option != TemplateURLMergeOption::kSettingAsDefaultProvider;
+    bool preserve_user_edits =
+        !original_turl.safe_for_autoreplace || preserve_program_properties;
+
+    if (preserve_user_edits) {
+      data_to_update.SetShortName(original_turl.short_name());
+      data_to_update.SetKeyword(original_turl.keyword());
+    }
+
+    if (preserve_program_properties) {
       // TODO(crbug.com/480856411): Search url from Play API might contain
       // attribution info and therefore should be preserved through prepopulated
       // data update (see crbug.com/40646573).
       // Feb 2026 update: This might not be necessary, as the "regulatory
       // extensions" mechanisms allows to do this while supporting updates.
-      url_to_update->SetURL(original_turl->url());
+      data_to_update.SetURL(original_turl.url());
     }
   }
 
   if (merge_option == TemplateURLMergeOption::kSplitPrepopulatedEntry) {
-    // The data from `original_turl` has been merged into `url_to_update`, but
-    // `url_to_update` has a different `prepopulate_id`. This could lead to
+    // The data from `original_turl` has been merged into `data_to_update`, but
+    // `data_to_update` has a different `prepopulate_id`. This could lead to
     // reconciliation issues on clients which don't have the latest data yet,
     // and future confusion about how the GUID for this entry was generated.
     // Reset it to limit such issues.
-    url_to_update->GenerateSyncGUID();
+    // TODO(crbug.com/446637115): Investigate also doing this for the
+    // `kSettingAsDefaultProvider` flow.
+    data_to_update.GenerateSyncGUID();
   } else {
-    url_to_update->sync_guid = original_turl->sync_guid();
+    data_to_update.sync_guid = original_turl.sync_guid;
   }
 
-  url_to_update->id = original_turl->id();
-  url_to_update->date_created = original_turl->date_created();
-  url_to_update->last_modified = original_turl->last_modified();
-  url_to_update->regulatory_origin = original_turl->data().regulatory_origin;
+  if (merge_option == TemplateURLMergeOption::kSettingAsDefaultProvider) {
+    data_to_update.last_visited = original_turl.last_visited;
+    data_to_update.favicon_url = original_turl.favicon_url;
+  }
+
+  data_to_update.id = original_turl.id;
+  data_to_update.date_created = original_turl.date_created;
+  data_to_update.last_modified = original_turl.last_modified;
+  data_to_update.regulatory_origin = original_turl.regulatory_origin;
 }
 
 ActionsFromCurrentData::ActionsFromCurrentData() = default;
@@ -558,7 +589,8 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     if (existing_url != nullptr) {
       // Update the data store with the new prepopulated data. Preserve user
       // edits to the name and keyword.
-      MergeIntoEngineData(existing_url, prepopulated_url.get(), merge_option);
+      MergeIntoEngineData(existing_url->data(), *prepopulated_url.get(),
+                          merge_option);
       // Update last_modified to ensure that if this entry is later merged with
       // entries from Sync, the conflict resolution logic knows that this was
       // updated and propagates the new values to the server.
@@ -651,7 +683,7 @@ ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
       // Update the data store with the new prepopulated data. Preserve user
       // edits to the name and keyword unless `merge_option` is set to
       // kOverwriteUserEdits.
-      MergeIntoEngineData(existing_url, url.get(), merge_option);
+      MergeIntoEngineData(existing_url->data(), *url.get(), merge_option);
       // Update last_modified to ensure that if this entry is later merged with
       // entries from Sync, the conflict resolution logic knows that this was
       // updated and propagates the new values to the server.

@@ -267,8 +267,7 @@ TemplateURLData UpdateTemplateURLDataIfPrepopulated(
     return data;
   }
 
-  TemplateURL turl(data);
-  MergeIntoEngineData(&turl, prepopulated_url.get());
+  MergeIntoEngineData(data, *prepopulated_url.get());
   return *prepopulated_url;
 }
 

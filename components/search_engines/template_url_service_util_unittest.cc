@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
@@ -22,6 +23,7 @@
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -207,7 +209,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_OverwriteUserEdits) {
   // Set `merge_options` to kOverwriteUserEdits. This should NOT preserve the
   // modified fields.  `url_to_update` should keep the default keyword and name
   // values as well as safe_for_autoreplace being true.
-  MergeIntoEngineData(original_turl.get(), url_to_update.get(),
+  MergeIntoEngineData(original_turl->data(), *url_to_update.get(),
                       TemplateURLMergeOption::kOverwriteUserEdits);
 
   EXPECT_TRUE(url_to_update->safe_for_autoreplace);
@@ -234,7 +236,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_Default) {
   // Set `merge_options` to kDefault. This should preserve the modified
   // keyword and title fields from original_turl and update url_to_update
   // accordingly.
-  MergeIntoEngineData(original_turl.get(), url_to_update.get(),
+  MergeIntoEngineData(original_turl->data(), *url_to_update.get(),
                       TemplateURLMergeOption::kDefault);
 
   EXPECT_FALSE(url_to_update->safe_for_autoreplace);
@@ -244,6 +246,9 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_Default) {
 }
 
 TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_SplitPrepopulatedEntry) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kPrepopulatedEnginesMigration};
+
   std::unique_ptr<TemplateURLData> original_turl_data =
       CreatePrepopulateTemplateURLData(1, "google");
   std::unique_ptr<TemplateURLData> url_to_update =
@@ -262,7 +267,7 @@ TEST(TemplateURLServiceUtilTest, MergeIntoEngineData_SplitPrepopulatedEntry) {
   // Set `merge_options` to kSplitPrepopulatedEntry. This should skip resetting
   // the `sync_guid`, ensuring that the split entry does not get merged with old
   // sync data.
-  MergeIntoEngineData(original_turl.get(), url_to_update.get(),
+  MergeIntoEngineData(original_turl->data(), *url_to_update.get(),
                       TemplateURLMergeOption::kSplitPrepopulatedEntry);
 
   EXPECT_FALSE(url_to_update->safe_for_autoreplace);

@@ -231,3 +231,7 @@ bool TemplateURLData::CreatedByEnterpriseSearchAggregatorPolicy() const {
 bool TemplateURLData::CreatedBySiteSearchPolicy() const {
   return policy_origin == PolicyOrigin::kSiteSearch;
 }
+
+bool TemplateURLData::CreatedByRegulatoryProgram() const {
+  return regulatory_origin != RegulatoryExtensionType::kDefault;
+}

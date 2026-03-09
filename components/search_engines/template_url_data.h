@@ -113,6 +113,8 @@ struct TemplateURLData {
   // Returns whether this search engine was created by the SiteSearchSettings
   // policy.
   bool CreatedBySiteSearchPolicy() const;
+  // Returns whether this search engine was created by a regulatory program.
+  bool CreatedByRegulatoryProgram() const;
 
   // Optional additional raw URLs.
   std::string suggestions_url;

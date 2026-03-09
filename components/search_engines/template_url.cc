@@ -2192,7 +2192,7 @@ bool TemplateURL::CreatedByEnterpriseSearchAggregatorPolicy() const {
 }
 
 bool TemplateURL::CreatedByRegulatoryProgram() const {
-  return GetRegulatoryExtensionType() != RegulatoryExtensionType::kDefault;
+  return data().CreatedByRegulatoryProgram();
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {

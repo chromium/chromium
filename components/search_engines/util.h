@@ -47,21 +47,35 @@ TemplateURL* FindURLByPrepopulateID(
 
 enum class TemplateURLMergeOption {
   kDefault,
+
+  // Stick to properties from the reference `data_to_update`,  user-modified
+  // fields and `safe_for_autoreplace` from `original_turl` are not
+  // preserved.
   kOverwriteUserEdits,
+
+  // Merge prepopulated entries with non-identical `prepopulate_id`, to carry
+  // over user modifications on pre-migration, `original_turl` data and merge it
+  // into the post-migration `data_to_update`.
   kSplitPrepopulatedEntry,
+
+  // Flow-specific behaviour: When merging `original_turl` data from profile
+  // prefs with prepopulated `data_to_update`, certain properties are affected
+  // in the differently from other modes to stay consistent with the legacy
+  // implementation.
+  // TODO(crbug.com/446637115): Investigate removing this divergence.
+  kSettingAsDefaultProvider,
 };
 
-// Modifies `url_to_update` so that it contains user-modified fields from
-// `original_turl`. Both URLs must have the same `prepopulate_id` or
-// `starter_pack_id`. If `merge_option` is set to kOverWriteUserEdits,
-// user-modified fields and `safe_for_autoreplace` are not preserved.
+// Modifies `data_to_update` so that it contains usage-related data from
+// `original_turl`. Both `TemplateURLData` must have the matching
+// `prepopulate_id` or `starter_pack_id`.
 //
-// WARNING: Changing merge_option from the default value will result in loss of
-// user data. It should be set to kDefault unless in very specific circumstances
-// where a reset to defaults is required.
+// WARNING: Changing merge_option from the default value can result in loss of
+// user data. It should be set to kDefault unless in very specific
+// circumstances. See `TemplateURLMergeOption` docs for details.
 void MergeIntoEngineData(
-    const TemplateURL* original_turl,
-    TemplateURLData* url_to_update,
+    const TemplateURLData& original_turl,
+    TemplateURLData& data_to_update,
     TemplateURLMergeOption merge_option = TemplateURLMergeOption::kDefault);
 
 // CreateActionsFromCurrentPrepopulateData() and
