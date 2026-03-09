@@ -1359,7 +1359,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
 
 // TODO(crbug.com/488467253): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       DISABLE_OTRRequestIsNotDropped) {
+                       DISABLED_OTRRequestIsNotDropped) {
   // Expectation: The request should include the Authorization header.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
