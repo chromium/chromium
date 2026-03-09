@@ -550,6 +550,7 @@ if (!is_android) {
       "//components/browsing_topics",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
+      "//components/enterprise",
       "//components/favicon/content",
       "//components/favicon/core",
       "//components/image_fetcher/core",

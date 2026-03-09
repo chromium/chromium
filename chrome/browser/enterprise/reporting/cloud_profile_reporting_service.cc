@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
@@ -122,10 +123,12 @@ void CloudProfileReportingService::CreateReportScheduler() {
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  auto saas_usage_reporting_delegate_factory =
-      SaasUsageReportingDelegateFactoryDesktop::CreateForProfile(profile_);
-  saas_usage_report_scheduler_ = SaasUsageReportScheduler::Create(
-      saas_usage_reporting_delegate_factory.get());
+  if (base::FeatureList::IsEnabled(kSaasUsageReporting)) {
+    auto saas_usage_reporting_delegate_factory =
+        SaasUsageReportingDelegateFactoryDesktop::CreateForProfile(profile_);
+    saas_usage_report_scheduler_ = SaasUsageReportScheduler::Create(
+        saas_usage_reporting_delegate_factory.get());
+  }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
 

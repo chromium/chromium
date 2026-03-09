@@ -49,6 +49,8 @@ static_library("enterprise") {
     "browser/reporting/report_util.cc",
     "browser/reporting/report_util.h",
     "browser/reporting/reporting_delegate_factory.h",
+    "browser/reporting/reporting_features.cc",
+    "browser/reporting/reporting_features.h",
     "browser/reporting/saas_usage/saas_usage_aggregation_utils.cc",
     "browser/reporting/saas_usage/saas_usage_aggregation_utils.h",
     "browser/reporting/saas_usage/saas_usage_report_factory.cc",

@@ -25,6 +25,7 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
@@ -540,11 +541,13 @@ void ChromeBrowserCloudManagementController::InitializeReporting() {
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
       std::move(params));
 
-  if (auto saas_usage_reporting_delegate_factory =
-          delegate_->GetSaasUsageReportingDelegateFactory()) {
-    saas_usage_report_scheduler_ =
-        enterprise_reporting::SaasUsageReportScheduler::Create(
-            saas_usage_reporting_delegate_factory.get());
+  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
+    if (auto saas_usage_reporting_delegate_factory =
+            delegate_->GetSaasUsageReportingDelegateFactory()) {
+      saas_usage_report_scheduler_ =
+          enterprise_reporting::SaasUsageReportScheduler::Create(
+              saas_usage_reporting_delegate_factory.get());
+    }
   }
 
   NotifyCloudReportingLaunched();
