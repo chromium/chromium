@@ -651,7 +651,7 @@ public class SettingsSearchCoordinator
         return providerMap;
     }
 
-    private void enterSearchState(boolean isRestored) {
+    void enterSearchState(boolean isRestored) {
         initIndex();
 
         if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
@@ -1205,7 +1205,7 @@ public class SettingsSearchCoordinator
      * @param query The search query the user entered.
      * @param callback The callback function to be executed when results are available.
      */
-    private void performSearch(String query, SearchCallback callback) {
+    void performSearch(String query, SearchCallback callback) {
         if (mSearchRunnable != null) {
             // Debouncing to avoid initiating search for each keystroke entered fast.
             // We sets some delay before initiating search (see postDelayed() below) so that

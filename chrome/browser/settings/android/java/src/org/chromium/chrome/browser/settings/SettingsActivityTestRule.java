@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.test.core.app.ApplicationProvider;
@@ -30,24 +29,26 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
  */
 public class SettingsActivityTestRule<T extends Fragment>
         extends BaseActivityTestRule<SettingsActivity> {
-    private final Class<T> mFragmentClass;
+    private final @Nullable Class<T> mFragmentClass;
     private @Nullable Bundle mDefaultFragmentArgs;
 
     /**
      * Create the settings activity test rule with an specific fragment class.
+     *
      * @param fragmentClass Fragment that will be attached after the activity starts.
      */
-    public SettingsActivityTestRule(Class<T> fragmentClass) {
+    public SettingsActivityTestRule(@Nullable Class<T> fragmentClass) {
         super(SettingsActivity.class);
         mFragmentClass = fragmentClass;
     }
 
     /**
      * Create the settings activity test rule with an specific fragment class.
+     *
      * @param fragmentClass Fragment that will be attached after the activity starts.
      * @param defaultFragmentArgs A bundle of default fragment arguments to be used.
      */
-    public SettingsActivityTestRule(Class<T> fragmentClass, @NonNull Bundle defaultFragmentArgs) {
+    public SettingsActivityTestRule(Class<T> fragmentClass, Bundle defaultFragmentArgs) {
         super(SettingsActivity.class);
         mFragmentClass = fragmentClass;
         mDefaultFragmentArgs = defaultFragmentArgs;

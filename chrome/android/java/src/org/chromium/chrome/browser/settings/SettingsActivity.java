@@ -1318,4 +1318,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             DefaultBrowserInfo.resetDefaultInfoTask();
         }
     }
+
+    public @Nullable SettingsSearchCoordinator getSearchCoordinatorForTesting() {
+        return mSearchCoordinator;
+    }
 }
