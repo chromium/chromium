@@ -122,9 +122,15 @@ export class SettingsAutofillAiEntriesListElement extends
 
       /**
          Optional boolean preference used to determine the list's editability.
-         If true - user will be able to add new entries to the list. Note that
-         even if preference is true allows the user may still be prevented from
-         adding entries due to other eligibility checks.
+         If true - user will be able to add new entries to the list.
+
+         Notes:
+          * Even if preference is true the user may still be prevented from
+            adding entries due to other eligibility checks.
+          * We assume that the provided preference is controlled by the address
+            autofill policy and extension API. If allowEditingPref is provided
+            its value will be overridden by the address autofill preference when
+            it is enforced.
       */
       allowEditingPref: {
         type: Object,
@@ -193,6 +199,14 @@ export class SettingsAutofillAiEntriesListElement extends
               'AutofillAddOtherDatatypesPrefIsEnabled');
         },
       },
+
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableYourSavedInfoPolicyAndExtentionToggleIndicators');
+        },
+      },
     };
   }
 
@@ -202,6 +216,10 @@ export class SettingsAutofillAiEntriesListElement extends
           'prefs.autofill.profile_enabled.value, allowEditingPref.*)',
       'onOptInStatusChanged_(' +
           'prefs.autofill.autofill_ai.opt_in_status.value, allowEditingPref.*)',
+      'updateOptInStatus_(' +
+          'prefs.autofill.autofill_ai.opt_in_status.value, ' +
+          'prefs.autofill.profile_enabled.value, ' +
+          'allowEditingPref.*)',
     ];
   }
 
@@ -220,6 +238,8 @@ export class SettingsAutofillAiEntriesListElement extends
   declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
+  declare private enableYourSavedInfoPolicyAndExtentionToggleIndicators_:
+      boolean;
 
   private activeEntityInstanceGuid_: string|null = null;
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
@@ -230,21 +250,23 @@ export class SettingsAutofillAiEntriesListElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.entityDataManager_.getOptInStatus().then(optedIntoAutofillAi => {
-      if (!this.autofillAddOtherDatatypesPrefIsEnabled_ &&
-          !this.getPref('autofill.profile_enabled').value) {
-        this.allowEditing_ = false;
-        return;
-      }
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      this.entityDataManager_.getOptInStatus().then(optedIntoAutofillAi => {
+        if (!this.autofillAddOtherDatatypesPrefIsEnabled_ &&
+            !this.getPref('autofill.profile_enabled').value) {
+          this.allowEditing_ = false;
+          return;
+        }
 
-      if (!this.autofillAiAvailableByDefault_) {
-        this.allowEditing_ = !this.ineligibleUser && optedIntoAutofillAi &&
-            this.isEditingAllowedByPref_;
-      } else {
-        this.allowEditing_ =
-            this.canEnableOrDisableAutofillAi_ && this.isEditingAllowedByPref_;
-      }
-    });
+        if (!this.autofillAiAvailableByDefault_) {
+          this.allowEditing_ = !this.ineligibleUser && optedIntoAutofillAi &&
+              this.isEditingAllowedByPref_;
+        } else {
+          this.allowEditing_ = this.canEnableOrDisableAutofillAi_ &&
+              this.isEditingAllowedByPref_;
+        }
+      });
+    }
 
     this.entityInstancesChangedListener_ =
         (entityInstances: EntityInstanceWithLabels[]) => {
@@ -428,6 +450,10 @@ export class SettingsAutofillAiEntriesListElement extends
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAddressPrefChanged_(prefValue: boolean) {
+    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return;
+    }
+
     if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
       return;
     }
@@ -451,6 +477,9 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private async onOptInStatusChanged_(): Promise<void> {
+    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return;
+    }
     // If Autofill AI is available by default, it means that the pref only
     // controls server model calls and MQLS logging. Therefore not whether the
     // user can use Autofill AI.
@@ -462,6 +491,27 @@ export class SettingsAutofillAiEntriesListElement extends
     const optedIn = await this.entityDataManager_.getOptInStatus();
     this.allowEditing_ =
         !this.ineligibleUser && optedIn && this.isEditingAllowedByPref_;
+  }
+
+  private async updateOptInStatus_(): Promise<void> {
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return;
+    }
+    const addressPref = this.getPref('autofill.profile_enabled');
+    const meetsAddressPrefRequirement =
+        this.autofillAddOtherDatatypesPrefIsEnabled_ || addressPref.value;
+
+    // If Autofill AI is available by default, it means that the pref only
+    // controls server model calls and MQLS logging. Therefore not whether the
+    // user can use Autofill AI.
+    if (this.autofillAiAvailableByDefault_) {
+      this.allowEditing_ = this.isEditingAllowedByPref_ &&
+          this.canEnableOrDisableAutofillAi_ && meetsAddressPrefRequirement;
+      return;
+    }
+    const optedIn = await this.entityDataManager_.getOptInStatus();
+    this.allowEditing_ = !this.ineligibleUser && optedIn &&
+        this.isEditingAllowedByPref_ && meetsAddressPrefRequirement;
   }
 
   // Refreshes the entity types list when the sync status changes.
@@ -477,9 +527,26 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private get isEditingAllowedByPref_(): boolean {
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ ||
+        this.autofillAddOtherDatatypesPrefIsEnabled_) {
+      return this.allowEditingPref?.value ?? true;
+    }
+
     // Defaults to true if the pref is not provided, allowing addition of new
     // entries.
-    return this.allowEditingPref?.value ?? true;
+    if (!this.allowEditingPref) {
+      return true;
+    }
+
+    // allowEditingPref should be ignored if autofill.profile_enabled is
+    // enforced.
+    const addressPref = this.getPref('autofill.profile_enabled');
+    if (addressPref.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return addressPref.value;
+    }
+
+    return this.allowEditingPref.value;
   }
 }
 

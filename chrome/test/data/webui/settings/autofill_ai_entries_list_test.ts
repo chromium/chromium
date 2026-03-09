@@ -282,6 +282,59 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
 
     assertTrue(addButton.disabled);
   });
+
+  test('DisableAddButtotWhenAddressAutofillDisabled', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    const entriesList = await createEntriesList();
+    entriesList.allowEditingPref = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    };
+    updateOptInStatus(true, entriesList);
+    entriesList.setPrefValue('autofill.profile_enabled', true);
+    await flushTasks();
+
+    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertFalse(addButton.disabled);
+
+    entriesList.setPrefValue('autofill.profile_enabled', false);
+    await flushTasks();
+
+    assertTrue(addButton.disabled);
+  });
+
+  test('EnableAddButtotWhenAddressAutofillIsForceEnabled', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    const entriesList = await createEntriesList();
+    entriesList.allowEditingPref = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,  // Editing is disabled
+    };
+    updateOptInStatus(true, entriesList);
+    entriesList.setPrefValue('autofill.profile_enabled', true);
+    await flushTasks();
+
+    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertTrue(addButton.disabled);
+
+    entriesList.set('prefs.autofill.profile_enabled', {
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      value: true,
+    });
+    await flushTasks();
+
+    assertFalse(addButton.disabled);
+  });
 });
 
 suite('AutofillAiEntriesListUiTest', function() {
