@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -471,16 +472,20 @@ class TabRestorer {
             return null;
         }
 
-        @Nullable Tab tab = null;
-        if (isActiveTab && tabState.contentsState == null && tabState.url != null) {
+        Tab tab = null;
+        GURL url = tabState.url;
+        if (isActiveTab && tabState.contentsState == null && url != null) {
             // Use fallback url if no contents state is available.
             tab =
                     mTabCreator.createNewTab(
-                            new LoadUrlParams(tabState.url),
+                            new LoadUrlParams(url),
                             TabLaunchType.FROM_RESTORE,
                             null,
                             index);
-        } else {
+        } else if (tabState.contentsState != null) {
+            if (url != null) {
+                tabState.contentsState.setFallbackUrlForRestorationFailure(url.getSpec());
+            }
             tab = mTabCreator.createFrozenTab(tabState, tabId, index);
         }
 
