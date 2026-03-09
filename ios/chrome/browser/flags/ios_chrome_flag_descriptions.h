@@ -690,6 +690,9 @@ extern const char kMobilePromoOnDesktopDescription[];
 extern const char kMobilePromoOnDesktopRecordActiveDaysName[];
 extern const char kMobilePromoOnDesktopRecordActiveDaysDescription[];
 
+extern const char kMobilePromoOnDesktopWave1Name[];
+extern const char kMobilePromoOnDesktopWave1Description[];
+
 extern const char kModelBasedPageClassificationName[];
 extern const char kModelBasedPageClassificationDescription[];
 

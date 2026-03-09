@@ -19,7 +19,8 @@ class MobilePromoOnDesktopFeaturesTest : public testing::Test {
     // Enable the dependency feature.
     feature_list_.InitWithFeatures(
         {sync_preferences::features::kEnableCrossDevicePrefTracker,
-         kMobilePromoOnDesktopWithReminder},
+         kMobilePromoOnDesktopWithReminder,
+         kMobilePromoOnDesktopWithReminderWave1},
         {});
   }
 

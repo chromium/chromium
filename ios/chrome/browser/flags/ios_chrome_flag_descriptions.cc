@@ -1109,6 +1109,13 @@ const char kMobilePromoOnDesktopRecordActiveDaysDescription[] =
     "When enabled, records the user's number of active days for the mobile "
     "promo on desktop.";
 
+const char kMobilePromoOnDesktopWave1Name[] =
+    "Mobile Promo On Desktop (Wave 1)";
+const char kMobilePromoOnDesktopWave1Description[] =
+    "When enabled, shows a mobile promo with a reminder flow on desktop for "
+    "eligible users. This version highlights features not included in the "
+    "existing mobile promos.";
+
 const char kModelBasedPageClassificationName[] =
     "Model Based Page Classification";
 const char kModelBasedPageClassificationDescription[] =
