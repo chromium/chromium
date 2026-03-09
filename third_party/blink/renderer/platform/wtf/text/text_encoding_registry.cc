@@ -216,7 +216,7 @@ AtomicString AtomicCanonicalTextEncodingName(StringView name) {
     // `StringImpl`. This is a pre-screening optimization for the hash map
     // lookup below. It's safe to skip this check for other `StringView`
     // types.
-    if (!impl->ContainsOnlyASCIIOrEmpty()) {
+    if (!impl->ContainsOnlyAsciiOrEmpty()) {
       return g_null_atom;
     }
   }

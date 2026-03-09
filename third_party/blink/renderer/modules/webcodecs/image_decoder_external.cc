@@ -38,8 +38,9 @@ namespace blink {
 namespace {
 
 bool IsTypeSupportedInternal(String type) {
-  if (!type.ContainsOnlyASCIIOrEmpty())
+  if (!type.ContainsOnlyAsciiOrEmpty()) {
     return false;
+  }
 
   // Disable ICO/CUR decoding since the underlying decoder does not operate like
   // the rest of our blink::ImageDecoders. Each frame is a different sized

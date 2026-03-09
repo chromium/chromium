@@ -54,8 +54,9 @@ bool ClientHintsPreferences::UpdateFromMetaCH(const String& header_value,
   // turning syntax errors into "correct" syntax, so reject those first.
   // (.Utf8() doesn't have this problem, but it does a lot of expensive
   //  work that would be wasted feeding to an ASCII-only syntax).
-  if (!header_value.ContainsOnlyASCIIOrEmpty())
+  if (!header_value.ContainsOnlyAsciiOrEmpty()) {
     return false;
+  }
 
   switch (type) {
     case network::MetaCHType::HttpEquivAcceptCH: {

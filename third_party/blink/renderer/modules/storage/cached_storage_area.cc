@@ -795,7 +795,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
     }
     case FormatOption::kSessionStorageForceUTF8: {
       unsigned length = input.length();
-      if (input.Is8Bit() && input.ContainsOnlyASCIIOrEmpty()) {
+      if (input.Is8Bit() && input.ContainsOnlyAsciiOrEmpty()) {
         Vector<uint8_t> result(length);
         base::span(result).copy_from(input.Span8());
         return result;

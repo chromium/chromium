@@ -38,7 +38,7 @@ std::optional<base::Token> IdStringToToken(const String& crop_id) {
   if (crop_id.empty()) {
     return base::Token();
   }
-  if (!crop_id.ContainsOnlyASCIIOrEmpty()) {
+  if (!crop_id.ContainsOnlyAsciiOrEmpty()) {
     return std::nullopt;
   }
   const base::Uuid guid = base::Uuid::ParseCaseInsensitive(crop_id.Ascii());

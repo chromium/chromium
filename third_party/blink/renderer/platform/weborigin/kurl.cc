@@ -979,7 +979,7 @@ void KURL::AssertStringSpecIsAscii() {
   // canonicalization step: the byte offsets in `url::Parsed` will still be
   // valid for a 16-bit ASCII string, since there is a 1:1 mapping between the
   // UTF-8 indices and UTF-16 indices.
-  DCHECK(string_.GetString().ContainsOnlyASCIIOrEmpty());
+  DCHECK(string_.GetString().ContainsOnlyAsciiOrEmpty());
 
   // It is not possible to check that `string_` is 8-bit here. There are some
   // instances where `string_` reuses an already-canonicalized `AtomicString`

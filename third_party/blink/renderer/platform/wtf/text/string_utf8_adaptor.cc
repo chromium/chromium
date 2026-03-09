@@ -14,7 +14,7 @@ StringUtf8Adaptor::StringUtf8Adaptor(StringView string,
   // UTF-8 when processing 8 bit strings. If |relative| is entirely ASCII, we
   // luck out and can avoid mallocing a new buffer to hold the UTF-8 data
   // because UTF-8 and Latin-1 use the same code units for ASCII code points.
-  if (string.Is8Bit() && string.ContainsOnlyASCIIOrEmpty()) {
+  if (string.Is8Bit() && string.ContainsOnlyAsciiOrEmpty()) {
     span_ = base::as_chars(string.Span8());
   } else {
     utf8_buffer_ = string.Utf8(mode);

@@ -5241,7 +5241,7 @@ void WebGLRenderingContextBase::shaderSource(WebGLShader* shader,
     return;
   String ascii_string = ReplaceNonASCII(string).Result();
   shader->SetSource(string);
-  DCHECK(ascii_string.Is8Bit() && ascii_string.ContainsOnlyASCIIOrEmpty());
+  DCHECK(ascii_string.Is8Bit() && ascii_string.ContainsOnlyAsciiOrEmpty());
   const GLchar* shader_data = base::as_chars(ascii_string.Span8()).data();
   const GLint shader_length = ascii_string.length();
   ContextGL()->ShaderSource(ObjectOrZero(shader), 1, &shader_data,

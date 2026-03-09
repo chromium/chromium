@@ -116,7 +116,7 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
 }
 
 bool IsValidTag(const String& tag) {
-  if (!tag.ContainsOnlyASCIIOrEmpty()) {
+  if (!tag.ContainsOnlyAsciiOrEmpty()) {
     return false;
   }
 

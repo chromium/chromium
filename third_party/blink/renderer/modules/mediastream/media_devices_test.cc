@@ -1628,7 +1628,7 @@ TEST_P(ProduceSubCaptureTargetTest, IdStringFormat) {
 
   const SubCaptureTarget* const target = ToSubCaptureTarget(tester->Value());
   const String& id = target->GetId();
-  EXPECT_TRUE(id.ContainsOnlyASCIIOrEmpty());
+  EXPECT_TRUE(id.ContainsOnlyAsciiOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(id.Ascii()).is_valid());
 }
 

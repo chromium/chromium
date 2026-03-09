@@ -246,7 +246,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     for (const String& origin_string : origin_strings) {
       DCHECK(!origin_string.empty());
 
-      if (!origin_string.ContainsOnlyASCIIOrEmpty()) {
+      if (!origin_string.ContainsOnlyAsciiOrEmpty()) {
         logger_.Warn("Non-ASCII characters in origin.");
         continue;
       }

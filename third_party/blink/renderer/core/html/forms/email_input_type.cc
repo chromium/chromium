@@ -74,8 +74,9 @@ Vector<StringView> EmailInputType::ParseMultipleValues(
 
 String EmailInputType::ConvertEmailAddressToAscii(const ScriptRegexp& regexp,
                                                   const StringView& address) {
-  if (address.ContainsOnlyASCIIOrEmpty())
+  if (address.ContainsOnlyAsciiOrEmpty()) {
     return address.ToString();
+  }
 
   wtf_size_t at_position = address.find('@');
   if (at_position == kNotFound)
@@ -112,8 +113,9 @@ String EmailInputType::ConvertEmailAddressToAscii(const ScriptRegexp& regexp,
 
 String EmailInputType::ConvertEmailAddressToUnicode(
     const String& address) const {
-  if (!address.ContainsOnlyASCIIOrEmpty())
+  if (!address.ContainsOnlyAsciiOrEmpty()) {
     return address;
+  }
 
   wtf_size_t at_position = address.find('@');
   if (at_position == kNotFound)

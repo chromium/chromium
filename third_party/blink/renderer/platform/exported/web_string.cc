@@ -120,7 +120,7 @@ std::string WebString::Ascii() const {
 }
 
 bool WebString::ContainsOnlyASCII() const {
-  return String(impl_).ContainsOnlyASCIIOrEmpty();
+  return String(impl_).ContainsOnlyAsciiOrEmpty();
 }
 
 WebString WebString::FromASCII(std::string_view s) {

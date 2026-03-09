@@ -30,7 +30,7 @@ bool IsValidName(const String& name) {
     return false;
   }
 
-  if (!name.ContainsOnlyASCIIOrEmpty()) {
+  if (!name.ContainsOnlyAsciiOrEmpty()) {
     return false;
   }
 

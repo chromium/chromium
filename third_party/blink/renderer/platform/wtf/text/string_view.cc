@@ -170,9 +170,9 @@ bool StringView::ContainsNoAsciiUpper() const {
       *this, [](auto chars) { return blink::ContainsNoAsciiUpper(chars); });
 }
 
-bool StringView::ContainsOnlyASCIIOrEmpty() const {
+bool StringView::ContainsOnlyAsciiOrEmpty() const {
   if (StringImpl* impl = SharedImpl())
-    return impl->ContainsOnlyASCIIOrEmpty();
+    return impl->ContainsOnlyAsciiOrEmpty();
   if (empty())
     return true;
   AsciiStringAttributes attrs = VisitCharacters(

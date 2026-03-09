@@ -89,8 +89,9 @@ bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
 // Validates |input| as an external type.
 bool IsValidExternalType(const String& input) {
   // Ensure |input| is an ASCII string.
-  if (!input.ContainsOnlyASCIIOrEmpty())
+  if (!input.ContainsOnlyAsciiOrEmpty()) {
     return false;
+  }
 
   // As all characters in |input| is ASCII, limiting its length within 255 just
   // limits the length of its utf-8 encoded bytes we finally write into the
@@ -129,8 +130,9 @@ bool IsValidExternalType(const String& input) {
 // Validates |input| as an local type.
 bool IsValidLocalType(const String& input) {
   // Ensure |input| is an ASCII string.
-  if (!input.ContainsOnlyASCIIOrEmpty())
+  if (!input.ContainsOnlyAsciiOrEmpty()) {
     return false;
+  }
 
   // The prefix ':' will be omitted when we actually write the record type into
   // the nfc tag. We're taking it into consideration for validating the length

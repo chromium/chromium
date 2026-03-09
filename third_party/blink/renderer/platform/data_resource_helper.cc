@@ -17,7 +17,7 @@ String UncompressResourceAsString(int resource_id) {
 
 String UncompressResourceAsASCIIString(int resource_id) {
   String result(Platform::Current()->GetDataResourceString(resource_id));
-  DCHECK(result.ContainsOnlyASCIIOrEmpty());
+  DCHECK(result.ContainsOnlyAsciiOrEmpty());
   return result;
 }
 

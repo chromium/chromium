@@ -469,8 +469,8 @@ class WTF_EXPORT String {
     return !impl_ || impl_->ContainsNoAsciiUpper();
   }
 
-  bool ContainsOnlyASCIIOrEmpty() const {
-    return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
+  bool ContainsOnlyAsciiOrEmpty() const {
+    return !impl_ || impl_->ContainsOnlyAsciiOrEmpty();
   }
   bool ContainsOnlyLatin1OrEmpty() const;
   bool ContainsOnlyWhitespaceOrEmpty() const {

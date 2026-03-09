@@ -50,8 +50,9 @@ std::string ToLowerASCIIInternal(base::span<const CharType> chars) {
 
 // Does the same as ToASCIIOrEmpty, but also makes the chars lower.
 std::string ToLowerASCIIOrEmpty(const String& str) {
-  if (str.empty() || !str.ContainsOnlyASCIIOrEmpty())
+  if (str.empty() || !str.ContainsOnlyAsciiOrEmpty()) {
     return std::string();
+  }
   return VisitCharacters(
       str, [](auto chars) { return ToLowerASCIIInternal(chars); });
 }

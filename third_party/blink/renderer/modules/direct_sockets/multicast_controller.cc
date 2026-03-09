@@ -24,7 +24,7 @@ namespace {
 std::optional<net::IPAddress> CreateAndCheckIpAddress(
     const String& ip_address,
     ExceptionState& exception_state) {
-  if (!ip_address.ContainsOnlyASCIIOrEmpty()) {
+  if (!ip_address.ContainsOnlyAsciiOrEmpty()) {
     exception_state.ThrowTypeError(
         "ipAddress must contain only ascii characters");
     return std::nullopt;
