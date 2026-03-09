@@ -2235,10 +2235,14 @@ void ClientSideDetectionHost::AddMiscellaneousMetadataToClientPhishingRequest(
           ? "ConditionalImageResize.Enabled"
           : "ConditionalImageResize.Control");
 
-  verdict->mutable_population()->add_finch_active_groups(
-      base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)
-          ? "ClientSideDetectionNewObservers.Enabled"
-          : "ClientSideDetectionNewObservers.Control");
+  if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
+    verdict->mutable_population()->add_finch_active_groups(
+        "ClientSideDetectionNewObservers.Enabled." +
+        base::NumberToString(kCsdClassificationDelay.Get()));
+  } else {
+    verdict->mutable_population()->add_finch_active_groups(
+        "ClientSideDetectionNewObservers.Control");
+  }
 
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
   if (cache_manager) {
