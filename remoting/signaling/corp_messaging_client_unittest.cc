@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "remoting/base/buildflags.h"
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/http_status.h"
@@ -42,55 +42,47 @@ constexpr char kFakeUsername[] = "fake_user";
 constexpr char kFakeAuthzToken[] = "fake_authz_token";
 #endif
 constexpr char kFakeAuthzTokenBase64[] = "ZmFrZV9hdXRoel90b2tlbg==";
-constexpr char kFakePublicKey[] = "fake_public_key";
+constexpr char kFakePublicKeyBase64[] = "ZmFrZV9wdWJsaWNfa2V5";
 
 using DoneCallback = CorpMessagingClient::DoneCallback;
-
-base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
-    const base::Location& from_here,
-    HttpStatus::Code expected_status_code,
-    base::RunLoop* run_loop) {
-  return base::BindLambdaForTesting([=](const HttpStatus& status) {
-    ASSERT_EQ(status.error_code(), expected_status_code)
-        << "Incorrect status code. Location: " << from_here.ToString();
-    run_loop->QuitWhenIdle();
-  });
-}
 
 }  // namespace
 
 class CorpMessagingClientTest : public testing::Test {
  protected:
+  void OnMessageReceived(const internal::PeerMessageStruct& message) {
+    messaging_client_.OnMessageReceived(message);
+  }
+
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
   base::MockCallback<CorpMessagingClient::SignalingAddressChangedCallback>
       mock_on_signaling_address_changed_;
   CorpMessagingClient messaging_client_{
-      kFakeUsername, kFakePublicKey, test_responder_.GetUrlLoaderFactory(),
-      CreateClientCertStoreInstance(),
+      kFakeUsername, kFakePublicKeyBase64,
+      test_responder_.GetUrlLoaderFactory(), CreateClientCertStoreInstance(),
       mock_on_signaling_address_changed_.Get()};
 };
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<HttpStatus> status_future;
 
   internal::PeerMessageStruct peer_message;
-  messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
-      CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
+  messaging_client_.SendMessage(SignalingAddress{kFakeAuthzTokenBase64},
+                                std::move(peer_message),
+                                status_future.GetCallback<const HttpStatus&>());
   test_responder_.AddErrorToMostRecentRequestUrl(
       HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
-  run_loop.Run();
+  EXPECT_EQ(status_future.Get().error_code(),
+            HttpStatus::Code::UNAUTHENTICATED);
 }
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_SendOnePeerMessage) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<HttpStatus> status_future;
   internal::PeerMessageStruct peer_message;
-  messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+  messaging_client_.SendMessage(SignalingAddress{kFakeAuthzTokenBase64},
+                                std::move(peer_message),
+                                status_future.GetCallback<const HttpStatus&>());
 
   HostSendMessageRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -101,20 +93,19 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_SendOnePeerMessage) {
 #endif
 
   test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
-  run_loop.Run();
+  EXPECT_EQ(status_future.Get().error_code(), HttpStatus::Code::OK);
 }
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneJingleMessage) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<HttpStatus> status_future;
   internal::PeerMessageStruct peer_message;
   internal::IqStanzaStruct iq_stanza;
   iq_stanza.xml = "<iq>test</iq>";
   peer_message.payload = std::move(iq_stanza);
 
-  messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+  messaging_client_.SendMessage(SignalingAddress{kFakeAuthzTokenBase64},
+                                std::move(peer_message),
+                                status_future.GetCallback<const HttpStatus&>());
 
   HostSendMessageRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -124,7 +115,81 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneJingleMessage) {
 #endif
 
   test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
-  run_loop.Run();
+  EXPECT_EQ(status_future.Get().error_code(), HttpStatus::Code::OK);
+}
+
+TEST_F(CorpMessagingClientTest, TestIsReceivingMessages) {
+  EXPECT_FALSE(messaging_client_.IsReceivingMessages());
+  base::test::TestFuture<void> ready_future;
+  messaging_client_.StartReceivingMessages(ready_future.GetCallback(),
+                                           base::DoNothing());
+
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      /*messages=*/{}, HttpStatus::OK());
+
+  EXPECT_TRUE(ready_future.Wait());
+  EXPECT_TRUE(messaging_client_.IsReceivingMessages());
+}
+
+TEST_F(CorpMessagingClientTest, TestStopReceivingMessages) {
+  base::test::TestFuture<void> ready_future;
+  messaging_client_.StartReceivingMessages(ready_future.GetCallback(),
+                                           base::DoNothing());
+
+  test_responder_.AddStreamResponseToMostRecentRequestUrl(
+      /*messages=*/{}, HttpStatus::OK());
+
+  EXPECT_TRUE(ready_future.Wait());
+  EXPECT_TRUE(messaging_client_.IsReceivingMessages());
+
+  messaging_client_.StopReceivingMessages();
+  EXPECT_FALSE(messaging_client_.IsReceivingMessages());
+}
+
+TEST_F(CorpMessagingClientTest, TestSendMessage_OverwritesMessageId) {
+  base::test::TestFuture<HttpStatus> status_future;
+  internal::PeerMessageStruct peer_message;
+  peer_message.message_id = "existing_message_id";
+  messaging_client_.SendMessage(SignalingAddress{kFakeAuthzTokenBase64},
+                                std::move(peer_message),
+                                status_future.GetCallback<const HttpStatus&>());
+
+  HostSendMessageRequest request;
+  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
+#if BUILDFLAG(REMOTING_INTERNAL)
+  ASSERT_NE("existing_message_id", request.peer_message().message_id());
+  ASSERT_FALSE(request.peer_message().message_id().empty());
+#endif
+
+  test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
+  EXPECT_EQ(status_future.Get().error_code(), HttpStatus::Code::OK);
+}
+
+TEST_F(CorpMessagingClientTest, TestRegisterMessageCallback) {
+  base::MockCallback<CorpMessagingClient::MessageCallback> mock_callback;
+  auto subscription =
+      messaging_client_.RegisterMessageCallback(mock_callback.Get());
+
+  internal::PeerMessageStruct peer_message;
+  internal::IqStanzaStruct iq_stanza;
+  iq_stanza.messaging_authz_token = kFakeAuthzTokenBase64;
+  peer_message.payload = std::move(iq_stanza);
+
+  EXPECT_CALL(mock_callback, Run(SignalingAddress(kFakeAuthzTokenBase64), _));
+  OnMessageReceived(peer_message);
+}
+
+TEST_F(CorpMessagingClientTest, TestOnMessageReceived_NonIqStanza) {
+  base::MockCallback<CorpMessagingClient::MessageCallback> mock_callback;
+  auto subscription =
+      messaging_client_.RegisterMessageCallback(mock_callback.Get());
+
+  internal::PeerMessageStruct peer_message;
+  peer_message.payload = internal::SystemTestStruct();
+
+  // If it's not an IqStanza, SignalingAddress should be empty.
+  EXPECT_CALL(mock_callback, Run(SignalingAddress(), _));
+  OnMessageReceived(peer_message);
 }
 
 // Since the internals of the various messaging protos are not available in the
