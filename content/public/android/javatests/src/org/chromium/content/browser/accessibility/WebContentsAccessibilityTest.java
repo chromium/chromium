@@ -3393,6 +3393,7 @@ public class WebContentsAccessibilityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Flaky, see https://crbug.com/491123600")
     @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_TEXT_FORMATTING)
     public void testAccessibilityNodeInfo_textFormatting() throws Throwable {
         // Build a web page with a variety of text formatting options.
