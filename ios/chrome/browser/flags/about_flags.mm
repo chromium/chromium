@@ -2735,6 +2735,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"gemini-binary-migration", flag_descriptions::kGeminiBinaryMigrationName,
      flag_descriptions::kGeminiBinaryMigrationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiBinaryMigration)},
+    {"ios-cobalt", flag_descriptions::kIOSCobaltName,
+     flag_descriptions::kIOSCobaltDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kIOSCobalt)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

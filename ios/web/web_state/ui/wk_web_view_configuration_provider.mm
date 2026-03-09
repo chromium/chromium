@@ -200,6 +200,10 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   [[configuration_ preferences] setJavaScriptCanOpenWindowsAutomatically:YES];
   UpdateScripts();
 
+  if (web::features::IsCobaltEnabled()) {
+    // TODO(crbug.com/475806371): Update configuration for Cobalt.
+  }
+
   if (!scheme_handler_) {
     scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory =
         browser_state_->GetSharedURLLoaderFactory();

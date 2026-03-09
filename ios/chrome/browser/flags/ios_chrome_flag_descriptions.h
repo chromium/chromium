@@ -480,6 +480,9 @@ extern const char kIOSChooseFromDriveDescription[];
 extern const char kIOSChooseFromDriveSignedOutName[];
 extern const char kIOSChooseFromDriveSignedOutDescription[];
 
+extern const char kIOSCobaltName[];
+extern const char kIOSCobaltDescription[];
+
 extern const char kIOSCustomFileUploadMenuName[];
 extern const char kIOSCustomFileUploadMenuDescription[];
 

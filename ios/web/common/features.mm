@@ -104,4 +104,10 @@ BASE_FEATURE(kEnableContextMenuTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNetErrorFromErrorChainKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSCobalt, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCobaltEnabled() {
+  return base::FeatureList::IsEnabled(kIOSCobalt);
+}
+
 }  // namespace web::features

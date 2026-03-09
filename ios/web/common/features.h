@@ -131,6 +131,12 @@ BASE_DECLARE_FEATURE(kEnableContextMenuTimeout);
 // underlying error in the chain, which was the pre-existing behavior.
 BASE_DECLARE_FEATURE(kNetErrorFromErrorChainKillSwitch);
 
+// Feature flag to enable Cobalt on iOS.
+BASE_DECLARE_FEATURE(kIOSCobalt);
+
+// Returns whether Cobalt is enabled on iOS.
+bool IsCobaltEnabled();
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
