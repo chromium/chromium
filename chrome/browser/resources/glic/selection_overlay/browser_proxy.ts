@@ -4,14 +4,20 @@
 
 import {SelectionOverlayPageCallbackRouter, SelectionOverlayPageHandlerFactory, SelectionOverlayPageHandlerRemote} from './selection_overlay.mojom-webui.js';
 
-export class BrowserProxy {
-  handler: SelectionOverlayPageHandlerRemote;
+let instance: BrowserProxy|null = null;
+
+export interface BrowserProxy {
   callbackRouter: SelectionOverlayPageCallbackRouter;
+  handler: SelectionOverlayPageHandlerRemote;
+}
+
+export class BrowserProxyImpl implements BrowserProxy {
+  callbackRouter: SelectionOverlayPageCallbackRouter =
+      new SelectionOverlayPageCallbackRouter();
+  handler: SelectionOverlayPageHandlerRemote =
+      new SelectionOverlayPageHandlerRemote();
 
   constructor() {
-    this.handler = new SelectionOverlayPageHandlerRemote();
-    this.callbackRouter = new SelectionOverlayPageCallbackRouter();
-
     const factory = SelectionOverlayPageHandlerFactory.getRemote();
     factory.createPageHandler(
         this.handler.$.bindNewPipeAndPassReceiver(),
@@ -19,8 +25,10 @@ export class BrowserProxy {
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    return instance || (instance = new BrowserProxyImpl());
+  }
+
+  static setInstance(obj: BrowserProxy) {
+    instance = obj;
   }
 }
-
-let instance: BrowserProxy|null = null;

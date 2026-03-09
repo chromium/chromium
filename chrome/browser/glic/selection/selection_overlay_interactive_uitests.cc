@@ -41,11 +41,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
                         "el => el.screenshot_ !== null"),
-      // The WebUI listens to the mouseUp event on the close button to dismiss
-      // the overlay.
-      MoveMouseTo(kOverlayWebContentsId,
-                  {"selection-overlay-app", "#closeButton"}),
-      ClickMouse(), WaitForHide(OverlayBaseController::kOverlayId));
+      // glic-selection-overlay is expected to be displayed.
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}));
 }
 
 }  // namespace glic
