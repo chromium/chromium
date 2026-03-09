@@ -712,13 +712,15 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
 void ScrollAnchor::Adjust() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                "ScrollAnchor::Adjust");
+  if (!queued_) {
+    return;
+  }
+  queued_ = false;
+
   if (suppress_adjustment_count_ > 0) {
     return;
   }
 
-  if (!queued_)
-    return;
-  queued_ = false;
   DCHECK(scroller_);
   if (!anchor_object_)
     return;
