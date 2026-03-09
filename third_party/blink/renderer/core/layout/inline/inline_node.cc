@@ -1456,33 +1456,73 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
                                        const Font* override_font,
                                        const InlineItems& items,
                                        ShapeResultSpacing& spacing) const {
-  // For consistency with similar usages of ShapeCache (e.g. canvas) and in
-  // order to avoid caching bugs (e.g. with scripts having Arabic joining)
-  // NGShapeCache is only enabled when the IFC is made of a single text item. To
-  // be efficient, NGShapeCache only stores entries for short strings and
-  // without memory copy, so don't allow it if the text item is too long or if
-  // the start/end offsets match a substring. Don't allow it either if a call to
-  // ApplySpacing is needed to avoid a costly copy of the ShapeResult in the
-  // loop below. Finally, check that the font meet requirements on the font
-  // family list to avoid expensive hash key calculations.
-  if (items.size() != 1) {
+  // We only allow the shape cache in a restricted (but common) set of
+  // circumstances.
+  //
+  // Theoretically we could build a more advanced cache, which stores a
+  // duplicate representation of the inline-items as the cache key, however
+  // this is too complex for what we need at the moment.
+  //
+  // Instead we cache using the raw text, and a restricted set of inline items.
+  // This is to avoid caching bugs (e.g. scripts having Arabic joining).
+  //
+  // At the moment we just support:
+  //  - A single text-item.
+  unsigned previous_text_end_offset = 0u;
+  auto is_at_text_start = [&]() { return previous_text_end_offset == 0u; };
+  auto is_at_text_end = [&]() {
+    return previous_text_end_offset == text_content.length();
+  };
+
+  // Don't hit the cache if we don't have any text.
+  if (text_content.empty()) {
     return false;
   }
-  const InlineItem& single_item = *items[0];
-  if (!(single_item.Type() == InlineItem::kText &&
-        single_item.StartOffset() == 0 &&
-        single_item.EndOffset() == text_content.length())) {
+
+  for (const auto& item : items) {
+    switch (item->Type()) {
+      case InlineItem::kText:
+        // Only support a single text-item at the moment.
+        if (!is_at_text_start()) {
+          return false;
+        }
+
+        if (previous_text_end_offset != item->StartOffset()) {
+          return false;
+        }
+        previous_text_end_offset = item->EndOffset();
+        break;
+      case InlineItem::kAtomicInline:
+      case InlineItem::kBlockInInline:
+      case InlineItem::kCloseTag:
+      case InlineItem::kControl:
+      case InlineItem::kFloating:
+      case InlineItem::kInitialLetterBox:
+      case InlineItem::kListMarker:
+      case InlineItem::kBidiControl:
+      case InlineItem::kOpenRubyColumn:
+      case InlineItem::kOpenTag:
+      case InlineItem::kOutOfFlowPositioned:
+      case InlineItem::kCloseRubyColumn:
+      case InlineItem::kRubyLinePlaceholder:
+        return false;
+    }
+  }
+
+  // Only allow the cache if the text-item(s) matches the text-content.
+  if (!is_at_text_end()) {
     return false;
   }
+
+  // Only allow the cache for initial font features.
   const Font& font =
-      override_font ? *override_font : single_item.FontWithSvgScaling();
+      override_font ? *override_font : items.front()->FontWithSvgScaling();
   if (font.HasNonInitialFontFeatures()) [[unlikely]] {
-    // Non-initial font features can't be cached because the cache is in
-    // `SimpleFontData`.
     return false;
   }
-  const FontDescription& font_description = font.GetFontDescription();
-  if (spacing.SetSpacing(font_description)) [[unlikely]] {
+
+  // We mutate the shape-result if there is spacing, it isn't safe to cache.
+  if (spacing.SetSpacing(font.GetFontDescription())) [[unlikely]] {
     return false;
   }
   return true;
