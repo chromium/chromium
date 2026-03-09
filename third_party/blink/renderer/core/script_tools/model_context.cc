@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -41,14 +42,37 @@ STATIC_ASSERT_ENUM(ScriptToolErrorCode::kToolCancelled,
 namespace {
 
 String ValidateAndStringifyObject(ScriptState* script_state,
+                                  ExceptionState& exception_state,
                                   const ScriptObject& input) {
   v8::Local<v8::String> value;
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+
   if (!v8::JSON::Stringify(script_state->GetContext(), input.V8Object())
            .ToLocal(&value)) {
+    CHECK(rethrow_scope.HasCaught());
     return String();
   }
-  return ToBlinkString<String>(script_state->GetIsolate(), value,
-                               kDoNotExternalize);
+
+  String result = ToBlinkString<String>(script_state->GetIsolate(), value,
+                                        kDoNotExternalize);
+
+  // JSON.stringify() can fail to produce a string in one of two ways:
+  //   1. It can throw an exception (as with unserializable objects), which is
+  //   handled by `rethrow_scope` above; or
+  //   2. It can return the `undefined` JavaScript value, which stringifies as
+  //   the String literal "undefined". We need to check for this, and consider
+  //   it a failure.
+  // This matches the semantics of
+  // https://infra.spec.whatwg.org/#serialize-a-javascript-value-to-a-json-string,
+  // which the spec uses in
+  // https://webmachinelearning.github.io/webmcp/#dom-modelcontext-registertool.
+  if (result == "undefined") {
+    exception_state.ThrowTypeError(
+        "invalid input schema: toJSON() returns undefined");
+    return String();
+  }
+
+  return result;
 }
 
 ScriptObject JSONStringToScriptObject(ScriptState* script_state,
@@ -202,11 +226,11 @@ void ModelContext::registerTool(ScriptState* script_state,
 
   String input_schema;
   if (tool->hasInputSchema()) {
-    input_schema =
-        ValidateAndStringifyObject(script_state, tool->inputSchema());
+    input_schema = ValidateAndStringifyObject(script_state, exception_state,
+                                              tool->inputSchema());
+
     if (!input_schema) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid input schema");
+      // Exception already thrown by ValidateAndStringifyObject
       return;
     }
   }

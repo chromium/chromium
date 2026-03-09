@@ -7,8 +7,8 @@
 <script src="/resources/testharnessreport.js"></script>
 
 <script>
-promise_test(async () => {
-  async function echo(obj) {
+test(() => {
+  function echo(obj) {
     return obj.text;
   }
 
@@ -35,4 +35,17 @@ promise_test(async () => {
 
   modelContext.unregisterTool("echo");
 }, "register and unregister script tool");
+
+test(() => {
+  navigator.modelContext.registerTool({
+    execute: () => {},
+    name: "empty",
+    description: "empty",
+    inputSchema: {
+      toJSON: () => {
+        return "undefined";
+      },
+    },
+  });
+}, "registerTool succeeds when inputSchema.toJSON() returns 'undefined'");
 </script>
