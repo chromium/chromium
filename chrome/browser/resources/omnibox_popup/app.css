@@ -68,6 +68,10 @@
   color: var(--color-searchbox-results-foreground);
 }
 
+.context-menu-container {
+  margin-top: 2px;
+}
+
 :host([searchbox-layout-mode_='TallBottomContext']) .context-menu-container,
 :host([searchbox-layout-mode_='Compact']) .context-menu-container {
   height: 40px;

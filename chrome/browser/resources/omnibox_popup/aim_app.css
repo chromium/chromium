@@ -94,6 +94,10 @@ cr-composebox::part(input) {
   min-height: 44px;
 }
 
+cr-composebox::part(context-menu-and-tools) {
+  margin-top: 2px;
+}
+
 cr-composebox[searchbox-layout-mode='TallBottomContext']::part(context-menu-and-tools) {
   height: 40px;
 }
