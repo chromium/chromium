@@ -246,6 +246,9 @@ void ServiceWorkerSyntheticResponseManager::InitiateRequest(
           kSyntheticNetworkRequest,
       storage_partition, request);
   is_initiated_by_prefetch_ = service_worker_client->is_initiated_by_prefetch();
+  factory_interceptor_count_ =
+      service_worker_client->factory_interceptor_count();
+  is_guest_ = storage_partition->is_guest();
 
   StartRequest(
       GlobalRequestID::MakeBrowserInitiated().request_id,
@@ -540,6 +543,16 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
               perfetto::Flow::FromPointer(this));
   if (did_start_synthetic_response_) {
     if (IsServiceWorkerSyntheticResponseNetworkService()) {
+      CHECK(shared_producer_);
+      SCOPED_CRASH_KEY_BOOL("SWSR", "did_start_synthetic_response",
+                            did_start_synthetic_response_);
+      SCOPED_CRASH_KEY_BOOL("SWSR", "is_initiated_by_prefetch",
+                            is_initiated_by_prefetch_);
+      SCOPED_CRASH_KEY_BOOL(
+          "SWSR", "is_shared_producer_pipe_valid", shared_producer_->pipe.is_valid());
+      SCOPED_CRASH_KEY_BOOL("SWSR", "is_guest", is_guest_);
+      SCOPED_CRASH_KEY_NUMBER("SWSR", "interceptor_count",
+                              factory_interceptor_count_);
       // In the NetworkService mode, the redirect response is managed in the
       // network service. Instead of calling `OnReceiveRedirect()`, the network
       // service sends a fallback trigger (e.g. <meta refresh>) with the

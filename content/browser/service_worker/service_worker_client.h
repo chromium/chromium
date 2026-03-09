@@ -414,6 +414,10 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   bool is_initiated_by_prefetch() const { return is_initiated_by_prefetch_; }
 
+  size_t factory_interceptor_count() const {
+    return factory_interceptor_count_;
+  }
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -640,6 +644,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Only set/used for clients for prefetch.
   scoped_refptr<network::SharedURLLoaderFactory>
       network_url_loader_factory_for_prefetch_;
+
+  size_t factory_interceptor_count_ = 0;
 
   // For all instances --------------------------------------------------------
 

@@ -1352,6 +1352,7 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
   // Record the number of interceptors for metrics.
+  factory_interceptor_count_ = factory_builder.num_interceptors();
   base::UmaHistogramCounts100(
       "ServiceWorker.URLLoaderFactoryInterceptorCountForMainResource",
       factory_builder.num_interceptors());
