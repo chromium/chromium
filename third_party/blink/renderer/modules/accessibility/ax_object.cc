@@ -2961,11 +2961,15 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   //  * Parent is a focusgroup owner whose role was implied (parent has no
   //    explicit role attribute and was generic before inference).
   //  * Current element has no explicit ARIA role (aria_role_ still kUnknown).
-  //  * Current element's native role is generic container or button (to avoid
-  //    overriding richer native semantics like <a>, <input>, etc.).
-  //    Button is included because it is the most common interactive element
-  //    used inside focusgroup patterns (e.g. tabs, menu items) and authors
-  //    expect its role to be inferred from the focusgroup behavior.
+  //  * Current element's native role is generic container, button, or popup
+  //    button (to avoid overriding richer native semantics like <a>, <input>,
+  //    etc.). Button and popup button are included because they are the most
+  //    common interactive elements used inside focusgroup patterns (e.g. tabs,
+  //    menu items, submenu triggers) and authors expect their roles to be
+  //    inferred from the focusgroup behavior. Toggle button (kToggleButton,
+  //    from aria-pressed) is intentionally excluded: aria-pressed declares
+  //    explicit stateful semantics that should not be overridden by implied
+  //    role inference.
   //  * The focusgroup owner's behavior maps to a child role (e.g. tablist->tab,
   //    radiogroup->radio, etc.).
   // TODO(crbug.com/40074157): Investigate why we need to check
@@ -2981,7 +2985,8 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
           element->GetExecutionContext()) &&
       (role_ == ax::mojom::blink::Role::kGenericContainer ||
        role_ == ax::mojom::blink::Role::kUnknown ||
-       role_ == ax::mojom::blink::Role::kButton)) {
+       role_ == ax::mojom::blink::Role::kButton ||
+       role_ == ax::mojom::blink::Role::kPopUpButton)) {
     // Avoid calling GetFocusgroupOwnerOfItem here to prevent
     // unnecessary style recalcs, and state-associated CHECKS.
     // Calling IsKeyboardFocusableSlow is safe here because we are passing the
