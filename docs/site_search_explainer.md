@@ -24,7 +24,7 @@ of the most common types:
   Secure Shell extension).
 - **Enterprise Policy**: Keywords set by a device administrator through enterprise policies. These
   can be further subdivided into:
-  - **Aggregator**: e.g.,`@agentspace`.
+  - **Aggregator**: e.g.,`@geminienterprise`.
   - **Non-aggregator**: e.g., `microsoft-documents`.
 - **Admin Policy**: Keywords set by an admin policy.
 
@@ -36,7 +36,7 @@ to generate suggestions. Site Search functionality is primarily handled by two d
 
 1. **[`FeaturedSearchProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/featured_search_provider.h)**:
    Manages the "Omnibox Starter Pack," which provides scoped search suggestions like `@history`,
-   `@bookmarks`, and `@tabs`, as well as enterprise keywords (e.g. @agentspace or
+   `@bookmarks`, and `@tabs`, as well as enterprise keywords (e.g. @geminienterprise or
    facebook-internal-documents).
 2. **[`KeywordProvider`](https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/keyword_provider.h)**:
    Manages searches directed at specific, non-default search engines using keywords. This is powered
