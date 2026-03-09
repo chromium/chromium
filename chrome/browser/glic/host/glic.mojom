@@ -1460,6 +1460,8 @@ enum InvocationSource {
   [MinVersion=10] kNavigationCapture = 18,
   // Automatically opened for a PDF.
   [MinVersion=11] kAutoOpenedForPdf = 19,
+  // Selection hotkey.
+  [MinVersion=12] kCaptureRegionHotkey = 20,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)

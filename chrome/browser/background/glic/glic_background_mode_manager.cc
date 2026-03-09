@@ -42,27 +42,33 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
     : public ui::AcceleratorTarget {
  public:
   AcceleratorRegistrar(GlicBackgroundModeManager* manager,
-                       ui::Accelerator accelerator)
+                       const std::vector<ui::Accelerator>& accelerators)
       : manager_(CHECK_DEREF(manager)) {
     if (ash::Shell::HasInstance()) {
+      manager->actual_registered_hotkeys_.clear();
       // TODO(crbug.com/461584318): Handle overwriting browser and system
       // shortcuts.
       auto* accel_controller = ash::Shell::Get()->accelerator_controller();
-      if (!accel_controller->IsReserved(accelerator) ||
-          !accel_controller->IsRegistered(accelerator)) {
-        accel_controller->Register({accelerator}, this);
-        manager->actual_registered_hotkey_ = accelerator;
+      for (auto accelerator : accelerators) {
+        if (!accelerator.IsEmpty() &&
+            (!accel_controller->IsReserved(accelerator) ||
+             !accel_controller->IsRegistered(accelerator))) {
+          accel_controller->Register({accelerator}, this);
+        } else {
+          accelerator = ui::Accelerator();
+        }
+        manager->actual_registered_hotkeys_.push_back(accelerator);
       }
     }
   }
 
   ~AcceleratorRegistrar() override {
     if (ash::Shell::HasInstance() &&
-        !manager_->actual_registered_hotkey_.IsEmpty()) {
+        !manager_->actual_registered_hotkeys_.empty()) {
       auto* accel_controller = ash::Shell::Get()->accelerator_controller();
-      accel_controller->Unregister(manager_->actual_registered_hotkey_, this);
+      accel_controller->UnregisterAll(this);
     }
-    manager_->actual_registered_hotkey_ = ui::Accelerator();
+    manager_->actual_registered_hotkeys_.clear();
   }
 
   // ui::AcceleratorTarget:
@@ -70,7 +76,10 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    if (accelerator == manager_->actual_registered_hotkey_) {
+    auto it =
+        std::find(manager_->actual_registered_hotkeys_.begin(),
+                  manager_->actual_registered_hotkeys_.end(), accelerator);
+    if (it != manager_->actual_registered_hotkeys_.end()) {
       manager_->HandleHotkey(accelerator);
       return true;
     }
@@ -87,18 +96,24 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
     : public ui::GlobalAcceleratorListener::Observer {
  public:
   AcceleratorRegistrar(GlicBackgroundModeManager* manager,
-                       ui::Accelerator accelerator)
+                       const std::vector<ui::Accelerator>& accelerators)
       : manager_(CHECK_DEREF(manager)) {
     auto* const global_accelerator_listener =
         ui::GlobalAcceleratorListener::GetInstance();
+    manager->actual_registered_hotkeys_.clear();
     if (global_accelerator_listener) {
       const bool shortcut_handling_suspended =
           global_accelerator_listener->IsShortcutHandlingSuspended();
       // Re-enable shortcut handling to allow the global accelerator listener to
       // register the hotkey.
       global_accelerator_listener->SetShortcutHandlingSuspended(false);
-      if (global_accelerator_listener->RegisterAccelerator(accelerator, this)) {
-        manager_->actual_registered_hotkey_ = accelerator;
+      for (auto accelerator : accelerators) {
+        if (!accelerator.IsEmpty() &&
+            !global_accelerator_listener->RegisterAccelerator(accelerator,
+                                                              this)) {
+          accelerator = ui::Accelerator();
+        }
+        manager_->actual_registered_hotkeys_.push_back(accelerator);
       }
       global_accelerator_listener->SetShortcutHandlingSuspended(
           shortcut_handling_suspended);
@@ -108,12 +123,10 @@ class GlicBackgroundModeManager::AcceleratorRegistrar
   ~AcceleratorRegistrar() override {
     auto* const global_accelerator_listener =
         ui::GlobalAcceleratorListener::GetInstance();
-    if (global_accelerator_listener &&
-        !manager_->actual_registered_hotkey_.IsEmpty()) {
-      global_accelerator_listener->UnregisterAccelerator(
-          manager_->actual_registered_hotkey_, this);
+    if (global_accelerator_listener) {
+      global_accelerator_listener->UnregisterAccelerators(this);
     }
-    manager_->actual_registered_hotkey_ = ui::Accelerator();
+    manager_->actual_registered_hotkeys_.clear();
   }
 
   // ui::GlobalAcceleratorListener::Observer
@@ -137,8 +150,9 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
       controller_(std::make_unique<GlicController>()),
       status_tray_(status_tray),
       enabled_pref_(GlicLauncherConfiguration::IsEnabled()),
-      expected_registered_hotkey_(
-          GlicLauncherConfiguration::GetGlobalHotkey()) {
+      expected_registered_hotkeys_(
+          {GlicLauncherConfiguration::GetGlobalHotkey(),
+           GlicLauncherConfiguration::GetSelectionGlobalHotkey()}) {
   g_browser_process->profile_manager()->AddObserver(this);
   // Start tracking any profiles that already exist.
   for (auto* profile :
@@ -171,27 +185,43 @@ void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
 #endif
 }
 
-void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
-  if (expected_registered_hotkey_ == hotkey) {
+void GlicBackgroundModeManager::OnGlobalHotkeyChanged() {
+  std::vector<ui::Accelerator> new_hotkeys = {
+      GlicLauncherConfiguration::GetGlobalHotkey(),
+      GlicLauncherConfiguration::GetSelectionGlobalHotkey()};
+
+  if (expected_registered_hotkeys_ == new_hotkeys) {
     return;
   }
 
-  expected_registered_hotkey_ = hotkey;
+  expected_registered_hotkeys_ = std::move(new_hotkeys);
   UpdateState();
 }
 
 void GlicBackgroundModeManager::HandleHotkey(
     const ui::Accelerator& accelerator) {
-  CHECK(accelerator == actual_registered_hotkey_);
-  CHECK(actual_registered_hotkey_ == expected_registered_hotkey_);
-  controller_->Toggle(mojom::InvocationSource::kOsHotkey);
-  // Record hotkey usage.
-  const ui::Accelerator default_hotkey =
-      GlicLauncherConfiguration::GetDefaultHotkey();
-  base::UmaHistogramEnumeration("Glic.Usage.Hotkey",
-                                accelerator == default_hotkey
-                                    ? glic::HotkeyUsage::kDefault
-                                    : glic::HotkeyUsage::kCustom);
+  auto it = std::find(actual_registered_hotkeys_.begin(),
+                      actual_registered_hotkeys_.end(), accelerator);
+  CHECK(it != actual_registered_hotkeys_.end());
+
+  switch (static_cast<HotkeyIndex>(
+      std::distance(actual_registered_hotkeys_.begin(), it))) {
+    case HotkeyIndex::kPanelKey: {
+      controller_->Toggle(mojom::InvocationSource::kOsHotkey);
+      // Record hotkey usage.
+      const ui::Accelerator default_hotkey =
+          GlicLauncherConfiguration::GetDefaultHotkey();
+      base::UmaHistogramEnumeration("Glic.Usage.Hotkey",
+                                    accelerator == default_hotkey
+                                        ? glic::HotkeyUsage::kDefault
+                                        : glic::HotkeyUsage::kCustom);
+      break;
+    }
+    case HotkeyIndex::kSelectionKey: {
+      controller_->RequestCaptureRegion();
+      break;
+    }
+  }
 }
 
 void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
@@ -258,11 +288,11 @@ void GlicBackgroundModeManager::ExitBackgroundMode() {
   keep_alive_.reset();
 }
 
-void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
-  CHECK(!updated_hotkey.IsEmpty());
+void GlicBackgroundModeManager::RegisterHotkeys(
+    const std::vector<ui::Accelerator>& updated_hotkeys) {
   CHECK(!accelerator_registrar_);
   accelerator_registrar_ =
-      std::make_unique<AcceleratorRegistrar>(this, updated_hotkey);
+      std::make_unique<AcceleratorRegistrar>(this, updated_hotkeys);
 }
 
 void GlicBackgroundModeManager::UnregisterHotkey() {
@@ -275,15 +305,17 @@ void GlicBackgroundModeManager::UpdateState() {
   bool background_mode_enabled = enabled_pref_ && IsEnabledInAnyLoadedProfile();
   if (background_mode_enabled) {
     EnterBackgroundMode();
-    if (!expected_registered_hotkey_.IsEmpty()) {
-      RegisterHotkey(expected_registered_hotkey_);
-    }
+    RegisterHotkeys(expected_registered_hotkeys_);
   } else {
     ExitBackgroundMode();
   }
 
   if (status_icon_) {
-    status_icon_->UpdateHotkey(actual_registered_hotkey_);
+    status_icon_->UpdateHotkey(
+        actual_registered_hotkeys_.empty()
+            ? ui::Accelerator()
+            : actual_registered_hotkeys_.at(
+                  static_cast<size_t>(HotkeyIndex::kPanelKey)));
   }
 }
 

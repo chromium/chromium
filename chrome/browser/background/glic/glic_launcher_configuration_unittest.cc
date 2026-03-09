@@ -23,7 +23,7 @@ class MockObserver : public GlicLauncherConfiguration::Observer {
  public:
   // void OnEnabledChanged(bool enabled) override {}
   MOCK_METHOD1(OnEnabledChanged, void(bool));
-  MOCK_METHOD1(OnGlobalHotkeyChanged, void(ui::Accelerator));
+  MOCK_METHOD0(OnGlobalHotkeyChanged, void());
 };
 }  // namespace
 
@@ -81,7 +81,7 @@ TEST_F(GlicLauncherConfigurationTest, Observer) {
   EXPECT_CALL(observer, OnEnabledChanged(true)).Times(1);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
-  EXPECT_CALL(observer, OnGlobalHotkeyChanged(testing::_)).Times(1);
+  EXPECT_CALL(observer, OnGlobalHotkeyChanged()).Times(1);
   const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
   local_state()->SetString(prefs::kGlicLauncherHotkey,
                            ui::Command::AcceleratorToString(hotkey));

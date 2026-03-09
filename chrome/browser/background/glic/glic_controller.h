@@ -31,6 +31,9 @@ class GlicController {
   // Returns true if the glic UI is visible.
   virtual bool IsShowing() const;
 
+  // Request capturing a region if we are in the foreground.
+  virtual void RequestCaptureRegion();
+
  private:
   // Helper that implements both Toggle and Show.
   void ToggleUI(bool prevent_close, mojom::InvocationSource source);

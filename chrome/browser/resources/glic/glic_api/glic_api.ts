@@ -2756,6 +2756,8 @@ export enum InvocationSource {
   NAVIGATION_CAPTURE = 18,
   // Automatically opened for a PDF.
   AUTO_OPENED_FOR_PDF = 19,
+  // Selection hotkey.
+  CAPTURE_REGION_HOTKEY = 20,
 }
 
 ///////////////////////////////////////////////

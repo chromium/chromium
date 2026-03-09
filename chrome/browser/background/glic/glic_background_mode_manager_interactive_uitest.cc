@@ -80,12 +80,14 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
                   &browser_process);
             }));
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
     feature_list_.InitWithFeatures(
-        {features::kGlicShowStatusTrayIcon,
-         chromeos::features::kSupportCustomIconsInStatusArea},
-        {});
+        {features::kGlicCaptureRegion,
+#if BUILDFLAG(IS_CHROMEOS)
+         features::kGlicShowStatusTrayIcon,
+         chromeos::features::kSupportCustomIconsInStatusArea
 #endif
+        },
+        {});
   }
 
   void TearDownOnMainThread() override {
@@ -112,9 +114,15 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
 #endif
   }
 
-  void RegisterHotkey(ui::Accelerator updated_hotkey) {
+  void RegisterLauncherHotkey(ui::Accelerator updated_hotkey) {
     g_browser_process->local_state()->SetString(
         prefs::kGlicLauncherHotkey,
+        ui::Command::AcceleratorToString(updated_hotkey));
+  }
+
+  void RegisterSelectionHotkey(ui::Accelerator updated_hotkey) {
+    g_browser_process->local_state()->SetString(
+        prefs::kGlicSelectionHotkey,
         ui::Command::AcceleratorToString(updated_hotkey));
   }
 
@@ -165,20 +173,30 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
                                                true);
   GlicBackgroundModeManager* const manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
-  EXPECT_EQ(ui::Accelerator(ui::VKEY_G,
-#if BUILDFLAG(IS_MAC)
-                            ui::EF_CONTROL_DOWN
-#elif BUILDFLAG(IS_CHROMEOS)
-                            ui::EF_COMMAND_DOWN
-#else
-                            ui::EF_ALT_DOWN
-#endif
-                            ),
-            manager->RegisteredHotkeyForTesting());
+  EXPECT_EQ(GlicLauncherConfiguration::GetDefaultHotkey(),
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
+  EXPECT_EQ(GlicLauncherConfiguration::GetDefaultSelectionHotkey(),
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kSelectionKey)));
 
   ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  RegisterHotkey(updated_hotkey);
-  EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
+  RegisterLauncherHotkey(updated_hotkey);
+  EXPECT_EQ(updated_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
+  EXPECT_EQ(GlicLauncherConfiguration::GetDefaultSelectionHotkey(),
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kSelectionKey)));
+
+  ui::Accelerator updated_selection_hotkey(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  RegisterSelectionHotkey(updated_selection_hotkey);
+  EXPECT_EQ(updated_selection_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kSelectionKey)));
+  EXPECT_EQ(updated_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
@@ -190,17 +208,24 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   ASSERT_FALSE(pref_service->GetBoolean(prefs::kGlicLauncherEnabled));
   GlicBackgroundModeManager* const manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
-  EXPECT_TRUE(manager->RegisteredHotkeyForTesting().IsEmpty());
+  EXPECT_TRUE(manager->RegisteredHotkeyForTesting().empty());
 
   // If the hotkey pref were to somehow change even while glic was disabled,
   // the manager should not register the hotkey.
   ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  RegisterHotkey(updated_hotkey);
-  EXPECT_TRUE(manager->RegisteredHotkeyForTesting().IsEmpty());
+  ui::Accelerator updated_selection_hotkey(ui::VKEY_B, ui::EF_CONTROL_DOWN);
+  RegisterLauncherHotkey(updated_hotkey);
+  RegisterSelectionHotkey(updated_selection_hotkey);
+  EXPECT_TRUE(manager->RegisteredHotkeyForTesting().empty());
 
   // Re-enabling glic should register the updated hotkey pref.
   pref_service->SetBoolean(prefs::kGlicLauncherEnabled, true);
-  EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
+  EXPECT_EQ(updated_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
+  EXPECT_EQ(updated_selection_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kSelectionKey)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
@@ -215,8 +240,10 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
 
   // Registering an invalid hotkey should fail.
   ui::Accelerator updated_hotkey(ui::VKEY_A, ui::EF_NONE);
-  RegisterHotkey(updated_hotkey);
-  EXPECT_NE(updated_hotkey, manager->RegisteredHotkeyForTesting());
+  RegisterLauncherHotkey(updated_hotkey);
+  EXPECT_NE(updated_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
@@ -234,9 +261,11 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   global_accelerator_listener->SetShortcutHandlingSuspended(true);
   ui::Accelerator updated_hotkey(ui::VKEY_A,
                                  ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  RegisterHotkey(updated_hotkey);
+  RegisterLauncherHotkey(updated_hotkey);
 
-  EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
+  EXPECT_EQ(updated_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
   EXPECT_TRUE(global_accelerator_listener->IsShortcutHandlingSuspended());
 }
 
@@ -276,7 +305,9 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
 
   ui::Accelerator default_hotkey =
       GlicLauncherConfiguration::GetDefaultHotkey();
-  EXPECT_EQ(default_hotkey, manager->RegisteredHotkeyForTesting());
+  EXPECT_EQ(default_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
   manager->HandleHotkey(default_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);
@@ -284,8 +315,10 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
                                      0);
 
   ui::Accelerator custom_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  RegisterHotkey(custom_hotkey);
-  EXPECT_EQ(custom_hotkey, manager->RegisteredHotkeyForTesting());
+  RegisterLauncherHotkey(custom_hotkey);
+  EXPECT_EQ(custom_hotkey,
+            manager->RegisteredHotkeyForTesting().at(static_cast<size_t>(
+                GlicBackgroundModeManager::HotkeyIndex::kPanelKey)));
   manager->HandleHotkey(custom_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);

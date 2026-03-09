@@ -7,6 +7,11 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -55,6 +60,22 @@ void GlicController::ToggleUI(bool prevent_close,
   GlicKeyedService* glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   glic_keyed_service->ToggleUI(nullptr, prevent_close, source);
+}
+
+void GlicController::RequestCaptureRegion() {
+  BrowserWindowInterface* const bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (!bwi) {
+    return;
+  }
+  GlicKeyedService* glic_keyed_service =
+      GlicKeyedService::Get(bwi->GetProfile());
+  if (!glic_keyed_service) {
+    return;
+  }
+  glic_keyed_service->Invoke(
+      bwi->GetActiveTabInterface(),
+      GlicInvokeOptions(glic::mojom::InvocationSource::kCaptureRegionHotkey));
 }
 
 }  // namespace glic

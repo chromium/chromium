@@ -24,7 +24,7 @@ class GlicLauncherConfiguration {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnEnabledChanged(bool enabled) {}
-    virtual void OnGlobalHotkeyChanged(ui::Accelerator hotkey) {}
+    virtual void OnGlobalHotkeyChanged() {}
   };
 
   explicit GlicLauncherConfiguration(Observer* manager);
@@ -37,8 +37,13 @@ class GlicLauncherConfiguration {
 
   static ui::Accelerator GetGlobalHotkey();
 
+  static ui::Accelerator GetSelectionGlobalHotkey();
+
   // Returns the default hotkey for the glic launcher.
   static ui::Accelerator GetDefaultHotkey();
+
+  // Return the default selection hotkey.
+  static ui::Accelerator GetDefaultSelectionHotkey();
 
   // Checks if the browser is the default browser and enables the launcher if it
   // is.

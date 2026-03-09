@@ -57,7 +57,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
 
   // GlicConfiguration::Observer
   void OnEnabledChanged(bool enabled) override;
-  void OnGlobalHotkeyChanged(ui::Accelerator hotkey) override;
+  void OnGlobalHotkeyChanged() override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -69,8 +69,13 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
 
   void Shutdown();
 
-  ui::Accelerator RegisteredHotkeyForTesting() {
-    return actual_registered_hotkey_;
+  enum class HotkeyIndex : uint8_t {
+    kPanelKey,
+    kSelectionKey,
+  };
+
+  const std::vector<ui::Accelerator>& RegisteredHotkeyForTesting() {
+    return actual_registered_hotkeys_;
   }
 
   bool IsInBackgroundModeForTesting() {
@@ -86,7 +91,7 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
  private:
   class AcceleratorRegistrar;
 
-  void RegisterHotkey(ui::Accelerator updated_hotkey);
+  void RegisterHotkeys(const std::vector<ui::Accelerator>& updated_hotkeys);
   void UnregisterHotkey();
   void UpdateState();
 
@@ -124,8 +129,8 @@ class GlicBackgroundModeManager : public GlicLauncherConfiguration::Observer,
   // because the Glic launcher may be disabled or registration fails which
   // results in no hotkey being registered and is represented with an empty
   // accelerator.
-  ui::Accelerator expected_registered_hotkey_;
-  ui::Accelerator actual_registered_hotkey_;
+  std::vector<ui::Accelerator> expected_registered_hotkeys_;
+  std::vector<ui::Accelerator> actual_registered_hotkeys_;
 
   // Accelerator subclass to control accelerator registration between different
   // platform.

@@ -25,6 +25,10 @@ inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
 inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 
 // String pref that keeps track of the non-localized version of the registered
+// selection hotkey for Glic.
+inline constexpr char kGlicSelectionHotkey[] = "glic.selection_hotkey";
+
+// String pref that keeps track of the non-localized version of the registered
 // hotkey for toggling focus between Glic and the browser window.
 inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";
 

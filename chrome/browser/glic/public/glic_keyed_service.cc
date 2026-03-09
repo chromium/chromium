@@ -400,6 +400,19 @@ void GlicKeyedService::InvokeWithAutoSubmit(
       .InvokeWithAutoSubmit(auto_submit_passkey, tab, std::move(options));
 }
 
+void GlicKeyedService::Invoke(tabs::TabInterface* tab,
+                              GlicInvokeOptions options) {
+  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
+
+  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
+  if (glic_profile_manager) {
+    glic_profile_manager->SetActiveGlic(this);
+  }
+
+  static_cast<GlicInstanceCoordinatorImpl&>(window_controller())
+      .Invoke(tab, std::move(options));
+}
+
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                                              mojom::InvocationSource source) {
 #if !BUILDFLAG(IS_ANDROID)
