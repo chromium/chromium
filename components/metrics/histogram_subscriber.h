@@ -25,6 +25,7 @@ class HistogramSubscriber {
   // This is called on the UI thread.
   virtual void OnHistogramDataCollected(
       int sequence_number,
+      bool is_webium_renderer,
       const std::vector<std::string>& pickled_histograms) = 0;
 };
 

@@ -489,7 +489,8 @@ void PersistentHistogramAllocator::FinalizeHistogram(Reference ref,
 
 PersistentHistogramAllocator::MergeResult
 PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
-    HistogramBase* histogram) {
+    HistogramBase* histogram,
+    std::string_view name_override) {
   DCHECK(histogram);
 
   // Return immediately if the histogram has no samples since the last delta
@@ -500,7 +501,8 @@ PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
     return PersistentHistogramAllocator::MergeResult::kSuccess;
   }
 
-  HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
+  HistogramBase* existing =
+      GetOrCreateStatisticsRecorderHistogram(histogram, name_override);
   if (!existing) {
     // The above should never fail but if it does, no real harm is done.
     // Some metric data will be lost but that is better than crashing.
@@ -513,7 +515,8 @@ PersistentHistogramAllocator::MergeHistogramDeltaToStatisticsRecorder(
 
 PersistentHistogramAllocator::MergeResult
 PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
-    const HistogramBase* histogram) {
+    const HistogramBase* histogram,
+    std::string_view name_override) {
   DCHECK(histogram);
 
   // Return immediately if the histogram has no samples. This is to prevent
@@ -524,7 +527,8 @@ PersistentHistogramAllocator::MergeHistogramFinalDeltaToStatisticsRecorder(
     return PersistentHistogramAllocator::MergeResult::kSuccess;
   }
 
-  HistogramBase* existing = GetOrCreateStatisticsRecorderHistogram(histogram);
+  HistogramBase* existing =
+      GetOrCreateStatisticsRecorderHistogram(histogram, name_override);
   if (!existing) {
     // The above should never fail but if it does, no real harm is done.
     // Some metric data will be lost but that is better than crashing.
@@ -711,14 +715,17 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
 
 HistogramBase*
 PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
-    const HistogramBase* histogram) {
+    const HistogramBase* histogram,
+    std::string_view name_override) {
   // This should never be called on the global histogram allocator as objects
   // created there are already within the global statistics recorder.
   DCHECK_NE(GlobalHistogramAllocator::Get(), this);
   DCHECK(histogram);
 
-  HistogramBase* existing =
-      StatisticsRecorder::FindHistogram(histogram->histogram_name());
+  std::string_view lookup_name =
+      name_override.empty() ? histogram->histogram_name() : name_override;
+
+  HistogramBase* existing = StatisticsRecorder::FindHistogram(lookup_name);
   if (existing) {
     return existing;
   }
@@ -731,7 +738,16 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
   base::Pickle pickle;
   histogram->SerializeInfo(&pickle);
   PickleIterator iter(pickle);
-  existing = DeserializeHistogramInfo(&iter);
+
+  base::RepeatingCallback<std::string_view(std::string_view)> mapper;
+  if (!name_override.empty()) {
+    mapper = base::BindRepeating(
+        [](std::string_view override_name, std::string_view /* original_name */)
+            -> std::string_view { return override_name; },
+        name_override);
+  }
+
+  existing = DeserializeHistogramInfo(&iter, mapper);
   if (!existing) {
     return nullptr;
   }

@@ -240,7 +240,8 @@ SparseHistogram::SparseHistogram(PersistentHistogramAllocator* allocator,
   DCHECK_EQ(name_hash, HashMetricName(*durable_name)) << "Name hash mismatch";
 }
 
-HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
+HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter,
+                                                    NameMapper mapper) {
   std::string histogram_name;
   int flags;
   if (!iter->ReadString(&histogram_name) || !iter->ReadInt(&flags)) {
@@ -250,7 +251,15 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
 
   flags &= ~HistogramBase::kIPCSerializationSourceFlag;
 
-  return SparseHistogram::FactoryGet(histogram_name, flags);
+  std::string_view name_to_use = histogram_name;
+  if (mapper) {
+    name_to_use = mapper.Run(histogram_name);
+    if (name_to_use.empty()) {
+      return DummyHistogram::GetInstance();
+    }
+  }
+
+  return SparseHistogram::FactoryGet(name_to_use, flags);
 }
 
 DictValue SparseHistogram::GetParameters() const {

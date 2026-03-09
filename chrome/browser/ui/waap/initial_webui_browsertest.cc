@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base64.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -12,6 +14,9 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/metrics/mapping/metrics_mapping_features.h"
+#include "components/metrics/mapping/metrics_name_mapping.pb.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,6 +27,14 @@
 #include "url/gurl.h"
 
 namespace waap {
+namespace {
+
+constexpr char kTestMetricName[] =
+    "Navigation.DocumentLoader.DidCommitNavigation";
+constexpr char kTestMetricNameRenamed[] =
+    "Webium.Navigation.DocumentLoader.DidCommitNavigation";
+
+}  // namespace
 
 // Initializes a web ui controller after navigation. Note that this is probably
 // an indication that these tests require too much insight into the state of
@@ -237,6 +250,187 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_NE(
       non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
       initial_webui_web_contents->GetPrimaryMainFrame()->GetProcess());
+}
+
+class InitialWebUIMetricsMappingBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIMetricsMappingBrowserTest() {
+    metrics::MetricsNameMappingConfiguration config;
+    metrics::MetricsNameMapping* mapping = config.add_rules();
+    mapping->set_metric_name(kTestMetricName);
+    mapping->set_new_metric_name(kTestMetricNameRenamed);
+
+    std::string serialized_config;
+    config.SerializeToString(&serialized_config);
+    std::string base64_config = base::Base64Encode(serialized_config);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{metrics::features::kWebiumMetricsMapping,
+          {{metrics::features::kWebiumMetricsMappingConfig.name,
+            base64_config}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsMappingBrowserTest,
+                       WebiumRendererMetricsAreMapped) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial WebUI page.
+  GURL url(chrome::kChromeUIWebUIToolbarURL);
+  WebUIToolbarInitializer initializer;
+  std::unique_ptr<content::WebContents> initial_webui_web_contents =
+      CreateAndNavigateWebContents(url, &initializer);
+
+  // Fetch the histograms from the Webium renderer and merge them into the
+  // browser's StatisticsRecorder.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // The Navigation.DocumentLoader.DidCommitNavigation metric is emitted
+  // unconditionally by the renderer upon navigation commit.
+  // The base metric should have been renamed by the synchronizer.
+  // We check that the Webium-prefixed metric successfully captured
+  // the sample by checking the count.
+  int total_webium_count = 0;
+  for (const base::Bucket& bucket :
+       histogram_tester.GetAllSamples(kTestMetricNameRenamed)) {
+    total_webium_count += bucket.count;
+  }
+  EXPECT_GE(total_webium_count, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsMappingBrowserTest,
+                       NormalRendererMetricsAreNotMapped) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a regular WebUI page (NOT TopChrome WebUI).
+  GURL url(chrome::kChromeUIVersionURL);
+  std::unique_ptr<content::WebContents> non_initial_webui_web_contents =
+      CreateAndNavigateWebContents(url, nullptr);
+
+  // Fetch histograms and merge them.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // Because this is NOT a Webium renderer, the metric should NOT be prefixed.
+  histogram_tester.ExpectTotalCount(kTestMetricNameRenamed, 0);
+
+  int total_normal_count = 0;
+  for (const base::Bucket& bucket :
+       histogram_tester.GetAllSamples(kTestMetricName)) {
+    total_normal_count += bucket.count;
+  }
+  EXPECT_GE(total_normal_count, 1);
+}
+
+class InitialWebUIMetricsAllowlistBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIMetricsAllowlistBrowserTest() {
+    metrics::MetricsNameMappingConfiguration config;
+    metrics::MetricsNameMapping* mapping = config.add_rules();
+    mapping->set_metric_name(kTestMetricName);
+    // No new_metric_name set, so it should be allowed without renaming.
+
+    std::string serialized_config;
+    config.SerializeToString(&serialized_config);
+    std::string base64_config = base::Base64Encode(serialized_config);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{metrics::features::kWebiumMetricsMapping,
+          {{metrics::features::kWebiumMetricsMappingConfig.name,
+            base64_config}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsAllowlistBrowserTest,
+                       WebiumRendererMetricsAllowedWithoutRenaming) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial WebUI page.
+  GURL url(chrome::kChromeUIWebUIToolbarURL);
+  WebUIToolbarInitializer initializer;
+  std::unique_ptr<content::WebContents> initial_webui_web_contents =
+      CreateAndNavigateWebContents(url, &initializer);
+
+  // Fetch the histograms from the Webium renderer and merge them into the
+  // browser's StatisticsRecorder.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // The Navigation.DocumentLoader.DidCommitNavigation metric is emitted
+  // unconditionally by the renderer upon navigation commit.
+  // The configuration allows this metric but does NOT provide a rename.
+  // We check that the original name is used and NO prefixed version exists.
+
+  // 1. Verify prefixed metric does NOT exist.
+  histogram_tester.ExpectTotalCount(kTestMetricNameRenamed, 0);
+
+  // 2. Verify original metric DOES exist.
+  int total_count = 0;
+  for (const base::Bucket& bucket :
+       histogram_tester.GetAllSamples(kTestMetricName)) {
+    total_count += bucket.count;
+  }
+  EXPECT_GE(total_count, 1);
+}
+
+class InitialWebUIMetricsDropBrowserTest : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIMetricsDropBrowserTest() {
+    // Enable the feature with an empty configuration.
+    // This implies that NO metrics are mapped or allowed, so all Webium
+    // renderer metrics should be dropped.
+    metrics::MetricsNameMappingConfiguration config;
+    std::string serialized_config;
+    config.SerializeToString(&serialized_config);
+    std::string base64_config = base::Base64Encode(serialized_config);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{metrics::features::kWebiumMetricsMapping,
+          {{metrics::features::kWebiumMetricsMappingConfig.name,
+            base64_config}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
+                       WebiumRendererMetricsDroppedIfNoRule) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial WebUI page.
+  GURL url(chrome::kChromeUIWebUIToolbarURL);
+  WebUIToolbarInitializer initializer;
+  std::unique_ptr<content::WebContents> initial_webui_web_contents =
+      CreateAndNavigateWebContents(url, &initializer);
+
+  // Fetch the histograms from the Webium renderer and merge them into the
+  // browser's StatisticsRecorder.
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  // The Navigation.DocumentLoader.DidCommitNavigation metric is emitted
+  // unconditionally by the renderer upon navigation commit.
+  // The configuration is empty, so this metric should be DROPPED.
+
+  // 1. Verify prefixed metric does NOT exist.
+  histogram_tester.ExpectTotalCount(kTestMetricNameRenamed, 0);
+
+  // 2. Verify original metric does NOT exist (it was dropped, not emitted
+  // as-is).
+  histogram_tester.ExpectTotalCount(kTestMetricName, 0);
 }
 
 }  // namespace waap

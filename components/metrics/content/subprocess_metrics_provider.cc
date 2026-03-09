@@ -9,14 +9,17 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "components/metrics/metrics_features.h"
+#include "components/metrics/mapping/metrics_mapping_features.h"
+#include "components/metrics/mapping/metrics_name_mapper.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
@@ -58,8 +61,10 @@ void SubprocessMetricsProvider::MergeHistogramDeltasForTesting(
 }
 
 SubprocessMetricsProvider::RefCountedAllocator::RefCountedAllocator(
-    std::unique_ptr<base::PersistentHistogramAllocator> allocator)
-    : allocator_(std::move(allocator)) {
+    std::unique_ptr<base::PersistentHistogramAllocator> allocator,
+    bool is_webium_renderer)
+    : allocator_(std::move(allocator)),
+      is_webium_renderer_(is_webium_renderer) {
   CHECK(allocator_);
 }
 
@@ -76,6 +81,11 @@ SubprocessMetricsProvider::SubprocessMetricsProvider()
   // Ensure no child processes currently exist so that we do not miss any.
   CHECK(content::RenderProcessHost::AllHostsIterator().IsAtEnd());
   CHECK(content::BrowserChildProcessHostIterator().Done());
+
+  if (base::FeatureList::IsEnabled(features::kWebiumMetricsMapping)) {
+    webium_metrics_name_mapper_ = std::make_unique<MetricsNameMapper>(
+        features::kWebiumMetricsMappingConfig.Get());
+  }
 }
 
 SubprocessMetricsProvider::~SubprocessMetricsProvider() {
@@ -85,7 +95,8 @@ SubprocessMetricsProvider::~SubprocessMetricsProvider() {
 
 void SubprocessMetricsProvider::RegisterSubprocessAllocator(
     int id,
-    std::unique_ptr<base::PersistentHistogramAllocator> allocator) {
+    std::unique_ptr<base::PersistentHistogramAllocator> allocator,
+    bool is_webium_renderer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(allocator);
 
@@ -100,7 +111,8 @@ void SubprocessMetricsProvider::RegisterSubprocessAllocator(
   // Insert the allocator into the internal map and verify that there was no
   // allocator with the same ID already.
   auto result = allocators_by_id_.emplace(
-      id, base::MakeRefCounted<RefCountedAllocator>(std::move(allocator)));
+      id, base::MakeRefCounted<RefCountedAllocator>(std::move(allocator),
+                                                    is_webium_renderer));
   CHECK(result.second);
 }
 
@@ -229,7 +241,8 @@ void SubprocessMetricsProvider::RenderProcessReady(
     RegisterSubprocessAllocator(
         host->GetDeprecatedID(),
         std::make_unique<base::PersistentHistogramAllocator>(
-            std::move(allocator)));
+            std::move(allocator)),
+        host->IsForTopChromeWebUI());
   }
 }
 
@@ -258,6 +271,20 @@ void SubprocessMetricsProvider::RecreateTaskRunnerForTesting() {
 }
 
 // static
+std::string_view SubprocessMetricsProvider::GetHistogramNameForMerging(
+    bool is_webium_renderer,
+    std::string_view histogram_name) {
+  if (is_webium_renderer) {
+    auto* mapper = SubprocessMetricsProvider::GetInstance()
+                       ->webium_metrics_name_mapper_.get();
+    if (mapper) {
+      return mapper->GetMetricsNameIfAllowed(histogram_name);
+    }
+  }
+  return histogram_name;
+}
+
+// static
 void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     int id,
     RefCountedAllocator* allocator) {
@@ -271,10 +298,19 @@ void SubprocessMetricsProvider::MergeHistogramDeltasFromAllocator(
     if (!histogram) {
       break;
     }
+
+    std::string_view final_name = GetHistogramNameForMerging(
+        allocator->IsWebiumRenderer(), histogram->histogram_name());
+
+    if (final_name.empty()) {
+      continue;
+    }
+
     // We expect histograms to match as subprocesses shouldn't have version skew
     // with the browser process.
     base::PersistentHistogramAllocator::MergeResult result =
-        allocator_ptr->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
+        allocator_ptr->MergeHistogramDeltaToStatisticsRecorder(histogram.get(),
+                                                               final_name);
 
     // When merging child process histograms into the parent, we expect the
     // merge operation to succeed. If it doesn't, it means the histograms have

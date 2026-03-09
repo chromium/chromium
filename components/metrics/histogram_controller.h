@@ -78,7 +78,8 @@ class COMPONENT_EXPORT(METRICS) HistogramController {
   void InsertChildHistogramFetcherInterface(
       HistogramChildProcess* host,
       mojo::Remote<mojom::ChildHistogramFetcher> child_histogram_fetcher,
-      ChildProcessMode mode);
+      ChildProcessMode mode,
+      bool is_webium_renderer);
 
   // Calls PingChildProcess() on ~10% of child processes. Not all child
   // processes are pinged so as to avoid possibly "waking up" too many and
@@ -102,6 +103,7 @@ class COMPONENT_EXPORT(METRICS) HistogramController {
   // Records the histogram data collected from a child process.
   void OnHistogramDataCollected(
       int sequence_number,
+      bool is_webium_renderer,
       const std::vector<std::string>& pickled_histograms);
 
   struct ChildHistogramFetcher;

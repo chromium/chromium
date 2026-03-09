@@ -49,8 +49,9 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
     if (!histogram) {
       break;
     }
+    // TODO(crbug.com/489919375): Fuzz the name_override parameter.
     histogram_allocator->MergeHistogramDeltaToStatisticsRecorder(
-        histogram.get());
+        histogram.get(), /*name_override=*/"");
   }
 
   return 0;

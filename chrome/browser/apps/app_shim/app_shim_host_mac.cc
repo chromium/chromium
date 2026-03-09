@@ -212,8 +212,9 @@ void AppShimHost::OnBootstrapConnected(
             std::move(histogram_allocator_)));
   }
 
-  if (on_shim_connected_for_testing_)
+  if (on_shim_connected_for_testing_) {
     std::move(on_shim_connected_for_testing_).Run();
+  }
 }
 
 void AppShimHost::LaunchShim(web_app::ShimLaunchMode launch_mode) {
@@ -315,4 +316,8 @@ void AppShimHost::BindChildHistogramFetcherFactory(
     mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
         factory) {
   app_shim_->BindChildHistogramFetcherFactory(std::move(factory));
+}
+
+bool AppShimHost::IsWebiumRenderer() const {
+  return false;
 }

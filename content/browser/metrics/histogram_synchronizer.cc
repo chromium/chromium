@@ -7,16 +7,17 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "components/metrics/histogram_controller.h"
+#include "components/metrics/mapping/metrics_name_mapper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -159,6 +160,7 @@ HistogramSynchronizer::HistogramSynchronizer()
     : lock_(),
       last_used_sequence_number_(kNeverUsableSequenceNumber),
       async_sequence_number_(kNeverUsableSequenceNumber) {
+  webium_metrics_name_mapper_ = metrics::MetricsNameMapper::CreateInstance();
   metrics::HistogramController::GetInstance()->Register(this);
 }
 
@@ -256,11 +258,27 @@ void HistogramSynchronizer::OnPendingProcesses(int sequence_number,
 
 void HistogramSynchronizer::OnHistogramDataCollected(
     int sequence_number,
+    bool is_webium_renderer,
     const std::vector<std::string>& pickled_histograms) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  base::HistogramBase::NameMapper mapper;
+  if (is_webium_renderer && webium_metrics_name_mapper_) {
+    mapper = base::BindRepeating(
+        [](base::WeakPtr<metrics::MetricsNameMapper> mapper,
+           std::string_view name) -> std::string_view {
+          if (mapper) {
+            return mapper->GetMetricsNameIfAllowed(name);
+          }
+          // If the mapper was destroyed, drop the metric by returning empty
+          // string.
+          return std::string_view();
+        },
+        webium_metrics_name_mapper_->GetWeakPtr());
+  }
+
   base::HistogramDeltaSerialization::DeserializeAndAddSamples(
-      pickled_histograms);
+      pickled_histograms, std::move(mapper));
 
   RequestContext* request = RequestContext::GetRequestContext(sequence_number);
   if (!request)

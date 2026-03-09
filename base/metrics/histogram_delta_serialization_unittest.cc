@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
@@ -32,7 +33,8 @@ TEST(HistogramDeltaSerializationTest, DeserializeHistogramAndAddSamples) {
   serializer.PrepareAndSerializeDeltas(&deltas, true);
   EXPECT_FALSE(deltas.empty());
 
-  HistogramDeltaSerialization::DeserializeAndAddSamples(deltas);
+  HistogramDeltaSerialization::DeserializeAndAddSamples(deltas,
+                                                        base::NullCallback());
 
   // The histogram has kIPCSerializationSourceFlag. So samples will be ignored.
   std::unique_ptr<HistogramSamples> snapshot(histogram->SnapshotSamples());
@@ -43,13 +45,62 @@ TEST(HistogramDeltaSerializationTest, DeserializeHistogramAndAddSamples) {
 
   // Clear kIPCSerializationSourceFlag to emulate multi-process usage.
   histogram->ClearFlags(HistogramBase::kIPCSerializationSourceFlag);
-  HistogramDeltaSerialization::DeserializeAndAddSamples(deltas);
+  HistogramDeltaSerialization::DeserializeAndAddSamples(deltas,
+                                                        base::NullCallback());
 
   std::unique_ptr<HistogramSamples> snapshot2(histogram->SnapshotSamples());
   EXPECT_EQ(2, snapshot2->GetCount(1));
   EXPECT_EQ(2, snapshot2->GetCount(10));
   EXPECT_EQ(2, snapshot2->GetCount(100));
   EXPECT_EQ(2, snapshot2->GetCount(1000));
+}
+
+// Tests that the MapperCallback can be used to conditionally rename or drop
+// metrics as they are deserialized. This validates the pipeline's ability to
+// intercept child process IPC metrics (like Webium) and fork them into separate
+// histogram names without needing to hardcode the separation into the sender.
+TEST(HistogramDeltaSerializationTest, DeserializeWithMapper) {
+  std::unique_ptr<StatisticsRecorder> statistic_recorder(
+      StatisticsRecorder::CreateTemporaryForTesting());
+  HistogramDeltaSerialization serializer;
+  std::vector<std::string> deltas;
+
+  HistogramBase* histogram1 =
+      Histogram::FactoryGet("TestHistogram1", 1, 1000, 10,
+                            HistogramBase::kIPCSerializationSourceFlag);
+  histogram1->Add(1);
+
+  HistogramBase* histogram2 =
+      Histogram::FactoryGet("TestHistogram2", 1, 1000, 10,
+                            HistogramBase::kIPCSerializationSourceFlag);
+  histogram2->Add(2);
+
+  serializer.PrepareAndSerializeDeltas(&deltas, true);
+  EXPECT_FALSE(deltas.empty());
+
+  histogram1->ClearFlags(HistogramBase::kIPCSerializationSourceFlag);
+  histogram2->ClearFlags(HistogramBase::kIPCSerializationSourceFlag);
+
+  auto mapper =
+      base::BindRepeating([](std::string_view name) -> std::string_view {
+        if (name == "TestHistogram1") {
+          return "";
+        }
+        if (name == "TestHistogram2") {
+          return "RenamedHistogram2";
+        }
+        return name;
+      });
+
+  HistogramDeltaSerialization::DeserializeAndAddSamples(deltas, mapper);
+
+  EXPECT_EQ(1, histogram1->SnapshotSamples()->GetCount(1));
+  EXPECT_EQ(1, histogram2->SnapshotSamples()->GetCount(2));
+
+  HistogramBase* renamed =
+      StatisticsRecorder::FindHistogram("RenamedHistogram2");
+  ASSERT_TRUE(renamed);
+  EXPECT_EQ(1, renamed->SnapshotSamples()->GetCount(2));
 }
 
 }  // namespace base

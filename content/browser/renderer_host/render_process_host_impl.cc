@@ -5975,6 +5975,10 @@ void RenderProcessHostImpl::BindChildHistogramFetcherFactory(
   BindReceiver(std::move(factory));
 }
 
+bool RenderProcessHostImpl::IsWebiumRenderer() const {
+  return IsForTopChromeWebUI();
+}
+
 // static
 RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(

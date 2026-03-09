@@ -30,6 +30,14 @@ const char* GetPingHistogramName(mojom::UmaPingCallSource call_source) {
 struct HistogramController::ChildHistogramFetcher {
   mojo::Remote<mojom::ChildHistogramFetcher> remote;
   ChildProcessMode mode;
+
+  // Cached value of host->IsWebiumRenderer() evaluated at the time of process
+  // registration. The object representing the `host` pointer might be destroyed
+  // causing `host` to dangle within the map before the asynchronous disconnect
+  // handler cleans the map entry up. Therefore this flag must be cached to
+  // safely evaluate it without dereferencing a potentially freed host pointer
+  // inside GetHistogramData().
+  bool is_webium_renderer;
 };
 
 HistogramController* HistogramController::GetInstance() {
@@ -69,6 +77,7 @@ void HistogramController::SetHistogramMemory(
     base::UnsafeSharedMemoryRegion shared_region,
     ChildProcessMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool is_webium_renderer = host->IsWebiumRenderer();
   mojo::Remote<mojom::ChildHistogramFetcherFactory> factory;
   host->BindChildHistogramFetcherFactory(factory.BindNewPipeAndPassReceiver());
 
@@ -77,13 +86,15 @@ void HistogramController::SetHistogramMemory(
                          fetcher.BindNewPipeAndPassReceiver());
   PingChildProcess(fetcher.get(),
                    mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP);
-  InsertChildHistogramFetcherInterface(host, std::move(fetcher), mode);
+  InsertChildHistogramFetcherInterface(host, std::move(fetcher), mode,
+                                       is_webium_renderer);
 }
 
 void HistogramController::InsertChildHistogramFetcherInterface(
     HistogramChildProcess* host,
     mojo::Remote<mojom::ChildHistogramFetcher> child_histogram_fetcher,
-    ChildProcessMode mode) {
+    ChildProcessMode mode,
+    bool is_webium_renderer) {
   // Broken pipe means remove this from the map. The map size is a proxy for
   // the number of known processes
   //
@@ -94,7 +105,8 @@ void HistogramController::InsertChildHistogramFetcherInterface(
       base::BindOnce(&HistogramController::RemoveChildHistogramFetcherInterface,
                      base::Unretained(this), base::UnsafeDangling(host)));
   child_histogram_fetchers_.emplace(
-      host, ChildHistogramFetcher{std::move(child_histogram_fetcher), mode});
+      host, ChildHistogramFetcher{std::move(child_histogram_fetcher), mode,
+                                  is_webium_renderer});
 }
 
 void HistogramController::PingChildProcesses() {
@@ -149,7 +161,8 @@ void HistogramController::GetHistogramData(int sequence_number) {
     fetcher.second.remote->GetChildNonPersistentHistogramData(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&HistogramController::OnHistogramDataCollected,
-                           base::Unretained(this), sequence_number),
+                           base::Unretained(this), sequence_number,
+                           fetcher.second.is_webium_renderer),
             std::vector<std::string>()));
     ++pending_processes;
   }
@@ -161,10 +174,12 @@ void HistogramController::GetHistogramData(int sequence_number) {
 
 void HistogramController::OnHistogramDataCollected(
     int sequence_number,
+    bool is_webium_renderer,
     const std::vector<std::string>& pickled_histograms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (subscriber_) {
-    subscriber_->OnHistogramDataCollected(sequence_number, pickled_histograms);
+    subscriber_->OnHistogramDataCollected(sequence_number, is_webium_renderer,
+                                          pickled_histograms);
   }
 }
 

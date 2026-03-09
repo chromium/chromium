@@ -176,6 +176,7 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   void BindChildHistogramFetcherFactory(
       mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
           factory) override;
+  bool IsWebiumRenderer() const override;
 
   // Weak, owns |this|.
   const raw_ptr<Client> client_;

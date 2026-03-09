@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("metrics_name_mapping_proto") {
+  sources = [ "metrics_name_mapping.proto" ]
+}
+
+component("mapping") {
+  sources = [
+    "metrics_mapping_features.cc",
+    "metrics_mapping_features.h",
+    "metrics_name_mapper.cc",
+    "metrics_name_mapper.h",
+  ]
+
+  defines = [ "IS_METRICS_MAPPING_IMPL" ]
+
+  public_deps = [ ":metrics_name_mapping_proto" ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "metrics_name_mapper_unittest.cc" ]
+  deps = [
+    ":mapping",
+    ":metrics_name_mapping_proto",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

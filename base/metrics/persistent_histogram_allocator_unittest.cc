@@ -305,7 +305,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
       break;
     }
 
-    recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
+    recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get(),
+                                                      /*name_override=*/"");
     HistogramBase* found =
         StatisticsRecorder::FindHistogram(recovered->histogram_name());
     EXPECT_NE(recovered.get(), found);
@@ -371,7 +372,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
     if (!recovered) {
       break;
     }
-    recovery2.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
+    recovery2.MergeHistogramDeltaToStatisticsRecorder(recovered.get(),
+                                                      /*name_override=*/"");
   }
   EXPECT_EQ(global_sr_initial_histogram_count + kNumHistogramsCreated,
             StatisticsRecorder::GetHistogramCount());
@@ -484,7 +486,8 @@ TEST_F(PersistentHistogramAllocatorTest,
       break;
     }
 
-    recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get());
+    recovery1.MergeHistogramDeltaToStatisticsRecorder(recovered.get(),
+                                                      /*name_override=*/"");
     HistogramBase* found =
         StatisticsRecorder::FindHistogram(recovered->histogram_name());
     EXPECT_FALSE(found);
@@ -518,7 +521,8 @@ TEST_F(PersistentHistogramAllocatorTest,
       break;
     }
 
-    recovery2.MergeHistogramFinalDeltaToStatisticsRecorder(recovered.get());
+    recovery2.MergeHistogramFinalDeltaToStatisticsRecorder(
+        recovered.get(), /*name_override=*/"");
     found = StatisticsRecorder::FindHistogram(recovered->histogram_name());
     EXPECT_FALSE(found);
   }

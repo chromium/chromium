@@ -288,8 +288,10 @@ class BASE_EXPORT Histogram : public HistogramBase {
   friend class StatisticsRecorderTest;
 
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
-      base::PickleIterator* iter);
-  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
+      base::PickleIterator* iter,
+      NameMapper mapper);
+  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter,
+                                            NameMapper mapper);
 
   static HistogramBase* FactoryGetInternal(std::string_view name,
                                            Sample32 minimum,
@@ -419,8 +421,10 @@ class BASE_EXPORT LinearHistogram : public Histogram {
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
-      base::PickleIterator* iter);
-  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
+      base::PickleIterator* iter,
+      NameMapper mapper);
+  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter,
+                                            NameMapper mapper);
 
   static HistogramBase* FactoryGetInternal(std::string_view name,
                                            Sample32 minimum,
@@ -545,8 +549,10 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
                    HistogramSamples::Metadata* logged_meta);
 
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
-      base::PickleIterator* iter);
-  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
+      base::PickleIterator* iter,
+      NameMapper mapper);
+  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter,
+                                            NameMapper mapper);
 };
 
 //------------------------------------------------------------------------------
@@ -612,8 +618,10 @@ class BASE_EXPORT CustomHistogram : public Histogram {
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
-      base::PickleIterator* iter);
-  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter);
+      base::PickleIterator* iter,
+      NameMapper mapper);
+  static HistogramBase* DeserializeInfoImpl(base::PickleIterator* iter,
+                                            NameMapper mapper);
 
   static HistogramBase* FactoryGetInternal(
       std::string_view name,

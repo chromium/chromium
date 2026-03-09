@@ -697,7 +697,8 @@ Histogram::~Histogram() = default;
 // Private methods
 
 // static
-HistogramBase* Histogram::DeserializeInfoImpl(PickleIterator* iter) {
+HistogramBase* Histogram::DeserializeInfoImpl(PickleIterator* iter,
+                                              NameMapper mapper) {
   std::string histogram_name;
   int flags;
   int declared_min;
@@ -710,9 +711,15 @@ HistogramBase* Histogram::DeserializeInfoImpl(PickleIterator* iter) {
     return nullptr;
   }
 
+  std::string_view name_to_use =
+      mapper ? mapper.Run(histogram_name) : histogram_name;
+  if (name_to_use.empty()) {
+    return nullptr;
+  }
+
   // Find or create the local version of the histogram in this process.
   HistogramBase* histogram = Histogram::FactoryGet(
-      histogram_name, declared_min, declared_max, bucket_count, flags);
+      name_to_use, declared_min, declared_max, bucket_count, flags);
   if (!histogram) {
     return nullptr;
   }
@@ -755,9 +762,9 @@ HistogramBase* Histogram::FactoryTimeGetInternal(std::string_view name,
                                                  int32_t flags) {
   DCHECK_LT(minimum.InMilliseconds(), std::numeric_limits<Sample32>::max());
   DCHECK_LT(maximum.InMilliseconds(), std::numeric_limits<Sample32>::max());
-  return FactoryGetInternal(name, static_cast<Sample32>(minimum.InMilliseconds()),
-                            static_cast<Sample32>(maximum.InMilliseconds()),
-                            bucket_count, flags);
+  return FactoryGetInternal(
+      name, static_cast<Sample32>(minimum.InMilliseconds()),
+      static_cast<Sample32>(maximum.InMilliseconds()), bucket_count, flags);
 }
 
 // static
@@ -769,9 +776,9 @@ HistogramBase* Histogram::FactoryMicrosecondsTimeGetInternal(
     int32_t flags) {
   DCHECK_LT(minimum.InMicroseconds(), std::numeric_limits<Sample32>::max());
   DCHECK_LT(maximum.InMicroseconds(), std::numeric_limits<Sample32>::max());
-  return FactoryGetInternal(name, static_cast<Sample32>(minimum.InMicroseconds()),
-                            static_cast<Sample32>(maximum.InMicroseconds()),
-                            bucket_count, flags);
+  return FactoryGetInternal(
+      name, static_cast<Sample32>(minimum.InMicroseconds()),
+      static_cast<Sample32>(maximum.InMicroseconds()), bucket_count, flags);
 }
 
 std::unique_ptr<SampleVector> Histogram::SnapshotAllSamples() const {
@@ -974,13 +981,14 @@ HistogramBase* LinearHistogram::FactoryTimeGetInternal(std::string_view name,
                                                        int32_t flags) {
   DCHECK_LT(minimum.InMilliseconds(), std::numeric_limits<Sample32>::max());
   DCHECK_LT(maximum.InMilliseconds(), std::numeric_limits<Sample32>::max());
-  return FactoryGetInternal(name, static_cast<Sample32>(minimum.InMilliseconds()),
-                            static_cast<Sample32>(maximum.InMilliseconds()),
-                            bucket_count, flags);
+  return FactoryGetInternal(
+      name, static_cast<Sample32>(minimum.InMilliseconds()),
+      static_cast<Sample32>(maximum.InMilliseconds()), bucket_count, flags);
 }
 
 // static
-HistogramBase* LinearHistogram::DeserializeInfoImpl(PickleIterator* iter) {
+HistogramBase* LinearHistogram::DeserializeInfoImpl(PickleIterator* iter,
+                                                    NameMapper mapper) {
   std::string histogram_name;
   int flags;
   int declared_min;
@@ -993,8 +1001,14 @@ HistogramBase* LinearHistogram::DeserializeInfoImpl(PickleIterator* iter) {
     return nullptr;
   }
 
+  std::string_view name_to_use =
+      mapper ? mapper.Run(histogram_name) : histogram_name;
+  if (name_to_use.empty()) {
+    return nullptr;
+  }
+
   HistogramBase* histogram = LinearHistogram::FactoryGet(
-      histogram_name, declared_min, declared_max, bucket_count, flags);
+      name_to_use, declared_min, declared_max, bucket_count, flags);
   if (!histogram) {
     return nullptr;
   }
@@ -1191,7 +1205,8 @@ BooleanHistogram::BooleanHistogram(
                       meta,
                       logged_meta) {}
 
-HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter) {
+HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter,
+                                                     NameMapper mapper) {
   std::string histogram_name;
   int flags;
   int declared_min;
@@ -1204,8 +1219,13 @@ HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter) {
     return nullptr;
   }
 
-  HistogramBase* histogram =
-      BooleanHistogram::FactoryGet(histogram_name, flags);
+  std::string_view name_to_use =
+      mapper ? mapper.Run(histogram_name) : histogram_name;
+  if (name_to_use.empty()) {
+    return nullptr;
+  }
+
+  HistogramBase* histogram = BooleanHistogram::FactoryGet(name_to_use, flags);
   if (!histogram) {
     return nullptr;
   }
@@ -1339,7 +1359,8 @@ void CustomHistogram::SerializeInfoImpl(Pickle* pickle) const {
 }
 
 // static
-HistogramBase* CustomHistogram::DeserializeInfoImpl(PickleIterator* iter) {
+HistogramBase* CustomHistogram::DeserializeInfoImpl(PickleIterator* iter,
+                                                    NameMapper mapper) {
   std::string histogram_name;
   int flags;
   int declared_min;
@@ -1361,8 +1382,14 @@ HistogramBase* CustomHistogram::DeserializeInfoImpl(PickleIterator* iter) {
     }
   }
 
+  std::string_view name_to_use =
+      mapper ? mapper.Run(histogram_name) : histogram_name;
+  if (name_to_use.empty()) {
+    return nullptr;
+  }
+
   HistogramBase* histogram =
-      CustomHistogram::FactoryGet(histogram_name, sample_ranges, flags);
+      CustomHistogram::FactoryGet(name_to_use, sample_ranges, flags);
   if (!histogram) {
     return nullptr;
   }

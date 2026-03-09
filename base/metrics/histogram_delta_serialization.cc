@@ -20,8 +20,9 @@ namespace {
 
 // Create or find existing histogram and add the samples from pickle.
 // Silently returns when seeing any data problem in the pickle.
-void DeserializeHistogramAndAddSamples(PickleIterator* iter) {
-  HistogramBase* histogram = DeserializeHistogramInfo(iter);
+void DeserializeHistogramAndAddSamples(PickleIterator* iter,
+                                       HistogramBase::NameMapper mapper) {
+  HistogramBase* histogram = DeserializeHistogramInfo(iter, std::move(mapper));
   if (!histogram) {
     return;
   }
@@ -55,11 +56,12 @@ void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
 
 // static
 void HistogramDeltaSerialization::DeserializeAndAddSamples(
-    const std::vector<std::string>& serialized_deltas) {
+    const std::vector<std::string>& serialized_deltas,
+    HistogramBase::NameMapper mapper) {
   for (const std::string& serialized_delta : serialized_deltas) {
     PickleIterator iter =
         PickleIterator::WithData(as_byte_span(serialized_delta));
-    DeserializeHistogramAndAddSamples(&iter);
+    DeserializeHistogramAndAddSamples(&iter, mapper);
   }
 }
 

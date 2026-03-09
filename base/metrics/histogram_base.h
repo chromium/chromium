@@ -11,11 +11,13 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/strings/durable_string_view.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -53,43 +55,6 @@ enum JSONVerbosityLevel {
 
 std::string HistogramTypeToString(HistogramType type);
 
-// This enum is used for reporting how many histograms and of what types and
-// variations are being created. It has to be in the main .h file so it is
-// visible to files that define the various histogram types.
-enum HistogramReport {
-  // Count the number of reports created. The other counts divided by this
-  // number will give the average per run of the program.
-  HISTOGRAM_REPORT_CREATED = 0,
-
-  // Count the total number of histograms created. It is the limit against
-  // which all others are compared.
-  HISTOGRAM_REPORT_HISTOGRAM_CREATED = 1,
-
-  // Count the total number of histograms looked-up. It's better to cache
-  // the result of a single lookup rather than do it repeatedly.
-  HISTOGRAM_REPORT_HISTOGRAM_LOOKUP = 2,
-
-  // These count the individual histogram types. This must follow the order
-  // of HistogramType above.
-  HISTOGRAM_REPORT_TYPE_LOGARITHMIC = 3,
-  HISTOGRAM_REPORT_TYPE_LINEAR = 4,
-  HISTOGRAM_REPORT_TYPE_BOOLEAN = 5,
-  HISTOGRAM_REPORT_TYPE_CUSTOM = 6,
-  HISTOGRAM_REPORT_TYPE_SPARSE = 7,
-
-  // These indicate the individual flags that were set.
-  HISTOGRAM_REPORT_FLAG_UMA_TARGETED = 8,
-  HISTOGRAM_REPORT_FLAG_UMA_STABILITY = 9,
-  HISTOGRAM_REPORT_FLAG_PERSISTENT = 10,
-
-  // This must be last.
-  HISTOGRAM_REPORT_MAX = 11
-};
-
-// Create or find existing histogram that matches the pickled info.
-// Returns NULL if the pickled data has problems.
-BASE_EXPORT HistogramBase* DeserializeHistogramInfo(base::PickleIterator* iter);
-
 ////////////////////////////////////////////////////////////////////////////////
 
 class BASE_EXPORT HistogramBase {
@@ -97,6 +62,9 @@ class BASE_EXPORT HistogramBase {
   using Sample32 = int32_t;              // Used for samples.
   using AtomicCount = subtle::Atomic32;  // Used to count samples.
   using Count32 = int32_t;  // Used to manipulate counts in temporaries.
+  // Used to rename or drop a histogram name when empty is returned.
+  using NameMapper =
+      base::RepeatingCallback<std::string_view(std::string_view)>;
 
   static const Sample32 kSampleType_MAX;  // INT_MAX
 
@@ -359,6 +327,16 @@ class BASE_EXPORT HistogramBase {
   // Additional information about the histogram.
   std::atomic<uint16_t> flags_{0};
 };
+
+// Create or find existing histogram that matches the pickled info.
+// The `mapper` callback is invoked with the original histogram name. It can
+// return a new name to rename the histogram, the original name to keep it,
+// or an empty string to drop the histogram entirely. This allows renaming
+// metrics during deserialization, e.g., adding prefixes based on process type.
+// Returns NULL if the pickled data has problems.
+BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
+    base::PickleIterator* iter,
+    HistogramBase::NameMapper mapper);
 
 }  // namespace base
 

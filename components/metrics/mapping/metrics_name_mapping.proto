@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+edition = "2023";
+
+package metrics;
+
+option optimize_for = LITE_RUNTIME;
+
+message MetricsNameMappingConfiguration {
+  // Ordered array of evaluation rules. Metrics from specified process types
+  // not matching any rule are dropped if the mapping feature is enabled.
+  repeated MetricsNameMapping rules = 1;
+}
+
+message MetricsNameMapping {
+  // The metric name this rule applies to. Must be an exact match.
+  // Wildcards are NOT supported.
+  string metric_name = 1;
+
+  // Optional string to replace the original name with if allowed.
+  string new_metric_name = 2;
+}

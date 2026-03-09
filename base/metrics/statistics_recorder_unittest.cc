@@ -912,7 +912,7 @@ class TestHistogramProvider : public StatisticsRecorder::HistogramProvider {
       if (!histogram) {
         break;
       }
-      allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get());
+      allocator_->MergeHistogramDeltaToStatisticsRecorder(histogram.get(), "");
     }
     std::move(done_callback).Run();
   }

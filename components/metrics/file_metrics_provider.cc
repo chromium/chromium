@@ -709,10 +709,10 @@ size_t FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
 
     if (read_only) {
       source->allocator->MergeHistogramFinalDeltaToStatisticsRecorder(
-          histogram.get());
+          histogram.get(), /*name_override=*/"");
     } else {
       source->allocator->MergeHistogramDeltaToStatisticsRecorder(
-          histogram.get());
+          histogram.get(), /*name_override=*/"");
     }
     ++histogram_count;
   }

@@ -139,6 +139,7 @@ source_set("browser") {
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
     "//components/metrics/dwa:dwa_builders",
+    "//components/metrics/mapping",
     "//components/metrics/private_metrics",
     "//components/network_session_configurator/browser",
     "//components/offline_pages/buildflags",

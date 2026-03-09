@@ -412,6 +412,10 @@ void BrowserChildProcessHostImpl::BindChildHistogramFetcherFactory(
   GetHost()->BindReceiver(std::move(factory));
 }
 
+bool BrowserChildProcessHostImpl::IsWebiumRenderer() const {
+  return false;
+}
+
 void BrowserChildProcessHostImpl::TerminateOnBadMessageReceived(
     const std::string& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

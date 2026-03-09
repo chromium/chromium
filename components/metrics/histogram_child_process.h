@@ -18,6 +18,15 @@ class HistogramChildProcess {
   // child process.
   virtual void BindChildHistogramFetcherFactory(
       mojo::PendingReceiver<mojom::ChildHistogramFetcherFactory> factory) = 0;
+
+  // Returns true if this child process is a Webium renderer, which is a process
+  // that hosts Top Chrome WebUI.
+  // This context is needed by the HistogramController for the IPC histogram
+  // fetching pipeline, so it can pass the flag to HistogramSynchronizer down
+  // the callback chain to apply metric name overrides based on process type.
+  // Note: For the shared memory pipeline, SubprocessMetricsProvider tracks this
+  // flag itself per process.
+  virtual bool IsWebiumRenderer() const = 0;
 };
 
 }  // namespace metrics

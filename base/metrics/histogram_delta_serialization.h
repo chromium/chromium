@@ -6,10 +6,13 @@
 #define BASE_METRICS_HISTOGRAM_DELTA_SERIALIZATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/threading/thread_checker.h"
@@ -40,8 +43,14 @@ class BASE_EXPORT HistogramDeltaSerialization
 
   // Deserialize deltas and add samples to corresponding histograms, creating
   // them if necessary. Silently ignores errors in |serialized_deltas|.
+  // The |mapper| callback is invoked for each serialized histogram. It allows
+  // the caller to conditionally rename or drop histograms before they are
+  // merged. Returning an empty string indicates that the histogram should be
+  // dropped. This is particularly useful where the caller needs to separate
+  // metrics without the child process's knowledge.
   static void DeserializeAndAddSamples(
-      const std::vector<std::string>& serialized_deltas);
+      const std::vector<std::string>& serialized_deltas,
+      HistogramBase::NameMapper mapper);
 
  private:
   // HistogramSnapshotManager implementation.
