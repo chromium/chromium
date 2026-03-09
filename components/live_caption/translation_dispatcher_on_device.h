@@ -16,7 +16,6 @@
 #include "components/on_device_translation/service_controller.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "url/origin.h"
 
 namespace captions {
@@ -50,7 +49,8 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
       TranslateEventCallback callback,
       base::expected<
           mojo::PendingRemote<on_device_translation::mojom::Translator>,
-          blink::mojom::CreateTranslatorError> translator);
+          on_device_translation::OnDeviceTranslationController::
+              CreateTranslatorError> translator);
 
   void OnTranslated(TranslateEventCallback callback,
                     const std::optional<std::string>& translation);
@@ -60,7 +60,8 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
       const std::string& target_language,
       const std::string& result,
       TranslateEventCallback callback,
-      blink::mojom::CanCreateTranslatorResult can_create_translator_result);
+      on_device_translation::OnDeviceTranslationController::CanTranslateResult
+          can_translate_result);
 
   std::string source_language_;
   std::string target_language_;

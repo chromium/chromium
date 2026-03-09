@@ -39,19 +39,14 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-using blink::mojom::CanCreateTranslatorResult;
-
 namespace on_device_translation {
 namespace {
 
-using blink::mojom::CreateTranslatorError;
 using mojom::CreateTranslatorResult;
 using mojom::FileOperationProxy;
 using mojom::OnDeviceTranslationLanguagePackage;
@@ -136,21 +131,27 @@ LanguagePackRequirements GetLanguagePackRequirements(
 }
 
 // Converts on_device_translation::mojom::CreateTranslatorResult to
-// blink::mojom::CreateTranslatorError.
-CreateTranslatorError ToCreateTranslatorError(CreateTranslatorResult result) {
+// OnDeviceTranslationController::CreateTranslatorError.
+OnDeviceTranslationController::CreateTranslatorError ToCreateTranslatorError(
+    CreateTranslatorResult result) {
   switch (result) {
     case CreateTranslatorResult::kSuccess:
       NOTREACHED();
     case CreateTranslatorResult::kErrorInvalidBinary:
-      return CreateTranslatorError::kInvalidBinary;
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kInvalidBinary;
     case CreateTranslatorResult::kErrorInvalidFunctionPointer:
-      return CreateTranslatorError::kInvalidFunctionPointer;
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kInvalidFunctionPointer;
     case CreateTranslatorResult::kErrorFailedToInitialize:
-      return CreateTranslatorError::kFailedToInitialize;
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kFailedToInitialize;
     case CreateTranslatorResult::kErrorFailedToCreateTranslator:
-      return CreateTranslatorError::kFailedToCreateTranslator;
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kFailedToCreateTranslator;
     case CreateTranslatorResult::kErrorInvalidVersion:
-      return CreateTranslatorError::kInvalidVersion;
+      return OnDeviceTranslationController::CreateTranslatorError::
+          kInvalidVersion;
   }
 }
 
@@ -286,14 +287,14 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
 void OnDeviceTranslationServiceController::CanTranslate(
     const std::string& source_lang_arg,
     const std::string& target_lang_arg,
-    base::OnceCallback<void(CanCreateTranslatorResult)> callback) {
+    CanTranslateCallback callback) {
   std::optional<std::string> best_fit_source_language =
       GetBestFitLanguageCode(source_lang_arg);
   std::optional<std::string> best_fit_target_language =
       GetBestFitLanguageCode(target_lang_arg);
   if (!best_fit_source_language.has_value() ||
       !best_fit_target_language.has_value()) {
-    std::move(callback).Run(CanCreateTranslatorResult::kNoNotSupportedLanguage);
+    std::move(callback).Run(CanTranslateResult::kNoNotSupportedLanguage);
     return;
   }
 
@@ -302,7 +303,7 @@ void OnDeviceTranslationServiceController::CanTranslate(
   std::move(callback).Run(CanTranslateImpl(source_lang, target_lang));
 }
 
-CanCreateTranslatorResult
+OnDeviceTranslationController::CanTranslateResult
 OnDeviceTranslationServiceController::CanTranslateImpl(
     const std::string& source_lang,
     const std::string& target_lang) {
@@ -314,26 +315,25 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   if (language_pack_requirements.required_packs.empty()) {
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
-    return CanCreateTranslatorResult::kNoNotSupportedLanguage;
+    return CanTranslateResult::kNoNotSupportedLanguage;
   }
 
   if (language_pack_requirements.required_not_installed_packs.empty()) {
     // All required language packages are installed.
     if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
       // The TranslateKit library is not ready.
-      return CanCreateTranslatorResult::kAfterDownloadLibraryNotReady;
+      return CanTranslateResult::kAfterDownloadLibraryNotReady;
     }
     // Both the TranslateKit library and the language packs are ready.
-    return CanCreateTranslatorResult::kReadily;
+    return CanTranslateResult::kReadily;
   }
 
   if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {
     // Both the TranslateKit library and the language packs are not ready.
-    return CanCreateTranslatorResult::
-        kAfterDownloadLibraryAndLanguagePackNotReady;
+    return CanTranslateResult::kAfterDownloadLibraryAndLanguagePackNotReady;
   }
   // The required language packs are not ready.
-  return CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady;
+  return CanTranslateResult::kAfterDownloadLanguagePackNotReady;
 }
 
 void OnDeviceTranslationServiceController::OnLanguagePackInstalled(

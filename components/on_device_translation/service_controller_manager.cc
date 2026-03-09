@@ -9,12 +9,8 @@
 #include "base/types/expected.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/service_controller.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 
 namespace on_device_translation {
-
-using ::blink::mojom::CanCreateTranslatorResult;
-using ::blink::mojom::CreateTranslatorError;
 
 ServiceControllerManager::ServiceControllerManager(
     PrefService* local_state,
@@ -59,8 +55,9 @@ void ServiceControllerManager::CreateTranslator(
     OnDeviceTranslationController::CreateTranslatorCallback callback) {
   OnDeviceTranslationController* controller = GetOrCreateController(origin);
   if (controller == nullptr) {
-    std::move(callback).Run(base::unexpected(
-        CreateTranslatorError::kExceedsServiceCountLimitation));
+    std::move(callback).Run(
+        base::unexpected(OnDeviceTranslationController::CreateTranslatorError::
+                             kExceedsServiceCountLimitation));
     return;
   }
   controller->CreateTranslator(source_lang, target_lang, std::move(callback));
@@ -75,8 +72,8 @@ void ServiceControllerManager::CanTranslate(
     OnDeviceTranslationController::CanTranslateCallback callback) {
   auto* controller = GetOrCreateController(origin);
   if (controller == nullptr) {
-    std::move(callback).Run(
-        CanCreateTranslatorResult::kNoExceedsServiceCountLimitation);
+    std::move(callback).Run(OnDeviceTranslationController::CanTranslateResult::
+                                kNoExceedsServiceCountLimitation);
     return;
   }
 

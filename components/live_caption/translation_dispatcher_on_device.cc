@@ -8,12 +8,10 @@
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
-#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace captions {
 
-using ::blink::mojom::CanCreateTranslatorResult;
 using ::on_device_translation::OnDeviceTranslationController;
 
 TranslationDispatcherOnDevice::TranslationDispatcherOnDevice() = default;
@@ -73,25 +71,26 @@ void TranslationDispatcherOnDevice::OnCanTranslate(
     const std::string& target_language,
     const std::string& result,
     TranslateEventCallback callback,
-    CanCreateTranslatorResult can_create_translator_result) {
-  switch (can_create_translator_result) {
-    case CanCreateTranslatorResult::kReadily:
-    case CanCreateTranslatorResult::kAfterDownloadLibraryNotReady:
-    case CanCreateTranslatorResult::kAfterDownloadLanguagePackNotReady:
-    case CanCreateTranslatorResult::
+    OnDeviceTranslationController::CanTranslateResult can_translate_result) {
+  switch (can_translate_result) {
+    case OnDeviceTranslationController::CanTranslateResult::kReadily:
+    case OnDeviceTranslationController::CanTranslateResult::
+        kAfterDownloadLibraryNotReady:
+    case OnDeviceTranslationController::CanTranslateResult::
+        kAfterDownloadLanguagePackNotReady:
+    case OnDeviceTranslationController::CanTranslateResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
-    case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
       translation_controller_->CreateTranslator(
           source_language, target_language,
           base::BindOnce(&TranslationDispatcherOnDevice::OnTranslationCreated,
                          weak_factory_.GetWeakPtr(), source_language,
                          target_language, result, std::move(callback)));
       return;
-    case CanCreateTranslatorResult::kNoNotSupportedLanguage:
-    case CanCreateTranslatorResult::kNoServiceCrashed:
-    case CanCreateTranslatorResult::kNoDisallowedByPolicy:
-    case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
-    case CanCreateTranslatorResult::kNoInvalidStoragePartition:
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoNotSupportedLanguage:
+    case OnDeviceTranslationController::CanTranslateResult::kNoServiceCrashed:
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoExceedsServiceCountLimitation:
       creation_in_progress_ = false;
       std::move(callback).Run(base::unexpected("Failed to create translator"));
       for (auto& pending_callback : pending_callbacks_) {
@@ -110,7 +109,7 @@ void TranslationDispatcherOnDevice::OnTranslationCreated(
     TranslateEventCallback callback,
     base::expected<
         mojo::PendingRemote<on_device_translation::mojom::Translator>,
-        blink::mojom::CreateTranslatorError> translator) {
+        OnDeviceTranslationController::CreateTranslatorError> translator) {
   creation_in_progress_ = false;
   if (!translator.has_value()) {
     std::move(callback).Run(base::unexpected("Failed to create translator"));

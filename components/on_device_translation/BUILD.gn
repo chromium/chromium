@@ -53,8 +53,6 @@ source_set("on_device_translation") {
     "//components/user_prefs",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
-    "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
   ]
 }
 

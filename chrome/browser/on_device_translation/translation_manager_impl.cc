@@ -29,6 +29,7 @@
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -61,15 +62,47 @@ std::string SwitchLanguageCodeToIwIfHe(std::string language_code) {
   return language_code;
 }
 
+blink::mojom::CanCreateTranslatorResult GetBlinkCanCreateTranslatorResult(
+    OnDeviceTranslationController::CanTranslateResult result) {
+  switch (result) {
+    case OnDeviceTranslationController::CanTranslateResult::kReadily:
+      return blink::mojom::CanCreateTranslatorResult::kReadily;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kAfterDownloadLibraryNotReady:
+      return blink::mojom::CanCreateTranslatorResult::
+          kAfterDownloadLibraryNotReady;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kAfterDownloadLibraryAndLanguagePackNotReady:
+      return blink::mojom::CanCreateTranslatorResult::
+          kAfterDownloadLibraryAndLanguagePackNotReady;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kAfterDownloadLanguagePackNotReady:
+      return blink::mojom::CanCreateTranslatorResult::
+          kAfterDownloadLanguagePackNotReady;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoNotSupportedLanguage:
+      return blink::mojom::CanCreateTranslatorResult::kNoNotSupportedLanguage;
+    case OnDeviceTranslationController::CanTranslateResult::
+        kNoExceedsServiceCountLimitation:
+      return blink::mojom::CanCreateTranslatorResult::
+          kNoExceedsServiceCountLimitation;
+    case OnDeviceTranslationController::CanTranslateResult::kNoServiceCrashed:
+      return blink::mojom::CanCreateTranslatorResult::kNoServiceCrashed;
+  }
+}
+
 void RunTranslationAvailableCallbackWithMasking(
     bool mask_readily_result,
     TranslationManagerImpl::TranslationAvailableCallback callback,
-    CanCreateTranslatorResult result) {
-  if (result == CanCreateTranslatorResult::kReadily && mask_readily_result) {
-    result =
+    OnDeviceTranslationController::CanTranslateResult result) {
+  blink::mojom::CanCreateTranslatorResult blink_result =
+      GetBlinkCanCreateTranslatorResult(result);
+  if (result == OnDeviceTranslationController::CanTranslateResult::kReadily &&
+      mask_readily_result) {
+    blink_result =
         CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired;
   }
-  std::move(callback).Run(result);
+  std::move(callback).Run(blink_result);
 }
 
 }  // namespace
@@ -242,6 +275,38 @@ bool TranslationManagerImpl::CrashesAllowed() {
   return false;
 }
 
+blink::mojom::CreateTranslatorError GetBlinkCreateTranslateError(
+    OnDeviceTranslationController::CreateTranslatorError error) {
+  switch (error) {
+    case OnDeviceTranslationController::CreateTranslatorError::kInvalidBinary:
+      return blink::mojom::CreateTranslatorError::kInvalidBinary;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kInvalidFunctionPointer:
+      return blink::mojom::CreateTranslatorError::kInvalidFunctionPointer;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kFailedToInitialize:
+      return blink::mojom::CreateTranslatorError::kFailedToInitialize;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kFailedToCreateTranslator:
+      return blink::mojom::CreateTranslatorError::kFailedToCreateTranslator;
+    case OnDeviceTranslationController::CreateTranslatorError::kInvalidVersion:
+      return blink::mojom::CreateTranslatorError::kInvalidVersion;
+    case OnDeviceTranslationController::CreateTranslatorError::kServiceCrashed:
+      return blink::mojom::CreateTranslatorError::kServiceCrashed;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kNotSupportedLanguage:
+      return blink::mojom::CreateTranslatorError::kNotSupportedLanguage;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kExceedsServiceCountLimitation:
+      return blink::mojom::CreateTranslatorError::
+          kExceedsServiceCountLimitation;
+    case OnDeviceTranslationController::CreateTranslatorError::
+        kExceedsPendingTaskCountLimitation:
+      return blink::mojom::CreateTranslatorError::
+          kExceedsPendingTaskCountLimitation;
+  }
+}
+
 void TranslationManagerImpl::CreateTranslatorImpl(
     mojo::PendingRemote<TranslationManagerCreateTranslatorClient> client,
     const std::string& source_language,
@@ -249,7 +314,8 @@ void TranslationManagerImpl::CreateTranslatorImpl(
     std::unique_ptr<optimization_guide::OnDeviceModelDownloadProgressManager>
         model_download_progress_manager,
     base::expected<mojo::PendingRemote<mojom::Translator>,
-                   CreateTranslatorError> result) {
+                   OnDeviceTranslationController::CreateTranslatorError>
+        result) {
   if (!client) {
     // Request was aborted or the frame was destroyed. Note: Currently
     // aborting createTranslator() is not supported yet.
@@ -259,8 +325,9 @@ void TranslationManagerImpl::CreateTranslatorImpl(
 
   if (!result.has_value()) {
     mojo::Remote<TranslationManagerCreateTranslatorClient>(std::move(client))
-        ->OnResult(CreateTranslatorResult::NewError(result.error()), nullptr,
-                   nullptr);
+        ->OnResult(CreateTranslatorResult::NewError(
+                       GetBlinkCreateTranslateError(result.error())),
+                   nullptr, nullptr);
     return;
   }
   mojo::PendingRemote<::blink::mojom::Translator> blink_remote;
