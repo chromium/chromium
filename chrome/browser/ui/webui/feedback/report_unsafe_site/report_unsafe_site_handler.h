@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_REPORT_UNSAFE_SITE_REPORT_UNSAFE_SITE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/feedback/screenshot_taker.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,9 +20,13 @@ class WebContents;
 class ReportUnsafeSitePageHandler
     : public feedback::report_unsafe_site::mojom::PageHandler {
  public:
+  typedef feedback::report_unsafe_site::mojom::PageHandler::
+      GetTriggeringPageInfoCallback GetTriggeringPageInfoCallback;
+
   ReportUnsafeSitePageHandler(
       base::WeakPtr<TopChromeWebUIController::Embedder> embedder,
       base::WeakPtr<content::WebContents> triggering_web_contents,
+      std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker,
       mojo::PendingReceiver<feedback::report_unsafe_site::mojom::PageHandler>
           receiver);
 
@@ -32,14 +37,13 @@ class ReportUnsafeSitePageHandler
   ~ReportUnsafeSitePageHandler() override;
 
   // report_unsafe_site::mojom::PageHandler:
-  void GetPageUrl(
-      feedback::report_unsafe_site::mojom::PageHandler::GetPageUrlCallback
-          callback) override;
+  void GetTriggeringPageInfo(GetTriggeringPageInfoCallback callback) override;
   void CloseDialog() override;
 
  private:
   const base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
   const base::WeakPtr<content::WebContents> triggering_web_contents_;
+  std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
   const mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandler>
       receiver_;
 };

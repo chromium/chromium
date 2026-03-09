@@ -39,6 +39,11 @@ class FeedbackUI
     triggering_web_contents_ = web_contents->GetWeakPtr();
   }
 
+  void set_screenshot_taker(
+      std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker) {
+    screenshot_taker_ = std::move(screenshot_taker);
+  }
+
   void BindInterface(
       mojo::PendingReceiver<
           feedback::report_unsafe_site::mojom::PageHandlerFactory> receiver);
@@ -54,6 +59,7 @@ class FeedbackUI
   mojo::Receiver<feedback::report_unsafe_site::mojom::PageHandlerFactory>
       report_unsafe_site_factory_receiver_{this};
   base::WeakPtr<content::WebContents> triggering_web_contents_;
+  std::unique_ptr<feedback::ScreenshotTaker> screenshot_taker_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

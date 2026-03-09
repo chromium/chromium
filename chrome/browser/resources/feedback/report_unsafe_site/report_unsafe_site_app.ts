@@ -7,11 +7,19 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import './icons.html.js';
 
+import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './report_unsafe_site_app.css.js';
 import {getHtml} from './report_unsafe_site_app.html.js';
 import {ReportUnsafeSiteBrowserProxyImpl} from './report_unsafe_site_browser_proxy.js';
+
+export interface ReportUnsafeSiteAppElement {
+  $: {
+    includeScreenshotCheckbox: CrCheckboxElement,
+  };
+}
 
 export class ReportUnsafeSiteAppElement extends CrLitElement {
   static get is() {
@@ -28,20 +36,29 @@ export class ReportUnsafeSiteAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      pageUrl_: {
-        type: String,
-      },
+      pageUrl_: {type: String},
+      includeScreenshot_: {type: Boolean},
+      screenshotDataUri_: {type: String},
     };
   }
 
   protected accessor pageUrl_: string = '';
+  protected accessor includeScreenshot_: boolean = false;
+  protected accessor screenshotDataUri_: string = '';
 
   override async connectedCallback() {
     super.connectedCallback();
-    this.pageUrl_ = (await ReportUnsafeSiteBrowserProxyImpl.getInstance()
+    const pageInfo = await ReportUnsafeSiteBrowserProxyImpl.getInstance()
                          .getPageHandler()
-                         .getPageUrl())
-                        .pageUrl;
+                         .getTriggeringPageInfo();
+    this.pageUrl_ = pageInfo.pageUrl;
+    this.screenshotDataUri_ = pageInfo.screenshotDataUri;
+    this.includeScreenshot_ = (this.screenshotDataUri_.length > 0);
+  }
+
+  protected onIncludeScreenshotCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.includeScreenshot_ = e.detail.value;
   }
 
   protected onCancelButtonClick_() {

@@ -4,14 +4,17 @@
 
 module feedback.report_unsafe_site.mojom;
 
+import "url/mojom/url.mojom";
+
 // Browser side handler for receiving calls from the page.
 interface PageHandler {
+  // Returns the URL, formatted for display, of the triggering page and a data
+  // URI with a screenshot of the triggering page. The returned URL should be
+  // used for display only.
+  GetTriggeringPageInfo() => (string pageUrl, url.mojom.Url screenshotDataUri);
+
   // Closes the dialog.
   CloseDialog();
-
-  // Gets the URL, formatted for display, of the triggering page. The returned
-  // URL should be used for display only.
-  GetPageUrl() => (string page_url);
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

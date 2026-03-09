@@ -5,6 +5,7 @@
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/feedback/screenshot_taker.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -118,6 +119,9 @@ void ReportUnsafeSiteDialog::Show(Browser* browser) {
       IDS_REPORT_UNSAFE_SITE_DIALOG_TITLE);
   contents_wrapper->GetWebUIController()->set_triggering_web_contents(
       web_contents);
+  contents_wrapper->GetWebUIController()->set_screenshot_taker(
+      ScreenshotTaker::Start(web_contents->GetPrimaryMainFrame()->GetView()));
+
   auto bubble_dialog = std::make_unique<ReportUnsafeSiteDialogView>(
       std::move(contents_wrapper), browser);
   views::Widget* widget =

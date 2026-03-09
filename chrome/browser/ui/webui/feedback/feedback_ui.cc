@@ -121,7 +121,8 @@ void FeedbackUI::CreatePageHandler(
     mojo::PendingReceiver<feedback_mojom::PageHandler> handler) {
   report_unsafe_site_page_handler_ =
       std::make_unique<ReportUnsafeSitePageHandler>(
-          embedder_, triggering_web_contents_, std::move(handler));
+          embedder_, triggering_web_contents_, std::move(screenshot_taker_),
+          std::move(handler));
 }
 
 FeedbackUIConfig::FeedbackUIConfig()

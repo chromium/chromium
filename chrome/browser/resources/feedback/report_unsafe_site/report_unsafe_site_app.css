@@ -39,7 +39,7 @@ a {
   margin-inline-end: 20px;
 }
 
-.hidden-screenshot-image {
+#screenshot-placeholder {
   align-items: center;
   background: var(--google-grey-200);
   border-radius: var(--cr-card-border-radius);
@@ -49,6 +49,15 @@ a {
   margin-top: 4px;
   width: 200px;
   height: 200px;
+}
+
+#screenshot-image {
+  margin-inline-end: 25px;
+  margin-top: 4px;
+  min-width: 100px;
+  min-height: 100px;
+  max-width: 300px;
+  max-height: 300px;
 }
 
 .main-content {

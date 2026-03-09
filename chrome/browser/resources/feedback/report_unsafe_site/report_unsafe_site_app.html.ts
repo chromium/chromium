@@ -17,14 +17,20 @@ export function getHtml(this: ReportUnsafeSiteAppElement) {
 <div class="main-content">
   <label class="url-input-container">
     $i18n{reportUnsafeSiteDialogUrlLabel}
-    <input type="text" .value="${this.pageUrl_}" readonly/>
+    <input type="text" .value="${this.pageUrl_}" readonly>
   </label>
   <div class="two-cols">
-    <div class="hidden-screenshot-image">
-      <cr-icon icon="report_unsafe_site:visibility-off"></cr-icon>
-    </div>
+    ${this.includeScreenshot_ ? html`
+      <img id="screenshot-image" src="${this.screenshotDataUri_}">
+    ` : html`
+      <div id="screenshot-placeholder">
+        <cr-icon icon="report_unsafe_site:visibility-off"></cr-icon>
+      </div>
+    `}
     <div>
-      <cr-checkbox>
+      <cr-checkbox id="includeScreenshotCheckbox"
+          ?checked="${this.includeScreenshot_}"
+          @checked-changed="${this.onIncludeScreenshotCheckedChanged_}">
         $i18n{reportUnsafeSiteDialogIncludeScreenshotCheckboxLabel}
       </cr-checkbox>
     </div>
