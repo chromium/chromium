@@ -124,29 +124,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                   .Wait());
 }
 
-// TODO(crbug.com/485145029): Remove this test once the flakiness issue with
-// content::WaitForHitTestData() is resolved.
-IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
-                       ShouldWaitForHitTestData) {
-  const GURL kUrl =
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
-  ASSERT_TRUE(SetupSync());
-
-  // Open tab and fill form.
-  content::WebContents* web_contents =
-      chrome::AddAndReturnTabAt(GetBrowser(0), kUrl, -1, true);
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
-
-  // TODO(crbug.com/485145029): Add a second call to WaitForHitTestData() to
-  // verify it doesn't time out.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
-
-  // Ensure that WaitForHitTestData() completes reliably. This was added
-  // temporarily to debug some test flakiness that motivated the revert
-  // https://crrev.com/c/7604051.
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-}
-
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                        ShouldReceiveFormFields) {
   const std::string kName = "John";
@@ -212,15 +189,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   }));
 }
 
-// TODO(crbug.com/485145029): Re-enable this test on Mac once the flakiness is
-// addressed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShouldSendFormFields DISABLED_ShouldSendFormFields
-#else
-#define MAYBE_ShouldSendFormFields ShouldSendFormFields
-#endif
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
-                       MAYBE_ShouldSendFormFields) {
+                       ShouldSendFormFields) {
   const std::string kName = "John";
   const std::string kEmail = "john@example.com";
   const GURL kUrl =
