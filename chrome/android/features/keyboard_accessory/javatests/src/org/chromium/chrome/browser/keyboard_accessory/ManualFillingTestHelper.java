@@ -193,7 +193,6 @@ public class ManualFillingTestHelper {
     }
 
     public void focusPasswordField(boolean useFakeKeyboard) throws TimeoutException {
-        DOMUtils.waitForNonZeroNodeBounds(mActivityTestRule.getWebContents(), PASSWORD_NODE_ID);
         DOMUtils.focusNode(mActivityTestRule.getWebContents(), PASSWORD_NODE_ID);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
