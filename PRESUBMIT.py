@@ -4915,7 +4915,6 @@ def _CheckAndroidDebuggableBuild(input_api, output_api):
     return results
 
 
-# TODO: add unit tests
 def _CheckAndroidToastUsage(input_api, output_api):
     """Checks that code uses org.chromium.ui.widget.Toast instead of
        android.widget.Toast (Chromium Toast doesn't force hardware

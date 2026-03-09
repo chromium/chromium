@@ -1628,6 +1628,65 @@ class AndroidDebuggableBuildTest(unittest.TestCase):
         self.assertIn('UsedExplicitBuildType.java:2', msgs[0].items)
 
 
+class AndroidToastUsageTest(unittest.TestCase):
+
+    def testCheckAndroidToastUsage(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+
+        mock_input_api.files = [
+            MockAffectedFile('RandomStuff.java', ['random stuff']),
+            MockAffectedFile('CorrectUsage.java', [
+                'import org.chromium.ui.widget.Toast;',
+                'Toast.makeText(context, "ok", Toast.LENGTH_SHORT).show();',
+            ]),
+            MockAffectedFile('UsedAndroidToastImport.java', [
+                'import android.widget.Toast;',
+            ]),
+            MockAffectedFile('UsedAndroidToastImportLine2.java', [
+                'some random stuff',
+                'import android.widget.Toast;',
+            ]),
+            MockAffectedFile('chromecast/AllowedImport.java', [
+                'import android.widget.Toast;',
+            ]),
+            MockAffectedFile('remoting/AllowedImport.java', [
+                'import android.widget.Toast;',
+            ]),
+        ]
+
+        msgs = PRESUBMIT._CheckAndroidToastUsage(mock_input_api,
+                                                 mock_output_api)
+        self.assertEqual(
+            1, len(msgs),
+            'Expected %d items, found %d: %s' % (1, len(msgs), msgs))
+        self.assertEqual(
+            2, len(msgs[0].items), 'Expected %d items, found %d: %s' %
+            (2, len(msgs[0].items), msgs[0].items))
+        self.assertIn('UsedAndroidToastImport.java:1', msgs[0].items)
+        self.assertIn('UsedAndroidToastImportLine2.java:2', msgs[0].items)
+
+    def testCheckAndroidToastUsageNoViolations(self):
+        mock_input_api = MockInputApi()
+        mock_output_api = MockOutputApi()
+
+        mock_input_api.files = [
+            MockAffectedFile('RandomStuff.java', ['random stuff']),
+            MockAffectedFile('CorrectUsage.java', [
+                'import org.chromium.ui.widget.Toast;',
+                'Toast.makeText(context, "ok", Toast.LENGTH_SHORT).show();',
+            ]),
+            MockAffectedFile('AnotherCorrectUsage.java', [
+                'import org.chromium.ui.widget.Toast;',
+                'Toast.makeText(context, "ok2", Toast.LENGTH_LONG).show();',
+            ]),
+        ]
+
+        msgs = PRESUBMIT._CheckAndroidToastUsage(mock_input_api,
+                                                 mock_output_api)
+        self.assertEqual(0, len(msgs))
+
+
 class LogUsageTest(unittest.TestCase):
 
     def testCheckAndroidCrLogUsage(self):
