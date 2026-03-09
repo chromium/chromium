@@ -42,6 +42,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
 
   // BrowserFrameView:
   void OnFullscreenStateChanged() override;
+  void OnTabStripStateChanged() override;
   bool CaptionButtonsOnLeadingEdge() const override;
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   int GetTopInset(bool restored) const override;
