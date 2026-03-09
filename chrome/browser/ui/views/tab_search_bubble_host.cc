@@ -128,13 +128,6 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             *bubble_created_time_,
             webui_bubble_manager_->bubble_using_cached_web_contents(),
             webui_bubble_manager_->contents_warmup_level()));
-
-    const PrefService* prefs = profile_->GetPrefs();
-    const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
-        prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
-    if (section == tab_search::mojom::TabSearchSection::kSearch) {
-      return;
-    }
   } else if (!visible && bubble_created_time_.has_value()) {
     const base::TimeDelta time_to_close =
         base::TimeTicks::Now() - bubble_created_time_.value();
@@ -169,7 +162,7 @@ void TabSearchBubbleHost::OnOrganizationAccepted(Browser* browser) {
 
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
-    ShowTabSearchBubble(false, tab_search::mojom::TabSearchSection::kOrganize);
+    ShowTabSearchBubble(false);
   }
 }
 
@@ -212,15 +205,9 @@ void TabSearchBubbleHost::RemoveObserver(
 }
 
 bool TabSearchBubbleHost::ShowTabSearchBubble(
-    bool triggered_by_keyboard_shortcut,
-    tab_search::mojom::TabSearchSection section) {
+    bool triggered_by_keyboard_shortcut) {
   TRACE_EVENT0("ui", "TabSearchBubbleHost::ShowTabSearchBubble");
   base::trace_event::EmitNamedTrigger("show-tab-search-bubble");
-  if (section != tab_search::mojom::TabSearchSection::kNone) {
-    profile_->GetPrefs()->SetInteger(
-        tab_search_prefs::kTabSearchTabIndex,
-        tab_search_prefs::GetIntFromTabSearchSection(section));
-  }
 
   if (webui_bubble_manager_->GetBubbleWidget()) {
     return false;

@@ -64,7 +64,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void CloseTab(int32_t tab_id) override;
   void CloseWebUiTab() override;
   void GetProfileData(GetProfileDataCallback callback) override;
-  void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
   void GetIsSplit(GetIsSplitCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
@@ -162,8 +161,6 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   // Call TabsChanged() and stop the timer if it's running.
   void NotifyTabsChanged();
-
-  void NotifyTabIndexPrefChanged(const Profile* profile);
 
   // Called when the browser window context for this WebUI has changed.
   void BrowserWindowInterfaceChanged();

@@ -2191,8 +2191,7 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 }
 
 void ShowTabSearch(BrowserWindowInterface* bwi) {
-  bwi->GetBrowserForMigrationOnly()->window()->CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection::kSearch);
+  bwi->GetBrowserForMigrationOnly()->window()->CreateTabSearchBubble();
 }
 
 void CloseTabSearch(Browser* browser) {

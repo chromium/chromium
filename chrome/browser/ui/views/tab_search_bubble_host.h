@@ -56,11 +56,8 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   // When this is called the bubble may already be showing or be loading in.
   // This returns true if the method call results in the creation of a new Tab
-  // Search bubble. Optionally use section to force the bubble to open to the
-  // given tab, even if the bubble is already showing.
-  bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false,
-                           tab_search::mojom::TabSearchSection section =
-                               tab_search::mojom::TabSearchSection::kSearch);
+  // Search bubble.
+  bool ShowTabSearchBubble(bool triggered_by_keyboard_shortcut = false);
   void CloseTabSearchBubble();
 
   Browser* GetBrowser();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ProfileData, SwitchToTabInfo, TabSearchSection} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -20,8 +20,6 @@ export interface TabSearchApiProxy {
   closeWebUiTab(): void;
 
   getProfileData(): Promise<{profileData: ProfileData}>;
-
-  getTabSearchSection(): Promise<{section: TabSearchSection}>;
 
   getIsSplit(): Promise<{isSplit: boolean}>;
 
@@ -60,10 +58,6 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getProfileData() {
     return this.handler.getProfileData();
-  }
-
-  getTabSearchSection() {
-    return this.handler.getTabSearchSection();
   }
 
   getIsSplit() {

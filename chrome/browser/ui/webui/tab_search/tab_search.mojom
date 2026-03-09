@@ -215,9 +215,6 @@ interface PageHandler {
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 
-  // Get the currently active section of the tab search bubble.
-  GetTabSearchSection() => (TabSearchSection section);
-
   // Returns whether or not the tab associated with this WebUI, if any, is in a
   // split view.
   GetIsSplit() => (bool is_split);
@@ -265,9 +262,6 @@ interface Page {
 
   // Callback when tabs are removed.
   TabsRemoved(TabsRemovedInfo tabsRemovedInfo);
-
-  // Called when the top level bubble tab should change.
-  TabSearchSectionChanged(TabSearchSection section);
 
   // Called when the tab corresponding to this WebUI, if any, has become newly
   // unsplit.

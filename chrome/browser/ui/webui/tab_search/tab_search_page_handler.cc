@@ -152,12 +152,6 @@ TabSearchPageHandler::TabSearchPageHandler(
                   &TabSearchPageHandler::BrowserWindowInterfaceChanged,
                   base::Unretained(this)))) {
   browser_tab_strip_tracker_.Init();
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  pref_change_registrar_.Init(profile->GetPrefs());
-  pref_change_registrar_.Add(
-      tab_search_prefs::kTabSearchTabIndex,
-      base::BindRepeating(&TabSearchPageHandler::NotifyTabIndexPrefChanged,
-                          base::Unretained(this), profile));
   BrowserWindowInterfaceChanged();
 }
 
@@ -253,15 +247,6 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   }
 
   std::move(callback).Run(std::move(profile_tabs));
-}
-
-void TabSearchPageHandler::GetTabSearchSection(
-    GetTabSearchSectionCallback callback) {
-  PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  tab_search::mojom::TabSearchSection section =
-      tab_search_prefs::GetTabSearchSectionFromInt(
-          prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
-  std::move(callback).Run(section);
 }
 
 std::optional<TabSearchPageHandler::TabDetails>
@@ -823,13 +808,6 @@ void TabSearchPageHandler::NotifyTabsChanged() {
   }
   page_->TabsChanged(CreateProfileData());
   debounce_timer_->Stop();
-}
-
-void TabSearchPageHandler::NotifyTabIndexPrefChanged(const Profile* profile) {
-  const int32_t section_int =
-      profile->GetPrefs()->GetInteger(tab_search_prefs::kTabSearchTabIndex);
-  page_->TabSearchSectionChanged(
-      tab_search_prefs::GetTabSearchSectionFromInt(section_int));
 }
 
 bool TabSearchPageHandler::IsWebContentsVisible() {

@@ -807,9 +807,7 @@ class BrowserView : public BrowserWindow,
   // feature is enabled).
   std::vector<views::NativeViewHost*> GetNativeViewHostsForTopControlsSlide();
 
-  void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kSearch) override;
+  void CreateTabSearchBubble() override;
   void CloseTabSearchBubble() override;
 
 #if !BUILDFLAG(IS_CHROMEOS)

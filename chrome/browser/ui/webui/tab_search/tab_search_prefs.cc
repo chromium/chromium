@@ -17,10 +17,6 @@ namespace tab_search_prefs {
 const char kTabSearchRecentlyClosedSectionExpanded[] =
     "tab_search.recently_closed_expanded";
 
-// Integer pref indicating which tab the Tab Search bubble should open to
-// when shown.
-const char kTabSearchTabIndex[] = "tab_search.tab_index";
-
 // Boolean pref indicating whether the Tab Search bubble has been used (a tab
 // has been activated or closed).
 const char kTabSearchUsed[] = "tab_search.used";
@@ -35,23 +31,9 @@ const char kTabOrganizationModelStrategy[] = "tab_organization.model_strategy";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
-  registry->RegisterIntegerPref(
-      kTabSearchTabIndex,
-      GetIntFromTabSearchSection(tab_search::mojom::TabSearchSection::kSearch));
   registry->RegisterBooleanPref(kTabSearchUsed, false);
   registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
   registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
-}
-
-tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
-    const int section) {
-  return ToKnownEnumValue(
-      static_cast<tab_search::mojom::TabSearchSection>(section));
-}
-
-int GetIntFromTabSearchSection(
-    const tab_search::mojom::TabSearchSection section) {
-  return std::to_underlying(section);
 }
 
 }  // namespace tab_search_prefs

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {PageRemote, ProfileData, SwitchToTabInfo, TabSearchApiProxy} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {PageCallbackRouter, TabSearchSection} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {PageCallbackRouter} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestTabSearchApiProxy extends TestBrowserProxy implements
@@ -18,7 +18,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'closeTab',
       'closeWebUiTab',
       'getProfileData',
-      'getTabSearchSection',
       'getIsSplit',
       'openRecentlyClosedEntry',
       'replaceActiveSplitTab',
@@ -44,11 +43,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   getProfileData() {
     this.methodCalled('getProfileData');
     return Promise.resolve({profileData: this.profileData_!});
-  }
-
-  getTabSearchSection() {
-    this.methodCalled('getTabSearchSection');
-    return Promise.resolve({section: TabSearchSection.kSearch});
   }
 
   getIsSplit() {
