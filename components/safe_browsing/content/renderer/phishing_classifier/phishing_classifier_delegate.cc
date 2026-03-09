@@ -128,9 +128,12 @@ void PhishingClassifierDelegate::StartPhishingDetection(
     const GURL& url,
     safe_browsing::mojom::ClientSideDetectionType request_type,
     StartPhishingDetectionCallback callback) {
-  if (!callback_.is_null())
+  if (!callback_.is_null()) {
     std::move(callback_).Run(mojom::PhishingDetectorResult::CANCELLED,
                              std::nullopt);
+    CancelPendingClassification(
+        CancelClassificationReason::kNewRequestFromBrowser);
+  }
   is_phishing_detection_running_ = true;
   awaiting_retry_ = false;
   last_url_received_from_browser_ = StripRef(url);
@@ -337,21 +340,35 @@ void PhishingClassifierDelegate::ClassificationDone(
 void PhishingClassifierDelegate::MaybeStartClassification() {
   // We can begin phishing classification when the following conditions are
   // met:
-  //  1. A Scorer has been created
-  //  2. The browser has sent a StartPhishingDetection message for the
+  //  1. There's no current classification going on.
+  //  2. A Scorer has been created.
+  //  3. The browser has sent a StartPhishingDetection message for the
   //     current toplevel URL.
-  //  3. The page has finished loading.
-  //  4. The load is a new navigation (not a session history navigation).
-  //  5. The toplevel URL has not already been classified.
+  //  4. The page has finished loading.
+  //  5. The load is a new navigation (not a session history navigation).
+  //  6. The toplevel URL has not already been classified.
   //
   // Note that if we determine that this particular navigation should not be
   // classified at all (as opposed to deferring it until we get an IPC or
   // the load completes), we discard the page text since it won't be needed.
+  if (is_classifying_) {
+    return;
+  }
+
   if (!classifier_->is_ready()) {
     // We should only retry if a phishing detection has been requested, which
-    // is tracked by |is_phishing_detection_running_|.
+    // is tracked by |is_phishing_detection_running_|. Otherwise, there's no
+    // browser side request to respond to.
     if (base::FeatureList::IsEnabled(kClientSideDetectionRetryLimit) &&
-        is_phishing_detection_running_ && !awaiting_retry_) {
+        is_phishing_detection_running_) {
+      // If there's a browser side request and a retry has been submitted, this
+      // is only possible if the PageText has been recaptured. If there's a new
+      // browser side request, the |awaiting_retry_| and
+      // |is_phishing_detection_running_| would have been set to false so we'd
+      // retry again on a fresh browser request.
+      if (awaiting_retry_) {
+        return;
+      }
       awaiting_retry_ = true;
 
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

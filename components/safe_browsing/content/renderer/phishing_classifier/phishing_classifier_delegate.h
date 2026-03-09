@@ -111,7 +111,10 @@ class PhishingClassifierDelegate : public content::RenderFrameObserver,
     kShutdown = 3,
     kNewPhishingScorerUpdate = 4,
     kScorerCleared = 5,
-    kMaxValue = kScorerCleared,  // Always add new values before this one.
+    kNewRequestFromBrowser = 6,
+
+    kMaxValue =
+        kNewRequestFromBrowser,  // Always add new values before this one.
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingCancelClassificationReason)
 

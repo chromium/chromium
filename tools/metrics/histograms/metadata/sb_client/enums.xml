@@ -397,6 +397,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Has bypassed download warnings before"/>
 </enum>
 
+<!-- LINT.IfChange(SBClientPhishingCancelClassificationReason) -->
+
 <enum name="SBClientPhishingCancelClassificationReason">
   <int value="0" label="NAVIGATE_AWAY"/>
   <int value="1" label="NAVIGATE_WITHIN_PAGE"/>
@@ -404,7 +406,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SHUTDOWN"/>
   <int value="4" label="NEW_PHISHING_SCORER"/>
   <int value="5" label="SCORER_CLEARED"/>
+  <int value="6" label="NEW_REQUEST_FROM_BROWSER"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h:CancelClassificationReason) -->
 
 <enum name="SBClientPhishingCancelImageEmbeddingReason">
   <int value="0" label="NAVIGATE_AWAY"/>
