@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -15,6 +16,8 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -130,8 +133,17 @@ void SearchPermissionsService::RecordEffectiveDSEOriginPermissions(
       hcsm->GetUserModifiableContentSetting(
           dse_origin, dse_origin, ContentSettingsType::NOTIFICATIONS));
 
-  permissions::PermissionUmaUtil::RecordDSEEffectiveSetting(
-      ContentSettingsType::GEOLOCATION,
-      hcsm->GetUserModifiableContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION));
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    permissions::PermissionUmaUtil::RecordDSEEffectiveSetting(
+        content_settings::GeolocationContentSettingsType(),
+        hcsm->GetUserModifiablePermissionSetting(
+            dse_origin, dse_origin,
+            content_settings::GeolocationContentSettingsType()));
+  } else {
+    permissions::PermissionUmaUtil::RecordDSEEffectiveSetting(
+        ContentSettingsType::GEOLOCATION,
+        hcsm->GetUserModifiableContentSetting(
+            dse_origin, dse_origin, ContentSettingsType::GEOLOCATION));
+  }
 }

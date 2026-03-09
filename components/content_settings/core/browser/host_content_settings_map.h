@@ -151,6 +151,13 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       content_settings::SettingInfo* info = nullptr) const;
 
+  // This is the same as GetPermissionSetting() but ignores providers which are
+  // not user-controllable (e.g. policy and extensions).
+  PermissionSetting GetUserModifiablePermissionSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type) const;
+
   // Returns a single content setting |Value| which applies to the given URLs.
   // If |info| is not NULL, then the |source| field of |info| is set to the
   // source of the returned |Value| (POLICY, EXTENSION, USER, ...) and the

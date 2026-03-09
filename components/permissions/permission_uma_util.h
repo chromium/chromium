@@ -765,7 +765,7 @@ class PermissionUmaUtil {
                                                      base::TimeDelta delta);
 
   static void RecordDSEEffectiveSetting(ContentSettingsType permission_type,
-                                        ContentSetting setting);
+                                        PermissionSetting setting);
 
   static void RecordPermissionPredictionConcurrentRequests(
       RequestType request_type);

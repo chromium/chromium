@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -1673,13 +1674,40 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
 // static
 void PermissionUmaUtil::RecordDSEEffectiveSetting(
     ContentSettingsType permission_type,
-    ContentSetting setting) {
+    PermissionSetting setting) {
   std::string permission_string =
       GetPermissionRequestString(PermissionUtil::GetUmaValueForRequestType(
           ContentSettingsTypeToRequestType(permission_type)));
-  base::UmaHistogramEnumeration(
-      "Permissions.DSE.EffectiveSetting." + permission_string, setting,
-      CONTENT_SETTING_NUM_SETTINGS);
+  if (ContentSetting* content_setting = std::get_if<ContentSetting>(&setting)) {
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.EffectiveSetting." + permission_string,
+        *content_setting, CONTENT_SETTING_NUM_SETTINGS);
+  } else if (GeolocationSetting* geolocation_setting =
+                 std::get_if<GeolocationSetting>(&setting)) {
+    CHECK_EQ(permission_type, ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+    const content_settings::PermissionSettingsInfo* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            permission_type);
+
+    ContentSetting equivalent_content_setting =
+        ContentSetting::CONTENT_SETTING_ASK;
+    if (info->delegate().IsAnyPermissionAllowed(*geolocation_setting)) {
+      equivalent_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Permissions.DSE.EffectiveSetting.", permission_string,
+                        ".Accuracy"}),
+          geolocation_setting->precise == PermissionOption::kAllowed
+              ? GeolocationAccuracy::kPrecise
+              : GeolocationAccuracy::kApproximate);
+    } else if (info->delegate().IsBlocked(*geolocation_setting)) {
+      equivalent_content_setting = ContentSetting::CONTENT_SETTING_BLOCK;
+    }
+    base::UmaHistogramEnumeration(
+        "Permissions.DSE.EffectiveSetting." + permission_string,
+        equivalent_content_setting, CONTENT_SETTING_NUM_SETTINGS);
+  } else {
+    NOTREACHED();
+  }
 }
 
 // static

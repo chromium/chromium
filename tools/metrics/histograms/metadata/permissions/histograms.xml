@@ -757,6 +757,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.DSE.EffectiveSetting.Geolocation.Accuracy"
+    enum="GeolocationAccuracy" expires_after="2026-09-01">
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever &quot;Permissions.DSE.EffectiveSetting.Geolocation&quot;
+    is recorded with value ALLOW. Tracks the Geolocation Accuracy granted to the
+    Default Search Engine origin.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.DSE.EffectiveSetting{PermissionTypes}"
     enum="ContentSetting" expires_after="2026-09-01">
   <owner>andypaicu@chromium.org</owner>

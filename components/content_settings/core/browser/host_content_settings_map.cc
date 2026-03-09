@@ -468,6 +468,20 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
   return content_settings::ValueToContentSetting(value);
 }
 
+PermissionSetting HostContentSettingsMap::GetUserModifiablePermissionSetting(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type) const {
+  CheckPermissionTypeRegistration(content_type);
+  auto* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_type);
+  const base::Value value =
+      GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
+                                ProviderFilter::kUserModifiable, nullptr);
+  return content_settings::ValueToPermissionSetting(permission_info, value);
+}
+
 PermissionSetting HostContentSettingsMap::GetPermissionSetting(
     const GURL& primary_url,
     const GURL& secondary_url,

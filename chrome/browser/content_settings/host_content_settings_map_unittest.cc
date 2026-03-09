@@ -45,6 +45,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
@@ -1454,6 +1455,37 @@ TEST_F(HostContentSettingsMapTest, GetUserModifiableContentSetting) {
                                        url, url, ContentSettingsType::COOKIES));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(url, url, ContentSettingsType::COOKIES));
+}
+
+TEST_F(HostContentSettingsMapTest, GetUserModifiablePermissionSetting) {
+  base::test::ScopedFeatureList enable_approximate_location(
+      content_settings::features::kApproximateGeolocationPermission);
+
+  GURL url("http://user_exception_allow.com");
+
+  TestingProfile profile;
+  // Arbitrarily using cookies as content type to test.
+  profile.GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedDefaultGeolocationSetting,
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{PermissionOption::kAllowed,
+                         PermissionOption::kAllowed});
+
+  EXPECT_EQ(PermissionSetting(GeolocationSetting{PermissionOption::kAllowed,
+                                                 PermissionOption::kAllowed}),
+            map->GetUserModifiablePermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
+  EXPECT_TRUE(
+      content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+          ->delegate()
+          .IsBlocked(map->GetPermissionSetting(
+              url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS)));
 }
 
 /**
