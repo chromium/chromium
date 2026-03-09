@@ -15,6 +15,9 @@ BASE_FEATURE(kAimServerEligibilityEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAimCoBrowseEligibilityCheckEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimFuseboxEligibilityCheckEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimUrlNavigationFetchEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled,

@@ -20,6 +20,9 @@ BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 // to whether Co-Browse eligibility is enabled.
 BASE_DECLARE_FEATURE(kAimCoBrowseEligibilityCheckEnabled);
 
+// If enabled, uses the server response for AIM Fusebox eligibility.
+BASE_DECLARE_FEATURE(kAimFuseboxEligibilityCheckEnabled);
+
 // If enabled, creates the navigation throttle that fetches AIM eligibility
 // responses on AIM URL navigations.
 BASE_DECLARE_FEATURE(kAimUrlNavigationFetchEnabled);

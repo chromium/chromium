@@ -526,6 +526,14 @@ bool AimEligibilityService::IsCobrowseEligible() const {
   return GetMostRecentResponse().is_cobrowse_eligible();
 }
 
+bool AimEligibilityService::IsFuseboxEligible() const {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kAimFuseboxEligibilityCheckEnabled)) {
+    return true;
+  }
+  return GetMostRecentResponse().is_fusebox_eligible();
+}
+
 bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
   for (const auto& rule : GetMostRecentResponse().aim_detection_url_rule()) {
     int matched_params = 0;
