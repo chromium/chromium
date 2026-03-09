@@ -23,18 +23,12 @@
 
   // Content view for Safety Check.
   UIView* _contentView;
-
-  // Delegate for the `_contentView`.
-  id<MagicStackModuleContentViewDelegate> _contentViewDelegate;
 }
 
 #pragma mark - Public methods
 
-- (instancetype)initWithConfig:(SafetyCheckConfig*)config
-           contentViewDelegate:
-               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
+- (instancetype)initWithConfig:(SafetyCheckConfig*)config {
   if ((self = [super init])) {
-    _contentViewDelegate = contentViewDelegate;
     _config = config;
   }
 

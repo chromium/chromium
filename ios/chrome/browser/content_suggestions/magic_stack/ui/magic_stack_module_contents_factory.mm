@@ -190,8 +190,8 @@
                          (id<MagicStackModuleContentViewDelegate>)
                              contentViewDelegate {
   SafetyCheckView* safetyCheckView =
-      [[SafetyCheckView alloc] initWithConfig:config
-                          contentViewDelegate:contentViewDelegate];
+      [[SafetyCheckView alloc] initWithConfig:config];
+  safetyCheckView.contentViewDelegate = contentViewDelegate;
   return safetyCheckView;
 }
 

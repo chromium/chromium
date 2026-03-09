@@ -16,12 +16,12 @@
 // Safe Browsing check.
 @interface SafetyCheckView : UIView
 
-// Initializes the SafetyCheckView with `config` and `contentViewDelegate`.
-// TODO(crbug.com/391617946): Refactor content view delegate and methods that
-// use it out of the initializer.
-- (instancetype)initWithConfig:(SafetyCheckConfig*)config
-           contentViewDelegate:
-               (id<MagicStackModuleContentViewDelegate>)contentViewDelegate;
+// Delegate for the content view.
+@property(nonatomic, weak)
+    id<MagicStackModuleContentViewDelegate> contentViewDelegate;
+
+// Initializes the SafetyCheckView with `config`.
+- (instancetype)initWithConfig:(SafetyCheckConfig*)config;
 
 @end
 
