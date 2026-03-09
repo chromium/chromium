@@ -77,6 +77,21 @@ EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
           return EntityAttributeUpdateType::kNewEntityAttributeAdded;
         }
 
+        // Since masked attributes for Wallet passes are only partially
+        // available in existing entities, raw string comparison wouldn't work.
+        // We compare their suffixes instead.
+        if (old_entity_attribute->masked()) {
+          std::u16string old_value =
+              old_entity_attribute->GetCompleteInfo(app_locale);
+          std::u16string new_value =
+              new_entity_attribute.GetCompleteInfo(app_locale);
+          size_t suffix_length = std::min(old_value.size(), new_value.size());
+          return old_value.substr(old_value.size() - suffix_length) ==
+                         new_value.substr(new_value.size() - suffix_length)
+                     ? EntityAttributeUpdateType::kNewEntityAttributeUnchanged
+                     : EntityAttributeUpdateType::kNewEntityAttributeUpdated;
+        }
+
         return std::ranges::all_of(
                    new_entity_attribute.type().field_subtypes(),
                    [&](FieldType type) {

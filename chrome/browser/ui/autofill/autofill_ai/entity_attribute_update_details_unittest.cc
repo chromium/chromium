@@ -129,6 +129,32 @@ TEST(EntityAttributeUpdateDetailsTest, AttributeRemoved) {
               EntityAttributeUpdateType::kNewEntityAttributeUnchanged)));
 }
 
+// Tests that masked attributes are compared by their suffixes rather than a raw
+// string comparison, since they are only partially available.
+TEST(EntityAttributeUpdateDetailsTest, MaskedAttributeMatchingSuffix) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillAiWalletPrivatePasses};
+
+  EntityInstance new_entity = test::GetKnownTravelerNumberInstance(
+      {.name = u"UpdatedName", .number = u"98761234"});
+  EntityInstance old_entity =
+      test::MaskEntityInstance(test::GetKnownTravelerNumberInstance(
+          {.name = u"Name",
+           .number = u"1234",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+
+  auto details = EntityAttributeUpdateDetails::GetUpdatedAttributesDetails(
+      new_entity, old_entity, "en-US");
+
+  // Verify that comparing an unmasked new attribute against a masked old
+  // attribute with a matching suffix results in unchanged.
+  auto it = std::ranges::find(details, u"Number",
+                              &EntityAttributeUpdateDetails::attribute_name);
+  ASSERT_NE(it, details.end());
+  EXPECT_EQ(it->update_type(),
+            EntityAttributeUpdateType::kNewEntityAttributeUnchanged);
+}
+
 }  // namespace
 
 }  // namespace autofill
