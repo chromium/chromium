@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {HAS_BEEN_PASSWORD_SYMBOL} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
@@ -15,6 +16,12 @@ type InteractiveNodeIds = Set<number>;
 // Interface for elements that have a 'disabled' property.
 interface HtmlElementWithDisabled extends HTMLElement {
   disabled: boolean;
+}
+
+// An HTMLInputElement that can be tracked with a Symbol property to indicate
+// it has been a password field.
+interface PasswordTrackedElement extends HTMLInputElement {
+  [HAS_BEEN_PASSWORD_SYMBOL]?: boolean;
 }
 
 // The last known pointer position.
@@ -203,6 +210,12 @@ const BASIC_CONTENT_ATTRIBUTES: PageContentAttributes = {
 // Style values.
 const STYLE_VALUE_OVERFLOW_AUTO = 'auto';
 const STYLE_VALUE_OVERFLOW_SCROLL = 'scroll';
+
+// Input redaction decision that will keep its value.
+const UNREDACTED_DECISIONS = [
+  PageContentRedactionDecision.NO_REDACTION_NECESSARY,
+  PageContentRedactionDecision.UNREDACTED_EMPTY_PASSWORD,
+];
 
 // Type alias for accessing webkit-specific fullscreen document properties that
 // are not part of the standard Document interface.
@@ -1103,7 +1116,6 @@ function getFormControlData(
     selectOptions: [],
     isChecked: false,
     isRequired: false,
-    // TODO(crbug.com/485211722): Set redaction decision for Autofill.
     redactionDecision: PageContentRedactionDecision.NO_REDACTION_NECESSARY,
   };
 
@@ -1114,15 +1126,22 @@ function getFormControlData(
 
   const value = (domNode as HTMLInputElement).value;
   if (value !== undefined) {
-    // TODO(crbug.com/485211722): Complete implementation once redaction
-    // decision is fully available.
-    // Exclude password field value mirroring Blink's logic.
-    // For now, only extract value if type != password.
+    // Don't include password values as they are sensitive (mirrors Blink's
+    // logic). The symbol should be enough but check the input type as a
+    // fallback.
+    if (tagName === TAG_INPUT &&
+        ((domNode as PasswordTrackedElement)[HAS_BEEN_PASSWORD_SYMBOL] ||
+         (domNode as HTMLInputElement).type === PASSWORD_TYPE)) {
+      formControlData.redactionDecision = value ?
+          PageContentRedactionDecision.REDACTED_HAS_BEEN_PASSWORD :
+          PageContentRedactionDecision.UNREDACTED_EMPTY_PASSWORD;
+    }
+
     // TAG_TEXTAREA and TAG_SELECT do not support the 'type' attribute to
     // designate a password field, so we consider their values safe to extract
     // (unless they are custom passwords, which is handled separately).
     if (tagName !== TAG_INPUT ||
-        (domNode as HTMLInputElement).type !== PASSWORD_TYPE) {
+        UNREDACTED_DECISIONS.includes(formControlData.redactionDecision)) {
       formControlData.fieldValue = value;
     }
   }

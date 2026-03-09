@@ -3868,6 +3868,100 @@ TEST_P(PageContextWrapperTest,
   EXPECT_EQ(fc_textarea.field_name(), "texta");
 }
 
+// Tests the extraction of password fields and checks that their value is
+// redacted.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_Rich_Extraction_PasswordRedaction) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure =
+      HtmlPage("Password Form",
+               RawHtml("<html><body><form name=\"f2\" action='/login'>"
+                       "  <input type=\"password\" name=\"pwd\" "
+                       "value=\"v3\">"
+                       "  <input type=\"password\" name=\"pwd_empty\">"
+                       "  <input type=\"text\" name=\"t1\" value=\"v1\">"
+                       "  <input type=\"password\" name=\"pwd_changed\" "
+                       "value=\"v4\">"
+                       "</form></body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Simulate the user clicking a "Show Password" toggle before extraction.
+  CallJavascript(
+      "let changed_pwd = document.getElementsByName('pwd_changed')[0];"
+      "changed_pwd.type = 'text';"
+      "changed_pwd[Symbol.for('__gCrHasBeenPassword')] = true;");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+
+  EXPECT_TRUE(form_node.content_attributes().has_form_data());
+
+  ASSERT_EQ(form_node.children_nodes_size(), 4);
+  const auto* input_password_node = &form_node.children_nodes(0);
+  const auto* empty_password_node = &form_node.children_nodes(1);
+  const auto* input_text_node = &form_node.children_nodes(2);
+  const auto* changed_password_node = &form_node.children_nodes(3);
+
+  ASSERT_TRUE(input_password_node);
+  const auto& fc_password =
+      input_password_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_password.field_name(), "pwd");
+  EXPECT_EQ(fc_password.field_value(), "");
+  EXPECT_EQ(fc_password.redaction_decision(),
+            optimization_guide::proto::RedactionDecision::
+                REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+
+  ASSERT_TRUE(empty_password_node);
+  const auto& fc_empty_password =
+      empty_password_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_empty_password.field_name(), "pwd_empty");
+  EXPECT_EQ(fc_empty_password.field_value(), "");
+  EXPECT_EQ(fc_empty_password.redaction_decision(),
+            optimization_guide::proto::RedactionDecision::
+                REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD);
+
+  ASSERT_TRUE(input_text_node);
+  const auto& fc_text =
+      input_text_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_text.field_name(), "t1");
+  EXPECT_EQ(fc_text.field_value(), "v1");
+  EXPECT_EQ(fc_text.redaction_decision(),
+            optimization_guide::proto::RedactionDecision::
+                REDACTION_DECISION_NO_REDACTION_NECESSARY);
+
+  ASSERT_TRUE(changed_password_node);
+  const auto& fc_changed_password =
+      changed_password_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_changed_password.field_name(), "pwd_changed");
+  EXPECT_EQ(fc_changed_password.field_value(), "");
+  EXPECT_EQ(fc_changed_password.redaction_decision(),
+            optimization_guide::proto::RedactionDecision::
+                REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+}
+
 // Tests that Canvas Metadata is extracted correctly.
 TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Canvas) {
   if (!IsRefactored()) {

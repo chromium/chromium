@@ -20,10 +20,14 @@ compile_ts("dom_node_ids_ts") {
 
 compile_ts("annotated_page_content_extraction_ts") {
   sources = [ "resources/annotated_page_content_extraction.ts" ]
+
+  # TODO(crbug.com/491073038): Look into removing the dependency
+  # on autofill components.
   deps = [
     ":common_ts",
     ":dom_node_ids_ts",
     ":page_content_types_ts",
+    "//components/autofill/ios/form_util:fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
