@@ -23,51 +23,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// A red-black tree, which is a form of a balanced binary tree. It
-// supports efficient insertion, deletion and queries of comparable
-// elements. The same element may be inserted multiple times. The
-// algorithmic complexity of common operations is:
+// A red-black tree, which is a form of a balanced binary tree. It supports
+// efficient insertion, deletion and queries of comparable elements. The same
+// element may be inserted multiple times. The algorithmic complexity of common
+// operations is:
 //
 //   Insertion: O(lg(n))
 //   Deletion:  O(lg(n))
 //   Querying:  O(lg(n))
 //
-// The data type T that is stored in this red-black tree must be only
-// Plain Old Data (POD), or bottom out into POD. It must _not_ rely on
-// having its destructor called. This implementation internally
-// allocates storage in large chunks and does not call the destructor
-// on each object.
+// The data type T that is stored in this red-black tree must be only Plain Old
+// Data (POD), or bottom out into POD. It must _not_ rely on having its
+// destructor called. This implementation internally allocates storage in large
+// chunks and does not call the destructor on each object.
 //
-// Type T must supply a default constructor, a copy constructor, and
-// the "<" and "==" operators.
+// Type T must supply a default constructor, a copy constructor, and the "<"
+// and "==" operators.
 //
-// In debug mode, printing of the data contained in the tree is
-// enabled. This requires the template specialization to be available:
+// In debug mode, printing of the data contained in the tree is enabled. This
+// requires the template specialization to be available:
 //
 //   template<> struct ValueToString<T> {
 //       static String toString(const T& t);
 //   };
 //
-// Note that when complex types are stored in this red/black tree, it
-// is possible that single invocations of the "<" and "==" operators
-// will be insufficient to describe the ordering of elements in the
-// tree during queries. As a concrete example, consider the case where
-// intervals are stored in the tree sorted by low endpoint. The "<"
-// operator on the Interval class only compares the low endpoint, but
-// the "==" operator takes into account the high endpoint as well.
-// This makes the necessary logic for querying and deletion somewhat
-// more complex. In order to properly handle such situations, the
-// property "needsFullOrderingComparisons" must be set to true on
-// the tree.
+// Note that when complex types are stored in this red/black tree, it is
+// possible that single invocations of the "<" and "==" operators will be
+// insufficient to describe the ordering of elements in the tree during
+// queries. As a concrete example, consider the case where intervals are stored
+// in the tree sorted by low endpoint. The "<" operator on the Interval class
+// only compares the low endpoint, but the "==" operator takes into account the
+// high endpoint as well. This makes the necessary logic for querying and
+// deletion somewhat more complex. In order to properly handle such situations,
+// this implementation performs full ordering comparisons during tree searches.
 //
-// This red-black tree is designed to be _augmented_; subclasses can
-// add additional and summary information to each node to efficiently
-// store and index more complex data structures. A concrete example is
-// the IntervalTree, which extends each node with a summary statistic
-// to efficiently store one-dimensional intervals.
+// This red-black tree is designed to be _augmented_; subclasses can add
+// additional and summary information to each node to efficiently store and
+// index more complex data structures. A concrete example is the IntervalTree,
+// which extends each node with a summary statistic to efficiently store
+// one-dimensional intervals.
 //
-// The design of this red-black tree comes from Cormen, Leiserson,
-// and Rivest, _Introduction to Algorithms_, MIT Press, 1990.
+// The design of this red-black tree comes from Cormen, Leiserson, and Rivest,
+// _Introduction to Algorithms_, MIT Press, 1990.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_
@@ -98,8 +95,7 @@ class PodRedBlackTree {
   // from a newly constructed PodFreeListArena.
   PodRedBlackTree()
       : arena_(PodFreeListArena<Node>::Create()),
-        root_(nullptr),
-        needs_full_ordering_comparisons_(false)
+        root_(nullptr)
 #ifndef NDEBUG
         ,
         verbose_debugging_(false)
@@ -111,8 +107,7 @@ class PodRedBlackTree {
   // from the given PodArena.
   explicit PodRedBlackTree(scoped_refptr<PodFreeListArena<Node>> arena)
       : arena_(std::move(arena)),
-        root_(nullptr),
-        needs_full_ordering_comparisons_(false)
+        root_(nullptr)
 #ifndef NDEBUG
         ,
         verbose_debugging_(false)
@@ -139,11 +134,6 @@ class PodRedBlackTree {
 
   bool Contains(const T& data) const {
     return TreeSearch(data);
-  }
-
-  // See the class documentation for an explanation of this property.
-  void SetNeedsFullOrderingComparisons(bool needs_full_ordering_comparisons) {
-    needs_full_ordering_comparisons_ = needs_full_ordering_comparisons;
   }
 
   virtual bool CheckInvariants() const {
@@ -243,42 +233,25 @@ class PodRedBlackTree {
 
   // Searches the tree for the given datum.
   Node* TreeSearch(const T& data) const {
-    if (needs_full_ordering_comparisons_)
-      return TreeSearchFullComparisons(root_, data);
-
-    return TreeSearchNormal(root_, data);
-  }
-
-  // Searches the tree using the normal comparison operations,
-  // suitable for simple data types such as numbers.
-  Node* TreeSearchNormal(Node* current, const T& data) const {
-    while (current) {
-      if (current->Data() == data)
-        return current;
-      if (data < current->Data())
-        current = current->Left();
-      else
-        current = current->Right();
-    }
-    return nullptr;
+    return TreeSearchFromNode(root_, data);
   }
 
   // Searches the tree using multiple comparison operations, required
   // for data types with more complex behavior such as intervals.
-  Node* TreeSearchFullComparisons(Node* current, const T& data) const {
+  Node* TreeSearchFromNode(Node* current, const T& data) const {
     if (!current)
       return nullptr;
     if (data < current->Data())
-      return TreeSearchFullComparisons(current->Left(), data);
+      return TreeSearchFromNode(current->Left(), data);
     if (current->Data() < data)
-      return TreeSearchFullComparisons(current->Right(), data);
+      return TreeSearchFromNode(current->Right(), data);
     if (data == current->Data())
       return current;
 
     // We may need to traverse both the left and right subtrees.
-    Node* result = TreeSearchFullComparisons(current->Left(), data);
+    Node* result = TreeSearchFromNode(current->Left(), data);
     if (!result)
-      result = TreeSearchFullComparisons(current->Right(), data);
+      result = TreeSearchFromNode(current->Right(), data);
     return result;
   }
 
@@ -698,7 +671,6 @@ class PodRedBlackTree {
 
   scoped_refptr<PodFreeListArena<Node>> arena_;
   Node* root_;
-  bool needs_full_ordering_comparisons_;
 #ifndef NDEBUG
   bool verbose_debugging_;
 #endif
