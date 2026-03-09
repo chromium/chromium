@@ -66,7 +66,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   }
 
   content::PageNavigator* page_navigator() { return page_navigator_; }
-  views::View* overflow_button() { return overflow_button_; }
+  views::View* everything_menu_button() { return everything_menu_button_; }
 
   // views::View
   bool GetDropFormats(int* formats,
@@ -152,10 +152,10 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // the button ptr from the tab_group_buttons_ list.
   void RemoveTabGroupButton(const base::Uuid& guid);
 
-  // Remove all buttons currently in the bar.
+  // Removes all buttons currently in the bar.
   void RemoveAllButtons();
 
-  // Find the button that matches `guid`.
+  // Finds the button that matches `guid`.
   views::View* GetButton(const base::Uuid& guid);
 
   // Returns the index of the group.
@@ -166,7 +166,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // visible in the SavedTabGroupBar.
   std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
 
-  // Updates the visibilites of all buttons up to `last_index_visible`. The
+  // Updates the visibilities of all buttons up to `last_index_visible`. The
   // overflow button will be displayed based on `should_show_overflow`.
   void UpdateButtonVisibilities(bool should_show_overflow,
                                 int last_visible_button_index);
@@ -194,7 +194,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Paints the drop indicator, if one should be shown.
   void MaybePaintDropIndicatorInBar(gfx::Canvas* canvas);
 
-  // Maybe show the promo if a group was closed from the tabstrip.
+  // Maybe shows the promo if a group was closed from the tabstrip.
   void MaybeShowClosePromo(const base::Uuid& saved_group_id);
 
   // Calculates the index in the saved tab groups bar at which we should show a
@@ -209,7 +209,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  raw_ptr<views::MenuButton, AcrossTasksDanglingUntriaged> overflow_button_;
+  // The button that opens the "Everything" menu for saved tab groups.
+  raw_ptr<views::MenuButton> everything_menu_button_;
 
   std::unique_ptr<STGEverythingMenu> everything_menu_;
 
@@ -238,6 +239,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
   // safety if BookmarkBarView is deleted after getting the callback.
+  // Factory for creating WeakPtrs to this class. This is used to ensure that
+  // callbacks to this class are not run after the class is destroyed.
   base::WeakPtrFactory<SavedTabGroupBar> weak_ptr_factory_{this};
 };
 

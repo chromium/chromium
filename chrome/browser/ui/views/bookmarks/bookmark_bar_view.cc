@@ -804,8 +804,8 @@ void BookmarkBarView::Layout(PassKey) {
     // of `saved_tab_group_bar_` below. Later the overflow button will be laid
     // out with both width and height the same as `button_height` (i.e. the
     // height of `saved_tab_group_bar_`).
-    if (saved_tab_group_bar_->overflow_button()) {
-      saved_tab_group_bar_->overflow_button()->SetPreferredSize(
+    if (saved_tab_group_bar_->everything_menu_button()) {
+      saved_tab_group_bar_->everything_menu_button()->SetPreferredSize(
           gfx::Size(button_height, button_height));
     }
     // Calculate the save tab group width without any restriction.

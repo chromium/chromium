@@ -526,9 +526,11 @@ TEST_F(SavedTabGroupBarUnitTest, OnlyShowEverthingButton) {
                                         ->GetPreferredSize()
                                         .width() +
                                     SavedTabGroupBar::kBetweenElementSpacing;
-  const int overflow_preferred_width =
-      saved_tab_group_bar()->overflow_button()->GetPreferredSize().width() +
-      SavedTabGroupBar::kBetweenElementSpacing;
+  const int overflow_preferred_width = saved_tab_group_bar()
+                                           ->everything_menu_button()
+                                           ->GetPreferredSize()
+                                           .width() +
+                                       SavedTabGroupBar::kBetweenElementSpacing;
 
   // Not enough width for even the overflow button
   saved_tab_group_bar()->SetBounds(0, 0, overflow_preferred_width - 1, 100);
