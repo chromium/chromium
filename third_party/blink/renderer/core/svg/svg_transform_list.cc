@@ -359,8 +359,6 @@ template <typename CharType>
 SVGParsingError SVGTransformList::ParseInternal(
     const base::span<const CharType> chars,
     size_t& position) {
-  Clear();
-
   bool delim_parsed = false;
   while (SkipOptionalSVGSpaces(chars, position)) {
     delim_parsed = false;
@@ -407,11 +405,13 @@ SVGParsingError SVGTransformList::ParseInternal(
 
 bool SVGTransformList::Parse(const base::span<const UChar> chars,
                              size_t& position) {
+  CHECK(IsEmpty());
   return ParseInternal(chars, position) == SVGParseStatus::kNoError;
 }
 
 bool SVGTransformList::Parse(const base::span<const LChar> chars,
                              size_t& position) {
+  CHECK(IsEmpty());
   return ParseInternal(chars, position) == SVGParseStatus::kNoError;
 }
 
@@ -425,15 +425,17 @@ SVGTransformType ParseTransformType(const String& string) {
 }
 
 SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
+  Clear();
+
   if (value.empty()) {
-    Clear();
     return SVGParseStatus::kNoError;
   }
   size_t position = 0;
   SVGParsingError parse_error = VisitCharacters(
       value, [&](auto chars) { return ParseInternal(chars, position); });
-  if (parse_error != SVGParseStatus::kNoError)
+  if (parse_error != SVGParseStatus::kNoError) {
     Clear();
+  }
   return parse_error;
 }
 
