@@ -10,7 +10,6 @@
 
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationDestination destination;
-  [ImplementedAs=canIntercept, RuntimeEnabled=NavigateEventCanTransition] readonly attribute boolean canTransition;
   readonly attribute boolean canIntercept;
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
@@ -19,7 +18,7 @@
   readonly attribute DOMString? downloadRequest;
   readonly attribute any info;
   [RuntimeEnabled=HasUAVisualTransition] readonly attribute boolean hasUAVisualTransition;
-  [RuntimeEnabled=NavigateEventSourceElement] readonly attribute Element? sourceElement;
+  readonly attribute Element? sourceElement;
 
   [RaisesException] void intercept(optional NavigationInterceptOptions options = {});
   [RaisesException,RuntimeEnabled=NavigateEventDeferCrossDocumentCommit] void deferPageSwap(NavigationDeferPageSwapOptions options);

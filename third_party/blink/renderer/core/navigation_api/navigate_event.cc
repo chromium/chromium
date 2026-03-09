@@ -187,7 +187,6 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
   }
 
   if (options->hasPrecommitHandler()) {
-    CHECK(RuntimeEnabledFeatures::NavigateEventCommitBehaviorEnabled());
     if (!cancelable()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -504,11 +503,6 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
                navigation_type_ == V8NavigationType::Enum::kTraverse)
           ? FirePopstate::kYes
           : FirePopstate::kNo;
-  if (!RuntimeEnabledFeatures::NavigateEventPopstateLimitationsEnabled() &&
-      fire_popstate == FirePopstate::kNo &&
-      dispatch_params_->event_type != NavigateEventType::kHistoryApi) {
-    fire_popstate = FirePopstate::kYes;
-  }
 
   // In the spec, the URL and history update steps are not called for reloads.
   // In our implementation, we call the corresponding function anyway, but

@@ -3773,23 +3773,8 @@
       status: "stable",
     },
     {
-      name: "NavigateEventCanTransition",
-    },
-    {
-      name: "NavigateEventCommitBehavior",
-      status: "stable",
-    },
-    {
       name: "NavigateEventDeferCrossDocumentCommit",
       status: "experimental",
-    },
-    {
-      name: "NavigateEventPopstateLimitations",
-      status: "stable",
-    },
-    {
-      name: "NavigateEventSourceElement",
-      status: "stable",
     },
     {
       name: "NavigationEventTiming",
@@ -3799,10 +3784,6 @@
       status: "experimental",
       origin_trial_feature_name: "SoftNavigationHeuristics",
       implied_by: ["SoftNavigationHeuristics"],
-    },
-    {
-      name: "NavigationTransitionDestination",
-      status: "stable",
     },
     {
       name: "NavigatorContentUtils",

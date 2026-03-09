@@ -3952,25 +3952,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(root_frame_host()->HasPendingCommitNavigation());
 }
 
-// TODO(japhet): Remove this helper class and use RenderFrameHostImplBrowserTest
-// when blink::features::kNavigateEventCommitBehavior is removed.
-class RenderFrameHostImplCommitBehaviorBrowserTest
-    : public RenderFrameHostImplBrowserTest {
- public:
-  RenderFrameHostImplCommitBehaviorBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kNavigateEventCommitBehavior);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests that when the navigation API intercepts and defers a commit, then
 // a second navigation preempts the deferred commit, no NavigationHandles are
 // leaked.
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplCommitBehaviorBrowserTest,
+    RenderFrameHostImplBrowserTest,
     DeferredAndPreemptedSameDocumentNavigationsShouldNotLeakNavigationHandles) {
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
@@ -4007,7 +3993,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that when the navigation API intercepts and defers a commit, then
 // the commit is aborted by script, no NavigationHandles are leaked.
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplCommitBehaviorBrowserTest,
+    RenderFrameHostImplBrowserTest,
     DeferredAndRejectedSameDocumentNavigationsShouldntLeakNavigationHandles) {
   GURL main_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
