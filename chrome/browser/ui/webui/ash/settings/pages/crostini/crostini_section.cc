@@ -206,7 +206,7 @@ bool IsDeviceManaged() {
 }
 
 bool IsAdbSideloadingAllowed() {
-  return false;  // Hardcoded to false. Feature is obsolete.
+  return base::FeatureList::IsEnabled(features::kArcAdbSideloadingFeature);
 }
 
 }  // namespace
