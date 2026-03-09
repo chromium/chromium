@@ -52,6 +52,8 @@ MotionEvent::Action FromAndroidAction(int android_action) {
     ACTION_CASE(HOVER_MOVE);
     ACTION_CASE(BUTTON_PRESS);
     ACTION_CASE(BUTTON_RELEASE);
+    ACTION_CASE(OUTSIDE);
+    ACTION_CASE(SCROLL);
     default:
       NOTREACHED() << "Invalid Android MotionEvent action: " << android_action;
   }

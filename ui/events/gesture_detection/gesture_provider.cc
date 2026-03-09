@@ -55,6 +55,10 @@ const char* GetMotionEventActionName(MotionEvent::Action action) {
       return "Action::BUTTON_PRESS";
     case MotionEvent::Action::BUTTON_RELEASE:
       return "Action::BUTTON_RELEASE";
+    case MotionEvent::Action::OUTSIDE:
+      return "Action::OUTSIDE";
+    case MotionEvent::Action::SCROLL:
+      return "Action::SCROLL";
   }
   return "";
 }
@@ -994,6 +998,8 @@ void GestureProvider::OnTouchEventHandlingBegin(const MotionEvent& event) {
     case MotionEvent::Action::HOVER_MOVE:
     case MotionEvent::Action::BUTTON_PRESS:
     case MotionEvent::Action::BUTTON_RELEASE:
+    case MotionEvent::Action::OUTSIDE:
+    case MotionEvent::Action::SCROLL:
       NOTREACHED();
   }
 }
@@ -1044,6 +1050,8 @@ void GestureProvider::OnTouchEventHandlingEnd(const MotionEvent& event) {
     case MotionEvent::Action::HOVER_MOVE:
     case MotionEvent::Action::BUTTON_PRESS:
     case MotionEvent::Action::BUTTON_RELEASE:
+    case MotionEvent::Action::OUTSIDE:
+    case MotionEvent::Action::SCROLL:
       NOTREACHED();
   }
 }

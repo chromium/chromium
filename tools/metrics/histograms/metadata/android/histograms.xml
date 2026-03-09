@@ -2804,7 +2804,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.InputOnViz.Viz.DroppedNonTouchActions"
+<histogram name="Android.InputOnViz.Viz.DroppedNonTouchActions2"
     enum="MotionEventAction" expires_after="2026-08-02">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>

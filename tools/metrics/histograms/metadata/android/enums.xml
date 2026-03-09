@@ -1420,6 +1420,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="HOVER_MOVE"/>
   <int value="10" label="BUTTON_PRESS"/>
   <int value="11" label="BUTTON_RELEASE"/>
+  <int value="12" label="OUTSIDE"/>
+  <int value="13" label="SCROLL"/>
 </enum>
 
 <enum name="MultipleUserProfilesState">

@@ -62,7 +62,7 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
       "Android.InputOnViz.Viz.PendingStateTransfers.NullCurrentState";
 
   static constexpr const char* kDroppedNonTouchActions =
-      "Android.InputOnViz.Viz.DroppedNonTouchActions";
+      "Android.InputOnViz.Viz.DroppedNonTouchActions2";
 
  private:
   bool IsExpectedMotionEventAction(int action);
