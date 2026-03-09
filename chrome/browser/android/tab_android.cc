@@ -630,7 +630,11 @@ void TabAndroid::SetDevToolsAgentHost(
 
 bool TabAndroid::IsTrustedWebActivity() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_isTrustedWebActivity(env, GetJavaObject(env));
+  auto obj = GetJavaObject(env);
+  if (!obj) {
+    return false;
+  }
+  return Java_TabImpl_isTrustedWebActivity(env, obj);
 }
 
 tabs::TabCollection* TabAndroid::GetRootCollection() const {

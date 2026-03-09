@@ -129,6 +129,11 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
@@ -1948,6 +1953,75 @@ TEST_P(GrantCookieAccessDueToHeuristicTest,
       profile(), web_contents(), url, FirstPartyStorageKey(top_level_url2),
       /*overrides=*/{}));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+class MockTabWebContentsDelegateAndroid
+    : public android::TabWebContentsDelegateAndroid {
+ public:
+  MockTabWebContentsDelegateAndroid()
+      : android::TabWebContentsDelegateAndroid(
+            base::android::AttachCurrentThread(),
+            base::android::ScopedJavaLocalRef<jobject>()) {}
+  ~MockTabWebContentsDelegateAndroid() override = default;
+
+  MOCK_METHOD(bool, IsNightModeEnabled, (), (const, override));
+};
+
+class ChromeContentBrowserClientPreferredColorSchemeAndroidTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ChromeContentBrowserClientPreferredColorSchemeAndroidTest() = default;
+
+ protected:
+  void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
+
+  ChromeContentBrowserClient client_;
+};
+
+TEST_F(ChromeContentBrowserClientPreferredColorSchemeAndroidTest, DarkMode) {
+  std::unique_ptr<TabAndroid> tab =
+      TabAndroid::CreateForTesting(profile(), 1, CreateTestWebContents());
+  content::WebContents* web_contents = tab->web_contents();
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents,
+                                                        tab.get());
+
+  auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
+  EXPECT_CALL(*delegate, IsNightModeEnabled())
+      .WillRepeatedly(testing::Return(true));
+  web_contents->SetDelegate(delegate.get());
+
+  blink::web_pref::WebPreferences web_preferences;
+  content::SiteInstance* site_instance = web_contents->GetSiteInstance();
+  client_.OverrideWebPreferences(web_contents, *site_instance,
+                                 &web_preferences);
+
+  EXPECT_EQ(blink::mojom::PreferredColorScheme::kDark,
+            web_preferences.preferred_color_scheme);
+}
+
+TEST_F(ChromeContentBrowserClientPreferredColorSchemeAndroidTest, LightMode) {
+  std::unique_ptr<TabAndroid> tab =
+      TabAndroid::CreateForTesting(profile(), 1, CreateTestWebContents());
+  content::WebContents* web_contents = tab->web_contents();
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents,
+                                                        tab.get());
+
+  auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
+  EXPECT_CALL(*delegate, IsNightModeEnabled())
+      .WillRepeatedly(testing::Return(false));
+  web_contents->SetDelegate(delegate.get());
+
+  blink::web_pref::WebPreferences web_preferences;
+  content::SiteInstance* site_instance = web_contents->GetSiteInstance();
+  client_.OverrideWebPreferences(web_contents, *site_instance,
+                                 &web_preferences);
+
+  EXPECT_EQ(blink::mojom::PreferredColorScheme::kLight,
+            web_preferences.preferred_color_scheme);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class ChromeContentBrowserClientAIPrefsTest
     : public ChromeRenderViewHostTestHarness {
