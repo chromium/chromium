@@ -8,6 +8,7 @@ source_set("indigo") {
   sources = [
     "indigo_alpha_rpc.h",
     "indigo_page_action_controller.h",
+    "indigo_script_loader.h",
   ]
 
   public_deps = [
@@ -26,6 +27,7 @@ source_set("impl") {
   sources = [
     "indigo_alpha_rpc.cc",
     "indigo_page_action_controller.cc",
+    "indigo_script_loader.cc",
   ]
 
   deps = [
@@ -40,6 +42,7 @@ source_set("impl") {
     "//components/optimization_guide/core",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
+    "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -50,6 +53,7 @@ source_set("unit_tests") {
   sources = [
     "indigo_alpha_rpc_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
+    "indigo_script_loader_unittest.cc",
   ]
   deps = [
     ":impl",
