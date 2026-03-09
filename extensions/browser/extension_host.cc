@@ -540,8 +540,8 @@ content::WebContents* ExtensionHost::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-  delegate_->CreateTab(std::move(new_contents), extension_id_, disposition,
-                       window_features, user_gesture);
+  delegate_->CreateTab(std::move(new_contents), target_url, extension_id_,
+                       disposition, window_features, user_gesture);
 
   return nullptr;
 }

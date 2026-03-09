@@ -40,6 +40,7 @@ class ExtensionHostDelegate {
   // Creates a new tab or popup window with `web_contents`. The embedder may
   // choose to do nothing if tabs and popups are not supported.
   virtual void CreateTab(std::unique_ptr<content::WebContents> web_contents,
+                         const GURL& target_url,
                          const ExtensionId& extension_id,
                          WindowOpenDisposition disposition,
                          const blink::mojom::WindowFeatures& window_features,

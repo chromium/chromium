@@ -22,6 +22,7 @@ void ShellExtensionHostDelegate::OnExtensionHostCreated(
 
 void ShellExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
+    const GURL& target_url,
     const ExtensionId& extension_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,

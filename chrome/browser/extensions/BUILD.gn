@@ -639,7 +639,6 @@ source_set("extensions") {
       "api/messaging/native_message_android_host.h",
       "api/tabs/tabs_event_router_platform_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.h",
-      "chrome_extension_host_delegate_android.cc",
       "extension_disabled_ui_android.cc",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",
@@ -657,7 +656,6 @@ source_set("extensions") {
       "api/chrome_extensions_api_client_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.h",
-      "chrome_extension_host_delegate_non_android.cc",
     ]
     public_deps += [
       "//chrome/browser/ui/tabs:utils",
