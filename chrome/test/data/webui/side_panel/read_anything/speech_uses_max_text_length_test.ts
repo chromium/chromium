@@ -4,10 +4,10 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ContentController, MAX_SPEECH_LENGTH, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, MAX_SPEECH_LENGTH, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, stubAnimationFrame} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechUsesMaxTextLength', () => {
@@ -91,6 +91,10 @@ suite('SpeechUsesMaxTextLength', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      stubAnimationFrame();
+    }
+    setInstance(null);
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     speechController = new SpeechController();

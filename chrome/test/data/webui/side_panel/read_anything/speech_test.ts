@@ -71,9 +71,13 @@ suite('Speech', () => {
     return speech.getArgs('speak')[0].text.trim();
   }
 
-  setup(() => {
+  setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    // Due to timing issues in tests, we need to explicitly set checkVisibility
+    // of the elements to true to ensure they're considered visible and
+    // included in the speech tree.
+    HTMLElement.prototype.checkVisibility = () => true;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
@@ -99,13 +103,16 @@ suite('Speech', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
+    await microtasksFinished();
     setupBasicSpeech(speech);
     chrome.readingMode.setContentForTesting(axTree, leafIds);
+    await microtasksFinished();
     speech.reset();
   });
 
-  test('speaks all text by sentences', () => {
+  test('speaks all text by sentences', async () => {
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    await microtasksFinished();
     assertEquals(1, speech.getCallCount('speak'));
     const spoken1 = speech.getArgs('speak')[0];
     assertEquals(paragraph1[0], spoken1.text.trim());
