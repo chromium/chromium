@@ -266,6 +266,10 @@ interface PageHandler {
   // Notifies the PageHandler that the state of the WebUI has changed.
   WebUiStateChanged(WebUiState new_state);
 
+};
+
+// Page handler for the glic internals WebUI.
+interface InternalsPageHandler {
   // Called by the internals WebUI page to get the data it will present.
   GetInternalsDataPayload() => (InternalsDataPayload internals_data);
 
@@ -274,6 +278,13 @@ interface PageHandler {
                      url.mojom.Url staging,
                      url.mojom.Url preprod,
                      url.mojom.Url prod);
+};
+
+// Factory for InternalsPageHandler used in chrome://glic/internals.
+interface InternalsPageHandlerFactory {
+  // Creates the InternalsPageHandler for chrome://glic/internals.
+  CreateInternalsPageHandler(
+      pending_receiver<InternalsPageHandler> receiver);
 };
 
 // @generate glic_api

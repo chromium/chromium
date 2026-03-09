@@ -6,8 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
-import {ActuationEligibility} from '../glic.mojom-webui.js';
+import {ActuationEligibility, InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic.mojom-webui.js';
 import type {InternalsDataPayload} from '../glic.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
@@ -35,14 +34,16 @@ export class GlicInternalsAppElement extends CrLitElement {
 
   protected accessor data_: InternalsDataPayload|undefined;
 
-  private browserProxy_ = new BrowserProxyImpl();
+  private pageHandler_ = new InternalsPageHandlerRemote();
 
   override connectedCallback() {
     super.connectedCallback();
-    this.browserProxy_.pageHandler.getInternalsDataPayload().then(
-        ({internalsData}) => {
-          this.data_ = internalsData;
-        });
+    InternalsPageHandlerFactory.getRemote().createInternalsPageHandler(
+        this.pageHandler_.$.bindNewPipeAndPassReceiver());
+
+    this.pageHandler_.getInternalsDataPayload().then(({internalsData}) => {
+      this.data_ = internalsData;
+    });
   }
 
   protected onAutopushInputChange(e: Event) {
@@ -78,7 +79,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       return;
     }
     errorMsg!.classList.add('hiddenElement');
-    this.browserProxy_.pageHandler.setGuestUrlPresets(
+    this.pageHandler_.setGuestUrlPresets(
         this.data_!.config.autopushGuestUrl, this.data_!.config.stagingGuestUrl,
         this.data_!.config.preprodGuestUrl, this.data_!.config.prodGuestUrl);
   }

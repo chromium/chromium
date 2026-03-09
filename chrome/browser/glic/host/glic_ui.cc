@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
@@ -128,6 +129,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui,
                               /*enable_chrome_send=*/false,
                               /*enable_chrome_histograms=*/true),
+      internals_page_factory_receiver_{this},
       preload_factory_receiver_{this} {
   static constexpr webui::LocalizedString kStrings[] = {
       {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
@@ -327,6 +329,15 @@ void GlicUI::BindInterface(
 }
 
 void GlicUI::BindInterface(
+    mojo::PendingReceiver<glic::mojom::InternalsPageHandlerFactory> receiver) {
+  std::string_view path = web_ui()->GetWebContents()->GetVisibleURL().path();
+  if (path == "/internals" || path.starts_with("/internals/")) {
+    internals_page_factory_receiver_.reset();
+    internals_page_factory_receiver_.Bind(std::move(receiver));
+  }
+}
+
+void GlicUI::BindInterface(
     mojo::PendingReceiver<glic::mojom::FrePageHandlerFactory> receiver) {
   fre_page_factory_receiver_.reset();
   fre_page_factory_receiver_.Bind(std::move(receiver));
@@ -373,6 +384,12 @@ void GlicUI::CreatePageHandler(
   }
   page_handler_ = std::make_unique<GlicPageHandler>(
       web_ui()->GetWebContents(), host_, std::move(receiver), std::move(page));
+}
+
+void GlicUI::CreateInternalsPageHandler(
+    mojo::PendingReceiver<glic::mojom::InternalsPageHandler> receiver) {
+  internals_page_handler_ = std::make_unique<GlicInternalsPageHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void GlicUI::CreatePageHandler(
