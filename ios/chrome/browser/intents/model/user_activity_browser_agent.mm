@@ -452,9 +452,14 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
   return ContinueUserActivityURL(webpage_url, application_is_active, NO);
 }
 
+// LINT.IfChange
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_shortcut_item.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
     UIApplicationShortcutItem* shortcut_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!IsEnableNewStartupFlowEnabled());
   const BOOL handled_shortcut_item = HandleShortcutItem(shortcut_item);
   const BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
                          UIApplicationStateActive;
@@ -463,6 +468,7 @@ BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
   }
   return handled_shortcut_item;
 }
+// LINT.ThenChange(ios/chrome/app/task_request_shortcut_item.mm)
 
 void UserActivityBrowserAgent::RouteToCorrectTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -550,9 +556,14 @@ UserActivityBrowserAgent::StartupParametersForOpeningNewTab(
   return startup_params;
 }
 
+// LINT.IfChange
+// TODO(crbug.com/462018636): This code will be soon migrated to
+// task_request_shortcut_item.mm, so any change should be reflected also there.
+// Contact fedegermi for additional information or support.
 BOOL UserActivityBrowserAgent::HandleShortcutItem(
     UIApplicationShortcutItem* shortcut_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!IsEnableNewStartupFlowEnabled());
   if (!IsProfileStateReady(browser_)) {
     return NO;
   }
@@ -624,6 +635,7 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
   base::debug::DumpWithoutCrashing();
   return NO;
 }
+// LINT.ThenChange(ios/chrome/app/task_request_shortcut_item.mm)
 
 void UserActivityBrowserAgent::OpenRequestedURLs(
     const std::vector<GURL>& webpage_urls,

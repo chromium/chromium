@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_command_line.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
 #import "base/values.h"
@@ -108,6 +109,10 @@
 class UserActivityBrowserAgentTest : public PlatformTest {
  public:
   UserActivityBrowserAgentTest() {
+    ResetEnableNewStartupFlowEnabledForTesting();
+    scoped_feature_list_.InitAndDisableFeature(kEnableNewStartupFlow);
+    SaveEnableNewStartupFlowForNextStart();
+
     profile_ = TestProfileIOS::Builder().Build();
 
     scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
@@ -131,6 +136,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   ~UserActivityBrowserAgentTest() override {
     [scene_state_ shutdown];
     scene_state_ = nil;
+    ResetEnableNewStartupFlowEnabledForTesting();
   }
 
  protected:
@@ -197,6 +203,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 

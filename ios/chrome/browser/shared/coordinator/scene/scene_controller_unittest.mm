@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -86,6 +88,10 @@ namespace {
 class SceneControllerTest : public PlatformTest {
  protected:
   SceneControllerTest() {
+    ResetEnableNewStartupFlowEnabledForTesting();
+    scoped_feature_list_.InitAndDisableFeature(kEnableNewStartupFlow);
+    SaveEnableNewStartupFlowForNextStart();
+
     base_view_controller_ = [[UIViewController alloc] init];
 
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
@@ -167,7 +173,10 @@ class SceneControllerTest : public PlatformTest {
     connection_information_ = scene_state_.controller;
   }
 
-  ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
+  ~SceneControllerTest() override {
+    [scene_controller_ teardownUI];
+    ResetEnableNewStartupFlowEnabledForTesting();
+  }
 
   // Mock & stub a ProfileState object with an arbitrary `init_stage` property.
   ProfileState* CreateMockProfileState(ProfileInitStage init_stage) {
@@ -215,6 +224,7 @@ class SceneControllerTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
