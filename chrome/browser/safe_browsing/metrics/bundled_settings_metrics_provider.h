@@ -10,6 +10,13 @@
 
 namespace safe_browsing {
 
+inline constexpr char kEnhancedJavascriptOptimizerWasModifiedHistogram[] =
+    "Security.EnhancedBundle.JavascriptOptimizerSetting."
+    "WasModifiedFromDefault";
+inline constexpr char kStandardJavascriptOptimizerWasModifiedHistogram[] =
+    "Security.StandardBundle.JavascriptOptimizerSetting."
+    "WasModifiedFromDefault";
+
 // A registerable metrics provider that will emit the bundled settings state of
 // the main profile upon UMA upload.
 class BundledSettingsMetricsProvider : public metrics::MetricsProvider {
