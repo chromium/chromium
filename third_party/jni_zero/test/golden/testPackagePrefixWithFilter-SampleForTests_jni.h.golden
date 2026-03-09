@@ -1187,8 +1187,8 @@ class _CalledByNatives<JSampleForTests> {
       const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>& a,
       const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>& b) const {
     auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
-    auto ret = Java_SampleForTests_addStructA(env, *this_obj, a, b);
-    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>(env, std::move(ret));
+    return Java_SampleForTests_addStructA(env, *this_obj, a, b)
+        .As<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>();
   }
 
   jni_zero::ScopedJavaLocalRef<jclass> getClass(
@@ -1212,21 +1212,21 @@ class _CalledByNatives<JSampleForTests> {
 
   static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerEnum> getInnerEnum(
       JNIEnv* env) {
-    auto ret = Java_SampleForTests_getInnerEnum(env);
-    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerEnum>(env, std::move(ret));
+    return Java_SampleForTests_getInnerEnum(env)
+        .As<::this::is::a::package::prefix::org::jni_zero::JInnerEnum>();
   }
 
   static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample> getInnerEnum(
       JNIEnv* env,
       JniIntWrapper a) {
-    auto ret = Java_SampleForTests_getInnerEnum(env, a);
-    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>(env, std::move(ret));
+    return Java_SampleForTests_getInnerEnum(env, a)
+        .As<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>();
   }
 
   static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerInterface> getInnerInterface(
       JNIEnv* env) {
-    auto ret = Java_SampleForTests_getInnerInterface(env);
-    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerInterface>(env, std::move(ret));
+    return Java_SampleForTests_getInnerInterface(env)
+        .As<::this::is::a::package::prefix::org::jni_zero::JInnerInterface>();
   }
 
   jni_zero::ScopedJavaLocalRef<jthrowable> getThrowable(

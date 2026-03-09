@@ -453,10 +453,7 @@ def mirrored_cpp_method(sb, cbn):
       sb(f'<const JavaRef<J{java_class_name}>*>(this);\n')
 
     with sb.statement():
-      if returned_mirrored_class:
-        sb('auto ret = ')
-      else:
-        sb('return ')
+      sb('return ')
       sb(f'Java_{java_class_name}_{cbn.method_id_function_name}')
       with sb.param_list() as plist:
         plist.append('env')
@@ -468,11 +465,9 @@ def mirrored_cpp_method(sb, cbn):
             if not p.java_type.is_primitive():
               expr = f'std::move({expr})'
           plist.append(expr)
-
-    if returned_mirrored_class:
-      return_type_java_class_name = cbn.return_type.java_class.nested_name
-      return_type_namespace = cbn.return_type.java_class.package_with_colons
-      return_type_mirrored_class = (f'::{return_type_namespace}'
-                                    f'::J{return_type_java_class_name}')
-      sb(f'return jni_zero::Cast<{return_type_mirrored_class}>')
-      sb(f'(env, std::move(ret));\n')
+      if returned_mirrored_class:
+        return_type_java_class_name = cbn.return_type.java_class.nested_name
+        return_type_namespace = cbn.return_type.java_class.package_with_colons
+        return_type_mirrored_class = (f'::{return_type_namespace}'
+                                      f'::J{return_type_java_class_name}')
+        sb(f'\n    .As<{return_type_mirrored_class}>()')
