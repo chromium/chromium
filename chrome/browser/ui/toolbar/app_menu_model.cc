@@ -1002,16 +1002,6 @@ void ToolsMenuModel::Build(Browser* browser) {
               ? kTabSearchTabStripIcon
               : kTabSearchToolbarIcon);
     }
-
-    if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
-        TabOrganizationUtils::GetInstance()->IsEnabled(browser->profile())) {
-      auto* const tab_organization_service =
-          TabOrganizationServiceFactory::GetForProfile(browser->profile());
-      if (tab_organization_service) {
-        AddItemWithStringIdAndVectorIcon(
-            this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
-      }
-    }
   }
 
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,

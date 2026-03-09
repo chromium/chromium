@@ -319,20 +319,6 @@ TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
-TEST_F(AppMenuModelTest, OrganizeTabsItem) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      {features::kTabOrganization, features::kTabOrganizationAppMenuItem}, {});
-
-  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-  AppMenuModel model(this, browser());
-  model.Init();
-  ToolsMenuModel toolModel(&model, browser());
-  size_t organize_tabs_index =
-      toolModel.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
-  EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
-}
-
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});

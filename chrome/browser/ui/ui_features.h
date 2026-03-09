@@ -224,8 +224,6 @@ BASE_DECLARE_FEATURE_PARAM(double, kTabOrganizationTriggerSensitivityThreshold);
 // predictably and frequently.
 BASE_DECLARE_FEATURE_PARAM(bool, KTabOrganizationTriggerDemoMode);
 
-BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
-
 BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
 BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);

@@ -197,8 +197,6 @@ BASE_FEATURE_PARAM(bool,
                    "trigger_demo_mode",
                    false);
 
-BASE_FEATURE(kTabOrganizationAppMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabOrganizationModelStrategy, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabOrganizationUserInstruction,
