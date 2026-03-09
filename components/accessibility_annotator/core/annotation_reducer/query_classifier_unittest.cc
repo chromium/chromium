@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
@@ -52,6 +53,10 @@ TEST_F(QueryClassifierTest, AddressIntents) {
             QueryIntentType::kAddressFull);
   EXPECT_EQ(classifier_->Classify(u"home address"),
             QueryIntentType::kAddressFull);
+  EXPECT_EQ(classifier_->Classify(u"company name"),
+            QueryIntentType::kCompanyName);
+  EXPECT_EQ(classifier_->Classify(u"organization"),
+            QueryIntentType::kCompanyName);
 }
 
 TEST_F(QueryClassifierTest, ContactIntents) {

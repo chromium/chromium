@@ -40,6 +40,8 @@ TEST(AtMemoryDataTypeTest, ToAtMemoryDataType) {
               Optional(VariantWith<FieldType>(PHONE_HOME_WHOLE_NUMBER)));
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kEmail),
               Optional(VariantWith<FieldType>(EMAIL_ADDRESS)));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kCompanyName),
+              Optional(VariantWith<FieldType>(COMPANY_NAME)));
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kIban),
               Optional(VariantWith<FieldType>(IBAN_VALUE)));
 

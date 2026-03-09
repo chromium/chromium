@@ -34,6 +34,7 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_FIELD_TYPE(kAddressCountry, ADDRESS_HOME_COUNTRY);
     INTENT_TO_FIELD_TYPE(kPhone, PHONE_HOME_WHOLE_NUMBER);
     INTENT_TO_FIELD_TYPE(kEmail, EMAIL_ADDRESS);
+    INTENT_TO_FIELD_TYPE(kCompanyName, COMPANY_NAME);
     INTENT_TO_FIELD_TYPE(kIban, IBAN_VALUE);
     INTENT_TO_ENTITY_TYPE(kVehicle, kVehicle);
     INTENT_TO_ATTRIBUTE_TYPE(kVehicleMake);

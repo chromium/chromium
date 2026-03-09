@@ -283,6 +283,9 @@ QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
   if (contains(u"email", u"e-mail")) {
     return QueryIntentType::kEmail;
   }
+  if (contains(u"organization", u"company")) {
+    return QueryIntentType::kCompanyName;
+  }
   if (contains(u"name")) {
     return QueryIntentType::kNameFull;
   }
