@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/common/features.h"
 
 @interface FullscreenSystemNotificationObserver () {
@@ -54,7 +55,7 @@
           std::make_unique<ScopedFullscreenDisabler>(_controller);
     }
     // Register for application lifecycle events.
-    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       [defaultCenter addObserver:self
                         selector:@selector(applicationWillEnterForeground)
                             name:UIApplicationWillEnterForegroundNotification

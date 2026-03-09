@@ -11,7 +11,7 @@
 #import "base/notreached.h"
 #import "ios/web/common/crw_obscured_insets_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
-#import "ios/web/common/features.h"
+#import "ios/web/public/web_client.h"
 
 namespace {
 
@@ -48,7 +48,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     _scrollView = scrollView;
     _fullscreenState = fullscreenState;
     // Default resizing value.
-    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    if (web::GetWebClient()->IsSmoothScrollingSupported()) {
       _webViewResizingType = WebViewResizingType::kContentInset;
     } else {
       _webViewResizingType = WebViewResizingType::kFrame;

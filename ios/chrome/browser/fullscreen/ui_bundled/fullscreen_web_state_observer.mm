@@ -90,7 +90,7 @@ void FullscreenWebStateObserver::DidFinishNavigation(
       // content insets to avoid document misalignment, unless smooth scrolling
       // is enabled.
       web_view_proxy.shouldUseViewContentInset =
-          base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault);
+          ios::provider::IsFullscreenSmoothScrollingSupported();
       resizes_scroll_view = !web_view_proxy.shouldUseViewContentInset;
     }
   } else {

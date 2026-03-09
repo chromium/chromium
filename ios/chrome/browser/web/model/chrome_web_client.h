@@ -81,6 +81,7 @@ class ChromeWebClient : public web::WebClient {
       const override API_AVAILABLE(ios(18.4));
   web::JSErrorReportLoggingLevel GetJSErrorReportLoggingLevel(
       web::BrowserState* browser_state) const override;
+  bool IsSmoothScrollingSupported() const override;
 
  private:
   // Reference to a view that is attached to a window.

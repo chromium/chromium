@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_resizer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/public/web_state.h"
 
 FullscreenMediator::FullscreenMediator(FullscreenController* controller,
@@ -172,7 +173,7 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
 void FullscreenMediator::FullscreenModelScrollEventEnded(
     FullscreenModel* model) {
   DCHECK_EQ(model_, model);
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     if (model_->progress() >= 0.5) {
       fullscreen_exit_reason_ =
           FullscreenExitReason::kUserInitiatedFinishedByCode;

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/common/features.h"
 
 namespace {
@@ -96,7 +97,7 @@ void FullscreenModel::ResetForNavigation() {
   scrolling_ = false;
   start_scrolling_time_ = std::nullopt;
   is_scrolling_time_recorded_ = false;
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     base_offset_ = NAN;
   }
   ScopedIncrementer reset_incrementer(&observer_callback_count_);
@@ -121,7 +122,7 @@ void FullscreenModel::AnimationEndedWithProgress(CGFloat progress) {
 }
 
 void FullscreenModel::ToolbarsHeightDidChange() {
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     base_offset_ = NAN;
   }
   ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
@@ -194,8 +195,7 @@ void FullscreenModel::SetYContentOffset(CGFloat y_content_offset) {
       UpdateProgress();
       break;
     case ScrollAction::kUpdateBaseOffsetAndProgress:
-      CHECK(
-          base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
+      CHECK(ios::provider::IsFullscreenSmoothScrollingSupported());
       UpdateBaseOffset();
       UpdateProgress();
       break;
@@ -364,7 +364,7 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
 
   // All other scrolls should result in an updated progress value.  If the model
   // doesn't have a base offset, it should also be updated.
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     return has_base_offset() ? ScrollAction::kUpdateProgress
                              : ScrollAction::kUpdateBaseOffsetAndProgress;
   } else {
@@ -389,7 +389,7 @@ void FullscreenModel::UpdateBaseOffset() {
 }
 
 void FullscreenModel::UpdateSpeed() {
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault) ||
+  if (ios::provider::IsFullscreenSmoothScrollingSupported() ||
       !base::FeatureList::IsEnabled(kFullscreenTransitionSpeed)) {
     return;
   }
@@ -404,7 +404,7 @@ void FullscreenModel::UpdateSpeed() {
 void FullscreenModel::UpdateProgress() {
   const CGFloat delta = base_offset_ - y_content_offset_;
   const CGFloat toolbar_height_delta = get_toolbar_height_delta();
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     SetProgress(1.0 + delta / toolbar_height_delta);
     return;
   } else {

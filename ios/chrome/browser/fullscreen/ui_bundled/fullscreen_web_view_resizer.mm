@@ -116,7 +116,7 @@
 
   CGRect newFrame = UIEdgeInsetsInsetRect(webView.superview.bounds, insets);
 
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     // Make sure the frame has changed to avoid a loop as the frame property is
     // actually monitored by this object.
     if (std::fabs(newFrame.origin.x - webView.frame.origin.x) < 0.01 &&

@@ -152,4 +152,8 @@ JSErrorReportLoggingLevel WebClient::GetJSErrorReportLoggingLevel(
   return JSErrorReportLoggingLevel::NONE;
 }
 
+bool WebClient::IsSmoothScrollingSupported() const {
+  return false;
+}
+
 }  // namespace web

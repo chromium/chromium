@@ -9,6 +9,7 @@
 #import "base/time/time.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/crw_content_view.h"
 #import "ios/web/web_state/ui/crw_web_view_content_view.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -198,7 +199,8 @@ constexpr base::TimeDelta kFixZoomScaleOnRotationDelay = base::Seconds(0.1);
 
 // Update the content view frame.
 - (void)updateWebViewContentViewFrame {
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::GetWebClient() &&
+      web::GetWebClient()->IsSmoothScrollingSupported()) {
     [self.webViewContentView setFrame:self.bounds];
   } else {
     // TODO(crbug.com/425651125): There appears to be a timing issue causing UI

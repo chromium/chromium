@@ -8,6 +8,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -331,6 +333,8 @@ TEST_F(CRWWebViewScrollViewProxyTest, SetClipsToBoundsBeforeSettingScrollView) {
 
 // Tests that frame changes are communicated to observers.
 TEST_F(CRWWebViewScrollViewProxyTest, FrameDidChange) {
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       web::features::kSmoothScrollingDefault);
@@ -351,6 +355,8 @@ TEST_F(CRWWebViewScrollViewProxyTest, FrameDidChange) {
 
 // Tests that contentInset changes are communicated to observers.
 TEST_F(CRWWebViewScrollViewProxyTest, ContentInsetDidChange) {
+  web::ScopedTestingWebClient web_client(
+      std::make_unique<web::FakeWebClient>());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       web::features::kSmoothScrollingDefault);

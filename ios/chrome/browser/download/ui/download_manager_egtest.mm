@@ -41,15 +41,6 @@ namespace {
 // Accessibility ID of the Activity menu.
 NSString* const kActivityMenuIdentifier = @"ActivityListView";
 
-// Scroll to the top of the Reading List.
-void ScrollToTop() {
-  XCUIApplication* springboardApplication = [[XCUIApplication alloc]
-      initWithBundleIdentifier:@"com.apple.springboard"];
-  // The center of the status bar is in the notch. Aim at the bottom left.
-  [[springboardApplication.statusBars.firstMatch
-      coordinateWithNormalizedOffset:CGVectorMake(0.05, 0.95)] tap];
-}
-
 }  // namespace
 
 // Tests for critical user journeys for Download Manager, with Save to Drive.
@@ -465,7 +456,8 @@ void ScrollToTop() {
                  }),
              @"Download bar did not hide on scroll");
 
-  ScrollToTop();
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:grey_scrollInDirection(kGREYDirectionUp, 150)];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:DownloadButton()];
 

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/error_test_util.h"
 #import "ios/web/public/test/fakes/crw_fake_find_session.h"
@@ -85,6 +86,10 @@ bool FakeWebClient::EnableWebInspector(web::BrowserState* browser_state) const {
 UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
                                                  const GURL& url) const {
   return default_user_agent_;
+}
+
+bool FakeWebClient::IsSmoothScrollingSupported() const {
+  return base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault);
 }
 
 }  // namespace web

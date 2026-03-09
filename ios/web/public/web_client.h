@@ -234,6 +234,9 @@ class WebClient {
 
   virtual JSErrorReportLoggingLevel GetJSErrorReportLoggingLevel(
       BrowserState* browser_state) const;
+
+  // Returns whether smooth scrolling is supported.
+  virtual bool IsSmoothScrollingSupported() const;
 };
 
 }  // namespace web

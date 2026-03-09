@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
+#import "ios/web/common/features.h"
 
 namespace ios {
 namespace provider {
 
 bool IsFullscreenSmoothScrollingSupported() {
-  return false;
+  return base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault);
 }
 
 }  // namespace provider

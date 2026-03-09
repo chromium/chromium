@@ -111,6 +111,7 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/user_agent.h"
@@ -679,4 +680,8 @@ web::JSErrorReportLoggingLevel ChromeWebClient::GetJSErrorReportLoggingLevel(
   }
 
   return web::JSErrorReportLoggingLevel::REPORT_WITHOUT_URL;
+}
+
+bool ChromeWebClient::IsSmoothScrollingSupported() const {
+  return ios::provider::IsFullscreenSmoothScrollingSupported();
 }

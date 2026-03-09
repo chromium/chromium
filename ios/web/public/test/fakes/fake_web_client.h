@@ -52,6 +52,7 @@ class FakeWebClient : public web::WebClient {
   bool EnableWebInspector(web::BrowserState* browser_state) const override;
   UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                     const GURL& url) const override;
+  bool IsSmoothScrollingSupported() const override;
 
   // Sets `plugin_not_supported_text_`.
   void SetPluginNotSupportedText(const std::u16string& text);
