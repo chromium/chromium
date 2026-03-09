@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
@@ -304,8 +305,16 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsMappingBrowserTest,
   EXPECT_GE(total_webium_count, 1);
 }
 
+// TODO(crbug.com/491012584): Flaky on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_NormalRendererMetricsAreNotMapped \
+  DISABLED_NormalRendererMetricsAreNotMapped
+#else
+#define MAYBE_NormalRendererMetricsAreNotMapped \
+  NormalRendererMetricsAreNotMapped
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsMappingBrowserTest,
-                       NormalRendererMetricsAreNotMapped) {
+                       MAYBE_NormalRendererMetricsAreNotMapped) {
   base::HistogramTester histogram_tester;
 
   // Navigate to a regular WebUI page (NOT TopChrome WebUI).
@@ -406,8 +415,16 @@ class InitialWebUIMetricsDropBrowserTest : public InitialWebUIBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/491012584): Flaky on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_WebiumRendererMetricsDroppedIfNoRule \
+  DISABLED_WebiumRendererMetricsDroppedIfNoRule
+#else
+#define MAYBE_WebiumRendererMetricsDroppedIfNoRule \
+  WebiumRendererMetricsDroppedIfNoRule
+#endif
 IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsDropBrowserTest,
-                       WebiumRendererMetricsDroppedIfNoRule) {
+                       MAYBE_WebiumRendererMetricsDroppedIfNoRule) {
   base::HistogramTester histogram_tester;
 
   // Navigate to an initial WebUI page.
