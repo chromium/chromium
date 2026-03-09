@@ -30,7 +30,7 @@ struct GridItemPlacementData {
 struct GridBreakTokenData final : BreakTokenAlgorithmData {
   GridBreakTokenData(
       GridItems&& grid_items,
-      GridLayoutSubtree grid_layout_subtree,
+      const GridLayoutSubtree* grid_layout_subtree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit offset_in_stitched_container,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
@@ -44,7 +44,7 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
       wtf_size_t first_unprocessed_row_gap_idx)
       : BreakTokenAlgorithmData(kGridData),
         grid_items(std::move(grid_items)),
-        grid_layout_subtree(std::move(grid_layout_subtree)),
+        grid_layout_subtree(grid_layout_subtree),
         intrinsic_block_size(intrinsic_block_size),
         offset_in_stitched_container(offset_in_stitched_container),
         grid_items_placement_data(grid_items_placement_data),
@@ -60,13 +60,14 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(grid_items);
+    visitor->Trace(grid_layout_subtree);
     visitor->Trace(oof_children);
     visitor->Trace(full_gap_geometry);
     BreakTokenAlgorithmData::Trace(visitor);
   }
 
   GridItems grid_items;
-  GridLayoutSubtree grid_layout_subtree;
+  Member<const GridLayoutSubtree> grid_layout_subtree;
   LayoutUnit intrinsic_block_size;
 
   // This is similar to |BreakTokenAlgorithmData::consumed_block_size|, however

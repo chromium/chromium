@@ -64,35 +64,36 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
 }
 
-GridLayoutTreePtr GridSizingTree::FinalizeTree() const {
+const GridLayoutTree* GridSizingTree::FinalizeTree() const {
   const auto tree_size = tree_data_.size();
 
-  Vector<GridLayoutTree::GridTreeNode, 16> layout_tree_data;
+  HeapVector<Member<GridLayoutTree::GridTreeNode>, 16> layout_tree_data;
   layout_tree_data.ReserveInitialCapacity(tree_size);
 
   for (const auto& grid_tree_node : tree_data_) {
-    layout_tree_data.emplace_back(grid_tree_node.layout_data,
-                                  grid_tree_node.subtree_size);
+    layout_tree_data.emplace_back(
+        MakeGarbageCollected<GridLayoutTree::GridTreeNode>(
+            grid_tree_node.layout_data, grid_tree_node.subtree_size));
   }
 
   for (wtf_size_t i = tree_size; i; --i) {
     auto& subtree_data = layout_tree_data[i - 1];
 
-    if (subtree_data.has_unresolved_geometry &&
-        subtree_data.subtree_size == 1) {
+    if (subtree_data->has_unresolved_geometry &&
+        subtree_data->subtree_size == 1) {
       continue;
     }
 
-    const wtf_size_t next_subtree_index = i + subtree_data.subtree_size - 1;
+    const wtf_size_t next_subtree_index = i + subtree_data->subtree_size - 1;
     for (wtf_size_t j = i;
-         j < next_subtree_index && !subtree_data.has_unresolved_geometry;
-         j += layout_tree_data[j].subtree_size) {
+         j < next_subtree_index && !subtree_data->has_unresolved_geometry;
+         j += layout_tree_data[j]->subtree_size) {
       DCHECK_LT(j, tree_size);
-      subtree_data.has_unresolved_geometry =
-          layout_tree_data[j].has_unresolved_geometry;
+      subtree_data->has_unresolved_geometry =
+          layout_tree_data[j]->has_unresolved_geometry;
     }
   }
-  return base::MakeRefCounted<GridLayoutTree>(std::move(layout_tree_data));
+  return MakeGarbageCollected<GridLayoutTree>(std::move(layout_tree_data));
 }
 
 SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(

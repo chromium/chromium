@@ -65,7 +65,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   ConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& grid_item,
       const GridLayoutData& layout_data,
-      GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
+      const GridLayoutSubtree* opt_layout_subtree = nullptr,
       LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
@@ -78,7 +78,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   const LayoutResult* LayoutInternal();
 
-  GridLayoutSubtree ComputeGridGeometry(
+  const GridLayoutSubtree* ComputeGridGeometry(
       GridItems* grid_items,
       LayoutUnit* intrinsic_block_size,
       HeapVector<Member<LayoutBox>>* oof_children);
@@ -105,7 +105,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in `grid_items`, and stores the results in `track_collection`.
-  void ComputeGridItemBaselines(const GridLayoutTreePtr& layout_tree,
+  void ComputeGridItemBaselines(const GridLayoutTree* layout_tree,
                                 const GridSizingSubtree& sizing_subtree,
                                 GridTrackSizingDirection track_direction,
                                 SizingConstraint sizing_constraint) const;
@@ -143,7 +143,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // Performs the final baseline alignment pass of a grid sizing subtree.
   void ComputeBaselineAlignment(
-      const GridLayoutTreePtr& layout_tree,
+      const GridLayoutTree* layout_tree,
       const GridSizingSubtree& sizing_subtree,
       const SubgriddedItemData& opt_subgrid_data,
       const std::optional<GridTrackSizingDirection>& opt_track_direction,
@@ -162,7 +162,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridItemData& grid_item,
       const LogicalSize& containing_grid_area_size,
       const LogicalSize& fixed_available_size,
-      GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
+      const GridLayoutSubtree* opt_layout_subtree = nullptr,
       bool min_block_size_should_encompass_intrinsic_size = false,
       std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
 

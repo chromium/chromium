@@ -111,7 +111,7 @@ class CORE_EXPORT GridSizingTree {
 
   // Creates a copy of the current grid geometry for the entire tree in a new
   // `GridLayoutTree` instance, which doesn't hold the grid items.
-  GridLayoutTreePtr FinalizeTree() const;
+  const GridLayoutTree* FinalizeTree() const;
 
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;

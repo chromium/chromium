@@ -161,6 +161,7 @@ class CORE_EXPORT GridLayoutData {
   }
 
  private:
+  // TODO(7154891): Oilpanify GridLayoutTrackCollection.
   std::unique_ptr<GridLayoutTrackCollection> columns_;
   std::unique_ptr<GridLayoutTrackCollection> rows_;
 };
@@ -174,20 +175,22 @@ class CORE_EXPORT GridLayoutData {
 // important because when we store this tree within a constraint space we want
 // to be able to invalidate the cached layout result of a subgrid based on
 // whether the provided subtree's track were sized exactly the same.
-class GridLayoutTree : public RefCounted<GridLayoutTree> {
+class GridLayoutTree : public GarbageCollected<GridLayoutTree> {
  public:
-  struct GridTreeNode {
+  struct GridTreeNode : public GarbageCollected<GridTreeNode> {
     GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
         : has_unresolved_geometry(layout_data.HasIndefiniteSet()),
           layout_data(layout_data),
           subtree_size(subtree_size) {}
 
+    void Trace(Visitor* visitor) const {}
     bool has_unresolved_geometry;
+    // TODO(7154891): Oilpanify GridLayoutData.
     GridLayoutData layout_data;
     wtf_size_t subtree_size;
   };
 
-  explicit GridLayoutTree(Vector<GridTreeNode, 16>&& tree_data)
+  explicit GridLayoutTree(HeapVector<Member<GridTreeNode>, 16>&& tree_data)
       : tree_data_(std::move(tree_data)) {}
 
   bool AreSubtreesEqual(wtf_size_t subtree_root,
@@ -210,50 +213,52 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
 
   bool HasUnresolvedGeometry(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index].has_unresolved_geometry;
+    return tree_data_[index]->has_unresolved_geometry;
   }
 
   const GridLayoutData& LayoutData(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index].layout_data;
+    return tree_data_[index]->layout_data;
   }
 
   wtf_size_t Size() const { return tree_data_.size(); }
 
   wtf_size_t SubtreeSize(wtf_size_t index) const {
     DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index].subtree_size;
+    return tree_data_[index]->subtree_size;
   }
 
- private:
-  Vector<GridTreeNode, 16> tree_data_;
-};
+  void Trace(Visitor* visitor) const { visitor->Trace(tree_data_); }
 
-using GridLayoutTreePtr = scoped_refptr<const GridLayoutTree>;
+ private:
+  HeapVector<Member<GridTreeNode>, 16> tree_data_;
+};
 
 // This class represents a subtree in a `GridLayoutTree` and mostly serves two
 // purposes: provide seamless iteration over the tree structure and compare
 // input subtrees to invalidate a subgrid's cached layout result.
-class GridLayoutSubtree : public GridSubtree<GridLayoutTree> {
-  DISALLOW_NEW();
-
+class GridLayoutSubtree : public GarbageCollected<GridLayoutSubtree>,
+                          public GridSubtree<GridLayoutTree> {
  public:
   GridLayoutSubtree() = default;
 
-  explicit GridLayoutSubtree(GridLayoutTreePtr layout_tree,
+  explicit GridLayoutSubtree(const GridLayoutTree* layout_tree,
                              wtf_size_t subtree_root = 0)
-      : layout_tree_(std::move(layout_tree)) {
+      : layout_tree_(layout_tree) {
     SetSubtreeRoot(LayoutTree(), subtree_root);
   }
 
-  GridLayoutSubtree FirstChild() const {
-    return GridLayoutSubtree(layout_tree_,
-                             GridSubtree::FirstChild(LayoutTree()));
+  GridLayoutSubtree(const GridLayoutTree* layout_tree, GridSubtree subtree)
+      : GridSubtree(std::move(subtree)), layout_tree_(layout_tree) {}
+
+  GridLayoutSubtree* FirstChild() const {
+    return MakeGarbageCollected<GridLayoutSubtree>(
+        layout_tree_, GridSubtree::FirstChild(LayoutTree()));
   }
 
-  GridLayoutSubtree NextSibling() const {
-    return GridLayoutSubtree(layout_tree_,
-                             GridSubtree::NextSibling(LayoutTree()));
+  GridLayoutSubtree* NextSibling() const {
+    return MakeGarbageCollected<GridLayoutSubtree>(
+        layout_tree_, GridSubtree::NextSibling(LayoutTree()));
   }
 
   // This method is meant to be used for layout invalidation, so we only care
@@ -273,9 +278,7 @@ class GridLayoutSubtree : public GridSubtree<GridLayoutTree> {
     return LayoutTree().LayoutData(subtree_root_);
   }
 
- private:
-  GridLayoutSubtree(const GridLayoutTreePtr& layout_tree, GridSubtree subtree)
-      : GridSubtree(std::move(subtree)), layout_tree_(layout_tree) {}
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_tree_); }
 
   const GridLayoutTree& LayoutTree() const {
     DCHECK(layout_tree_);
@@ -283,12 +286,9 @@ class GridLayoutSubtree : public GridSubtree<GridLayoutTree> {
   }
 
   // Pointer to the layout tree shared by multiple subtree instances.
-  GridLayoutTreePtr layout_tree_{nullptr};
+  Member<const GridLayoutTree> layout_tree_;
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::GridLayoutTree::GridTreeNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/table/table_constraint_space_data.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -934,7 +935,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_adjacent_to_paper_edge_block_end(
               other.is_adjacent_to_paper_edge_block_end),
           line_clamp_ancestor_chain_(other.line_clamp_ancestor_chain_),
-          subgrid_data_(other.subgrid_data_) {
+          grid_layout_subtree_(other.grid_layout_subtree_) {
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
           break;
@@ -990,7 +991,7 @@ class CORE_EXPORT ConstraintSpace final {
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(line_clamp_ancestor_chain_);
-      visitor->Trace(subgrid_data_);
+      visitor->Trace(grid_layout_subtree_);
     }
 
     bool MaySkipLayout(const RareData& other) const {
@@ -1044,7 +1045,7 @@ class CORE_EXPORT ConstraintSpace final {
           ignore_margins_for_stretch != other.ignore_margins_for_stretch ||
           !base::ValuesEquivalent(line_clamp_ancestor_chain_,
                                   other.line_clamp_ancestor_chain_) ||
-          !base::ValuesEquivalent(subgrid_data_, other.subgrid_data_)) {
+          !base::ValuesEquivalent(grid_layout_subtree_, other.grid_layout_subtree_)) {
         return false;
       }
 
@@ -1093,7 +1094,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_adjacent_to_paper_edge_block_start ||
           is_adjacent_to_paper_edge_block_end ||
           !ignore_margins_for_stretch.IsEmpty() || line_clamp_ancestor_chain_ ||
-          subgrid_data_) {
+          grid_layout_subtree_) {
         return false;
       }
 
@@ -1306,12 +1307,11 @@ class CORE_EXPORT ConstraintSpace final {
     }
 
     const GridLayoutSubtree* GetGridLayoutSubtree() const {
-      return subgrid_data_ ? &subgrid_data_->layout_subtree : nullptr;
+      return grid_layout_subtree_ ? grid_layout_subtree_.Get() : nullptr;
     }
 
-    void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
-      subgrid_data_ =
-          MakeGarbageCollected<SubgridData>(std::move(grid_layout_subtree));
+    void SetGridLayoutSubtree(const GridLayoutSubtree* grid_layout_subtree) {
+      grid_layout_subtree_ = grid_layout_subtree;
     }
 
     DataUnionType GetDataUnionType() const {
@@ -1536,19 +1536,7 @@ class CORE_EXPORT ConstraintSpace final {
     };
 
     Member<const LineClampAncestorChain> line_clamp_ancestor_chain_;
-
-    struct SubgridData : public GarbageCollected<SubgridData> {
-      explicit SubgridData(GridLayoutSubtree&& layout_subtree)
-          : layout_subtree(layout_subtree) {}
-
-      void Trace(Visitor*) const {}
-
-      bool operator==(const SubgridData& other) const {
-        return layout_subtree == other.layout_subtree;
-      }
-      const GridLayoutSubtree layout_subtree;
-    };
-    Member<const SubgridData> subgrid_data_;
+    Member<const GridLayoutSubtree> grid_layout_subtree_;
   };
 
   // This struct simply allows us easily copy, compare, and initialize all the

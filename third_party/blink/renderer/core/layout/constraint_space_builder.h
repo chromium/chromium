@@ -609,12 +609,12 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     EnsureRareData()->SetTargetStretchBlockSizes(target_stretch_block_sizes);
   }
 
-  void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
+  void SetGridLayoutSubtree(const GridLayoutSubtree* grid_layout_subtree) {
 #if DCHECK_IS_ON()
     DCHECK(!is_grid_layout_subtree_set_);
     is_grid_layout_subtree_set_ = true;
 #endif
-    EnsureRareData()->SetGridLayoutSubtree(std::move(grid_layout_subtree));
+    EnsureRareData()->SetGridLayoutSubtree(grid_layout_subtree);
   }
 
   // Creates a new constraint space.
