@@ -214,6 +214,18 @@ class HfsTool:
             os.fsencode(target_udif_path), b"attr", b"/", b"C"
         ])
 
+    def set_root_open_folder(self, target_udif_path: pathlib.Path):
+        """Marks the DMG root folder to automatically open when mounted.
+
+        Args:
+            target_udif_path: Where to find the existing HFS+-formatted
+              raw UDIF with no volume map.
+        """
+        subprocess.check_call([
+            self._tool_path,
+            os.fsencode(target_udif_path), b"setopenfolder", b"/"
+        ])
+
 
 class DmgTool:
     """Wraps the `dmg_tool` binary for building and modifying DMG files."""
@@ -415,6 +427,7 @@ def create_taggable_dmg(hfs_tool: HfsTool, dmg_tool: DmgTool, hdiutil: HdiUtil,
 
         hfs_tool.addall(udif_path, mount_path)
         hfs_tool.enable_folder_icon(udif_path)
+        hfs_tool.set_root_open_folder(udif_path)
 
         # Omaha tags set by this script always occupy the maximum length of
         # a tag, since they reserve space for subsequent re-tagging. The

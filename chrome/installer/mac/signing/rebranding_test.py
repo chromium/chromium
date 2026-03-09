@@ -117,6 +117,41 @@ class TestRebranding(unittest.TestCase):
                 tag_content = output[14:14 + tag_len]
                 self.assertEqual(tag_content, expected_tag)
 
+            # 3. Verify auto-open folder is set to root (ID 2)
+            fsid_output = subprocess.check_output(
+                ["hdiutil", "fsid", expected_output]).decode("utf-8")
+            # Look for the "finderInfo" section of `hdiutil fsid`'s output.
+            found_open_folder = 0
+            in_finder_info = False
+            in_correct_partition = False
+            for line in fsid_output.splitlines():
+                if line.startswith("Analyzing partition "):
+                    in_correct_partition = line.endswith("Mac_OS_X Apple_HFSX")
+                if not in_correct_partition:
+                    continue
+                if line.strip() == "finderInfo":
+                    in_finder_info = True
+                    continue
+                if in_finder_info:
+                    parts = line.split()
+                    if len(parts) < 2:
+                        # Exited the FinderInfo segment.
+                        in_finder_info = False
+                        continue
+                    if parts[0] == "2":
+                        found_open_folder += 1
+                        self.assertEqual(
+                            parts[1], "2",
+                            f"finderInfo[2] should be 2, got {parts[1]} "
+                            f"(instance {found_open_folder})")
+                        # This is the only thing we wanted in FinderInfo.
+                        in_finder_info = False
+                        continue
+            self.assertEqual(
+                found_open_folder, 2,
+                "Wrong number of finderInfo[2] records, expected one each for "
+                "volume header and alternate volume header")
+
 
 if __name__ == '__main__':
     unittest.main()
