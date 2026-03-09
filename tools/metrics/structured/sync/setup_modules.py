@@ -26,13 +26,7 @@ import sys
 
 _CHROMIUM_SRC_RELATIVE_PATH = '../../../..'
 
-# When script is run in the context of PRESUBMIT check the
-# __file__ is not set, but we can use cwd() as an equivalent
-# due to how the script is run by PRESUBMIT instrumentation.
-if hasattr(sys.modules[__name__], '__file__'):
-  base_path = Path(os.path.dirname(os.path.abspath(__file__)))
-else:
-  base_path = Path(os.getcwd())
+base_path = Path(os.path.dirname(os.path.abspath(__file__)))
 
 # Add src/tools/metrics to path temporarily to import the setup_modules_lib.
 chromium_src_path = base_path.joinpath(_CHROMIUM_SRC_RELATIVE_PATH).resolve()
