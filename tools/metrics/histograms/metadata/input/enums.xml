@@ -33,6 +33,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Coarse and fine pointers"/>
 </enum>
 
+<!-- LINT.IfChange(GetCachedFirstRectResult) -->
+
+<enum name="GetCachedFirstRectResult">
+  <int value="0" label="Found"/>
+  <int value="1" label="NoTextInputManager"/>
+  <int value="2" label="NoTextSelection"/>
+  <int value="3" label="NotBoundedBySelection"/>
+  <int value="4" label="NoCompositionBounds"/>
+  <int value="5" label="InvalidCompositionRange"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_widget_host_view_mac.mm:GetCachedFirstRectResult) -->
+
 <enum name="IMEAssistiveDisabledReason">
   <int value="0" label="None"/>
   <int value="1" label="Feature flag off"/>

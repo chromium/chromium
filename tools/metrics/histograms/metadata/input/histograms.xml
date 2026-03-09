@@ -2251,6 +2251,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TextInputClient.GetCachedFirstRectResult"
+    enum="GetCachedFirstRectResult" expires_after="2026-08-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the result of attempting to retrieve the first rect for a character
+    range from the cache on Mac. This is logged every time
+    RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange is called.
+
+    Only recorded on macOS.
+  </summary>
+</histogram>
+
 <histogram name="TextInputClient.InSyncRequest.CharacterIndex" enum="Boolean"
     expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>

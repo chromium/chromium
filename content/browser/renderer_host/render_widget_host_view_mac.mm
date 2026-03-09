@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -100,6 +101,20 @@ namespace {
 // update it immediately.
 BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GetCachedFirstRectResult)
+enum class GetCachedFirstRectResult {
+  kFound = 0,
+  kNoTextInputManager = 1,
+  kNoTextSelection = 2,
+  kNotBoundedBySelection = 3,
+  kNoCompositionBounds = 4,
+  kInvalidCompositionRange = 5,
+  kMaxValue = kInvalidCompositionRange,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/input/enums.xml:GetCachedFirstRectResult)
 
 }  // namespace
 
@@ -1244,8 +1259,15 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     const gfx::Range& requested_range,
     gfx::Rect* rect,
     gfx::Range* actual_range) {
-  if (!GetTextInputManager())
-    return false;
+  auto log_result = [](GetCachedFirstRectResult result) -> bool {
+    base::UmaHistogramEnumeration("TextInputClient.GetCachedFirstRectResult",
+                                  result);
+    return result == GetCachedFirstRectResult::kFound;
+  };
+
+  if (!GetTextInputManager()) {
+    return log_result(GetCachedFirstRectResult::kNoTextInputManager);
+  }
 
   DCHECK(rect);
   // This exists to make IMEs more responsive, see http://crbug.com/115920
@@ -1254,8 +1276,9 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
                "requested range", requested_range.ToString());
 
   const TextInputManager::TextSelection* selection = GetTextSelection();
-  if (!selection)
-    return false;
+  if (!selection) {
+    return log_result(GetCachedFirstRectResult::kNoTextSelection);
+  }
 
   // If requested range is right after caret, we can just return it.
   if (selection->range().is_empty() &&
@@ -1273,7 +1296,7 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
           "ime",
           "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
           "GetTextSelectionBounds", rect->ToString());
-      return true;
+      return log_result(GetCachedFirstRectResult::kFound);
     }
 
     // If no selection bounds, fall back to use selection region.
@@ -1283,14 +1306,15 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     TRACE_EVENT1(
         "ime", "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
         "caret_rect", rect->ToString());
-    return true;
+    return log_result(GetCachedFirstRectResult::kFound);
   }
 
   const TextInputManager::CompositionRangeInfo* composition_info =
       GetCompositionRangeInfo();
   if (!composition_info || composition_info->range.is_empty()) {
-    if (!requested_range.IsBoundedBy(selection->range()))
-      return false;
+    if (!requested_range.IsBoundedBy(selection->range())) {
+      return log_result(GetCachedFirstRectResult::kNotBoundedBySelection);
+    }
     DCHECK(GetFocusedWidget());
     if (actual_range)
       *actual_range = selection->range();
@@ -1300,18 +1324,20 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     TRACE_EVENT1(
         "ime", "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
         "first_selection_rect", rect->ToString());
-    return true;
+    return log_result(GetCachedFirstRectResult::kFound);
   }
 
   // If firstRectForCharacterRange in WebFrame is failed in renderer,
   // ImeCompositionRangeChanged will be sent with empty vector.
-  if (!composition_info || composition_info->character_bounds.empty())
-    return false;
+  if (!composition_info || composition_info->character_bounds.empty()) {
+    return log_result(GetCachedFirstRectResult::kNoCompositionBounds);
+  }
 
   const gfx::Range request_range_in_composition =
       ConvertCharacterRangeToCompositionRange(requested_range);
-  if (request_range_in_composition == gfx::Range::InvalidRange())
-    return false;
+  if (request_range_in_composition == gfx::Range::InvalidRange()) {
+    return log_result(GetCachedFirstRectResult::kInvalidCompositionRange);
+  }
 
   DCHECK_EQ(composition_info->character_bounds.size(),
             composition_info->range.length());
@@ -1329,7 +1355,7 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
         gfx::Range(composition_info->range.start() + ui_actual_range.start(),
                    composition_info->range.start() + ui_actual_range.end());
   }
-  return true;
+  return log_result(GetCachedFirstRectResult::kFound);
 }
 
 void RenderWidgetHostViewMac::FocusedNodeChanged(
