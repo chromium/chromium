@@ -42,6 +42,7 @@ void LensOverlayRequestIdGenerator::ResetRequestId() {
   analytics_id_ = base::RandBytesAsString(kAnalyticsIdBytesSize);
   context_id_ = RandInt64();
   has_chrome_tab_data_ = false;
+  is_implicit_upload_ = false;
   routing_info_.reset();
 }
 
@@ -110,6 +111,7 @@ LensOverlayRequestIdGenerator::CreateNextRequestIdForUpdate(
   request_id->set_context_id(previous_request_id->context_id());
   request_id->set_has_chrome_tab_data(
       previous_request_id->has_chrome_tab_data());
+  request_id->set_is_implicit_upload(previous_request_id->is_implicit_upload());
   if (previous_request_id->has_mime_type()) {
     request_id->set_mime_type(previous_request_id->mime_type());
   }
@@ -205,6 +207,7 @@ LensOverlayRequestIdGenerator::GetCurrentRequestId() {
   }
   request_id->set_context_id(context_id_);
   request_id->set_has_chrome_tab_data(has_chrome_tab_data_);
+  request_id->set_is_implicit_upload(is_implicit_upload_);
   if (mime_type_.has_value()) {
     request_id->set_mime_type(mime_type_.value());
   }

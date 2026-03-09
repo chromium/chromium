@@ -364,6 +364,7 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
   if (use_separate_request_ids_for_viewport_images_) {
     // Viewport images always come from tab data.
     request_id_generator_.SetHasChromeTabData(true);
+    request_id_generator_.SetIsImplicitUpload(file_info->is_implicit_upload);
     // Create a new request id for the viewport image upload request.
     file_info->viewport_request_id_ = request_id_generator_.GetNextRequestId(
         lens::RequestIdUpdateMode::kMultiContextUploadRequest,
@@ -516,15 +517,23 @@ void ComposeboxQueryController::CreateSearchUrl(
       DCHECK(last_active_lens_file->request_id.has_value());
       request_id_generator_.SetHasChromeTabData(
           last_active_lens_file->tab_session_id.has_value());
+      // Region search interactions, and the corresponding search url, are
+      // considered implicit uploads.
+      bool has_selection_type =
+          search_url_request_info->lens_overlay_selection_type.has_value();
+      bool has_image_crop = search_url_request_info->image_crop.has_value();
+      request_id_generator_.SetIsImplicitUpload(
+          last_active_lens_file->is_implicit_upload ||
+          (has_selection_type && has_image_crop));
       // Trigger the interaction request on the last file if needed.
       // TODO(crbug.com/462509148): Determine how to support interaction
       // requests for multi-context input flow.
-      if (search_url_request_info->lens_overlay_selection_type.has_value()) {
+      if (has_selection_type) {
         request_id_generator_.SetContextId(
             last_active_lens_file->request_id->context_id());
         auto interaction_request_id = request_id_generator_.GetNextRequestId(
             lens::RequestIdUpdateMode::kInteractionRequest,
-            search_url_request_info->image_crop.has_value()
+            has_image_crop
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
                 : last_active_lens_file->request_id->media_type());
         SendInteractionRequest(
@@ -780,6 +789,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   if (contextual_input_data->file_name.has_value()) {
     file_info->file_name = contextual_input_data->file_name.value();
   }
+  file_info->is_implicit_upload = contextual_input_data->is_implicit_upload;
   file_info->input_data =
       std::make_unique<lens::ContextualInputData>(*contextual_input_data);
 
@@ -860,6 +870,10 @@ void ComposeboxQueryController::StartFileUploadFlow(
     current_file_info.request_id =
         *request_id_generator_.CreateNextRequestIdForUpdate(
             std::move(previous_request_id_proto), base_update_mode);
+    // Recontextualization requests may be implicit even if the original
+    // request was not.
+    current_file_info.request_id->set_is_implicit_upload(
+        current_file_info.is_implicit_upload);
   } else {
     // Unlike image uploads, PDF / page content uploads need to increment the
     // long context id instead of the image sequence id.
@@ -869,6 +883,8 @@ void ComposeboxQueryController::StartFileUploadFlow(
     request_id_generator_.SetContextId(context_id);
     request_id_generator_.SetHasChromeTabData(
         current_file_info.tab_session_id.has_value());
+    request_id_generator_.SetIsImplicitUpload(
+        current_file_info.is_implicit_upload);
     if (current_file_info.mime_type != lens::MimeType::kImage &&
         !has_viewport_screenshot &&
         current_file_info.mime_type_string.has_value() &&

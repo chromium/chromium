@@ -421,6 +421,10 @@ void ContextualTasksComposeboxHandler::OnTabContextualizationFetched(
     return;
   }
 
+  // Set the is_implicit_upload field for the page content data since this
+  // callback runs for re-contextualization from the contextual tasks page.
+  page_content_data->is_implicit_upload = true;
+
   if (web_ui_interface_->GetTaskId() != original_task_id) {
     single_tab_upload_callback.Run();
     return;
