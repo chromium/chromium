@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <map>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -164,7 +165,7 @@ void NetErrorAutoReloader::DidStartNavigation(
 
   // Suppress automatic reload as long as any navigations are pending.
   PauseAutoReloadTimerIfRunning();
-  pending_navigations_.insert(handle);
+  pending_navigations_.emplace(handle, IsSuppressedErrorPage(false));
 }
 
 void NetErrorAutoReloader::DidFinishNavigation(
@@ -173,7 +174,22 @@ void NetErrorAutoReloader::DidFinishNavigation(
     return;
   }
 
-  pending_navigations_.erase(handle);
+  auto pending_navigation = pending_navigations_.find(handle);
+  bool is_suppressed_error_page = false;
+  // Per comments above MaybeCreateAndAddNavigationThrottle(), the
+  // NetErrorAutoReloader is only created for a WebContents as needed, when
+  // creating throttles, so it never receives the navigation start event for a
+  // tab's initial navigation, and as a result, the first navigation is never
+  // added to `pending_navigations_`. This isn't a problem, as the
+  // NetErrorAutoReloader doesn't do anything until after an error page commits,
+  // but it does mean that we have to handle the case where the committed
+  // navigation isn't listed in `pending_navigations_`.
+  if (pending_navigation != pending_navigations_.end()) {
+    is_suppressed_error_page =
+        pending_navigation->second == IsSuppressedErrorPage(true);
+    pending_navigations_.erase(pending_navigation);
+  }
+
   if (!handle->HasCommitted()) {
     // This navigation was cancelled and not committed. If there are still other
     // pending navigations, or we aren't sitting on a error page which allows
@@ -182,11 +198,14 @@ void NetErrorAutoReloader::DidFinishNavigation(
       return;
     }
 
-    // The last pending navigation was just cancelled and we're sitting on an
-    // error page which allows auto-reload. Schedule the next auto-reload
-    // attempt.
+    // There are no pending navigations, so there's no auto-reload in progress.
     is_auto_reload_in_progress_ = false;
-    ScheduleNextAutoReload();
+
+    // The last pending navigation was just cancelled due to resulting in an
+    // identical error page as before. Schedule the next auto-reload attempt.
+    if (is_suppressed_error_page) {
+      ScheduleNextAutoReload();
+    }
     return;
   }
 
@@ -334,6 +353,8 @@ void NetErrorAutoReloader::MaybeCreateAndAdd(
 
 bool NetErrorAutoReloader::ShouldSuppressErrorPage(
     content::NavigationHandle* handle) {
+  DCHECK(pending_navigations_.contains(handle));
+
   // We already verified these conditions when the throttle was created, but now
   // that the throttle is about to fail its navigation, we double-check in case
   // another navigation has committed in the interim.
@@ -343,6 +364,7 @@ bool NetErrorAutoReloader::ShouldSuppressErrorPage(
     return false;
   }
 
+  pending_navigations_[handle] = IsSuppressedErrorPage(true);
   return true;
 }
 

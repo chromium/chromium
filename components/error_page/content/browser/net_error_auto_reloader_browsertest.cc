@@ -10,6 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -479,9 +482,74 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
   EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
 
   // Now cancel the deferred navigation and observe that auto-reload for the
-  // error page is rescheduled.
+  // error page is cancelled.
   deferrer.CancelAndWaitForNavigationToFinish();
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+}
+
+// A DownloadManagerDelegate that claims it handles all downloads, while
+// silently dropping them instead. This prevents any save dialog, or trying to
+// save anything to disk.
+class TestShellDownloadManagerDelegate
+    : public content::DownloadManagerDelegate {
+ public:
+  TestShellDownloadManagerDelegate() = default;
+  ~TestShellDownloadManagerDelegate() override = default;
+
+  // DownloadManagerDelegate:
+  bool InterceptDownloadIfApplicable(
+      const GURL& url,
+      const std::string& user_agent,
+      const std::string& content_disposition,
+      const std::string& mime_type,
+      const std::string& request_origin,
+      int64_t content_length,
+      bool is_transient,
+      bool is_content_initiated,
+      content::WebContents* web_contents) override {
+    run_loop_.Quit();
+    return true;
+  }
+
+  void WaitForDownload() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+// When an autoreload results in a download, and thus cancels the navigation,
+// auto-reloading is stopped.
+IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
+                       AutoReloadDownloadStopsAutoReload) {
+  GURL download_url = embedded_test_server()->GetURL("/download-test1.lib");
+
+  // Force an error to initiate auto-reload.
+  auto interceptor = std::make_unique<NetErrorUrlInterceptor>(
+      download_url, net::ERR_CONNECTION_RESET);
+
+  EXPECT_FALSE(NavigateMainFrame(download_url));
   EXPECT_EQ(GetDelayForReloadCount(0), GetCurrentAutoReloadDelay());
+  interceptor.reset();
+
+  TestShellDownloadManagerDelegate test_delegate;
+  content::DownloadManager* manager =
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
+  manager->GetDelegate()->Shutdown();
+  manager->SetDelegate(&test_delegate);
+
+  content::TestNavigationManager navigation(web_contents(), download_url);
+  ForceScheduledAutoReloadNow();
+  // This is considered a successful navigation by the WebContents, despite the
+  // navigation being cancelled, from the perspective of NavigationObservers.
+  EXPECT_TRUE(navigation.WaitForNavigationFinished());
+  test_delegate.WaitForDownload();
+
+  // The error page should still be showing.
+  EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+  // There should be no new auto reload pending.
+  EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+
+  manager->SetDelegate(nullptr);
 }
 
 // An error page while offline does not trigger auto-reload.
