@@ -4,13 +4,14 @@
 
 ## News and Updates
 
-Please report all Chromium security bugs in the new tracker using [this
+Please report all Chromium security bugs in the tracker using [this
 form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
 or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
 
-* 5 January 2026: Announcing the [top 20 Chrome VRP reporters of 2025](https://crbug.com/473635778)
+* March 2026 : Updated formatting criteria & added self-service hotlists.
+* January 2026: Announcing the [top 20 Chrome VRP reporters of 2025](https://crbug.com/473635778)
   -- another great year of actionable and sometimes surprising reports -- well done to every
   researcher who made the list and thanks to all VRP reporters for helping keep people using
   Chrome safe on the internet.
@@ -67,15 +68,26 @@ reports:
     reproduction by ClusterFuzz or the Security Shepherd triaging your report.
 * Please format your PoCs so they do not require running python as root.
   * Your PoC should be constructed to reproduce locally when at all possible.
-* Do *not* provide links (public or unlisted) to / as PoCs.
+* Do *not* provide links to websites (public or unlisted) as PoCs.
   * The PoC should ALWAYS be a file directly attached to the report, even if it
     cannot be reproduced in ClusterFuzz.
+* Example servers should be written only in Python, other languages may lead
+  to your report being rejected.
+
+### Patches to simulate a compromised renderer
+
+* Upload a git generated patch with a clear base commit.
+* Use process guards (e.g. test the commandline for `--type="renderer"`) if
+  code can run in multiple processes.
+* Use Sleep() in privileged processes to simulate a race.
+* Avoid extraneous logging like `LOG(INFO) << "EXPLOIT SUCCEEDED"`.
 
 ### Steps to Reproduce
 
 * Please include clear, concise, numbered steps to reproduce the bug you are
   reporting.
-* Provide the full command line and any build flags to reproduce.
+* Provide the full Chrome or d8 command line and any build flags to reproduce.
+* Do not run Chrome in a harness or via CDP it must run directly.
 
 ### Report Attachments
 
@@ -127,14 +139,12 @@ reports:
 * If suggesting a patch to fix the issue you are reporting, please upload it to
   the report as its own attachment.
 * We reward [bonuses for your patches](https://g.co/chrome/vrp/#patch-bonus)
-  that end up being used as the fix.
-  * Bonuses are $500 - $2000 depending on how substantial the patch is.
-  * To maximize your patch rewards, please commit the patch directly to Chromium
-    and include the Gerrit (Chromium code review tool) link in the report or
-    report comment.
+  but you must upload them to gerrit for review to be eligible.
   * Remember to include the Chromium bug tracker issue number in the CL, if you
     land the patch after filing the bug report, so that it can be linked to the
     report.
+* Suggested patches (attached to the report as `fix.patch`) will contribute to
+  our assessment of report quality, but will not be eligible for a patch bonus.
 
 ## Frequently Asked Questions (FAQ)
 
@@ -249,6 +259,28 @@ Is there a time limit for submitting an exploit?
 #### What happens after I report a security bug to you?
 
 * Please see [Life of a Security Issue](life-of-a-security-issue.md).
+
+#### My bug was triaged incorrectly?
+
+* We are human. If you disagree with the severity assessment of an issue please
+  comment on the issue and add it to the
+  [Security-Severity-Reassessment-Request](https://issues.chromium.org/hotlists/8059196)
+  hotlist (id:8059196) which will enter the issue into a queue that is reviewed
+  on a weekly basis by the security team. Access to the hotlist is restricted to
+  people on our [VRP Updates List](#updates-on-the-vrp). If you do not have
+  permission to add the hotlist please ask on the bug and a Chromium team member
+  can add it for you.
+
+#### My bug was Fixed and the team hasn't marked it Fixed?
+
+* Identify when the issue was fixed. You can use `git bisect` or Chromium's
+  `bisect-builds.py` to help locate when the issue went away. Add this evidence
+  to the bug, ideally identifying the CL which fixed the issue.
+* Give the team a week to close the issue themselves.
+* If, after a week, the issue is still open, add it to the
+  [Security-Fixed-Issue-Request](https://issues.chromium.org/hotlists/8059017)
+  hotlist (id:8059017) where it will be addressed by the security team on a
+  weekly basis.
 
 #### Will I receive a CVE for my bug?
 
@@ -395,6 +427,13 @@ Is there a time limit for submitting an exploit?
   please reach out to us at security-vrp@chromium.org detailing why you believe
   we should reassess your report.
 
+### Updates On The VRP
+
+<a href="join-update-list">
+#### I want to get updates on the Chrome VRP and add things to hotlists?
+
+Request to join our [low volume list](https://groups.google.com/a/chromium.org/g/vrp-reporters).
+
 ### Other
 
 I have a security-related question that is not listed here.
@@ -404,5 +443,3 @@ I have a security-related question that is not listed here.
 * Also, if you have not already, please check the [Chrome VRP Rewards and
   Policies page](https://g.co/chrome/vrp).
 * If you still need assistance, please reach out to security-vrp@chromium.org.
-
-

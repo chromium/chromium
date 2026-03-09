@@ -62,10 +62,11 @@ about issues that are frequently reported.
 After the bug is filed, a [security shepherd](shepherd.md) will evaluate the
 report. The shepherd does several tasks:
 
-- Validate that the bug reproduces
-- Searching for any duplicate reports
-- Tag the bug with components
+- Ensure the bug has the necessary information for reproduction
 - Assess the bug's [severity](severity-guidelines.md)
+- Search for any duplicate reports
+- Validate that the bug reproduces
+- Tag the bug with components
 - Determine the versions affected
 - Assign the bug to a developer
 
