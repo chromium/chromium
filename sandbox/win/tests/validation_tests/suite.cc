@@ -12,58 +12,45 @@
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
+#include "sandbox/win/tests/validation_tests/commands.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Callback that generates fresh TestRunners for process access tests.
-typedef std::unique_ptr<sandbox::TestRunner> (*RunnerGenerator)();
+typedef std::unique_ptr<sandbox::OpenProcessCmdTestRunner> (*RunnerGenerator)();
 
 namespace {
 
 void TestProcessAccess(RunnerGenerator runner_gen, DWORD target) {
-  const wchar_t *kCommandTemplate = L"OpenProcessCmd %d %d";
-  wchar_t command[1024] = {};
-  std::unique_ptr<sandbox::TestRunner> runner = nullptr;
-
   // Test all the scary process permissions.
-  wsprintf(command, kCommandTemplate, target, PROCESS_CREATE_THREAD);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_CREATE_THREAD));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_DUP_HANDLE);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_DUP_HANDLE));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_SET_INFORMATION);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_SET_INFORMATION));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_VM_OPERATION);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_VM_OPERATION));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_VM_READ);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_VM_READ));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_VM_WRITE);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_VM_WRITE));
 
-  wsprintf(command, kCommandTemplate, target, PROCESS_QUERY_INFORMATION);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, PROCESS_QUERY_INFORMATION));
 
-  wsprintf(command, kCommandTemplate, target, WRITE_DAC);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, WRITE_DAC));
 
-  wsprintf(command, kCommandTemplate, target, WRITE_OWNER);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, WRITE_OWNER));
 
-  wsprintf(command, kCommandTemplate, target, READ_CONTROL);
-  runner = runner_gen();
-  EXPECT_EQ(sandbox::SBOX_TEST_DENIED, runner->RunTest(command));
+  EXPECT_EQ(sandbox::SBOX_TEST_DENIED,
+            runner_gen()->RunTest(target, READ_CONTROL));
 }
 
 }  // namespace
@@ -102,90 +89,82 @@ TEST(ValidationSuite, TestFileSystem) {
   ASSERT_TRUE(VolumeSupportsACLs(L"%Temp%\\"));
   ASSERT_TRUE(VolumeSupportsACLs(L"%AppData%\\"));
 
-  TestRunner runner_sysdrive;
+  OpenFileCmdTestRunner runner_sysdrive;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_sysdrive.RunTest(L"%SystemDrive%"));
+
+  OpenFileCmdTestRunner runner_sysroot;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_sysroot.RunTest(L"%SystemRoot%"));
+
+  OpenFileCmdTestRunner runner_programfiles;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_programfiles.RunTest(L"%ProgramFiles%"));
+
+  OpenFileCmdTestRunner runner_system32;
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_sysdrive.RunTest(L"OpenFileCmd %SystemDrive%"));
+            runner_system32.RunTest(L"%SystemRoot%\\System32"));
 
-  TestRunner runner_sysroot;
+  OpenFileCmdTestRunner runner_explorer;
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_sysroot.RunTest(L"OpenFileCmd %SystemRoot%"));
+            runner_explorer.RunTest(L"%SystemRoot%\\explorer.exe"));
 
-  TestRunner runner_programfiles;
+  OpenFileCmdTestRunner runner_cursors;
   EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_programfiles.RunTest(L"OpenFileCmd %ProgramFiles%"));
+            runner_cursors.RunTest(L"%SystemRoot%\\Cursors\\arrow_i.cur"));
 
-  TestRunner runner_system32;
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_system32.RunTest(L"OpenFileCmd %SystemRoot%\\System32"));
+  OpenFileCmdTestRunner runner_profiles;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_profiles.RunTest(L"%AllUsersProfile%"));
 
-  TestRunner runner_explorer;
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_explorer.RunTest(L"OpenFileCmd %SystemRoot%\\explorer.exe"));
+  OpenFileCmdTestRunner runner_temp;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_temp.RunTest(L"%Temp%"));
 
-  TestRunner runner_cursors;
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_cursors.RunTest(
-                L"OpenFileCmd %SystemRoot%\\Cursors\\arrow_i.cur"));
-
-  TestRunner runner_profiles;
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_profiles.RunTest(L"OpenFileCmd %AllUsersProfile%"));
-
-  TestRunner runner_temp;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_temp.RunTest(L"OpenFileCmd %Temp%"));
-
-  TestRunner runner_appdata;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_appdata.RunTest(L"OpenFileCmd %AppData%"));
+  OpenFileCmdTestRunner runner_appdata;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_appdata.RunTest(L"%AppData%"));
 }
 
 // Tests if the registry is correctly protected by the sandbox.
 TEST(ValidationSuite, TestRegistry) {
-  TestRunner runner_hklm;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_hklm.RunTest(L"OpenKey HKLM"));
+  OpenKeyTestRunner runner_hklm;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_hklm.RunTest(L"HKLM"));
 
-  TestRunner runner_hkcu;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_hkcu.RunTest(L"OpenKey HKCU"));
+  OpenKeyTestRunner runner_hkcu;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_hkcu.RunTest(L"HKCU"));
 
-  TestRunner runner_hku;
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_hku.RunTest(L"OpenKey HKU"));
+  OpenKeyTestRunner runner_hku;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_hku.RunTest(L"HKU"));
 
-  TestRunner runner_hklm_key;
-  EXPECT_EQ(
-      SBOX_TEST_DENIED,
-      runner_hklm_key.RunTest(
-          L"OpenKey HKLM "
-          L"\"Software\\Microsoft\\Windows NT\\CurrentVersion\\WinLogon\""));
+  OpenKeyTestRunner runner_hklm_key;
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            runner_hklm_key.RunTest(
+                L"HKLM",
+                L"Software\\Microsoft\\Windows NT\\CurrentVersion\\WinLogon"));
 }
 
-std::unique_ptr<TestRunner> DesktopRunner() {
-  auto runner = std::make_unique<TestRunner>();
+template <typename Runner>
+std::unique_ptr<Runner> DesktopRunner() {
+  auto runner = std::make_unique<Runner>();
   EXPECT_EQ(SBOX_ALL_OK, runner->broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
-  runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
-  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
-                             INTEGRITY_LEVEL_LOW));
+  runner->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
+  EXPECT_EQ(SBOX_ALL_OK,
+            runner->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW));
   return runner;
 }
 
 // Tests that the permissions on the Windowstation does not allow the sandbox
 // to get to the interactive desktop or to make the sbox desktop interactive.
 TEST(ValidationSuite, TestDesktop) {
-  auto runner = DesktopRunner();
-  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(L"OpenInteractiveDesktop NULL"));
-
-  runner = DesktopRunner();
-  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(L"SwitchToSboxDesktop NULL"));
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            DesktopRunner<OpenInteractiveDesktopTestRunner>()->RunTest());
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            DesktopRunner<SwitchToSboxDesktopTestRunner>()->RunTest());
 }
 
 // Tests that the permissions on the Windowstation does not allow the sandbox
 // to get to the interactive desktop or to make the sbox desktop interactive.
 TEST(ValidationSuite, TestAlternateDesktop) {
-  TestRunner runner_no_policy;
-  EXPECT_EQ(SBOX_TEST_DENIED,
-            runner_no_policy.RunTest(L"EnumAlternateWinsta NULL"));
+  EnumAlternateWinstaTestRunner runner_no_policy;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner_no_policy.RunTest());
 
-  TestRunner runner;
-  wchar_t command[1024] = {};
+  OpenAlternateDesktopTestRunner runner;
   runner.SetTimeout(3600000);
   EXPECT_EQ(SBOX_ALL_OK, runner.broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
@@ -198,28 +177,31 @@ TEST(ValidationSuite, TestAlternateDesktop) {
   std::wstring desktop_name =
       runner.broker()->GetDesktopName(Desktop::kAlternateWinstation);
   desktop_name = desktop_name.substr(desktop_name.find('\\') + 1);
-  wsprintf(command, L"OpenAlternateDesktop %lS", desktop_name.c_str());
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
+  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(desktop_name));
 }
 
-std::unique_ptr<TestRunner> AlternateDesktopLocalWinstationRunner() {
-  auto runner = std::make_unique<TestRunner>();
+template <typename Runner>
+std::unique_ptr<Runner> AlternateDesktopLocalWinstationRunner() {
+  auto runner = std::make_unique<Runner>();
   EXPECT_EQ(SBOX_ALL_OK, runner->broker()->CreateAlternateDesktop(
                              Desktop::kAlternateDesktop));
-  runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
-  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
-                             INTEGRITY_LEVEL_LOW));
+  runner->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
+  EXPECT_EQ(SBOX_ALL_OK,
+            runner->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW));
   return runner;
 }
 
 // Same as TestDesktop, but uses the local winstation, instead of an alternate
 // one.
 TEST(ValidationSuite, TestAlternateDesktopLocalWinstation) {
-  auto runner = AlternateDesktopLocalWinstationRunner();
-  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(L"OpenInteractiveDesktop NULL"));
-
-  runner = AlternateDesktopLocalWinstationRunner();
-  EXPECT_EQ(SBOX_TEST_DENIED, runner->RunTest(L"SwitchToSboxDesktop NULL"));
+  EXPECT_EQ(
+      SBOX_TEST_DENIED,
+      AlternateDesktopLocalWinstationRunner<OpenInteractiveDesktopTestRunner>()
+          ->RunTest());
+  EXPECT_EQ(
+      SBOX_TEST_DENIED,
+      AlternateDesktopLocalWinstationRunner<SwitchToSboxDesktopTestRunner>()
+          ->RunTest());
 }
 
 // Tests if the windows are correctly protected by the sandbox.
@@ -233,35 +215,32 @@ TEST(ValidationSuite, TestWindows) {
     GTEST_SKIP() << "Skipping test for Win10 19041 branch, crbug.com/1057656.";
   }
 
-  wchar_t command[1024] = {};
+  ValidWindowTestRunner runner_getshellwindow;
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            runner_getshellwindow.RunTest(
+                reinterpret_cast<size_t>(::GetShellWindow())));
 
-  TestRunner runner_getshellwindow;
-  wsprintf(command, L"ValidWindow %Id",
-           reinterpret_cast<size_t>(::GetShellWindow()));
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_getshellwindow.RunTest(command));
-
-  TestRunner runner_findwindow;
-  wsprintf(command, L"ValidWindow %Id",
-           reinterpret_cast<size_t>(::FindWindow(NULL, NULL)));
-  EXPECT_EQ(SBOX_TEST_DENIED, runner_findwindow.RunTest(command));
+  ValidWindowTestRunner runner_findwindow;
+  EXPECT_EQ(SBOX_TEST_DENIED,
+            runner_findwindow.RunTest(
+                reinterpret_cast<size_t>(::FindWindow(NULL, NULL))));
 }
 
-std::unique_ptr<TestRunner> ProcessDenyLockdownRunner() {
-  return std::make_unique<TestRunner>();
+std::unique_ptr<OpenProcessCmdTestRunner> ProcessDenyLockdownRunner() {
+  return std::make_unique<OpenProcessCmdTestRunner>();
 }
 
 // Tests that a locked-down process cannot open another locked-down process.
 TEST(ValidationSuite, TestProcessDenyLockdown) {
-  TestRunner target;
-  target.SetAsynchronous(true);
+  SleepCmdTestRunner target;
+  base::Process process = target.RunTestAsync(30000);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, target.RunTest(L"SleepCmd 30000"));
-
-  TestProcessAccess(ProcessDenyLockdownRunner, target.process_id());
+  TestProcessAccess(ProcessDenyLockdownRunner, process.Pid());
+  EXPECT_TRUE(process.Terminate(0, true));
 }
 
-std::unique_ptr<TestRunner> ProcessDenyLowIntegrityRunner() {
-  auto runner = std::make_unique<TestRunner>();
+std::unique_ptr<OpenProcessCmdTestRunner> ProcessDenyLowIntegrityRunner() {
+  auto runner = std::make_unique<OpenProcessCmdTestRunner>();
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
                              INTEGRITY_LEVEL_LOW));
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetTokenLevel(
@@ -272,18 +251,18 @@ std::unique_ptr<TestRunner> ProcessDenyLowIntegrityRunner() {
 // Tests that a low-integrity process cannot open a locked-down process (due
 // to the integrity label changing after startup via SetDelayedIntegrityLevel).
 TEST(ValidationSuite, TestProcessDenyLowIntegrity) {
-  TestRunner target;
-  target.SetAsynchronous(true);
+  SleepCmdTestRunner target;
   target.GetPolicy()->GetConfig()->SetDelayedIntegrityLevel(
       INTEGRITY_LEVEL_LOW);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, target.RunTest(L"SleepCmd 30000"));
+  base::Process process = target.RunTestAsync(30000);
 
-  TestProcessAccess(ProcessDenyLowIntegrityRunner, target.process_id());
+  TestProcessAccess(ProcessDenyLowIntegrityRunner, process.Pid());
+  EXPECT_TRUE(process.Terminate(0, true));
 }
 
-std::unique_ptr<TestRunner> ProcessDenyBelowLowIntegrityRunner() {
-  auto runner = std::make_unique<TestRunner>();
+std::unique_ptr<OpenProcessCmdTestRunner> ProcessDenyBelowLowIntegrityRunner() {
+  auto runner = std::make_unique<OpenProcessCmdTestRunner>();
   runner->GetPolicy()->GetConfig()->SetDelayedIntegrityLevel(
       INTEGRITY_LEVEL_UNTRUSTED);
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetTokenLevel(
@@ -293,59 +272,52 @@ std::unique_ptr<TestRunner> ProcessDenyBelowLowIntegrityRunner() {
 
 // Tests that a locked-down process cannot open a low-integrity process.
 TEST(ValidationSuite, TestProcessDenyBelowLowIntegrity) {
-  TestRunner target;
-  target.SetAsynchronous(true);
+  SleepCmdTestRunner target;
   EXPECT_EQ(SBOX_ALL_OK, target.GetPolicy()->GetConfig()->SetIntegrityLevel(
                              INTEGRITY_LEVEL_LOW));
   EXPECT_EQ(SBOX_ALL_OK, target.GetPolicy()->GetConfig()->SetTokenLevel(
                              USER_RESTRICTED_SAME_ACCESS, USER_INTERACTIVE));
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, target.RunTest(L"SleepCmd 30000"));
+  base::Process process = target.RunTestAsync(30000);
 
-  TestProcessAccess(ProcessDenyBelowLowIntegrityRunner, target.process_id());
+  TestProcessAccess(ProcessDenyBelowLowIntegrityRunner, process.Pid());
+  EXPECT_TRUE(process.Terminate(0, true));
 }
 
 // Tests if the threads are correctly protected by the sandbox.
 TEST(ValidationSuite, TestThread) {
-  TestRunner runner;
-  wchar_t command[1024] = {};
-
-  wsprintf(command, L"OpenThreadCmd %d", ::GetCurrentThreadId());
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
+  OpenThreadCmdTestRunner runner;
+  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(::GetCurrentThreadId()));
 }
 
 // Tests if an over-limit allocation will be denied.
 TEST(ValidationSuite, TestMemoryLimit) {
-  TestRunner runner;
-  wchar_t command[1024] = {};
+  AllocateCmdTestRunner runner;
   const int kAllocationSize = 256 * 1024 * 1024;
 
-  wsprintf(command, L"AllocateCmd %d", kAllocationSize);
   runner.GetPolicy()->GetConfig()->SetJobMemoryLimit(kAllocationSize);
-  EXPECT_EQ(SBOX_FATAL_MEMORY_EXCEEDED, runner.RunTest(command));
+  EXPECT_EQ(SBOX_FATAL_MEMORY_EXCEEDED, runner.RunTest(kAllocationSize));
 }
 
 // Tests a large allocation will succeed absent limits.
 TEST(ValidationSuite, TestMemoryNoLimit) {
-  TestRunner runner;
-  wchar_t command[1024] = {};
+  AllocateCmdTestRunner runner;
   const int kAllocationSize = 256 * 1024 * 1024;
 
-  wsprintf(command, L"AllocateCmd %d", kAllocationSize);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(kAllocationSize));
 }
 
 // Tests that the InitCompleted API works correctly in various states.
 TEST(ValidationSuite, TestInitCompleted) {
   {
-    TestRunner runner;
-    runner.SetTestState(BEFORE_REVERT);
-    EXPECT_EQ(SBOX_TEST_FIRST_ERROR, runner.RunTest(L"InitCompleted"));
+    InitCompletedTestRunner runner;
+    runner.SetTestState(BEFORE_INIT);
+    EXPECT_EQ(SBOX_TEST_FIRST_ERROR, runner.RunTest());
   }
   {
-    TestRunner runner;
+    InitCompletedTestRunner runner;
     runner.SetTestState(AFTER_REVERT);
-    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"InitCompleted"));
+    EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
   }
 }
 
