@@ -680,9 +680,23 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateValuableMetadata(
     ReportResult(Result::kAddOrUpdateValuableMetadata_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
-  ReportResult(Result::kAddOrUpdateValuableMetadata_Success);
 
+  ValuableMetadataChange change(ValuableMetadataChange::UPDATE,
+                                metadata.valuable_id, metadata);
+  NotifyOnValuableMetadataChanged(change);
+
+  ReportResult(Result::kAddOrUpdateValuableMetadata_Success);
   return WebDatabase::COMMIT_NEEDED;
+}
+
+void AutofillWebDataBackendImpl::NotifyOnValuableMetadataChanged(
+    const ValuableMetadataChange& change) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
+       db_observer_list_) {
+    db_observer.ValuableMetadataChanged(change);
+  }
 }
 
 std::unique_ptr<WDTypedResult>

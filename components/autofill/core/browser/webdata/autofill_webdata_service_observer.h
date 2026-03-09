@@ -48,6 +48,10 @@ class AutofillWebDataServiceObserverOnDBSequence {
   virtual void ServerEntityInstanceMetadataChanged(
       const EntityInstanceMetadataChange& change) {}
 
+  // Called on DB sequence when a valuable metadata has been
+  // added/updated/deleted in the WebDatabase.
+  virtual void ValuableMetadataChanged(const ValuableMetadataChange& change) {}
+
  protected:
   virtual ~AutofillWebDataServiceObserverOnDBSequence() = default;
 };

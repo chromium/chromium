@@ -72,15 +72,15 @@ EntityInstance::EntityMetadata test_metadata() {
       .use_date = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(13379000000000000u))};
 }
-std::vector<EntityInstance::EntityMetadata>
-ExtractEntitiesMetadataFromDataBatch(std::unique_ptr<syncer::DataBatch> batch) {
-  std::vector<EntityInstance::EntityMetadata> entities;
+std::vector<std::string> ExtractMetadataIdsFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<std::string> metadata_ids;
   while (batch->HasNext()) {
     const syncer::KeyAndData& data_pair = batch->Next();
-    entities.push_back(CreateEntityMetadataFromSpecifics(
-        data_pair.second->specifics.autofill_valuable_metadata()));
+    metadata_ids.push_back(
+        data_pair.second->specifics.autofill_valuable_metadata().valuable_id());
   }
-  return entities;
+  return metadata_ids;
 }
 
 EntityInstance CreateServerVehicleEntityInstance(
@@ -89,7 +89,6 @@ EntityInstance CreateServerVehicleEntityInstance(
   options.record_type = EntityInstance::RecordType::kServerWallet;
   return test::GetVehicleEntityInstance(options);
 }
-
 
 class ValuableMetadataSyncBridgeTest : public testing::Test {
  public:
@@ -444,8 +443,9 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
   EXPECT_THAT(GetEntityMetadataEntries(), SizeIs(1));
 }
 
-// Tests that GetAllData() returns all metadata entries from the database.
-TEST_F(ValuableMetadataSyncBridgeTest, GetAllData) {
+// Tests that GetAllData() returns all entity metadata entries from the
+// database.
+TEST_F(ValuableMetadataSyncBridgeTest, GetAllData_OnlyEntityMetadata) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000",
        .date_modified = base::Time::FromSecondsSinceUnixEpoch(100),
@@ -459,10 +459,49 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetAllData) {
   entity_table().AddOrUpdateEntityInstance(vehicle1);
   entity_table().AddOrUpdateEntityInstance(vehicle2);
 
+  const ValuableMetadata valuable_metadata1 = TestValuableMetadata("1");
+  const ValuableMetadata valuable_metadata2 = TestValuableMetadata("2");
+  valuables_table().AddOrUpdateValuableMetadata(valuable_metadata1);
+  valuables_table().AddOrUpdateValuableMetadata(valuable_metadata2);
+
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   ASSERT_TRUE(batch);
-  EXPECT_THAT(ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
-              UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
+  EXPECT_THAT(
+      ExtractMetadataIdsFromDataBatch(std::move(batch)),
+      UnorderedElementsAre(vehicle1.guid().value(), vehicle2.guid().value()));
+}
+
+// Tests that GetAllData() returns the metadata entries from both the
+// `entity_table` and `valuables_table` when the `kSyncLoyaltyCardMetadata` is
+// enabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       GetAllData_SyncLoyaltyCardMetadataEnabled_EntityAndValuableMetadata) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
+       .use_count = 7});
+  entity_table().AddOrUpdateEntityInstance(vehicle1);
+  entity_table().AddOrUpdateEntityInstance(vehicle2);
+
+  const ValuableMetadata valuable_metadata1 = TestValuableMetadata("1");
+  const ValuableMetadata valuable_metadata2 = TestValuableMetadata("2");
+  valuables_table().AddOrUpdateValuableMetadata(valuable_metadata1);
+  valuables_table().AddOrUpdateValuableMetadata(valuable_metadata2);
+
+  std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(batch);
+  EXPECT_THAT(
+      ExtractMetadataIdsFromDataBatch(std::move(batch)),
+      UnorderedElementsAre(vehicle1.guid().value(), vehicle2.guid().value(),
+                           valuable_metadata1.valuable_id.value(),
+                           valuable_metadata2.valuable_id.value()));
 }
 
 // Tests that GetAllData() supports metadata entries for private passes.
@@ -492,11 +531,12 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 
   std::unique_ptr<syncer::DataBatch> batch = bridge().GetAllDataForDebugging();
   ASSERT_TRUE(batch);
-  EXPECT_THAT(
-      ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
-      UnorderedElementsAre(passport.metadata(), driver_license.metadata(),
-                           redress_numer.metadata(), ktn.metadata(),
-                           national_id.metadata()));
+  EXPECT_THAT(ExtractMetadataIdsFromDataBatch(std::move(batch)),
+              UnorderedElementsAre(passport.metadata().guid.value(),
+                                   driver_license.metadata().guid.value(),
+                                   redress_numer.metadata().guid.value(),
+                                   ktn.metadata().guid.value(),
+                                   national_id.metadata().guid.value()));
 }
 
 // Tests that GetAllData() ignores metadata entries without a `PassType`.
@@ -511,8 +551,8 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   EXPECT_FALSE(batch->HasNext());
 }
 
-// Tests that GetDataForCommit() returns the specified metadata entries.
-TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit) {
+// Tests that GetDataForCommit() returns the specified `EntityMetadata` entries.
+TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_EntityMetadata) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000",
        .date_modified = base::Time::FromSecondsSinceUnixEpoch(100),
@@ -530,12 +570,14 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit) {
       bridge().GetDataForCommit({"00000000-0000-4000-8000-300000000000"});
 
   ASSERT_TRUE(batch);
-  EXPECT_THAT(ExtractEntitiesMetadataFromDataBatch(std::move(batch)),
-              UnorderedElementsAre(vehicle2.metadata()));
+  EXPECT_THAT(ExtractMetadataIdsFromDataBatch(std::move(batch)),
+              UnorderedElementsAre(vehicle2.guid().value()));
 }
 
-// Tests that GetDataForCommit() includes unknown fields from the server.
-TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_UnknownFields) {
+// Tests that GetDataForCommit() includes unknown fields from the server for
+// `EntityMetadata` entries.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       GetDataForCommit_EntityMetadata_UnknownFields) {
   const EntityInstance vehicle = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000"});
   entity_table().AddOrUpdateEntityInstance(vehicle);
@@ -554,6 +596,49 @@ TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_UnknownFields) {
   ASSERT_TRUE(batch->HasNext());
   const syncer::KeyAndData& data_pair = batch->Next();
   ASSERT_EQ(data_pair.first, vehicle.guid().value());
+  EXPECT_THAT(data_pair.second->specifics.autofill_valuable_metadata(),
+              HasUnknownField("unknown_field"));
+}
+
+// Tests that GetDataForCommit() returns the specified `ValuableMetadata`
+// entries when the `kSyncLoyaltyCardMetadata` is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest, GetDataForCommit_ValuableMetadata) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  const ValuableMetadata metadata1 = TestValuableMetadata("1");
+  const ValuableMetadata metadata2 = TestValuableMetadata("2");
+  valuables_table().AddOrUpdateValuableMetadata(metadata1);
+  valuables_table().AddOrUpdateValuableMetadata(metadata2);
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({metadata2.valuable_id.value()});
+
+  ASSERT_TRUE(batch);
+  EXPECT_THAT(ExtractMetadataIdsFromDataBatch(std::move(batch)),
+              UnorderedElementsAre(metadata2.valuable_id.value()));
+}
+
+// Tests that GetDataForCommit() includes unknown fields from the server for
+// `ValuableMetadata` entries.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       GetDataForCommit_ValuableMetadata_UnknownFields) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  const ValuableMetadata valuable_metadata = TestValuableMetadata();
+  valuables_table().AddOrUpdateValuableMetadata(valuable_metadata);
+
+  sync_pb::EntitySpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(
+      *base_specifics.mutable_autofill_valuable_metadata(), "unknown_field");
+
+  ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+      .WillByDefault(ReturnRef(base_specifics));
+
+  std::unique_ptr<syncer::DataBatch> batch =
+      bridge().GetDataForCommit({valuable_metadata.valuable_id.value()});
+
+  ASSERT_TRUE(batch);
+  ASSERT_TRUE(batch->HasNext());
+  const syncer::KeyAndData& data_pair = batch->Next();
+  ASSERT_EQ(data_pair.first, valuable_metadata.valuable_id.value());
   EXPECT_THAT(data_pair.second->specifics.autofill_valuable_metadata(),
               HasUnknownField("unknown_field"));
 }
@@ -684,6 +769,82 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   bridge().ServerEntityInstanceMetadataChanged(
       EntityInstanceMetadataChange(EntityInstanceMetadataChange::REMOVE,
                                    vehicle.guid(), vehicle.metadata()));
+}
+
+// Tests that `ValuableMetadataChanged()` ignores changes when
+// `kSyncLoyaltyCardMetadata` is disabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ValuableMetadataChanged_kSyncLoyaltyCardMetadataDisabled) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const ValuableMetadata metadata = TestValuableMetadata();
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::ADD, metadata.valuable_id, metadata));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::UPDATE, metadata.valuable_id, metadata));
+
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::REMOVE, metadata.valuable_id, metadata));
+}
+
+// Tests that `ValuableMetadataChanged()` handles ADD and UPDATE
+// changes when the `kSyncLoyaltyCardMetadata` is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest, ValuableMetadataChanged_AddUpdate) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const ValuableMetadata metadata = TestValuableMetadata();
+
+  EXPECT_CALL(mock_processor(), Put(*metadata.valuable_id, _, _));
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::ADD, metadata.valuable_id, metadata));
+
+  EXPECT_CALL(mock_processor(), Put(*metadata.valuable_id, _, _));
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::UPDATE, metadata.valuable_id, metadata));
+}
+
+// Tests that `ValuableMetadataChanged()` handles a REMOVE change when the
+// `kSyncLoyaltyCardMetadata` is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest, ValuableMetadataChanged_Remove) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const ValuableMetadata metadata = TestValuableMetadata();
+
+  EXPECT_CALL(mock_processor(), Delete(*metadata.valuable_id, _, _));
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::REMOVE, metadata.valuable_id, metadata));
+}
+
+// Tests that `ValuableMetadataChanged()` includes unknown fields
+// from the server when `kSyncLoyaltyCardMetadata` is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ValuableMetadataChanged_PreservesUnknownFields) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const ValuableMetadata metadata = TestValuableMetadata();
+
+  sync_pb::EntitySpecifics base_specifics;
+  syncer::test::AddUnknownFieldToProto(
+      *base_specifics.mutable_autofill_valuable_metadata(), "unknown_field");
+  EXPECT_CALL(mock_processor(),
+              GetPossiblyTrimmedRemoteSpecifics(metadata.valuable_id.value()))
+      .WillOnce(ReturnRef(base_specifics));
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([&metadata](const std::string& storage_key,
+                            std::unique_ptr<syncer::EntityData> entity_data,
+                            syncer::MetadataChangeList* metadata_change_list) {
+        ASSERT_EQ(storage_key, metadata.valuable_id.value());
+        EXPECT_THAT(entity_data->specifics.autofill_valuable_metadata(),
+                    HasUnknownField("unknown_field"));
+      });
+
+  bridge().ValuableMetadataChanged(ValuableMetadataChange(
+      ValuableMetadataChange::ADD, metadata.valuable_id, metadata));
 }
 
 // Tests that DeleteOldOrphanMetadata() deletes metadata that has no

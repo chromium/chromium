@@ -86,6 +86,12 @@ class AutofillWebDataBackend {
   // NOTE: This method is intended to be called from the DB sequence.
   virtual void NotifyOnServerEntityMetadataChanged(
       const EntityInstanceMetadataChange& change) = 0;
+
+  // Notifies listeners on the DB sequence that a valuable metadata has been
+  // added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnValuableMetadataChanged(
+      const ValuableMetadataChange& change) = 0;
 };
 
 } // namespace autofill

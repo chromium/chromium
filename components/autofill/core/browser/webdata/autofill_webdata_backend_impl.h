@@ -99,6 +99,8 @@ class AutofillWebDataBackendImpl final
       const EntityInstanceChange& change) override;
   void NotifyOnServerEntityMetadataChanged(
       const EntityInstanceMetadataChange& change) override;
+  void NotifyOnValuableMetadataChanged(
+      const ValuableMetadataChange& change) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible

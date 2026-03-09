@@ -80,6 +80,9 @@ class ValuableMetadataSyncBridge
   void ServerEntityInstanceMetadataChanged(
       const EntityInstanceMetadataChange& change) override;
 
+  // AutofillWebDataServiceObserverOnDBSequence:
+  void ValuableMetadataChanged(const ValuableMetadataChange& change) override;
+
  private:
   // Merges remote changes, specified in `entity_data`, with the local DB and,
   // potentially, writes changes to the local DB and/or commits updates of

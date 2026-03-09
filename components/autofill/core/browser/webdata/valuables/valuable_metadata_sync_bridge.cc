@@ -123,7 +123,6 @@ void ValuableMetadataSyncBridge::UploadInitialLocalData(
       change_processor()->Put(
           *storage_key,
           CreateEntityDataFromEntityMetadata(
-
               stored_metadata[storage_key], *pass_type,
               GetPossiblyTrimmedValuableMetadataSpecifics(storage_key.value())),
           metadata_change_list);
@@ -225,12 +224,22 @@ ValuableMetadataSyncBridge::GetAllData() {
        GetEntityTable()->GetSyncedMetadata()) {
     if (std::optional<sync_pb::AutofillValuableMetadataSpecifics::PassType>
             pass_type = GetPassTypeForEntityId(storage_key)) {
-      batch->Put(*storage_key,
-
-                 CreateEntityDataFromEntityMetadata(
-                     metadata, *pass_type,
-                     GetPossiblyTrimmedValuableMetadataSpecifics(
-                         storage_key.value())));
+      batch->Put(
+          *storage_key,
+          CreateEntityDataFromEntityMetadata(
+              metadata, *pass_type,
+              GetPossiblyTrimmedValuableMetadataSpecifics(*storage_key)));
+    }
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncLoyaltyCardMetadata)) {
+    for (const auto& [storage_key, metadata] :
+         GetValuablesTable()->GetAllValuableMetadata()) {
+      batch->Put(
+          *storage_key,
+          CreateEntityDataFromValuableMetadata(
+              metadata,
+              sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+              GetPossiblyTrimmedValuableMetadataSpecifics(*storage_key)));
     }
   }
   return batch;
@@ -447,6 +456,40 @@ void ValuableMetadataSyncBridge::ServerEntityInstanceMetadataChanged(
       NOTREACHED();
   }
 
+  ApplyMetadataChanges(std::move(metadata_change_list));
+}
+
+void ValuableMetadataSyncBridge::ValuableMetadataChanged(
+    const ValuableMetadataChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata));
+  if (!base::FeatureList::IsEnabled(syncer::kSyncLoyaltyCardMetadata) ||
+      !change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+
+  switch (change.type()) {
+    case ValuableMetadataChange::ADD:
+    case ValuableMetadataChange::UPDATE:
+      change_processor()->Put(
+          *change.key(),
+          CreateEntityDataFromValuableMetadata(
+              change.data_model(),
+              sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+              GetPossiblyTrimmedValuableMetadataSpecifics(*change.key())),
+          metadata_change_list.get());
+      break;
+    case ValuableMetadataChange::REMOVE:
+      change_processor()->Delete(
+          *change.key(), syncer::DeletionOrigin::FromLocation(FROM_HERE),
+          metadata_change_list.get());
+      break;
+    case ValuableMetadataChange::HIDE_IN_AUTOFILL:
+      NOTREACHED();
+  }
   ApplyMetadataChanges(std::move(metadata_change_list));
 }
 
