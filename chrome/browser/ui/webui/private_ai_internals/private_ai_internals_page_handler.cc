@@ -57,9 +57,14 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
     scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
   }
   webui_logger_ = std::make_unique<PrivateAiLogger>();
-  webui_client_ = Client::Create(
-      url, api_key, proxy_url, use_token_attestation, network_context_,
-      token_manager_, content::GetNetworkService(), webui_logger_.get());
+  std::string effective_api_key = api_key;
+  if (effective_api_key == kApiKeyPlaceholder) {
+    effective_api_key = private_ai::kPrivateAiApiKey.Get();
+  }
+  webui_client_ =
+      Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
+                     network_context_, token_manager_,
+                     content::GetNetworkService(), webui_logger_.get());
   scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
   webui_client_->EstablishConnection();
   std::move(callback).Run();

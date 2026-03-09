@@ -58,7 +58,10 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
       IDR_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_HTML);
 
   source->AddString("default_url", kPrivateAiUrl.Get());
-  source->AddString("default_api_key", kPrivateAiApiKey.Get());
+  source->AddString("default_api_key",
+                    private_ai::kPrivateAiApiKey.Get().empty()
+                        ? ""
+                        : PrivateAiInternalsPageHandler::kApiKeyPlaceholder);
   source->AddString("default_proxy_url", kPrivateAiProxyServerUrl.Get());
   source->AddString(
       "default_feature_name",

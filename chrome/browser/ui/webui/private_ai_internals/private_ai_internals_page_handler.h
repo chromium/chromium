@@ -61,6 +61,8 @@ class PrivateAiInternalsPageHandler
   void OnLogError(const base::Location& location,
                   std::string_view message) override;
 
+  static constexpr char kApiKeyPlaceholder[] = "__DEFAULT_API_KEY__";
+
  private:
   void LogToPage(private_ai_internals::mojom::LogLevel level,
                  const base::Location& location,
