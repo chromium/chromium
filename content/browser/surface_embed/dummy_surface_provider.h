@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SURFACE_EMBED_BROWSER_DUMMY_SURFACE_PROVIDER_H_
-#define COMPONENTS_SURFACE_EMBED_BROWSER_DUMMY_SURFACE_PROVIDER_H_
+#ifndef CONTENT_BROWSER_SURFACE_EMBED_DUMMY_SURFACE_PROVIDER_H_
+#define CONTENT_BROWSER_SURFACE_EMBED_DUMMY_SURFACE_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -13,15 +13,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
-namespace surface_embed {
+namespace content {
 
-// TODO(crbug.com/479743223): Remove this file and its .cc file once the calls
-// to it from SurfaceEmbedHost have been replaced by retrieving the
-// FrameSinkId from SurfaceEmbedConnector.
-//
 // A dummy surface provider that owns a FrameSinkId and draws a solid red
 // rectangle on the surface. This is used in tests by the SurfaceEmbedHost to
 // avoid the need for a real embedder surface.
+//
+// Note that this class will only temporarily be used in production code. When
+// the implementation of Surface Embed has advanced enough, it will replace this
+// with a real surface provider. DummySurfaceProvider will then either be
+// removed or else relegated to test-only code.
 class DummySurfaceProvider : public viz::HostFrameSinkClient,
                              public viz::mojom::CompositorFrameSinkClient {
  public:
@@ -61,6 +62,6 @@ class DummySurfaceProvider : public viz::HostFrameSinkClient,
       compositor_frame_sink_client_receiver_{this};
 };
 
-}  // namespace surface_embed
+}  // namespace content
 
-#endif  // COMPONENTS_SURFACE_EMBED_BROWSER_DUMMY_SURFACE_PROVIDER_H_
+#endif  // CONTENT_BROWSER_SURFACE_EMBED_DUMMY_SURFACE_PROVIDER_H_

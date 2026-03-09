@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_SURFACE_EMBED_SURFACE_EMBED_CONNECTOR_IMPL_H_
 #define CONTENT_BROWSER_SURFACE_EMBED_SURFACE_EMBED_CONNECTOR_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -18,6 +20,7 @@ class RenderWidgetHostInputEventRouter;
 }  // namespace input
 
 namespace content {
+class DummySurfaceProvider;
 
 class RenderViewHostDelegateView;
 class RenderWidgetHostViewChildFrame;
@@ -67,8 +70,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl : public SurfaceEmbedConnector {
   raw_ptr<WebContentsImpl> child_web_contents_ = nullptr;  // Owns us.
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
-  // The last received FrameSinkId from the child WebContents's view.
-  viz::FrameSinkId frame_sink_id_;
+  std::unique_ptr<DummySurfaceProvider> dummy_surface_provider_;
 
   // The last received LocalSurfaceId from the SurfaceEmbed.
   viz::LocalSurfaceId local_surface_id_;

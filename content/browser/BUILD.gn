@@ -3750,6 +3750,8 @@ source_set("browser") {
 
   if (enable_surface_embed) {
     sources += [
+      "surface_embed/dummy_surface_provider.cc",
+      "surface_embed/dummy_surface_provider.h",
       "surface_embed/surface_embed_connector_impl.cc",
       "surface_embed/surface_embed_connector_impl.h",
     ]
