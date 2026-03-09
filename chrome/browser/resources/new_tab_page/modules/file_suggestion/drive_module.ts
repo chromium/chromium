@@ -32,7 +32,7 @@ const DriveModuleElementBase = I18nMixinLit(CrLitElement);
  */
 export class DriveModuleElement extends DriveModuleElementBase {
   static get is() {
-    return 'ntp-drive-module-redesigned';
+    return 'ntp-drive-module';
   }
 
   override render() {
@@ -105,7 +105,7 @@ export class DriveModuleElement extends DriveModuleElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-drive-module-redesigned': DriveModuleElement;
+    'ntp-drive-module': DriveModuleElement;
   }
 }
 

@@ -38,12 +38,14 @@ const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules", "#container"};
 const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules", "#container",
                                      "ntp-module-wrapper"};
 const DeepQuery kMicrosoftAuthIframe = {"ntp-app", "#microsoftAuth"};
-const DeepQuery kTabGroupsModule = {"ntp-app", "ntp-modules", "ntp-tab-groups"};
+const DeepQuery kTabGroupsModule = {"ntp-app", "ntp-modules",
+                                    "ntp-tab-groups-module"};
 const DeepQuery kTabGroupsModuleContainer = {
-    "ntp-app", "ntp-modules", "ntp-tab-groups", "#tabGroupsContainer"};
+    "ntp-app", "ntp-modules", "ntp-tab-groups-module", "#tabGroupsContainer"};
 const DeepQuery kCreateNewTabGroup = {
-    "ntp-app", "ntp-modules", "ntp-tab-groups", ".create-new-tab-group"};
-const DeepQuery kFirstTabGroup = {"ntp-app", "ntp-modules", "ntp-tab-groups",
+    "ntp-app", "ntp-modules", "ntp-tab-groups-module", ".create-new-tab-group"};
+const DeepQuery kFirstTabGroup = {"ntp-app", "ntp-modules",
+                                  "ntp-tab-groups-module",
                                   ".tab-group:nth-of-type(1)"};
 
 struct ModuleLink {
@@ -68,18 +70,21 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
       {{ntp_features::kNtpMostRelevantTabResumptionModuleDataParam,
         "Fake Data"}}}},
     {"ntp-app", "ntp-modules", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption"},
+     "ntp-most-relevant-tab-resumption-module"},
     {"ntp-app", "ntp-modules", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#menuButton"},
+     "ntp-most-relevant-tab-resumption-module", "ntp-module-header-v2",
+     "#menuButton"},
     {"ntp-app", "ntp-modules", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption", "ntp-module-header-v2",
+     "ntp-most-relevant-tab-resumption-module", "ntp-module-header-v2",
      "cr-action-menu", "dialog"},
     {"ntp-app", "ntp-modules", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#dismiss"},
+     "ntp-most-relevant-tab-resumption-module", "ntp-module-header-v2",
+     "#dismiss"},
     {"ntp-app", "ntp-modules", "ntp-module-wrapper",
-     "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
+     "ntp-most-relevant-tab-resumption-module", "ntp-module-header-v2",
+     "#disable"},
     {{{"ntp-app", "ntp-modules", "ntp-module-wrapper",
-       "ntp-most-relevant-tab-resumption", "#urlVisits", "a"},
+       "ntp-most-relevant-tab-resumption-module", "#urlVisits", "a"},
       "https://www.google.com"}},
 };
 

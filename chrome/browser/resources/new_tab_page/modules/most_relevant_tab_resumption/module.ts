@@ -27,17 +27,17 @@ import {MostRelevantTabResumptionProxyImpl} from './most_relevant_tab_resumption
 
 export const MAX_URL_VISITS = 5;
 
-export interface ModuleElement {
+export interface MostRelevantTabResumptionModuleElement {
   $: {
     moduleHeaderElementV2: ModuleHeaderElement,
     urlVisits: HTMLElement,
   };
 }
 
-export class ModuleElement extends I18nMixinLit
+export class MostRelevantTabResumptionModuleElement extends I18nMixinLit
 (CrLitElement) {
   static get is() {
-    return 'ntp-most-relevant-tab-resumption';
+    return 'ntp-most-relevant-tab-resumption-module';
   }
 
   static override get styles() {
@@ -236,22 +236,28 @@ export class ModuleElement extends I18nMixinLit
   }
 }
 
+export type ModuleElement = MostRelevantTabResumptionModuleElement;
+
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-most-relevant-tab-resumption': ModuleElement;
+    'ntp-most-relevant-tab-resumption-module':
+        MostRelevantTabResumptionModuleElement;
   }
 }
 
-customElements.define(ModuleElement.is, ModuleElement);
+customElements.define(
+    MostRelevantTabResumptionModuleElement.is,
+    MostRelevantTabResumptionModuleElement);
 
-async function createElement(): Promise<ModuleElement|null> {
+async function createElement():
+    Promise<MostRelevantTabResumptionModuleElement|null> {
   const {urlVisits} = await MostRelevantTabResumptionProxyImpl.getInstance()
                           .handler.getURLVisits();
   if (!urlVisits || urlVisits.length === 0) {
     return null;
   }
 
-  const element = new ModuleElement();
+  const element = new MostRelevantTabResumptionModuleElement();
   element.urlVisits = urlVisits;
 
   urlVisits.slice(0, MAX_URL_VISITS).forEach((urlVisit) => {
