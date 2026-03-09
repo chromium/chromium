@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/overlay_interstitial_ad_detector.h"
+#include "third_party/blink/renderer/core/ad_tracker/overlay_interstitial_ad_detector.h"
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -52,8 +52,9 @@ bool IsOverlayCandidate(Element* element) {
     return true;
   }
 
-  if (style->GetPosition() == EPosition::kAbsolute)
+  if (style->GetPosition() == EPosition::kAbsolute) {
     return !object->StyleRef().ScrollsOverflow();
+  }
 
   return false;
 }
@@ -64,8 +65,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
     LocalFrame* outermost_main_frame) {
   DCHECK(outermost_main_frame);
   DCHECK(outermost_main_frame->IsOutermostMainFrame());
-  if (popup_ad_detected_)
+  if (popup_ad_detected_) {
     return;
+  }
 
   DCHECK(outermost_main_frame->GetDocument());
   DCHECK(outermost_main_frame->ContentLayoutObject());
@@ -81,8 +83,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
   if (started_detection_ &&
       base::FeatureList::IsEnabled(
           features::kFrequencyCappingForOverlayPopupDetection) &&
-      current_time < last_detection_time_ + kFireInterval)
+      current_time < last_detection_time_ + kFireInterval) {
     return;
+  }
 
   TRACE_EVENT0("blink,benchmark",
                "OverlayInterstitialAdDetector::MaybeFireDetection");
@@ -114,8 +117,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
   // We want to explicitly prevent mid-roll ads from being categorized as
   // pop-ups. Skip the detection if we are in the middle of a video play.
-  if (outermost_main_frame->View()->HasDominantVideoElement())
+  if (outermost_main_frame->View()->HasDominantVideoElement()) {
     return;
+  }
 
   HitTestLocation location(
       gfx::PointF(outermost_main_frame_size.width() / 2.0,
@@ -125,8 +129,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
       location, result);
 
   Element* element = result.InnerElement();
-  if (!element)
+  if (!element) {
     return;
+  }
 
   DOMNodeId element_id = element->GetDomNodeId();
 
@@ -157,29 +162,33 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
       OnPopupDetected(outermost_main_frame, candidate_is_ad_);
     }
 
-    if (popup_ad_detected_)
+    if (popup_ad_detected_) {
       return;
+    }
 
     last_unqualified_element_id_ = candidate_id_;
     candidate_id_ = kInvalidDOMNodeId;
     candidate_is_ad_ = false;
   }
 
-  if (element_id == last_unqualified_element_id_)
+  if (element_id == last_unqualified_element_id_) {
     return;
+  }
 
   if (!is_new_element) {
     // Potentially update the ad status of the candidate from non-ad to ad.
     // Ad tagging could occur after the initial painting (e.g. at loading time),
     // and we are making the best effort to catch it.
-    if (element->IsAdRelated())
+    if (element->IsAdRelated()) {
       candidate_is_ad_ = true;
+    }
 
     return;
   }
 
-  if (!element->GetLayoutObject())
+  if (!element->GetLayoutObject()) {
     return;
+  }
 
   gfx::Rect overlay_rect =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect();
@@ -203,8 +212,9 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
       OnPopupDetected(outermost_main_frame, is_ad);
     }
 
-    if (popup_ad_detected_)
+    if (popup_ad_detected_) {
       return;
+    }
 
     candidate_id_ = element_id;
     candidate_is_ad_ = is_ad;

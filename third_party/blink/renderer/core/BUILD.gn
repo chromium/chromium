@@ -18,6 +18,7 @@ import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/accessibility/build.gni")
+import("//third_party/blink/renderer/core/ad_tracker/build.gni")
 import("//third_party/blink/renderer/core/animation/build.gni")
 import("//third_party/blink/renderer/core/animation_frame/build.gni")
 import("//third_party/blink/renderer/core/annotation/build.gni")
@@ -299,6 +300,7 @@ component("core") {
                          "",
                          "fragment_directive")
   sources += rebase_path(blink_core_sources_frame, "", "frame")
+  sources += rebase_path(blink_core_sources_ad_tracker, "", "ad_tracker")
   sources += get_target_outputs(":make_deprecation_info")
   sources += rebase_path(blink_core_sources_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_sources_geolocation, "", "geolocation")
@@ -1479,6 +1481,7 @@ source_set("unit_tests") {
   sources +=
       rebase_path(blink_core_tests_fragment_directive, "", "fragment_directive")
   sources += rebase_path(blink_core_tests_frame, "", "frame")
+  sources += rebase_path(blink_core_tests_ad_tracker, "", "ad_tracker")
   sources += rebase_path(blink_core_tests_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_tests_geometry, "", "geometry")
   sources += rebase_path(blink_core_tests_highlight, "", "highlight")

@@ -6,8 +6,8 @@
 
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 
 namespace blink {

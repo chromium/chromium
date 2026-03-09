@@ -7,8 +7,8 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace v8 {

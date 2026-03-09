@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/sticky_ad_detector.h"
+#include "third_party/blink/renderer/core/ad_tracker/sticky_ad_detector.h"
+
+#include <cstdlib>
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -18,8 +20,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 
-#include <cstdlib>
-
 namespace blink {
 
 namespace {
@@ -30,8 +30,9 @@ constexpr double kLargeAdSizeToViewportSizeThreshold = 0.3;
 // An sticky element should have a non-default position w.r.t. the viewport. The
 // main page should also be scrollable.
 bool IsStickyAdCandidate(Element* element) {
-  if (!element->IsAdRelated())
+  if (!element->IsAdRelated()) {
     return false;
+  }
 
   const ComputedStyle* style = nullptr;
   LayoutView* layout_view = element->GetDocument().GetLayoutView();
@@ -56,8 +57,9 @@ bool IsStickyAdCandidate(Element* element) {
 void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   DCHECK(outermost_main_frame);
   DCHECK(outermost_main_frame->IsOutermostMainFrame());
-  if (done_detection_)
+  if (done_detection_) {
     return;
+  }
 
   DCHECK(outermost_main_frame->GetDocument());
   DCHECK(outermost_main_frame->ContentLayoutObject());
@@ -96,8 +98,9 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   last_detection_time_ = current_time;
 
   Element* element = result.InnerElement();
-  if (!element)
+  if (!element) {
     return;
+  }
 
   DOMNodeId element_id = element->GetDomNodeId();
 
@@ -121,8 +124,9 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* outermost_main_frame) {
   // have dismissed itself soon after its appearance.
   candidate_id_ = kInvalidDOMNodeId;
 
-  if (!element->GetLayoutObject())
+  if (!element->GetLayoutObject()) {
     return;
+  }
 
   gfx::Rect overlay_rect =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect();

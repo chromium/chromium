@@ -5,10 +5,6 @@
 import("//third_party/blink/renderer/config.gni")
 
 blink_core_sources_frame = [
-  "ad_tracker.cc",
-  "ad_tracker.h",
-  "ad_script_identifier.cc",
-  "ad_script_identifier.h",
   "animation_frame_timing_monitor.cc",
   "animation_frame_timing_monitor.h",
   "attribution_src_loader.cc",
@@ -143,8 +139,6 @@ blink_core_sources_frame = [
   "navigator_user_activation.h",
   "opened_frame_tracker.cc",
   "opened_frame_tracker.h",
-  "overlay_interstitial_ad_detector.cc",
-  "overlay_interstitial_ad_detector.h",
   "page_dismissal_scope.cc",
   "page_dismissal_scope.h",
   "page_scale_constraints.cc",
@@ -212,8 +206,6 @@ blink_core_sources_frame = [
   "settings_string_converter.h",
   "smart_clip.cc",
   "smart_clip.h",
-  "sticky_ad_detector.cc",
-  "sticky_ad_detector.h",
   "test_report_body.cc",
   "test_report_body.h",
   "use_counter_impl.cc",
@@ -256,7 +248,6 @@ blink_core_sources_frame = [
 ]
 
 blink_core_tests_frame = [
-  "ad_tracker_test.cc",
   "animation_frame_timing_monitor_test.cc",
   "attribution_src_loader_test.cc",
   "browser_controls_test.cc",

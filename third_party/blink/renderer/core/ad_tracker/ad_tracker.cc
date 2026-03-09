@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 
 #include <memory>
 #include <optional>
@@ -122,8 +122,9 @@ bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
   // TODO(jkarlin): Do the same check for worker contexts.
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     LocalFrame* frame = window->GetFrame();
-    if (frame && frame->IsAdFrame())
+    if (frame && frame->IsAdFrame()) {
       return true;
+    }
   }
   return false;
 }
@@ -201,8 +202,9 @@ AdTracker::~AdTracker() {
 }
 
 void AdTracker::Shutdown() {
-  if (!local_root_)
+  if (!local_root_) {
     return;
+  }
   local_root_->GetProbeSink()->RemoveAdTracker(this);
   local_root_ = nullptr;
 }
@@ -628,8 +630,9 @@ bool AdTracker::IsFunctionAMonkeyPatch(v8::Isolate* isolate,
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
                                 const String& url) {
-  if (!execution_context)
+  if (!execution_context) {
     return false;
+  }
 
   if (IsKnownAdExecutionContext(execution_context)) {
     return true;

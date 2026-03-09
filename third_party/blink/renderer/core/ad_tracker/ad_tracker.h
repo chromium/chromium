@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_AD_TRACKER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_AD_TRACKER_H_
 
 #include <stdint.h>
 
 #include <optional>
 
 #include "components/subresource_filter/core/common/scoped_rule.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/ad_script_identifier.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
@@ -266,4 +266,4 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_AD_TRACKER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_AD_TRACKER_H_

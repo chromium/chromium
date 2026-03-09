@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_ad_tracker = [
+  "ad_script_identifier.cc",
+  "ad_script_identifier.h",
+  "ad_tracker.cc",
+  "ad_tracker.h",
+  "overlay_interstitial_ad_detector.cc",
+  "overlay_interstitial_ad_detector.h",
+  "sticky_ad_detector.cc",
+  "sticky_ad_detector.h",
+]
+
+blink_core_tests_ad_tracker = [ "ad_tracker_test.cc" ]
