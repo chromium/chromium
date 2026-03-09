@@ -2635,6 +2635,8 @@ static CSSValue* ConsumeDeprecatedGradientStopColor(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kColorStop, local_context);
   if (stream.Peek().Id() == CSSValueID::kCurrentcolor) {
     return nullptr;
   }
@@ -2685,6 +2687,8 @@ static CSSValue* ConsumeDeprecatedGradient(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kWebkitGradient, local_context);
   CSSValueID id = stream.Peek().Id();
   if (id != CSSValueID::kRadial && id != CSSValueID::kLinear) {
     return nullptr;
@@ -2859,6 +2863,8 @@ static CSSValue* ConsumeDeprecatedRadialGradient(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     cssvalue::CSSGradientRepeat repeating) {
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kWebkitRadialGradient, local_context);
   CSSValue* center_x = nullptr;
   CSSValue* center_y = nullptr;
   ConsumeOneOrTwoValuedPosition(stream, context, local_context,
@@ -3252,6 +3258,8 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kWebkitCrossFade, local_context);
   CSSValue* from_image_value =
       ConsumeImageOrNone(stream, context, local_context);
   if (!from_image_value || !ConsumeCommaIncludingWhitespace(stream)) {
@@ -4371,6 +4379,9 @@ CSSValue* ConsumeViewFunction(CSSParserTokenStream& stream,
   if (stream.Peek().FunctionId() != CSSValueID::kView) {
     return nullptr;
   }
+
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kView, local_context);
 
   CSSIdentifierValue* axis = nullptr;
   CSSValue* inset = nullptr;
@@ -8447,6 +8458,9 @@ CSSValue* ConsumeRay(CSSParserTokenStream& stream,
   if (stream.Peek().FunctionId() != CSSValueID::kRay) {
     return nullptr;
   }
+
+  CSSParserLocalContext::FunctionLocalContext function_context(CSSValueID::kRay,
+                                                               local_context);
 
   CSSValue* value;
   {

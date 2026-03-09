@@ -1050,6 +1050,7 @@
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "animation-range-end",
@@ -1065,6 +1066,7 @@
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "animation-timeline",
@@ -1158,6 +1160,7 @@
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "timeline-trigger-activation-range-end",
@@ -1170,6 +1173,7 @@
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "timeline-trigger-active-range-start",
@@ -1182,6 +1186,7 @@
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "timeline-trigger-active-range-end",
@@ -1194,6 +1199,7 @@
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
       is_animation_affecting: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "timeline-trigger-source",
@@ -3431,6 +3437,7 @@
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
       invalidate: ["paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "fill-rule",
@@ -3576,6 +3583,7 @@
       supports_incremental_style: true,
       accepts_numeric_literal: true,
       invalidate: ["paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "flow-tolerance",
@@ -4504,6 +4512,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword", "Position"],
       invalidate: ["transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "offset-distance",
@@ -4545,6 +4554,7 @@
       keywords: ["auto", "normal"],
       typedom_types: ["Keyword", "Position"],
       invalidate: ["has-transform", "transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "offset-rotate",
@@ -5039,6 +5049,7 @@
       // Overlaps with -webkit-perspective-origin-[x,y].
       overlapping: true,
       invalidate: ["transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "pointer-events",
@@ -5652,6 +5663,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
+      percentages_depend_on_used_value: false,
     },
     {
       name: "shape-margin",
@@ -5745,6 +5757,7 @@
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
       invalidate: ["paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "stroke",
@@ -5857,6 +5870,7 @@
       typedom_types: ["Number"],
       accepts_numeric_literal: true,
       invalidate: ["paint"],
+      percentages_depend_on_used_value: false,
     },
     {
       name: "stroke-width",
@@ -6361,6 +6375,7 @@
       // Overlaps with -webkit-transform-origin-[x,y,z].
       overlapping: true,
       invalidate: ["transform-data", "transform-other"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "transform-style",
@@ -6484,6 +6499,7 @@
       converter: "ConvertViewTimelineInset",
       separator: ",",
       is_animation_affecting: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "view-timeline-name",
@@ -6646,6 +6662,7 @@
       affected_by_all: false,
       // Overlaps with border-image.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-border-vertical-spacing",
@@ -6742,6 +6759,7 @@
       converter: "ConvertBoxReflect",
       invalidate: ["filter-data"],
       includes_currentcolor: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "column-count",
@@ -7239,6 +7257,7 @@
         modifier_type: "Slice",
       },
       stored_on_extra_field: ["MaskBoxImage"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-mask-box-image-source",
@@ -7257,6 +7276,7 @@
         modifier_type: "Width",
       },
       stored_on_extra_field: ["MaskBoxImage"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "mask-mode",
@@ -7335,6 +7355,7 @@
         fill_type: "PositionX",
       },
       stored_on_extra_field: ["Mask"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-mask-position-y",
@@ -7345,6 +7366,7 @@
         fill_type: "PositionY",
       },
       stored_on_extra_field: ["Mask"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "mask-repeat",
@@ -7368,6 +7390,7 @@
         fill_type: "Size",
       },
       stored_on_extra_field: ["Mask"],
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-mask-size",
@@ -7383,6 +7406,7 @@
       affected_by_all: false,
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-perspective-origin-y",
@@ -7394,6 +7418,7 @@
       affected_by_all: false,
       // Overlaps with perspective-origin.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-rtl-ordering",
@@ -7542,6 +7567,7 @@
       converter: "ConvertFitText",
       invalidate: ["layout"],
       runtime_flag: "CssFitWidthText",
+      percentages_depend_on_used_value: false,
     },
     {
       name: "-webkit-text-security",

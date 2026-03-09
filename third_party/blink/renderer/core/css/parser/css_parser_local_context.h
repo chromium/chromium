@@ -167,6 +167,11 @@ class CORE_EXPORT CSSParserLocalContext {
   CSSParserLocalContext() = default;
 
   CSSPropertyID current_shorthand_ = CSSPropertyID::kInvalid;
+  // The property name used as context for value resolution. This should ideally
+  // be a longhand property. However, shorthands with custom expansion logic
+  // (e.g., background-position) that avoid generic helpers like
+  // ConsumeShorthandGreedilyViaLonghands may leave this as a shorthand ID.
+  // This is currently acceptable for features like random() resolution.
   std::optional<CSSPropertyName> unresolved_property_name_;
   HeapVector<CSSValueID> functions_stack_;
 

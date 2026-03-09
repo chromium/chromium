@@ -4341,6 +4341,8 @@ const CSSValue* DynamicRangeLimit::ParseSingleValue(
   if (stream.Peek().FunctionId() != CSSValueID::kDynamicRangeLimitMix) {
     return nullptr;
   }
+  CSSParserLocalContext::FunctionLocalContext function_context(
+      CSSValueID::kDynamicRangeLimitMix, local_context);
 
   HeapVector<Member<const CSSValue>> limits;
   HeapVector<Member<const CSSPrimitiveValue>> percentages;

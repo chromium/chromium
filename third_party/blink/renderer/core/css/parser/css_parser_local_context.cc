@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
 namespace blink {
@@ -16,23 +17,75 @@ bool CSSParserLocalContext::PercentagesDependOnUsedValue() const {
   }
   if (InFunctionContext()) {
     CSSValueID current_function_id = functions_stack_.back();
-    return current_function_id == CSSValueID::kCrossFade ||
-           current_function_id == CSSValueID::kConicGradient ||
-           current_function_id == CSSValueID::kRadialGradient ||
-           current_function_id == CSSValueID::kInset ||
-           current_function_id == CSSValueID::kXywh ||
-           current_function_id == CSSValueID::kRect ||
-           current_function_id == CSSValueID::kCircle ||
-           current_function_id == CSSValueID::kEllipse ||
-           current_function_id == CSSValueID::kPolygon ||
-           current_function_id == CSSValueID::kShape ||
-           current_function_id == CSSValueID::kScale3d ||
-           current_function_id == CSSValueID::kScaleZ ||
-           current_function_id == CSSValueID::kTranslate ||
-           current_function_id == CSSValueID::kTranslateX ||
-           current_function_id == CSSValueID::kTranslateY ||
-           current_function_id == CSSValueID::kTranslate3d ||
-           current_function_id == CSSValueID::kRepeat;
+    switch (current_function_id) {
+      case CSSValueID::kCrossFade:
+      case CSSValueID::kWebkitCrossFade:
+      case CSSValueID::kConicGradient:
+      case CSSValueID::kRadialGradient:
+      case CSSValueID::kWebkitRadialGradient:
+      case CSSValueID::kWebkitGradient:
+      case CSSValueID::kInset:
+      case CSSValueID::kXywh:
+      case CSSValueID::kRect:
+      case CSSValueID::kCircle:
+      case CSSValueID::kEllipse:
+      case CSSValueID::kPolygon:
+      case CSSValueID::kShape:
+      case CSSValueID::kScale3d:
+      case CSSValueID::kScaleZ:
+      case CSSValueID::kTranslate:
+      case CSSValueID::kTranslateX:
+      case CSSValueID::kTranslateY:
+      case CSSValueID::kTranslate3d:
+      case CSSValueID::kRepeat:
+      case CSSValueID::kRay:
+      case CSSValueID::kView:
+        return true;
+      case CSSValueID::kBlur:
+      case CSSValueID::kBrightness:
+      case CSSValueID::kColor:
+      case CSSValueID::kColorMix:
+      case CSSValueID::kColorStop:
+      case CSSValueID::kContrast:
+      case CSSValueID::kDropShadow:
+      case CSSValueID::kDynamicRangeLimitMix:
+      case CSSValueID::kGrayscale:
+      case CSSValueID::kHsl:
+      case CSSValueID::kHsla:
+      case CSSValueID::kHueRotate:
+      case CSSValueID::kHwb:
+      case CSSValueID::kInvert:
+      case CSSValueID::kLab:
+      case CSSValueID::kLch:
+      case CSSValueID::kLinear:
+      case CSSValueID::kMatrix:
+      case CSSValueID::kMatrix3d:
+      case CSSValueID::kOklab:
+      case CSSValueID::kOklch:
+      case CSSValueID::kOpacity:
+      case CSSValueID::kPaletteMix:
+      case CSSValueID::kPath:
+      case CSSValueID::kPerspective:
+      case CSSValueID::kRgb:
+      case CSSValueID::kRgba:
+      case CSSValueID::kRotate:
+      case CSSValueID::kRotate3d:
+      case CSSValueID::kRotateX:
+      case CSSValueID::kRotateY:
+      case CSSValueID::kRotateZ:
+      case CSSValueID::kSaturate:
+      case CSSValueID::kScale:
+      case CSSValueID::kScaleX:
+      case CSSValueID::kScaleY:
+      case CSSValueID::kSepia:
+      case CSSValueID::kSkew:
+      case CSSValueID::kSkewX:
+      case CSSValueID::kSkewY:
+      case CSSValueID::kTranslateZ:
+        return false;
+      default:
+        NOTREACHED();
+    }
   }
   CSSProperty property =
       CSSProperty::Get(ResolveCSSPropertyID(unresolved_property_name_->Id()));
@@ -41,9 +94,15 @@ bool CSSParserLocalContext::PercentagesDependOnUsedValue() const {
 
 #if DCHECK_IS_ON()
 void CSSParserLocalContext::CheckPercentagesFlagSetOnProperty() const {
+  // Early exit if the property context is a shorthand. While this context
+  // should ideally be a longhand, some shorthands with custom expansion logic
+  // skip generic helpers that update the context. Since percentage dependency
+  // flags are only defined on longhands, we skip the check in this case.
   if (InFunctionContext() || !unresolved_property_name_.has_value() ||
       unresolved_property_name_->IsCustomProperty() ||
-      unresolved_property_name_->Id() != CSSPropertyID::kInvalid) {
+      unresolved_property_name_->Id() == CSSPropertyID::kInvalid ||
+      ResolveCSSPropertyID(unresolved_property_name_->Id()) ==
+          current_shorthand_) {
     return;
   }
   CSSProperty property =
