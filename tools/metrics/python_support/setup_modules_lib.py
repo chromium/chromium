@@ -15,7 +15,7 @@ _SRC_MODULE_NAME = "chromium_src"
 # directly as the module named in the key of this dictionary.
 # Those are globally importable so they can potentially cause
 # conflicts in names.
-# TODO(crbug.com/482274154): Consider handling global imports through venv.
+# TODO(crbug.com/488362708): Consider handling global imports through venv.
 _EXTRA_MODULES: Dict[str, str] = {"typ": "third_party/catapult/third_party/typ"}
 
 

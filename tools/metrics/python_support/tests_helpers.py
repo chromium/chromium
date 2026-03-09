@@ -106,14 +106,15 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
         file_path=Path('tools/metrics/ukm/pretty_print.py'), flags=[]),
     TestableScript.CreatePythonScript(
         file_path=Path('tools/metrics/ukm/validate_format.py')),
-    # TODO(crbug.com/482274154): Fix this script.
+    # TODO(crbug.com/488367077): Fix this script.
     # TestableScript.CreatePythonScript(
     #   file_path='tools/metrics/histograms/histogram_ownership.py'
     # ),
-    # TODO(crbug.com/482274154): Fix the unmapped histograms.
+    # TODO(crbug.com/488362727): Fix the unmapped histograms.
     # TestableScript.CreatePythonScript(file_path=Path(
     #      'tools/metrics/histograms/find_unmapped_histograms.py')),
 ]
+
 
 def _is_test_file(file_path: str) -> bool:
   return any(

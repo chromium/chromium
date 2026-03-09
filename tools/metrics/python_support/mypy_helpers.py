@@ -19,7 +19,7 @@ _SRC_ROOT = _THIS_DIR.parent.parent.parent
 
 # This file lists all preexisting errors that were in the code when this
 # check was added. Long term we want to clean that list.
-# TODO(crbug.com/482274154): Fix this list.
+# TODO(crbug.com/484881364): Fix this list.
 _IGNORE_LIST_PATH = _SRC_ROOT.joinpath(
     'tools/metrics/python_support/mypy_ignore_list.txt')
 
@@ -47,10 +47,10 @@ _IGNORED_ERRORS: List[str] = [
     r"^.*chromium_mypy_stubs_.*chromium_src.tools.metrics.*$",
 
     # Ignore all third party errors.
-    # TODO(crbug.com/482274154): Treat them as warning instead.
+    # TODO(crbug.com/484881364): Treat them as warning instead.
     r"^.*chromium_mypy_stubs_.*chromium_src.third_party.*$",
 
-    # TODO(crbug.com/482274154): Fix this.
+    # TODO(crbug.com/484881364): Fix this.
     r'^.*chromium_src.components.autofill.core.browser.data_model',
 ]
 
