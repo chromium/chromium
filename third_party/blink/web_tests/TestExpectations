@@ -9720,5 +9720,5 @@ crbug.com/488337157 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-o
 crbug.com/490381610 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Failure Pass ]
 crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specific.https.any.html [ Failure Pass ]
 
-# Fails on Mac12.
-crbug.com/490316323 [ Mac12 ] external/wpt/css/css-pseudo/first-letter-insert-text-node-dynamic.html [ Failure Pass ]
+# Fails on Mac12-arm64.
+crbug.com/490316323 [ Mac12-arm64 ] external/wpt/css/css-pseudo/first-letter-insert-text-node-dynamic.html [ Failure Pass ]
