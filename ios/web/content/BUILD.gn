@@ -46,6 +46,7 @@ source_set("content") {
     "//components/js_injection/common:common_mojom",
     "//content/public/browser",
     "//ios/web/annotations",
+    "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
