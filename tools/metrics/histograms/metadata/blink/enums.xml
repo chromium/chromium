@@ -5814,11 +5814,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5219" label="SrcSetUsedHigherDensityImageFromCache"/>
   <int value="5220" label="HTMLElementWritingSuggestions"/>
   <int value="5221" label="CSSPseudoOpen"/>
-  <int value="5222" label="AdScriptInStackOnGeoLocation"/>
-  <int value="5223" label="AdScriptInStackOnClipboardRead"/>
-  <int value="5224" label="AdScriptInStackOnBluetooth"/>
-  <int value="5225" label="AdScriptInStackOnMicrophoneRead"/>
-  <int value="5226" label="AdScriptInStackOnCameraRead"/>
+  <int value="5222" label="OBSOLETE_AdScriptInStackOnGeoLocation"/>
+  <int value="5223" label="OBSOLETE_AdScriptInStackOnClipboardRead"/>
+  <int value="5224" label="OBSOLETE_AdScriptInStackOnBluetooth"/>
+  <int value="5225" label="OBSOLETE_AdScriptInStackOnMicrophoneRead"/>
+  <int value="5226" label="OBSOLETE_AdScriptInStackOnCameraRead"/>
   <int value="5227" label="ClipboardCustomFormatRead"/>
   <int value="5228" label="ClipboardCustomFormatWrite"/>
   <int value="5229" label="ClipboardSvgRead"/>
@@ -5935,8 +5935,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5323" label="ScrollButtonPseudoElement"/>
   <int value="5324" label="ScrollMarkerPseudoElement"/>
   <int value="5325" label="OBSOLETE_V8AITranslatorFactory_Availability_Method"/>
-  <int value="5326" label="GeolocationWouldSucceedWhenAdScriptInStack"/>
-  <int value="5327" label="AdScriptInStackOnWatchGeoLocation"/>
+  <int value="5326"
+      label="OBSOLETE_GeolocationWouldSucceedWhenAdScriptInStack"/>
+  <int value="5327" label="OBSOLETE_AdScriptInStackOnWatchGeoLocation"/>
   <int value="5328" label="DeviceBoundSessionRegistered"/>
   <int value="5329"
       label="OBSOLETE_V8AILanguageDetectorFactory_Availability_Method"/>

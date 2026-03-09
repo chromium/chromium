@@ -46,10 +46,6 @@ class GeoNotifier : public GarbageCollectedMixin, public NameClient {
   void StopTimer();
   bool IsTimerActive() const;
 
-  void SetCalledWithAdScriptInStack() {
-    called_with_ad_script_in_stack_ = true;
-  }
-
  private:
   // Customized TaskRunnerTimer class that checks the ownership between this
   // notifier and the Geolocation. The timer should run only when the notifier
@@ -88,11 +84,6 @@ class GeoNotifier : public GarbageCollectedMixin, public NameClient {
   Member<Timer> timer_;
   Member<GeolocationPositionError> fatal_error_;
   bool use_cached_position_;
-
-  // Temporarily stored to understand how often location is successfully
-  // returned but would be blocked if ad script is disallowed from calling
-  // geolocation APIs. See crbug.com/384511645.
-  bool called_with_ad_script_in_stack_ = false;
 };
 
 }  // namespace blink

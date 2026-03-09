@@ -264,12 +264,6 @@ void Geolocation::getCurrentPositionForBindings(
   auto* notifier = MakeGarbageCollected<GeoNotifierV8>(
       this, options, success_callback, error_callback);
 
-  if (GetFrame()->IsAdScriptInStack()) {
-    notifier->SetCalledWithAdScriptInStack();
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kAdScriptInStackOnGeoLocation);
-  }
-
   one_shots_->insert(notifier);
 
   StartRequest(notifier);
@@ -313,11 +307,6 @@ int Geolocation::watchPositionForBindings(
   auto* notifier = MakeGarbageCollected<GeoNotifierV8>(
       this, options, success_callback, error_callback);
 
-  if (GetFrame()->IsAdScriptInStack()) {
-    notifier->SetCalledWithAdScriptInStack();
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kAdScriptInStackOnWatchGeoLocation);
-  }
   return WatchPositionInternal(notifier);
 }
 
