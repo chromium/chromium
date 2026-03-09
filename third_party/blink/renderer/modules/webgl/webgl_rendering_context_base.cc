@@ -837,12 +837,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   gfx::Size size = GetDrawingBuffer()->Size();
   // We are grabbing a snapshot that is generally not for compositing, so use a
   // custom resource provider to specify only the minimal required set of
-  // usages, resulting in as lightweight a backing of the created SharedImage as
-  // possible. This SharedImage will be the destination of a copy of the drawing
-  // buffer's contents made via the raster interface. In addition, we tag the
-  // SharedImage with display usage since there are uncommon paths which may use
-  // this snapshot for compositing.
-  auto shared_image_usages = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+  // usages, resulting in as lightweight a backing of the created SharedImage
+  // as possible. This SharedImage will be the destination of a copy of the
+  // drawing buffer's contents made via the raster interface. It also may be
+  // read back via the raster interface. In addition, we tag the SharedImage
+  // with display usage since there are uncommon paths which may use this
+  // snapshot for compositing.
+  auto shared_image_usages = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider;
