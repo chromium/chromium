@@ -1869,7 +1869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.Error" enum="IOSEditMenuError"
-    expires_after="2026-03-05">
+    expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1880,7 +1880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedAction" enum="IOSEditMenuActions"
-    expires_after="2026-07-12">
+    expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1891,7 +1891,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.EditMenu.SelectedActionInContext"
-    enum="IOSEditMenuActions" expires_after="2026-03-05">
+    enum="IOSEditMenuActions" expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -5883,7 +5883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.AccessPointWithMode"
-    enum="ReaderModeAccessPointWithMode" expires_after="2026-03-22">
+    enum="ReaderModeAccessPointWithMode" expires_after="2027-03-09">
   <owner>fernandex@google.com</owner>
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -6748,7 +6748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SearchWith.Trigger" enum="IOSSearchWithContext"
-    expires_after="2026-03-15">
+    expires_after="2027-03-09">
   <owner>olivierrobin@chromium.org</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>The context in which Search With has been triggered.</summary>
