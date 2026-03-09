@@ -147,6 +147,11 @@ String String::substr(size_type pos, size_type len) const {
   return impl_ ? impl_->Substring(pos, len) : String();
 }
 
+StringView String::subview(size_type pos, size_type len) const {
+  CHECK_LE(pos, length());
+  return StringView(*this, pos, std::min(len, length() - pos));
+}
+
 String String::DeprecatedLower() const {
   if (!impl_)
     return String();

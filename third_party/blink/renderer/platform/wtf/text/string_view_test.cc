@@ -932,6 +932,30 @@ TEST(StringViewTest, Substr) {
   EXPECT_EQ(u"b", view16.substr(1, 1));
 }
 
+TEST(StringViewTest, Subview) {
+  StringView view8("abc");
+  EXPECT_EQ("abc", view8.subview(0));
+  EXPECT_EQ("bc", view8.subview(1));
+  EXPECT_EQ("c", view8.subview(2));
+  EXPECT_EQ("", view8.subview(3));
+  EXPECT_EQ("", view8.subview(3, 1));
+  EXPECT_EQ("ab", view8.subview(0, 2));
+  EXPECT_EQ("abc", view8.subview(0, 3));
+  EXPECT_EQ("abc", view8.subview(0, 4));
+  EXPECT_EQ("b", view8.subview(1, 1));
+
+  StringView view16(u"abc");
+  EXPECT_EQ(u"abc", view16.subview(0));
+  EXPECT_EQ(u"bc", view16.subview(1));
+  EXPECT_EQ(u"c", view16.subview(2));
+  EXPECT_EQ(u"", view16.subview(3));
+  EXPECT_EQ(u"", view16.subview(3, 1));
+  EXPECT_EQ(u"ab", view16.subview(0, 2));
+  EXPECT_EQ(u"abc", view16.subview(0, 3));
+  EXPECT_EQ(u"abc", view16.subview(0, 4));
+  EXPECT_EQ(u"b", view16.subview(1, 1));
+}
+
 TEST(StringViewTest, RemovePrefix) {
   auto apply_and_return = [](StringView view, wtf_size_t len) {
     view.remove_prefix(len);

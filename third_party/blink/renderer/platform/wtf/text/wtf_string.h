@@ -402,8 +402,18 @@ class WTF_EXPORT String {
   // substring from `pos` to the end is returned.
   //
   // This copies the content of the substring. If you don't need to copy the
-  // content, use `StringView(string, pos, len)` instead.
+  // content, use `subview(pos, len)` instead.
   [[nodiscard]] String substr(size_type pos, size_type len = npos) const;
+  // Returns a StringView of the substring.
+  //
+  // If `pos` is greater than the string length, unlike `std::string::substr`,
+  // it crashes (`std::string::substr` throws an `std::out_of_range` exception).
+  // If `len` exceeds the length from `pos` to the end of the string, the
+  // substring from `pos` to the end is returned.
+  //
+  // `str.subview(pos, len)` is similar to `StringView(str, pos, len)`, however
+  // the latter doesn't accept `len` exceeding the length of `str`.
+  [[nodiscard]] StringView subview(size_type pos, size_type len = npos) const;
   // Returns a substring.
   //
   // If `pos` is greater than or equal to the string length, returns an empty

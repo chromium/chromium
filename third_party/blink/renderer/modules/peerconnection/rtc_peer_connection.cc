@@ -466,10 +466,10 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
   if (new_fingerprint_end == kNotFound) {
     new_fingerprint_end = new_sdp.find('\n', new_fingerprint_pos + 1);
   }
-  return old_sdp.substr(old_fingerprint_pos,
-                        old_fingerprint_end - old_fingerprint_pos) !=
-         new_sdp.substr(new_fingerprint_pos,
-                        new_fingerprint_end - new_fingerprint_pos);
+  return old_sdp.subview(old_fingerprint_pos,
+                         old_fingerprint_end - old_fingerprint_pos) !=
+         new_sdp.subview(new_fingerprint_pos,
+                         new_fingerprint_end - new_fingerprint_pos);
 }
 
 bool ContainsLegacySimulcast(String sdp) {
