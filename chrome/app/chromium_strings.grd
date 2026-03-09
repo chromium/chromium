@@ -1154,6 +1154,16 @@ Chromium is unable to recover your settings.
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chromium with their enterprise account when it is mandatory to sign in to Chromium with the enterprise account.">
         Your organization requires you to sign into Chromium
       </message>
+
+      <!-- Signin Search AI Mode promo -->
+      <!-- TODO(crbug.com/486858498): Finalize and make transalteable. -->
+      <message name="IDS_AI_SIGNIN_PROMO_SUBTITLE" translateable="false">
+        Sign in to Chromium to ask AI mode about your tabs. You'll also get your passwords and more on all your devices.
+      </message>
+      <message name="IDS_AI_SIGNIN_PROMO_AVATAR_PILL_TEXT" translateable="false" meaning="Text shown on the expanded avatar pill when the Signin Search AI Bubble promo is shown to the user">
+        Sign in to Chromium?
+      </message>
+
       <if expr="toolkit_views">
         <message name="IDS_ENTERPRISE_SIGNIN_TITLE" desc="The title of the dialog to confirm linking the browser profile with the signed-in enterprise account">
           Link your Chromium data to this account?

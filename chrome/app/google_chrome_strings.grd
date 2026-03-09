@@ -1133,6 +1133,15 @@ Google Chrome is unable to recover your settings.
         Settings, opens in new tab.
       </message>
 
+      <!-- Signin Search AI Mode promo -->
+      <!-- TODO(crbug.com/486858498): Finalize and make transalteable. -->
+      <message name="IDS_AI_SIGNIN_PROMO_SUBTITLE" translateable="false">
+        Sign in to Chrome to ask AI mode about your tabs. You'll also get your passwords and more on all your devices.
+      </message>
+      <message name="IDS_AI_SIGNIN_PROMO_AVATAR_PILL_TEXT" translateable="false" meaning="Text shown on the expanded avatar pill when the Signin Search AI Bubble promo is shown to the user">
+        Sign in to Chrome?
+      </message>
+
       <!-- Enterprise sign-in dialog -->
       <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account when it is mandatory to sign in to Chrome with the enterprise account.">
         Your organization requires you to sign into Chrome

@@ -117,7 +117,7 @@ class ExtensionPostInstallDialogViewUtilsSignInBrowserTest
                                                        *extension));
 
     // Initiate a sign in from the promo.
-    BubbleSignInPromoDelegate delegate(
+    BubbleSignInPromoForSyncableDataTypeDelegate delegate(
         *browser()->tab_strip_model()->GetActiveWebContents(),
         signin_metrics::AccessPoint::kExtensionInstallBubble,
         syncer::LocalDataItemModel::DataId(extension->id()));

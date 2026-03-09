@@ -53,10 +53,11 @@ void BubbleSignInPromoDelegateTest::ReplaceBlank(Browser* browser) {
 }
 
 void BubbleSignInPromoDelegateTest::SignInBrowser(Browser* browser) {
-  auto delegate = std::make_unique<BubbleSignInPromoDelegate>(
-      *browser->tab_strip_model()->GetActiveWebContents(),
-      signin_metrics::AccessPoint::kBookmarkBubble,
-      syncer::LocalDataItemModel::DataId());
+  auto delegate =
+      std::make_unique<BubbleSignInPromoForSyncableDataTypeDelegate>(
+          *browser->tab_strip_model()->GetActiveWebContents(),
+          signin_metrics::AccessPoint::kBookmarkBubble,
+          syncer::LocalDataItemModel::DataId());
   delegate->OnSignIn(AccountInfo());
 }
 
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, BrowserRemoved) {
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
   std::unique_ptr<BubbleSignInPromoDelegate> delegate =
-      std::make_unique<BubbleSignInPromoDelegate>(
+      std::make_unique<BubbleSignInPromoForSyncableDataTypeDelegate>(
           *extra_browser->tab_strip_model()->GetActiveWebContents(),
           signin_metrics::AccessPoint::kBookmarkBubble,
           syncer::LocalDataItemModel::DataId());

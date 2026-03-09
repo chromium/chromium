@@ -47,11 +47,8 @@ syncer::DataType GetDataTypeFromAccessPoint(
 
 BubbleSignInPromoDelegate::BubbleSignInPromoDelegate(
     content::WebContents& web_contents,
-    signin_metrics::AccessPoint access_point,
-    syncer::LocalDataItemModel::DataId data_id)
-    : data_id_(std::move(data_id)),
-      web_contents_(web_contents.GetWeakPtr()),
-      access_point_(access_point) {}
+    signin_metrics::AccessPoint access_point)
+    : web_contents_(web_contents.GetWeakPtr()), access_point_(access_point) {}
 
 BubbleSignInPromoDelegate::~BubbleSignInPromoDelegate() = default;
 
@@ -77,6 +74,22 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
 
+  MaybeHandleSyncableDataTypeAfterSignIn(profile);
+}
+
+BubbleSignInPromoForSyncableDataTypeDelegate::
+    BubbleSignInPromoForSyncableDataTypeDelegate(
+        content::WebContents& web_contents,
+        signin_metrics::AccessPoint access_point,
+        syncer::LocalDataItemModel::DataId data_id)
+    : BubbleSignInPromoDelegate(web_contents, access_point),
+      data_id_(std::move(data_id)) {}
+
+BubbleSignInPromoForSyncableDataTypeDelegate::
+    ~BubbleSignInPromoForSyncableDataTypeDelegate() = default;
+
+void BubbleSignInPromoForSyncableDataTypeDelegate::
+    MaybeHandleSyncableDataTypeAfterSignIn(Profile* profile) {
   if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
       access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     // Make sure the `data_id_` is of the correct type.
@@ -147,3 +160,10 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
       ->InitializeCallbackAfterSignIn(std::move(maybe_move_data),
                                       access_point_);
 }
+
+DefaultBubbleSignInPromoDelegate::DefaultBubbleSignInPromoDelegate(
+    content::WebContents& web_contents,
+    signin_metrics::AccessPoint access_point)
+    : BubbleSignInPromoDelegate(web_contents, access_point) {}
+
+DefaultBubbleSignInPromoDelegate::~DefaultBubbleSignInPromoDelegate() = default;

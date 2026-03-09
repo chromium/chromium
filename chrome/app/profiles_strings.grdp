@@ -185,6 +185,13 @@
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
   </message>
+
+   <!-- Signin Search AI Mode promo. -->
+   <!-- TODO(crbug.com/486858498): Finalize and make transalteable. -->
+  <message name="IDS_AI_SIGNIN_PROMO_TITLE" translateable="false">
+    Continue the conversation with AI Mode
+  </message>
+
   <if expr="use_titlecase">
       <message name="IDS_PROFILES_VERIFY_ACCOUNT_BUTTON" desc="The label of the button that is shown when the user is in a Signin paused state. When the user clicks this button, they will be prompted to enter their Google Account credentials.">
         Verify It's You

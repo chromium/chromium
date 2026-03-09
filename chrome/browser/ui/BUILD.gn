@@ -1443,6 +1443,15 @@ static_library("ui") {
       ]
     }
 
+    if (enable_dice_support) {
+      sources += [
+        "views/search_ai_mode/signin_promo_controller.cc",
+        "views/search_ai_mode/signin_promo_controller.h",
+        "views/search_ai_mode/signin_promo_view.cc",
+        "views/search_ai_mode/signin_promo_view.h",
+      ]
+    }
+
     # Non-android deps for "ui" target.
     deps += [
       ":browser_tab_strip",

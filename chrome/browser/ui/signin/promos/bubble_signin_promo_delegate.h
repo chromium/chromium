@@ -10,6 +10,7 @@
 #include "components/sync/service/local_data_description.h"
 
 struct AccountInfo;
+class Profile;
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -23,8 +24,7 @@ class WebContents;
 class BubbleSignInPromoDelegate {
  public:
   BubbleSignInPromoDelegate(content::WebContents& web_contents,
-                            signin_metrics::AccessPoint access_point,
-                            syncer::LocalDataItemModel::DataId data_id);
+                            signin_metrics::AccessPoint access_point);
 
   BubbleSignInPromoDelegate(BubbleSignInPromoDelegate&) = delete;
   BubbleSignInPromoDelegate& operator=(const BubbleSignInPromoDelegate&) =
@@ -38,12 +38,38 @@ class BubbleSignInPromoDelegate {
 
   content::WebContents* GetWebContents() { return web_contents_.get(); }
 
+ protected:
+  base::WeakPtr<content::WebContents> web_contents_;
+  signin_metrics::AccessPoint access_point_;
+
  private:
+  // Handles data uploading if the sign-in promo relates to the uploading of
+  // syncable data.
+  virtual void MaybeHandleSyncableDataTypeAfterSignIn(Profile* profile) {}
+};
+
+class BubbleSignInPromoForSyncableDataTypeDelegate
+    : public BubbleSignInPromoDelegate {
+ public:
+  BubbleSignInPromoForSyncableDataTypeDelegate(
+      content::WebContents& web_contents,
+      signin_metrics::AccessPoint access_point,
+      syncer::LocalDataItemModel::DataId data_id);
+  ~BubbleSignInPromoForSyncableDataTypeDelegate() override;
+
+ private:
+  void MaybeHandleSyncableDataTypeAfterSignIn(Profile* profile) override;
+
   // Used to move the local data item to the account storage once the sign in
   // has been completed.
   const syncer::LocalDataItemModel::DataId data_id_;
-  base::WeakPtr<content::WebContents> web_contents_;
-  signin_metrics::AccessPoint access_point_;
+};
+
+class DefaultBubbleSignInPromoDelegate : public BubbleSignInPromoDelegate {
+ public:
+  DefaultBubbleSignInPromoDelegate(content::WebContents& web_contents,
+                                   signin_metrics::AccessPoint access_point);
+  ~DefaultBubbleSignInPromoDelegate() override;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_PROMOS_BUBBLE_SIGNIN_PROMO_DELEGATE_H_
