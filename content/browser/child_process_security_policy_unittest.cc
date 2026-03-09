@@ -102,34 +102,16 @@ void LockProcessIfNeeded(ChildProcessId process_id,
 
 }  // namespace
 
-// Parameterize the tests to run with and without
-// features::kCommittedOriginEnforcements, for https://crbug.com/40148776.
-enum class ChildProcessSecurityPolicyTestCase {
-  kCommittedOriginEnforcementsDisabled,
-  kCommittedOriginEnforcementsEnabled,
-};
-class ChildProcessSecurityPolicyTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<ChildProcessSecurityPolicyTestCase> {
+class ChildProcessSecurityPolicyTest : public testing::Test {
  public:
   ChildProcessSecurityPolicyTest()
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         old_browser_client_(nullptr) {
     // Force committed origin tracking to always be performed, and enable the
-    // enforcements based on that tracking according to test parameterization.
+    // enforcements based on that tracking.
     feature_list_.InitWithFeatureStates(
-        {{features::kCommittedOriginEnforcements,
-          GetParam() == ChildProcessSecurityPolicyTestCase::
-                            kCommittedOriginEnforcementsEnabled},
+        {{features::kCommittedOriginEnforcements, true},
          {features::kCommittedOriginTracking, true}});
-  }
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param == ChildProcessSecurityPolicyTestCase::
-                             kCommittedOriginEnforcementsEnabled
-               ? "CommittedOriginEnforcementsEnabled"
-               : "CommittedOriginEnforcementsDisabled";
   }
 
   void SetUp() override {
@@ -351,7 +333,7 @@ class ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault
   }
 };
 
-TEST_P(ChildProcessSecurityPolicyTest, ChildID) {
+TEST_F(ChildProcessSecurityPolicyTest, ChildID) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   p->AddForTesting(kRendererProcess, browser_context());
@@ -360,7 +342,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ChildID) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
+TEST_F(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -379,7 +361,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsWebSafeSchemeTest) {
   p->ClearRegisteredSchemeForTesting("registered-web-safe-scheme");
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, IsPseudoSchemeTest) {
+TEST_F(ChildProcessSecurityPolicyTest, IsPseudoSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -397,7 +379,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsPseudoSchemeTest) {
   p->ClearRegisteredSchemeForTesting("registered-pseudo-scheme");
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
+TEST_F(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -458,7 +440,7 @@ TEST_P(ChildProcessSecurityPolicyTest, StandardSchemesTest) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, BlobSchemeTest) {
+TEST_F(ChildProcessSecurityPolicyTest, BlobSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -525,7 +507,7 @@ TEST_P(ChildProcessSecurityPolicyTest, BlobSchemeTest) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, AboutTest) {
+TEST_F(ChildProcessSecurityPolicyTest, AboutTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -583,7 +565,7 @@ TEST_P(ChildProcessSecurityPolicyTest, AboutTest) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, JavaScriptTest) {
+TEST_F(ChildProcessSecurityPolicyTest, JavaScriptTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -600,7 +582,7 @@ TEST_P(ChildProcessSecurityPolicyTest, JavaScriptTest) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, RegisterWebSafeSchemeTest) {
+TEST_F(ChildProcessSecurityPolicyTest, RegisterWebSafeSchemeTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -641,7 +623,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RegisterWebSafeSchemeTest) {
   p->ClearRegisteredSchemeForTesting("asdf");
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, CanServiceCommandsTest) {
+TEST_F(ChildProcessSecurityPolicyTest, CanServiceCommandsTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -666,7 +648,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceCommandsTest) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, ViewSource) {
+TEST_F(ChildProcessSecurityPolicyTest, ViewSource) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -710,7 +692,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ViewSource) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, GoogleChromeScheme) {
+TEST_F(ChildProcessSecurityPolicyTest, GoogleChromeScheme) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -725,7 +707,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GoogleChromeScheme) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, GrantCommitURLToNonStandardScheme) {
+TEST_F(ChildProcessSecurityPolicyTest, GrantCommitURLToNonStandardScheme) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -760,7 +742,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GrantCommitURLToNonStandardScheme) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
+TEST_F(ChildProcessSecurityPolicyTest, SpecificFile) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -798,7 +780,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, ContentUri) {
+TEST_F(ChildProcessSecurityPolicyTest, ContentUri) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -848,7 +830,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ContentUri) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, FileSystemGrantsTest) {
+TEST_F(ChildProcessSecurityPolicyTest, FileSystemGrantsTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -926,7 +908,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FileSystemGrantsTest) {
   storage::IsolatedContext::GetInstance()->RevokeFileSystem(delete_from_id);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
+TEST_F(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -994,7 +976,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, FilePermissions) {
+TEST_F(ChildProcessSecurityPolicyTest, FilePermissions) {
   base::FilePath granted_file = base::FilePath(TEST_PATH("/home/joe"));
   base::FilePath sibling_file = base::FilePath(TEST_PATH("/home/bob"));
   base::FilePath child_file = base::FilePath(TEST_PATH("/home/joe/file"));
@@ -1117,7 +1099,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissions) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
+TEST_F(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1244,7 +1226,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   }
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
+TEST_F(ChildProcessSecurityPolicyTest, RemoveRace) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1275,7 +1257,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
   EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, HandleDuplicate) {
+TEST_F(ChildProcessSecurityPolicyTest, HandleDuplicate) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1320,7 +1302,7 @@ TEST_P(ChildProcessSecurityPolicyTest, HandleDuplicate) {
       duplicate_handle2.CanAccessDataForOrigin(url::Origin::Create(url)));
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_URL) {
+TEST_F(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_URL) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1352,25 +1334,16 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_URL) {
 
   // Verify unlocked origin permissions.
   for (auto url : kAllTestUrls) {
-    if (AreAllSitesIsolatedForTesting() ||
-        base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
-      // An unlocked process cannot access URLs below (because with
-      // site-per-process all the URLs need to be isolated). If
-      // CanAccessDataForOrigin enforcement uses committed origin tracking, then
-      // these should fail even without site isolation, since the process hasn't
-      // committed any origins at this point.
-      EXPECT_FALSE(
-          p->CanAccessDataForOrigin(kRendererID, url::Origin::Create(url)))
-          << url;
-      EXPECT_FALSE(handle.CanAccessDataForOrigin(url::Origin::Create(url)))
-          << url;
-    } else {
-      EXPECT_TRUE(
-          p->CanAccessDataForOrigin(kRendererID, url::Origin::Create(url)))
-          << url;
-      EXPECT_TRUE(handle.CanAccessDataForOrigin(url::Origin::Create(url)))
-          << url;
-    }
+    // An unlocked process cannot access URLs below (because with
+    // site-per-process all the URLs need to be isolated). Since
+    // CanAccessDataForOrigin enforcement relies on committed origin tracking,
+    // these should fail even without site isolation, since the process hasn't
+    // committed any origins at this point.
+    EXPECT_FALSE(
+        p->CanAccessDataForOrigin(kRendererID, url::Origin::Create(url)))
+        << url;
+    EXPECT_FALSE(handle.CanAccessDataForOrigin(url::Origin::Create(url)))
+        << url;
   }
 
   // Isolate |foo_http_url| so we can't get a default SiteInstance.
@@ -1425,7 +1398,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_URL) {
   }
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
+TEST_F(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1473,11 +1446,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
   // where origins differ only in port.
   for (auto* url : foo_urls_with_port_mismatch) {
     auto origin = url::Origin::Create(GURL(url));
-    if (base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
-      non_foo_origins.push_back(origin);
-    } else {
-      foo_origins.push_back(origin);
-    }
+    non_foo_origins.push_back(origin);
     all_origins.push_back(origin);
   }
 
@@ -1505,23 +1474,18 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
 
   // Verify unlocked process permissions.
   for (const auto& origin : all_origins) {
-    if (AreAllSitesIsolatedForTesting() ||
-        base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
-      // An unlocked process cannot access URLs below (because with
-      // site-per-process all the URLs need to be isolated). If
-      // CanAccessDataForOrigin enforcement uses committed origin tracking, then
-      // these should fail even without site isolation, since the process hasn't
-      // committed any origins at this point. The only exception is for opaque
-      // origins with no precursor, which are currently allowed; see TODO in
-      // ChildProcessSecurityPolicyImpl::CanAccessOrigin().
-      if (origin.opaque() &&
-          !origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
-        EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
-      } else {
-        EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
-      }
-    } else {
+    // An unlocked process cannot access URLs below (because with
+    // site-per-process all the URLs need to be isolated). Since
+    // CanAccessDataForOrigin enforcement uses committed origin tracking, then
+    // these should fail even without site isolation, since the process hasn't
+    // committed any origins at this point. The only exception is for opaque
+    // origins with no precursor, which are currently allowed; see TODO in
+    // ChildProcessSecurityPolicyImpl::CanAccessOrigin().
+    if (origin.opaque() &&
+        !origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
       EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
+    } else {
+      EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
     }
   }
 
@@ -1561,7 +1525,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
 
 // Tests that queries for Midi permissions work after RenderProcessHost removal
 // until the corresponding Handles are gone. See https://crbug.com/471021577.
-TEST_P(ChildProcessSecurityPolicyTest, MidiAfterProcessRemoval) {
+TEST_F(ChildProcessSecurityPolicyTest, MidiAfterProcessRemoval) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   p->AddForTesting(kRendererProcess, browser_context());
@@ -1591,7 +1555,7 @@ TEST_P(ChildProcessSecurityPolicyTest, MidiAfterProcessRemoval) {
 // against origins that have committed in a process. This test simulates an
 // unlocked process that may commit origins from different sites (e.g., in a
 // default SiteInstance on Android).
-TEST_P(ChildProcessSecurityPolicyTest, MatchesCommittedOrigin) {
+TEST_F(ChildProcessSecurityPolicyTest, MatchesCommittedOrigin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1668,7 +1632,7 @@ TEST_P(ChildProcessSecurityPolicyTest, MatchesCommittedOrigin) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
+TEST_F(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1736,7 +1700,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
   p->Remove(kRendererProcess);
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
+TEST_F(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1787,7 +1751,7 @@ TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
 
 // Test the granting of origin permissions, and their interactions with
 // granting scheme permissions.
-TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
+TEST_F(ChildProcessSecurityPolicyTest, OriginGranting) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
@@ -1881,7 +1845,7 @@ TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
   } while (0);
 
 // Verifies ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins method.
-TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
+TEST_F(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
   url::Origin baz = url::Origin::Create(GURL("https://baz.com/"));
@@ -1978,7 +1942,7 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
                      testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
+TEST_F(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
   url::Origin qux = url::Origin::Create(GURL("https://qux.com/"));
   IsolatedOriginPattern etld1_wild("https://[*.]foo.com");
   IsolatedOriginPattern etld2_wild("https://[*.]bar.foo.com");
@@ -2028,7 +1992,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolateAllSuborigins) {
 
 // Verify that the isolation behavior for wildcard and non-wildcard origins,
 // singly or in concert, behaves correctly via calls to GetSiteForURL().
-TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+TEST_F(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
        WildcardAndNonWildcardOrigins) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2094,7 +2058,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
                      testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+TEST_F(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
        WildcardAndNonWildcardEmbedded) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2248,7 +2212,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
 }
 
 // Verifies that isolated origins only apply to future BrowsingInstances.
-TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
+TEST_F(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
   url::Origin baz = url::Origin::Create(GURL("https://baz.com/"));
@@ -2366,7 +2330,7 @@ TEST_P(ChildProcessSecurityPolicyTest, DynamicIsolatedOrigins) {
 
 // Check that an unsuccessful isolated origin lookup for a URL with an empty
 // host doesn't crash. See https://crbug.com/882686.
-TEST_P(ChildProcessSecurityPolicyTest, IsIsolatedOriginWithEmptyHost) {
+TEST_F(ChildProcessSecurityPolicyTest, IsIsolatedOriginWithEmptyHost) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   TestBrowserContext context;
@@ -2384,7 +2348,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsIsolatedOriginWithEmptyHost) {
 // cutoffs.  Attempts to re-add an origin for the same profile should be
 // ignored.  Also, once an isolated origin is added globally for all profiles,
 // future attempts to re-add it (for any profile) should also be ignored.
-TEST_P(ChildProcessSecurityPolicyTest,
+TEST_F(ChildProcessSecurityPolicyTest,
        IsolatedOriginsForSpecificBrowserContexts) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
@@ -2484,7 +2448,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
 // This test ensures that isolated origins associated with a specific
 // BrowserContext are removed when that BrowserContext is destroyed.
-TEST_P(ChildProcessSecurityPolicyTest,
+TEST_F(ChildProcessSecurityPolicyTest,
        IsolatedOriginsRemovedWhenBrowserContextDestroyed) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin sub_foo = url::Origin::Create(GURL("https://sub.foo.com/"));
@@ -2553,7 +2517,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
                      testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
+TEST_F(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
   const std::string_view etld1_wild("https://[*.]foo.com");
   url::Origin etld1_wild_origin = url::Origin::Create(GURL("https://foo.com"));
   IsolatedOriginPattern p(etld1_wild);
@@ -2632,7 +2596,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPattern) {
 
 // This test adds isolated origins from various sources and verifies that
 // GetIsolatedOrigins() properly restricts lookups by source.
-TEST_P(ChildProcessSecurityPolicyTest, GetIsolatedOrigins) {
+TEST_F(ChildProcessSecurityPolicyTest, GetIsolatedOrigins) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
   url::Origin baz = url::Origin::Create(GURL("https://baz.com/"));
@@ -2678,7 +2642,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GetIsolatedOrigins) {
 // This test adds isolated origins from various sources as well as restricted
 // to particular profiles, and verifies that GetIsolatedOrigins() properly
 // restricts lookups by both source and profile.
-TEST_P(ChildProcessSecurityPolicyTest, GetIsolatedOriginsWithProfile) {
+TEST_F(ChildProcessSecurityPolicyTest, GetIsolatedOriginsWithProfile) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
   url::Origin baz = url::Origin::Create(GURL("https://baz.com/"));
@@ -2735,7 +2699,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GetIsolatedOriginsWithProfile) {
   EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPatternEquality) {
+TEST_F(ChildProcessSecurityPolicyTest, IsolatedOriginPatternEquality) {
   std::string foo("https://foo.com");
   std::string foo_port("https://foo.com:8000");
   std::string foo_path("https://foo.com/some/path");
@@ -2756,7 +2720,7 @@ TEST_P(ChildProcessSecurityPolicyTest, IsolatedOriginPatternEquality) {
 }
 
 // Verifies parsing logic in SiteIsolationPolicy::ParseIsolatedOrigins.
-TEST_P(ChildProcessSecurityPolicyTest, ParseIsolatedOrigins) {
+TEST_F(ChildProcessSecurityPolicyTest, ParseIsolatedOrigins) {
   EXPECT_THAT(ChildProcessSecurityPolicyImpl::ParseIsolatedOrigins(""),
               testing::IsEmpty());
 
@@ -2799,7 +2763,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ParseIsolatedOrigins) {
 
 // Verify that the default port for an isolated origin's scheme is returned
 // during a lookup, not the port of the origin requested.
-TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
+TEST_F(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_THAT(p->GetIsolatedOrigins(), testing::IsEmpty());
@@ -2850,7 +2814,7 @@ TEST_P(ChildProcessSecurityPolicyTest, WildcardDefaultPort) {
 
 // Verify the mechanism that allows non-origin-keyed isolated origins to be
 // associated with a single BrowsingInstance.
-TEST_P(ChildProcessSecurityPolicyTest,
+TEST_F(ChildProcessSecurityPolicyTest,
        IsolatedOriginsForSpecificBrowsingInstances) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
@@ -3002,7 +2966,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
 
 // Verify isolated origins associated with a single BrowsingInstance can be
 // combined with isolated origins that apply to future BrowsingInstances.
-TEST_P(ChildProcessSecurityPolicyTest,
+TEST_F(ChildProcessSecurityPolicyTest,
        IsolatedOriginsForCurrentAndFutureBrowsingInstances) {
   url::Origin foo = url::Origin::Create(GURL("https://foo.com/"));
   url::Origin bar = url::Origin::Create(GURL("https://bar.com/"));
@@ -3108,7 +3072,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
 // even if all BrowsingInstanceIDs for that process have been deleted, so long
 // as the request matches the process' lock. This test sets an origin-keyed
 // lock.
-TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
+TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
   url::Origin foo = url::Origin::Create(GURL("https://sub.foo.com/"));
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3170,7 +3134,7 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
 // This test verifies that CanAccessDataForOrigin returns true for a process id
 // even if all BrowsingInstanceIDs for that process have been deleted, so long
 // as the request matches the process' lock. This test sets a site-keyed lock.
-TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+TEST_F(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
        NoBrowsingInstanceIDs_SiteKeyed) {
   url::Origin sub_foo_origin =
       url::Origin::Create(GURL("https://sub.foo.com/"));
@@ -3223,19 +3187,15 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
             p->BrowsingInstanceIdCountForTesting(kRendererProcess));
 
   // Because the ProcessLock is site-keyed, it should match foo.com and all
-  // sub-origins. However, if we're in the new enforcement mode based on a list
+  // sub-origins. However, because we're in the enforcement mode based on a list
   // of committed origins, then only the specific origin we've committed
   // (sub.foo.com) will be allowed access. The other origin (foo.com) would need
   // to also be committed to get access.
   EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, sub_foo_origin));
   url::Origin foo_origin(url::Origin::Create(GURL("https://foo.com/")));
-  if (base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
-    EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, foo_origin));
-    p->AddCommittedOrigin(kRendererID, foo_origin);
-    EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, foo_origin));
-  } else {
-    EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, foo_origin));
-  }
+  EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, foo_origin));
+  p->AddCommittedOrigin(kRendererID, foo_origin);
+  EXPECT_TRUE(p->CanAccessDataForOrigin(kRendererID, foo_origin));
   EXPECT_FALSE(p->CanAccessDataForOrigin(
       kRendererID, url::Origin::Create(GURL("https://bar.com/"))));
 
@@ -3246,7 +3206,7 @@ TEST_P(ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
 // This test verifies that CanAccessDataForOrigin returns false for a process id
 // when all BrowsingInstanceIDs for that process have been deleted, and the
 // ProcessLock has is_locked_to_site() = false, regardless of the url requested.
-TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
+TEST_F(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
   GURL foo_url = GURL("https://foo.com/");
   url::Origin foo = url::Origin::Create(foo_url);
 
@@ -3318,7 +3278,7 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
 }
 
 // Regression test for https://crbug.com/1324407.
-TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
+TEST_F(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   TestBrowserContext context;
@@ -3356,7 +3316,7 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 
 // Tests that queries for GetProcessLock work after RenderProcessHost removal
 // until the corresponding Handles are gone. See https://crbug.com/470831168.
-TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
+TEST_F(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   TestBrowserContext context;
@@ -3388,7 +3348,7 @@ TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
 // Test that
 // ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOriginIfNotCached()
 // ignores opaque origins.
-TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationStateForOpaqueOrigin) {
+TEST_F(ChildProcessSecurityPolicyTest, AddV8OptimizationStateForOpaqueOrigin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   BrowsingInstanceId browsing_instance_id =
@@ -3406,7 +3366,7 @@ TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationStateForOpaqueOrigin) {
 // Test the behavior of
 // ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOriginIfNotCached()
 // for non-opaque origins.
-TEST_P(ChildProcessSecurityPolicyTest,
+TEST_F(ChildProcessSecurityPolicyTest,
        AddV8OptimizationStateForNonOpaqueOrigin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -3433,7 +3393,7 @@ TEST_P(ChildProcessSecurityPolicyTest,
                    .has_value());
 }
 
-TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationState_AlreadyCached) {
+TEST_F(ChildProcessSecurityPolicyTest, AddV8OptimizationState_AlreadyCached) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   BrowsingInstanceId browsing_instance_id =
@@ -3452,23 +3412,5 @@ TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationState_AlreadyCached) {
   EXPECT_EQ(std::optional<bool>(false),
             p->LookupAreV8OptimizationsDisabled(browsing_instance_id, origin));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChildProcessSecurityPolicyTest,
-    ::testing::Values(ChildProcessSecurityPolicyTestCase::
-                          kCommittedOriginEnforcementsDisabled,
-                      ChildProcessSecurityPolicyTestCase::
-                          kCommittedOriginEnforcementsEnabled),
-    &ChildProcessSecurityPolicyTest::DescribeParams);
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
-    ::testing::Values(ChildProcessSecurityPolicyTestCase::
-                          kCommittedOriginEnforcementsDisabled,
-                      ChildProcessSecurityPolicyTestCase::
-                          kCommittedOriginEnforcementsEnabled),
-    &ChildProcessSecurityPolicyTest::DescribeParams);
 
 }  // namespace content
