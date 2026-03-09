@@ -358,13 +358,13 @@ TEST_F(DrawingBufferTest, verifyInsertAndWaitSyncTokenCorrectly) {
   testing::Mock::VerifyAndClearExpectations(gl_);
 }
 
-class DrawingBufferImageChromiumTest : public DrawingBufferTest,
-                                       private ScopedWebGLImageChromiumForTest {
+class DrawingBufferImageChromiumTest : public DrawingBufferTest {
  public:
-  DrawingBufferImageChromiumTest() : ScopedWebGLImageChromiumForTest(true) {}
+  DrawingBufferImageChromiumTest() = default;
 
  protected:
   void SetUp() override {
+    SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
     gfx::Size initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();
     auto provider =

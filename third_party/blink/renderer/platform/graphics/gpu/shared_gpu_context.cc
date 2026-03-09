@@ -33,6 +33,7 @@ namespace {
 
 std::optional<bool> g_use_mappable_shared_images_for_canvas_2d_for_testing;
 std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
+std::optional<bool> g_webgl_image_chromium_enabled_for_testing;
 
 #if BUILDFLAG(IS_APPLE)
 bool IsDelegatedCompositingEnabled() {
@@ -322,6 +323,7 @@ void SharedGpuContext::Reset() {
   this_ptr->context_provider_factory_.Reset();
   g_use_mappable_shared_images_for_canvas_2d_for_testing.reset();
   g_low_latency_usage_supported_for_canvas_2d_for_testing.reset();
+  g_webgl_image_chromium_enabled_for_testing.reset();
 }
 
 bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
@@ -438,7 +440,15 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 }
 
 bool SharedGpuContext::WebGLImageChromiumEnabled() {
+  if (g_webgl_image_chromium_enabled_for_testing) {
+    return g_webgl_image_chromium_enabled_for_testing.value();
+  }
+
   return RuntimeEnabledFeatures::WebGLImageChromiumEnabled();
+}
+
+void SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(bool enable) {
+  g_webgl_image_chromium_enabled_for_testing = enable;
 }
 
 }  // namespace blink

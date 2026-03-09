@@ -70,6 +70,10 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   static bool WebGLImageChromiumEnabled();
 
+  // Forces WebGLImageChromiumEnabled() to return the passed-in value.
+  // Cleared on the next invocation of Reset() of the global context.
+  static void SetWebGLImageChromiumEnabledForTesting(bool enable);
+
   // Whether mappable SharedImages should be used for canvas2d content with CPU
   // raster.
   static bool UseMappableSharedImagesForCanvas2D();
