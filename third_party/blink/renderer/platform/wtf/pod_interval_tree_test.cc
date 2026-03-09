@@ -58,8 +58,7 @@ TEST(PodIntevalTreeTest, TestInsertionAndQuery) {
   PodIntervalTree<float> tree;
   tree.Add(PodInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PodInterval<float>> overlap =
-      tree.AllOverlaps(PodInterval<float>(1, 3));
+  Vector<PodInterval<float>> overlap = tree.AllOverlaps(1, 3);
   EXPECT_EQ(1U, overlap.size());
   EXPECT_EQ(2, overlap[0].Low());
   EXPECT_EQ(4, overlap[0].High());
@@ -86,8 +85,7 @@ TEST(PodIntevalTreeTest, TestQueryAgainstZeroSizeInterval) {
   tree.Add(PodInterval<float>(3.5, 5));
   tree.Add(PodInterval<float>(2, 4));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PodInterval<float>> result =
-      tree.AllOverlaps(PodInterval<float>(3, 3));
+  Vector<PodInterval<float>> result = tree.AllOverlaps(3, 3);
   EXPECT_EQ(1U, result.size());
   EXPECT_EQ(2, result[0].Low());
   EXPECT_EQ(4, result[0].High());
@@ -159,8 +157,7 @@ TEST(PodIntevalTreeTest, TestQueryingOfComplexUserData) {
   data1.b = 6;
   tree.Add(tree.CreateInterval(2, 4, data1));
   ASSERT_TRUE(tree.CheckInvariants());
-  Vector<PodInterval<float, UserData1>> overlaps =
-      tree.AllOverlaps(tree.CreateInterval(3, 5, data1));
+  Vector<PodInterval<float, UserData1>> overlaps = tree.AllOverlaps(3, 5);
   EXPECT_EQ(1U, overlaps.size());
   EXPECT_EQ(5, overlaps[0].Data().a);
   EXPECT_EQ(6, overlaps[0].Data().b);

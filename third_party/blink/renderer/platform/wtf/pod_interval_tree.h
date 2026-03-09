@@ -35,31 +35,6 @@
 
 namespace blink {
 
-template <class T, class UserData = void*>
-class PodIntervalSearchAdapter {
-  DISALLOW_NEW();
-
- public:
-  using IntervalType = PodInterval<T, UserData>;
-
-  PodIntervalSearchAdapter(Vector<IntervalType>& result,
-                           const T& low_value,
-                           const T& high_value)
-      : result_(result), low_value_(low_value), high_value_(high_value) {}
-
-  const T& LowValue() const { return low_value_; }
-  const T& HighValue() const { return high_value_; }
-  void CollectIfNeeded(const IntervalType& data) const {
-    if (data.Overlaps(low_value_, high_value_))
-      result_.push_back(data);
-  }
-
- private:
-  Vector<IntervalType>& result_;
-  T low_value_;
-  T high_value_;
-};
-
 // An interval tree, which is a form of augmented red-black tree. It
 // supports efficient (O(lg n)) insertion, removal and querying of
 // intervals in the tree.
@@ -69,7 +44,6 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
   // Typedef to reduce typing when declaring intervals to be stored in
   // this tree.
   using IntervalType = PodInterval<T, UserData>;
-  using IntervalSearchAdapterType = PodIntervalSearchAdapter<T, UserData>;
 
   explicit PodIntervalTree(UninitializedTreeEnum unitialized_tree)
       : PodRedBlackTree<IntervalType>(unitialized_tree) {
@@ -89,28 +63,10 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
   // Returns all intervals in the tree which overlap the given query
   // interval. The returned intervals are sorted by increasing low
   // endpoint.
-  Vector<IntervalType> AllOverlaps(const IntervalType& interval) const {
+  Vector<IntervalType> AllOverlaps(const T& low, const T& high) const {
     Vector<IntervalType> result;
-    AllOverlaps(interval, result);
+    SearchForOverlapsFrom(this->Root(), low, high, result);
     return result;
-  }
-
-  // Returns all intervals in the tree which overlap the given query
-  // interval. The returned intervals are sorted by increasing low
-  // endpoint.
-  void AllOverlaps(const IntervalType& interval,
-                   Vector<IntervalType>& result) const {
-    // Explicit dereference of "this" required because of
-    // inheritance rules in template classes.
-    IntervalSearchAdapterType adapter(result, interval.Low(), interval.High());
-    SearchForOverlapsFrom(this->Root(), adapter);
-  }
-
-  template <class AdapterType>
-  void AllOverlapsWithAdapter(AdapterType& adapter) const {
-    // Explicit dereference of "this" required because of
-    // inheritance rules in template classes.
-    SearchForOverlapsFrom(this->Root(), adapter);
   }
 
   // Helper to create interval objects.
@@ -148,13 +104,14 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
   // Starting from the given node, adds all overlaps with the given
   // interval to the result vector. The intervals are sorted by
   // increasing low endpoint.
-  template <class AdapterType>
-  DISABLE_CFI_PERF static void SearchForOverlapsFrom(IntervalNode const* node,
-                                                     AdapterType& adapter) {
+  DISABLE_CFI_PERF static void SearchForOverlapsFrom(
+      IntervalNode const* node,
+      const T& low,
+      const T& high,
+      Vector<IntervalType>& result) {
     // This is phrased this way to avoid the need for operator
     // <= on type T.
-    if (!node || adapter.HighValue() < node->Data().MinLow() ||
-        node->Data().MaxHigh() < adapter.LowValue()) {
+    if (!node || high < node->Data().MinLow() || node->Data().MaxHigh() < low) {
       return;
     }
 
@@ -162,13 +119,15 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
     // traversal produces results sorted as desired.
 
     // Attempt to traverse left subtree
-    SearchForOverlapsFrom(node->Left(), adapter);
+    SearchForOverlapsFrom(node->Left(), low, high, result);
 
     // Check for overlap with current node.
-    adapter.CollectIfNeeded(node->Data());
+    if (node->Data().Overlaps(low, high)) {
+      result.push_back(node->Data());
+    }
 
     // Attempt to traverse right subtree
-    SearchForOverlapsFrom(node->Right(), adapter);
+    SearchForOverlapsFrom(node->Right(), low, high, result);
   }
 
   static std::optional<T> NextIntervalPoint(T start, IntervalNode const* node) {

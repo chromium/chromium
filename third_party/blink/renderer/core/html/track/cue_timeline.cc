@@ -193,8 +193,7 @@ void CueTimeline::TimeMarchesOn() {
   // kHaveNothing.
   if (media_element.getReadyState() != HTMLMediaElement::kHaveNothing &&
       media_element.GetWebMediaPlayer()) {
-    current_cues =
-        cue_tree_.AllOverlaps(cue_tree_.CreateInterval(movie_time, movie_time));
+    current_cues = cue_tree_.AllOverlaps(movie_time, movie_time);
   }
 
   CueList previous_cues;
@@ -219,7 +218,7 @@ void CueTimeline::TimeMarchesOn() {
   CueList missed_cues;
   if (last_time >= 0 && last_seek_time < movie_time) {
     CueList potentially_skipped_cues =
-        cue_tree_.AllOverlaps(cue_tree_.CreateInterval(last_time, movie_time));
+        cue_tree_.AllOverlaps(last_time, movie_time);
     missed_cues.ReserveInitialCapacity(potentially_skipped_cues.size());
 
     for (CueInterval cue : potentially_skipped_cues) {

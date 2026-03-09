@@ -143,9 +143,8 @@ bool FloatPolygon::OverlappingEdges(
     float min_y,
     float max_y,
     Vector<const FloatPolygonEdge*>& result) const {
-  Vector<FloatPolygon::EdgeInterval> overlapping_edge_intervals;
-  edge_tree_.AllOverlaps(FloatPolygon::EdgeInterval(min_y, max_y, 0),
-                         overlapping_edge_intervals);
+  Vector<FloatPolygon::EdgeInterval> overlapping_edge_intervals =
+      edge_tree_.AllOverlaps(min_y, max_y);
   unsigned overlapping_edge_intervals_size = overlapping_edge_intervals.size();
   result.resize(overlapping_edge_intervals_size);
   for (unsigned i = 0; i < overlapping_edge_intervals_size; ++i) {
