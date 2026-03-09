@@ -64,38 +64,39 @@ void ChromeExtensionHostDelegate::CreateTab(
       browser_window_util::GetLastActiveNormalBrowserWithProfile(
           *profile, /*include_incognito_or_parent=*/false);
 
-  const bool should_create_browser = !browser;
-  bool browser_created = false;
-
-  if (should_create_browser) {
-    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
-        BrowserWindowInterface::CreationStatus::kOk) {
-      // No active browser and can't create a new one. Bail.
-      return;
-    }
-
-    BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
-                                     *profile, user_gesture);
-#if BUILDFLAG(IS_ANDROID)
-    // Android creates windows asynchronously.
-    auto callback =
-        base::BindOnce(&ChromeExtensionHostDelegate::NavigateBrowser,
-                       weak_factory_.GetWeakPtr(), /*browser_created=*/true,
-                       std::move(web_contents), target_url, extension_id,
-                       disposition, window_features, user_gesture);
-    CreateBrowserWindow(std::move(params), std::move(callback));
+  // If we have an existing browser, navigate it.
+  if (browser) {
+    NavigateBrowser(/*browser_created=*/false, std::move(web_contents),
+                    target_url, extension_id, disposition, window_features,
+                    user_gesture, browser);
     return;
-#else
-    // Other platforms create windows synchronously.
-    browser = CreateBrowserWindow(std::move(params));
-    CHECK(browser);
-    browser_created = true;
-    // Continue on to navigate.
-#endif
   }
-  NavigateBrowser(browser_created, std::move(web_contents), target_url,
+
+  // Otherwise we need to create a browser.
+  if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+      BrowserWindowInterface::CreationStatus::kOk) {
+    // No active browser and can't create a new one. Bail.
+    return;
+  }
+
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                   *profile, user_gesture);
+#if BUILDFLAG(IS_ANDROID)
+  // Android creates windows asynchronously.
+  auto callback = base::BindOnce(
+      &ChromeExtensionHostDelegate::NavigateBrowser, weak_factory_.GetWeakPtr(),
+      /*browser_created=*/true, std::move(web_contents), target_url,
+      extension_id, disposition, window_features, user_gesture);
+  CreateBrowserWindow(std::move(params), std::move(callback));
+  return;
+#else
+  // Other platforms create windows synchronously.
+  browser = CreateBrowserWindow(std::move(params));
+  CHECK(browser);
+  NavigateBrowser(/*browser_created=*/true, std::move(web_contents), target_url,
                   extension_id, disposition, window_features, user_gesture,
                   browser);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeExtensionHostDelegate::NavigateBrowser(
