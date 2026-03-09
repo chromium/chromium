@@ -173,12 +173,6 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      // Whether top level navigation was aborted. One example where this can
-      // occur is if a user is offline.
-      isLoadError_: {
-        type: Boolean,
-        reflect: true,
-      },
       isAiPage_: {type: Boolean, reflect: true},
       isLensOverlayShowing_: {type: Boolean},
       isOverlayOpenForAimVisualSearch_: {type: Boolean},
@@ -224,9 +218,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableBasicMode');
   protected accessor enableBasicModeZOrder_: boolean =
       loadTimeData.getBoolean('enableBasicModeZOrder');
-  // Whether top-level navigation failed. Initialized based on online status
-  // though top-level navigation could fail for numerous reasons.
-  protected accessor isLoadError_: boolean = !window.navigator.onLine;
   protected accessor isAiPage_: boolean = true;
   protected accessor isLensOverlayShowing_: boolean = false;
   protected accessor isOverlayOpenForAimVisualSearch_: boolean = false;
@@ -456,7 +447,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.$.threadFrame.addEventListener(
         'contentload', this.onThreadFrameContentLoad.bind(this));
     this.$.threadFrame.addEventListener(
-        'loadabort', this.onThreadFrameLoadAbort.bind(this) as EventListener);
+        'loadabort', this.onThreadFrameLoadAbort.bind(this));
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -603,9 +594,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!ev.isTopLevel) {
       return;
     }
-
-    this.isLoadError_ = !window.navigator.onLine;
-
     // Reset the composebox bounds and the occluders since the embedded page is
     // reloading.
     this.forcedComposeboxBounds_ = null;
@@ -678,12 +666,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.updateBasicModeAfterNavigation();
   }
 
-  private onThreadFrameLoadAbort(e: chrome.webviewTag.LoadAbortEvent) {
-    if (e.isTopLevel) {
-      // TODO(crbug.com/489713572): Potentially query autocomplete when the
-      // error is resolved and the page reloads.
-      this.isLoadError_ = true;
-    }
+  private onThreadFrameLoadAbort() {
     this.isFrameLoading = false;
     this.isLoadingZeroStateFromResults_ = false;
     this.setIsGhostLoaderVisible(false);
@@ -821,11 +804,6 @@ export class ContextualTasksAppElement extends CrLitElement {
       composebox.clearInputAndFocus();
     }
   }
-
-  get isLoadErrorForTesting() {
-    return this.isLoadError_;
-  }
-
 
   getEnableNativeZeroStateSuggestionsForTesting() {
     return this.enableNativeZeroStateSuggestions_;
@@ -1034,8 +1012,8 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.onThreadFrameContentLoad();
   }
 
-  onThreadFrameLoadAbortForTesting(event: chrome.webviewTag.LoadAbortEvent) {
-    this.onThreadFrameLoadAbort(event);
+  onThreadFrameLoadAbortForTesting() {
+    this.onThreadFrameLoadAbort();
   }
 
   setIsZeroStateForTesting(isZeroState: boolean) {

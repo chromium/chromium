@@ -1034,11 +1034,7 @@ suite('ContextualTasksAppTest', function() {
         'isFrameLoading should be true');
 
     // Simulate load abort.
-    const loadAbortEvent = new CustomEvent('loadabort') as any;
-    loadAbortEvent.isTopLevel = true;
-    loadAbortEvent.url = 'https://google.com';
-    loadAbortEvent.reason = 'ERR_CONNECTION_RESET';
-    appElement.onThreadFrameLoadAbortForTesting(loadAbortEvent);
+    appElement.onThreadFrameLoadAbortForTesting();
     await microtasksFinished();
 
     // Verify isFrameLoading is false.
