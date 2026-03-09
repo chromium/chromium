@@ -30,6 +30,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
@@ -135,6 +137,48 @@ bool ShouldEnableAsyncDns() {
 #endif
   return feature_can_be_enabled &&
          base::FeatureList::IsEnabled(net::features::kAsyncDns);
+}
+
+// Returns whether the Secure DNS DoH fallback behavior should be used.
+bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
+                          const PrefService& local_state,
+                          const DnsOverHttpsConfigSource& doh_config_source) {
+  // DoH fallback is only applicable to Automatic mode.
+  if (secure_dns_mode != net::SecureDnsMode::kAutomatic) {
+    return false;
+  }
+
+  // DoH fallback must be enabled.
+  if (!base::FeatureList::IsEnabled(
+          net::features::kAddAutomaticWithDohFallbackMode)) {
+    return false;
+  }
+
+  // Should use DoH fallback if local state pref enables it.
+  if (doh_config_source.AutomaticModeFallbackToDohEnabled()) {
+    return true;
+  }
+
+  // Now consider forcing DoH fallback even though it is not enabled by the
+  // user. We need to do this in order to test the feature before we include it
+  // in a security bundle. See: crbug.com/490045356
+
+  // Do not force DoH fallback if ESB is not enabled.
+  if (!safe_browsing::IsEnhancedProtectionEnabled(local_state)) {
+    return false;
+  }
+
+  // Do not force DoH fallback if the fallback pref is managed.
+  if (local_state.IsManagedPreference(
+          prefs::kDnsOverHttpsAutomaticModeFallbackToDoh)) {
+    return false;
+  }
+
+  // Lastly return whether the feature flag for forcing DoH fallback is enabled.
+  // The feature needs to be checked last, because checking the feature
+  // activates the field trial and marks the client as active in a study group.
+  return base::FeatureList::IsEnabled(
+      safe_browsing::kForceSecureDnsDohFallback);
 }
 
 }  // namespace
@@ -398,10 +442,8 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   if (secure_dns_mode != net::SecureDnsMode::kOff) {
     doh_config = net::DnsOverHttpsConfig::FromStringLax(
         GetDnsOverHttpsConfigSource()->GetDnsOverHttpsTemplates());
-    if (secure_dns_mode == net::SecureDnsMode::kAutomatic &&
-        GetDnsOverHttpsConfigSource()->AutomaticModeFallbackToDohEnabled() &&
-        base::FeatureList::IsEnabled(
-            net::features::kAddAutomaticWithDohFallbackMode)) {
+    if (ShouldUseDohFallback(secure_dns_mode, *local_state_,
+                             *GetDnsOverHttpsConfigSource())) {
       bool fallback_pref_managed = local_state_->IsManagedPreference(
           prefs::kDnsOverHttpsAutomaticModeFallbackToDoh);
       mode_details = fallback_pref_managed

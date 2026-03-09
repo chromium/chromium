@@ -14,8 +14,11 @@
 #include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -65,6 +68,7 @@ class StubResolverConfigReaderTest : public testing::Test {
   StubResolverConfigReaderTest() {
     StubResolverConfigReader::RegisterPrefs(local_state_.registry());
     DefaultDnsOverHttpsConfigSource::RegisterPrefs(local_state_.registry());
+    safe_browsing::RegisterProfilePrefs(local_state_.registry());
   }
 
  protected:
@@ -77,6 +81,8 @@ class StubResolverConfigReaderTest : public testing::Test {
 
   const net::DnsOverHttpsConfig expected_doh_config_ =
       *net::DnsOverHttpsConfig::FromString(kDohConfigString);
+  const std::vector<net::IPEndPoint> expected_fallback_doh_nameservers_ =
+      StubResolverConfigReader::GetFallbackDohNameservers();
 };
 
 TEST_F(StubResolverConfigReaderTest, GetSecureDnsConfiguration) {
@@ -166,6 +172,97 @@ TEST_F(StubResolverConfigReaderTest,
       "Net.DNS.DnsConfig.SecureDnsMode",
       StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
           kAutomaticWithDohFallbackByEnterprisePolicy,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DohFallbackForceSetByFeatureFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kAddAutomaticWithDohFallbackMode,
+       safe_browsing::kForceSecureDnsDohFallback},
+      {});
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  safe_browsing::SetSafeBrowsingState(
+      &local_state_, safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  // Pref is false, but kForceSecureDnsDohFallback should force to interpreting
+  // as if it were true.
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                          false);
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_EQ(expected_fallback_doh_nameservers_,
+            secure_dns_config.fallback_doh_nameservers());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticWithDohFallbackByUser,
+      1);
+}
+
+TEST_F(
+    StubResolverConfigReaderTest,
+    Doh_Automatic_DohFallbackNotForceSetByFeatureFlag_SafeBrowsingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kAddAutomaticWithDohFallbackMode,
+       safe_browsing::kForceSecureDnsDohFallback},
+      {});
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  safe_browsing::SetSafeBrowsingState(
+      &local_state_, safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                          false);
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticByUser,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DohFallbackNotForceSetByFeatureFlag_PrefManaged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kAddAutomaticWithDohFallbackMode,
+       safe_browsing::kForceSecureDnsDohFallback},
+       {});
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  safe_browsing::SetSafeBrowsingState(
+      &local_state_, safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              std::make_unique<base::Value>(false));
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticByUser,
       1);
 }
 

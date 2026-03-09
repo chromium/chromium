@@ -252,6 +252,12 @@ extern const base::FeatureParam<int>
 // Enables reporting of external app redirects
 BASE_DECLARE_FEATURE(kExternalAppRedirectTelemetry);
 
+// When this flag is enabled, and when the configured secure_dns_mode is
+// AUTOMATIC, the DoH fallback setting
+// (dns_over_https.automatic_mode_fallback_to_doh) should be forced to be
+// interpreted as true.
+BASE_DECLARE_FEATURE(kForceSecureDnsDohFallback);
+
 // Enables querying server-side Gemini model for scam detection.
 BASE_DECLARE_FEATURE(kGeminiAntiscamProtectionForMetricsCollection);
 // The minimum scam score required to log page content to MQLS.
