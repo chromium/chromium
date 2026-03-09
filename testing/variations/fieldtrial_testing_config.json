@@ -16541,9 +16541,12 @@
             ],
             "experiments": [
                 {
-                    "name": "WhileLoading_20260226",
+                    "name": "WhileLoading_20260309",
                     "enable_features": [
                         "NetworkServiceIncreasedPriorityWhileLoading"
+                    ],
+                    "disable_features": [
+                        "NetworkServiceIncreasedPriorityAlways"
                     ]
                 }
             ]
