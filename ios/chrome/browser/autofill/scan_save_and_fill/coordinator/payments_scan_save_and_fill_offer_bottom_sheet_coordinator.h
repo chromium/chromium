@@ -7,12 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
-namespace autofill {
-struct FormActivityParams;
-}
 
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller. This is the coordinator that will trigger scan card bottom

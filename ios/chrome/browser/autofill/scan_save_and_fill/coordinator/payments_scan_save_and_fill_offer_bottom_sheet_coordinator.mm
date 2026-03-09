@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 
-#import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetCoordinator () <
     PaymentsScanSaveAndFillOfferBottomSheetDelegate>
@@ -48,6 +49,14 @@
         initWithWebStateList:self.browser->GetWebStateList()
                       params:std::move(*_params)];
     _params.reset();
+  }
+
+  // Dismiss right away if the presentation failed to avoid having a zombie
+  // coordinator.
+  if (!_viewController.presentingViewController) {
+    id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [handler dismissPaymentSuggestions];
   }
 }
 

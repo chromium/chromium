@@ -63,6 +63,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/infobar_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
@@ -521,6 +522,11 @@ const char kChromeAppStoreUrl[] =
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) CredentialSuggestionBottomSheetCoordinator*
     credentialSuggestionBottomSheetCoordinator;
+
+// Coordinator in charge of presenting the scan card save and fill option in a
+// bottom sheet.
+@property(nonatomic, strong)
+    PaymentsScanSaveAndFillOfferBottomSheetCoordinator* paymentsScanCoordinator;
 
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
@@ -1560,6 +1566,8 @@ const char kChromeAppStoreUrl[] =
 
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
+  /* paymentsScanCoordinator is created and started by a BrowserCommand */
+
   /* paymentsSuggestionBottomSheetCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1664,6 +1672,9 @@ const char kChromeAppStoreUrl[] =
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
+
+  [self.paymentsScanCoordinator stop];
+  self.paymentsScanCoordinator = nil;
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
@@ -2141,6 +2152,15 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params {
+  if (self.paymentsScanCoordinator) {
+    return;
+  }
+  self.paymentsScanCoordinator =
+      [[PaymentsScanSaveAndFillOfferBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                              params:params];
+  [self.paymentsScanCoordinator start];
 }
 
 - (void)showCardUnmaskAuthentication {
@@ -2644,6 +2664,8 @@ const char kChromeAppStoreUrl[] =
 - (void)dismissPaymentSuggestions {
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
+  [self.paymentsScanCoordinator stop];
+  self.paymentsScanCoordinator = nil;
 }
 
 - (void)dismissPasskeyCreation {
@@ -2892,6 +2914,9 @@ const char kChromeAppStoreUrl[] =
   self.passwordSuggestionCoordinator = nil;
 
   [self hidePageInfo];
+
+  [self.paymentsScanCoordinator stop];
+  self.paymentsScanCoordinator = nil;
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
