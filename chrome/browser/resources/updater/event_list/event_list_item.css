@@ -39,7 +39,7 @@ cr-expand-button {
   /* Using an inline-grid allows the event-summary to shrink such that the
    * expand button is always visible.*/
   display: inline-grid;
-  min-width: 0;
+  width: 100%;
 }
 
 .event-summary {
