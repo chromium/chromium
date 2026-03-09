@@ -114,7 +114,6 @@
 namespace blink {
 
 BASE_FEATURE(kEventTimingReportingInStrictOrderOnly,
-             "EventTimingReportingInStrictOrderOnly",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static constexpr base::TimeDelta kLongTaskObserverThreshold =

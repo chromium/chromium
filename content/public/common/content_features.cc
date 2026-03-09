@@ -1290,7 +1290,6 @@ BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
 // this event should cause a nodes's children to be rerendered if there've been
 // structural changes.
 BASE_FEATURE(kAccessibilityRequestScopedContentChangedEvents,
-             "AccessibilityRequestScopedContentChangedEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxContentChangedEventsToFireParam{

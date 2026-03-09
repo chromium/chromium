@@ -78,7 +78,6 @@ const char kPartialSiteIsolationMemoryThresholdParamName[] =
 // memory threshold checks, including any thresholds that might be set by
 // kSiteIsolationMemoryThresholdsAndroid or default values.
 BASE_FEATURE(kSiteIsolationEnableMemoryThresholdAndroid,
-             "SiteIsolationEnableMemoryThresholdAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

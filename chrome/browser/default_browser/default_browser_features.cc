@@ -43,9 +43,7 @@ constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserPromptSurfaces,
-             "DefaultBrowserPromptSurfaces",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
              base::FEATURE_DISABLED_BY_DEFAULT);
