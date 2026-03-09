@@ -269,7 +269,6 @@ if (!is_android) {
       "app_menu_icon_controller_unittest.cc",
       "app_menu_model_unittest.cc",
       "back_forward_menu_model_unittest.cc",
-      "location_bar_model_unittest.cc",
       "toolbar_actions_model_unittest.cc",
     ]
     deps = [
@@ -358,6 +357,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "chrome_location_bar_model_delegate_browsertest.cc",
+      "location_bar_model_browsertest.cc",
       "toolbar_actions_model_browsertest.cc",
     ]
     deps = [

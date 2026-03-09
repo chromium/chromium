@@ -12,21 +12,25 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/test_extension_system.h"
+
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #endif
@@ -45,8 +49,8 @@ struct TestItem {
 const std::vector<TestItem>& TestItems() {
   static base::NoDestructor<std::vector<TestItem>> items{{
       {
-          GURL("view-source:http://www.google.com"),
-          "view-source:www.google.com",
+          GURL("view-source:http://a.test"),
+          "view-source:a.test",
       },
       {
           GURL(chrome::kChromeUINewTabURL),
@@ -78,9 +82,9 @@ const std::vector<TestItem>& TestItems() {
           "searchurl/?q=tractor+supply",
       },
       {
-          GURL("http://www.google.com/search?q=tractor+supply"),
-          "www.google.com/search?q=tractor+supply",
-          "google.com/search?q=tractor+supply",
+          GURL("http://www.a.test/search?q=tractor+supply"),
+          "www.a.test/search?q=tractor+supply",
+          "a.test/search?q=tractor+supply",
       },
       {
           GURL("https://www.google.com/search?q=tractor+supply"),
@@ -93,12 +97,12 @@ const std::vector<TestItem>& TestItems() {
           "m.google.ca/search?q=tractor+supply",
       },
       {
-          GURL("http://m.google.ca/search?q=tractor+supply"),
-          "m.google.ca/search?q=tractor+supply",
+          GURL("http://m.a.test/search?q=tractor+supply"),
+          "m.a.test/search?q=tractor+supply",
       },
       {
-          GURL("http://en.wikipedia.org"),
-          "en.wikipedia.org",
+          GURL("http://en.a.test"),
+          "en.a.test",
       },
       {
           GURL("https://en.wikipedia.org"),
@@ -106,8 +110,8 @@ const std::vector<TestItem>& TestItems() {
           "en.wikipedia.org",
       },
       {
-          GURL("http://www3.nhk.or.jp/nhkworld"),
-          "www3.nhk.or.jp/nhkworld",
+          GURL("http://www3.a.test/nhkworld"),
+          "www3.a.test/nhkworld",
       },
       {
           GURL("https://www3.nhk.or.jp/nhkworld"),
@@ -140,7 +144,7 @@ const std::vector<TestItem>& TestItems() {
 // LocationBarModelTest
 // -----------------------------------------------------------
 
-class LocationBarModelTest : public BrowserWithTestWindowTest {
+class LocationBarModelTest : public InProcessBrowserTest {
  public:
   LocationBarModelTest();
 
@@ -150,7 +154,7 @@ class LocationBarModelTest : public BrowserWithTestWindowTest {
   ~LocationBarModelTest() override;
 
   // BrowserWithTestWindowTest:
-  void SetUp() override;
+  void SetUpOnMainThread() override;
 
  protected:
   void NavigateAndCheckText(
@@ -164,26 +168,19 @@ LocationBarModelTest::LocationBarModelTest() = default;
 
 LocationBarModelTest::~LocationBarModelTest() = default;
 
-void LocationBarModelTest::SetUp() {
-  BrowserWithTestWindowTest::SetUp();
-  AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
-      profile(),
-      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
+void LocationBarModelTest::SetUpOnMainThread() {
+  InProcessBrowserTest::SetUpOnMainThread();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Install a fake extension so that the ID in the chrome-extension test URL is
   // valid. Invalid extension URLs may result in error pages (if blocked by
   // ExtensionNavigationThrottle), which this test doesn't wish to exercise.
-  extensions::TestExtensionSystem* extension_system =
-      static_cast<extensions::TestExtensionSystem*>(
-          extensions::ExtensionSystem::Get(profile()));
-  extension_system->CreateExtensionService(
-      base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("Test")
           .SetID("fooooooooooooooooooooooooooooooo")
           .Build();
-  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->AddExtension(extension);
 #endif
 }
 
@@ -191,59 +188,53 @@ void LocationBarModelTest::NavigateAndCheckText(
     const GURL& url,
     const std::u16string& expected_formatted_full_url,
     const std::u16string& expected_elided_url_for_display) {
-  // Check while loading.
-  content::NavigationController* controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController* controller = &web_contents->GetController();
+
+  // Use PAGE_TRANSITION_LINK to avoid auto-upgrading HTTP to HTTPS in typed
+  // navigations
   controller->LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                       std::string());
+
   LocationBarModel* location_bar_model =
       browser()->GetFeatures().location_bar_model();
-  EXPECT_EQ(expected_formatted_full_url,
-            location_bar_model->GetFormattedFullURL());
-  EXPECT_NE(expected_formatted_full_url.empty(),
-            location_bar_model->ShouldDisplayURL());
-  EXPECT_EQ(expected_elided_url_for_display,
-            location_bar_model->GetURLForDisplay());
 
-  // Check after commit.
-  CommitPendingLoad(controller);
+  if (!url.SchemeIs(url::kJavaScriptScheme)) {
+    content::WaitForLoadStop(web_contents);
+  }
+
   EXPECT_EQ(expected_formatted_full_url,
-            location_bar_model->GetFormattedFullURL());
+            location_bar_model->GetFormattedFullURL())
+      << " URL: " << url;
   EXPECT_NE(expected_formatted_full_url.empty(),
-            location_bar_model->ShouldDisplayURL());
+            location_bar_model->ShouldDisplayURL())
+      << " URL: " << url;
   EXPECT_EQ(expected_elided_url_for_display,
-            location_bar_model->GetURLForDisplay());
+            location_bar_model->GetURLForDisplay())
+      << " URL: " << url;
 }
 
 void LocationBarModelTest::NavigateAndCheckElided(const GURL& url) {
-  // Check while loading.
-  content::NavigationController* controller =
-      &browser()->tab_strip_model()->GetActiveWebContents()->GetController();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::NavigationController* controller = &web_contents->GetController();
+
   controller->LoadURL(url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
                       std::string());
+  content::WaitForLoadStop(web_contents);
+
   LocationBarModel* location_bar_model =
       browser()->GetFeatures().location_bar_model();
-  const std::u16string formatted_full_url_before(
-      location_bar_model->GetFormattedFullURL());
-  EXPECT_LT(formatted_full_url_before.size(), url.spec().size());
-  EXPECT_TRUE(base::EndsWith(formatted_full_url_before,
-                             std::u16string(gfx::kEllipsisUTF16),
-                             base::CompareCase::SENSITIVE));
-  const std::u16string display_url_before(
-      location_bar_model->GetURLForDisplay());
-  EXPECT_LT(display_url_before.size(), url.spec().size());
-  EXPECT_TRUE(base::EndsWith(display_url_before,
-                             std::u16string(gfx::kEllipsisUTF16),
-                             base::CompareCase::SENSITIVE));
 
-  // Check after commit.
-  CommitPendingLoad(controller);
   const std::u16string formatted_full_url_after(
       location_bar_model->GetFormattedFullURL());
-  EXPECT_LT(formatted_full_url_after.size(), url.spec().size());
+  EXPECT_LT(formatted_full_url_after.size(), url.spec().size())
+      << " URL: " << url;
   EXPECT_TRUE(base::EndsWith(formatted_full_url_after,
                              std::u16string(gfx::kEllipsisUTF16),
                              base::CompareCase::SENSITIVE));
+
   const std::u16string display_url_after(
       location_bar_model->GetURLForDisplay());
   EXPECT_LT(display_url_after.size(), url.spec().size());
@@ -255,9 +246,7 @@ void LocationBarModelTest::NavigateAndCheckElided(const GURL& url) {
 // Actual tests ---------------------------------------------------------------
 
 // Test URL display.
-TEST_F(LocationBarModelTest, ShouldDisplayURL) {
-  AddTab(browser(), GURL(url::kAboutBlankURL));
-
+IN_PROC_BROWSER_TEST_F(LocationBarModelTest, ShouldDisplayURL) {
   for (const TestItem& test_item : TestItems()) {
     NavigateAndCheckText(
         test_item.url,
@@ -266,8 +255,7 @@ TEST_F(LocationBarModelTest, ShouldDisplayURL) {
   }
 }
 
-TEST_F(LocationBarModelTest, ShouldElideLongURLs) {
-  AddTab(browser(), GURL(url::kAboutBlankURL));
+IN_PROC_BROWSER_TEST_F(LocationBarModelTest, ShouldElideLongURLs) {
   const std::string long_text(content::kMaxURLDisplayChars + 1024, '0');
   NavigateAndCheckElided(
       GURL(std::string("https://www.foo.com/?") + long_text));
@@ -275,12 +263,13 @@ TEST_F(LocationBarModelTest, ShouldElideLongURLs) {
 }
 
 // Regression test for crbug.com/792401.
-TEST_F(LocationBarModelTest, ShouldDisplayURLWhileNavigatingAwayFromNTP) {
+IN_PROC_BROWSER_TEST_F(LocationBarModelTest,
+                       ShouldDisplayURLWhileNavigatingAwayFromNTP) {
   LocationBarModel* location_bar_model =
       browser()->GetFeatures().location_bar_model();
 
   // Open an NTP. Its URL should not be displayed.
-  AddTab(browser(), GURL("chrome://newtab"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
   ASSERT_FALSE(location_bar_model->ShouldDisplayURL());
   ASSERT_TRUE(location_bar_model->GetFormattedFullURL().empty());
 
@@ -297,7 +286,8 @@ TEST_F(LocationBarModelTest, ShouldDisplayURLWhileNavigatingAwayFromNTP) {
             location_bar_model->GetFormattedFullURL());
 
   // Of course the same should still hold after committing.
-  CommitPendingLoad(controller);
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(location_bar_model->ShouldDisplayURL());
   EXPECT_EQ(base::ASCIIToUTF16(other_url),
             location_bar_model->GetFormattedFullURL());
