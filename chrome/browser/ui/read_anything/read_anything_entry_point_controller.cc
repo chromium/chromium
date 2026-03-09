@@ -101,6 +101,8 @@ void OnPdfTextReceived(base::OnceCallback<void(bool)> result_callback,
 }
 #endif
 
+static int check_count_;
+
 }  // namespace
 
 namespace read_anything {
@@ -287,6 +289,7 @@ bool ReadAnythingEntryPointController::CheckIfShouldSuggestReadingModeNaive(
 void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
     BrowserWindowInterface* bwi,
     base::OnceCallback<void(bool)> result_callback) {
+  check_count_++;
   if (!features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
     std::move(result_callback).Run(false);
     return;
@@ -345,6 +348,16 @@ void ReadAnythingEntryPointController::OnPageActionIgnored(
     page_action_controller->HideSuggestionChip(
         kActionSidePanelShowReadAnything);
   }
+}
+
+// static
+int ReadAnythingEntryPointController::CheckCountForTesting() {
+  return check_count_;
+}
+
+// static
+void ReadAnythingEntryPointController::ResetCheckCountForTesting() {
+  check_count_ = 0;
 }
 
 }  // namespace read_anything

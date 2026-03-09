@@ -63,6 +63,9 @@ class ReadAnythingEntryPointController {
 
   static base::AutoReset<size_t> SetMinPdfTextLengthForTesting(size_t length);
 
+  static int CheckCountForTesting();
+  static void ResetCheckCountForTesting();
+
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);

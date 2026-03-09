@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "read_anything_entry_point_controller.h"
@@ -90,7 +91,8 @@ void ReadAnythingOmniboxController::Activate(
     // Hide the omnibox entrypoint now that RM is already showing.
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/false, tab_->GetBrowserWindowInterface());
-  } else if (!features::IsImmersiveReadAnythingEnabled()) {
+  } else if (!features::IsImmersiveReadAnythingEnabled() &&
+             tab_->IsActivated()) {
     // Show the entrypoint again once RM is closed. In immersive mode, do this
     // in OnReadingModePresenterChanged instead since the presentation state
     // does not change right away.
