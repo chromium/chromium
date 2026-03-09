@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/view_utils.h"
@@ -131,6 +132,10 @@ class VerticalTabStripLinkDragTest
     }));
     return group_view;
   }
+
+  gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropBeforeAndAfterTabs) {
