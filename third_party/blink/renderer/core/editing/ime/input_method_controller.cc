@@ -1336,7 +1336,8 @@ bool InputMethodController::SetSelectionOffsets(
   if (show_context_menu) {
     ContextMenuAllowedScope scope;
     GetFrame().GetEventHandler().ShowNonLocatedContextMenu(
-        /*override_target_element=*/nullptr, kMenuSourceTouch);
+        /*override_target_element=*/nullptr,
+        ui::mojom::blink::MenuSourceType::kTouch);
   }
   return true;
 }

@@ -10,7 +10,6 @@
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace blink {
 
@@ -94,8 +93,7 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.field_renderer_id = data.field_renderer_id;
   params.form_renderer_id = data.form_renderer_id;
 
-  // TODO(crbug.com/373340199): Remove `WebMenuSourceType` and static_cast
-  params.source_type = static_cast<ui::mojom::MenuSourceType>(data.source_type);
+  params.source_type = data.source_type;
 
   return params;
 }

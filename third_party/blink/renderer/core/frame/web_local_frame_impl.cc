@@ -1592,7 +1592,7 @@ void WebLocalFrameImpl::SelectRange(
   if (selection_menu_behavior == SelectionMenuBehavior::kShow) {
     ContextMenuAllowedScope scope;
     GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
-        nullptr, kMenuSourceAdjustSelection);
+        nullptr, ui::mojom::blink::MenuSourceType::kAdjustSelection);
   }
 }
 

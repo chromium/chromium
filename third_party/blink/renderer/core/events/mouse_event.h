@@ -26,11 +26,11 @@
 
 #include <cmath>
 
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 
 namespace blink {
 
@@ -62,7 +62,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
                             const MouseEventInit*,
                             base::TimeTicks platform_time_stamp,
                             SyntheticEventType,
-                            WebMenuSourceType);
+                            ui::mojom::blink::MenuSourceType);
 
   static MouseEvent* Create(ScriptState*,
                             const AtomicString& event_type,
@@ -72,7 +72,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
              const MouseEventInit*,
              base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
              SyntheticEventType = kRealOrIndistinguishable,
-             WebMenuSourceType = kMenuSourceNone,
+             ui::mojom::blink::MenuSourceType =
+                 ui::mojom::blink::MenuSourceType::kNone,
              LocalDOMWindow* fallback_dom_window = nullptr);
   MouseEvent();
 
@@ -170,7 +171,9 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   bool HasPosition() const { return position_type_ == PositionType::kPosition; }
 
-  WebMenuSourceType GetMenuSourceType() const { return menu_source_type_; }
+  ui::mojom::blink::MenuSourceType GetMenuSourceType() const {
+    return menu_source_type_;
+  }
 
   // Page point in layout coordinates (i.e. post-zoomed, page-relative
   // coords, usable with LayoutObject::absoluteToLocal) relative to view(),
@@ -237,7 +240,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   SyntheticEventType synthetic_event_type_;
 
   // Only used for contextmenu events.
-  WebMenuSourceType menu_source_type_;
+  ui::mojom::blink::MenuSourceType menu_source_type_;
 };
 
 template <>

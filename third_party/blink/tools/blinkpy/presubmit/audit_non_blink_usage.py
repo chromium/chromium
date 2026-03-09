@@ -391,7 +391,10 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/common/context_menu_data/'],
+        'paths': [
+            'third_party/blink/common/context_menu_data/',
+            'third_party/blink/common/input/',
+        ],
         'allowed': [
             'ui::mojom::MenuSourceType',
         ],
@@ -1404,6 +1407,7 @@ _CONFIG = [
             # and must use the regular variants.
             'mojom::.+',
             'network::mojom::.+',
+            'ui::mojom::MenuSourceType',
             'ui::mojom::WindowShowState',
             'ui::mojom::WindowShowState::.+',
 

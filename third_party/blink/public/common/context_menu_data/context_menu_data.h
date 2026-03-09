@@ -36,11 +36,11 @@
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -162,7 +162,7 @@ struct ContextMenuData {
   // the current webpage.
   int selection_start_offset;
 
-  WebMenuSourceType source_type;
+  ui::mojom::MenuSourceType source_type;
 
   // Set when the context contains text selected by an annotation (see
   // third_party/blink/renderer/core/annotation/README.md).

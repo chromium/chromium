@@ -169,7 +169,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
-#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-forward.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -658,7 +658,8 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
       WebInputEvent::Type::kMouseMove,
       GetPage()->GetVisualViewport().ViewportToRootFrame(point_in_viewport),
       screen_point, WebPointerProperties::Button::kLeft, 0,
-      WebInputEvent::kNoModifiers, base::TimeTicks::Now(), kMenuSourceNone,
+      WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      ui::mojom::blink::MenuSourceType::kNone,
       local_root_->GetFrame()
           ->GetPage()
           ->GetDragController()
@@ -1107,7 +1108,7 @@ void WebFrameWidgetImpl::MouseContextMenu(const WebMouseEvent& event) {
 
   WebMouseEvent transformed_event =
       TransformWebMouseEvent(LocalRootImpl()->GetFrameView(), event);
-  transformed_event.menu_source_type = kMenuSourceMouse;
+  transformed_event.menu_source_type = ui::mojom::blink::MenuSourceType::kMouse;
   transformed_event.id = PointerEventFactory::kMouseId;
 
   // Find the right target frame. See issue 1186900.
@@ -2261,8 +2262,8 @@ void WebFrameWidgetImpl::ShowContextMenu(
     ContextMenuAllowedScope scope;
     if (LocalFrame* focused_frame =
             GetPage()->GetFocusController().FocusedFrame()) {
-      focused_frame->GetEventHandler().ShowNonLocatedContextMenu(
-          nullptr, static_cast<blink::WebMenuSourceType>(source_type));
+      focused_frame->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
+                                                                 source_type);
     }
   }
   host_context_menu_location_.reset();

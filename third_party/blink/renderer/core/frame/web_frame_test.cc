@@ -13778,7 +13778,8 @@ TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
 
   RunPendingTasks();
   web_view_helper.Reset();
-  EXPECT_EQ(frame.GetMenuData().source_type, kMenuSourceTouch);
+  EXPECT_EQ(frame.GetMenuData().source_type,
+            ui::mojom::blink::MenuSourceType::kTouch);
   EXPECT_FALSE(frame.GetMenuData().selected_text.empty());
 }
 

@@ -22,7 +22,8 @@ class CORE_EXPORT HighlightPointerEvent : public PointerEvent {
       base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
       MouseEvent::SyntheticEventType synthetic_event_type =
           kRealOrIndistinguishable,
-      WebMenuSourceType menu_source_type = kMenuSourceNone) {
+      ui::mojom::blink::MenuSourceType menu_source_type =
+          ui::mojom::blink::MenuSourceType::kNone) {
     return MakeGarbageCollected<HighlightPointerEvent>(
         type, initializer, platform_time_stamp, synthetic_event_type,
         menu_source_type);
@@ -33,7 +34,8 @@ class CORE_EXPORT HighlightPointerEvent : public PointerEvent {
       const HighlightPointerEventInit*,
       base::TimeTicks platform_time_stamp,
       MouseEvent::SyntheticEventType synthetic_event_type,
-      WebMenuSourceType menu_source_type = kMenuSourceNone);
+      ui::mojom::blink::MenuSourceType menu_source_type =
+          ui::mojom::blink::MenuSourceType::kNone);
 
   Range* range() const { return range_.Get(); }
 

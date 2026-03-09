@@ -39,7 +39,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
@@ -156,6 +155,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_source.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/transform.h"
@@ -7873,7 +7873,7 @@ bool AXObject::OnNativeShowContextMenuAction() {
   ContextMenuAllowedScope scope;
   WebInputEventResult result =
       document->GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
-          element, kMenuSourceKeyboard);
+          element, ui::mojom::blink::MenuSourceType::kKeyboard);
 
   // The node may have ceased to exist due to the event handler actions, so we
   // check its detached state. We also check the result of the contextMenu

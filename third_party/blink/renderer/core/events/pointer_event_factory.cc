@@ -378,7 +378,8 @@ PointerEvent* PointerEventFactory::Create(
 
   return PointerEvent::Create(
       type, pointer_event_init, web_pointer_event.TimeStamp(),
-      MouseEvent::kRealOrIndistinguishable, kMenuSourceNone,
+      MouseEvent::kRealOrIndistinguishable,
+      ui::mojom::blink::MenuSourceType::kNone,
       web_pointer_event.GetPreventCountingAsInteraction());
 }
 

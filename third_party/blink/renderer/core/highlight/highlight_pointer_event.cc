@@ -13,7 +13,7 @@ HighlightPointerEvent::HighlightPointerEvent(
     const HighlightPointerEventInit* initializer,
     base::TimeTicks platform_time_stamp,
     MouseEvent::SyntheticEventType synthetic_event_type,
-    WebMenuSourceType menu_source_type)
+    ui::mojom::blink::MenuSourceType menu_source_type)
     : PointerEvent(type,
                    initializer,
                    platform_time_stamp,

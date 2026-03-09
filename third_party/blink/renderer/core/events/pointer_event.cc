@@ -20,7 +20,7 @@ PointerEvent::PointerEvent(const AtomicString& type,
                            const PointerEventInit* initializer,
                            base::TimeTicks platform_time_stamp,
                            MouseEvent::SyntheticEventType synthetic_event_type,
-                           WebMenuSourceType menu_source_type,
+                           ui::mojom::blink::MenuSourceType menu_source_type,
                            bool prevent_counting_as_interaction)
     : MouseEvent(type,
                  initializer,

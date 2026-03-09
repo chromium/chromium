@@ -6,12 +6,10 @@
 // from Blink are valid.
 
 #include "media/base/mime_util.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/web_text_input_mode.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 
 namespace content {
 
@@ -58,26 +56,5 @@ STATIC_ASSERT_ENUM(blink::kWebTextInputTypeContentEditable,
                    ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE);
 STATIC_ASSERT_ENUM(blink::kWebTextInputTypeDateTimeField,
                    ui::TEXT_INPUT_TYPE_DATE_TIME_FIELD);
-
-// WebMenuSourceType
-STATIC_ASSERT_ENUM(blink::kMenuSourceNone, ui::mojom::MenuSourceType::kNone);
-STATIC_ASSERT_ENUM(blink::kMenuSourceMouse, ui::mojom::MenuSourceType::kMouse);
-STATIC_ASSERT_ENUM(blink::kMenuSourceKeyboard,
-                   ui::mojom::MenuSourceType::kKeyboard);
-STATIC_ASSERT_ENUM(blink::kMenuSourceTouch, ui::mojom::MenuSourceType::kTouch);
-STATIC_ASSERT_ENUM(blink::kMenuSourceTouchEditMenu,
-                   ui::mojom::MenuSourceType::kTouchEditMenu);
-STATIC_ASSERT_ENUM(blink::kMenuSourceLongPress,
-                   ui::mojom::MenuSourceType::kLongPress);
-STATIC_ASSERT_ENUM(blink::kMenuSourceLongTap,
-                   ui::mojom::MenuSourceType::kLongTap);
-STATIC_ASSERT_ENUM(blink::kMenuSourceTouchHandle,
-                   ui::mojom::MenuSourceType::kTouchHandle);
-STATIC_ASSERT_ENUM(blink::kMenuSourceStylus,
-                   ui::mojom::MenuSourceType::kStylus);
-STATIC_ASSERT_ENUM(blink::kMenuSourceAdjustSelection,
-                   ui::mojom::MenuSourceType::kAdjustSelection);
-STATIC_ASSERT_ENUM(blink::kMenuSourceAdjustSelectionReset,
-                   ui::mojom::MenuSourceType::kAdjustSelectionReset);
 
 } // namespace content

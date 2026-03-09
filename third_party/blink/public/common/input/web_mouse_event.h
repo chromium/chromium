@@ -8,8 +8,8 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 
 namespace blink {
 
@@ -25,7 +25,7 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   int click_count = {};
 
   // Only used for contextmenu events.
-  WebMenuSourceType menu_source_type = kMenuSourceNone;
+  ui::mojom::MenuSourceType menu_source_type = ui::mojom::MenuSourceType::kNone;
 
   WebMouseEvent(Type type_param,
                 gfx::PointF position,
@@ -34,7 +34,8 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 int click_count_param,
                 int modifiers_param,
                 base::TimeTicks time_stamp_param,
-                WebMenuSourceType menu_source_type_param = kMenuSourceNone,
+                ui::mojom::MenuSourceType menu_source_type_param =
+                    ui::mojom::MenuSourceType::kNone,
                 PointerId id_param = kMousePointerId)
       : WebInputEvent(type_param,
                       Type::kMouseTypeFirst,
@@ -93,7 +94,9 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
 
   int ClickCount() const { return click_count; }
 
-  WebMenuSourceType GetMenuSourceType() const { return menu_source_type; }
+  ui::mojom::MenuSourceType GetMenuSourceType() const {
+    return menu_source_type;
+  }
 
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;

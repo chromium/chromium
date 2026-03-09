@@ -178,7 +178,6 @@ source_set("headers") {
     "input/web_input_event.h",
     "input/web_input_event_attribution.h",
     "input/web_keyboard_event.h",
-    "input/web_menu_source_type.h",
     "input/web_mouse_event.h",
     "input/web_mouse_wheel_event.h",
     "input/web_pointer_event.h",

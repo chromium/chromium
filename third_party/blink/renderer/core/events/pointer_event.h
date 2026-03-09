@@ -24,7 +24,8 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
       base::TimeTicks platform_time_stamp = base::TimeTicks::Now(),
       MouseEvent::SyntheticEventType synthetic_event_type =
           kRealOrIndistinguishable,
-      WebMenuSourceType menu_source_type = kMenuSourceNone,
+      ui::mojom::blink::MenuSourceType menu_source_type =
+          ui::mojom::blink::MenuSourceType::kNone,
       bool prevent_counting_as_interaction = false) {
     return MakeGarbageCollected<PointerEvent>(
         type, initializer, platform_time_stamp, synthetic_event_type,
@@ -35,7 +36,8 @@ class CORE_EXPORT PointerEvent : public MouseEvent {
                const PointerEventInit*,
                base::TimeTicks platform_time_stamp,
                MouseEvent::SyntheticEventType synthetic_event_type,
-               WebMenuSourceType menu_source_type = kMenuSourceNone,
+               ui::mojom::blink::MenuSourceType menu_source_type =
+                   ui::mojom::blink::MenuSourceType::kNone,
                bool prevent_counting_as_interaction = false);
 
   PointerId pointerId() const { return pointer_id_; }

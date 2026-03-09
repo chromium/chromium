@@ -116,14 +116,15 @@ MouseEvent* MouseEvent::Create(ScriptState* script_state,
   }
   return MakeGarbageCollected<MouseEvent>(
       type, initializer, base::TimeTicks::Now(), kRealOrIndistinguishable,
-      kMenuSourceNone, fallback_dom_window);
+      ui::mojom::blink::MenuSourceType::kNone, fallback_dom_window);
 }
 
-MouseEvent* MouseEvent::Create(const AtomicString& event_type,
-                               const MouseEventInit* initializer,
-                               base::TimeTicks platform_time_stamp,
-                               SyntheticEventType synthetic_event_type,
-                               WebMenuSourceType menu_source_type) {
+MouseEvent* MouseEvent::Create(
+    const AtomicString& event_type,
+    const MouseEventInit* initializer,
+    base::TimeTicks platform_time_stamp,
+    SyntheticEventType synthetic_event_type,
+    ui::mojom::blink::MenuSourceType menu_source_type) {
   return MakeGarbageCollected<MouseEvent>(
       event_type, initializer, platform_time_stamp, synthetic_event_type,
       menu_source_type);
@@ -140,7 +141,7 @@ MouseEvent::MouseEvent(const AtomicString& event_type,
                        const MouseEventInit* initializer,
                        base::TimeTicks platform_time_stamp,
                        SyntheticEventType synthetic_event_type,
-                       WebMenuSourceType menu_source_type,
+                       ui::mojom::blink::MenuSourceType menu_source_type,
                        LocalDOMWindow* fallback_dom_window)
     : UIEventWithKeyState(event_type, initializer, platform_time_stamp),
       screen_x_(initializer->screenX()),

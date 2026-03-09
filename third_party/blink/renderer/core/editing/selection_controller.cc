@@ -31,7 +31,6 @@
 
 #include "base/auto_reset.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -64,6 +63,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -564,8 +564,8 @@ void SelectionController::HandleTapOnCaret(
           .SetShouldShowHandle(should_show_handle)
           .Build());
   if (did_select) {
-    frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
-                                                        kMenuSourceTouch);
+    frame_->GetEventHandler().ShowNonLocatedContextMenu(
+        nullptr, ui::mojom::blink::MenuSourceType::kTouch);
   }
 }
 
@@ -579,7 +579,7 @@ bool SelectionController::HandleTapInsideSelection(
         SelectInputEventType::kTouch);
     if (did_select) {
       frame_->GetEventHandler().ShowNonLocatedContextMenu(
-          nullptr, kMenuSourceAdjustSelectionReset);
+          nullptr, ui::mojom::blink::MenuSourceType::kAdjustSelectionReset);
     }
     return true;
   }
@@ -597,8 +597,8 @@ bool SelectionController::HandleTapInsideSelection(
       event.InnerNode(), selection,
       SetSelectionOptions::Builder().SetShouldShowHandle(true).Build());
   if (did_select) {
-    frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
-                                                        kMenuSourceTouch);
+    frame_->GetEventHandler().ShowNonLocatedContextMenu(
+        nullptr, ui::mojom::blink::MenuSourceType::kTouch);
   }
   return true;
 }
@@ -1066,8 +1066,8 @@ bool SelectionController::HandleDoubleClick(
     return true;
   if (!Selection().IsHandleVisible())
     return true;
-  frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
-                                                      kMenuSourceTouch);
+  frame_->GetEventHandler().ShowNonLocatedContextMenu(
+      nullptr, ui::mojom::blink::MenuSourceType::kTouch);
   return true;
 }
 
@@ -1120,8 +1120,8 @@ bool SelectionController::HandleTripleClick(
 
   if (!Selection().IsHandleVisible())
     return true;
-  frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
-                                                      kMenuSourceTouch);
+  frame_->GetEventHandler().ShowNonLocatedContextMenu(
+      nullptr, ui::mojom::blink::MenuSourceType::kTouch);
   return true;
 }
 
@@ -1381,7 +1381,8 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
   base::AutoReset<bool> mouse_down_may_start_select_change(
       &mouse_down_may_start_select_, true);
 
-  if (mouse_event->GetMenuSourceType() != kMenuSourceTouchHandle &&
+  if (mouse_event->GetMenuSourceType() !=
+          ui::mojom::blink::MenuSourceType::kTouchHandle &&
       HitTestResultIsMisspelled(hit_test_result)) {
     return SelectClosestMisspellingFromMouseEvent(mouse_event, hit_test_result);
   }
@@ -1397,8 +1398,10 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
 
   // Opening the context menu, triggered by long press or keyboard, should not
   // change the selected text.
-  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress ||
-      mouse_event->GetMenuSourceType() == kMenuSourceKeyboard) {
+  if (mouse_event->GetMenuSourceType() ==
+          ui::mojom::blink::MenuSourceType::kLongPress ||
+      mouse_event->GetMenuSourceType() ==
+          ui::mojom::blink::MenuSourceType::kKeyboard) {
     return;
   }
 

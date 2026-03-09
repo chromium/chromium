@@ -52,7 +52,6 @@
 #include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -193,6 +192,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -1069,7 +1069,7 @@ WebInputEventResult WebViewImpl::SendContextMenuEvent() {
             focused_local_frame->GetDocument()->FocusedElement())
       focused_element->scrollIntoViewIfNeeded();
     return focused_local_frame->GetEventHandler().ShowNonLocatedContextMenu(
-        nullptr, kMenuSourceKeyboard);
+        nullptr, ui::mojom::blink::MenuSourceType::kKeyboard);
   }
 }
 

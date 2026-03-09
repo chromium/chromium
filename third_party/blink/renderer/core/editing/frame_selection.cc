@@ -961,8 +961,8 @@ void FrameSelection::SelectAll(SetSelectionBy set_selection_by,
   NotifyTextControlOfSelectionChange(SetSelectionBy::kUser);
   if (IsHandleVisible()) {
     ContextMenuAllowedScope scope;
-    frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
-                                                        kMenuSourceTouch);
+    frame_->GetEventHandler().ShowNonLocatedContextMenu(
+        nullptr, ui::mojom::blink::MenuSourceType::kTouch);
   }
 }
 
@@ -1373,7 +1373,8 @@ bool FrameSelection::SelectAroundCaret(
   if (context_menu_visibility == ContextMenuVisibility::kVisible) {
     ContextMenuAllowedScope scope;
     frame_->GetEventHandler().ShowNonLocatedContextMenu(
-        /*override_target_element=*/nullptr, kMenuSourceTouch);
+        /*override_target_element=*/nullptr,
+        ui::mojom::blink::MenuSourceType::kTouch);
   }
 
   return true;

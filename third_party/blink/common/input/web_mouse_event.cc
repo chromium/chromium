@@ -82,16 +82,16 @@ void WebMouseEvent::SetMenuSourceType(WebInputEvent::Type type) {
     case Type::kGestureTapDown:
     case Type::kGestureTap:
     case Type::kGestureDoubleTap:
-      menu_source_type = kMenuSourceTouch;
+      menu_source_type = ui::mojom::MenuSourceType::kTouch;
       break;
     case Type::kGestureLongPress:
-      menu_source_type = kMenuSourceLongPress;
+      menu_source_type = ui::mojom::MenuSourceType::kLongPress;
       break;
     case Type::kGestureLongTap:
-      menu_source_type = kMenuSourceLongTap;
+      menu_source_type = ui::mojom::MenuSourceType::kLongTap;
       break;
     default:
-      menu_source_type = kMenuSourceNone;
+      menu_source_type = ui::mojom::MenuSourceType::kNone;
   }
 }
 

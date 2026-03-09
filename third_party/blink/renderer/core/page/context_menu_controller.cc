@@ -38,7 +38,6 @@
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -100,6 +99,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 
 namespace blink {
 
@@ -220,8 +220,9 @@ void ContextMenuController::ShowContextMenuAtPoint(
     ContextMenuProvider* menu_provider) {
   menu_provider_ = menu_provider;
   if (!ShowContextMenu(frame, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)),
-                       kMenuSourceNone))
+                       ui::mojom::blink::MenuSourceType::kNone)) {
     ClearContextMenu();
+  }
 }
 
 void ContextMenuController::CustomContextMenuItemSelected(unsigned action) {
@@ -431,16 +432,18 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
          !data.selected_text.empty();
 }
 
-bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
-                                            const PhysicalOffset& point,
-                                            WebMenuSourceType source_type) {
+bool ContextMenuController::ShowContextMenu(
+    LocalFrame* frame,
+    const PhysicalOffset& point,
+    ui::mojom::blink::MenuSourceType source_type) {
   return ShowContextMenu(frame, point, source_type, nullptr);
 }
 
-bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
-                                            const PhysicalOffset& point,
-                                            WebMenuSourceType source_type,
-                                            const MouseEvent* mouse_event) {
+bool ContextMenuController::ShowContextMenu(
+    LocalFrame* frame,
+    const PhysicalOffset& point,
+    ui::mojom::blink::MenuSourceType source_type,
+    const MouseEvent* mouse_event) {
   // Displaying the context menu in this function is a big hack as we don't
   // have context, i.e. whether this is being invoked via a script or in
   // response to user input (Mouse event WM_RBUTTONDOWN,
@@ -489,7 +492,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
       To<LocalFrame>(page_->GetFocusController().FocusedOrMainFrame())
           ->GetEditor());
 
-  if (mouse_event && source_type == kMenuSourceKeyboard) {
+  if (mouse_event &&
+      source_type == ui::mojom::blink::MenuSourceType::kKeyboard) {
     Node* target_node = mouse_event->RawTarget()->ToNode();
     if (target_node && IsA<Element>(target_node)) {
       // Get the url from an explicitly set target, e.g. the focused element
@@ -512,9 +516,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.alt_text = html_element->AltText().Utf8();
   }
 
-  const bool from_touch = source_type == kMenuSourceTouch ||
-                          source_type == kMenuSourceLongPress ||
-                          source_type == kMenuSourceLongTap;
+  const bool from_touch =
+      source_type == ui::mojom::blink::MenuSourceType::kTouch ||
+      source_type == ui::mojom::blink::MenuSourceType::kLongPress ||
+      source_type == ui::mojom::blink::MenuSourceType::kLongTap;
 
   if (from_touch) {
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
@@ -684,12 +689,12 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
   data.selection_start_offset = 0;
   // HitTestResult::isSelected() ensures clean layout by performing a hit test.
-  // If source_type is |kMenuSourceAdjustSelection| or
-  // |kMenuSourceAdjustSelectionReset| we know the original HitTestResult in
-  // SelectionController passed the inside check already, so let it pass.
+  // If source_type is |kAdjustSelection| or |kAdjustSelectionReset| we know the
+  // original HitTestResult in SelectionController passed the inside check
+  // already, so let it pass.
   if (result.IsSelected(location) ||
-      source_type == kMenuSourceAdjustSelection ||
-      source_type == kMenuSourceAdjustSelectionReset) {
+      source_type == ui::mojom::blink::MenuSourceType::kAdjustSelection ||
+      source_type == ui::mojom::blink::MenuSourceType::kAdjustSelectionReset) {
     // Remove any unselectable content from the selected text.
     data.selected_text =
         selected_frame

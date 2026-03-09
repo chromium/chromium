@@ -1188,7 +1188,7 @@ TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   GetDocument().GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
-      nullptr, kMenuSourceTouchHandle);
+      nullptr, ui::mojom::blink::MenuSourceType::kTouchHandle);
 
   ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
