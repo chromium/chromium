@@ -451,14 +451,14 @@ void MergeIntoEngineData(const TemplateURLData& original_turl,
     }
   }
 
-  if (merge_option == TemplateURLMergeOption::kSplitPrepopulatedEntry) {
+  if (is_id_migration) {
     // The data from `original_turl` has been merged into `data_to_update`, but
     // `data_to_update` has a different `prepopulate_id`. This could lead to
     // reconciliation issues on clients which don't have the latest data yet,
     // and future confusion about how the GUID for this entry was generated.
     // Reset it to limit such issues.
-    // TODO(crbug.com/446637115): Investigate also doing this for the
-    // `kSettingAsDefaultProvider` flow.
+    // For the `kSettingAsDefaultProvider` flow, this will also trigger the
+    // prefs to be updated.
     data_to_update.GenerateSyncGUID();
   } else {
     data_to_update.sync_guid = original_turl.sync_guid;
