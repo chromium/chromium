@@ -14,8 +14,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace {
@@ -59,7 +60,8 @@ void BrowserCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
     return;
   }
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 
   // `on_close_success` doesn't wait for browser to close and is therefore not
   // used. `on_close_aborted` cannot be reached because `skip_beforeunload` is
@@ -67,9 +69,10 @@ void BrowserCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   chrome::CloseAllBrowsersWithProfile(profile_, /*skip_beforeunload=*/true);
 }
 
-void BrowserCleanupHandler::OnBrowserRemoved(Browser* browser) {
-  if (browser->profile() != profile_)
+void BrowserCleanupHandler::OnBrowserClosed(BrowserWindowInterface* browser) {
+  if (browser->GetProfile() != profile_) {
     return;
+  }
 
   // In case any browser window is still open for current profile the cleanup
   // must not proceed otherwise some open tabs can remain in browser data.
@@ -77,7 +80,7 @@ void BrowserCleanupHandler::OnBrowserRemoved(Browser* browser) {
     return;
   }
 
-  BrowserList::RemoveObserver(this);
+  browser_collection_observation_.Reset();
   RemoveBrowserHistory();
 }
 

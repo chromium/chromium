@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_BROWSER_CLEANUP_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace chromeos {
@@ -18,7 +20,7 @@ namespace chromeos {
 // `chrome_browsing_data_remover::ALL_DATA_TYPES` for the list of data types
 // removed.
 class BrowserCleanupHandler : public CleanupHandler,
-                              public BrowserListObserver,
+                              public BrowserCollectionObserver,
                               public content::BrowsingDataRemover::Observer {
  public:
   BrowserCleanupHandler();
@@ -27,8 +29,8 @@ class BrowserCleanupHandler : public CleanupHandler,
   // CleanupHandler:
   void Cleanup(CleanupHandlerCallback callback) override;
 
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   void RemoveBrowserHistory();
 
@@ -39,8 +41,10 @@ class BrowserCleanupHandler : public CleanupHandler,
   raw_ptr<content::BrowsingDataRemover> data_remover_;
   CleanupHandlerCallback callback_;
   raw_ptr<Profile> profile_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace chromeos
 
-#endif  //  CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_BROWSER_CLEANUP_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_BROWSER_CLEANUP_HANDLER_H_
