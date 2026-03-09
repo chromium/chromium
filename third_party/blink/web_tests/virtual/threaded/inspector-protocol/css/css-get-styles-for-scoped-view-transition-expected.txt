@@ -65,6 +65,50 @@ PseudoElement: view-transition-group shared
     font-size: 10px; @[0:45-0:61]
     font-size: 10px; @[undefined-undefined]
 }
+PseudoElement: view-transition-group-children root
+::view-transition-image-pair(*), *::view-transition-group-children(*)* {    user-agent    readonly
+    position: absolute; @[undefined-undefined]
+    top: 0px; @[undefined-undefined]
+    right: 0px; @[undefined-undefined]
+    bottom: 0px; @[undefined-undefined]
+    left: 0px; @[undefined-undefined]
+    animation-delay: inherit; @[undefined-undefined]
+    animation-timing-function: inherit; @[undefined-undefined]
+    animation-iteration-count: inherit; @[undefined-undefined]
+    animation-direction: inherit; @[undefined-undefined]
+    animation-play-state: inherit; @[undefined-undefined]
+}
+*::view-transition-group-children(*)* {    user-agent    readonly
+    border-top-style: solid; @[undefined-undefined]
+    border-right-style: solid; @[undefined-undefined]
+    border-bottom-style: solid; @[undefined-undefined]
+    border-left-style: solid; @[undefined-undefined]
+    border-top-color: transparent; @[undefined-undefined]
+    border-right-color: transparent; @[undefined-undefined]
+    border-bottom-color: transparent; @[undefined-undefined]
+    border-left-color: transparent; @[undefined-undefined]
+}
+*::view-transition-group-children(root)* {    user-agent    readonly
+    border-top-left-radius: 0px; @[undefined-undefined]
+    border-top-right-radius: 0px; @[undefined-undefined]
+    border-bottom-right-radius: 0px; @[undefined-undefined]
+    border-bottom-left-radius: 0px; @[undefined-undefined]
+    border-top-width: 0px; @[undefined-undefined]
+    border-right-width: 0px; @[undefined-undefined]
+    border-bottom-width: 0px; @[undefined-undefined]
+    border-left-width: 0px; @[undefined-undefined]
+    corner-top-left-shape: round; @[undefined-undefined]
+    corner-top-right-shape: round; @[undefined-undefined]
+    corner-bottom-right-shape: round; @[undefined-undefined]
+    corner-bottom-left-shape: round; @[undefined-undefined]
+}
+*::view-transition-group-children(root)* {    user-agent    readonly
+    animation-name: -ua-view-transition-group-children-anim-root; @[undefined-undefined]
+    animation-timing-function: ease; @[undefined-undefined]
+    animation-delay: 0s; @[undefined-undefined]
+    animation-iteration-count: 1; @[undefined-undefined]
+    animation-direction: normal; @[undefined-undefined]
+}
 PseudoElement: view-transition-image-pair root
 *::view-transition-image-pair(*)*, ::view-transition-group-children(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
@@ -323,6 +367,50 @@ Dumping styles for : ::view-transition-new with id root
 }
 *::view-transition-new(root)* {    user-agent    readonly
     animation-name: -ua-view-transition-fade-in, -ua-mix-blend-mode-plus-lighter; @[undefined-undefined]
+}
+Dumping styles for : ::view-transition-group-children with id root
+::view-transition-image-pair(*), *::view-transition-group-children(*)* {    user-agent    readonly
+    position: absolute; @[undefined-undefined]
+    top: 0px; @[undefined-undefined]
+    right: 0px; @[undefined-undefined]
+    bottom: 0px; @[undefined-undefined]
+    left: 0px; @[undefined-undefined]
+    animation-delay: inherit; @[undefined-undefined]
+    animation-timing-function: inherit; @[undefined-undefined]
+    animation-iteration-count: inherit; @[undefined-undefined]
+    animation-direction: inherit; @[undefined-undefined]
+    animation-play-state: inherit; @[undefined-undefined]
+}
+*::view-transition-group-children(*)* {    user-agent    readonly
+    border-top-style: solid; @[undefined-undefined]
+    border-right-style: solid; @[undefined-undefined]
+    border-bottom-style: solid; @[undefined-undefined]
+    border-left-style: solid; @[undefined-undefined]
+    border-top-color: transparent; @[undefined-undefined]
+    border-right-color: transparent; @[undefined-undefined]
+    border-bottom-color: transparent; @[undefined-undefined]
+    border-left-color: transparent; @[undefined-undefined]
+}
+*::view-transition-group-children(root)* {    user-agent    readonly
+    border-top-left-radius: 0px; @[undefined-undefined]
+    border-top-right-radius: 0px; @[undefined-undefined]
+    border-bottom-right-radius: 0px; @[undefined-undefined]
+    border-bottom-left-radius: 0px; @[undefined-undefined]
+    border-top-width: 0px; @[undefined-undefined]
+    border-right-width: 0px; @[undefined-undefined]
+    border-bottom-width: 0px; @[undefined-undefined]
+    border-left-width: 0px; @[undefined-undefined]
+    corner-top-left-shape: round; @[undefined-undefined]
+    corner-top-right-shape: round; @[undefined-undefined]
+    corner-bottom-right-shape: round; @[undefined-undefined]
+    corner-bottom-left-shape: round; @[undefined-undefined]
+}
+*::view-transition-group-children(root)* {    user-agent    readonly
+    animation-name: -ua-view-transition-group-children-anim-root; @[undefined-undefined]
+    animation-timing-function: ease; @[undefined-undefined]
+    animation-delay: 0s; @[undefined-undefined]
+    animation-iteration-count: 1; @[undefined-undefined]
+    animation-direction: normal; @[undefined-undefined]
 }
 Dumping styles for : ::view-transition-group with id shared
 *::view-transition-group(*)* {    user-agent    readonly

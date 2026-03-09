@@ -35,6 +35,10 @@ html {
     view-transition-name: root;
 }
 
+:active-view-transition:not(:root) {
+  view-transition-group: contain;
+}
+
 /* generic block-level elements */
 
 body {
