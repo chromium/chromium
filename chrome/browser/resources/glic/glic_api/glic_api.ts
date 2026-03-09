@@ -2758,6 +2758,8 @@ export enum InvocationSource {
   AUTO_OPENED_FOR_PDF = 19,
   // Selection hotkey.
   CAPTURE_REGION_HOTKEY = 20,
+  // From the in-product-help (IPH) entrypoint.
+  IPH = 21,
 }
 
 ///////////////////////////////////////////////

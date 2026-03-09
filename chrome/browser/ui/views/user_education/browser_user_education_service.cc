@@ -717,9 +717,8 @@ void MaybeRegisterChromeFeaturePromos(
                 }
                 if (auto* glic_service =
                         glic::GlicKeyedService::Get(browser->GetProfile())) {
-                  glic_service->ToggleUI(
-                      browser, /*prevent_close=*/true,
-                      glic::mojom::InvocationSource::kTopChromeButton);
+                  glic_service->ToggleUI(browser, /*prevent_close=*/true,
+                                         glic::mojom::InvocationSource::kIph);
                 }
               }))
           .SetBubbleTitleText(IDS_GLIC_TRYIT_TITLE)

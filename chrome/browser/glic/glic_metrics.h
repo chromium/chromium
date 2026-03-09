@@ -217,7 +217,11 @@ enum class ResponseSegmentation {
   kCaptureRegionHotkeyAttachedAudio = 82,
   kCaptureRegionHotkeyDetachedText = 83,
   kCaptureRegionHotkeyDetachedAudio = 84,
-  kMaxValue = kCaptureRegionHotkeyDetachedAudio,
+  kIphAttachedText = 85,
+  kIphAttachedAudio = 86,
+  kIphDetachedText = 87,
+  kIphDetachedAudio = 88,
+  kMaxValue = kIphDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
