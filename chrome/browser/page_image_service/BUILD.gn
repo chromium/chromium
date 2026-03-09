@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("page_image_service") {
+  sources = [
+    "image_service_factory.cc",
+    "image_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  deps = [
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
+    "//components/page_image_service",
+  ]
+}

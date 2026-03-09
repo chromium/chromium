@@ -5,6 +5,43 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("android") {
+  sources = [
+    "image_service_bridge.cc",
+    "image_service_bridge.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/page_image_service",
+    "//components/signin/public/identity_manager",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//chrome/browser/page_image_service",
+    "//chrome/browser/signin",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "image_service_bridge_unittest.cc" ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/page_image_service",
+    "//components/signin/public/identity_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
