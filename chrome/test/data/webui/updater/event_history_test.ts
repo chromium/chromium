@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActivateEndEvent, ActivateStartEvent, AppCommandEndEvent, AppCommandStartEvent, HistoryEvent, InstallEndEvent, InstallStartEvent, LoadPolicyEndEvent, LoadPolicyStartEvent, MergedHistoryEvent, MergedInstallEvent, MergedUpdaterProcessEvent, PersistedDataEvent, PostRequestEndEvent, PostRequestStartEvent, QualifyEndEvent, QualifyStartEvent, UninstallEndEvent, UninstallStartEvent, UpdateEndEvent, UpdaterProcessEndEvent, UpdaterProcessStartEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
-import {deduplicateEvents, mergeEvents, parseEvent, UpdaterProcessMap} from 'chrome://updater/event_history.js';
+import type {ActivateEndEvent, ActivateStartEvent, AppCommandEndEvent, AppCommandStartEvent, HistoryEvent, InstallEndEvent, InstallStartEvent, LoadPolicyEndEvent, LoadPolicyStartEvent, MergedHistoryEvent, MergedInstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent, PostRequestEndEvent, PostRequestStartEvent, QualifyEndEvent, QualifyStartEvent, UninstallEndEvent, UninstallStartEvent, UpdateEndEvent, UpdaterProcessEndEvent, UpdaterProcessStartEvent, UpdateStartEvent} from 'chrome://updater/event_history.js';
+import {deduplicateEvents, getUpdateOutcome, mergeEvents, parseEvent, UpdaterProcessMap} from 'chrome://updater/event_history.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('parseEvent', () => {
@@ -130,19 +130,24 @@ suite('parseEvent', () => {
       'pid': 125,
       'processToken': 'token3',
       'bound': 'END',
-      'outcome': 'UPDATED',
+      'updateStates': [
+        {'deviceUptime': '323456', 'state': 'UPDATED'},
+      ],
+      'result': 'SUCCESS',
       'nextVersion': '2.0',
     };
     const event = parseEvent(message) as UpdateEndEvent;
     assertEquals('UPDATE', event.eventType);
     assertEquals('END', event.bound);
     assertEquals('event3', event.eventId);
-    assertEquals('UPDATED', event.outcome);
+    assertArrayEquals(
+        [{deviceUptime: 323456, state: 'UPDATED'}], event.updateStates);
+    assertEquals('SUCCESS', event.result);
     assertEquals('2.0', event.nextVersion);
     assertArrayEquals([], event.errors);
   });
 
-  test('should parse an UPDATE END event with arbitrary outcome string', () => {
+  test('should parse an UPDATE END event with multiple updateStates', () => {
     const message: Record<string, unknown> = {
       'eventType': 'UPDATE',
       'eventId': 'event3',
@@ -150,11 +155,37 @@ suite('parseEvent', () => {
       'pid': 125,
       'processToken': 'token3',
       'bound': 'END',
-      'outcome': 'SOME_OTHER_OUTCOME',
-      'nextVersion': '2.0',
+      'updateStates': [
+        {'deviceUptime': '323450', 'state': 'DOWNLOADING'},
+        {'deviceUptime': '323456', 'state': 'UPDATED'},
+      ],
+      'result': 'SUCCESS',
     };
     const event = parseEvent(message) as UpdateEndEvent;
-    assertEquals('SOME_OTHER_OUTCOME', event.outcome);
+    assertArrayEquals(
+        [
+          {deviceUptime: 323450, state: 'DOWNLOADING'},
+          {deviceUptime: 323456, state: 'UPDATED'},
+        ],
+        event.updateStates);
+    assertEquals('SUCCESS', event.result);
+    assertEquals(undefined, event.nextVersion);
+  });
+
+  test('should parse an UPDATE END event with arbitrary state string', () => {
+    const message: Record<string, unknown> = {
+      'eventType': 'UPDATE',
+      'eventId': 'event3',
+      'deviceUptime': '323456',
+      'pid': 125,
+      'processToken': 'token3',
+      'bound': 'END',
+      'updateStates': [
+        {'deviceUptime': '323456', 'state': 'SOME_OTHER_STATE'},
+      ],
+    };
+    const event = parseEvent(message) as UpdateEndEvent;
+    assertEquals('SOME_OTHER_STATE', event.updateStates[0]!.state);
   });
 
   test('should parse a valid PERSISTED_DATA event', () => {
@@ -620,6 +651,47 @@ suite('parseEvent', () => {
               () => parseEvent(message),
               `Message missing required field 'reason'`);
         });
+
+    suite('UPDATE END message validation', () => {
+      const baseUpdateEndMessage: Record<string, unknown> = {
+        'eventType': 'UPDATE',
+        'eventId': 'event3',
+        'deviceUptime': '323456',
+        'pid': 125,
+        'processToken': 'token3',
+        'bound': 'END',
+      };
+
+      test('should throw if updateStates is not an array', () => {
+        const message: Record<string, unknown> = {
+          ...baseUpdateEndMessage,
+          'updateStates': {},
+        };
+        assertThrows(
+            () => parseEvent(message),
+            `Message has field 'updateStates' of unexpected non-array type 'object'.`);
+      });
+
+      test('should throw if an updateState item is missing state', () => {
+        const message: Record<string, unknown> = {
+          ...baseUpdateEndMessage,
+          'updateStates': [{'deviceUptime': '12345'}],
+        };
+        assertThrows(
+            () => parseEvent(message),
+            `Message missing required field 'state'`);
+      });
+
+      test('should throw if result is not a string', () => {
+        const message: Record<string, unknown> = {
+          ...baseUpdateEndMessage,
+          'result': 123,
+        };
+        assertThrows(
+            () => parseEvent(message),
+            `Message has field result with unexpected type 'number', expected 'string'`);
+      });
+    });
 
     test(
         `should throw if required field 'eulaRequired' is missing for PERSISTED_DATA`,
@@ -1689,5 +1761,71 @@ suite('UpdaterProcessMap', () => {
           LOAD_POLICY_END.policySet,
           map.effectivePolicySet(LOAD_POLICY_MERGED, [LOAD_POLICY_MERGED]));
     });
+  });
+});
+
+suite('getUpdateOutcome', () => {
+  const baseUpdateEnd: UpdateEndEvent = {
+    eventType: 'UPDATE',
+    eventId: '3',
+    pid: 101,
+    processToken: 'def',
+    deviceUptime: 1005,
+    bound: 'END',
+    errors: [],
+    updateStates: [],
+  };
+
+  test('should return the last state from updateStates', () => {
+    const event: UpdateEndEvent = {
+      ...baseUpdateEnd,
+      updateStates: [
+        {deviceUptime: 1000, state: 'DOWNLOADING'},
+        {deviceUptime: 1005, state: 'UPDATED'},
+      ],
+    };
+    assertEquals('UPDATED', getUpdateOutcome(event));
+  });
+
+  test('should return result if updateStates is empty', () => {
+    const event: UpdateEndEvent = {
+      ...baseUpdateEnd,
+      updateStates: [],
+      result: 'SUCCESS',
+    };
+    assertEquals('SUCCESS', getUpdateOutcome(event));
+  });
+
+  test(
+      'should return undefined if both updateStates and result are missing',
+      () => {
+        const event: UpdateEndEvent = {
+          ...baseUpdateEnd,
+          updateStates: [],
+        };
+        assertEquals(undefined, getUpdateOutcome(event));
+      });
+
+  test('should work with MergedUpdateEvent', () => {
+    const startEvent: UpdateStartEvent = {
+      eventType: 'UPDATE',
+      eventId: '3',
+      pid: 101,
+      processToken: 'def',
+      deviceUptime: 1000,
+      bound: 'START',
+      errors: [],
+      appId: 'app1',
+    };
+    const endEvent: UpdateEndEvent = {
+      ...baseUpdateEnd,
+      updateStates: [{deviceUptime: 1005, state: 'UPDATED'}],
+    };
+    const mergedEvent: MergedUpdateEvent = {
+      eventType: 'UPDATE',
+      startEvent,
+      endEvent,
+    };
+    assertEquals('UPDATED', getUpdateOutcome(mergedEvent));
   });
 });

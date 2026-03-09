@@ -46,7 +46,8 @@ function createUpdateEndEvent(
     pid: 100,
     processToken: 'token-100',
     errors: [],
-    outcome,
+    updateStates:
+        outcome !== undefined ? [{deviceUptime: 1000, state: outcome}] : [],
   };
 }
 

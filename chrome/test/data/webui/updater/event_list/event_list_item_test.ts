@@ -263,7 +263,8 @@ suite('EventListItemElement', () => {
         processToken: '',
         bound: 'END',
         errors: [],
-        outcome: 'UPDATED',
+        updateStates: [{deviceUptime: 1000, state: 'UPDATED'}],
+        result: 'SUCCESS',
         nextVersion: '2.0',
       },
     };
@@ -275,19 +276,20 @@ suite('EventListItemElement', () => {
         item.shadowRoot.textContent,
         loadTimeData.getStringF('updatedTo', '2.0'));
 
-    event.endEvent.outcome = 'NO_UPDATE';
+    event.endEvent.updateStates = [{deviceUptime: 1000, state: 'NO_UPDATE'}];
     item.event = {...event};
     await microtasksFinished();
     assertStringContains(
         item.shadowRoot.textContent, loadTimeData.getString('noUpdate'));
 
-    event.endEvent.outcome = 'UPDATE_ERROR';
+    event.endEvent.updateStates = [{deviceUptime: 1000, state: 'UPDATE_ERROR'}];
     item.event = {...event};
     await microtasksFinished();
     assertStringContains(
         item.shadowRoot.textContent, loadTimeData.getString('updateError'));
 
-    event.endEvent.outcome = 'UNKNOWN_OUTCOME';
+    event.endEvent.updateStates =
+        [{deviceUptime: 1000, state: 'UNKNOWN_OUTCOME'}];
     item.event = {...event};
     await microtasksFinished();
     assertStringContains(
@@ -781,7 +783,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'UPDATED',
+          updateStates: [{deviceUptime: 1000, state: 'UPDATED'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();
@@ -812,7 +815,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'NO_UPDATE',
+          updateStates: [{deviceUptime: 1000, state: 'NO_UPDATE'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();
@@ -843,7 +847,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'UPDATE_ERROR',
+          updateStates: [{deviceUptime: 1000, state: 'UPDATE_ERROR'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();
@@ -922,7 +927,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'UPDATED',
+          updateStates: [{deviceUptime: 1000, state: 'UPDATED'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();
@@ -950,7 +956,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'UPDATE_ERROR',
+          updateStates: [{deviceUptime: 1000, state: 'UPDATE_ERROR'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();
@@ -1004,7 +1011,8 @@ suite('EventListItemElement', () => {
           processToken: '',
           bound: 'END',
           errors: [],
-          outcome: 'NO_UPDATE',
+          updateStates: [{deviceUptime: 1000, state: 'NO_UPDATE'}],
+          result: 'SUCCESS',
         },
       };
       await microtasksFinished();

@@ -15,7 +15,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {PolicySet, Scope, UpdaterProcessMap} from '../event_history.js';
-import {getAppId, isMergedHistoryEvent} from '../event_history.js';
+import {getAppId, getUpdateOutcome, isMergedHistoryEvent} from '../event_history.js';
 import type {HistoryEvent, MergedActivateEvent, MergedAppCommandEvent, MergedHistoryEvent, MergedInstallEvent, MergedQualifyEvent, MergedUninstallEvent, MergedUpdateEvent, MergedUpdaterProcessEvent, PersistedDataEvent} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {getKnownAppNamesById} from '../known_apps.js';
@@ -195,7 +195,7 @@ export class EventListItemElement extends CrLitElement {
       return 'error';
     }
     if (this.event.eventType === 'UPDATE' && isMergedHistoryEvent(this.event)) {
-      const updateOutcome = this.event.endEvent.outcome;
+      const updateOutcome = getUpdateOutcome(this.event.endEvent);
       if (updateOutcome === 'UPDATED') {
         return 'success';
       }
@@ -258,7 +258,7 @@ export class EventListItemElement extends CrLitElement {
     }
     switch (this.event.eventType) {
       case 'UPDATE':
-        switch (this.event.endEvent.outcome) {
+        switch (getUpdateOutcome(this.event)) {
           case 'UPDATED':
             return 'cr:check-circle';
           case 'NO_UPDATE':
@@ -303,7 +303,8 @@ export class EventListItemElement extends CrLitElement {
   }
 
   private getUpdateSummary(event: MergedUpdateEvent): string|undefined {
-    switch (event.endEvent.outcome) {
+    const updateOutcome = getUpdateOutcome(event);
+    switch (updateOutcome) {
       case 'NO_UPDATE':
         return loadTimeData.getString('noUpdate');
       case 'UPDATED':
@@ -313,8 +314,8 @@ export class EventListItemElement extends CrLitElement {
       case 'UPDATE_ERROR':
         return loadTimeData.getString('updateError');
       default:
-        return event.endEvent.outcome ?
-            loadTimeData.getStringF('outcome', event.endEvent.outcome) :
+        return updateOutcome !== undefined ?
+            loadTimeData.getStringF('outcome', updateOutcome) :
             loadTimeData.getString('outcomeUnknown');
     }
   }

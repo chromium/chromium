@@ -105,6 +105,14 @@ interface EventPair<Event,
 // clang-format on
 
 /**
+ * Represents a state transition within an update flow.
+ */
+export interface UpdateState {
+  deviceUptime?: number;
+  state: string;
+}
+
+/**
  * Represents an app registered with the updater.
  */
 export interface RegisteredApp {
@@ -310,8 +318,9 @@ export interface UpdateStartEvent extends StartEvent {
  */
 export interface UpdateEndEvent extends EndEvent {
   eventType: 'UPDATE';
-  outcome?: string;
   nextVersion?: string;
+  updateStates: UpdateState[];
+  result?: string;
 }
 
 /**
@@ -683,6 +692,51 @@ function parseUpdaterErrors(message: Record<string, unknown>): UpdaterError[] {
 }
 
 /**
+ * Parses a UpdateState from a message.
+ */
+function parseUpdateState(message: Record<string, unknown>): UpdateState {
+  const deviceUptime = parseInteger(message, 'deviceUptime');
+  const state = required(parseString, message, 'state');
+  return {deviceUptime, state};
+}
+
+/**
+ * Parses a list of UpdateStates from a message.
+ */
+function parseUpdateStates(
+    message: Record<string, unknown>,
+    fieldName: string,
+    ): UpdateState[] {
+  const updateStates = message[fieldName];
+  if (updateStates === undefined || updateStates === null) {
+    return [];
+  }
+  if (!Array.isArray(updateStates)) {
+    throw new ParseError(
+        `Message has field '${fieldName}' of unexpected non-array type '${
+            typeof updateStates}'.`,
+    );
+  }
+
+  const parsedUpdateStates: UpdateState[] = [];
+  for (const updateStateItem of updateStates) {
+    if (typeof updateStateItem !== 'object' || updateStateItem === null) {
+      throw new ParseError(`Message has field '${
+          fieldName}' containing an element of unexpected type '${
+          typeof updateStateItem}', expected 'object'.`);
+    }
+    if (Array.isArray(updateStateItem)) {
+      throw new ParseError(
+          `Message has field '${fieldName}' of unexpected array type.`);
+    }
+    parsedUpdateStates.push(
+        parseUpdateState(updateStateItem as Record<string, unknown>));
+  }
+  return parsedUpdateStates;
+}
+
+
+/**
  * Parses a RegisteredApp from a message.
  */
 function parseRegisteredApp(message: Record<string, unknown>): RegisteredApp {
@@ -896,9 +950,10 @@ function parseUpdateEndEvent(
     base: EndEvent&{eventType: 'UPDATE'},
     message: Record<string, unknown>,
     ): UpdateEndEvent {
-  const outcome = parseString(message, 'outcome');
   const nextVersion = parseString(message, 'nextVersion');
-  return {...base, outcome, nextVersion};
+  const updateStates = parseUpdateStates(message, 'updateStates');
+  const result = parseString(message, 'result');
+  return {...base, nextVersion, updateStates, result};
 }
 
 function parseQualifyStartEvent(
@@ -1351,4 +1406,14 @@ export class UpdaterProcessMap {
   private static eventProcessKey(event: HistoryEvent): string {
     return JSON.stringify([event.pid, event.processToken]);
   }
+}
+
+/**
+ * Determines the outcome of a an update event, which may be a
+ * CommonUpdateOutcome.
+ */
+export function getUpdateOutcome(event: MergedUpdateEvent|UpdateEndEvent):
+    string|undefined {
+  const endEvent = isMergedHistoryEvent(event) ? event.endEvent : event;
+  return endEvent.updateStates.at(-1)?.state ?? endEvent.result;
 }
