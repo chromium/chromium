@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/jobs/migration_target_install_job.h"
@@ -53,7 +54,11 @@ WebAppInstallFromMigrateFromFieldCommand::
     : WebAppCommand<AppLock, WebAppInstallFromMigrateFromFieldResult>(
           "WebAppInstallFromMigrateFromFieldCommand",
           AppLockDescription(GenerateAppIdFromManifest(*manifest)),
-          std::move(callback),
+          base::BindOnce([](WebAppInstallFromMigrateFromFieldResult result) {
+            base::UmaHistogramEnumeration(
+                "WebApp.InstallFromMigrateFromField.Result", result);
+            return result;
+          }).Then(std::move(callback)),
           /*args_for_shutdown=*/
           WebAppInstallFromMigrateFromFieldResult::kSystemShutdown),
       web_contents_(web_contents),

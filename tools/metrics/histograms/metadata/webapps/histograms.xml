@@ -1277,6 +1277,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallFromMigrateFromField.Result"
+    enum="WebAppInstallFromMigrateFromFieldResult" expires_after="2027-03-06">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of the WebAppInstallFromMigrateFromFieldCommand. This
+    occurs when a manifest is seen attached to a document the user navigated to,
+    where the 'migrate_from' manifest field is set, signifying that the current
+    manifest (web app) can can be migrated to from another installed manifest
+    (web app). The general purpose of this command is to install the current
+    manifest as a migration suggestion if the 'migrate_from' app is installed.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallMigrateToApp.Result"
     enum="InstallMigrateToAppResult" expires_after="2027-02-11">
   <owner>mek@chromium.org</owner>

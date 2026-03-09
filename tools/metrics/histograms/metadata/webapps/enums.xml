@@ -558,6 +558,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/ui_manager/update_dialog_types.h:WebAppIdentityUpdateResult) -->
 
+<!-- LINT.IfChange(WebAppInstallFromMigrateFromFieldResult) -->
+
+<enum name="WebAppInstallFromMigrateFromFieldResult">
+  <int value="0" label="AlreadyInstalled"/>
+  <int value="1" label="SuccessInstalled"/>
+  <int value="2" label="ManifestToWebAppInstallInfoError"/>
+  <int value="3" label="InstallFromInfoFailed"/>
+  <int value="4" label="UpdateFailed"/>
+  <int value="5" label="WebContentsWasDestroyed"/>
+  <int value="6" label="NoSourceAppInstalled"/>
+  <int value="7" label="UserNavigated"/>
+  <int value="8" label="SystemShutdown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h:WebAppInstallFromMigrateFromFieldResult) -->
+
 <enum name="WebAppLauncherLaunchResult">
   <int value="0" label="Success"/>
   <int value="1" label="Started">
