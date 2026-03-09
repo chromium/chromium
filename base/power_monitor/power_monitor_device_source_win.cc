@@ -62,17 +62,16 @@ void PowerMonitorDeviceSource::PlatformInit() {
   if (!CurrentUIThread::IsSet()) {
     return;
   }
-  speed_limit_observer_ =
-      std::make_unique<base::SequenceBound<SpeedLimitObserverWin>>(
-          base::ThreadPool::CreateSequencedTaskRunner({}),
-          BindRepeating(&PowerMonitorSource::ProcessSpeedLimitEvent));
+  speed_limit_observer_.emplace(
+      base::ThreadPool::CreateSequencedTaskRunner({}),
+      BindRepeating(&PowerMonitorSource::ProcessSpeedLimitEvent));
 }
 
 void PowerMonitorDeviceSource::PlatformDestroy() {
   // Because |speed_limit_observer_| is sequence bound, the actual destruction
   // happens asynchronously on its task runner. Until this has completed it is
   // still possible for PowerMonitorSource::ProcessSpeedLimitEvent to be called.
-  speed_limit_observer_.reset();
+  speed_limit_observer_.Reset();
 }
 
 PowerStateObserver::BatteryPowerStatus
