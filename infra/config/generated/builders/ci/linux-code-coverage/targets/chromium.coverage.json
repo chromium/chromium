@@ -2280,12 +2280,6 @@
         "script": "check_network_annotations.py"
       },
       {
-        "module_name": "check_static_initializers",
-        "module_scheme": "single",
-        "name": "check_static_initializers",
-        "script": "check_static_initializers.py"
-      },
-      {
         "module_name": "checkdeps",
         "module_scheme": "single",
         "name": "checkdeps",

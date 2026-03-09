@@ -1397,6 +1397,9 @@ coverage_builder(
                     shards = 50,
                 ),
             ),
+            "check_static_initializers": targets.remove(
+                reason = "Coverage instrumentation adds static initializers, so this test will always fail.",
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--no-sandbox",
