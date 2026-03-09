@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.70"
 name = "minijinja"
-version = "2.16.0"
+version = "2.17.1"
 authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
 build = false
 exclude = ["tests"]

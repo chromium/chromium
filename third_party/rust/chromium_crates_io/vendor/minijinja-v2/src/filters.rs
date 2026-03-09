@@ -554,9 +554,12 @@ mod builtins {
     /// {{ "42"|int == 42 }} -> true
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
-    pub fn int(value: &Value) -> Result<Value, Error> {
+    pub fn int(state: &State, value: &Value) -> Result<Value, Error> {
         match &value.0 {
-            ValueRepr::Undefined(_) | ValueRepr::None => Ok(Value::from(0)),
+            ValueRepr::Undefined(_) | ValueRepr::None => {
+                ok!(state.undefined_behavior().assert_value_not_undefined(value));
+                Ok(Value::from(0))
+            }
             ValueRepr::Bool(x) => Ok(Value::from(*x as u64)),
             ValueRepr::U64(_) | ValueRepr::I64(_) | ValueRepr::U128(_) | ValueRepr::I128(_) => {
                 Ok(value.clone())
@@ -587,9 +590,12 @@ mod builtins {
     /// {{ "42.5"|float == 42.5 }} -> true
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
-    pub fn float(value: &Value) -> Result<Value, Error> {
+    pub fn float(state: &State, value: &Value) -> Result<Value, Error> {
         match &value.0 {
-            ValueRepr::Undefined(_) | ValueRepr::None => Ok(Value::from(0.0)),
+            ValueRepr::Undefined(_) | ValueRepr::None => {
+                ok!(state.undefined_behavior().assert_value_not_undefined(value));
+                Ok(Value::from(0.0))
+            }
             ValueRepr::Bool(x) => Ok(Value::from(*x as u64 as f64)),
             ValueRepr::String(..) | ValueRepr::SmallStr(_) => value
                 .as_str()
@@ -843,12 +849,13 @@ mod builtins {
     ///
     /// If the string has been marked as safe, that value is preserved.
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
-    pub fn string(value: &Value) -> Value {
-        if value.kind() == ValueKind::String {
+    pub fn string(state: &State, value: &Value) -> Result<Value, Error> {
+        ok!(state.undefined_behavior().assert_value_not_undefined(value));
+        Ok(if value.kind() == ValueKind::String {
             value.clone()
         } else {
             value.to_string().into()
-        }
+        })
     }
 
     /// Converts the value into a boolean value.
@@ -860,8 +867,8 @@ mod builtins {
     /// {{ 42|bool }} -> true
     /// ```
     #[cfg_attr(docsrs, doc(cfg(feature = "builtins")))]
-    pub fn bool(value: &Value) -> bool {
-        value.is_true()
+    pub fn bool(state: &State, value: &Value) -> Result<bool, Error> {
+        state.undefined_behavior().is_true(value)
     }
 
     /// Slice an iterable and return a list of lists containing

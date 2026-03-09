@@ -27,7 +27,7 @@ ecosystem of editor integrations.
 ```
 $ cargo tree
 minimal v0.1.0 (examples/minimal)
-└── minijinja v2.16.0 (minijinja)
+└── minijinja v2.17.1 (minijinja)
     └── serde v1.0.144
 ```
 
@@ -141,7 +141,7 @@ These are related template engines for Rust:
   precompilation. Has significant divergence from Jinja syntax in parts.
 * [Tera](https://crates.io/crates/tera): Jinja inspired, dynamic, has divergences from Jinja.
 * [Liquid](https://crates.io/crates/liquid): an implementation of Liquid templates for Rust.
-  Liquid was inspired by Django from which Jinja took it's inspiration.
+  Liquid was inspired by Django from which Jinja took its inspiration.
 * [TinyTemplate](https://crates.io/crates/tinytemplate): minimal footprint template engine
   with syntax that takes lose inspiration from Jinja and handlebars.
 

@@ -66,7 +66,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "a powerful template engine for Rust with minimal dependencies"
   cargo_pkg_repository = "https://github.com/mitsuhiko/minijinja"
-  cargo_pkg_version = "2.16.0"
+  cargo_pkg_version = "2.17.1"
 
   allow_unsafe = true
 
