@@ -94,9 +94,11 @@ class ActorKeyedService : public KeyedService,
 
   // Executes the given ToolRequest actions using the execution engine for the
   // given task id.
+  // TODO(crbug.com/490381613): `result_code` and `index_of_failed_action` can
+  // be obtained from `action_results`.
   using PerformActionsCallback = base::OnceCallback<void(
       mojom::ActionResultCode /*result_code*/,
-      std::optional<size_t> /*index_of_failing_action*/,
+      std::optional<size_t> /*index_of_failed_action*/,
       std::vector<ActionResultWithLatencyInfo> /* action_results */)>;
   void PerformActions(TaskId task_id,
                       std::vector<std::unique_ptr<ToolRequest>>&& actions,

@@ -1176,6 +1176,10 @@ void BuildActionsResultWithObservations(
       latency_step->set_latency_stop_ms(
           (action_result.end_time - actions_start_time).InMilliseconds());
     }
+    if (!actor::IsOk(*action_result.result)) {
+      CHECK_EQ(*index_of_failed_action, i);
+      response->set_error_message(action_result.result->message);
+    }
   }
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
