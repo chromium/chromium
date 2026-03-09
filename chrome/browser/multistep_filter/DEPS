@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/multistep_filter/content",
   "+components/multistep_filter/core",
   "+components/keyed_service/core",
+  "+components/tabs",
 ]

@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/multistep_filter/core",
+  "+content/public/browser",
+]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+content/public/test",
+  ],
+}

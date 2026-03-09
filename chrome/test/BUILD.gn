@@ -7155,7 +7155,6 @@ test("unit_tests") {
     "//chrome/browser/media/router:unittests",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/metrics/structured",
-    "//chrome/browser/multistep_filter:unit_tests",
     "//chrome/browser/navigation_predictor:unit_tests",
     "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/net:probe_message_proto",
@@ -7703,7 +7702,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/skills:unit_tests" ]
+    deps += [
+      "//chrome/browser/multistep_filter:unit_tests",
+      "//chrome/browser/skills:unit_tests",
+    ]
   }
 
   if (is_win) {

@@ -38,7 +38,7 @@ class MultistepFilterService : public KeyedService {
 
   // Generates a filter suggestion for `url`. Based on URL analysis, the
   // suggestion may be stored for later use. Returns the result via `callback`.
-  void GenerateFilterSuggestions(
+  virtual void GenerateFilterSuggestions(
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 

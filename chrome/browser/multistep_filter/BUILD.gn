@@ -2,10 +2,57 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("multistep_filter") {
+  sources = []
+  public_deps = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    public_deps += [
+      "//chrome/browser/multistep_filter/core",
+      "//chrome/browser/ui/tabs",
+      "//ui/base/unowned_user_data",
+    ]
+    sources += [
+      "chrome_filter_navigation_observer.cc",
+      "chrome_filter_navigation_observer.h",
+    ]
+    deps += [
+      "//base",
+      "//chrome/browser/multistep_filter/ui",
+      "//chrome/browser/profiles:profile",
+      "//components/multistep_filter/content",
+      "//components/multistep_filter/core",
+      "//components/multistep_filter/core:features",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//url",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
-  deps = [
-    "//chrome/browser/multistep_filter/core:unit_tests",
-    "//chrome/browser/multistep_filter/ui:unit_tests",
-  ]
+  sources = []
+  deps = []
+
+  if (!is_android && !is_ios) {
+    sources += [ "chrome_filter_navigation_observer_unittest.cc" ]
+    deps += [
+      ":multistep_filter",
+      "//base/test:test_support",
+      "//chrome/browser/multistep_filter/core:unit_tests",
+      "//chrome/browser/multistep_filter/ui",
+      "//chrome/browser/multistep_filter/ui:unit_tests",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/test:test_support",
+      "//components/multistep_filter/core",
+      "//components/multistep_filter/core:features",
+      "//components/tabs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }

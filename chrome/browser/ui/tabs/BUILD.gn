@@ -556,6 +556,7 @@ if (!is_android) {
       "//components/image_fetcher/core",
       "//components/lens",
       "//components/metrics:content",
+      "//components/multistep_filter/core:features",
       "//components/passage_embeddings/core",
       "//components/performance_manager",
       "//components/permissions",
@@ -588,7 +589,11 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      deps += [ "//chrome/browser/wallet" ]
+      deps += [
+        "//chrome/browser/multistep_filter",
+        "//chrome/browser/multistep_filter/ui",
+        "//chrome/browser/wallet",
+      ]
     }
 
     if (is_chromeos) {

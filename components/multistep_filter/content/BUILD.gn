@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "filter_navigation_observer.cc",
+    "filter_navigation_observer.h",
+  ]
+  public_deps = [ "//components/multistep_filter/core/data_models" ]
+  deps = [
+    "//base",
+    "//components/multistep_filter/core",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "filter_navigation_observer_unittest.cc" ]
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_support",
+    "//components/multistep_filter/core",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

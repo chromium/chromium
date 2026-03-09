@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("multistep_filter") {
-  public_deps = [ "//components/multistep_filter/core" ]
-}
-
 source_set("unit_tests") {
   testonly = true
   deps = [ "//components/multistep_filter/core:unit_tests" ]
+
+  if (!is_ios) {
+    deps += [ "//components/multistep_filter/content:unit_tests" ]
+  }
 }

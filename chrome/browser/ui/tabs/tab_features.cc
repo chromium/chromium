@@ -24,6 +24,8 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
+#include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
+#include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -93,6 +95,8 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
+
+#include "components/multistep_filter/core/features.h"
 #include "components/skills/features.h"
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -549,6 +553,19 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     saas_usage_navigation_observer_ =
         std::make_unique<enterprise_reporting::SaasUsageNavigationObserver>(
             tab.GetContents());
+  }
+#endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
+    filter_ui_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<multistep_filter::FilterUiController>(tab, tab);
+    filter_navigation_observer_ =
+        GetUserDataFactory()
+            .CreateInstance<multistep_filter::ChromeFilterNavigationObserver>(
+                tab, tab);
   }
 #endif
 

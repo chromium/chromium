@@ -14,6 +14,7 @@ include_rules = [
   "+components/omnibox",
   "+components/page_image_service",
   "+components/page_load_metrics/browser",
+  "+components/multistep_filter/core",
   "+components/facilitated_payments/core/features",
   "+components/power_bookmarks/core",
   "+components/fullscreen_control",

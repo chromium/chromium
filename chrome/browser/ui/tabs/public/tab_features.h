@@ -170,6 +170,11 @@ namespace indigo {
 class IndigoPageActionController;
 }  // namespace indigo
 
+namespace multistep_filter {
+class ChromeFilterNavigationObserver;
+class FilterUiController;
+}  // namespace multistep_filter
+
 namespace tabs {
 
 class ContextHighlightTabFeature;
@@ -586,6 +591,10 @@ class TabFeatures {
   std::unique_ptr<indigo::IndigoPageActionController>
       indigo_page_action_controller_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  std::unique_ptr<multistep_filter::FilterUiController> filter_ui_controller_;
+  std::unique_ptr<multistep_filter::ChromeFilterNavigationObserver>
+      filter_navigation_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

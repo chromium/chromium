@@ -121,6 +121,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_keyed_service_factory.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
@@ -1084,6 +1085,10 @@ void ChromeBrowserMainExtraPartsProfiles::
   ProfileMetricsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   MicrosoftAuthServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  multistep_filter::MultistepFilterServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   web_app::IsolatedWebAppsWindowOpenPermissionServiceFactory::GetInstance();
