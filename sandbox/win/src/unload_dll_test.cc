@@ -2,51 +2,67 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/compiler_specific.h"
-#include "base/win/scoped_handle.h"
+#include <windows.h>
+
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "sandbox/win/src/sandbox.h"
-#include "sandbox/win/src/sandbox_factory.h"
-#include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
 
+namespace {
+constexpr wchar_t kLoad[] = L"Load";
+constexpr wchar_t kUnload[] = L"Unload";
+constexpr wchar_t kBoth[] = L"Both";
+}  // namespace
+
 // Loads and or unloads a DLL passed in the second parameter of argv.
-// The first parameter of argv is 'L' = load, 'U' = unload or 'B' for both.
-SBOX_TESTS_COMMAND int UseOneDLL(int argc, wchar_t** argv) {
-  if (argc != 2)
+// The first parameter of args is "Load", "Unload" or "Both".
+SBOX_TEST_COMMAND(UseOneDLL) {
+  if (args.size() != 2) {
     return SBOX_TEST_FAILED_TO_RUN_TEST;
+  }
+
+  bool do_load = args[0] == kLoad || args[0] == kBoth;
+  bool do_unload = args[0] == kUnload || args[0] == kBoth;
+
+  if (!do_load && !do_unload) {
+    return SBOX_TEST_INVALID_PARAMETER;
+  }
+
   int rv = SBOX_TEST_FAILED_TO_RUN_TEST;
 
-  wchar_t option = (argv[0])[0];
-  if ((option == L'L') || (option == L'B')) {
-    HMODULE module1 = ::LoadLibraryW(UNSAFE_TODO(argv[1]));
-    rv = (!module1) ? SBOX_TEST_FAILED : SBOX_TEST_SUCCEEDED;
+  if (do_load) {
+    HMODULE module = ::LoadLibraryW(args[1].c_str());
+    rv = module ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
   }
 
-  if ((option == L'U') || (option == L'B')) {
-    HMODULE module2 = ::GetModuleHandleW(UNSAFE_TODO(argv[1]));
-    rv = ::FreeLibrary(module2) ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
+  if (do_unload) {
+    HMODULE module = ::GetModuleHandleW(args[1].c_str());
+    rv = ::FreeLibrary(module) ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
   }
+
   return rv;
 }
 
 // Opens the current executable's path.
-SBOX_TESTS_COMMAND int OpenExecutablePath(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(OpenExecutablePath) {
   WCHAR full_path[MAX_PATH];
-  if (!::GetModuleFileName(nullptr, full_path, MAX_PATH))
+  if (!::GetModuleFileName(nullptr, full_path, MAX_PATH)) {
     return SBOX_TEST_FIRST_ERROR;
-  if (::GetFileAttributes(full_path) == INVALID_FILE_ATTRIBUTES)
+  }
+  if (::GetFileAttributes(full_path) == INVALID_FILE_ATTRIBUTES) {
     return SBOX_TEST_FAILED;
+  }
   return SBOX_TEST_SUCCEEDED;
 }
 
-std::unique_ptr<TestRunner> BaselineAvicapRunner() {
-  auto runner = std::make_unique<TestRunner>();
+std::unique_ptr<UseOneDLLTestRunner> BaselineAvicapRunner() {
+  auto runner = std::make_unique<UseOneDLLTestRunner>();
   runner->SetTestState(BEFORE_REVERT);
-  runner->SetTimeout(2000);
+  runner->SetTimeout(base::Milliseconds(2000));
   // Add a file rule, because that ensures that the interception agent has
   // more than one item in its internal table.
   runner->AllowFileAccess(FileSemantics::kAllowReadonly, L"\\??\\*.exe");
@@ -60,49 +76,50 @@ std::unique_ptr<TestRunner> BaselineAvicapRunner() {
 #define MAYBE_BaselineAvicapDll BaselineAvicapDll
 #endif
 TEST(UnloadDllTest, MAYBE_BaselineAvicapDll) {
-  auto runner = BaselineAvicapRunner();
   // Note for the puzzled: avicap32.dll is a 64-bit dll in 64-bit versions of
   // windows so this test and the others just work.
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner->RunTest(L"UseOneDLL L avicap32.dll"));
-  runner = BaselineAvicapRunner();
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner->RunTest(L"UseOneDLL B avicap32.dll"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            BaselineAvicapRunner()->RunTest(kLoad, L"avicap32.dll"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            BaselineAvicapRunner()->RunTest(kBoth, L"avicap32.dll"));
 }
 
-std::unique_ptr<TestRunner> UnloadAvicapNoPatchingRunner() {
-  auto runner = std::make_unique<TestRunner>();
+std::unique_ptr<UseOneDLLTestRunner> UnloadAvicapNoPatchingRunner() {
+  auto runner = std::make_unique<UseOneDLLTestRunner>();
   runner->SetTestState(BEFORE_REVERT);
-  runner->SetTimeout(2000);
-  runner->GetPolicy()->GetConfig()->AddDllToUnload(L"avicap32.dll");
+  runner->SetTimeout(base::Milliseconds(2000));
+  runner->GetConfig()->AddDllToUnload(L"avicap32.dll");
   return runner;
 }
 
 TEST(UnloadDllTest, UnloadAviCapDllNoPatching) {
-  auto runner = UnloadAvicapNoPatchingRunner();
-  EXPECT_EQ(SBOX_TEST_FAILED, runner->RunTest(L"UseOneDLL L avicap32.dll"));
-  runner = UnloadAvicapNoPatchingRunner();
-  EXPECT_EQ(SBOX_TEST_FAILED, runner->RunTest(L"UseOneDLL B avicap32.dll"));
+  EXPECT_EQ(SBOX_TEST_FAILED,
+            UnloadAvicapNoPatchingRunner()->RunTest(kLoad, L"avicap32.dll"));
+  EXPECT_EQ(SBOX_TEST_FAILED,
+            UnloadAvicapNoPatchingRunner()->RunTest(kBoth, L"avicap32.dll"));
 }
 
-std::unique_ptr<TestRunner> UnloadAvicapWithPatchingRunner() {
-  auto runner = std::make_unique<TestRunner>();
-  runner->SetTestState(BEFORE_REVERT);
-  runner->SetTimeout(2000);
-  runner->GetPolicy()->GetConfig()->AddDllToUnload(L"avicap32.dll");
+template <typename T>
+void ConfigAvicapWithPatching(T& runner) {
+  runner.SetTimeout(base::Milliseconds(2000));
+  runner.GetConfig()->AddDllToUnload(L"avicap32.dll");
   // Add a couple of rules that ensures that the interception agent add EAT
   // patching on the client which makes sure that the unload dll record does
   // not interact badly with them.
-  runner->AllowFileAccess(FileSemantics::kAllowReadonly, L"\\??\\*.exe");
-  runner->AllowFileAccess(FileSemantics::kAllowReadonly, L"\\??\\*.log");
-  return runner;
+  runner.AllowFileAccess(FileSemantics::kAllowReadonly, L"\\??\\*.exe");
+  runner.AllowFileAccess(FileSemantics::kAllowReadonly, L"\\??\\*.log");
 }
 
 TEST(UnloadDllTest, UnloadAviCapDllWithPatching) {
-  auto runner = UnloadAvicapWithPatchingRunner();
-  EXPECT_EQ(SBOX_TEST_FAILED, runner->RunTest(L"UseOneDLL L avicap32.dll"));
+  UseOneDLLTestRunner runner;
+  ConfigAvicapWithPatching(runner);
+  runner.SetTestState(BEFORE_REVERT);
+  EXPECT_EQ(SBOX_TEST_FAILED, runner.RunTest(kLoad, L"avicap32.dll"));
 
-  runner = UnloadAvicapWithPatchingRunner();
-  runner->SetTestState(AFTER_REVERT);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner->RunTest(L"OpenExecutablePath"));
+  OpenExecutablePathTestRunner runner2;
+  ConfigAvicapWithPatching(runner2);
+  runner2.SetTestState(AFTER_REVERT);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest());
 }
 
 }  // namespace sandbox

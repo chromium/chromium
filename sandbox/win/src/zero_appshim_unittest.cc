@@ -24,7 +24,7 @@ constexpr ptrdiff_t kShimDataOffset = 0x1e8;
 }  // namespace
 
 // Validate that we can zero the member and still execute.
-SBOX_TESTS_COMMAND int ZeroAppShimCommand(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(ZeroAppShimCommand) {
   PROCESS_BASIC_INFORMATION info = {};
   NTSTATUS status =
       ::NtQueryInformationProcess(GetCurrentProcess(), ProcessBasicInformation,
@@ -51,13 +51,10 @@ TEST(ZeroAppShimTest, ZeroAppShim) {
     GTEST_SKIP() << "ZeroAppShim not supported in WoW or ARM64 emulated modes.";
   }
 
-  std::wstring test_command = L"ZeroAppShimCommand";
-  TestRunner runner;
-  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  ZeroAppShimCommandTestRunner runner;
+  runner.GetConfig()->SetZeroAppShim();
 
-  config->SetZeroAppShim();
-
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 }
 
 }  // namespace sandbox
