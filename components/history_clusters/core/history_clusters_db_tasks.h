@@ -27,7 +27,7 @@ namespace history_clusters {
 class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
  public:
   using Callback = base::OnceCallback<void(
-      std::vector<int64_t> cluster_ids,
+      std::vector<history::ClusterId> cluster_ids,
       std::vector<history::AnnotatedVisit> annotated_visits,
       QueryClustersContinuationParams continuation_params)>;
 
@@ -132,7 +132,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // The clusters whose visits were returned. Any cluster included will have all
   // its visits included; i.e. won't return partial clusters. Retrieved from the
   // history DB thread and returned through the callback on the main thread.
-  std::vector<int64_t> cluster_ids_;
+  std::vector<history::ClusterId> cluster_ids_;
 
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.

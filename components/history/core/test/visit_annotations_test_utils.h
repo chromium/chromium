@@ -22,7 +22,7 @@ std::vector<VisitID> GetVisitIds(
     const std::vector<ClusterVisit>& cluster_visits);
 
 // Extract cluster IDs from `Cluster`s.
-std::vector<int64_t> GetClusterIds(
+std::vector<ClusterId> GetClusterIds(
     const std::vector<history::Cluster>& clusters);
 
 // Construct a `Cluster` containing `visit_ids`.
@@ -30,7 +30,7 @@ Cluster CreateCluster(const std::vector<VisitID>& visit_ids);
 
 // Like `CreateCluster()`, but creates multiple `Cluster`s.
 std::vector<Cluster> CreateClusters(
-    const std::vector<std::vector<int64_t>>& visit_ids_per_cluster);
+    const std::vector<std::vector<VisitID>>& visit_ids_per_cluster);
 
 }  // namespace history
 

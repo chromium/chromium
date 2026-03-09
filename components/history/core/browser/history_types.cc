@@ -604,7 +604,7 @@ std::string ClusterKeywordData::GetKeywordTypeLabel() const {
 }
 
 Cluster::Cluster() = default;
-Cluster::Cluster(int64_t cluster_id,
+Cluster::Cluster(ClusterId cluster_id,
                  const std::vector<ClusterVisit>& visits,
                  const base::flat_map<std::u16string, ClusterKeywordData>&
                      keyword_to_data_map,

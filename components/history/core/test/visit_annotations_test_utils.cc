@@ -35,9 +35,9 @@ std::vector<VisitID> GetVisitIds(
   return visit_ids;
 }
 
-std::vector<int64_t> GetClusterIds(
+std::vector<ClusterId> GetClusterIds(
     const std::vector<history::Cluster>& clusters) {
-  std::vector<int64_t> cluster_ids;
+  std::vector<ClusterId> cluster_ids;
   cluster_ids.reserve(clusters.size());
   std::ranges::transform(
       clusters, std::back_inserter(cluster_ids),
@@ -59,7 +59,7 @@ Cluster CreateCluster(const std::vector<VisitID>& visit_ids) {
 }
 
 std::vector<Cluster> CreateClusters(
-    const std::vector<std::vector<int64_t>>& visit_ids_per_cluster) {
+    const std::vector<std::vector<VisitID>>& visit_ids_per_cluster) {
   std::vector<Cluster> clusters;
   clusters.reserve(visit_ids_per_cluster.size());
   std::ranges::transform(visit_ids_per_cluster, std::back_inserter(clusters),

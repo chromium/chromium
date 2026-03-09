@@ -65,7 +65,7 @@ TEST(HistoryClustersUtilTest, ComputeURLForDeduping) {
 TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
   std::vector<history::Cluster> all_clusters;
   all_clusters.push_back(
-      history::Cluster(1,
+      history::Cluster(history::ClusterId(1),
                        {
                            GetHardcodedClusterVisit(2),
                            GetHardcodedClusterVisit(1),
@@ -78,7 +78,7 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
   hidden_google_visit.interaction_state =
       history::ClusterVisit::InteractionState::kHidden;
   all_clusters.push_back(
-      history::Cluster(2,
+      history::Cluster(history::ClusterId(2),
                        {
                            GetHardcodedClusterVisit(2),
                            hidden_google_visit,
@@ -142,13 +142,13 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
     ASSERT_EQ(clusters.size(), expected_size);
 
     if (test_item.expect_first_cluster) {
-      EXPECT_EQ(clusters[0].cluster_id, 1);
+      EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(1));
     }
 
     if (test_item.expect_second_cluster) {
       const auto& cluster =
           test_item.expect_first_cluster ? clusters[1] : clusters[0];
-      EXPECT_EQ(cluster.cluster_id, 2);
+      EXPECT_EQ(cluster.cluster_id, history::ClusterId(2));
     }
   }
 }
@@ -156,7 +156,7 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
 TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
   std::vector<history::Cluster> all_clusters;
   all_clusters.push_back(
-      history::Cluster(0,
+      history::Cluster(history::ClusterId(0),
                        {
                            GetHardcodedClusterVisit(1),
                            GetHardcodedClusterVisit(2),
@@ -193,7 +193,7 @@ TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
 TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
   std::vector<history::Cluster> all_clusters;
   all_clusters.push_back(
-      history::Cluster(1,
+      history::Cluster(history::ClusterId(1),
                        {
                            GetHardcodedClusterVisit(1),
                            GetHardcodedClusterVisit(2),
@@ -202,7 +202,7 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
                         {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
   all_clusters.push_back(
-      history::Cluster(2,
+      history::Cluster(history::ClusterId(2),
                        {
                            GetHardcodedClusterVisit(1),
                        },
@@ -218,8 +218,8 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     std::vector clusters = all_clusters;
     ApplySearchQuery("search", clusters);
     ASSERT_EQ(clusters.size(), 2U);
-    EXPECT_EQ(clusters[0].cluster_id, 1);
-    EXPECT_EQ(clusters[1].cluster_id, 2);
+    EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(1));
+    EXPECT_EQ(clusters[1].cluster_id, history::ClusterId(2));
     EXPECT_FLOAT_EQ(clusters[0].search_match_score, 0.5);
     EXPECT_FLOAT_EQ(clusters[1].search_match_score, 3.5);
   }
@@ -234,8 +234,8 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     std::vector clusters = all_clusters;
     ApplySearchQuery("search", clusters);
     ASSERT_EQ(clusters.size(), 2U);
-    EXPECT_EQ(clusters[0].cluster_id, 2);
-    EXPECT_EQ(clusters[1].cluster_id, 1);
+    EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(2));
+    EXPECT_EQ(clusters[1].cluster_id, history::ClusterId(1));
     EXPECT_FLOAT_EQ(clusters[0].search_match_score, 3.5);
     EXPECT_FLOAT_EQ(clusters[1].search_match_score, 0.5);
   }
@@ -249,8 +249,8 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
     std::vector clusters = all_clusters;
     ApplySearchQuery("google", clusters);
     ASSERT_EQ(clusters.size(), 2U);
-    EXPECT_EQ(clusters[0].cluster_id, 1);
-    EXPECT_EQ(clusters[1].cluster_id, 2);
+    EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(1));
+    EXPECT_EQ(clusters[1].cluster_id, history::ClusterId(2));
     EXPECT_FLOAT_EQ(clusters[0].search_match_score, 0.5);
     EXPECT_FLOAT_EQ(clusters[1].search_match_score, 0.5);
   }
@@ -259,7 +259,8 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
 TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
   std::vector<history::Cluster> all_clusters;
 
-  auto add_cluster = [&](int64_t cluster_id, std::vector<float> visit_scores) {
+  auto add_cluster = [&](history::ClusterId cluster_id,
+                         std::vector<float> visit_scores) {
     history::Cluster cluster;
     cluster.cluster_id = cluster_id;
     std::ranges::transform(visit_scores, std::back_inserter(cluster.visits),
@@ -271,22 +272,22 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
   };
 
   // High scoring visits should always be above the fold.
-  add_cluster(0, {1, .8, .5, .5, .5});
+  add_cluster(history::ClusterId(0), {1, .8, .5, .5, .5});
 
   // Low scoring visits should be above the fold only if they're one of top 4.
-  add_cluster(1, {.4, .4, .4, .4, .4});
+  add_cluster(history::ClusterId(1), {.4, .4, .4, .4, .4});
 
   // 0 scoring visits should never be above the fold.
-  add_cluster(2, {0, 0, .8, .8});
+  add_cluster(history::ClusterId(2), {0, 0, .8, .8});
 
   // Clusters with 1 visit after filtering should be removed.
-  add_cluster(3, {.8, 0});
+  add_cluster(history::ClusterId(3), {.8, 0});
 
   // Clusters with 0 visits after filtering should be removed.
-  add_cluster(4, {0, 0});
+  add_cluster(history::ClusterId(4), {0, 0});
 
   // Hidden and Done visits can be culled out.
-  add_cluster(5, {1, 1, 1, 1});
+  add_cluster(history::ClusterId(5), {1, 1, 1, 1});
   all_clusters[5].visits[0].interaction_state =
       history::ClusterVisit::InteractionState::kHidden;
   all_clusters[5].visits[1].interaction_state =
@@ -306,19 +307,19 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
         "History.Clusters.Backend.NumVisitsBelowFoldPercentage", 4);
 
     // No visits are hidden as they are all high-scoring.
-    EXPECT_EQ(clusters[0].cluster_id, 0);
+    EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(0));
     EXPECT_EQ(clusters[0].visits.size(), 5u);
 
     // 1 visit could have been shown but is below the fold due to score.
-    EXPECT_EQ(clusters[1].cluster_id, 1);
+    EXPECT_EQ(clusters[1].cluster_id, history::ClusterId(1));
     EXPECT_EQ(clusters[1].visits.size(), 4u);
 
     // No visits that should actually be shown are hidden.
-    EXPECT_EQ(clusters[2].cluster_id, 2);
+    EXPECT_EQ(clusters[2].cluster_id, history::ClusterId(2));
     EXPECT_EQ(clusters[2].visits.size(), 2u);
 
     // No visits that should actually be shown are hidden.
-    EXPECT_EQ(clusters[3].cluster_id, 5);
+    EXPECT_EQ(clusters[3].cluster_id, history::ClusterId(5));
     EXPECT_EQ(clusters[3].visits.size(), 2u);
 
     // Clusters index 0, 2, and 3.
@@ -347,10 +348,10 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
 
     // Cluster id = 3, with 1 visit after filtering should no longer be removed.
     ASSERT_EQ(clusters.size(), 5u);
-    EXPECT_EQ(clusters[3].cluster_id, 3);
+    EXPECT_EQ(clusters[3].cluster_id, history::ClusterId(3));
     EXPECT_EQ(clusters[3].visits.size(), 1u);
     // Cluster id = 5, with a Done visit, should have that Done visit visible.
-    EXPECT_EQ(clusters[4].cluster_id, 5);
+    EXPECT_EQ(clusters[4].cluster_id, history::ClusterId(5));
     EXPECT_EQ(clusters[4].visits.size(), 3u);
 
     // Clusters 0, 2, 3, and 4.
@@ -427,7 +428,7 @@ TEST(HistoryClustersUtilTest, SortClusters) {
   // This first cluster is meant to validate that the higher scoring "visit 1"
   // gets sorted to the top, even though "visit 1" is older than "visit 2".
   // It's to validate the within-cluster sorting.
-  clusters.push_back(history::Cluster(0,
+  clusters.push_back(history::Cluster(history::ClusterId(0),
                                       {
                                           GetHardcodedClusterVisit(2, 0.5),
                                           GetHardcodedClusterVisit(1, 0.9),
@@ -436,7 +437,7 @@ TEST(HistoryClustersUtilTest, SortClusters) {
   // The second cluster is lower scoring, but newer, because the top visit is
   // newer. It should be sorted above the first cluster because of reverse
   // chronological between-cluster sorting.
-  clusters.push_back(history::Cluster(0,
+  clusters.push_back(history::Cluster(history::ClusterId(0),
                                       {
                                           GetHardcodedClusterVisit(3, 0.1),
                                       },

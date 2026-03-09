@@ -118,7 +118,7 @@ std::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
 mojom::ClusterPtr ClusterToMojom(const TemplateURLService* template_url_service,
                                  const history::Cluster cluster) {
   auto cluster_mojom = mojom::Cluster::New();
-  cluster_mojom->id = cluster.cluster_id;
+  cluster_mojom->id = cluster.cluster_id.value();
   if (cluster.label) {
     cluster_mojom->label = base::UTF16ToUTF8(*cluster.label);
     for (const auto& match : cluster.label_match_positions) {
@@ -140,7 +140,7 @@ mojom::ClusterPtr ClusterToMojom(const TemplateURLService* template_url_service,
 
   if (GetConfig().user_visible_debug && cluster.from_persistence) {
     cluster_mojom->debug_info =
-        "persisted, id = " + base::NumberToString(cluster.cluster_id);
+        "persisted, id = " + base::NumberToString(cluster.cluster_id.value());
   }
 
   for (const auto& visit : cluster.visits) {

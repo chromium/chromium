@@ -85,7 +85,7 @@ class MockHistoryService : public history::HistoryService {
               (override));
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               AddVisitsToCluster,
-              (int64_t,
+              (history::ClusterId,
                const std::vector<history::ClusterVisit>&,
                base::OnceClosure callback,
                base::CancelableTaskTracker*),
@@ -106,12 +106,12 @@ class MockHistoryService : public history::HistoryService {
   }
 
   // Runs the last cluster id callback received with `cluster_id`.
-  void RunLastClusterIdCallbackWithClusterId(int64_t cluster_id) {
+  void RunLastClusterIdCallbackWithClusterId(history::ClusterId cluster_id) {
     std::move(cluster_id_callback_).Run(cluster_id);
   }
 
   base::CancelableTaskTracker::TaskId RunAddVisitsToClusterCallback(
-      int64_t cluster_id,
+      history::ClusterId cluster_id,
       const std::vector<history::ClusterVisit>& cluster_visits,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker) {
@@ -283,7 +283,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
   base::HistogramTester histogram_tester;
 
   SetPersistenceExpectedConfig();
-  int64_t cluster_id = 123;
+  history::ClusterId cluster_id = history::ClusterId(123);
 
   history::ClusterVisit got_cluster_visit;
   EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
@@ -305,7 +305,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
 TEST_F(ContextClustererHistoryServiceObserverTest,
        StillPersistsClusterEvenIfClusterIdComesBackWayLaterSingleVisit) {
   SetPersistenceExpectedConfig();
-  int64_t cluster_id = 123;
+  history::ClusterId cluster_id = history::ClusterId(123);
 
   base::HistogramTester histogram_tester;
 
@@ -336,7 +336,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 TEST_F(ContextClustererHistoryServiceObserverTest,
        StillPersistsClusterEvenIfClusterIdComesBackWayLaterMultipleVisits) {
   SetPersistenceExpectedConfig();
-  int64_t cluster_id = 123;
+  history::ClusterId cluster_id = history::ClusterId(123);
 
   {
     history::ClusterVisit got_cluster_visit;
@@ -396,7 +396,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   base::HistogramTester histogram_tester;
 
   SetPersistenceExpectedConfig();
-  int64_t cluster_id = 123;
+  history::ClusterId cluster_id = history::ClusterId(123);
 
   EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
                                      _, base::test::IsNotNullCallback(), _))
@@ -437,7 +437,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   base::HistogramTester histogram_tester;
 
   SetPersistenceExpectedConfig();
-  int64_t cluster_id = 123;
+  history::ClusterId cluster_id = history::ClusterId(123);
 
   EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
                                      _, base::test::IsNotNullCallback(), _))
@@ -528,7 +528,8 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
                              &MockHistoryService::CaptureClusterIdCallback)));
   VisitURL(GURL("http://default-engine.com/search?q=foo"), 1,
            base::Time::FromTimeT(123));
-  history_service_->RunLastClusterIdCallbackWithClusterId(123);
+  history_service_->RunLastClusterIdCallbackWithClusterId(
+      history::ClusterId(123));
 
   history::ClusterVisit got_second_cluster_visit;
   EXPECT_CALL(*history_service_, ReserveNextClusterIdWithVisit(
@@ -539,7 +540,8 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
   VisitURL(GURL("http://default-engine.com/search?q=otherterm"), 2,
            base::Time::FromTimeT(123),
            /*opener_visit=*/1);
-  history_service_->RunLastClusterIdCallbackWithClusterId(124);
+  history_service_->RunLastClusterIdCallbackWithClusterId(
+      history::ClusterId(124));
 
   EXPECT_EQ(2, GetNumClustersCreated());
   EXPECT_EQ(got_first_cluster_visit.annotated_visit.visit_row.visit_id, 1);

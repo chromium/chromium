@@ -71,7 +71,7 @@ void HistoryClustersServiceTaskUpdateClusters::Start() {
 }
 
 void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
-    std::vector<int64_t> old_clusters,
+    std::vector<history::ClusterId> old_clusters,
     std::vector<history::AnnotatedVisit> annotated_visits,
     QueryClustersContinuationParams continuation_params) {
   if (!weak_history_clusters_service_)
@@ -111,7 +111,7 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
 }
 
 void HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters(
-    std::vector<int64_t> old_cluster_ids,
+    std::vector<history::ClusterId> old_cluster_ids,
     QueryClustersContinuationParams continuation_params,
     std::vector<history::Cluster> clusters) {
   if (!weak_history_clusters_service_)

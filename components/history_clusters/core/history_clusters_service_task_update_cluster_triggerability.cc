@@ -84,7 +84,7 @@ void HistoryClustersServiceTaskUpdateClusterTriggerability::Start() {
 void HistoryClustersServiceTaskUpdateClusterTriggerability::
     OnGotAnnotatedVisitsToCluster(
         base::TimeTicks start_time,
-        std::vector<int64_t> old_clusters_unused,
+        std::vector<history::ClusterId> old_clusters_unused,
         std::vector<history::AnnotatedVisit> annotated_visits,
         QueryClustersContinuationParams continuation_params) {
   if (!weak_history_clusters_service_) {

@@ -73,7 +73,7 @@ class HistoryClustersServiceTaskUpdateClusterTriggerability
   // triggerability metadata will be run.
   void OnGotAnnotatedVisitsToCluster(
       base::TimeTicks start_time,
-      std::vector<int64_t> old_clusters_unused,
+      std::vector<history::ClusterId> old_clusters_unused,
       std::vector<history::AnnotatedVisit> annotated_visits,
       QueryClustersContinuationParams continuation_params);
 

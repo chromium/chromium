@@ -1210,7 +1210,7 @@ struct Cluster {
   };
 
   Cluster();
-  Cluster(int64_t cluster_id,
+  Cluster(ClusterId cluster_id,
           const std::vector<ClusterVisit>& visits,
           const base::flat_map<std::u16string, ClusterKeywordData>&
               keyword_to_data_map = {},
@@ -1230,7 +1230,7 @@ struct Cluster {
 
   std::vector<std::u16string> GetKeywords() const;
 
-  int64_t cluster_id = 0;
+  ClusterId cluster_id = ClusterId(0);
   std::vector<ClusterVisit> visits;
 
   // A map of keywords to additional data.
@@ -1287,7 +1287,7 @@ struct Cluster {
   // Note that even for synced clusters, this may be 0 if from a legacy client
   // that does not support the sending of this field or the local client does
   // not support populating this field.
-  int64_t originator_cluster_id = 0;
+  ClusterId originator_cluster_id = ClusterId(0);
 };
 
 // Navigation -----------------------------------------------------------------

@@ -104,7 +104,7 @@ MATCHER_P2(MvuMatches, expected_url, expected_title, "") {
 
 // Minimal representation of a `Cluster` for verifying 2 clusters are equal.
 struct ClusterExpectation {
-  int64_t cluster_id;
+  ClusterId cluster_id;
   std::vector<VisitID> visit_ids;
 };
 
@@ -4619,12 +4619,12 @@ TEST_F(HistoryBackendTest, ReplaceClusters) {
     VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
                                                    base::Time::Max(), 10, 1000),
                    {
-                       {1, {2, 1}},
+                       {ClusterId(1), {2, 1}},
                        // Shouldn't check duplicates clusters.
-                       {2, {2, 1}},
+                       {ClusterId(2), {2, 1}},
                        // Shouldn't return empty clusters.
                        // The empty cluster shouldn't increment `cluster_id`.
-                       {3, {1}},
+                       {ClusterId(3), {1}},
                    });
   }
 
@@ -4633,14 +4633,15 @@ TEST_F(HistoryBackendTest, ReplaceClusters) {
     AddAnnotatedVisit(2);
     AddAnnotatedVisit(3);
 
-    backend_->ReplaceClusters({2, 4}, CreateClusters({{1, 3}, {4}}));
+    backend_->ReplaceClusters({ClusterId(2), ClusterId(4)},
+                              CreateClusters({{1, 3}, {4}}));
     VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
                                                    base::Time::Max(), 10, 1000),
                    {
-                       {5, {4}},
-                       {4, {3, 1}},
-                       {1, {2, 1}},
-                       {3, {1}},
+                       {ClusterId(5), {4}},
+                       {ClusterId(4), {3, 1}},
+                       {ClusterId(1), {2, 1}},
+                       {ClusterId(3), {1}},
                    });
   }
 }
@@ -4667,28 +4668,28 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
     SCOPED_TRACE("time: [9, 20), max_clusters: 10, max_visits: 100");
     VerifyClusters(backend_->GetMostRecentClusters(
                        GetRelativeTime(9), GetRelativeTime(20), 10, 100),
-                   {{3, {10}}, {2, {9, 6, 5}}});
+                   {{ClusterId(3), {10}}, {ClusterId(2), {9, 6, 5}}});
   }
   {
     // Verify doesn't return clusters with a visit > max_time.
     SCOPED_TRACE("time: [9, 20), max_clusters: 10, max_visits: 100");
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(4),
                                                    GetRelativeTime(8), 10, 100),
-                   {{1, {4, 3}}});
+                   {{ClusterId(1), {4, 3}}});
   }
   {
     // Verify `max_clusters`.
     SCOPED_TRACE("time: [0, 20), max_clusters: 1, max_visits: 100");
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
                                                    GetRelativeTime(20), 1, 100),
-                   {{3, {10}}});
+                   {{ClusterId(3), {10}}});
   }
   {
     // Verify `max_visits`.
     SCOPED_TRACE("time: [0, 20), max_clusters: 10, max_visits: 1");
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
                                                    GetRelativeTime(20), 10, 1),
-                   {{3, {10}}});
+                   {{ClusterId(3), {10}}});
   }
   {
     // Verify doesn't return clusters with invalid visits.
@@ -4708,7 +4709,7 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
     backend_->db()->DeleteAnnotationsForVisit(10);
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
                                                    GetRelativeTime(20), 1, 100),
-                   {{2, {9, 6, 5}}});
+                   {{ClusterId(2), {9, 6, 5}}});
   }
 }
 
@@ -4740,16 +4741,16 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
       ClusterKeywordData::ClusterKeywordType::kEntityCategory, .6};
 
   backend_->db_->AddClusters(
-      {{0,
+      {{ClusterId(0),
         {visit_1, visit_2, visit_3},
         {{u"keyword1", keyword_data_1}, {u"keyword2", keyword_data_2}},
         false,
         u"label"}});
 
-  auto cluster =
-      backend_->GetCluster(1, /*include_keywords_and_duplicates=*/true);
-  VerifyCluster(cluster, {1, {1}});
-  EXPECT_EQ(cluster.cluster_id, 1);
+  auto cluster = backend_->GetCluster(ClusterId(1),
+                                      /*include_keywords_and_duplicates=*/true);
+  VerifyCluster(cluster, {ClusterId(1), {1}});
+  EXPECT_EQ(cluster.cluster_id, ClusterId(1));
   EXPECT_EQ(cluster.label, u"label");
   EXPECT_EQ(cluster.visits[0].url_for_display, u"url_for_display");
   // Verify keywords
@@ -4772,9 +4773,9 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
 
   // Verify keywords and duplicates are not returned, but other info is, when
   // the `include_keywords_and_duplicates` param is false.
-  cluster = backend_->GetCluster(1, false);
-  VerifyCluster(cluster, {1, {2, 1}});
-  EXPECT_EQ(cluster.cluster_id, 1);
+  cluster = backend_->GetCluster(ClusterId(1), false);
+  VerifyCluster(cluster, {ClusterId(1), {2, 1}});
+  EXPECT_EQ(cluster.cluster_id, ClusterId(1));
   EXPECT_EQ(cluster.label, u"label");
   EXPECT_EQ(cluster.visits[1].url_for_display, u"url_for_display");
   EXPECT_TRUE(cluster.keyword_to_data_map.empty());
@@ -4782,19 +4783,19 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
   EXPECT_TRUE(cluster.visits[1].duplicate_visits.empty());
 
   // Verify non-existent clusters aren't returned.
-  VerifyCluster(backend_->GetCluster(2, true), {0});
+  VerifyCluster(backend_->GetCluster(ClusterId(2), true), {ClusterId(0)});
 
   // Verify clusters without valid visits aren't returned. `visit_3` does not
   // exist.
-  backend_->db_->AddClusters({{0, {visit_3}, {}, false, u"label"}});
-  VerifyCluster(backend_->GetCluster(2, true), {0});
+  backend_->db_->AddClusters({{ClusterId(0), {visit_3}, {}, false, u"label"}});
+  VerifyCluster(backend_->GetCluster(ClusterId(2), true), {ClusterId(0)});
 }
 
 TEST_F(HistoryBackendTest, ReserveNextClusterIdWithVisit_GetCluster) {
   AddAnnotatedVisit(1);
   ClusterVisit visit_1;
   visit_1.annotated_visit.visit_row.visit_id = 1;
-  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
+  ClusterId cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
 
   // We call from the DB instead of from the backend since the DB does
   // additional checking around visit count.
@@ -4805,7 +4806,7 @@ TEST_F(HistoryBackendTest, ReserveNextClusterIdWithVisit_GetCluster) {
 
   VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {1}});
 
-  int64_t received_cluster_id = backend_->GetClusterIdContainingVisit(1);
+  ClusterId received_cluster_id = backend_->GetClusterIdContainingVisit(1);
   EXPECT_EQ(received_cluster_id, cluster_id);
 }
 
@@ -4816,7 +4817,7 @@ TEST_F(
   ClusterVisit visit_1;
   visit_1.annotated_visit.visit_row.visit_id = 1;
   visit_1.url_for_display = u"url_for_display";
-  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
+  ClusterId cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
   AddAnnotatedVisit(2);
   ClusterVisit visit_2;
   visit_2.annotated_visit.visit_row.visit_id = 2;
@@ -4824,7 +4825,7 @@ TEST_F(
 
   VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {2, 1}});
 
-  int64_t received_cluster_id = backend_->GetClusterIdContainingVisit(2);
+  ClusterId received_cluster_id = backend_->GetClusterIdContainingVisit(2);
   EXPECT_EQ(received_cluster_id, cluster_id);
 }
 
@@ -4836,7 +4837,7 @@ TEST_F(
   visit_1.annotated_visit.visit_row.visit_id = 1;
   // Verify the cluster visits are being flushed out.
   visit_1.url_for_display = u"url_for_display";
-  int64_t cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
+  ClusterId cluster_id = backend_->ReserveNextClusterIdWithVisit(visit_1);
   AddAnnotatedVisit(2);
   ClusterVisit visit_2;
   visit_2.annotated_visit.visit_row.visit_id = 2;
@@ -4859,7 +4860,7 @@ TEST_F(
 TEST_F(HistoryBackendTest,
        AddVisitToSyncedCluster_GetCluster_UpdateClusterVisit) {
   std::string originator_cache_guid = "originator";
-  int64_t originator_cluster_id = 123;
+  ClusterId originator_cluster_id = ClusterId(123);
 
   const ui::PageTransition kLink = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
@@ -4880,9 +4881,9 @@ TEST_F(HistoryBackendTest,
   backend_->AddVisitToSyncedCluster(cluster_visit, originator_cache_guid,
                                     originator_cluster_id);
 
-  int64_t local_cluster_id =
+  ClusterId local_cluster_id =
       backend_->db_->GetClusterIdContainingVisit(added_id1);
-  EXPECT_GT(local_cluster_id, 0);
+  EXPECT_GT(local_cluster_id.value(), 0);
 
   // Update the cluster visit.
   history::ClusterVisit updated_cluster_visit = cluster_visit;
@@ -4945,8 +4946,8 @@ TEST_F(HistoryBackendTest, UpdateClusterVisit_NoClusterAssigned) {
 
   // Cluster visit should not belong to any cluster if no cluster contains the
   // visit to be updated.
-  int64_t local_cluster_id = backend_->db_->GetClusterIdContainingVisit(10);
-  EXPECT_EQ(local_cluster_id, 0);
+  ClusterId local_cluster_id = backend_->db_->GetClusterIdContainingVisit(10);
+  EXPECT_EQ(local_cluster_id, ClusterId(0));
 }
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {

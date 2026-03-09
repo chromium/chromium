@@ -271,7 +271,8 @@ class HistoryClustersServiceTest : public testing::Test {
     history::Cluster cluster = history::CreateCluster(visit_ids);
     if (is_remote_cluster) {
       cluster.originator_cache_guid = "otherdevice";
-      cluster.originator_cluster_id = 1001 + visit_ids.front();
+      cluster.originator_cluster_id =
+          history::ClusterId(1001 + visit_ids.front());
     }
     AddCluster(std::move(cluster));
   }
@@ -368,11 +369,12 @@ class HistoryClustersServiceTest : public testing::Test {
 
   // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster` and return
   // the clusters and visits it returns.
-  std::pair<std::vector<int64_t>, std::vector<history::AnnotatedVisit>>
+  std::pair<std::vector<history::ClusterId>,
+            std::vector<history::AnnotatedVisit>>
   NextVisits(QueryClustersContinuationParams& continuation_params,
              bool recent_first,
              int days_of_clustered_visits) {
-    std::vector<int64_t> old_clusters;
+    std::vector<history::ClusterId> old_clusters;
     std::vector<history::AnnotatedVisit> visits;
     base::CancelableTaskTracker task_tracker;
     history_service_->ScheduleDBTask(
@@ -381,7 +383,7 @@ class HistoryClustersServiceTest : public testing::Test {
             IncompleteVisitMap{}, base::Time(), continuation_params,
             recent_first, days_of_clustered_visits, /*recluster=*/false,
             base::BindLambdaForTesting(
-                [&](std::vector<int64_t> old_clusters_temp,
+                [&](std::vector<history::ClusterId> old_clusters_temp,
                     std::vector<history::AnnotatedVisit> visits_temp,
                     QueryClustersContinuationParams continuation_params_temp) {
                   old_clusters = old_clusters_temp;
@@ -616,7 +618,10 @@ TEST_F(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2, 3));
+    ASSERT_THAT(
+        GetClusterIds(clusters),
+        testing::ElementsAre(history::ClusterId(1), history::ClusterId(2),
+                             history::ClusterId(3)));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
     EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4));
     EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(5));
@@ -671,7 +676,9 @@ TEST_F(HistoryClustersServiceTest,
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, true);
-    std::vector<int64_t> expected_cluster_ids = {1, 2, 3, 4};
+    std::vector<history::ClusterId> expected_cluster_ids = {
+        history::ClusterId(1), history::ClusterId(2), history::ClusterId(3),
+        history::ClusterId(4)};
     ASSERT_THAT(GetClusterIds(clusters),
                 testing::ElementsAreArray(expected_cluster_ids));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(1));
@@ -722,7 +729,8 @@ TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_Today) {
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    ASSERT_THAT(GetClusterIds(clusters),
+                testing::ElementsAre(history::ClusterId(1)));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(2));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
@@ -785,7 +793,9 @@ TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2));
+    ASSERT_THAT(
+        GetClusterIds(clusters),
+        testing::ElementsAre(history::ClusterId(1), history::ClusterId(2)));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
     EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
@@ -882,7 +892,7 @@ TEST_F(HistoryClustersServiceTest, QueryClusteredVisits) {
     // 3-day-old clustered visit. Should not get the 3-day-old or older
     // unclustered visits.
     const auto [clusters, visits] = NextVisits(continuation_params, true, 1);
-    EXPECT_THAT(clusters, testing::ElementsAre(1));
+    EXPECT_THAT(clusters, testing::ElementsAre(history::ClusterId(1)));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre(2, 5));
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -957,7 +967,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
 
   std::vector<history::Cluster> clusters;
   clusters.push_back(
-      history::Cluster(0,
+      history::Cluster(history::ClusterId(0),
                        {
                            test_clustering_backend_->GetVisitById(2),
                            test_clustering_backend_->GetVisitById(5),
@@ -966,7 +976,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
                         {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   clusters.push_back(
-      history::Cluster(0,
+      history::Cluster(history::ClusterId(0),
                        {
                            test_clustering_backend_->GetVisitById(2),
                        },
@@ -1115,7 +1125,7 @@ TEST_F(HistoryClustersServiceKeywordTest, DoesQueryMatchAnyCluster) {
   AddHardcodedTestDataToHistoryService();
 
   AddCluster(history::Cluster(
-      0,
+      history::ClusterId(0),
       {
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(2),
@@ -1127,7 +1137,7 @@ TEST_F(HistoryClustersServiceKeywordTest, DoesQueryMatchAnyCluster) {
        {u"apples bananas", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   AddCluster(history::Cluster(
-      0,
+      history::ClusterId(0),
       {
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(2),
@@ -1137,14 +1147,14 @@ TEST_F(HistoryClustersServiceKeywordTest, DoesQueryMatchAnyCluster) {
                           history::ClusterKeywordData::kSearchTerms, 100.0f)},
       },
       /*should_show_on_prominent_ui_surfaces=*/true));
-  AddCluster(history::Cluster(0,
+  AddCluster(history::Cluster(history::ClusterId(0),
                               {
                                   GetHardcodedClusterVisit(5),
                                   GetHardcodedClusterVisit(2),
                               },
                               {{u"sensitive", history::ClusterKeywordData()}},
                               /*should_show_on_prominent_ui_surfaces=*/false));
-  AddCluster(history::Cluster(0,
+  AddCluster(history::Cluster(history::ClusterId(0),
                               {
                                   GetHardcodedClusterVisit(5),
                               },
@@ -1153,7 +1163,7 @@ TEST_F(HistoryClustersServiceKeywordTest, DoesQueryMatchAnyCluster) {
   auto hidden_visit = GetHardcodedClusterVisit(5);
   hidden_visit.interaction_state =
       history::ClusterVisit::InteractionState::kHidden;
-  AddCluster(history::Cluster(0,
+  AddCluster(history::Cluster(history::ClusterId(0),
                               {
                                   hidden_visit,
                               },
@@ -1244,15 +1254,15 @@ TEST_F(HistoryClustersServiceKeywordTest,
 
   base::CancelableTaskTracker task_tracker;
   history::Cluster cluster = history::CreateCluster({1, 2});
-  cluster.cluster_id = 1;
+  cluster.cluster_id = history::ClusterId(1);
   cluster.keyword_to_data_map = {{u"peach", history::ClusterKeywordData()},
                                  {u"", history::ClusterKeywordData()}};
   cluster.should_show_on_prominent_ui_surfaces = true;
 
   history::Cluster cluster2 = history::CreateCluster({3, 4});
-  cluster2.cluster_id = 2;
+  cluster2.cluster_id = history::ClusterId(2);
   cluster2.originator_cache_guid = "remotedevice";
-  cluster2.originator_cluster_id = 1000;
+  cluster2.originator_cluster_id = history::ClusterId(1000);
   cluster2.keyword_to_data_map = {{u"remote", history::ClusterKeywordData()}};
   cluster2.should_show_on_prominent_ui_surfaces = true;
   history_service_->ReplaceClusters({}, {cluster, cluster2}, base::DoNothing(),
@@ -1286,7 +1296,7 @@ TEST_F(HistoryClustersServiceKeywordTest,
 TEST_F(HistoryClustersServiceKeywordTest, LoadCachesFromPrefs) {
   AddHardcodedTestDataToHistoryService();
   AddCluster(history::Cluster(
-      0,
+      history::ClusterId(0),
       {
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(2),
@@ -1356,7 +1366,7 @@ TEST_F(HistoryClustersServiceKeywordTest, LoadSecondaryCachesFromPrefs) {
   AddCompleteVisit(visit);
 
   AddCluster(history::Cluster(
-      0,
+      history::ClusterId(0),
       {
           GetHardcodedClusterVisit(1),
           GetHardcodedClusterVisit(2),
@@ -1411,7 +1421,8 @@ TEST_F(HistoryClustersServiceKeywordTest,
   // 1) A cluster with 4 phrases and 6 words. The next cluster's keywords should
   // also be cached since we have less than 5 phrases.
   AddCluster(history::Cluster(
-      0, {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
+      history::ClusterId(0),
+      {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
       {{u"one", history::ClusterKeywordData()},
        {u"two", history::ClusterKeywordData()},
        {u"three", history::ClusterKeywordData()},
@@ -1420,20 +1431,22 @@ TEST_F(HistoryClustersServiceKeywordTest,
   // 2) The 2nd cluster has only 1 visit. Since it's keywords won't be cached,
   // they should not affect the max.
   AddCluster(history::Cluster(
-      0, {{GetHardcodedClusterVisit(1)}},
+      history::ClusterId(0), {{GetHardcodedClusterVisit(1)}},
       {{u"ignored not cached", history::ClusterKeywordData()},
        {u"elephant penguin kangaroo", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   // 3) With this 3rd cluster, we'll have 5 phrases and 7 words. Now that we've
   // reached 5 phrases, the next cluster's keywords should not be cached.
   AddCluster(history::Cluster(
-      0, {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
+      history::ClusterId(0),
+      {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
       {{u"seven", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   // 4) The 4th cluster's keywords should not be cached since we've reached 5
   // phrases.
   AddCluster(history::Cluster(
-      0, {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
+      history::ClusterId(0),
+      {GetHardcodedClusterVisit(1), GetHardcodedClusterVisit(5)},
       {{u"eight", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
 
@@ -1540,10 +1553,13 @@ TEST_F(HistoryClustersServiceTest, UpdateClusters_Sparse) {
     // Expect the visits to be clustered into 4 clusters.
     QueryClustersContinuationParams continuation_params = {};
     const auto clusters = NextQueryClusters(continuation_params, false).first;
-    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(4, 3, 2, 1));
+    EXPECT_THAT(
+        GetClusterIds(clusters),
+        testing::ElementsAre(history::ClusterId(4), history::ClusterId(3),
+                             history::ClusterId(2), history::ClusterId(1)));
     for (const auto& cluster : clusters) {
       EXPECT_THAT(GetVisitIds(cluster.visits),
-                  testing::ElementsAre(cluster.cluster_id));
+                  testing::ElementsAre(cluster.cluster_id.value()));
     }
   }
 
@@ -1655,13 +1671,18 @@ TEST_F(HistoryClustersServiceTest, UpdateClusters_Reclustering) {
   // `max_persisted_cluster_visits_to_fetch_soft_cap`.
   QueryClustersContinuationParams continuation_params = {};
   auto clusters = NextQueryClusters(continuation_params, false).first;
-  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(13, 12, 10));
+  EXPECT_THAT(
+      GetClusterIds(clusters),
+      testing::ElementsAre(history::ClusterId(13), history::ClusterId(12),
+                           history::ClusterId(10)));
   EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(9, 8, 3));
   EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(7));
   EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(6, 5, 4));
 
   clusters = NextQueryClusters(continuation_params, false).first;
-  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(4, 2));
+  EXPECT_THAT(
+      GetClusterIds(clusters),
+      testing::ElementsAre(history::ClusterId(4), history::ClusterId(2)));
   EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(2));
   EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(1));
 
@@ -1673,7 +1694,9 @@ TEST_F(HistoryClustersServiceTest, UpdateClusters_Reclustering) {
   SetConfigForTesting(config);
   continuation_params = {};
   clusters = NextQueryClusters(continuation_params, false).first;
-  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(13, 12));
+  EXPECT_THAT(
+      GetClusterIds(clusters),
+      testing::ElementsAre(history::ClusterId(13), history::ClusterId(12)));
 
   {
     // A 2nd call shouldn't cluster anything.
@@ -1771,7 +1794,9 @@ TEST_F(HistoryClustersServiceTest, UpdateClusters_ReclusterMultipleClusters) {
   // Check the final clusters.
   QueryClustersContinuationParams continuation_params = {};
   auto clusters = NextQueryClusters(continuation_params, false).first;
-  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(6, 2, 3));
+  EXPECT_THAT(GetClusterIds(clusters),
+              testing::ElementsAre(history::ClusterId(6), history::ClusterId(2),
+                                   history::ClusterId(3)));
   EXPECT_THAT(GetVisitIds(clusters[0].visits),
               testing::ElementsAre(10, 9, 8, 7, 2));
   EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4, 3));
@@ -1832,7 +1857,9 @@ TEST_F(HistoryClustersServiceTest, UpdateClusters_PopularDay) {
 
   QueryClustersContinuationParams continuation_params = {};
   auto clusters = NextQueryClusters(continuation_params, false).first;
-  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(2, 1));
+  EXPECT_THAT(
+      GetClusterIds(clusters),
+      testing::ElementsAre(history::ClusterId(2), history::ClusterId(1)));
   EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(9, 8, 7));
   EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(5, 4, 3));
 

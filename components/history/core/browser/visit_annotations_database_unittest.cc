@@ -323,7 +323,7 @@ TEST_F(
   // Cluster without visits shouldn't be added.
   std::vector<Cluster> clusters;
   // Cluster ID shouldn't matter, it should be auto-incremented in the db.
-  clusters.push_back({10, {}});
+  clusters.push_back({ClusterId(10), {}});
 
   // Clusters with visits should be added.
   ClusterVisit visit_1;
@@ -350,35 +350,43 @@ TEST_F(
   visit_2.interaction_state = ClusterVisit::InteractionState::kHidden;
 
   // `search_match_score` shouldn't matter, it is not persisted.
-  clusters.push_back(
-      {11, {visit_1, visit_2}, {}, false, u"label", u"raw_label", {}, {}, .6});
+  clusters.push_back({ClusterId(11),
+                      {visit_1, visit_2},
+                      {},
+                      false,
+                      u"label",
+                      u"raw_label",
+                      {},
+                      {},
+                      .6});
 
   // Empty or `nullopt` labels should both be retrieved as `nullopt`.
-  clusters.push_back({11, {visit_2}, {}, false, u"", std::nullopt, {}, {}, .6});
+  clusters.push_back(
+      {ClusterId(11), {visit_2}, {}, false, u"", std::nullopt, {}, {}, .6});
   AddClusters(clusters);
 
   // Test `GetCluster()`.
 
   // Should return the non-empty cluster2.
-  const auto cluster_1 = GetCluster(1);
-  EXPECT_EQ(cluster_1.cluster_id, 1);
+  const auto cluster_1 = GetCluster(ClusterId(ClusterId(1)));
+  EXPECT_EQ(cluster_1.cluster_id, ClusterId(1));
   EXPECT_EQ(cluster_1.should_show_on_prominent_ui_surfaces, false);
   EXPECT_EQ(cluster_1.label, u"label");
   EXPECT_EQ(cluster_1.raw_label, u"raw_label");
   // Should not populate `visits`.
   EXPECT_TRUE(cluster_1.visits.empty());
-  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(20, 21));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), UnorderedElementsAre(20, 21));
   // Should not populate the non-persisted `search_match_score` field.
   EXPECT_EQ(cluster_1.search_match_score, 0);
 
-  const auto cluster_2 = GetCluster(2);
-  EXPECT_EQ(cluster_2.cluster_id, 2);
+  const auto cluster_2 = GetCluster(ClusterId(ClusterId(2)));
+  EXPECT_EQ(cluster_2.cluster_id, ClusterId(2));
   EXPECT_EQ(cluster_2.label, std::nullopt);
   EXPECT_EQ(cluster_2.raw_label, std::nullopt);
-  EXPECT_THAT(GetVisitIdsInCluster(2), UnorderedElementsAre(21));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(2)), UnorderedElementsAre(21));
 
   // There should be no other cluster.
-  EXPECT_EQ(GetCluster(3).cluster_id, 0);
+  EXPECT_EQ(GetCluster(ClusterId(3)).cluster_id, ClusterId(0));
 
   // Test `GetClusterVisit()`.
 
@@ -424,13 +432,13 @@ TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
   // Should return clusters with at least 1 visit >= min time.
   // Should be ordered max visit time descending.
   EXPECT_EQ(GetMostRecentClusterIds(IntToTime(101), IntToTime(120), 10),
-            std::vector<int64_t>({3, 4, 2}));
+            std::vector<ClusterId>({ClusterId(3), ClusterId(4), ClusterId(2)}));
   // Should not return clusters with visits > max time.
   EXPECT_EQ(GetMostRecentClusterIds(IntToTime(100), IntToTime(103), 10),
-            std::vector<int64_t>({2}));
+            std::vector<ClusterId>({ClusterId(2)}));
   // Should return at most `max_clusters`.
   EXPECT_EQ(GetMostRecentClusterIds(IntToTime(0), IntToTime(500), 1),
-            std::vector<int64_t>({3}));
+            std::vector<ClusterId>({ClusterId(3)}));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -453,17 +461,17 @@ TEST_F(VisitAnnotationsDatabaseTest,
   AddClusters({cluster});
 
   // GetVisitIdsInCluster
-  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(4));
-  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(7, 9, 8, 6));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), ElementsAre(4));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(3)), ElementsAre(7, 9, 8, 6));
 
   // GetClusterIdContainingVisit
-  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
-  EXPECT_EQ(GetClusterIdContainingVisit(2), 0);
-  EXPECT_EQ(GetClusterIdContainingVisit(3), 0);
-  EXPECT_EQ(GetClusterIdContainingVisit(4), 1);
-  EXPECT_EQ(GetClusterIdContainingVisit(5), 2);
-  EXPECT_EQ(GetClusterIdContainingVisit(6), 3);
-  EXPECT_EQ(GetClusterIdContainingVisit(7), 3);
+  EXPECT_EQ(GetClusterIdContainingVisit(1), ClusterId(0));
+  EXPECT_EQ(GetClusterIdContainingVisit(2), ClusterId(0));
+  EXPECT_EQ(GetClusterIdContainingVisit(3), ClusterId(0));
+  EXPECT_EQ(GetClusterIdContainingVisit(4), ClusterId(1));
+  EXPECT_EQ(GetClusterIdContainingVisit(5), ClusterId(2));
+  EXPECT_EQ(GetClusterIdContainingVisit(6), ClusterId(3));
+  EXPECT_EQ(GetClusterIdContainingVisit(7), ClusterId(3));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest,
@@ -471,8 +479,8 @@ TEST_F(VisitAnnotationsDatabaseTest,
   // Add an initial cluster with multiple visits.
   VisitID visit_id1 = AddVisitWithTime(IntToTime(0));
   VisitID visit_id2 = AddVisitWithTime(IntToTime(1));
-  int64_t cluster_id1 = ReserveNextClusterId("", 0);
-  int64_t cluster_id2 = ReserveNextClusterId("", 0);
+  ClusterId cluster_id1 = ReserveNextClusterId("", ClusterId(0));
+  ClusterId cluster_id2 = ReserveNextClusterId("", ClusterId(0));
   Cluster cluster1 = CreateCluster({visit_id1, visit_id2});
   cluster1.cluster_id = cluster_id1;
   AddVisitsToCluster(cluster_id1, cluster1.visits);
@@ -545,19 +553,19 @@ TEST_F(VisitAnnotationsDatabaseTest,
 
 TEST_F(VisitAnnotationsDatabaseTest, GetClusterIdForSyncedDetails) {
   std::string originator_cache_guid = "somedevice";
-  int64_t originator_cluster_id = 1;
+  ClusterId originator_cluster_id = ClusterId(1);
 
   // Not a cluster with these details yet, so we expect for the cluster id to be
   // 0.
   EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid,
                                          originator_cluster_id),
-            0);
+            ClusterId(0));
 
   // Now, add a cluster ID with the details and make sure it was reserved
   // successfully.
-  int64_t reserved_cluster_id =
+  ClusterId reserved_cluster_id =
       ReserveNextClusterId(originator_cache_guid, originator_cluster_id);
-  EXPECT_GT(reserved_cluster_id, 0);
+  EXPECT_GT(reserved_cluster_id.value(), 0);
 
   // Ask for the cluster id for the same synced details and should get the one
   // that's been reserved.
@@ -568,11 +576,12 @@ TEST_F(VisitAnnotationsDatabaseTest, GetClusterIdForSyncedDetails) {
   // Make sure that a different device with the same cluster id does not get
   // resolved to the same cluster id.
   EXPECT_EQ(GetClusterIdForSyncedDetails("otherdevice", originator_cluster_id),
-            0);
+            ClusterId(0));
 
   // Make sure that a cluster with the same originator cache guid but different
   // cluster id does not get resolved to the same cluster id.
-  EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid, 3), 0);
+  EXPECT_EQ(GetClusterIdForSyncedDetails(originator_cache_guid, ClusterId(3)),
+            ClusterId(0));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
@@ -594,11 +603,11 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_TRUE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(1, 2));
-  EXPECT_EQ(GetClusterIdContainingVisit(1), 1);
-  EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(1));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), UnorderedElementsAre(1, 2));
+  EXPECT_EQ(GetClusterIdContainingVisit(1), ClusterId(1));
+  EXPECT_EQ(GetClusterIdContainingVisit(2), ClusterId(1));
+  EXPECT_EQ(GetClusterKeywords(ClusterId(1)).size(), 2u);
   EXPECT_EQ(GetDuplicateClusterVisitIdsForClusterVisit(1).size(), 1u);
   EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(2).empty());
   EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(3).empty());
@@ -609,11 +618,11 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_TRUE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_TRUE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(2));
-  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
-  EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(1));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), UnorderedElementsAre(2));
+  EXPECT_EQ(GetClusterIdContainingVisit(1), ClusterId(0));
+  EXPECT_EQ(GetClusterIdContainingVisit(2), ClusterId(1));
+  EXPECT_EQ(GetClusterKeywords(ClusterId(1)).size(), 2u);
   EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(1).empty());
 
   // Delete the 2nd visit. Make sure the cluster is removed.
@@ -622,11 +631,11 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_FALSE(GetContextAnnotationsForVisit(1, &got_context_annotations));
   EXPECT_FALSE(GetContentAnnotationsForVisit(2, &got_content_annotations));
   EXPECT_FALSE(GetContextAnnotationsForVisit(2, &got_context_annotations));
-  EXPECT_EQ(GetCluster(1).cluster_id, 0);
-  EXPECT_TRUE(GetVisitIdsInCluster(1).empty());
-  EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
-  EXPECT_EQ(GetClusterIdContainingVisit(2), 0);
-  EXPECT_EQ(GetClusterKeywords(1).size(), 0u);
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(0));
+  EXPECT_TRUE(GetVisitIdsInCluster(ClusterId(1)).empty());
+  EXPECT_EQ(GetClusterIdContainingVisit(1), ClusterId(0));
+  EXPECT_EQ(GetClusterIdContainingVisit(2), ClusterId(0));
+  EXPECT_EQ(GetClusterKeywords(ClusterId(1)).size(), 0u);
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
@@ -639,44 +648,44 @@ TEST_F(VisitAnnotationsDatabaseTest, AddClusters_DeleteClusters) {
   cluster_with_keyword_data.keyword_to_data_map[u"keyword2"];
   AddClusters({cluster_with_keyword_data});
 
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 3);
-  EXPECT_EQ(GetCluster(4).cluster_id, 4);
-  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
-  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
-  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
-  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(1));
+  EXPECT_EQ(GetCluster(ClusterId(2)).cluster_id, ClusterId(2));
+  EXPECT_EQ(GetCluster(ClusterId(3)).cluster_id, ClusterId(3));
+  EXPECT_EQ(GetCluster(ClusterId(4)).cluster_id, ClusterId(4));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(2)), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(3)), ElementsAre(6));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(4)), ElementsAre(10));
   EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre(7));
-  EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
+  EXPECT_EQ(GetClusterKeywords(ClusterId(4)).size(), 2u);
 
   DeleteClusters({});
 
-  EXPECT_EQ(GetCluster(1).cluster_id, 1);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 3);
-  EXPECT_EQ(GetCluster(4).cluster_id, 4);
-  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre(5, 3, 2));
-  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
-  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre(6));
-  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre(10));
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(1));
+  EXPECT_EQ(GetCluster(ClusterId(2)).cluster_id, ClusterId(2));
+  EXPECT_EQ(GetCluster(ClusterId(3)).cluster_id, ClusterId(3));
+  EXPECT_EQ(GetCluster(ClusterId(4)).cluster_id, ClusterId(4));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(2)), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(3)), ElementsAre(6));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(4)), ElementsAre(10));
   EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre(7));
-  EXPECT_EQ(GetClusterKeywords(4).size(), 2u);
+  EXPECT_EQ(GetClusterKeywords(ClusterId(4)).size(), 2u);
 
-  DeleteClusters({1, 3, 4, 5});
+  DeleteClusters({ClusterId(1), ClusterId(3), ClusterId(4), ClusterId(5)});
 
-  EXPECT_EQ(GetCluster(1).cluster_id, 0);
-  EXPECT_EQ(GetCluster(2).cluster_id, 2);
-  EXPECT_EQ(GetCluster(3).cluster_id, 0);
-  EXPECT_EQ(GetCluster(4).cluster_id, 0);
-  EXPECT_THAT(GetVisitIdsInCluster(1), ElementsAre());
-  EXPECT_THAT(GetVisitIdsInCluster(2), ElementsAre(5, 3, 2));
-  EXPECT_THAT(GetVisitIdsInCluster(3), ElementsAre());
-  EXPECT_THAT(GetVisitIdsInCluster(4), ElementsAre());
+  EXPECT_EQ(GetCluster(ClusterId(1)).cluster_id, ClusterId(0));
+  EXPECT_EQ(GetCluster(ClusterId(2)).cluster_id, ClusterId(2));
+  EXPECT_EQ(GetCluster(ClusterId(3)).cluster_id, ClusterId(0));
+  EXPECT_EQ(GetCluster(ClusterId(4)).cluster_id, ClusterId(0));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(1)), ElementsAre());
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(2)), ElementsAre(5, 3, 2));
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(3)), ElementsAre());
+  EXPECT_THAT(GetVisitIdsInCluster(ClusterId(4)), ElementsAre());
   // Verifies that the `cluster_visit_duplicates` table is also cleaned up.
   // https://crbug.com/1383274
   EXPECT_THAT(GetDuplicateClusterVisitIdsForClusterVisit(6), ElementsAre());
-  EXPECT_TRUE(GetClusterKeywords(4).empty());
+  EXPECT_TRUE(GetClusterKeywords(ClusterId(4)).empty());
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, SerializeDataForCrossDeviceSync) {

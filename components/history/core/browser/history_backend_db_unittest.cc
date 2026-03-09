@@ -2558,7 +2558,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
 TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(59));
 
-  int64_t cluster_id = 1;
+  ClusterId cluster_id = ClusterId(1);
 
   // Open the old version of the DB and make sure the new columns don't exist
   // yet.
@@ -2575,7 +2575,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
     // Add a row to `clusters` table.
     {
       sql::Statement s(db.GetUniqueStatement(kInsertClustersStatement));
-      s.BindInt64(0, cluster_id);
+      s.BindInt64(0, cluster_id.value());
       s.BindBool(1, true);
       s.BindString16(2, u"");
       s.BindString16(3, u"");
@@ -2605,7 +2605,7 @@ TEST_F(HistoryBackendDBTest,
        MigrateClustersAutoincrementIdAndAddOriginatorColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(60));
 
-  int64_t cluster_id = 1;
+  ClusterId cluster_id = ClusterId(1);
 
   // Open the db for manual manipulation.
   {
@@ -2620,7 +2620,7 @@ TEST_F(HistoryBackendDBTest,
 
     // Add a row to `clusters` table.
     sql::Statement s(db.GetUniqueStatement(kInsertClustersStatement));
-    s.BindInt64(0, cluster_id);
+    s.BindInt64(0, cluster_id.value());
     s.BindBool(1, true);
     s.BindString16(2, u"");
     s.BindString16(3, u"");
@@ -2639,7 +2639,7 @@ TEST_F(HistoryBackendDBTest,
     // Check contents.
     Cluster cluster = db_->GetCluster(cluster_id);
     EXPECT_EQ(cluster.originator_cache_guid, "");
-    EXPECT_EQ(cluster.originator_cluster_id, 0);
+    EXPECT_EQ(cluster.originator_cluster_id, ClusterId(0));
   }
 }
 

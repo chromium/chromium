@@ -215,7 +215,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   }
 
   // See what cluster we should add it to.
-  std::optional<int64_t> cluster_id;
+  std::optional<history::ClusterId> cluster_id;
 
   std::vector<history::VisitID> previous_visit_ids_to_check;
   if (new_visit.opener_visit != 0) {
@@ -257,7 +257,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   // Add a new cluster if we haven't assigned one already.
   if (is_new_cluster) {
     cluster_id_counter_++;
-    cluster_id = cluster_id_counter_;
+    cluster_id = history::ClusterId(cluster_id_counter_);
 
     in_progress_clusters_.emplace(*cluster_id, InProgressCluster());
   }
@@ -286,7 +286,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     //   returned the IDs, there's already a callback pending that will add the
     //   visits.
     // For clusters whose IDs are already known, add the visits here.
-    if (in_progress_cluster.persisted_cluster_id > 0) {
+    if (in_progress_cluster.persisted_cluster_id.value() > 0) {
       // Persist visit to existing cluster.
       history_service->AddVisitsToCluster(
           in_progress_cluster.persisted_cluster_id, {std::move(cluster_visit)},
@@ -333,7 +333,7 @@ void ContextClustererHistoryServiceObserver::OnHistoryDeletions(
   }
 
   // Delete relevant visits from in-progress clusters.
-  base::flat_set<int64_t> clusters_to_finalize;
+  base::flat_set<history::ClusterId> clusters_to_finalize;
   for (const auto& deleted_url : deletion_info.deleted_rows()) {
     std::string normalized_deleted_url =
         deleted_url.url().possibly_invalid_spec();
@@ -353,7 +353,7 @@ void ContextClustererHistoryServiceObserver::OnHistoryDeletions(
   }
 
   // Finalize clusters.
-  for (int64_t cluster_id : clusters_to_finalize) {
+  for (history::ClusterId cluster_id : clusters_to_finalize) {
     FinalizeCluster(cluster_id);
   }
 }
@@ -371,7 +371,7 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
   }
 
   // See which clusters we need to clean up.
-  base::flat_set<int64_t> clusters_to_finalize;
+  base::flat_set<history::ClusterId> clusters_to_finalize;
   for (const auto& cluster_id_and_cluster : in_progress_clusters_) {
     if ((clock_->Now() - cluster_id_and_cluster.second.last_visit_time) >
         GetConfig().cluster_navigation_time_cutoff) {
@@ -380,14 +380,13 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
   }
 
   // Finalize clusters.
-  for (int64_t cluster_id : clusters_to_finalize) {
+  for (history::ClusterId cluster_id : clusters_to_finalize) {
     FinalizeCluster(cluster_id);
   }
-
 }
 
 void ContextClustererHistoryServiceObserver::FinalizeCluster(
-    int64_t cluster_id) {
+    history::ClusterId cluster_id) {
   DCHECK(in_progress_clusters_.find(cluster_id) != in_progress_clusters_.end());
   auto& cluster = in_progress_clusters_.at(cluster_id);
 
@@ -416,8 +415,8 @@ void ContextClustererHistoryServiceObserver::FinalizeCluster(
 
 void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
     base::TimeTicks start_time,
-    int64_t cluster_id,
-    int64_t persisted_cluster_id) {
+    history::ClusterId cluster_id,
+    history::ClusterId persisted_cluster_id) {
   LogDbLatencyHistogram(ContextClustererDbLatencyType::kReserveNextClusterId,
                         start_time);
 

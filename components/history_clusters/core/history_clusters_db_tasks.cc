@@ -159,7 +159,8 @@ bool GetAnnotatedVisitsToCluster::AddUnclusteredVisits(
     // parameter setting below.
     const bool is_clustered =
         !recluster_
-            ? db->GetClusterIdContainingVisit(visit.visit_row.visit_id) > 0
+            ? (db->GetClusterIdContainingVisit(visit.visit_row.visit_id))
+                      .value() > 0
             : false;
     if (is_clustered && recent_first_)
       continuation_params_.exhausted_unclustered_visits = true;

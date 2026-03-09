@@ -357,7 +357,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   // Cluster finalizers should be run.
 
   history::Cluster cluster1;
-  cluster1.cluster_id = 1;
+  cluster1.cluster_id = history::ClusterId(1);
   cluster1.should_show_on_prominent_ui_surfaces = false;
   cluster1.visits.emplace_back(
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -365,7 +365,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
   clusters.push_back(cluster1);
 
   history::Cluster cluster2;
-  cluster2.cluster_id = 2;
+  cluster2.cluster_id = history::ClusterId(2);
   cluster2.should_show_on_prominent_ui_surfaces = false;
   cluster2.visits.emplace_back(
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -379,14 +379,14 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
       GetClusterTriggerability(clusters);
   EXPECT_EQ(result_clusters.size(), 2u);
   history::Cluster out_cluster1 = result_clusters[0];
-  EXPECT_EQ(out_cluster1.cluster_id, 1);
+  EXPECT_EQ(out_cluster1.cluster_id, history::ClusterId(1));
   EXPECT_TRUE(out_cluster1.triggerability_calculated);
   // Single visit cluster.
   EXPECT_FALSE(out_cluster1.should_show_on_prominent_ui_surfaces);
   EXPECT_TRUE(out_cluster1.label.has_value());
 
   history::Cluster out_cluster2 = result_clusters[1];
-  EXPECT_EQ(out_cluster2.cluster_id, 2);
+  EXPECT_EQ(out_cluster2.cluster_id, history::ClusterId(2));
   EXPECT_TRUE(out_cluster2.triggerability_calculated);
   EXPECT_TRUE(out_cluster2.should_show_on_prominent_ui_surfaces);
   EXPECT_TRUE(out_cluster2.label.has_value());

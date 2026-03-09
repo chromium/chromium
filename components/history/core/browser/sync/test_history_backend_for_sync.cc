@@ -326,14 +326,14 @@ bool TestHistoryBackendForSync::UpdateVisitReferrerOpenerIDs(
 void TestHistoryBackendForSync::AddVisitToSyncedCluster(
     const ClusterVisit& cluster_visit,
     const std::string& originator_cache_guid,
-    int64_t cluster_id) {
+    ClusterId cluster_id) {
   ++add_visit_to_synced_cluster_count_;
 }
 
-int64_t TestHistoryBackendForSync::GetClusterIdContainingVisit(
+ClusterId TestHistoryBackendForSync::GetClusterIdContainingVisit(
     VisitID visit_id) {
   // For testing purposes, just put every visit in a different cluster.
-  return 1000 + static_cast<int64_t>(visit_id);
+  return ClusterId(1000 + static_cast<int64_t>(visit_id));
 }
 
 std::vector<GURL> TestHistoryBackendForSync::GetFaviconURLsForURL(

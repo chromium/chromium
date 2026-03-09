@@ -129,7 +129,7 @@ std::string GetDebugJSONForClusters(
   base::ListValue debug_clusters_list;
   for (const auto& cluster : clusters) {
     base::DictValue debug_cluster;
-    debug_cluster.Set("id", static_cast<int>(cluster.cluster_id));
+    debug_cluster.Set("id", static_cast<int>(cluster.cluster_id.value()));
     debug_cluster.Set("label", cluster.label.value_or(u""));
     base::ListValue debug_keywords;
     for (const auto& keyword_data_p : cluster.keyword_to_data_map) {

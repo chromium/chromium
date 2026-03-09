@@ -334,7 +334,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
-    const std::vector<int64_t>& ids_to_delete,
+    const std::vector<ClusterId>& ids_to_delete,
     const std::vector<Cluster>& clusters_to_add,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {
@@ -362,7 +362,7 @@ HistoryService::ReserveNextClusterIdWithVisit(
 }
 
 base::CancelableTaskTracker::TaskId HistoryService::AddVisitsToCluster(
-    int64_t cluster_id,
+    ClusterId cluster_id,
     const std::vector<ClusterVisit>& visits,
     base::OnceClosure callback,
     base::CancelableTaskTracker* tracker) {

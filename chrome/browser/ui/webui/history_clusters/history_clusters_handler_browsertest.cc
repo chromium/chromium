@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   std::vector<history::Cluster> clusters;
 
   history::Cluster cluster;
-  cluster.cluster_id = 4;
+  cluster.cluster_id = history::ClusterId(4);
   cluster.related_searches = {"one", "two", "three", "four", "five"};
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));

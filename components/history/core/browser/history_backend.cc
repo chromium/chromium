@@ -2279,7 +2279,7 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
     auto to_remove = std::ranges::remove_if(
         visit_rows.begin(), visit_rows.end(), [&](auto& visit) {
           // This may seem slow, but it's an indexed lookup.
-          return db_->GetClusterIdContainingVisit(visit.visit_id) > 0;
+          return (db_->GetClusterIdContainingVisit(visit.visit_id)).value() > 0;
         });
     visit_rows.erase(to_remove.begin(), to_remove.end());
   }
@@ -2427,7 +2427,7 @@ base::Time HistoryBackend::FindMostRecentClusteredTime() {
 }
 
 void HistoryBackend::ReplaceClusters(
-    const std::vector<int64_t>& ids_to_delete,
+    const std::vector<ClusterId>& ids_to_delete,
     const std::vector<Cluster>& clusters_to_add) {
   TRACE_EVENT0("browser", "HistoryBackend::ReplaceClusters");
   if (!db_)
@@ -2437,23 +2437,23 @@ void HistoryBackend::ReplaceClusters(
   ScheduleCommit();
 }
 
-int64_t HistoryBackend::ReserveNextClusterIdWithVisit(
+ClusterId HistoryBackend::ReserveNextClusterIdWithVisit(
     const ClusterVisit& cluster_visit) {
   TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterIdWithVisit");
-  int64_t cluster_id =
+  ClusterId cluster_id =
       db_ ? db_->ReserveNextClusterId(/*originator_cache_guid=*/"",
-                                      /*originator_cluster_id=*/0)
-          : 0;
-  if (cluster_id == 0) {
+                                      /*originator_cluster_id=*/ClusterId(0))
+          : ClusterId(0);
+  if (cluster_id.value() == 0) {
     // DB write was not successful, just return.
-    return 0;
+    return ClusterId(0);
   }
   AddVisitsToCluster(cluster_id, {cluster_visit});
   return cluster_id;
 }
 
 void HistoryBackend::AddVisitsToCluster(
-    int64_t cluster_id,
+    ClusterId cluster_id,
     const std::vector<ClusterVisit>& visits) {
   TRACE_EVENT0("browser", "HistoryBackend::AddVisitsToCluster");
   if (!db_)
@@ -2465,21 +2465,21 @@ void HistoryBackend::AddVisitsToCluster(
 void HistoryBackend::AddVisitToSyncedCluster(
     const history::ClusterVisit& cluster_visit,
     const std::string& originator_cache_guid,
-    int64_t originator_cluster_id) {
+    ClusterId originator_cluster_id) {
   TRACE_EVENT0("browser", "HistoryBackend::AddVisitToSyncedCluster");
   if (!db_) {
     return;
   }
 
-  int64_t local_cluster_id = db_->GetClusterIdForSyncedDetails(
+  ClusterId local_cluster_id = db_->GetClusterIdForSyncedDetails(
       originator_cache_guid, originator_cluster_id);
-  if (local_cluster_id == 0) {
+  if (local_cluster_id.value() == 0) {
     // Reserve a new one since one with the synced details does not already
     // exist.
     local_cluster_id =
         db_->ReserveNextClusterId(originator_cache_guid, originator_cluster_id);
   }
-  if (local_cluster_id == 0) {
+  if (local_cluster_id.value() == 0) {
     // Cluster failed to be added to the DB - unclear if/how this can happen.
     return;
   }
@@ -2511,9 +2511,9 @@ void HistoryBackend::UpdateClusterVisit(
     return;
   }
 
-  int64_t cluster_id = db_->GetClusterIdContainingVisit(
+  ClusterId cluster_id = db_->GetClusterIdContainingVisit(
       cluster_visit.annotated_visit.visit_row.visit_id);
-  if (cluster_id == 0) {
+  if (cluster_id.value() == 0) {
     // No cluster visit persisted, just return.
     return;
   }
@@ -2540,7 +2540,7 @@ std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     // `cluster` should be valid in the normal flow, but DB corruption can
     // happen. `GetCluster()` returning a cluster_id` of 0 indicates an invalid
     // cluster.
-    if (cluster.cluster_id > 0) {
+    if (cluster.cluster_id.value() > 0) {
       accumulated_visits_count += cluster.visits.size();
       clusters.push_back(std::move(cluster));
       if (accumulated_visits_count >= max_visits_soft_cap)
@@ -2550,7 +2550,7 @@ std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
   return clusters;
 }
 
-Cluster HistoryBackend::GetCluster(int64_t cluster_id,
+Cluster HistoryBackend::GetCluster(ClusterId cluster_id,
                                    bool include_keywords_and_duplicates) {
   TRACE_EVENT0("browser", "HistoryBackend::GetCluster");
   if (!db_)
@@ -2570,10 +2570,10 @@ Cluster HistoryBackend::GetCluster(int64_t cluster_id,
   return cluster;
 }
 
-int64_t HistoryBackend::GetClusterIdContainingVisit(VisitID visit_id) {
+ClusterId HistoryBackend::GetClusterIdContainingVisit(VisitID visit_id) {
   TRACE_EVENT0("browser", "HistoryBackend::GetClusterIdContainingVisit");
 
-  return db_ ? db_->GetClusterIdContainingVisit(visit_id) : 0;
+  return db_ ? db_->GetClusterIdContainingVisit(visit_id) : ClusterId(0);
 }
 
 VisitRow HistoryBackend::GetRedirectChainStart(VisitRow visit) {

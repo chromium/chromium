@@ -52,7 +52,7 @@ struct InProgressCluster {
   // set once if a search visit is part of this in-progress cluster.
   std::u16string search_terms;
   // The corresponding cluster ID in the persisted database.
-  int64_t persisted_cluster_id = 0;
+  history::ClusterId persisted_cluster_id = history::ClusterId(0);
   // The vector of visits that have not been persisted yet. Note that each entry
   // only contains the minimum required to persist a cluster visit.
   std::vector<history::ClusterVisit> unpersisted_visits;
@@ -107,13 +107,13 @@ class ContextClustererHistoryServiceObserver
   void CleanUpClusters();
 
   // Finalizes the cluster with index, `cluster_id`.
-  void FinalizeCluster(int64_t cluster_id);
+  void FinalizeCluster(history::ClusterId cluster_id);
 
   // Callback invoked when the History Service returns the cluster ID
   // (`persisted_cluster_id`) to use for `cluster_id`.
   void OnPersistedClusterIdReceived(base::TimeTicks start_time,
-                                    int64_t cluster_id,
-                                    int64_t persisted_cluster_id);
+                                    history::ClusterId cluster_id,
+                                    history::ClusterId persisted_cluster_id);
 
   // Creates a cluster visit from `normalized_url` and `visit_row`.
   history::ClusterVisit CreateClusterVisit(const std::string& normalized_url,
@@ -130,14 +130,14 @@ class ContextClustererHistoryServiceObserver
   int64_t num_clusters_created() const { return cluster_id_counter_; }
 
   // Mapping from cluster ID to the contents of the in-progress cluster.
-  std::map<int64_t, InProgressCluster> in_progress_clusters_;
+  std::map<history::ClusterId, InProgressCluster> in_progress_clusters_;
 
   // Mapping from visit ID to the in-progress cluster ID it belongs to.
-  std::map<history::VisitID, int64_t> visit_id_to_cluster_map_;
+  std::map<history::VisitID, history::ClusterId> visit_id_to_cluster_map_;
 
   // Mapping from normalized URL spec to the in-progress cluster ID it belongs
   // to.
-  std::map<std::string, int64_t> visit_url_to_cluster_map_;
+  std::map<std::string, history::ClusterId> visit_url_to_cluster_map_;
 
   // A running counter that is used to index the in-progress clusters.
   int64_t cluster_id_counter_ = 0;

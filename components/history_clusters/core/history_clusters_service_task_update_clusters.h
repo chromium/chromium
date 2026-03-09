@@ -64,13 +64,13 @@ class HistoryClustersServiceTaskUpdateClusters
   // request clusters from `ClusteringBackend`. May instead syncly invoke
   // `callback_` if no annotated visits were fetched.
   void OnGotAnnotatedVisitsToCluster(
-      std::vector<int64_t> old_clusters,
+      std::vector<history::ClusterId> old_clusters,
       std::vector<history::AnnotatedVisit> annotated_visits,
       QueryClustersContinuationParams continuation_params);
 
   // Invoked after `OnGotAnnotatedVisitsToCluster()` asyncly obtains clusters.
   // Will asyncly request `old_cluster_ids` be replaced with `clusters`.
-  void OnGotModelClusters(std::vector<int64_t> old_cluster_ids,
+  void OnGotModelClusters(std::vector<history::ClusterId> old_cluster_ids,
                           QueryClustersContinuationParams continuation_params,
                           std::vector<history::Cluster> clusters);
 

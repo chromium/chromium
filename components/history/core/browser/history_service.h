@@ -650,27 +650,27 @@ class HistoryService : public KeyedService,
   // Delete and add 2 sets of clusters. Doing this in one call avoids an
   // additional thread hops.
   base::CancelableTaskTracker::TaskId ReplaceClusters(
-      const std::vector<int64_t>& ids_to_delete,
+      const std::vector<ClusterId>& ids_to_delete,
       const std::vector<Cluster>& clusters_to_add,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
   // Implemented and called by `ReserveNextClusterIdWithVisit()` below with the
   // last cluster ID that was added to the database.
-  using ClusterIdCallback = base::OnceCallback<void(int64_t)>;
+  using ClusterIdCallback = base::OnceCallback<void(ClusterId)>;
 
   // Adds a cluster with `cluster_visit` and invokes `callback` with the ID of
   // the new cluster. It is expected for this to only be called for local
   // visits. Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId ReserveNextClusterIdWithVisit(
       const ClusterVisit& cluster_visit,
-      base::OnceCallback<void(int64_t)> callback,
+      base::OnceCallback<void(ClusterId)> callback,
       base::CancelableTaskTracker* tracker);
 
   // Adds `visits` to the cluster `cluster_id`.
   // Virtual for testing.
   virtual base::CancelableTaskTracker::TaskId AddVisitsToCluster(
-      int64_t cluster_id,
+      ClusterId cluster_id,
       const std::vector<ClusterVisit>& visits,
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);

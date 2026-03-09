@@ -20,10 +20,10 @@ using ::testing::ElementsAre;
 
 std::vector<history::Cluster> GetTestClusters() {
   history::Cluster meets_no_criteria;
-  meets_no_criteria.cluster_id = 1;
+  meets_no_criteria.cluster_id = history::ClusterId(1);
 
   history::Cluster meets_all_criteria;
-  meets_all_criteria.cluster_id = 2;
+  meets_all_criteria.cluster_id = history::ClusterId(2);
   history::AnnotatedVisit visit =
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
   visit.visit_row.is_known_to_sync = true;
@@ -45,29 +45,29 @@ std::vector<history::Cluster> GetTestClusters() {
                                testing::CreateClusterVisit(visit4)};
 
   history::Cluster not_enough_images = meets_all_criteria;
-  not_enough_images.cluster_id = 3;
+  not_enough_images.cluster_id = history::ClusterId(3);
   not_enough_images.visits[0]
       .annotated_visit.content_annotations.has_url_keyed_image = false;
 
   history::Cluster no_categories = meets_all_criteria;
-  no_categories.cluster_id = 4;
+  no_categories.cluster_id = history::ClusterId(4);
   no_categories.visits[0]
       .annotated_visit.content_annotations.model_annotations.categories.clear();
   no_categories.visits[2]
       .annotated_visit.content_annotations.model_annotations.categories.clear();
 
   history::Cluster no_search_terms = meets_all_criteria;
-  no_search_terms.cluster_id = 5;
+  no_search_terms.cluster_id = history::ClusterId(5);
   no_search_terms.visits[1].annotated_visit.content_annotations.search_terms =
       u"";
 
   history::Cluster no_related_searches = meets_all_criteria;
-  no_related_searches.cluster_id = 6;
+  no_related_searches.cluster_id = history::ClusterId(6);
   no_related_searches.visits[1]
       .annotated_visit.content_annotations.related_searches.clear();
 
   history::Cluster noisy_cluster = meets_all_criteria;
-  noisy_cluster.cluster_id = 7;
+  noisy_cluster.cluster_id = history::ClusterId(7);
   for (auto& noisy_cluster_visit : noisy_cluster.visits) {
     noisy_cluster_visit.engagement_score =
         GetConfig().noisy_cluster_visits_engagement_threshold + 1;
@@ -75,23 +75,23 @@ std::vector<history::Cluster> GetTestClusters() {
   }
 
   history::Cluster single_visit_cluster = meets_all_criteria;
-  single_visit_cluster.cluster_id = 8;
+  single_visit_cluster.cluster_id = history::ClusterId(8);
   single_visit_cluster.visits = {meets_all_criteria.visits[0]};
 
   history::Cluster non_visible_cluster = meets_all_criteria;
-  non_visible_cluster.cluster_id = 9;
+  non_visible_cluster.cluster_id = history::ClusterId(9);
   non_visible_cluster.visits[0]
       .annotated_visit.content_annotations.model_annotations.visibility_score =
       GetConfig().content_visibility_threshold - 0.1;
 
   history::Cluster has_blocked_category = meets_all_criteria;
-  has_blocked_category.cluster_id = 10;
+  has_blocked_category.cluster_id = history::ClusterId(10);
   has_blocked_category.visits[0]
       .annotated_visit.content_annotations.model_annotations.categories
       .push_back({"blocked", 80});
 
   history::Cluster has_image_not_known_to_sync = meets_all_criteria;
-  has_image_not_known_to_sync.cluster_id = 11;
+  has_image_not_known_to_sync.cluster_id = history::ClusterId(11);
   std::ranges::for_each(
       has_image_not_known_to_sync.visits, [&](auto& cluster_visit) {
         cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
@@ -99,7 +99,8 @@ std::vector<history::Cluster> GetTestClusters() {
 
   history::Cluster meets_all_criteria_but_not_after_skipped_visits =
       meets_all_criteria;
-  meets_all_criteria_but_not_after_skipped_visits.cluster_id = 12;
+  meets_all_criteria_but_not_after_skipped_visits.cluster_id =
+      history::ClusterId(12);
   std::ranges::for_each(
       meets_all_criteria_but_not_after_skipped_visits.visits,
       [&](auto& cluster_visit) { cluster_visit.score = 0.0; });
@@ -125,7 +126,7 @@ class FilterClusterProcessorTest : public ::testing::Test {
 
   // Runs the test clusters through a `FilterClusterProcessor` with
   // `filter_params`. Returns the ids of the clusters that remain.
-  std::vector<int64_t> GetTestClusterIdsThatPassFilter(
+  std::vector<history::ClusterId> GetTestClusterIdsThatPassFilter(
       QueryClustersFilterParams& filter_params,
       bool engagement_score_provider_is_valid = true) {
     auto cluster_processor = std::make_unique<FilterClusterProcessor>(
@@ -135,7 +136,7 @@ class FilterClusterProcessorTest : public ::testing::Test {
     std::vector<history::Cluster> clusters = GetTestClusters();
     cluster_processor->ProcessClusters(&clusters);
 
-    std::vector<int64_t> cluster_ids;
+    std::vector<history::ClusterId> cluster_ids;
     cluster_ids.reserve(clusters.size());
     for (const auto& cluster : clusters) {
       cluster_ids.push_back(cluster.cluster_id);
@@ -173,7 +174,12 @@ TEST_F(FilterClusterProcessorTest, NoFunctionalFilter) {
   QueryClustersFilterParams params;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+              ElementsAre(history::ClusterId(1), history::ClusterId(2),
+                          history::ClusterId(3), history::ClusterId(4),
+                          history::ClusterId(5), history::ClusterId(6),
+                          history::ClusterId(7), history::ClusterId(8),
+                          history::ClusterId(9), history::ClusterId(10),
+                          history::ClusterId(11), history::ClusterId(12)));
 
   // Filter should not have been run, so expect these counts to be 0.
   histogram_tester.ExpectTotalCount(
@@ -197,7 +203,11 @@ TEST_F(FilterClusterProcessorTest, OnlyVisitsConstraint) {
   params.min_visits = 2;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(2, 3, 4, 5, 6, 7, 9, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(4), history::ClusterId(5),
+                          history::ClusterId(6), history::ClusterId(7),
+                          history::ClusterId(9), history::ClusterId(10),
+                          history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -224,7 +234,10 @@ TEST_F(FilterClusterProcessorTest, OnlyImageConstraint) {
   params.min_visits_with_images = 2;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(2, 4, 5, 6, 7, 9, 10));
+              ElementsAre(history::ClusterId(2), history::ClusterId(4),
+                          history::ClusterId(5), history::ClusterId(6),
+                          history::ClusterId(7), history::ClusterId(9),
+                          history::ClusterId(10)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -251,7 +264,11 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryAllowlistConstraint) {
   params.categories_allowlist = {"category1", "category2"};
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(2, 3, 5, 6, 7, 8, 9, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(5), history::ClusterId(6),
+                          history::ClusterId(7), history::ClusterId(8),
+                          history::ClusterId(9), history::ClusterId(10),
+                          history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -278,7 +295,12 @@ TEST_F(FilterClusterProcessorTest, OnlyCategoryBlocklistConstraint) {
   params.categories_blocklist = {"blocked"};
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12));
+              ElementsAre(history::ClusterId(1), history::ClusterId(2),
+                          history::ClusterId(3), history::ClusterId(4),
+                          history::ClusterId(5), history::ClusterId(6),
+                          history::ClusterId(7), history::ClusterId(8),
+                          history::ClusterId(9), history::ClusterId(11),
+                          history::ClusterId(12)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -305,7 +327,10 @@ TEST_F(FilterClusterProcessorTest, OnlySearchInitiated) {
   params.is_search_initiated = true;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(2, 3, 4, 6, 9, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(4), history::ClusterId(6),
+                          history::ClusterId(9), history::ClusterId(10),
+                          history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -332,7 +357,10 @@ TEST_F(FilterClusterProcessorTest, OnlyRelatedSearches) {
   params.has_related_searches = true;
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
-              ElementsAre(2, 3, 4, 5, 7, 9, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(4), history::ClusterId(5),
+                          history::ClusterId(7), history::ClusterId(9),
+                          history::ClusterId(10), history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -360,7 +388,10 @@ TEST_F(FilterClusterProcessorTest, OnlyShownOnProminentUiSurfacesNoEngagement) {
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(
                   params, /*engagement_score_provider_is_valid=*/false),
-              ElementsAre(2, 3, 4, 5, 6, 7, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(4), history::ClusterId(5),
+                          history::ClusterId(6), history::ClusterId(7),
+                          history::ClusterId(10), history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -397,7 +428,10 @@ TEST_F(FilterClusterProcessorTest,
 
   EXPECT_THAT(GetTestClusterIdsThatPassFilter(
                   params, /*engagement_score_provider_is_valid=*/true),
-              ElementsAre(2, 3, 4, 5, 6, 10, 11));
+              ElementsAre(history::ClusterId(2), history::ClusterId(3),
+                          history::ClusterId(4), history::ClusterId(5),
+                          history::ClusterId(6), history::ClusterId(10),
+                          history::ClusterId(11)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
@@ -437,7 +471,8 @@ TEST_F(FilterClusterProcessorTest, FullFilter) {
   params.has_related_searches = true;
   params.is_shown_on_prominent_ui_surfaces = true;
 
-  EXPECT_THAT(GetTestClusterIdsThatPassFilter(params), ElementsAre(2));
+  EXPECT_THAT(GetTestClusterIdsThatPassFilter(params),
+              ElementsAre(history::ClusterId(2)));
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PreFilter."
