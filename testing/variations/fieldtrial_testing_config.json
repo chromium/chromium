@@ -3541,21 +3541,6 @@
             ]
         }
     ],
-    "AvoidDoubleMultiwindowChanges": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidDoubleMultiwindowChanges"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvoidEntryCreationForNoStore": [
         {
             "platforms": [
