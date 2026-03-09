@@ -1682,12 +1682,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // Copy the source video frame into the intermediate (cached) SI if
     // necessary and generate the sync token that the following GL access of
     // that cached SI will wait on.
-    gpu::SyncToken sync_token;
-    if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
-      // Cache hit: Ensure that the GL access below waits on the
-      // `rgb_sync_token` passed from the cache.
-      sync_token = rgb_sync_token;
-    } else {
+    gpu::SyncToken sync_token = rgb_sync_token;
+    if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
       // Cache miss: Copy the VideoFrame into the cached SI and ensure that the
       // GL access below waits on the copy operation to complete.
       sync_token =
