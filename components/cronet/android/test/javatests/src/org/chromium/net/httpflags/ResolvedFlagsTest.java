@@ -636,4 +636,71 @@ public final class ResolvedFlagsTest {
                     value.getIntValue();
                 });
     }
+
+    @Test
+    @SmallTest
+    public void testResolve_returnsFlagThatMatchesAppIdPrefix() {
+        assertThat(
+                        ResolvedFlags.resolve(
+                                        singleFlag(
+                                                "test_flag",
+                                                FlagValue.newBuilder()
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                                "test_flag_value")
+                                                                        .setAppId("test_app."))),
+                                        "test_app.foo",
+                                        "1.2.3.4",
+                                        /* isTelemetryEnabled= */ true)
+                                .flags())
+                .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
+                .containsExactly("test_flag", "test_flag_value");
+    }
+
+    @Test
+    @SmallTest
+    public void testResolve_usesFirstMatch_whenWildcardIsFirst() {
+        assertThat(
+                        ResolvedFlags.resolve(
+                                        singleFlag(
+                                                "test_flag",
+                                                FlagValue.newBuilder()
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                        "wildcard_match"))
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                                "prefix_match")
+                                                                        .setAppId(
+                                                                                "test_app.foo."))),
+                                        "test_app.foo",
+                                        "1.2.3.4",
+                                        /* isTelemetryEnabled= */ true)
+                                .flags())
+                .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
+                .containsExactly("test_flag", "wildcard_match");
+    }
+
+    @Test
+    @SmallTest
+    public void testResolve_usesFirstMatch_whenPrefixMatchIsFirst() {
+        assertThat(
+                        ResolvedFlags.resolve(
+                                        singleFlag(
+                                                "test_flag",
+                                                FlagValue.newBuilder()
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                                "exact_match")
+                                                                        .setAppId("test_app."))
+                                                        .addConstrainedValues(
+                                                                stringConstrainedValue(
+                                                                        "wildcard_match"))),
+                                        "test_app.foo",
+                                        "1.2.3.4",
+                                        /* isTelemetryEnabled= */ true)
+                                .flags())
+                .comparingValuesUsing(FLAG_STRING_VALUE_EQUALS)
+                .containsExactly("test_flag", "exact_match");
+    }
 }

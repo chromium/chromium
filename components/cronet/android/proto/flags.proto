@@ -18,9 +18,18 @@ message FlagValue {
   // A possible value for this flag, along with a set of constraints that have
   // to be met for that value to be used.
   message ConstrainedValue {
-    // App selector: only apply this value to applications whose package ID
-    // matches the value of this field, e.g. "com.google.foo".
-    // If not set, matches all apps.
+    // App selector:
+    // * If not set, matches all apps.
+    // * If the value ends with a dot (.), it matches any application whose
+    //   package ID starts with this value. For example, "com.google." matches
+    //   "com.google.foo" and "com.google.bar".
+    //   Note: the prefix matching (ending with a dot) was introduced in March
+    //   2026 (https://crrev.com/c/7603018). Older versions of Cronet do not
+    //   support prefix matching. These versions will attempt to do an exact
+    //   match, and since app IDs cannot end with a dot, no match can ever
+    //   occur.
+    // * Otherwise, matches only applications whose package ID equals the value
+    //   of this field, e.g. "com.google.foo".
     optional string app_id = 1;
 
     // Only apply this value to client libraries running at least this version.

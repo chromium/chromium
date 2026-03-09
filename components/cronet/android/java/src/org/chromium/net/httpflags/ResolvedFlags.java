@@ -39,6 +39,12 @@ public final class ResolvedFlags {
 
         private final Object mValue;
 
+        private static boolean doesAppIdMatch(String constrainedValueAppId, String appId) {
+            return constrainedValueAppId.equals(appId)
+                    || (constrainedValueAppId.endsWith(".")
+                            && appId.startsWith(constrainedValueAppId));
+        }
+
         @Nullable
         private static Value resolve(
                 FlagValue flagValue,
@@ -49,7 +55,7 @@ public final class ResolvedFlags {
                 if ((!isTelemetryEnabled
                                 && !constrainedValue.getApplyEvenIfCronetTelemetryDisabled())
                         || (constrainedValue.hasAppId()
-                                && !constrainedValue.getAppId().equals(appId))
+                                && !doesAppIdMatch(constrainedValue.getAppId(), appId))
                         || (constrainedValue.hasMinVersion()
                                 && !matchesVersion(
                                         cronetVersion,
