@@ -1395,12 +1395,12 @@ void ComposeboxQueryController::SetQueryControllerState(
 }
 
 bool ComposeboxQueryController::IsTerminalFileStatus(
-    contextual_search::FileUploadStatus status) {
-  return status == contextual_search::FileUploadStatus::kUploadFailed ||
-         status == contextual_search::FileUploadStatus::kUploadSuccessful ||
-         status == contextual_search::FileUploadStatus::kValidationFailed ||
-         status == contextual_search::FileUploadStatus::kUploadExpired ||
-         status == contextual_search::FileUploadStatus::kUploadReplaced;
+    contextual_search::ContextUploadStatus status) {
+  return status == contextual_search::ContextUploadStatus::kUploadFailed ||
+         status == contextual_search::ContextUploadStatus::kUploadSuccessful ||
+         status == contextual_search::ContextUploadStatus::kValidationFailed ||
+         status == contextual_search::ContextUploadStatus::kUploadExpired ||
+         status == contextual_search::ContextUploadStatus::kUploadReplaced;
 }
 
 // Marks the file upload as in terminal state and creates search URL
@@ -1434,7 +1434,7 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
     // Once we start uploading a file in `StartFileUploadFlow`, if
     // we get `kNotUploaded` status outside of `StartFileUploadFlow`,
     // we consider it a failure, as it is the second `kNotUploaded`.
-    if (status == contextual_search::FileUploadStatus::kNotUploaded) {
+    if (status == contextual_search::ContextUploadStatus::kNotUploaded) {
       MarkFileUploadAsInTerminalState(file_token);
     }
   } else {

@@ -214,7 +214,7 @@ class ContextualTasksLensInteractionBrowserTestBase
     // This will satisfy MarkFileUploadAsInTerminalState and trigger URL
     // creation.
     context_controller->update_file_upload_status_for_testing(
-        *file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+        *file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);
   }
 

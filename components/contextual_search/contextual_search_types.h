@@ -44,8 +44,6 @@ enum class ContextUploadStatus {
   kUploadReplaced = 8,
 };
 
-using FileUploadStatus = ContextUploadStatus;
-
 // For upload error notifications and metrics.
 enum class ContextUploadErrorType {
   // Unknown.
@@ -63,8 +61,6 @@ enum class ContextUploadErrorType {
   // Image processing error.
   kImageProcessingError = 6,
 };
-
-using FileUploadErrorType = ContextUploadErrorType;
 
 // Struct containing file information for a file upload.
 struct FileInfo {

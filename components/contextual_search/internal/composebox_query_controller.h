@@ -136,8 +136,8 @@ class ComposeboxQueryController
 
   void update_file_upload_status_for_testing(
       const base::UnguessableToken& file_token,
-      contextual_search::FileUploadStatus status,
-      std::optional<contextual_search::FileUploadErrorType> error_type) {
+      contextual_search::ContextUploadStatus status,
+      std::optional<contextual_search::ContextUploadErrorType> error_type) {
     UpdateFileUploadStatus(file_token, status, error_type);
   }
 
@@ -385,7 +385,7 @@ class ComposeboxQueryController
   void SetQueryControllerState(QueryControllerState new_state);
 
   // Returns if file status is considered to be in the terminal state.
-  bool IsTerminalFileStatus(contextual_search::FileUploadStatus status);
+  bool IsTerminalFileStatus(contextual_search::ContextUploadStatus status);
 
   // Marks file upload as in terminal state (success, replaced, failed,
   // expired, validation failed) for given file token, and if

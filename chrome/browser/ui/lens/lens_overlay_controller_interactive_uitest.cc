@@ -336,7 +336,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
       auto* context_controller = static_cast<ComposeboxQueryController*>(
           session_handle->GetController());
       context_controller->update_file_upload_status_for_testing(
-          *file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+          *file_token,
+          contextual_search::ContextUploadStatus::kUploadSuccessful,
           std::nullopt);
     }));
   }
