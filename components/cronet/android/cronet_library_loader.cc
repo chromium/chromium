@@ -162,6 +162,14 @@ static void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
                                                bool initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
 
+  ApplyBaseFeatureOverrides(GetBaseFeatureOverrides(env));
+
+  if (base::FeatureList::IsEnabled(kLogMe)) {
+    LOG(/* Bypass log spam warning regex */ INFO)
+        << "CronetLogMe feature flag set, logging as instructed. Message: "
+        << kLogMeMessage.Get();
+  }
+
   if (!base::ThreadPoolInstance::Get()) {
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
   }
@@ -170,14 +178,6 @@ static void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
     ATrace_beginSection("CronetLibraryLoader_NativeInit initializing Perfetto");
     InitializePerfetto();
     ATrace_endSection();
-  }
-
-  ApplyBaseFeatureOverrides(GetBaseFeatureOverrides(env));
-
-  if (base::FeatureList::IsEnabled(kLogMe)) {
-    LOG(/* Bypass log spam warning regex */ INFO)
-        << "CronetLogMe feature flag set, logging as instructed. Message: "
-        << kLogMeMessage.Get();
   }
 }
 
