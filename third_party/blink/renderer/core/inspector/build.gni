@@ -112,6 +112,8 @@ blink_core_sources_inspector = [
   "inspector_task_runner.h",
   "inspector_trace_events.cc",
   "inspector_trace_events.h",
+  "inspector_web_mcp_agent.cc",
+  "inspector_web_mcp_agent.h",
   "invalidation_set_to_selector_map.cc",
   "invalidation_set_to_selector_map.h",
   "legacy_dom_snapshot_agent.cc",

@@ -92,6 +92,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/storage.h",
     "inspector/protocol/web_audio.cc",
     "inspector/protocol/web_audio.h",
+    "inspector/protocol/web_mcp.cc",
+    "inspector/protocol/web_mcp.h",
   ]
 
   deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]

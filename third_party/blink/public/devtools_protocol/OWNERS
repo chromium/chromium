@@ -9,3 +9,4 @@ sadym@chromium.org
 per-file domains/BluetoothEmulation.pdl=alexnj@chromium.org
 per-file domains/CSS.pdl=pfaffe@chromium.org
 per-file domains/DOM.pdl=pfaffe@chromium.org
+per-file domains/WebMCP.pdl=pfaffe@chromium.org

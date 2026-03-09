@@ -629,6 +629,8 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // See http://crbug.com/124534.
 BASE_FEATURE(kDevToolsImprovedNetworkError, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDevToolsWebMCPSupport, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDirectCompositorThreadIpc,
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

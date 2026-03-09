@@ -122,6 +122,9 @@
                 "async": ["getResponseBody", "getRequestPostData"]
             },
             {
+                "domain": "WebMCP"
+            },
+            {
                 "domain": "WebAudio"
             },
             {

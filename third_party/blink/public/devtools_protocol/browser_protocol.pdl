@@ -56,3 +56,4 @@ include domains/Tethering.pdl
 include domains/Tracing.pdl
 include domains/WebAudio.pdl
 include domains/WebAuthn.pdl
+include domains/WebMCP.pdl

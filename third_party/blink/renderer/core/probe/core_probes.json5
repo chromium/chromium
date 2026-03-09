@@ -313,6 +313,12 @@
         "SpeculationCandidatesUpdated",
       ]
     },
+    InspectorWebMCPAgent: {
+      probes: [
+        "WebMCPToolAdded",
+        "WebMCPToolRemoved",
+      ]
+    },
     InspectorTraceEvents: {
       probes: [
         "CallFunction",

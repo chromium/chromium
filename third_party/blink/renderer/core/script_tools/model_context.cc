@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -46,16 +47,13 @@ String ValidateAndStringifyObject(ScriptState* script_state,
                                   const ScriptObject& input) {
   v8::Local<v8::String> value;
   TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
-
   if (!v8::JSON::Stringify(script_state->GetContext(), input.V8Object())
            .ToLocal(&value)) {
     CHECK(rethrow_scope.HasCaught());
     return String();
   }
-
   String result = ToBlinkString<String>(script_state->GetIsolate(), value,
                                         kDoNotExternalize);
-
   // JSON.stringify() can fail to produce a string in one of two ways:
   //   1. It can throw an exception (as with unserializable objects), which is
   //   handled by `rethrow_scope` above; or
@@ -228,7 +226,6 @@ void ModelContext::registerTool(ScriptState* script_state,
   if (tool->hasInputSchema()) {
     input_schema = ValidateAndStringifyObject(script_state, exception_state,
                                               tool->inputSchema());
-
     if (!input_schema) {
       // Exception already thrown by ValidateAndStringifyObject
       return;
@@ -252,6 +249,7 @@ void ModelContext::registerTool(ScriptState* script_state,
       CaptureSourceLocation(ExecutionContext::From(script_state)));
 
   tool_map_.insert(tool->name(), tool_data);
+  probe::WebMCPToolAdded(document_, *tool_data);
   OnToolsChanged();
   UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
 }
@@ -265,6 +263,7 @@ void ModelContext::unregisterTool(const String& tool_name,
     return;
   }
 
+  probe::WebMCPToolRemoved(document_, *it->value);
   tool_map_.erase(it);
   OnToolsChanged();
 }
@@ -491,7 +490,8 @@ void ModelContext::RegisterDeclarativeTool(
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
-  tool_map_.insert(name, std::move(tool_data));
+  tool_map_.insert(name, tool_data);
+  probe::WebMCPToolAdded(document_, *tool_data);
   OnToolsChanged();
   UseCounter::Count(document_,
                     WebFeature::kModelContextRegisterDeclarativeTool);
@@ -528,8 +528,7 @@ void ModelContext::PauseExecution() {
   script_tool_host_remote_->PauseExecution();
 }
 
-HeapVector<Member<const ModelContext::ToolData>> ModelContext::ListTools()
-    const {
+HeapVector<Member<const ToolData>> ModelContext::ListTools() const {
   HeapVector<Member<const ToolData>> tools;
   tools.ReserveInitialCapacity(tool_map_.size());
 
@@ -561,25 +560,25 @@ void ModelContext::Trace(Visitor* visitor) const {
   visitor->Trace(script_tool_host_remote_);
 }
 
-const String& ModelContext::ToolData::Name() const {
+const String& ToolData::Name() const {
   return script_tool_->name;
 }
 
-SourceLocation* ModelContext::ToolData::GetSourceLocation() const {
+SourceLocation* ToolData::GetSourceLocation() const {
   return source_location_;
 }
 
-Element* ModelContext::ToolData::BackingFormElement() const {
+Element* ToolData::BackingFormElement() const {
   return declarative_tool_ ? declarative_tool_->FormElement() : nullptr;
 }
 
-void ModelContext::ToolData::Trace(Visitor* visitor) const {
+void ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(v8_tool_function_);
   visitor->Trace(declarative_tool_);
   visitor->Trace(source_location_);
 }
 
-void ModelContext::ToolData::RefreshDeclarativeInputSchema() {
+void ToolData::RefreshDeclarativeInputSchema() {
   if (declarative_tool_) {
     script_tool_->input_schema = declarative_tool_->ComputeInputSchema();
   }

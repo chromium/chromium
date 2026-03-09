@@ -12959,7 +12959,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"devtools-webmcp-support", flag_descriptions::kDevToolsWebMCPSupportName,
      flag_descriptions::kDevToolsWebMCPSupportDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kDevToolsWebMCPSupport)},
+     FEATURE_VALUE_TYPE(blink::features::kDevToolsWebMCPSupport)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"use-surface-view-for-thin-webview",

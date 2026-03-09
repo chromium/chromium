@@ -53,6 +53,7 @@ domains = [
   "domains/Tracing.pdl",
   "domains/WebAudio.pdl",
   "domains/WebAuthn.pdl",
+  "domains/WebMCP.pdl",
 ]
 
 action("protocol_compatibility_check") {

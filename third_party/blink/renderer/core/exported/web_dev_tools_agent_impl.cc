@@ -82,6 +82,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
 #include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
+#include "third_party/blink/renderer/core/inspector/inspector_web_mcp_agent.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -355,6 +356,9 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                                     session->V8Session());
 
   session->CreateAndAppend<InspectorMemoryAgent>(inspected_frames);
+  if (base::FeatureList::IsEnabled(features::kDevToolsWebMCPSupport)) {
+    session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames);
+  }
 
   auto* page_agent = session->CreateAndAppend<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),

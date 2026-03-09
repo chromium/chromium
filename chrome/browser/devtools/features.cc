@@ -229,9 +229,5 @@ BASE_FEATURE(kDevToolsGeminiRebranding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsAiOriginTrialsApis, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to enable the WebMCP support in DevTools.
-BASE_FEATURE(kDevToolsWebMCPSupport, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDevToolsUseGcaApi, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features

@@ -1,0 +1,124 @@
+Tests that WebMCP toolsAdded and toolsRemoved events fire correctly.
+Enabling WebMCP Domain
+Adding {
+    tools : [
+        [0] : {
+            backendNodeId : <number>
+            description : A declarative WebMCP tool
+            frameId : <string>
+            inputSchema : {
+                properties : {
+                    text : {
+                        type : string
+                    }
+                }
+                required : [
+                ]
+                type : object
+            }
+            name : initial_declarative_tool
+        }
+        [1] : {
+            description : An imperative WebMCP tool
+            frameId : <string>
+            name : initial_imperative_tool
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 31
+                        functionName :
+                        lineNumber : 9
+                        scriptId : <string>
+                        url :
+                    }
+                ]
+            }
+        }
+    ]
+}
+Registering a new imperative and a new declarative tool...
+Adding {
+    tools : [
+        [0] : {
+            description : Another imperative tool
+            frameId : <string>
+            inputSchema : {
+                properties : {
+                    text : {
+                        type : string
+                    }
+                }
+                required : [
+                    [0] : text
+                ]
+                type : object
+            }
+            name : new_imperative_tool
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 35
+                        functionName : window.registerNewTools
+                        lineNumber : 16
+                        scriptId : <string>
+                        url :
+                    }
+                ]
+            }
+        }
+    ]
+}
+Adding {
+    tools : [
+        [0] : {
+            backendNodeId : <number>
+            description : Another declarative tool
+            frameId : <string>
+            inputSchema : {
+            }
+            name : new_declarative_tool
+        }
+    ]
+}
+Unregistering one of each...
+Removing {
+    tools : [
+        [0] : {
+            description : An imperative WebMCP tool
+            frameId : <string>
+            name : initial_imperative_tool
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 31
+                        functionName :
+                        lineNumber : 9
+                        scriptId : <string>
+                        url :
+                    }
+                ]
+            }
+        }
+    ]
+}
+Removing {
+    tools : [
+        [0] : {
+            backendNodeId : <number>
+            description : A declarative WebMCP tool
+            frameId : <string>
+            inputSchema : {
+                properties : {
+                    text : {
+                        type : string
+                    }
+                }
+                required : [
+                ]
+                type : object
+            }
+            name : initial_declarative_tool
+        }
+    ]
+}
+

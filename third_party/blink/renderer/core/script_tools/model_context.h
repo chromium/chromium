@@ -46,6 +46,57 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
   virtual Element* FormElement() const = 0;
 };
 
+class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
+ public:
+  // Creates a JS-backed tool.
+  ToolData(base::PassKey<ModelContext>,
+           mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
+           V8ToolExecuteCallback* v8_tool_function,
+           SourceLocation* source_location)
+      : script_tool_(std::move(script_tool)),
+        v8_tool_function_(v8_tool_function),
+        source_location_(source_location) {}
+
+  // Creates a declarative (<form>-backed) tool.
+  ToolData(base::PassKey<ModelContext>,
+           mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
+           DeclarativeWebMCPTool* declarative_tool)
+      : script_tool_(std::move(script_tool)),
+        declarative_tool_(declarative_tool) {}
+
+  const String& Name() const;
+
+  const mojom::blink::ScriptTool& ScriptTool() const { return *script_tool_; }
+
+  // If this is a JS-provided tool, returns the source location
+  // of the call to registerTool(). Otherwise, returns nullptr.
+  SourceLocation* GetSourceLocation() const;
+
+  // If this is a declarative tool, returns the <form> element
+  // that provided this tool. Otherwise, returns nullptr.
+  Element* BackingFormElement() const;
+
+  void Trace(Visitor* visitor) const;
+
+ private:
+  friend class ModelContext;
+
+  V8ToolExecuteCallback* GetV8ToolExecuteCallback() const {
+    return v8_tool_function_;
+  }
+  DeclarativeWebMCPTool* DeclarativeTool() const { return declarative_tool_; }
+
+  void RefreshDeclarativeInputSchema();
+
+  mojo::StructPtr<mojom::blink::ScriptTool> script_tool_;
+  // A JS-provided MCP tool:
+  Member<V8ToolExecuteCallback> v8_tool_function_;
+  // Used for declarative (form-based) MCP tools only:
+  Member<DeclarativeWebMCPTool> declarative_tool_;
+  // For JS-provided MCP tools, the location of the registerTool() call.
+  Member<SourceLocation> source_location_;
+};
+
 class CORE_EXPORT ModelContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -84,57 +135,6 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                                DeclarativeWebMCPTool* tool);
   void PauseExecution();
   void DidFinishParsing();
-
-  class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
-   public:
-    // Creates a JS-backed tool.
-    ToolData(base::PassKey<ModelContext>,
-             mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
-             V8ToolExecuteCallback* v8_tool_function,
-             SourceLocation* source_location)
-        : script_tool_(std::move(script_tool)),
-          v8_tool_function_(v8_tool_function),
-          source_location_(source_location) {}
-
-    // Creates a declarative (<form>-backed) tool.
-    ToolData(base::PassKey<ModelContext>,
-             mojo::StructPtr<mojom::blink::ScriptTool> script_tool,
-             DeclarativeWebMCPTool* declarative_tool)
-        : script_tool_(std::move(script_tool)),
-          declarative_tool_(declarative_tool) {}
-
-    const String& Name() const;
-
-    const mojom::blink::ScriptTool& ScriptTool() const { return *script_tool_; }
-
-    // If this is a JS-provided tool, returns the source location
-    // of the call to registerTool(). Otherwise, returns nullptr.
-    SourceLocation* GetSourceLocation() const;
-
-    // If this is a declarative tool, returns the <form> element
-    // that provided this tool. Otherwise, returns nullptr.
-    Element* BackingFormElement() const;
-
-    void Trace(Visitor* visitor) const;
-
-   private:
-    friend class ModelContext;
-
-    V8ToolExecuteCallback* GetV8ToolExecuteCallback() const {
-      return v8_tool_function_;
-    }
-    DeclarativeWebMCPTool* DeclarativeTool() const { return declarative_tool_; }
-
-    void RefreshDeclarativeInputSchema();
-
-    mojo::StructPtr<mojom::blink::ScriptTool> script_tool_;
-    // A JS-provided MCP tool:
-    Member<V8ToolExecuteCallback> v8_tool_function_;
-    // Used for declarative (form-based) MCP tools only:
-    Member<DeclarativeWebMCPTool> declarative_tool_;
-    // For JS-provided MCP tools, the location of the registerTool() call.
-    Member<SourceLocation> source_location_;
-  };
 
   // Returns registered tools, sorted by CodeUnitCompareLessThan().
   HeapVector<Member<const ToolData>> ListTools() const;

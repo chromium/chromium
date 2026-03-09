@@ -66,6 +66,7 @@ interface CoreProbes {
   class Script;
   class ScriptState;
   class SpeculationCandidate;
+  class ToolData;
   class XMLHttpRequest;
   using PropertyName = std::variant<const char*, String>;
 
@@ -245,4 +246,6 @@ interface CoreProbes {
   void UpdateAdRelatedState([Keep] Node& node, bool is_ad_related);
   void WillHidePopover([Keep] HTMLElement* element, bool* force_open);
   void UpdateAffectedByStartingStylesFlag([Keep] Node* node, std::optional<bool> override_flag);
+  void WebMCPToolAdded([Keep] Document* document, const ToolData& tool);
+  void WebMCPToolRemoved([Keep] Document* document, const ToolData& tool);
 }
