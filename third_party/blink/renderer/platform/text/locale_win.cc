@@ -271,7 +271,7 @@ void CommitLiteralToken(StringBuilder& literal_buffer,
                         StringBuilder& converted) {
   if (literal_buffer.length() <= 0)
     return;
-  DateTimeFormat::QuoteAndappend(literal_buffer.ToString(), converted);
+  DateTimeFormat::QuoteAndAppend(StringView(literal_buffer), converted);
   literal_buffer.Clear();
 }
 

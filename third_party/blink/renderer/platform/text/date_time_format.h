@@ -119,7 +119,7 @@ class PLATFORM_EXPORT DateTimeFormat {
 
   // Returns true if succeeded, false if failed.
   static bool Parse(const String&, TokenHandler&);
-  static void QuoteAndappend(const String&, StringBuilder&);
+  static void QuoteAndAppend(const StringView&, StringBuilder&);
 };
 
 }  // namespace blink

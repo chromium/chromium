@@ -247,17 +247,17 @@ String Locale::WeekFormatInLDML() {
   unsigned length = templ.length();
   for (unsigned i = 0; i + 1 < length; ++i) {
     if (templ[i] == '$' && (templ[i + 1] == '1' || templ[i + 1] == '2')) {
-      if (literal_start < i)
-        DateTimeFormat::QuoteAndappend(
-            templ.Substring(literal_start, i - literal_start), builder);
+      if (literal_start < i) {
+        DateTimeFormat::QuoteAndAppend(
+            templ.subview(literal_start, i - literal_start), builder);
+      }
       builder.Append(templ[++i] == '1' ? "yyyy" : "ww");
       literal_start = i + 1;
     }
   }
   if (literal_start < length)
-    DateTimeFormat::QuoteAndappend(
-        templ.Substring(literal_start, length - literal_start), builder);
-  return builder.ToString();
+    DateTimeFormat::QuoteAndAppend(templ.subview(literal_start), builder);
+  return builder.ReleaseString();
 }
 
 void Locale::SetLocaleData(const Vector<String, kDecimalSymbolsSize>& symbols,
