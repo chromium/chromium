@@ -207,6 +207,10 @@ class MODULES_EXPORT MediaDevices final
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
+  void CheckIfEnumerateDevicesTimedOut(
+      ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
+                                       IDLSequence<MediaDeviceInfo>>*
+          result_tracker);
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
   void SetPreferredSinkIdResultReceived(
       const String& sink_id,
