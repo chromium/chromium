@@ -117,29 +117,28 @@ base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
 struct PointCollector {
   Vector<gfx::PointF>& points;
   gfx::PointF subpath_start;
-};
 
-void CollectPoint(void* info, const PathElement& element) {
-  auto* collector = static_cast<PointCollector*>(info);
-  switch (element.type) {
-    case kPathElementMoveToPoint:
-      collector->subpath_start = element.points[0];
-      collector->points.push_back(element.points[0]);
-      break;
-    case kPathElementAddLineToPoint:
-      collector->points.push_back(element.points[0]);
-      break;
-    case kPathElementAddQuadCurveToPoint:
-      collector->points.push_back(element.points[1]);
-      break;
-    case kPathElementAddCurveToPoint:
-      collector->points.push_back(element.points[2]);
-      break;
-    case kPathElementCloseSubpath:
-      collector->points.push_back(collector->subpath_start);
-      break;
+  void CollectPoint(const PathElement& element) {
+    switch (element.type) {
+      case kPathElementMoveToPoint:
+        subpath_start = element.points[0];
+        points.push_back(element.points[0]);
+        break;
+      case kPathElementAddLineToPoint:
+        points.push_back(element.points[0]);
+        break;
+      case kPathElementAddQuadCurveToPoint:
+        points.push_back(element.points[1]);
+        break;
+      case kPathElementAddCurveToPoint:
+        points.push_back(element.points[2]);
+        break;
+      case kPathElementCloseSubpath:
+        points.push_back(subpath_start);
+        break;
+    }
   }
-}
+};
 
 }  // namespace
 
@@ -230,7 +229,9 @@ bool SVGAnimateMotionElement::CalculatePathValues() {
   if (RuntimeEnabledFeatures::SvgAnimateMotionDiscreteCalcModeEnabled() &&
       GetCalcMode() == kCalcModeDiscrete && !animation_path_.IsEmpty()) {
     PointCollector collector{discrete_points_, {}};
-    animation_path_.Apply(&collector, CollectPoint);
+    animation_path_.Apply([&collector](const PathElement& element) {
+      collector.CollectPoint(element);
+    });
   }
   return true;
 }

@@ -36,13 +36,9 @@ static double BisectingAngle(double in_angle, double out_angle) {
 }
 
 void SVGMarkerDataBuilder::Build(const Path& path) {
-  path.Apply(this, SVGMarkerDataBuilder::UpdateFromPathElement);
+  path.Apply(
+      [this](const PathElement& element) { UpdateFromPathElement(element); });
   Flush();
-}
-
-void SVGMarkerDataBuilder::UpdateFromPathElement(void* info,
-                                                 const PathElement& element) {
-  static_cast<SVGMarkerDataBuilder*>(info)->UpdateFromPathElement(element);
 }
 
 namespace {

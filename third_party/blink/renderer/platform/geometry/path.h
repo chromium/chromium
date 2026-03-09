@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
@@ -71,8 +72,6 @@ struct PointAndTangent {
   gfx::PointF point;
   float tangent_in_degrees = 0;
 };
-
-typedef void (*PathApplierFunction)(void* info, const PathElement&);
 
 class PLATFORM_EXPORT Path {
   USING_FAST_MALLOC(Path);
@@ -139,7 +138,7 @@ class PLATFORM_EXPORT Path {
 
   const SkPath& GetSkPath() const { return path_; }
 
-  void Apply(void* info, PathApplierFunction) const;
+  void Apply(base::FunctionRef<void(const PathElement&)>) const;
 
   // Utility factories for simple shapes.
   static Path MakeRect(const gfx::RectF&);

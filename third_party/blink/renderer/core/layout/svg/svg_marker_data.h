@@ -84,8 +84,6 @@ class SVGMarkerDataBuilder : private SVGPathConsumer {
   // SVGPathConsumer
   void EmitSegment(const PathSegmentData&) override;
 
-  static void UpdateFromPathElement(void* info, const PathElement&);
-
   enum AngleType {
     kBisecting,
     kInbound,

@@ -174,7 +174,7 @@ static base::span<gfx::PointF> ConvertPathPoints(
   return base::span(dst).first(src.size());
 }
 
-void Path::Apply(void* info, PathApplierFunction function) const {
+void Path::Apply(base::FunctionRef<void(const PathElement&)> function) const {
   SkPath::RawIter iter(path_);
   std::array<SkPoint, 4> pts;
   std::array<gfx::PointF, 3> path_points;
@@ -215,7 +215,7 @@ void Path::Apply(void* info, PathApplierFunction function) const {
         for (unsigned i = 0; i < kQuadCount; ++i) {
           path_element.points = ConvertPathPoints(
               path_points, base::span(quads).subspan(1 + 2 * i, 2u));
-          function(info, path_element);
+          function(path_element);
         }
         continue;
       }
@@ -226,7 +226,7 @@ void Path::Apply(void* info, PathApplierFunction function) const {
       case SkPath::kDone_Verb:
         return;
     }
-    function(info, path_element);
+    function(path_element);
   }
 }
 

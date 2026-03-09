@@ -80,27 +80,15 @@ class HighlightPathBuilder {
   std::unique_ptr<protocol::ListValue> Release() { return std::move(path_); }
 
   void AppendPath(const Path& path, float scale) {
-    ApplyInfo apply_info{this, scale};
-    path.Apply(&apply_info, &HighlightPathBuilder::AppendPathElement);
+    path.Apply([this, scale](const PathElement& path_element) {
+      AppendPathElement(path_element, scale);
+    });
   }
 
  protected:
   virtual gfx::PointF TranslatePoint(const gfx::PointF& point) { return point; }
 
  private:
-  struct ApplyInfo {
-    STACK_ALLOCATED();
-
-   public:
-    HighlightPathBuilder* builder;
-    float scale;
-  };
-
-  static void AppendPathElement(void* info, const PathElement& path_element) {
-    const ApplyInfo* apply_info = static_cast<ApplyInfo*>(info);
-    apply_info->builder->AppendPathElement(path_element, apply_info->scale);
-  }
-
   void AppendPathElement(const PathElement&, float scale);
   void AppendPathCommandAndPoints(const char* command,
                                   base::span<const gfx::PointF> points,
