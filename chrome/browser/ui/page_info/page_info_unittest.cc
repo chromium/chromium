@@ -24,6 +24,7 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -43,6 +44,7 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/buildflags.h"
@@ -2855,4 +2857,31 @@ TEST_F(PageInfoTest, SiteExceptionScopeTypeMetrics) {
   tester.ExpectBucketCount(kScopeTypeHistogram,
                            ContentSettingsPattern::Scope::kCustomScope,
                            1 /* expected_count */);
+}
+
+TEST_F(PageInfoTest, ResetPermissionClearsEmbargo) {
+  auto* autoblocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
+  GURL target_url = url();
+
+  // Record 3 dismissals to trigger embargo.
+  autoblocker->RecordDismissAndEmbargo(target_url,
+                                       ContentSettingsType::GEOLOCATION,
+                                       /*dismissed_prompt_was_quiet=*/false);
+  autoblocker->RecordDismissAndEmbargo(target_url,
+                                       ContentSettingsType::GEOLOCATION,
+                                       /*dismissed_prompt_was_quiet=*/false);
+  autoblocker->RecordDismissAndEmbargo(target_url,
+                                       ContentSettingsType::GEOLOCATION,
+                                       /*dismissed_prompt_was_quiet=*/false);
+
+  EXPECT_TRUE(
+      autoblocker->IsEmbargoed(target_url, ContentSettingsType::GEOLOCATION));
+
+  // Reset the permission
+  page_info()->OnSitePermissionChanged(ContentSettingsType::GEOLOCATION,
+                                       std::nullopt, std::nullopt, false);
+
+  EXPECT_FALSE(
+      autoblocker->IsEmbargoed(target_url, ContentSettingsType::GEOLOCATION));
 }

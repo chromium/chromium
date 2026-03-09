@@ -724,8 +724,9 @@ void PageInfo::OnSitePermissionChanged(
                                  permissions::PermissionSourceUI::OIB);
 
   // The permission may have been blocked due to being under embargo, so if it
-  // was changed away from BLOCK, clear embargo status if it exists.
-  if (setting && !info->delegate().IsBlocked(*setting)) {
+  // was changed away from BLOCK (or reset to default), clear embargo status if
+  // it exists.
+  if (!setting || !info->delegate().IsBlocked(*setting)) {
     delegate_->GetPermissionDecisionAutoblocker()->RemoveEmbargoAndResetCounts(
         site_url_, type);
   }
