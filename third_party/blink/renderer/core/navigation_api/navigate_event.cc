@@ -612,8 +612,11 @@ void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
 
   NavigationApi* navigation = DomWindow()->navigation();
   CHECK(controller_);
+  auto* previous = navigation->ongoing_navigate_event_.Get();
   controller_->abort(script_state, error);
-  navigation->ongoing_navigate_event_ = nullptr;
+  if (navigation->ongoing_navigate_event_ == previous) {
+    navigation->ongoing_navigate_event_ = nullptr;
+  }
   delayed_load_start_task_handle_.Cancel();
   if (!defaultPrevented()) {
     switch (intercept_state_) {
