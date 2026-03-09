@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Lens.Overlay.NonBlockingPrivacyNotice.ByInvocationSource.{InvocationSource}.Accepted"
     enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
-    expires_after="2026-03-15">
+    expires_after="2026-07-19">
   <owner>nguyenbryan@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
