@@ -10,6 +10,7 @@ import plistlib
 import subprocess
 import time
 import typing
+import functools
 
 import constants
 import test_runner
@@ -269,6 +270,7 @@ def delete_simulator_by_udid(udid):
   try:
     subprocess.check_output(['xcrun', 'simctl', 'delete', udid],
                             stderr=subprocess.STDOUT).decode('utf-8')
+    is_device_with_udid_simulator.cache_clear()
   except subprocess.CalledProcessError as e:
     # Logging error instead of throwing so we don't cause failures in case
     # this was indeed failing to clean up.
@@ -307,7 +309,7 @@ def get_home_directory(platform, version):
        get_simulator(platform, version), 'HOME']).decode('utf-8').rstrip()
 
 
-def boot_simulator_if_not_booted(sim_udid):
+def boot_simulator_if_not_booted(sim_udid, path=SIMULATOR_DEFAULT_PATH):
   """Boots the simulator of given udid.
 
   Args:
@@ -316,19 +318,63 @@ def boot_simulator_if_not_booted(sim_udid):
   Raises:
     test_runner.SimulatorNotFoundError if the sim_udid is not found on machine.
   """
-  simulator_list = get_simulator_list()
+  simulator_list = get_simulator_list(path=path)
   for _, devices in simulator_list['devices'].items():
     for device in devices:
       if device['udid'] != sim_udid:
         continue
       if device['state'] == 'Booted':
         return
-      subprocess.check_output(['xcrun', 'simctl', 'boot',
-                               sim_udid]).decode('utf-8')
+      subprocess.check_output(
+          ['xcrun', 'simctl', '--set', path, 'boot', sim_udid]).decode('utf-8')
       return
   raise test_runner.SimulatorNotFoundError(
       'Not found simulator with "%s" UDID in devices %s' %
       (sim_udid, simulator_list['devices']))
+
+
+def ensure_simulator_fully_booted(sim_udid: str, path=SIMULATOR_DEFAULT_PATH):
+  """Ensures simulator of given udid is fully booted.
+
+  `xcrun simctl boot` launches only background processes and does not ensure the
+  entire boot process runs. Running `xcrun simctl bootstatus UDID -b` monitors
+  the specified device until the device finishes booting exiting with return
+  code 0 when the device is fully booted.
+
+  Args:
+    sim_udid: (str) UDID of simulator
+    path: path to simulator directory, passed to --set option of xcrun simctl
+
+  Raises:
+    test_runner.SimulatorNotFoundError if the sim_udid is not on machine
+
+  Returns:
+    True if the simulator was successfully booted, false otherwise.
+  """
+  if is_device_with_udid_simulator(sim_udid):
+
+    # Ensure data migrations are run
+    cmd = [
+        'xcrun',
+        'simctl',
+        '--set',
+        path,
+        'bootstatus',
+        sim_udid,
+        '-bd',
+    ]
+    try:
+      subprocess.check_call(cmd, timeout=120)
+    except subprocess.TimeoutExpired as e:
+      msg = f"Manually booting simulator timed out after 120 seconds."
+      LOGGER.info(msg)
+      return False
+    return True
+
+  else:
+    raise test_runner.SimulatorNotFoundError(
+        f"Not found simulator with UDID: {sim_udid}")
+
 
 
 def get_app_data_directory(app_bundle_id, sim_udid):
@@ -343,6 +389,7 @@ def get_app_data_directory(app_bundle_id, sim_udid):
        'data']).decode('utf-8').rstrip()
 
 
+@functools.cache
 def is_device_with_udid_simulator(device_udid):
   """Checks whether a device with udid is simulator or not.
 

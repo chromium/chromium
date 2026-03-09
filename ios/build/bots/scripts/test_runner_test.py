@@ -73,6 +73,10 @@ class SimulatorTestRunnerTest(TestCase):
         iossim_util, 'get_platform_type_by_platform',
         lambda platform: constants.IOSPlatformType.TVOS if platform.startswith(
             'Apple TV') else constants.IOSPlatformType.IPHONEOS)
+    self.mock(iossim_util, 'ensure_simulator_fully_booted',
+              lambda *args, **kwargs: True)
+    self.mock(iossim_util, 'is_device_with_udid_simulator',
+              lambda *args, **kwargs: True)
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
 

@@ -181,6 +181,8 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(os, 'listdir', lambda _: ['any_egtests.xctest'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
+    self.mock(iossim_util, 'ensure_simulator_fully_booted',
+              lambda *args, **kw: True)
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
     self.mock(test_apps.EgtestsApp, 'get_all_tests',

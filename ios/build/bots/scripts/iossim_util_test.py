@@ -534,12 +534,16 @@ class GetiOSSimUtil(test_runner_test.TestCase):
         'com.apple.CoreSimulator.SimRuntime.iOS-13-2'
     ], subprocess_mock.call_args[0][0])
 
+  @mock.patch.object(
+      iossim_util, 'is_device_with_udid_simulator', autospec=True)
   @mock.patch('subprocess.check_output', autospec=True)
-  def test_delete_simulator_by_udid(self, subprocess_mock, _, _2):
+  def test_delete_simulator_by_udid(self, subprocess_mock, is_simulator_mock, _,
+                                    _2):
     """Ensures that command is correct."""
     iossim_util.delete_simulator_by_udid('UDID')
     self.assertEqual(['xcrun', 'simctl', 'delete', 'UDID'],
                      subprocess_mock.call_args[0][0])
+    is_simulator_mock.cache_clear.assert_called_with()
 
   @mock.patch('subprocess.check_call', autospec=True)
   def test_wipe_simulator_by_platform_and_version(self, subprocess_mock, _, _2):
@@ -761,6 +765,44 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     iossim_util.disable_hardware_keyboard(udid)
     mock_load.assert_called()
     mock_dump.assert_called_with(expected, mock_open(), fmt=plistlib.FMT_BINARY)
+
+  def test_ensure_simulator_fully_booted(self, _, _2):
+    with mock.patch('iossim_util.is_device_with_udid_simulator') as mock_is_sim:
+
+      # Check to ensure correct calls made when simulator exists
+      mock_is_sim.return_value = True
+
+      udid = "UDID"
+
+      check_call_mock = mock.Mock()
+      self.mock(subprocess, 'check_call', check_call_mock)
+      check_calls = [
+          mock.call([
+              'xcrun', 'simctl', '--set', iossim_util.SIMULATOR_DEFAULT_PATH,
+              'bootstatus', udid, '-bd'
+          ],
+                    timeout=120),
+          mock.call(
+              ['xcrun', 'simctl', '--set', '/path', 'bootstatus', udid, '-bd'],
+              timeout=120),
+      ]
+      self.assertTrue(iossim_util.ensure_simulator_fully_booted(udid))
+      self.assertTrue(
+          iossim_util.ensure_simulator_fully_booted(udid, path='/path'))
+
+      check_call_mock.assert_has_calls(check_calls)
+
+      # Ensure exception raised when simulator doesn't exist
+      mock_is_sim.return_value = False
+      with self.assertRaises(test_runner.SimulatorNotFoundError):
+        iossim_util.ensure_simulator_fully_booted(udid)
+
+      # Ensure hitting timeout does not prohibit program flow.
+      mock_is_sim.return_value = True
+      check_call_mock.side_effect = subprocess.TimeoutExpired(
+          cmd=["cmd"], timeout=120)
+      self.assertFalse(iossim_util.ensure_simulator_fully_booted(udid))
+
 
   def test_disable_simulator_keyboard_tutorial(self, _, _2):
     with mock.patch('iossim_util.boot_simulator_if_not_booted') \

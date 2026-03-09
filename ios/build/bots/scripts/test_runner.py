@@ -33,6 +33,12 @@ from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 import xctest_utils
 
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
+
 LOGGER = logging.getLogger(__name__)
 DERIVED_DATA = os.path.expanduser('~/Library/Developer/Xcode/DerivedData')
 DEFAULT_TEST_REPO = 'https://chromium.googlesource.com/chromium/src'
@@ -625,6 +631,16 @@ class TestRunner(object):
     test_app = self.get_launch_test_app()
     out_dir = os.path.join(self.out_dir, 'TestResults')
     cmd = self.get_launch_command(test_app, out_dir, destination, self.clones)
+
+    # Preboot simulator and measure boot time
+    if iossim_util.is_device_with_udid_simulator(self.udid):
+      with measures.time_consumption('Simulator full boot', 'TestRunner',
+                                     'Pre launch for testing'):
+        if not iossim_util.ensure_simulator_fully_booted(self.udid):
+          LOGGER.info("Failed to manually boot simulator. "
+                      "Wiping simulator and continuing.")
+          iossim_util.wipe_simulator_by_udid(self.udid)
+
     try:
       result = self._run(cmd=cmd, clones=self.clones or 1)
       if (result.crashed and not result.spawning_test_launcher and
