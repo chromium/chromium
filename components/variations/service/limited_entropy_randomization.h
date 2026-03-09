@@ -8,6 +8,8 @@
 #include <optional>
 #include <string_view>
 
+#include "base/time/time.h"
+
 // Provides functions to validate that the variations seed is
 // correctly configured to respect an entropy limit. See below for details.
 //
@@ -100,12 +102,14 @@ double GetGoogleWebEntropyLimitInBits();
 //
 // * client_state: The client state to use for filtering studies.
 // * seed: The seed to check for misconfigured entropy.
+// * current_time: The time used for visibility considerations.
 // * entropy_limit_in_bits: The entropy limit to use for checking. Exposed for
 //     testing. Should be set to GetGoogleWebEntropyLimitInBits() in production.
 MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     const ClientFilterableState& client_state,
     const VariationsSeed& seed,
-    double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits());
+    double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits(),
+    base::Time current_time = base::Time::Now());
 
 }  // namespace variations
 
