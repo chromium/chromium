@@ -318,11 +318,7 @@ AudioData::AudioData(ScriptState* script_state,
   }
 
   format_ = init->format();
-  auto channel_layout =
-      init->numberOfChannels() > 8
-          // GuesschannelLayout() doesn't know how to guess above 8 channels.
-          ? media::CHANNEL_LAYOUT_DISCRETE
-          : media::GuessChannelLayout(init->numberOfChannels());
+  auto channel_layout = media::GuessChannelLayout(init->numberOfChannels());
 
   bool sample_aligned = base::IsAligned(array_span.data(), bytes_per_sample);
   if (buffer_contents.IsValid() && sample_aligned) {
