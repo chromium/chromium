@@ -14,4 +14,7 @@ third_party {
   version: "a0828e04289639f875cb924f8d1a65a634683b19"
   last_upgrade_date { year: 2020 month: 1 day: 9 }
   license_type: RESTRICTED
+  security: {
+    mitigated_security_patch: "CVE-2022-1664"  # Does not apply to imported code.
+  }
 }
