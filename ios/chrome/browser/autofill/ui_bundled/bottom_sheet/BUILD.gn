@@ -146,6 +146,7 @@ source_set("bottom_sheet_unit_tests") {
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/testing:block_swizzler",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

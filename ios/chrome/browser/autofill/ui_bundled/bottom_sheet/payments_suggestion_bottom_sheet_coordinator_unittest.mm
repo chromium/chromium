@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -56,7 +57,8 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     // Set circular SyncService dependency to null.
     personal_data_manager->SetSyncServiceForTest(nullptr);
 
-    window_ = [[UIWindow alloc] init];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
     UIView.animationsEnabled = NO;
