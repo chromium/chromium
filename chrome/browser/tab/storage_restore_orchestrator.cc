@@ -62,6 +62,8 @@ class PreRestoreChangesCrawler : public DirectChildWalker::Processor {
   }
 
   void ProcessCollection(const TabCollection* collection) override {
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
     if (!tracker_->AssociateCollection(collection) &&
         ShouldSaveOnRestoreStart(collection)) {
       service_->Save(collection);
@@ -69,8 +71,6 @@ class PreRestoreChangesCrawler : public DirectChildWalker::Processor {
       service_->SaveDivergentChildren(collection->GetParentCollection(),
                                       passkey_);
     }
-    DirectChildWalker walker(collection, this);
-    walker.Walk();
   }
 
   bool ShouldSaveOnRestoreStart(const TabCollection* collection) {
@@ -151,7 +151,8 @@ void StorageRestoreOrchestrator::OnSaveChildTab(
   }
 
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
-  if (was_inserted && tracker->AssociateTab(tab)) {
+  bool was_associated = tracker->AssociateTab(tab);
+  if (was_inserted && was_associated) {
     TabCollectionHandle parent_handle = parent->GetHandle();
     DCHECK(tracker->HasCollectionBeenAssociated(parent_handle));
   } else {
@@ -179,7 +180,8 @@ void StorageRestoreOrchestrator::OnSaveChildCollection(
   }
 
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
-  if (was_inserted && tracker->AssociateCollection(collection)) {
+  bool was_associated = tracker->AssociateCollection(collection);
+  if (was_inserted && was_associated) {
     TabCollectionHandle parent_handle = parent->GetHandle();
     DCHECK(tracker->HasCollectionBeenAssociated(parent_handle));
   } else {
