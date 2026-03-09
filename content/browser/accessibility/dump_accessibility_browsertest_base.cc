@@ -667,8 +667,8 @@ ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNode(
   }
 
   CHECK(search_root);
-  ui::BrowserAccessibility* node = FindNodeInSubtree(*search_root, name);
-  return node;
+  return FindFirstAccessibilityNodeWithStringAttribute(
+      *search_root, ax::mojom::StringAttribute::kName, name);
 }
 
 ui::BrowserAccessibilityManager* DumpAccessibilityTestBase::GetManager() const {
@@ -758,48 +758,13 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   return std::make_pair(std::move(action_result), std::move(event_logs));
 }
 
-ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNodeInSubtree(
-    ui::BrowserAccessibility& node,
-    const std::string& name) const {
-  if (node.GetStringAttribute(ax::mojom::StringAttribute::kName) == name) {
-    return &node;
-  }
-
-  for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    ui::BrowserAccessibility* result =
-        FindNodeInSubtree(*node.PlatformGetChild(i), name);
-    if (result) {
-      return result;
-    }
-  }
-  return nullptr;
-}
-
 ui::BrowserAccessibility* DumpAccessibilityTestBase::FindNodeByStringAttribute(
     const ax::mojom::StringAttribute attr,
     const std::string& value) const {
   ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
 
   CHECK(root);
-  return FindNodeByStringAttributeInSubtree(*root, attr, value);
-}
-
-ui::BrowserAccessibility*
-DumpAccessibilityTestBase::FindNodeByStringAttributeInSubtree(
-    ui::BrowserAccessibility& node,
-    const ax::mojom::StringAttribute attr,
-    const std::string& value) const {
-  if (node.GetStringAttribute(attr) == value) {
-    return &node;
-  }
-
-  for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    if (ui::BrowserAccessibility* result = FindNodeByStringAttributeInSubtree(
-            *node.PlatformGetChild(i), attr, value)) {
-      return result;
-    }
-  }
-  return nullptr;
+  return FindFirstAccessibilityNodeWithStringAttribute(*root, attr, value);
 }
 
 bool DumpAccessibilityTestBase::IsTestingExternalTree() const {

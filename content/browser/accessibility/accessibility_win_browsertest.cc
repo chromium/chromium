@@ -30,6 +30,7 @@
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
+#include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -167,9 +168,6 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
       Microsoft::WRL::ComPtr<IAccessibleText>* input_text);
   void SetUpSampleParagraphHelper(
       Microsoft::WRL::ComPtr<IAccessibleText>* accessible_text);
-  ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
-                                              ax::mojom::Role role,
-                                              const std::string& name_or_value);
 };
 
 AccessibilityWinBrowserTest::AccessibilityWinBrowserTest() = default;
@@ -461,7 +459,8 @@ ui::BrowserAccessibility* AccessibilityWinBrowserTest::FindNode(
     const std::string& name_or_value) {
   ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
   CHECK(root);
-  return FindNodeInSubtree(*root, role, name_or_value);
+  return FindFirstAccessibilityNodeWithRoleAndNameOrValue(*root, role,
+                                                          name_or_value);
 }
 
 // Retrieve the browser accessibility manager object for the current web
@@ -472,36 +471,6 @@ ui::BrowserAccessibilityManager* AccessibilityWinBrowserTest::GetManager() {
   return web_contents->GetOrCreateRootBrowserAccessibilityManager();
 }
 
-// Retrieve the accessibility node in the subtree that matches the accessibility
-// role, name or value.
-ui::BrowserAccessibility* AccessibilityWinBrowserTest::FindNodeInSubtree(
-    ui::BrowserAccessibility& node,
-    ax::mojom::Role role,
-    const std::string& name_or_value) {
-  const std::string& name =
-      node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-  // Note that in the case of a text field,
-  // "BrowserAccessibility::GetValueForControl" has the added functionality of
-  // computing the value of an ARIA text box from its inner text.
-  //
-  // <div contenteditable="true" role="textbox">Hello world.</div>
-  // Will expose no HTML value attribute, but some screen readers, such as Jaws,
-  // VoiceOver and Talkback, require one to be computed.
-  const std::string value = base::UTF16ToUTF8(node.GetValueForControl());
-  if (node.GetRole() == role &&
-      (name == name_or_value || value == name_or_value)) {
-    return &node;
-  }
-
-  for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-    ui::BrowserAccessibility* result =
-        FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-    if (result) {
-      return result;
-    }
-  }
-  return nullptr;
-}
 // Static helpers ------------------------------------------------
 
 Microsoft::WRL::ComPtr<IAccessible>

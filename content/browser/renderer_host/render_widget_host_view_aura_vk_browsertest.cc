@@ -5,6 +5,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -157,7 +158,8 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
     ui::BrowserAccessibility* root =
         GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
-    return FindNodeInSubtree(*root, role, name_or_value);
+    return FindFirstAccessibilityNodeWithRoleAndNameOrValue(*root, role,
+                                                            name_or_value);
   }
 
   ui::BrowserAccessibilityManager* GetManager() {
@@ -179,28 +181,6 @@ class RenderWidgetHostViewAuraBrowserMockIMETest : public ContentBrowserTest {
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-
- private:
-  ui::BrowserAccessibility* FindNodeInSubtree(
-      ui::BrowserAccessibility& node,
-      ax::mojom::Role role,
-      const std::string& name_or_value) {
-    const std::string& name =
-        node.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    const std::string value = base::UTF16ToUTF8(node.GetValueForControl());
-    if (node.GetRole() == role &&
-        (name == name_or_value || value == name_or_value)) {
-      return &node;
-    }
-
-    for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
-      ui::BrowserAccessibility* result =
-          FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-      if (result)
-        return result;
-    }
-    return nullptr;
-  }
 };
 
 #if BUILDFLAG(IS_WIN)

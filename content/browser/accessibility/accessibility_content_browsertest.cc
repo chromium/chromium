@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/strings/escape.h"
-#include "base/strings/utf_string_conversions.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -112,37 +111,8 @@ AccessibilityContentBrowserTest::GetRootAndAssertNonNull() const {
 ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNode(
     const ax::mojom::Role role,
     const std::string& name_or_value) const {
-  return FindNodeInSubtree(GetRootAndAssertNonNull(), role, name_or_value);
-}
-
-ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
-    ui::BrowserAccessibility* node,
-    const ax::mojom::Role role,
-    const std::string& name_or_value) const {
-  const std::string& name =
-      node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  // Note that in the case of a text field,
-  // "BrowserAccessibility::GetValueForControl" has the added functionality of
-  // computing the value of an ARIA text box from its inner text.
-  //
-  // <div contenteditable="true" role="textbox">Hello world.</div>
-  // Will expose no HTML value attribute, but some screen readers, such as Jaws,
-  // VoiceOver and Talkback, require one to be computed.
-  const std::string value = base::UTF16ToUTF8(node->GetValueForControl());
-  if (node->GetRole() == role &&
-      (name == name_or_value || value == name_or_value)) {
-    return node;
-  }
-
-  for (uint32_t i = 0; i < node->PlatformChildCount(); ++i) {
-    ui::BrowserAccessibility* result =
-        FindNodeInSubtree(node->PlatformGetChild(i), role, name_or_value);
-    if (result) {
-      return result;
-    }
-  }
-
-  return nullptr;
+  return FindFirstAccessibilityNodeWithRoleAndNameOrValue(
+      *GetRootAndAssertNonNull(), role, name_or_value);
 }
 
 }  // namespace content

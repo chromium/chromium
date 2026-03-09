@@ -11,6 +11,7 @@
 
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/browser/web_contents.h"
@@ -256,14 +257,6 @@ class DumpAccessibilityTestBase
 
  private:
   std::string FormatWebContentsTree(const ui::AXTreeFormatter&) const;
-
-  ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
-                                              const std::string& name) const;
-
-  ui::BrowserAccessibility* FindNodeByStringAttributeInSubtree(
-      ui::BrowserAccessibility& node,
-      const ax::mojom::StringAttribute attr,
-      const std::string& value) const;
 
   // The entries in skip_urls will be omitted from the result. This is used,
   // e.g., in support of the @NO-LOAD-EXPECTED directive, when an element has an

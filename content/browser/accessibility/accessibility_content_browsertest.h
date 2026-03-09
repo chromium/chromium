@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -50,11 +51,6 @@ class AccessibilityContentBrowserTest : public ContentBrowserTest {
                                      const std::string& name_or_value) const;
 
  private:
-  ui::BrowserAccessibility* FindNodeInSubtree(
-      ui::BrowserAccessibility* node,
-      const ax::mojom::Role role,
-      const std::string& name_or_value) const;
-
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 

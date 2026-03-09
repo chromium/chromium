@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "content/browser/accessibility/accessibility_test_helpers.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -237,7 +238,7 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
     ui::BrowserAccessibility* root =
         GetManager()->GetBrowserAccessibilityRoot();
     CHECK(root);
-    return FindNodeInSubtree(*root, role);
+    return FindFirstAccessibilityNodeWithRole(*root, role);
   }
 
   ui::BrowserAccessibilityManager* GetManager() {
@@ -290,20 +291,6 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   ui::TestAXNodeIdDelegate node_id_delegate_;
 
  private:
-  ui::BrowserAccessibility* FindNodeInSubtree(ui::BrowserAccessibility& node,
-                                              ax::mojom::Role role) {
-    if (node.GetRole() == role)
-      return &node;
-    for (ui::BrowserAccessibility::PlatformChildIterator it =
-             node.PlatformChildrenBegin();
-         it != node.PlatformChildrenEnd(); ++it) {
-      ui::BrowserAccessibility* result = FindNodeInSubtree(*it, role);
-      if (result)
-        return result;
-    }
-    return nullptr;
-  }
-
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
