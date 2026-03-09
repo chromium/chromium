@@ -559,7 +559,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType"
-    enum="ClientSafeBrowsingReportType" expires_after="2026-03-19">
+    enum="ClientSafeBrowsingReportType" expires_after="2026-09-19">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -791,7 +791,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2026-04-20">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2026-09-19">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
