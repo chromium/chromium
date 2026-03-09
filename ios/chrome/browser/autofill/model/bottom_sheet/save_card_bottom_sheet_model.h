@@ -60,6 +60,13 @@ class SaveCardBottomSheetModel {
   // Calls `AutofillSaveCardDelegate` to handle the dismiss event.
   virtual void OnCanceled();
 
+  // Called when the user confirms the "Scan and Save" flow with edited details.
+  // Forwards the user-provided details to the underlying
+  // AutofillSaveCardDelegate.
+  virtual void OnUpdatedAndAcceptedForSaveAndFill(
+      payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+          details);
+
   // Updates observer with save card result and sets the callback to be run
   // after bottomsheet is closed upon showing the success confirmation.
   virtual void CreditCardUploadCompleted(

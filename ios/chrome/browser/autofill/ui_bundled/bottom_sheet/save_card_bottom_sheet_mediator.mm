@@ -280,6 +280,14 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
   [_autofillCommandsHandler dismissSaveCardBottomSheet];
 }
 
+- (void)onUpdatedAndAcceptedForSaveAndFill:
+    (autofill::payments::PaymentsAutofillClient::
+         UserProvidedCardSaveAndFillDetails)details {
+  // Pass the details from the View Controller down to the Model.
+  _saveCardBottomSheetModel->OnUpdatedAndAcceptedForSaveAndFill(
+      std::move(details));
+}
+
 #pragma mark - SaveCardBottomSheetModel Observer
 
 - (void)onCreditCardUploadCompleted:(BOOL)cardSaved {

@@ -40,6 +40,9 @@
 
 namespace {
 
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::Optional;
 using LegacySaveCardPromptResult =
     autofill::autofill_metrics::LegacySaveCardPromptResult;
 using SaveCardPromptOffer = autofill::autofill_metrics::SaveCardPromptOffer;
@@ -150,6 +153,11 @@ class MockSaveCardBottomSheetModel : public autofill::SaveCardBottomSheetModel {
 
   MOCK_METHOD(void, OnAccepted, (), (override));
   MOCK_METHOD(void, OnCanceled, (), (override));
+  MOCK_METHOD(void,
+              OnUpdatedAndAcceptedForSaveAndFill,
+              (autofill::payments::PaymentsAutofillClient::
+                   UserProvidedCardSaveAndFillDetails details),
+              (override));
 };
 
 class SaveCardBottomSheetMediatorTest : public PlatformTest {
@@ -588,6 +596,49 @@ TEST_F(SaveCardBottomSheetMediatorTest,
       base::StrCat(
           {kCreditCardUploadSuccessConfirmationResultPrefix, ".CardUploaded"}),
       LegacySaveCardPromptResult::kClosed, 1);
+}
+
+// Tests that `onUpdatedAndAcceptedForSaveAndFill` calls the corresponding
+// method on the model.
+TEST_F(SaveCardBottomSheetMediatorTest, OnUpdatedAndAcceptedForSaveAndFill) {
+  autofill::payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+      details;
+  details.card_number = u"5555555555554444";
+  details.cardholder_name = u"John Doe";
+  details.expiration_date_month = u"12";
+  details.expiration_date_year = u"2030";
+  details.security_code = u"123";
+  details.nickname = u"My Test Card";
+
+  // Expect the model to receive the call with the correct details.
+  EXPECT_CALL(
+      *model_,
+      OnUpdatedAndAcceptedForSaveAndFill(testing::AllOf(
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::card_number,
+                         u"5555555555554444"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::cardholder_name,
+              u"John Doe"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_month,
+              u"12"),
+          testing::Field(
+              &autofill::payments::PaymentsAutofillClient::
+                  UserProvidedCardSaveAndFillDetails::expiration_date_year,
+              u"2030"),
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::security_code,
+                         testing::Optional(std::u16string(u"123"))),
+          testing::Field(&autofill::payments::PaymentsAutofillClient::
+                             UserProvidedCardSaveAndFillDetails::nickname,
+                         testing::Optional(std::u16string(u"My Test Card"))))));
+
+  // Pass by value using std::move, matching the updated performance
+  // improvement.
+  [mediator_ onUpdatedAndAcceptedForSaveAndFill:std::move(details)];
 }
 
 class SaveCardBottomSheetMediatorTestForLocalSave

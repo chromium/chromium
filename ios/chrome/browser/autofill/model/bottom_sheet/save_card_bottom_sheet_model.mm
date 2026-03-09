@@ -57,4 +57,13 @@ void SaveCardBottomSheetModel::CreditCardUploadCompleted(
   observer_list_.Notify(&Observer::OnCreditCardUploadCompleted, card_saved);
 }
 
+void SaveCardBottomSheetModel::OnUpdatedAndAcceptedForSaveAndFill(
+    payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails
+        details) {
+  if (save_card_delegate()) {
+    save_card_delegate()->OnUiUpdatedAndAcceptedForSaveAndFill(
+        std::move(details));
+  }
+}
+
 }  // namespace autofill

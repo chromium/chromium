@@ -16,6 +16,9 @@
 
 namespace autofill {
 
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::Optional;
 using SaveCardBottomSheetModelFieldsTest = PlatformTest;
 
 // Verfies each field of the model correctly maps to the AutofillSaveCardUiInfo
@@ -88,6 +91,11 @@ class MockAutofillSaveCardDelegate : public AutofillSaveCardDelegate {
 
   MOCK_METHOD(void, OnUiAccepted, (base::OnceClosure), (override));
   MOCK_METHOD(void, OnUiCanceled, (), (override));
+  MOCK_METHOD(
+      void,
+      OnUiUpdatedAndAcceptedForSaveAndFill,
+      (payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails),
+      (override));
 };
 
 class MockSaveCardBottomSheetModelObserver
@@ -203,6 +211,43 @@ TEST_F(SaveCardBottomSheetModelTestForLocalSave, OnAccepted) {
   save_card_bottom_sheet_model_->OnAccepted();
   EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
             SaveCardBottomSheetModel::SaveCardState::kSaved);
+}
+
+// Tests that `OnUpdatedAndAcceptedForSaveAndFill` forwards all details
+// to the underlying cross-platform AutofillSaveCardDelegate.
+TEST_F(SaveCardBottomSheetModelTest, OnUpdatedAndAcceptedForSaveAndFill) {
+  payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails details;
+  details.card_number = u"5555555555554444";
+  details.cardholder_name = u"John Doe";
+  details.expiration_date_month = u"12";
+  details.expiration_date_year = u"2030";
+  details.security_code = u"123";
+  details.nickname = u"My Test Card";
+
+  EXPECT_CALL(
+      *static_cast<MockAutofillSaveCardDelegate*>(save_card_delegate_),
+      OnUiUpdatedAndAcceptedForSaveAndFill(AllOf(
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::card_number,
+                u"5555555555554444"),
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::cardholder_name,
+                u"John Doe"),
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::expiration_date_month,
+                u"12"),
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::expiration_date_year,
+                u"2030"),
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::security_code,
+                Optional(std::u16string(u"123"))),
+          Field(&payments::PaymentsAutofillClient::
+                    UserProvidedCardSaveAndFillDetails::nickname,
+                Optional(std::u16string(u"My Test Card"))))));
+
+  save_card_bottom_sheet_model_->OnUpdatedAndAcceptedForSaveAndFill(
+      std::move(details));
 }
 
 }  // namespace autofill

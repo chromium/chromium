@@ -239,7 +239,7 @@ source_set("save_card_bottom_sheet_consumer") {
 
 source_set("save_card_bottom_sheet_mutator") {
   sources = [ "save_card_bottom_sheet_mutator.h" ]
-  deps = []
+  deps = [ "//components/autofill/core/browser" ]
   frameworks = [ "UIKit.framework" ]
 }
 

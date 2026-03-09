@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
+
 // Delegate to handle user actions from the save card bottomsheet view
 // controller.
 @protocol SaveCardBottomSheetMutator <NSObject>
@@ -16,6 +18,12 @@
 
 // Handles user dismissing the save card bottomsheet through the cancel button.
 - (void)didCancel;
+
+// Triggered when the user confirms the "Scan and Save" flow with edited
+// details.
+- (void)onUpdatedAndAcceptedForSaveAndFill:
+    (autofill::payments::PaymentsAutofillClient::
+         UserProvidedCardSaveAndFillDetails)details;
 
 @end
 
