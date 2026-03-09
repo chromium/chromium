@@ -3353,6 +3353,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Total.RendererPrivateMemoryFootprint" units="MB"
     expires_after="2026-07-26">
   <owner>tommckee@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes.
 
@@ -3372,6 +3373,7 @@ chromium-metrics-reviews@google.com.
     units="MB" expires_after="2026-08-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes
     on Android ignoring Renderers with only Waived process bindings.
@@ -3386,6 +3388,7 @@ chromium-metrics-reviews@google.com.
     units="MB" expires_after="2026-07-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     A rough estimate of the private memory footprint of all renderer processes
     with visible or higher importance on Android. This ignores Renderers with
