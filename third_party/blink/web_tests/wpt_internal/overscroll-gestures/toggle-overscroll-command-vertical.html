@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  #menu {
+    width: 100%;
+    height: 50px;
+    bottom: 100%; /* Overscrolls above the container. */
+  }
+  #content {
+    width: 600px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="menu"></button>
+
+<script>
+function click(target) {
+  let event_received = new Promise(resolve => {
+    target.addEventListener("click", resolve, { once: true });
+  });
+  return Promise.all([test_driver.click(button), event_received]);
+}
+
+promise_test(async () => {
+  // The container is only horizontally scrollable
+  container.scrollLeft = 10;
+  assert_greater_than(container.scrollWidth, container.clientWidth);
+  assert_equals(container.scrollHeight, container.clientHeight);
+  assert_equals(container.scrollLeft, 10, "container starts scrolled");
+
+  // Initially the menu is offscreen above (and abspos).
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "init bottom aligned");
+  assert_less_than(menu.getBoundingClientRect().top, 0, "init top not aligned");
+  assert_equals(getComputedStyle(menu).position, "absolute");
+  assert_not_equals(getComputedStyle(content).position, "absolute");
+
+  // Click the button to bring the menu into view.
+  await click(button);
+
+  // The menu should now be in view.
+  assert_equals(menu.getBoundingClientRect().top, 0, "top edge aligned");
+
+  // The container has not scrolled.
+  assert_equals(container.scrollLeft, 10, "container not scrolled from initial");
+
+  // Click the button again.
+  await click(button);
+
+ // The menu should now be hidden again.
+  assert_equals(menu.getBoundingClientRect().bottom, 0, "bottom edge aligned");
+
+  // The container still has not scrolled.
+  assert_equals(container.scrollLeft, 10, "container still not scrolled");
+
+  // Change commandfor, which should remove the overscroll area.
+  button.setAttribute("command", "show-popover");
+  assert_not_equals(getComputedStyle(menu).position, "absolute", "menu should no longer be an overscroll area");
+}, "Toggle overscroll brings the menu in and out");
+</script>
