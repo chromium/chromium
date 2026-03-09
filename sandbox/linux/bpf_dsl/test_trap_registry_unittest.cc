@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,15 +26,17 @@ intptr_t TestTrapFuncTwo(const arch_seccomp_data& data, void* aux) {
 
 // Test that TestTrapRegistry correctly assigns trap IDs to trap handlers.
 TEST(TestTrapRegistry, TrapIDs) {
-  struct {
+  struct Funcs {
     TrapRegistry::TrapFnc fnc;
     raw_ptr<const void> aux;
-  } funcs[] = {
+  };
+  int dummy = 0;
+  auto funcs = std::to_array<Funcs>({
       {TestTrapFuncOne, nullptr},
       {TestTrapFuncTwo, nullptr},
-      {TestTrapFuncOne, funcs},
-      {TestTrapFuncTwo, funcs},
-  };
+      {TestTrapFuncOne, &dummy},
+      {TestTrapFuncTwo, &dummy},
+  });
 
   TestTrapRegistry traps;
 
@@ -40,8 +44,7 @@ TEST(TestTrapRegistry, TrapIDs) {
   for (int i = 0; i < 2; ++i) {
     for (size_t j = 0; j < std::size(funcs); ++j) {
       // Trap IDs start at 1.
-      UNSAFE_TODO(
-          EXPECT_EQ(j + 1, traps.Add({funcs[j].fnc, funcs[j].aux, true})));
+      EXPECT_EQ(j + 1, traps.Add({funcs[j].fnc, funcs[j].aux, true}));
     }
   }
 }
