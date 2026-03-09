@@ -12,10 +12,10 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -129,13 +129,14 @@ class ArcUtilTest : public ash::AshTestBase {
   PrefService* profile_prefs() { return &profile_prefs_; }
 
   std::unique_ptr<FakeArcPlatformSupport> fake_arc_platform_support_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
  private:
   TestingPrefServiceSimple profile_prefs_;
 };
 
 TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_DlcNotEnabled) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
   command_line->InitFromArgv({"", "--arcvm-dlc-hardware-satisfied"});
   fake_arc_platform_support_->SetDlcEnabled(false);
@@ -144,7 +145,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_DlcNotEnabled) {
 }
 
 TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_HardwareNotSatisfied) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
   fake_arc_platform_support_->SetDlcEnabled(true);
 
@@ -152,7 +153,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_ArcVmDlcRequired_HardwareNotSatisfied) {
 }
 
 TEST_F(ArcUtilTest, IsArcAvailable_None) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
 
   command_line->InitFromArgv({"", "--arc-availability=none"});
   EXPECT_FALSE(IsArcAvailable());
@@ -167,7 +168,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_None) {
 
 // Test --arc-available with EnableARC feature combination.
 TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
 
   // If ARC is not installed, IsArcAvailable() should return false,
   // regardless of EnableARC feature.
@@ -220,7 +221,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_Installed) {
 
 TEST_F(ArcUtilTest, IsArcAvailable_OfficiallySupported) {
   // Regardless of FeatureList, IsArcAvailable() should return true.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--enable-arc"});
   EXPECT_TRUE(IsArcAvailable());
 
@@ -231,7 +232,7 @@ TEST_F(ArcUtilTest, IsArcAvailable_OfficiallySupported) {
 TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_FALSE(IsArcVmEnabled());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--enable-arcvm"});
   EXPECT_TRUE(IsArcVmEnabled());
 }
@@ -239,7 +240,7 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
 TEST_F(ArcUtilTest, IsArcVmDlcRequired) {
   EXPECT_FALSE(IsArcVmDlcRequired());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
   EXPECT_TRUE(IsArcVmDlcRequired());
 }
@@ -247,7 +248,7 @@ TEST_F(ArcUtilTest, IsArcVmDlcRequired) {
 TEST_F(ArcUtilTest, IsArcVmDlcHardwareRequirementSatisfied) {
   EXPECT_FALSE(IsArcVmDlcHardwareRequirementSatisfied());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--arcvm-dlc-hardware-satisfied"});
   EXPECT_TRUE(IsArcVmDlcHardwareRequirementSatisfied());
 }
@@ -276,7 +277,7 @@ TEST_F(ArcUtilTest, IsArcVmRtVcpuEnabled) {
 TEST_F(ArcUtilTest, IsArcVmUseHugePages) {
   EXPECT_FALSE(IsArcVmUseHugePages());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--arcvm-use-hugepages"});
   EXPECT_TRUE(IsArcVmUseHugePages());
 }
@@ -284,13 +285,13 @@ TEST_F(ArcUtilTest, IsArcVmUseHugePages) {
 TEST_F(ArcUtilTest, IsArcVmDevConfIgnored) {
   EXPECT_FALSE(IsArcVmDevConfIgnored());
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--ignore-arcvm-dev-conf"});
   EXPECT_TRUE(IsArcVmDevConfIgnored());
 }
 
 TEST_F(ArcUtilTest, GetArcUreadaheadModeVmSwitch) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   const char* mode = ash::switches::kArcVmUreadaheadMode;
 
   command_line->InitFromArgv({""});
@@ -307,7 +308,7 @@ TEST_F(ArcUtilTest, GetArcUreadaheadModeVmSwitch) {
 }
 
 TEST_F(ArcUtilTest, GetArcUreadaheadModeContainerSwitch) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   const char* mode = ash::switches::kArcHostUreadaheadMode;
 
   command_line->InitFromArgv({""});
@@ -328,13 +329,13 @@ TEST_F(ArcUtilTest, UseDevCachesDefault) {
 }
 
 TEST_F(ArcUtilTest, UseDevCachesSet) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--arc-use-dev-caches"});
   EXPECT_TRUE(IsArcUseDevCaches());
 }
 
 TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({""});
   EXPECT_FALSE(IsArcOptInVerificationDisabled());
 
@@ -380,14 +381,14 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
 }
 
 TEST_F(ArcUtilTest, ArcStartModeDefault) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--arc-availability=installed"});
   EXPECT_FALSE(ShouldArcAlwaysStart());
   EXPECT_FALSE(ShouldArcAlwaysStartWithNoPlayStore());
 }
 
 TEST_F(ArcUtilTest, ArcStartModeWithoutPlayStore) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv(
       {"", "--arc-availability=installed",
        "--arc-start-mode=always-start-with-no-play-store"});
@@ -397,7 +398,7 @@ TEST_F(ArcUtilTest, ArcStartModeWithoutPlayStore) {
 
 // Verifies that ARC manual start is activated by switch.
 TEST_F(ArcUtilTest, ArcStartModeManually) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+  scoped_command_line_.GetProcessCommandLine()->InitFromArgv(
       {"", "--arc-start-mode=manual"});
   EXPECT_FALSE(ShouldArcAlwaysStart());
   EXPECT_TRUE(ShouldArcStartManually());
@@ -427,7 +428,7 @@ TEST_F(ArcUtilTest, ScaleFactorToDensity) {
   EXPECT_EQ(180, GetLcdDensityForDeviceScaleFactor(1.5f));
   EXPECT_EQ(1200, GetLcdDensityForDeviceScaleFactor(10.f));
 
-  auto* command_line = base::CommandLine::ForCurrentProcess();
+  auto* command_line = scoped_command_line_.GetProcessCommandLine();
   command_line->InitFromArgv({"", "--arc-scale=280"});
   EXPECT_EQ(280, GetLcdDensityForDeviceScaleFactor(1.234f));
 
