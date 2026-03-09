@@ -8,6 +8,8 @@ per-file threat_details_unittest.cc=skrakowi@chromium.org
 
 # For extensions telemetry changes.
 per-file BUILD.gn=anunoy@chromium.org
+# For tailored security + bundled settings metrics changes.
+per-file BUILD.gn=jacastro@chromium.org
 
 per-file *client_side_detection*=andysjlim@chromium.org
 
