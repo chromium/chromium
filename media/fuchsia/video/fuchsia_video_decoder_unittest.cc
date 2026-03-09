@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
@@ -14,6 +9,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -342,7 +338,7 @@ scoped_refptr<DecoderBuffer> GetH264Frame(size_t frame_num) {
       ReadTestDataFile("h264-320x180-frame-2"),
       ReadTestDataFile("h264-320x180-frame-3")};
   CHECK_LT(frame_num, std::size(frames));
-  return frames[frame_num];
+  return UNSAFE_TODO(frames[frame_num]);
 }
 
 TEST_F(FuchsiaVideoDecoderTest, CreateAndDestroy) {}

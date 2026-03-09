@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/fuchsia/common/vmo_buffer.h"
 
 #include <zircon/rights.h>
@@ -16,6 +11,7 @@
 #include "base/bits.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
 
@@ -119,7 +115,8 @@ size_t VmoBuffer::Read(size_t offset, base::span<uint8_t> data) {
     return 0U;
   size_t bytes_to_fill = std::min(size_ - offset, data.size());
   FlushCache(offset, bytes_to_fill, /*invalidate=*/true);
-  memcpy(data.data(), base_address_ + offset_ + offset, bytes_to_fill);
+  UNSAFE_TODO(
+      memcpy(data.data(), base_address_ + offset_ + offset, bytes_to_fill));
   return bytes_to_fill;
 }
 
@@ -127,7 +124,7 @@ size_t VmoBuffer::Write(base::span<const uint8_t> data) {
   DCHECK(writable_);
 
   size_t bytes_to_fill = std::min(size_, data.size());
-  memcpy(base_address_ + offset_, data.data(), bytes_to_fill);
+  UNSAFE_TODO(memcpy(base_address_ + offset_, data.data(), bytes_to_fill));
 
   FlushCache(0, bytes_to_fill, /*invalidate=*/false);
 
@@ -136,12 +133,12 @@ size_t VmoBuffer::Write(base::span<const uint8_t> data) {
 
 base::span<const uint8_t> VmoBuffer::GetMemory() {
   FlushCache(0, size_, /*invalidate=*/true);
-  return base::span((base_address_ + offset_).get(), size_);
+  return UNSAFE_TODO(base::span((base_address_ + offset_).get(), size_));
 }
 
 base::span<uint8_t> VmoBuffer::GetWritableMemory() {
   DCHECK(writable_);
-  return base::span((base_address_ + offset_).get(), size_);
+  return UNSAFE_TODO(base::span((base_address_ + offset_).get(), size_));
 }
 
 void VmoBuffer::FlushCache(size_t flush_offset,
@@ -153,7 +150,7 @@ void VmoBuffer::FlushCache(size_t flush_offset,
     return;
   }
 
-  uint8_t* address = base_address_ + offset_ + flush_offset;
+  uint8_t* address = UNSAFE_TODO(base_address_ + offset_ + flush_offset);
   uint32_t options = ZX_CACHE_FLUSH_DATA;
   if (invalidate)
     options |= ZX_CACHE_FLUSH_INVALIDATE;

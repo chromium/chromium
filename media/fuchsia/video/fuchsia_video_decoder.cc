@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
@@ -15,6 +10,7 @@
 #include <vulkan/vulkan.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -94,8 +90,8 @@ std::optional<gfx::Size> ParseMinBufferSize() {
     return std::nullopt;
   size_t width;
   size_t height;
-  if (sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width, &height) !=
-      2) {
+  if (UNSAFE_TODO(sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width,
+                         &height)) != 2) {
     LOG(WARNING) << "Invalid value for --"
                  << switches::kMinVideoDecoderOutputBufferSize << ": '"
                  << min_buffer_size_arg << "'";
@@ -502,12 +498,13 @@ void FuchsiaVideoDecoder::OnStreamProcessorAllocateOutputBuffers(
     auto& image_constraints =
         constraints.mutable_image_format_constraints()->emplace_back();
     image_constraints.set_pixel_format(
-        kSupportedPixelFormats[pixel_format_index]);
+        UNSAFE_TODO(kSupportedPixelFormats[pixel_format_index]));
     image_constraints.set_pixel_format_modifier(
         fuchsia::images2::PixelFormatModifier::LINEAR);
 
     for (size_t i = 0; i < std::size(kSupportedColorSpaces); ++i) {
-      image_constraints.mutable_color_spaces()->emplace_back(kSupportedColorSpaces[i]);
+      image_constraints.mutable_color_spaces()->emplace_back(
+          UNSAFE_TODO(kSupportedColorSpaces[i]));
     }
   }
 

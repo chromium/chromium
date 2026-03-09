@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/fuchsia/common/vmo_buffer_writer_queue.h"
 
 #include <zircon/rights.h>
+
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/process/process_metrics.h"
 #include "media/base/decoder_buffer.h"
@@ -110,8 +107,8 @@ void VmoBufferWriterQueue::PumpPackets() {
     size_t buffer_index = unused_buffers_.back();
     unused_buffers_.pop_back();
 
-    size_t bytes_filled = buffers_[buffer_index].Write(
-        base::span(current_buffer->data(), current_buffer->bytes_left()));
+    size_t bytes_filled = buffers_[buffer_index].Write(UNSAFE_TODO(
+        base::span(current_buffer->data(), current_buffer->bytes_left())));
     current_buffer->AdvanceCurrentPos(bytes_filled);
 
     bool buffer_end = current_buffer->bytes_left() == 0;

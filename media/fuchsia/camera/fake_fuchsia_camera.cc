@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -48,7 +44,7 @@ void FillPlane(uint8_t* data,
       orientation == fuchsia::camera3::Orientation::RIGHT_FLIPPED ||
       orientation == fuchsia::camera3::Orientation::LEFT_FLIPPED) {
     // Move the origin to the top right corner and flip the X axis.
-    data += (size.width() - 1) * x_step;
+    UNSAFE_TODO(data += (size.width() - 1)) * x_step;
     x_step = -x_step;
   }
 
@@ -61,7 +57,8 @@ void FillPlane(uint8_t* data,
     case fuchsia::camera3::Orientation::DOWN_FLIPPED:
       // Move |data| to point to the bottom right corner and reverse direction
       // of both axes.
-      data += (size.width() - 1) * x_step + (size.height() - 1) * y_step;
+      UNSAFE_TODO(data += (size.width() - 1)) * x_step +
+          (size.height() - 1) * y_step;
       x_step = -x_step;
       y_step = -y_step;
       break;
@@ -70,7 +67,7 @@ void FillPlane(uint8_t* data,
     case fuchsia::camera3::Orientation::LEFT_FLIPPED:
       // Rotate 90 degrees clockwise by moving |data| to point to the right top
       // corner, swapping the axes and reversing direction of the Y axis.
-      data += (size.width() - 1) * x_step;
+      UNSAFE_TODO(data += (size.width() - 1)) * x_step;
       size = gfx::Size(size.height(), size.width());
       std::swap(x_step, y_step);
       y_step = -y_step;
@@ -81,7 +78,7 @@ void FillPlane(uint8_t* data,
       // Rotate 90 degrees counter-clockwise by moving |data| to point to the
       // bottom left corner, swapping the axes and reversing direction of the X
       // axis.
-      data += (size.height() - 1) * y_step;
+      UNSAFE_TODO(data += (size.height() - 1)) * y_step;
       size = gfx::Size(size.height(), size.width());
       std::swap(x_step, y_step);
       x_step = -x_step;
@@ -90,7 +87,8 @@ void FillPlane(uint8_t* data,
 
   for (int y = 0; y < size.height(); ++y) {
     for (int x = 0; x < size.width(); ++x) {
-      data[x * x_step + y * y_step] = GetTestFrameValue(size, x, y, salt);
+      UNSAFE_TODO(data[x * x_step + y * y_step]) =
+          GetTestFrameValue(size, x, y, salt);
     }
   }
 }
@@ -103,8 +101,8 @@ void ValidatePlane(const uint8_t* data,
   for (int y = 0; y < size.height(); ++y) {
     for (int x = 0; x < size.width(); ++x) {
       SCOPED_TRACE(testing::Message() << "x=" << x << " y=" << y);
-      EXPECT_EQ(data[x * x_step + y * y_step],
-                GetTestFrameValue(size, x, y, salt));
+      UNSAFE_TODO(EXPECT_EQ(data[x * x_step + y * y_step],
+                            GetTestFrameValue(size, x, y, salt)));
     }
   }
 }
@@ -127,13 +125,14 @@ void FakeCameraStream::ValidateFrameData(const uint8_t* data,
   }
 
   gfx::Size uv_size(size.width() / 2, size.height() / 2);
-  const uint8_t* u_plane = y_plane + size.width() * size.height();
+  const uint8_t* u_plane = UNSAFE_TODO(y_plane + size.width()) * size.height();
   {
     SCOPED_TRACE("U plane");
     ValidatePlane(u_plane, uv_size, 1, uv_size.width(), salt + kUPlaneSalt);
   }
 
-  const uint8_t* v_plane = u_plane + uv_size.width() * uv_size.height();
+  const uint8_t* v_plane =
+      UNSAFE_TODO(u_plane + uv_size.width()) * uv_size.height();
   {
     SCOPED_TRACE("V plane");
     ValidatePlane(v_plane, uv_size, 1, uv_size.width(), salt + kVPlaneSalt);
@@ -243,10 +242,11 @@ void FakeCameraStream::ProduceFrame(base::TimeTicks timestamp, uint8_t salt) {
 
   // Fill UV plane.
   gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
-  uint8_t* uv_plane = y_plane + kMaxFrameSize.width() * kMaxFrameSize.height();
+  uint8_t* uv_plane =
+      UNSAFE_TODO(y_plane + kMaxFrameSize.width()) * kMaxFrameSize.height();
   FillPlane(uv_plane, uv_size, /*x_step=*/2, /*y_step=*/stride, orientation_,
             salt + kUPlaneSalt);
-  FillPlane(uv_plane + 1, uv_size, /*x_step=*/2, /*y_step=*/stride,
+  FillPlane(UNSAFE_TODO(uv_plane + 1), uv_size, /*x_step=*/2, /*y_step=*/stride,
             orientation_, salt + kVPlaneSalt);
 
   // Create FrameInfo.
