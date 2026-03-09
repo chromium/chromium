@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.68"
+rust-version = "1.71"
 name = "quote"
-version = "1.0.44"
+version = "1.0.45"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false

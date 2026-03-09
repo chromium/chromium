@@ -1,4 +1,5 @@
 use super::TokenStreamExt;
+use std::sync::Arc;
 use alloc::borrow::{Cow, ToOwned};
 use alloc::boxed::Box;
 use alloc::ffi::CString;
@@ -99,6 +100,12 @@ impl<T: ?Sized + ToTokens> ToTokens for Box<T> {
 }
 
 impl<T: ?Sized + ToTokens> ToTokens for Rc<T> {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        (**self).to_tokens(tokens);
+    }
+}
+
+impl<T: ?Sized + ToTokens> ToTokens for Arc<T> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         (**self).to_tokens(tokens);
     }

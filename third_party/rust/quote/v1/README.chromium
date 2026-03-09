@@ -1,7 +1,7 @@
 Name: quote
 URL: https://crates.io/crates/quote
-Version: 1.0.44
-Revision: ad9fb4019efc3f34e5d3b9be416199937f7a8ee3
+Version: 1.0.45
+Revision: 842ffde933fdd76cd1681a288bed136d8b95a97a
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/quote-v1/LICENSE-APACHE
