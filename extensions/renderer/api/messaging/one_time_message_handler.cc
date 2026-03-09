@@ -1019,6 +1019,14 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
     OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,
                                              const PortId& port_id,
                                              CallbackID callback_id) {
+  // The ScriptContext may have been invalidated (and the `v8::Context`
+  // released) if this callback was created during context invalidation. In that
+  // case, the `OneTimeMessageContextData` will be destroyed when the
+  // `v8::Context` is garbage collected, so we can just return.
+  if (!script_context->is_valid()) {
+    return;
+  }
+
   // Note: we know |script_context| is still valid because the GC callback won't
   // be called after context invalidation.
   v8::HandleScope handle_scope(script_context->isolate());
