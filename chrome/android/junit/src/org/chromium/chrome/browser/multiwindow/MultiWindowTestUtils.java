@@ -39,6 +39,7 @@ public class MultiWindowTestUtils {
         MultiInstancePersistentStore.writeTabCount(
                 instanceId, tabCount, /* incognitoTabCount= */ 0);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
+        if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);
     }
 
     /** Clears instance information. */

@@ -1384,7 +1384,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sRobustWindowManagement =
-            newMutableFlagWithSafeDefault(ROBUST_WINDOW_MANAGEMENT, false);
+            newMutableFlagWithSafeDefault(ROBUST_WINDOW_MANAGEMENT, true);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
@@ -1902,5 +1902,5 @@ public abstract class ChromeFeatureList {
             sTabBottomSheet.newBooleanParam("resize_webview", false);
 
     public static final MutableBooleanParamWithSafeDefault sRobustWindowManagementBulkClose =
-            sRobustWindowManagement.newBooleanParam("bulk_close", false);
+            sRobustWindowManagement.newBooleanParam("bulk_close", true);
 }

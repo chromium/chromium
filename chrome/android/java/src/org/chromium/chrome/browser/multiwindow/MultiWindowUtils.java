@@ -1506,6 +1506,14 @@ public class MultiWindowUtils implements ActivityStateListener {
         ResettersForTesting.register(() -> sAppTaskIdsForTesting = null);
     }
 
+    /* package */ static void addAppTaskIdForTesting(int appTaskId) {
+        if (sAppTaskIdsForTesting == null) {
+            sAppTaskIdsForTesting = new HashSet<>();
+        }
+        sAppTaskIdsForTesting.add(appTaskId);
+        ResettersForTesting.register(() -> sAppTaskIdsForTesting = null);
+    }
+
     public static void setInstanceForTesting(MultiWindowUtils instance) {
         var oldValue = sInstance;
         sInstance = instance;
