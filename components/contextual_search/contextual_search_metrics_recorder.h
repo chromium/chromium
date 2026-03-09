@@ -155,6 +155,9 @@ class ContextualSearchMetricsRecorder {
       composebox_query::mojom::ToolMode tool_mode,
       composebox_query::mojom::ModelMode model_mode);
 
+  // Records when a zero-suggest suggestion is clicked.
+  virtual void RecordZeroSuggestClick(bool is_contextual);
+
  private:
   // Called when the session starts to correctly track session
   // durations.

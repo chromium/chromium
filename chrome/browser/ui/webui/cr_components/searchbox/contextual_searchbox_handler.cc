@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -38,6 +39,8 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/contextual_input.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
@@ -743,6 +746,35 @@ void ContextualSearchboxHandler::ClearFiles(
   if (input_state_model_) {
     input_state_model_->OnContextChanged();
   }
+}
+
+void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
+                                                       const GURL& url,
+                                                       bool are_matches_showing,
+                                                       uint8_t mouse_button,
+                                                       bool alt_key,
+                                                       bool ctrl_key,
+                                                       bool meta_key,
+                                                       bool shift_key) {
+  const AutocompleteMatch* match = GetMatchWithUrl(line, url);
+
+  // Record zero suggest clicks for composebox matches.
+  bool record_zero_suggest =
+      autocomplete_controller()->input().IsZeroSuggest() &&
+      omnibox::IsComposebox(
+          omnibox_controller()->client()->GetPageClassification(
+              /*is_prefetch=*/false)) &&
+      match;
+
+  if (record_zero_suggest) {
+    if (auto* recorder = GetMetricsRecorder()) {
+      recorder->RecordZeroSuggestClick(match->IsContextualSearchSuggestion());
+    }
+  }
+
+  SearchboxHandler::OpenAutocompleteMatch(line, url, are_matches_showing,
+                                          mouse_button, alt_key, ctrl_key,
+                                          meta_key, shift_key);
 }
 
 void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,

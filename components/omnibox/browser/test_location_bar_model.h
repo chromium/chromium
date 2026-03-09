@@ -67,6 +67,10 @@ class TestLocationBarModel : public LocationBarModel {
   void set_should_prevent_elision(bool should_prevent_elision) {
     should_prevent_elision_ = should_prevent_elision;
   }
+  void set_page_classification(
+      metrics::OmniboxEventProto::PageClassification page_classification) {
+    page_classification_ = page_classification;
+  }
 
  private:
   // If either of these is not explicitly set, the test class will return
@@ -82,6 +86,8 @@ class TestLocationBarModel : public LocationBarModel {
   bool offline_page_ = false;
   std::u16string secure_display_text_ = std::u16string();
   bool should_prevent_elision_ = false;
+  metrics::OmniboxEventProto::PageClassification page_classification_ =
+      metrics::OmniboxEventProto::OTHER;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TEST_LOCATION_BAR_MODEL_H_

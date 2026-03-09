@@ -10975,6 +10975,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="ContextualSearch.ZeroSuggestClick.{Type}.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <description>
+    Recorded when a user clicks on a {Type} suggestion in the zero-suggest mode
+    from {ContextualSearchSource}.
+  </description>
+  <token key="Type">
+    <variant name="Contextual" summary=""/>
+    <variant name="NonContextual" summary=""/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
 <action name="ContextualSuggestions.ContextMenu{ContextMenu_Type}">
   <obsolete>This feature was deprecated in M74</obsolete>
   <owner>twellington@chromium.org</owner>

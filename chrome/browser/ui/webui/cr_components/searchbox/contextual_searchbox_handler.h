@@ -121,6 +121,14 @@ class ContextualSearchboxHandler
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
+  void OpenAutocompleteMatch(uint8_t line,
+                             const GURL& url,
+                             bool are_matches_showing,
+                             uint8_t mouse_button,
+                             bool alt_key,
+                             bool ctrl_key,
+                             bool meta_key,
+                             bool shift_key) override;
 
   // Continues the process of adding tab context for a given `tab_id`.
   // This method is used when a `context_token` has already been generated
@@ -206,6 +214,8 @@ class ContextualSearchboxHandler
                            AddTabContext_DelayUpload);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTestTabsTest,
                            DeleteContext_DelayUpload);
+  FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
+                           OpenAutocompleteMatch_ZeroSuggestClick);
 
   std::optional<lens::ImageEncodingOptions> CreateTabPreviewEncodingOptions(
       content::WebContents* web_contents);

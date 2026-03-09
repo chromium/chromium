@@ -13,12 +13,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -41,6 +43,10 @@
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
@@ -155,6 +161,10 @@ class ContextualSearchboxHandlerTest
 
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
+    ON_CALL(*metrics_recorder_ptr, RecordZeroSuggestClick)
+        .WillByDefault(testing::Invoke(
+            metrics_recorder_ptr.get(),
+            &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
 
     service_ = ContextualSearchServiceFactory::GetForProfile(profile());
     contextual_session_handle_ = service_->CreateSessionForTesting(
@@ -704,6 +714,88 @@ TEST_F(ContextualSearchboxHandlerTest, OnInputStateChanged) {
       "ContextualSearch.Models.NewTabPage",
       composebox_query::mojom::ModelMode::kGeminiRegular, 1);
 }
+
+TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
+  base::UserActionTester user_action_tester;
+
+  // Set up a zero-suggest input.
+  AutocompleteInput input(u"",
+                          metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  // Set the page classification on the client's location bar model.
+  static_cast<TestOmniboxClient*>(handler().omnibox_controller()->client())
+      ->location_bar_model()
+      ->set_page_classification(
+          metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX);
+
+  // 1. Test normal zero-suggest click.
+  {
+    // Use FakeAutocompleteController to easily set input and results.
+    auto fake_controller =
+        std::make_unique<FakeAutocompleteController>(nullptr);
+    fake_controller->input_ = input;
+
+    AutocompleteMatch match;
+    match.provider = &fake_controller->GetFakeProvider();
+    match.destination_url = GURL("https://www.google.com");
+
+    fake_controller->published_result_.AppendMatches({match});
+
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(fake_controller));
+
+    EXPECT_CALL(*GetMetricsRecorderPtr(), RecordZeroSuggestClick(false))
+        .WillOnce(testing::Invoke(
+            GetMetricsRecorderPtr(),
+            &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
+
+    handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
+                                    /*are_matches_showing=*/true, 0, false,
+                                    false, false, false);
+
+    histogram_tester().ExpectBucketCount(
+        "ContextualSearch.ZeroSuggestClick.IsContextual.NewTabPage", false, 1);
+    EXPECT_EQ(user_action_tester.GetActionCount(
+                  "ContextualSearch.ZeroSuggestClick.NonContextual.NewTabPage"),
+              1);
+  }
+
+  // 2. Test contextual zero-suggest click.
+  {
+    // Need a new controller since we moved it.
+    auto fake_controller =
+        std::make_unique<FakeAutocompleteController>(nullptr);
+    fake_controller->input_ = input;
+
+    AutocompleteMatch match;
+    match.provider = &fake_controller->GetFakeProvider();
+    match.destination_url = GURL("https://www.contextual.com");
+    match.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+
+    fake_controller->published_result_.AppendMatches({match});
+
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(fake_controller));
+
+    EXPECT_CALL(*GetMetricsRecorderPtr(), RecordZeroSuggestClick(true))
+        .WillOnce(testing::Invoke(
+            GetMetricsRecorderPtr(),
+            &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
+
+    handler().OpenAutocompleteMatch(0, GURL("https://www.contextual.com"),
+                                    /*are_matches_showing=*/true, 0, false,
+                                    false, false, false);
+
+    histogram_tester().ExpectBucketCount(
+        "ContextualSearch.ZeroSuggestClick.IsContextual.NewTabPage", true, 1);
+    EXPECT_EQ(user_action_tester.GetActionCount(
+                  "ContextualSearch.ZeroSuggestClick.Contextual.NewTabPage"),
+              1);
+  }
+}
+
 TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   // Ensure udm param is always set as an additional param.
   SubmitQueryAndWaitForNavigation();

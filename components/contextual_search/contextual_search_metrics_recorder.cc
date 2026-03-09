@@ -559,4 +559,17 @@ void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
       model_mode);
 }
 
+void ContextualSearchMetricsRecorder::RecordZeroSuggestClick(
+    bool is_contextual) {
+  std::string suffix = is_contextual ? "Contextual" : "NonContextual";
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat(
+          {"ContextualSearch.ZeroSuggestClick.", suffix, ".", metrics_suffix_})
+          .c_str()));
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"ContextualSearch.ZeroSuggestClick.IsContextual.", metrics_suffix_}),
+      is_contextual);
+}
+
 }  // namespace contextual_search

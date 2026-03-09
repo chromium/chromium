@@ -56,7 +56,7 @@ net::CertStatus TestLocationBarModel::GetCertStatus() const {
 
 metrics::OmniboxEventProto::PageClassification
 TestLocationBarModel::GetPageClassification(bool is_prefetch) const {
-  return metrics::OmniboxEventProto::OTHER;
+  return page_classification_;
 }
 
 metrics::OmniboxEventProto::PageClassification
