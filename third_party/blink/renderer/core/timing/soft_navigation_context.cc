@@ -49,6 +49,11 @@ PerformanceTimelineEntryIdInfo SoftNavigationContext::GetInteractionIdInfo()
 
 SoftNavigationHeuristics* SoftNavigationContext::GetSoftNavigationHeuristics()
     const {
+  // Before this context is Garbage-collected, it may become disposed, and
+  // window_ may get cleared.
+  if (HasBeenShutdown()) {
+    return nullptr;
+  }
   return window_->GetSoftNavigationHeuristics();
 }
 
@@ -226,6 +231,9 @@ SoftNavigationContext::LatestLcpDetailsForUkm() {
 
 void SoftNavigationContext::WriteIntoTrace(
     perfetto::TracedValue context) const {
+  // Ensure we don't try to trace after shutdown has been called.  If you want
+  // to trace the final values-- do so right before shutdown.
+  CHECK(!HasBeenShutdown());
   perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
 
   dict.Add("softNavContextId", context_id_);
@@ -261,6 +269,7 @@ void SoftNavigationContext::Shutdown() {
 }
 
 void SoftNavigationContext::EmitSoftNavigation() {
+  CHECK(!HasBeenShutdown());
   CHECK(!WasEmitted());
   CHECK(HasFirstContentfulPaint());
   CHECK(SatisfiesSoftNavNonPaintCriteria());
@@ -286,8 +295,7 @@ void SoftNavigationContext::EmitSoftNavigation() {
 }
 
 void SoftNavigationContext::Dispose() {
-  // `window_` will be null if this context was already shut down.
-  if (!window_) {
+  if (HasBeenShutdown()) {
     return;
   }
   // `heuristics` will be null if the `window_` was detached but this context
@@ -311,7 +319,7 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
     return;
   }
   // This should not be called after we've been shut down.
-  CHECK(window_);
+  CHECK(!HasBeenShutdown());
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
 

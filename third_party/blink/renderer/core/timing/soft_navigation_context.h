@@ -160,7 +160,6 @@ class CORE_EXPORT SoftNavigationContext
     return first_input_or_scroll_time_.is_null();
   }
 
-  LocalDOMWindow* Window() const { return window_.Get(); }
   SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
 
   // Emits the soft navigation performance entry. The context must not have been
@@ -190,6 +189,7 @@ class CORE_EXPORT SoftNavigationContext
 
   // Called when `SoftNavigationHeuristics` is shut down on frame detach.
   void Shutdown();
+  bool HasBeenShutdown() const { return !window_; }
 
   void Dispose();
 
