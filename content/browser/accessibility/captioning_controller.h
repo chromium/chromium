@@ -18,14 +18,14 @@ class WebContents;
 // together with WebContents.
 class CaptioningController : public WebContentsObserver {
  public:
-  explicit CaptioningController(WebContents* web_contents);
+  CaptioningController(JNIEnv* env,
+                       const base::android::JavaRef<jobject>& obj,
+                       WebContents* web_contents);
 
   ~CaptioningController() override;
 
   CaptioningController(const CaptioningController&) = delete;
   CaptioningController& operator=(const CaptioningController&) = delete;
-
-  void Destroy(JNIEnv* env);
 
   void SetTextTrackSettings(
       JNIEnv* env,
@@ -42,10 +42,10 @@ class CaptioningController : public WebContentsObserver {
   // WebContentsObserver implementation.
   void PrimaryPageChanged(Page& page) override;
   void RenderViewReady() override;
+  void WebContentsDestroyed() override;
 
-  base::android::ScopedJavaLocalRef<jobject> GetFromWebContents(
-      JNIEnv* env,
-      WebContents* web_contents);
+  // A weak reference to the Java CaptioningController object.
+  JavaObjectWeakGlobalRef java_ref_;
 };
 
 }  // namespace content

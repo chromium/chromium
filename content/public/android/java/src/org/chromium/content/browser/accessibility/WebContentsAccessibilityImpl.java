@@ -311,7 +311,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         WebContents webContents = mDelegate.getWebContents();
         if (webContents != null) {
-            mCaptioningController = CaptioningController.fromWebContents(webContents);
+            mCaptioningController = new CaptioningController(webContents);
             WindowEventObserverManager.from(webContents).addObserver(this);
             assumeNonNull(webContents.getViewAndroidDelegate()).addObserver(this);
         }
