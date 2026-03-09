@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
@@ -27,6 +28,8 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
+
+namespace {
 
 // Helper method to normalize the `admin_area` for the given `country_code`.
 // The value in `admin_area` will be overwritten.
@@ -51,7 +54,7 @@ bool NormalizeAdminAreaForCountryCode(std::u16string& admin_area,
 // Returns the SelectOption::value of `field_options` that best matches the
 // normalized `value`. Returns an empty string if no match is found.
 // Normalization is relative to the `country_code` and to `address_normalizer`.
-std::u16string GetNormalizedStateSelectControlValue(
+std::optional<SelectOption> GetNormalizedStateSelectControlValue(
     std::u16string value,
     base::span<const SelectOption> field_options,
     const std::string& country_code,
@@ -67,14 +70,14 @@ std::u16string GetNormalizedStateSelectControlValue(
     if (failure_to_fill) {
       *failure_to_fill += "Could not normalize admin area for country code. ";
     }
-    return {};
+    return std::nullopt;
   }
 
   // If successful, try filling the normalized value with the existing field
   // |options|.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return *select_control_value;
+  if (std::optional<SelectOption> select_control_value =
+          GetSelectControlOption(value, field_options, failure_to_fill)) {
+    return select_control_value;
   }
 
   // Normalize `field_options` using a copy.
@@ -92,78 +95,24 @@ std::u16string GetNormalizedStateSelectControlValue(
 
   // Try filling the normalized value with the existing `field_options_copy`.
   size_t best_match_index = 0;
-  if (normalized && GetSelectControlValue(value, field_options_copy,
-                                          failure_to_fill, &best_match_index)) {
+  if (normalized &&
+      GetSelectControlOption(value, field_options_copy, failure_to_fill,
+                             &best_match_index)) {
     // `best_match_index` now points to the option in `field->options`
     // that corresponds to our best match.
-    return field_options[best_match_index].value;
+    return field_options[best_match_index];
   }
   if (failure_to_fill) {
     *failure_to_fill += "Could not set normalized state in control element. ";
   }
-  return {};
-}
-
-std::optional<std::u16string> GetSelectControlValue(
-    const std::u16string& value,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill,
-    size_t* best_match_index) {
-  l10n::CaseInsensitiveCompare compare;
-
-  std::u16string best_match;
-  for (size_t i = 0; i < field_options.size(); ++i) {
-    const SelectOption& option = field_options[i];
-    if (value == option.value || value == option.text) {
-      // An exact match, use it.
-      best_match = option.value;
-      if (best_match_index) {
-        *best_match_index = i;
-      }
-      break;
-    }
-
-    if (compare.StringsEqual(value, option.value) ||
-        compare.StringsEqual(value, option.text)) {
-      // A match, but not in the same case. Save it in case an exact match is
-      // not found.
-      best_match = option.value;
-      if (best_match_index) {
-        *best_match_index = i;
-      }
-    }
-  }
-
-  if (best_match.empty()) {
-    if (failure_to_fill) {
-      *failure_to_fill +=
-          "Did not find value to fill in select control element. ";
-    }
-    return std::nullopt;
-  }
-
-  return best_match;
-}
-
-std::optional<std::u16string> GetSelectControlValueSubstringMatch(
-    const std::u16string& value,
-    bool ignore_whitespace,
-    base::span<const SelectOption> field_options,
-    std::string* failure_to_fill) {
-  if (auto best_match = FindShortestSubstringMatchInSelect(
-          value, ignore_whitespace, field_options)) {
-    return field_options[best_match.value()].value;
-  }
-
-  if (failure_to_fill) {
-    *failure_to_fill +=
-        "Did not find substring match for filling select control element. ";
-  }
-
   return std::nullopt;
 }
 
-std::optional<std::u16string> GetSelectControlValueTokenMatch(
+// Like GetSelectControlOption, but searches within the field values and options
+// for `value`. First it tokenizes the options, then tries to match against
+// tokens. For example, "NC - North Carolina" would match "nc" but not "ca".
+// A nullopt value means that no value for filling was found.
+std::optional<SelectOption> GetSelectControlOptionTokenMatch(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
@@ -178,7 +127,7 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
   for (const SelectOption& option : field_options) {
     if (std::ranges::any_of(tokenize(option.value), equals_value) ||
         std::ranges::any_of(tokenize(option.text), equals_value)) {
-      return option.value;
+      return option;
     }
   }
 
@@ -190,7 +139,69 @@ std::optional<std::u16string> GetSelectControlValueTokenMatch(
   return std::nullopt;
 }
 
-std::optional<std::u16string> GetNumericSelectControlValue(
+}  // namespace
+
+std::optional<SelectOption> GetSelectControlOption(
+    const std::u16string& value,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill,
+    size_t* best_match_index) {
+  l10n::CaseInsensitiveCompare compare;
+
+  std::u16string best_match;
+  size_t index = -1;
+  for (size_t i = 0; i < field_options.size(); ++i) {
+    const SelectOption& option = field_options[i];
+    if (value == option.value || value == option.text) {
+      // An exact match, use it.
+      best_match = option.value;
+      index = i;
+      break;
+    }
+
+    if (compare.StringsEqual(value, option.value) ||
+        compare.StringsEqual(value, option.text)) {
+      // A match, but not in the same case. Save it in case an exact match is
+      // not found.
+      best_match = option.value;
+      index = i;
+    }
+  }
+
+  if (best_match.empty()) {
+    if (failure_to_fill) {
+      *failure_to_fill +=
+          "Did not find value to fill in select control element. ";
+    }
+    return std::nullopt;
+  }
+
+  if (best_match_index) {
+    *best_match_index = index;
+  }
+
+  return field_options[index];
+}
+
+std::optional<SelectOption> GetSelectControlOptionSubstringMatch(
+    const std::u16string& value,
+    bool ignore_whitespace,
+    base::span<const SelectOption> field_options,
+    std::string* failure_to_fill) {
+  if (auto best_match = FindShortestSubstringMatchInSelect(
+          value, ignore_whitespace, field_options)) {
+    return field_options[best_match.value()];
+  }
+
+  if (failure_to_fill) {
+    *failure_to_fill +=
+        "Did not find substring match for filling select control element. ";
+  }
+
+  return std::nullopt;
+}
+
+std::optional<SelectOption> GetNumericSelectControlOption(
     int value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
@@ -198,7 +209,7 @@ std::optional<std::u16string> GetNumericSelectControlValue(
     int num;
     if ((base::StringToInt(option.value, &num) && num == value) ||
         (base::StringToInt(option.text, &num) && num == value)) {
-      return option.value;
+      return option;
     }
   }
 
@@ -273,14 +284,14 @@ std::u16string GetObfuscatedValue(const std::u16string& value,
 
 // Gets the country value to fill in a select control.
 // Returns an empty string if no value for filling was found.
-std::u16string GetCountrySelectControlValue(
+std::optional<SelectOption> GetCountrySelectControlOption(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     std::string* failure_to_fill) {
   // Search for exact matches.
-  if (std::optional<std::u16string> select_control_value =
-          GetSelectControlValue(value, field_options, failure_to_fill)) {
-    return *select_control_value;
+  if (std::optional<SelectOption> select_control_option =
+          GetSelectControlOption(value, field_options, failure_to_fill)) {
+    return select_control_option;
   }
   std::string country_code = CountryNames::GetInstance()->GetCountryCode(value);
   if (country_code.empty()) {
@@ -313,7 +324,7 @@ std::u16string GetCountrySelectControlValue(
                             strip_phone_country_code(option.value)) ||
         country_code == CountryNames::GetInstance()->GetCountryCode(
                             strip_phone_country_code(option.text))) {
-      return option.value;
+      return option;
     }
   }
 
@@ -363,7 +374,7 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 
 // Gets the state value to fill in a select control.
 // Returns an empty string if no value for filling was found.
-std::u16string GetStateSelectControlValue(
+std::optional<SelectOption> GetStateSelectControlOption(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
     const std::string& country_code,
@@ -419,37 +430,37 @@ std::u16string GetStateSelectControlValue(
 
   // Try an exact match of the abbreviation first.
   for (const std::u16string& abbreviation : abbreviations) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValue(abbreviation, field_options,
-                                  failure_to_fill)) {
-      return *select_control_value;
+    if (std::optional<SelectOption> select_control_option =
+            GetSelectControlOption(abbreviation, field_options,
+                                   failure_to_fill)) {
+      return select_control_option;
     }
   }
 
   // Try an exact match of the full name.
   for (const std::u16string& full : full_names) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValue(full, field_options, failure_to_fill)) {
-      return *select_control_value;
+    if (std::optional<SelectOption> select_control_option =
+            GetSelectControlOption(full, field_options, failure_to_fill)) {
+      return select_control_option;
     }
   }
 
   // Try an inexact match of the full name.
   for (const std::u16string& full : full_names) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValueSubstringMatch(
+    if (std::optional<SelectOption> select_control_option =
+            GetSelectControlOptionSubstringMatch(
                 full, /*ignore_whitespace=*/false, field_options,
                 failure_to_fill)) {
-      return *select_control_value;
+      return select_control_option;
     }
   }
 
   // Try an inexact match of the abbreviation name.
   for (const std::u16string& abbreviation : abbreviations) {
-    if (std::optional<std::u16string> select_control_value =
-            GetSelectControlValueTokenMatch(abbreviation, field_options,
-                                            failure_to_fill)) {
-      return *select_control_value;
+    if (std::optional<SelectOption> select_control_option =
+            GetSelectControlOptionTokenMatch(abbreviation, field_options,
+                                             failure_to_fill)) {
+      return select_control_option;
     }
   }
 

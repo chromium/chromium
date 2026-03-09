@@ -56,11 +56,11 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByValue) {
   }
   field.set_options(std::move(options));
 
-  std::u16string match_value =
-      GetSelectControlValue(u"Meenie", field.options(),
-                            /*failure_to_fill=*/nullptr)
-          .value_or(u"");
-  EXPECT_EQ(u"Meenie", match_value);
+  std::optional<SelectOption> match_option =
+      GetSelectControlOption(u"Meenie", field.options(),
+                             /*failure_to_fill=*/nullptr);
+  ASSERT_TRUE(match_option.has_value());
+  EXPECT_EQ(u"Meenie", match_option->value);
 }
 
 TEST_F(FieldFillingUtilTest, GetSelectControlByContents) {
@@ -80,11 +80,11 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByContents) {
   }
   field.set_options(std::move(options));
 
-  std::u16string match_value =
-      GetSelectControlValue(u"Miney", field.options(),
-                            /*failure_to_fill=*/nullptr)
-          .value_or(u"");
-  EXPECT_EQ(u"2", match_value);
+  std::optional<SelectOption> match_option =
+      GetSelectControlOption(u"Miney", field.options(),
+                             /*failure_to_fill=*/nullptr);
+  ASSERT_TRUE(match_option.has_value());
+  EXPECT_EQ(u"2", match_option->value);
 }
 
 // TODO(crbug.com/394011769): Remove once `kAutofillAiWalletPrivatePasses` is
