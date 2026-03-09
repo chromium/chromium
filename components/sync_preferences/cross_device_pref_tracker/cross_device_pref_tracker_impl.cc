@@ -269,13 +269,12 @@ std::optional<TimestampedPrefValueInternal> ParseCrossDevicePrefEntry(
       base::ValueToTime(cross_device_entry.Find(kUpdateTimeKey));
 
   if (!value || !update_timestamp.has_value()) {
-    if (base::FeatureList::IsEnabled(
-            sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-      VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": failed to parse "
-              << "dictionary entry for guid " << device_info.guid()
-              << ". Missing value or update_time.";
-    }
-
+    VLOG_IF(1,
+            base::FeatureList::IsEnabled(
+                sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+        << "CrossDevicePrefTracker, " << __func__ << ": failed to parse "
+        << "dictionary entry for guid " << device_info.guid()
+        << ". Missing value or update_time.";
     return std::nullopt;
   }
 
@@ -397,12 +396,11 @@ void ApplyPrefChangeToCrossDevice(
       ScopedDictPrefUpdate update(profile_pref_service, cross_device_pref_name);
       update->Remove(cache_guid.value());
 
-      if (base::FeatureList::IsEnabled(
-              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-        VLOG(1) << "CrossDevicePrefTracker, " << __func__
-                << ": Cleared entry for " << cross_device_pref_name
-                << ", guid: " << cache_guid.value();
-      }
+      VLOG_IF(1,
+              base::FeatureList::IsEnabled(
+                  sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+          << "CrossDevicePrefTracker, " << __func__ << ": Cleared entry for "
+          << cross_device_pref_name << ", guid: " << cache_guid.value();
     }
 
     return;
@@ -442,12 +440,11 @@ void ApplyPrefChangeToCrossDevice(
 
   update->Set(cache_guid.value(), std::move(entry));
 
-  if (base::FeatureList::IsEnabled(
-          sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-    VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": Wrote entry for "
-            << cross_device_pref_name << ", guid: " << cache_guid.value()
-            << ", value: " << current_value.DebugString();
-  }
+  VLOG_IF(1, base::FeatureList::IsEnabled(
+                 sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+      << "CrossDevicePrefTracker, " << __func__ << ": Wrote entry for "
+      << cross_device_pref_name << ", guid: " << cache_guid.value()
+      << ", value: " << current_value.DebugString();
 }
 
 // Retrieves, filters, and parses all valid cross-device pref entries that
@@ -475,36 +472,31 @@ GetCrossDeviceEntriesMatchingDeviceFilter(
   std::vector<TimestampedPrefValueInternal> matching_cross_device_entries;
   base::Time current_time = base::Time::Now();
 
+  const bool debug_logs_enabled = base::FeatureList::IsEnabled(
+      sync_preferences::features::kCrossDevicePrefTrackerExtraLogs);
+
   for (const auto [cache_guid, entry_value] : cross_device_dict) {
     const syncer::DeviceInfo* device_info =
         device_info_tracker->GetDeviceInfo(cache_guid);
 
     if (!device_info) {
-      if (base::FeatureList::IsEnabled(
-              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-        VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
-                << cache_guid
-                << " because DeviceInfo is missing from the tracker.";
-      }
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
+          << cache_guid << " because DeviceInfo is missing from the tracker.";
       continue;
     }
 
     if (!DeviceMatchesFilter(*device_info, filter, current_time)) {
-      if (base::FeatureList::IsEnabled(
-              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-        VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
-                << cache_guid << " because it did not match the DeviceFilter.";
-      }
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
+          << cache_guid << " because it did not match the DeviceFilter.";
       continue;
     }
 
     if (!entry_value.is_dict()) {
-      if (base::FeatureList::IsEnabled(
-              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-        VLOG(1) << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
-                << cache_guid
-                << " because its entry_value is not a dictionary.";
-      }
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__ << ": skipping guid "
+          << cache_guid << " because its entry_value is not a dictionary.";
       continue;
     }
 
@@ -644,12 +636,12 @@ std::vector<TimestampedPrefValue> CrossDevicePrefTrackerImpl::GetValues(
   CHECK(device_info_sync_service_);
 
   if (service_status_ != ServiceStatus::kAvailable) {
-    if (base::FeatureList::IsEnabled(
-            sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-      VLOG(1) << "CrossDevicePrefTracker, " << __func__
-              << ": called while service status is not kAvailable (Status: "
-              << static_cast<int>(service_status_) << ").";
-    }
+    VLOG_IF(1,
+            base::FeatureList::IsEnabled(
+                sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+        << "CrossDevicePrefTracker, " << __func__
+        << ": called while service status is not kAvailable (Status: "
+        << static_cast<int>(service_status_) << ").";
   }
 
   syncer::DeviceInfoTracker* device_info_tracker =
@@ -704,12 +696,12 @@ CrossDevicePrefTrackerImpl::GetMostRecentValue(
                                                 cross_device_pref_name, filter);
 
   if (matching_entries.empty()) {
-    if (base::FeatureList::IsEnabled(
-            sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-      VLOG(1) << "CrossDevicePrefTracker, " << __func__
-              << ": returning nullopt because no matching entries were "
-              << "found after applying filters.";
-    }
+    VLOG_IF(1,
+            base::FeatureList::IsEnabled(
+                sync_preferences::features::kCrossDevicePrefTrackerExtraLogs))
+        << "CrossDevicePrefTracker, " << __func__
+        << ": returning nullopt because no matching entries were "
+        << "found after applying filters.";
     return std::nullopt;
   }
 
@@ -1148,6 +1140,9 @@ void CrossDevicePrefTrackerImpl::GarbageCollectStaleCacheGuids() {
     }
   }
 
+  const bool debug_logs_enabled = base::FeatureList::IsEnabled(
+      sync_preferences::features::kCrossDevicePrefTrackerExtraLogs);
+
   // Remove the stale entries. It is now safe for the cache to be updated.
   for (const auto& [cross_device_pref_name, guids_to_remove] :
        entries_to_remove) {
@@ -1157,12 +1152,10 @@ void CrossDevicePrefTrackerImpl::GarbageCollectStaleCacheGuids() {
       bool removed = update->Remove(guid);
       CHECK(removed);
 
-      if (base::FeatureList::IsEnabled(
-              sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-        VLOG(1) << "CrossDevicePrefTracker, " << __func__
-                << ": Garbage collected stale entry for "
-                << cross_device_pref_name << ", guid: " << guid;
-      }
+      VLOG_IF(1, debug_logs_enabled)
+          << "CrossDevicePrefTracker, " << __func__
+          << ": Garbage collected stale entry for " << cross_device_pref_name
+          << ", guid: " << guid;
     }
   }
 }
