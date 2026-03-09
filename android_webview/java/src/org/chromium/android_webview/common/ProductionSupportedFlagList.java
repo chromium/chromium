@@ -1349,6 +1349,12 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SAVE_STATE_INCLUDE_HEADERS,
                 "When enabled, navigation headers will be saved and restored as part of saved state"
                         + " for WebView"),
+        Flag.baseFeature(
+                "ThrottleSendingCustomUserTimings",
+                "Throttle sending custom user timing events via performance.mark() from the"
+                        + " renderer to the browser process, to reduce the number of IPCs to record"
+                        + " page load metrics."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

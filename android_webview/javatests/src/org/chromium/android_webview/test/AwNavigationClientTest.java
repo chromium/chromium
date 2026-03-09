@@ -264,13 +264,17 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                 mContentsClient.getOnPageFinishedHelper(),
                 testPage);
 
+        // First, wait for the native callbacks to ensure they are all processed.
+        int expectedNumMarks = 3;
+        // We expect 3 callbacks from performance.mark() calls, plus one for the FCP event.
+        mCallbackHelper.waitForCallback(0, expectedNumMarks + 1);
+
         // Wait for performance marks data to be returned via postmessage
         TestWebMessageListener.Data data = listener.waitForOnPostMessage();
         JSONArray jsPerformanceMarks = new JSONArray(data.getAsString());
         List<TestAwNavigationListener.PerformanceMark> listenerPerformanceMarks =
                 mNavigationListener.getPerformanceMarks();
 
-        int expectedNumMarks = 3;
         Assert.assertEquals(
                 "Number of marks observered via js is incorrect",
                 expectedNumMarks,
@@ -324,10 +328,14 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         mActivityTestRule.loadUrlSync(
                 awContents, mContentsClient.getOnPageFinishedHelper(), testPageInitial);
 
+        int callBackCount = mCallbackHelper.getCallCount();
+        // We expect 1 callback from performance.mark() called at the pageshow event, and one FCP
+        // event.
+        mCallbackHelper.waitForCallback(callBackCount, 2);
         // Wait for post message to verify page has been shown and mark should have been set
         listener.waitForOnPostMessage();
 
-        // Check we obseve the first performance mark
+        // Check we observe the first performance mark
         List<TestAwNavigationListener.PerformanceMark> listenerPerformanceMarks =
                 mNavigationListener.getPerformanceMarks();
         Assert.assertEquals(
@@ -349,6 +357,9 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                 InstrumentationRegistry.getInstrumentation(),
                 awContents.getWebContents(),
                 mContentsClient.getOnPageStartedHelper());
+
+        // We expect another callback from performance.mark(). Now 3 events in total.
+        mCallbackHelper.waitForCallback(callBackCount, 3);
 
         // Wait for post message to verify page has been shown again and mark should have been set
         listener.waitForOnPostMessage();
