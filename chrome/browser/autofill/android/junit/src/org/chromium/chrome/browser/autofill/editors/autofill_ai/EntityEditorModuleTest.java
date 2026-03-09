@@ -445,6 +445,52 @@ public class EntityEditorModuleTest {
                 ((AttributeInstance.DateValue) passportIssueDate.getAttributeValue()).getDate());
     }
 
+    @Test
+    @SmallTest
+    public void testCommitChangesWithWhitespaces() {
+        EntityInstance entity =
+                new EntityInstance.Builder(PASSPORT_TYPE)
+                        .setGUID("guid")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .addAttribute(
+                                new AttributeInstance(
+                                        PASSPORT_COUNTRY_ATTRIBUTE_TYPE, /* value= */ "Cuba"))
+                        .addAttribute(
+                                new AttributeInstance(
+                                        PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                        .build();
+        showEditorDialog(entity);
+
+        ViewGroup content = mCoordinator.getEntityEditorViewForTest().getContentView();
+        DateFieldView issueDate = (DateFieldView) content.getChildAt(3);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        ListModel<EditorItem> editorFields = model.get(EntityEditorProperties.EDITOR_FIELDS);
+        // Make sure that the fields order is correct before editing them.
+        EditorItem passportNameItem = editorFields.get(0);
+        EditorItem passportNumberItem = editorFields.get(2);
+
+        // Update some fields to values with whitespaces.
+        passportNameItem.model.set(VALUE, "     ");
+        passportNumberItem.model.set(VALUE, "    ");
+
+        mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
+        EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
+
+        // The name attribute should not be added to the entity because it wasn't set before.
+        assertFalse(updatedEntityInstance.hasAttribute(PASSPORT_NAME_ATTRIBUTE_TYPE));
+        // The number attribute should be populated to an empty value because is was set before.
+        assertTrue(updatedEntityInstance.hasAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE));
+        assertEquals(
+                new StringValue(""),
+                updatedEntityInstance
+                        .getAttribute(PASSPORT_NUMBER_ATTRIBUTE_TYPE)
+                        .getAttributeValue());
+    }
+
     private void showEditorDialog(EntityInstance entityInstance) {
         mCoordinator = new EntityEditorCoordinator(mActivity, mDelegate, mProfile, entityInstance);
         mContainerView = mCoordinator.getEntityEditorViewForTest().getContainerView();

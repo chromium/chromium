@@ -129,6 +129,10 @@ public class EntityInstance {
         return mAttributes.get(attributeType);
     }
 
+    public boolean hasAttribute(AttributeType attributeType) {
+        return mAttributes.containsKey(attributeType);
+    }
+
     public void setAttributeValue(AttributeType attributeType, String value) {
         switch (attributeType.getDataType()) {
             case DataType.NAME:

@@ -151,7 +151,14 @@ class EntityEditorMediator {
 
     private void commitChanges() {
         for (Map.Entry<AttributeType, PropertyModel> entry : mAttributeFields.entrySet()) {
-            mEntityInstance.setAttributeValue(entry.getKey(), entry.getValue().get(VALUE));
+            String sanitizedValue = entry.getValue().get(VALUE).trim();
+            if (TextUtils.isEmpty(sanitizedValue)
+                    && !mEntityInstance.hasAttribute(entry.getKey())) {
+                // Do not populate the EntityInstance with empty attribute values if they didn't
+                // exist before.
+                continue;
+            }
+            mEntityInstance.setAttributeValue(entry.getKey(), sanitizedValue);
         }
     }
 
