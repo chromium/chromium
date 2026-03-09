@@ -13,6 +13,8 @@ extern const CGFloat kMorphingBaseMargin;
 extern const CGFloat kMorphingMediumMargin;
 // Default corner radius for standard states.
 extern const CGFloat kMorphingBaseCornerRadius;
+// Maximum alpha for the background dimming view.
+extern const CGFloat kMaxBackgroundDimmingAlpha;
 
 // Encapsulates the dynamically computed styling properties with sub-pixel
 // precision.
@@ -22,6 +24,7 @@ struct ContainerMorphingConstraints {
   CGFloat bottom_margin;
   CGFloat corner_radius;
   CACornerMask masked_corners;
+  CGFloat background_dimming_alpha;
 };
 
 // Computes the rubber banding distance for downward gestures.

@@ -42,6 +42,9 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   NSLayoutConstraint* _trailingConstraint;
   NSLayoutConstraint* _bottomConstraint;
 
+  // Background dimming view for transitions to large detent.
+  UIView* _dimmingView;
+
   // The view that holds the child view controller.
   AssistantContainerView* _assistantContainerView;
 
@@ -81,6 +84,8 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   // which prevents excessive layout passes in the parent view when resizing
   // the Assistant container.
   self.view = [[ChromeOverlayContainerView alloc] init];
+
+  [self setupDimmingView];
 
   _assistantContainerView = [[AssistantContainerView alloc] init];
   _assistantContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -258,6 +263,16 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
 #pragma mark - Private
 
+// Configures and adds the background dimming view.
+- (void)setupDimmingView {
+  _dimmingView = [[UIView alloc] init];
+  _dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
+  _dimmingView.backgroundColor = UIColor.blackColor;
+  _dimmingView.alpha = 0.0;
+  [self.view addSubview:_dimmingView];
+  AddSameConstraints(_dimmingView, self.view);
+}
+
 // Dynamically updates the bounding constraints and border radius based on
 // scale.
 - (void)updateContainerStylingForHeight:(CGFloat)height {
@@ -275,6 +290,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   _bottomConstraint.constant = -constraints.bottom_margin;
   [_assistantContainerView updateCornerRadius:constraints.corner_radius
                                 maskedCorners:constraints.masked_corners];
+  _dimmingView.alpha = constraints.background_dimming_alpha;
 }
 
 // Notifies the delegate of a detent change if it differs from the previously

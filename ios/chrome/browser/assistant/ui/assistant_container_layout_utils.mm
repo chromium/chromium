@@ -17,6 +17,7 @@ constexpr CGFloat kRubberBandCoefficient = 0.10;
 const CGFloat kMorphingBaseMargin = 10.0;
 const CGFloat kMorphingMediumMargin = 5.0;
 const CGFloat kMorphingBaseCornerRadius = 36.0;
+const CGFloat kMaxBackgroundDimmingAlpha = 0.4;
 
 NSInteger RubberBandDistance(NSInteger offset, NSInteger dimension) {
   CGFloat float_offset = static_cast<CGFloat>(offset);
@@ -58,6 +59,8 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
                                 kCALayerMaxXMinYCorner |
                                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
 
+  CGFloat background_dimming_alpha = 0.0;
+
   CGFloat lowest_detent =
       minimized_height >= 0
           ? minimized_height
@@ -72,6 +75,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
       side_margin = 0;
       bottom_margin = 0;
       masked_corners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+      background_dimming_alpha = kMaxBackgroundDimmingAlpha;
     } else {
       // Lock size strictly to detent layout.
       actual_height = lowest_detent;
@@ -109,6 +113,8 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     CGFloat progress = InterpolateProgress(height, medium_height, large_height);
     side_margin = InterpolateValue(kMorphingMediumMargin, 0, progress);
     bottom_margin = InterpolateValue(kMorphingBaseMargin, 0, progress);
+    background_dimming_alpha =
+        InterpolateValue(0.0, kMaxBackgroundDimmingAlpha, progress);
   }
 
   // Large (and exceeding).
@@ -116,6 +122,7 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     side_margin = 0;
     bottom_margin = 0;
     masked_corners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+    background_dimming_alpha = kMaxBackgroundDimmingAlpha;
   }
 
   // Minimized -> Large (skipping Medium).
@@ -125,6 +132,8 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
         InterpolateProgress(height, minimized_height, large_height);
     side_margin = InterpolateValue(kMorphingBaseMargin, 0, progress);
     bottom_margin = InterpolateValue(kMorphingBaseMargin, 0, progress);
+    background_dimming_alpha =
+        InterpolateValue(0.0, kMaxBackgroundDimmingAlpha, progress);
   }
 
   // Fallback (e.g. overscrolling past Medium with no Large available).
@@ -138,6 +147,6 @@ ContainerMorphingConstraints CalculateMorphingConstraints(
     }
   }
 
-  return {actual_height, side_margin, bottom_margin, corner_radius,
-          masked_corners};
+  return {actual_height, side_margin,    bottom_margin,
+          corner_radius, masked_corners, background_dimming_alpha};
 }

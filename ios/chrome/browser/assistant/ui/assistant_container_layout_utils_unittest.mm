@@ -24,6 +24,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Exactly at minimized.
   constraints = CalculateMorphingConstraints(100, minimized, medium, large);
@@ -34,6 +35,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Between minimized and medium at progress 0.5.
   constraints = CalculateMorphingConstraints(200, minimized, medium, large);
@@ -46,6 +48,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Exactly at medium.
   constraints = CalculateMorphingConstraints(300, minimized, medium, large);
@@ -56,18 +59,22 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Between medium and large at progress 0.5.
+  CGFloat progress = 0.5;
   constraints = CalculateMorphingConstraints(450, minimized, medium, large);
   EXPECT_EQ(450.0, constraints.actual_height);
-  EXPECT_EQ(kMorphingMediumMargin + (0.0 - kMorphingMediumMargin) * 0.5,
+  EXPECT_EQ(kMorphingMediumMargin + (0.0 - kMorphingMediumMargin) * progress,
             constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * 0.5,
+  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * progress,
             constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.corner_radius);
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(progress * kMaxBackgroundDimmingAlpha,
+            constraints.background_dimming_alpha);
 
   // Exactly at large (bottom margin reaches 0, bottom mask drops).
   constraints = CalculateMorphingConstraints(600, minimized, medium, large);
@@ -77,6 +84,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.corner_radius);
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(kMaxBackgroundDimmingAlpha, constraints.background_dimming_alpha);
 }
 
 // Tests behavior bypassing medium explicitly.
@@ -86,17 +94,20 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_NoMediumDetent) {
   NSInteger large = 600;
 
   // Between minimized and large at progress 0.5.
+  CGFloat progress = 0.5;
   auto constraints =
       CalculateMorphingConstraints(350, minimized, medium, large);
   EXPECT_EQ(350.0, constraints.actual_height);
-  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * 0.5,
+  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * progress,
             constraints.side_margin);
-  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * 0.5,
+  EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * progress,
             constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.corner_radius);
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(progress * kMaxBackgroundDimmingAlpha,
+            constraints.background_dimming_alpha);
 }
 
 // Tests behavior bypassing large explicitly.
@@ -116,6 +127,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_NoLargeDetent) {
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 }
 
 // Tests behavior bypassing minimized explicitly.
@@ -136,6 +148,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 }
 
 // Tests an isolated minimized detent.
@@ -156,6 +169,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 }
 
 // Tests an isolated medium detent.
@@ -175,6 +189,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   constraints = CalculateMorphingConstraints(800, minimized, medium, large);
   EXPECT_EQ(800.0, constraints.actual_height);
@@ -184,6 +199,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
                 kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 }
 
 // Tests an isolated large detent.
@@ -202,4 +218,5 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.corner_radius);
   EXPECT_EQ(kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner,
             constraints.masked_corners);
+  EXPECT_EQ(kMaxBackgroundDimmingAlpha, constraints.background_dimming_alpha);
 }
