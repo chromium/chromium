@@ -467,6 +467,7 @@ export class ComposeboxElement extends I18nMixinLit
 
       this.eventTracker_.add(this.$.input, 'focus', () => {
         this.$.caret.classList.add('caret-visible');
+        this.updateCaret_();
       });
       this.eventTracker_.add(this.$.input, 'blur', () => {
         this.$.caret.classList.remove('caret-visible');
@@ -1331,7 +1332,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.queryAutocomplete_(/* clearMatches= */ true);
 
       if (!this.disableCaretColorAnimation) {
-        this.resetCaret();
+        this.resetCaret_();
       }
     } else {
       this.closeComposebox_();
@@ -1606,7 +1607,7 @@ export class ComposeboxElement extends I18nMixinLit
 
         caret.style.transform = `translate(${caretX}px, ${caretY}px)`;
       } else {
-        this.resetCaret();
+        this.resetCaret_();
       }
       return;
     }
@@ -1631,7 +1632,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  resetCaret() {
+  protected resetCaret_() {
     // 12 origin must be set as this fixes spacing to match the box padding
     // around the caret
     const isRtl = document.documentElement.dir === 'rtl';
