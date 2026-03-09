@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
@@ -23,6 +24,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/actions/action_view_controller.h"
@@ -107,10 +109,8 @@ class ProjectsPanelTabGroupsViewTest : public ChromeViewsTestBase {
     EXPECT_EQ(1u, tab_groups_view_->children().size());
     views::Label* no_tabs_label = views::AsViewClass<views::Label>(
         tab_groups_view_->no_tab_groups_view_for_testing()->children()[1]);
-    EXPECT_EQ(
-        u"Organize your tabs by grouping them together and label them with a "
-        u"custom name and color",
-        no_tabs_label->GetText());
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_NO_TAB_GROUPS),
+              no_tabs_label->GetText());
   }
 };
 

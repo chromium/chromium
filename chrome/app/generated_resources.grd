@@ -10437,10 +10437,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <if expr="use_titlecase">
         <then>
           <message name="IDS_VIEW_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that shows the projects panel.">
-            View Projects
+            View Organizer
           </message>
           <message name="IDS_HIDE_PROJECTS_PANEL" desc="In Title Case: The tooltip for the button in the top container that hides the projects panel.">
-            Hide Projects
+            Hide Organizer
           </message>
           <message name="IDS_TAB_GROUPS_TITLE" desc="In Title Case: The title for the tab groups container in the projects panel.">
             Tab Groups
@@ -10451,13 +10451,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
+          <message name="IDS_THREADS_SHOW_MORE" desc="In Title Case: The label for the button that expands the list of recent threads.">
+            Show More
+          </message>
+          <message name="IDS_THREADS_SHOW_LESS" desc="In Title Case: The label for the button that collapses the list of recent threads.">
+            Show Less
+          </message>
         </then>
         <else>
           <message name="IDS_VIEW_PROJECTS_PANEL" desc="The tooltip for the button in the top container that shows the projects panel.">
-            View projects
+            View organizer
           </message>
           <message name="IDS_HIDE_PROJECTS_PANEL" desc="The tooltip for the button in the top container that hides the projects panel.">
-            Hide projects
+            Hide organizer
           </message>
           <message name="IDS_TAB_GROUPS_TITLE" desc="The title for the tab groups container in the projects panel.">
             Tab groups
@@ -10468,8 +10474,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
+          <message name="IDS_THREADS_SHOW_MORE" desc="The label for the button that expands the list of recent threads.">
+            Show more
+          </message>
+          <message name="IDS_THREADS_SHOW_LESS" desc="The label for the button that collapses the list of recent threads.">
+            Show less
+          </message>
         </else>
       </if>
+      <message name="IDS_PROJECTS_PANEL" desc="The name of the projects panel announced by screenreaders." is_accessibility_with_no_ui="true">
+        Organizer
+      </message>
       <message name="IDS_PROJECTS_PANEL_GEMINI_ACTIVITY" desc="The label for the Gemini app activity menu item in the projects panel.">
         Gemini app activity
       </message>
@@ -10477,7 +10492,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         AI Mode activity
       </message>
       <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
-        Organize your tabs by grouping them together and label them with a custom name and color
+        Organize tabs into labeled, color-coded groups for easy access
       </message>
       <message name="IDS_OPEN_GEMINI_THREAD_TOOLTIP" desc="Tooltip for a button that opens a Gemini thread.">
         Open in Gemini
@@ -12690,8 +12705,23 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
 
         <message name="IDS_RESUMPTION_RAIL_IPH_BODY" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
-          We’re moving tab groups to give your bookmarks more breathing room.
+          You can now manage your tab groups, Gemini chats, and AI Mode threads in one place. Unpin this at any time.
         </message>
+
+        <message name="IDS_RESUMPTION_RAIL_IPH_BODY_NO_THREADS" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint, including only language about tab groups.">
+          You can now manage your tab groups here. Unpin this at any time.
+        </message>
+
+        <if expr="use_titlecase">
+          <message name="IDS_RESUMPTION_RAIL_IPH_OK_BUTTON" desc="In Title Case: The acknowledgement button text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
+            Got It
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_RESUMPTION_RAIL_IPH_OK_BUTTON" desc="The acknowledgement button text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
+            Got it
+          </message>
+        </if>
 
       <!-- Saved Tab Group Error -->
       <message name="IDS_SAVED_TAB_GROUPS_UNSUPPORTED_ERROR" desc="The text on an error page showing that the URL from the remote device is not supported by the saved tab griups feature and cannot be synced.">

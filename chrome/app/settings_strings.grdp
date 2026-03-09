@@ -264,7 +264,7 @@
     Show tab search button
   </message>
   <message name="IDS_SETTINGS_SHOW_PROJECTS_PANEL_BUTTON" desc="Label for the checkbox which enables or disables showing the projects panel button in the tab strip.">
-    Show projects panel button
+    Show organizer button
   </message>
   <message name="IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON" desc="Label for the checkbox which enables or disables showing the saved tab groups button in the tab strip.">
     Show saved tab groups button
