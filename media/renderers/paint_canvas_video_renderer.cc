@@ -848,7 +848,7 @@ bool CanCopyVideoFrameDirectlyToGLTexture(scoped_refptr<VideoFrame> video_frame,
              internal_format, type, level, dst_alpha_type);
 }
 
-bool CopyVideoFrameDirectlyToGLTexture(
+void CopyVideoFrameDirectlyToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
     scoped_refptr<VideoFrame> video_frame,
@@ -865,11 +865,6 @@ bool CopyVideoFrameDirectlyToGLTexture(
   CHECK(destination_gl);
   CHECK(raster_context_provider);
 
-  if (!CanCopyVideoFrameDirectlyToGLTexture(
-          video_frame, target, internal_format, type, level, dst_alpha_type)) {
-    return false;
-  }
-
   const auto shared_image = video_frame->shared_image();
   if (CanCopySharedImageToGLTextureViaTextureCopy(shared_image)) {
     CopySharedImageToGLTextureViaTextureCopy(
@@ -880,7 +875,7 @@ bool CopyVideoFrameDirectlyToGLTexture(
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
-    return true;
+    return;
   }
 
   CHECK(CanCopySharedImageToGLTextureViaSkia(
@@ -915,7 +910,6 @@ bool CopyVideoFrameDirectlyToGLTexture(
   SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                             raster_context_provider->ContextSupport(),
                             std::move(destination_access));
-  return true;
 }
 
 SkImageInfo GetVideoImageGeneratorSkImageInfo(
@@ -1651,9 +1645,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
 
-  if (CopyVideoFrameDirectlyToGLTexture(
-          raster_context_provider, destination_gl, video_frame, target, texture,
-          internal_format, format, type, level, dst_alpha_type, dst_origin)) {
+  if (CanCopyVideoFrameDirectlyToGLTexture(video_frame, target, internal_format,
+                                           type, level, dst_alpha_type)) {
+    CopyVideoFrameDirectlyToGLTexture(
+        raster_context_provider, destination_gl, video_frame, target, texture,
+        internal_format, format, type, level, dst_alpha_type, dst_origin);
     return true;
   } else {
     // Take the two-copy path:
