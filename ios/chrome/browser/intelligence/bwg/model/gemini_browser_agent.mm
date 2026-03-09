@@ -140,6 +140,7 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
 
 GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
+  browser_->AddObserver(this);
   if (IsGeminiCopresenceEnabled()) {
     StartObserving(browser_);
 
@@ -225,6 +226,10 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
+  if (browser_) {
+    browser_->RemoveObserver(this);
+  }
+
   [bwg_link_opening_handler_ disconnect];
   bwg_link_opening_handler_ = nil;
 
@@ -257,6 +262,13 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   }
 
   StopObserving();
+}
+
+void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
+  [bwg_link_opening_handler_ disconnect];
+  bwg_link_opening_handler_ = nil;
+
+  browser->RemoveObserver(this);
 }
 
 void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {

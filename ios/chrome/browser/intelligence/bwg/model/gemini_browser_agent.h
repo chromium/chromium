@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -52,12 +53,16 @@ class ScopedFullscreenDisabler;
 class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public GeminiTabHelperObserver,
                            public FullscreenControllerObserver,
-                           public TabsDependencyInstaller {
+                           public TabsDependencyInstaller,
+                           public BrowserObserver {
  public:
   GeminiBrowserAgent(const GeminiBrowserAgent&) = delete;
   GeminiBrowserAgent& operator=(const GeminiBrowserAgent&) = delete;
 
   ~GeminiBrowserAgent() override;
+
+  // BrowserObserver:
+  void BrowserDestroyed(Browser* browser) override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -255,6 +260,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
+  /// TODO(crbug.com/491093929): Rename the below classes to move away from the
+  /// `-Handler` naming scheme used by Chromium Objective-C command protocols.
   // Handler for opening links from BWG.
   __strong BWGLinkOpeningHandler* bwg_link_opening_handler_ = nullptr;
 
