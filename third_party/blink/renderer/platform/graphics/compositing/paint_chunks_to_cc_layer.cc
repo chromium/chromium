@@ -957,6 +957,14 @@ ConversionContext<cc::DisplayItemList>::ComputeScrollTranslationAction(
     return {};
   }
 
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      target_scroll_translation.ScrollNode() &&
+      target_scroll_translation.ScrollNode()
+              ->GetCompositedScrollingPreference() ==
+          CompositedScrollingPreference::kNotPreferred) {
+    return {};
+  }
+
   const auto& chunk_scroll_translation = chunk_to_layer_mapper_.ChunkState()
                                              .Transform()
                                              .NearestScrollTranslationNode();
