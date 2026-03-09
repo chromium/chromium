@@ -471,6 +471,27 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(!!extensionIndicator);
   });
 
+  test('AddressAutofillNotEnforcesTrueValueOnToggle', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    entityDataManager.setGetOptInStatusResponse(false);
+    settingsPrefs.set('prefs.autofill.profile_enabled', {
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'test-extension-id',
+    });
+    await createSection();
+
+    const extensionIndicator =
+        section.shadowRoot!.querySelector('#autofillExtensionIndicator');
+    assertEquals(undefined, section.get('optedIn_.enforcement'));
+    assertEquals(undefined, section.get('optedIn_.controlledBy'));
+    assertFalse(section.get('optedIn_.value'));
+    assertFalse(!!extensionIndicator);
+  });
+
   test('ToggleIsDisabledWhenUserIsNotEligible', async function() {
     await createSection();
     // The toggle is initially enabled (see the setup() method). Clicking it

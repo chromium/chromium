@@ -527,26 +527,7 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private get isEditingAllowedByPref_(): boolean {
-    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_ ||
-        this.autofillAddOtherDatatypesPrefIsEnabled_) {
-      return this.allowEditingPref?.value ?? true;
-    }
-
-    // Defaults to true if the pref is not provided, allowing addition of new
-    // entries.
-    if (!this.allowEditingPref) {
-      return true;
-    }
-
-    // allowEditingPref should be ignored if autofill.profile_enabled is
-    // enforced.
-    const addressPref = this.getPref('autofill.profile_enabled');
-    if (addressPref.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED) {
-      return addressPref.value;
-    }
-
-    return this.allowEditingPref.value;
+    return this.allowEditingPref?.value ?? true;
   }
 }
 

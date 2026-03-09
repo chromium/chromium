@@ -210,7 +210,8 @@ export class SettingsIdentityDocsPageElement extends
           this.getPref<boolean>('autofill.profile_enabled');
 
       if (addressAutofillEnabled.enforcement ===
-          chrome.settingsPrivate.Enforcement.ENFORCED) {
+              chrome.settingsPrivate.Enforcement.ENFORCED &&
+          !addressAutofillEnabled.value) {
         fakePref.enforcement = addressAutofillEnabled.enforcement;
         fakePref.controlledBy = addressAutofillEnabled.controlledBy;
         fakePref.value = addressAutofillEnabled.value;
@@ -242,7 +243,8 @@ export class SettingsIdentityDocsPageElement extends
     const addressAutofillEnabled =
         this.getPref<boolean>('autofill.profile_enabled');
 
-    return !!addressAutofillEnabled.extensionId;
+    return !!addressAutofillEnabled.extensionId &&
+        !addressAutofillEnabled.value;
   }
 }
 

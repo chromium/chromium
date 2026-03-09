@@ -269,4 +269,33 @@ suite('TravelPage', function() {
         assertTrue(!!extensionControlledIndicator);
         assertFalse(page.$.optInToggle.checked);
       });
+
+  test(
+      'Extension indicator is not shown when autofillProfileEnabled is ' +
+          'controlled by extension and forced true',
+      async function() {
+        loadTimeData.overrideValues({
+          userEligibleForAutofillAi: true,
+          AutofillAddOtherDatatypesPrefIsEnabled: false,
+          autofillAiAvailableByDefault: true,
+          canEnableOrDisableAutofillAi: true,
+          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+        });
+
+        settingsPrefs.set(
+            'prefs.autofill.autofill_ai.travel_entities_enabled.value', false);
+        settingsPrefs.set('prefs.autofill.profile_enabled', {
+          value: true,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+          extensionId: 'test-extension-id',
+        });
+
+        const page = await setupPage();
+        const extensionControlledIndicator =
+            page.shadowRoot!.querySelector('#autofillExtensionIndicator');
+
+        assertFalse(!!extensionControlledIndicator);
+        assertFalse(page.$.optInToggle.checked);
+      });
 });

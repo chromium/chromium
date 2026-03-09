@@ -217,7 +217,11 @@ export class SettingsAutofillAiSectionElement extends
         this.getPref<boolean>('autofill.profile_enabled');
     if (addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !addressAutofillEnabled.value &&
         !this.autofillAddOtherDatatypesPrefIsEnabled_) {
+      // We need to check addressAutofillEnabled.value here. this.ineligibleUser
+      // does consider addressAutofillEnabled.value, but loadTimeData constants
+      // are refreshed only after page reload.
       this.set(
           'optedIn_.value',
           !this.ineligibleUser && addressAutofillEnabled.value);
@@ -319,16 +323,24 @@ export class SettingsAutofillAiSectionElement extends
 
     const addressAutofillEnabled =
         this.getPref<boolean>('autofill.profile_enabled');
-    return !!addressAutofillEnabled.extensionId;
+
+    // We show the extension control only if the extension forces false value
+    return !!addressAutofillEnabled.extensionId &&
+        !addressAutofillEnabled.value;
   }
 
   private optInToggleDisabled_(): boolean {
     if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
       const addressAutofillEnabled =
           this.getPref<boolean>('autofill.profile_enabled');
-      return this.ineligibleUser ||
+      const addressAutofillEnforcedFalse =
           addressAutofillEnabled.enforcement ===
-          chrome.settingsPrivate.Enforcement.ENFORCED;
+              chrome.settingsPrivate.Enforcement.ENFORCED &&
+          !addressAutofillEnabled.value;
+      // We need to check addressAutofillEnabled.value here. this.ineligibleUser
+      // does consider addressAutofillEnabled.value, but loadTimeData constants
+      // are refreshed only after page reload.
+      return this.ineligibleUser || addressAutofillEnforcedFalse;
     } else {
       return this.ineligibleUser;
     }

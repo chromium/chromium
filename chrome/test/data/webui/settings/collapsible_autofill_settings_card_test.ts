@@ -443,7 +443,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
         });
         const card = await createCollapsibleAutofillSettingsCard();
 
-        // Expand the card to make the logging bullet visible.
         const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
         assertTrue(!!expandButton);
         expandButton.click();
@@ -499,7 +498,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
         });
         const card = await createCollapsibleAutofillSettingsCard();
 
-        // Expand the card to make the logging bullet visible.
         const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
         assertTrue(!!expandButton);
         expandButton.click();
@@ -508,7 +506,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         const getExtensionIndicator = () =>
             card.shadowRoot!.querySelector('#autofillExtensionIndicator');
 
-        // Initial state: Policy `ALLOW`.
+        // Initial state: Extension `ALLOW`.
         assertTrue(card.get('enhancedAutofillOptedIn_.value'));
         assertEquals(
             undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
@@ -516,7 +514,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
             undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
         assertFalse(!!getExtensionIndicator());
 
-        // State: Policy `DISABLE`.
+        // State: Extension `DISABLE`.
         card.set('prefs.autofill.profile_enabled', {
           value: false,
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
@@ -534,7 +532,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
             card.get('enhancedAutofillOptedIn_.controlledBy'));
         assertTrue(!!getExtensionIndicator());
 
-        // State: Policy `ALLOW` again.
+        // State: Extension `ALLOW` again.
         card.set('prefs.autofill.profile_enabled', {value: true});
         await flushTasks();
 
@@ -546,6 +544,35 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertEquals(
             'none', getExtensionIndicator()!.parentElement!.style.display);
       });
+
+  test('AddressAutofillDoesNotEnforceTrueValueOnToggle', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ true,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
+        /*optInStatusResponse=*/ false);
+    card.set('prefs.autofill.profile_enabled', {
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'test-extension-id',
+    });
+
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    const extensionIndicator =
+        card.shadowRoot!.querySelector('#autofillExtensionIndicator');
+
+    assertFalse(card.get('enhancedAutofillOptedIn_.value'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+    assertFalse(!!extensionIndicator);
+  });
 
   test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
     loadTimeData.overrideValues(
