@@ -375,6 +375,7 @@ source_set("virtual_card_enrollment_bottom_sheet_coordinator_unittest") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gtest",

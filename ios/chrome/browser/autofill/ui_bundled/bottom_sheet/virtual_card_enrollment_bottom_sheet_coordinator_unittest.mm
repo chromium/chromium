@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -71,7 +72,8 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
                         OnDeclineVirtualCard,
                     weak_factory_.GetWeakPtr())));
 
-    window_ = [[UIWindow alloc] init];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
     UIView.animationsEnabled = NO;
