@@ -1327,6 +1327,9 @@
     <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_INVALID_DATE_ERROR_MESSAGE" desc="An error message that appears beneath a date picker in the case that the user doesn't add a full date. For example, the user sees this error if they set the month but not the day or year, or choose an invalid date like February 30." formatter_data="android_java">
       Check the date
     </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_REQUIRED_FIELD_ERROR_MESSAGE" desc="An error message that appears beneath the required field in the entity editor if it was left blank by the user and the user tapped the 'Done' button." formatter_data="android_java">
+      Enter <ph name="FIELD">$1<ex>Passport number</ex></ph>
+    </message>
   </if>
 
   <!-- FFR Dialog -->

@@ -44,6 +44,7 @@ struct EntityTypeAndroid {
   std::string edit_entity_type_string;
   std::string delete_entity_type_string;
   std::vector<AttributeTypeAndroid> attribute_types;
+  std::vector<AttributeTypeAndroid> required_types;
 };
 
 }  // namespace autofill

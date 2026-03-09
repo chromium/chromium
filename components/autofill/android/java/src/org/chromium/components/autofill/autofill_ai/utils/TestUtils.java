@@ -29,7 +29,8 @@ public final class TestUtils {
                 /* addEntityTypeString= */ "Add Vehicle",
                 /* editEntityTypeString= */ "Edit Vehicle",
                 /* deleteEntityTypeString= */ "Delete Vehicle",
-                /* attributeTypes= */ Collections.emptyList());
+                /* attributeTypes= */ Collections.emptyList(),
+                /* requiredAttributes= */ Collections.emptyList());
     }
 
     public static EntityType getVehicleEntityType() {
@@ -46,7 +47,8 @@ public final class TestUtils {
                 /* addEntityTypeString= */ "Add passport",
                 /* editEntityTypeString= */ "Edit passport",
                 /* deleteEntityTypeString= */ "Delete passport",
-                /* attributeTypes= */ Collections.emptyList());
+                /* attributeTypes= */ Collections.emptyList(),
+                /* requiredAttributes= */ Collections.emptyList());
     }
 
     public static EntityType getPassportEntityType() {
@@ -63,7 +65,8 @@ public final class TestUtils {
                 /* addEntityTypeString= */ "Add National ID",
                 /* editEntityTypeString= */ "Edit National ID",
                 /* deleteEntityTypeString= */ "Delete National ID",
-                /* attributeTypes= */ Collections.emptyList());
+                /* attributeTypes= */ Collections.emptyList(),
+                /* requiredAttributes= */ Collections.emptyList());
     }
 
     public static EntityType getNationalIdEntityType() {

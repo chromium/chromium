@@ -5,11 +5,13 @@
 #include "chrome/browser/autofill/android/entity_type_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/android/main_autofill_jni_headers/EntityType_jni.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -21,7 +23,8 @@ base::android::ScopedJavaLocalRef<jobject> EntityTypeAndroid::Create(
       entity_type.is_read_only, entity_type.is_enabled,
       entity_type.type_name_as_string, entity_type.type_name_as_metrics_string,
       entity_type.add_entity_type_string, entity_type.edit_entity_type_string,
-      entity_type.delete_entity_type_string, entity_type.attribute_types);
+      entity_type.delete_entity_type_string, entity_type.attribute_types,
+      entity_type.required_types);
 }
 
 EntityTypeAndroid EntityTypeAndroid::FromJavaEntityType(
@@ -49,7 +52,25 @@ EntityTypeAndroid::EntityTypeAndroid(const EntityType& entity_type,
       attribute_types(base::ToVector(entity_type.attributes(),
                                      [](const AttributeType& attr) {
                                        return AttributeTypeAndroid(attr);
-                                     })) {}
+                                     })),
+      required_types(
+          base::ToVector(entity_type.import_constraints(),
+                         [](autofill::DenseSet<AttributeType> group) {
+                           // It was decided to keep the schema expressive to
+                           // allow future complex
+                           // constraints, rather than restricting it to match
+                           // current UI capabilities. Consequently, this code
+                           // enforces the current UI limitation (simple
+                           // disjunctions only) via runtime checks. Ex.
+                           // "[[a]]", "[[a], [b]]", "[[a], [b], [c]]" etc are
+                           // supported in UI. More details here:
+                           // crrev.com/c/7245980
+                           CHECK_EQ(group.size(), 1u)
+                               << "Unsupported format: Complex constraint "
+                                  "groups not supported by UI";
+
+                           return AttributeTypeAndroid(*group.begin());
+                         })) {}
 
 EntityTypeAndroid::EntityTypeAndroid(const EntityTypeAndroid&) = default;
 

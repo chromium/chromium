@@ -10,7 +10,9 @@ import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents information of an Autofill AI entity type, used in the management page to build the
@@ -38,6 +40,8 @@ public class EntityType {
     private final String mDeleteEntityTypeString;
     // The complete list of attribute types this entity type supports.
     private final List<AttributeType> mAttributeTypes;
+    // The list of required attributes for this entity type.
+    private final Set<AttributeType> mRequiredAttributes;
 
     @CalledByNative
     public EntityType(
@@ -50,7 +54,9 @@ public class EntityType {
             @JniType("std::string") String editEntityTypeString,
             @JniType("std::string") String deleteEntityTypeString,
             @JniType("std::vector<autofill::AttributeTypeAndroid>")
-                    List<AttributeType> attributeTypes) {
+                    List<AttributeType> attributeTypes,
+            @JniType("std::vector<autofill::AttributeTypeAndroid>")
+                    List<AttributeType> requiredAttributes) {
         mTypeName = typeName;
         mIsReadOnly = isReadOnly;
         mIsEnabled = isEnabled;
@@ -60,6 +66,7 @@ public class EntityType {
         mEditEntityTypeString = editEntityTypeString;
         mDeleteEntityTypeString = deleteEntityTypeString;
         mAttributeTypes = attributeTypes;
+        mRequiredAttributes = new HashSet<>(requiredAttributes);
     }
 
     @CalledByNative
@@ -99,5 +106,9 @@ public class EntityType {
 
     public List<AttributeType> getAttributeTypes() {
         return mAttributeTypes;
+    }
+
+    public boolean isRequiredAttribute(AttributeType attributeType) {
+        return mRequiredAttributes.contains(attributeType);
     }
 }

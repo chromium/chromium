@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldValidator;
+import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.DataType;
@@ -203,6 +204,16 @@ class EntityEditorMediator {
                         .with(LABEL, attributeType.getTypeNameAsString())
                         .with(TEXT_FIELD_TYPE, attributeType.getFieldType())
                         .with(VALUE, value)
+                        .with(
+                                IS_REQUIRED,
+                                entityInstance.getEntityType().isRequiredAttribute(attributeType))
+                        .with(
+                                VALIDATOR,
+                                getRequiredFieldValidator(
+                                        attributeType.getTypeNameAsString(),
+                                        entityInstance
+                                                .getEntityType()
+                                                .isRequiredAttribute(attributeType)))
                         .build(),
                 /* isFullLine= */ true);
     }
@@ -220,8 +231,17 @@ class EntityEditorMediator {
                         .with(
                                 DROPDOWN_KEY_VALUE_LIST,
                                 AutofillProfileBridge.getSupportedCountries())
-                        .with(IS_REQUIRED, false)
+                        .with(
+                                IS_REQUIRED,
+                                entityInstance.getEntityType().isRequiredAttribute(attributeType))
                         .with(VALUE, value)
+                        .with(
+                                VALIDATOR,
+                                getRequiredFieldValidator(
+                                        attributeType.getTypeNameAsString(),
+                                        entityInstance
+                                                .getEntityType()
+                                                .isRequiredAttribute(attributeType)))
                         .build());
     }
 
@@ -233,20 +253,40 @@ class EntityEditorMediator {
             attributeValue =
                     ((AttributeInstance.DateValue) attribute.getAttributeValue()).toString();
         }
+        EditorFieldValidator validator =
+                new DateFieldValidator(
+                        mContext.getString(
+                                R.string.autofill_ai_entity_editor_invalid_date_error_message));
+        if (entityInstance.getEntityType().isRequiredAttribute(attributeType)) {
+            validator.setRequiredErrorMessage(
+                    getRequiredFieldErrorMessage(attributeType.getTypeNameAsString()));
+        }
         return new EditorItem(
                 DATE,
                 new PropertyModel.Builder(DATE_ALL_KEYS)
                         .with(LABEL, attributeType.getTypeNameAsString())
-                        .with(IS_REQUIRED, false)
-                        .with(VALUE, attributeValue)
                         .with(
-                                VALIDATOR,
-                                new DateFieldValidator(
-                                        mContext.getString(
-                                                R.string
-                                                        .autofill_ai_entity_editor_invalid_date_error_message)))
+                                IS_REQUIRED,
+                                entityInstance.getEntityType().isRequiredAttribute(attributeType))
+                        .with(VALUE, attributeValue)
+                        .with(VALIDATOR, validator)
                         .build(),
                 /* isFullLine= */ true);
+    }
+
+    private @Nullable EditorFieldValidator getRequiredFieldValidator(
+            String label, boolean isRequired) {
+        if (!isRequired) {
+            return null;
+        }
+        return new EditorFieldValidator.Builder()
+                .withRequiredErrorMessage(getRequiredFieldErrorMessage(label))
+                .build();
+    }
+
+    private String getRequiredFieldErrorMessage(String label) {
+        return mContext.getString(R.string.autofill_ai_entity_editor_required_field_error_message)
+                .replace("$1", label);
     }
 
     private String getStringAttribute(EntityInstance entityInstance, AttributeType attributeType) {
