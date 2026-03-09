@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_detail_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 
 using segmentation_platform::TipIdentifier;
@@ -21,7 +22,8 @@ class TipsModuleViewTest : public PlatformTest {
   TipsModuleViewTest() {
     _superview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
 
-    _window = [[UIWindow alloc] init];
+    _window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
 
     [_window addSubview:_superview];
 
