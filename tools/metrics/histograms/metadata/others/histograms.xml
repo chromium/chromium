@@ -5008,6 +5008,8 @@ chromium-metrics-reviews@google.com.
     The result when ImportantFileWriter moves the temporary file to its final
     location. Recorded on every write with ImportantFileWriter. If retries were
     needed, the retry count is recorded in ImportantFile.FileReplaceRetryCount2.
+
+    {ImportantFileClients}
   </summary>
 </histogram>
 
@@ -5031,9 +5033,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of retries needed for ImportantFileWriter to move the temporary
     file to its final location, succeed or fail. The success or failure of the
-    operation is recorded in ImportantFile.FileReplaceesult. Unlike
+    operation is recorded in ImportantFile.FileReplaceResult. Unlike
     ImportantFile.FileReplaceRetryCount, this is only logged if a retry is
     needed.
+
+    {ImportantFileClients}
   </summary>
 </histogram>
 
@@ -5047,6 +5051,8 @@ chromium-metrics-reviews@google.com.
     preferences). For users of ImportantFileWriter that leverage background
     serialization (e.g. bookmarks), it excludes the time spent on the background
     thread, and only logs the time spent on the foreground thread.
+
+    {ImportantFileClients}
   </summary>
 </histogram>
 
@@ -5060,6 +5066,8 @@ chromium-metrics-reviews@google.com.
 
     Note: As client suffixes are added the volume of the unsufixed variant will
     decline. This needs to be taken into account when analyzing overall counts.
+
+    {ImportantFileClients}
   </summary>
 </histogram>
 
@@ -5073,6 +5081,8 @@ chromium-metrics-reviews@google.com.
 
     Note: As client suffixes are added the volume of the unsufixed variant will
     decline. This needs to be taken into account when analyzing overall counts.
+
+    {ImportantFileClients}
   </summary>
 </histogram>
 
