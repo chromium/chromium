@@ -37,7 +37,7 @@ base::span<float> GetStreamBeginWriteSpan(pa_stream* stream,
   // The documentation of `pa_stream_begin_write` says that `pa_buffer`
   // points to the write address. `pa_buffer_size` indicates the number of
   // valid bytes.
-  return UNSAFE_BUFFERS(base::span(reinterpret_cast<float*>(*pa_buffer),
+  return UNSAFE_BUFFERS(base::span(reinterpret_cast<float*>(pa_buffer),
                                    *pa_buffer_size / sizeof(float)));
 }
 
@@ -201,11 +201,7 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
       std::ranges::fill(pa_span, 0);
       pa_stream_write(pa_stream_, pa_buffer, pa_buffer_size, nullptr, 0LL,
                       PA_SEEK_RELATIVE);
-
-      // Avoid underflows as `pa_buffer_size` can end up being bigger the
-      // `buffer_size_` request.
-      CHECK_LE(pa_buffer_size, bytes_remaining, base::NotFatalUntil::M153);
-      bytes_remaining -= std::min(bytes_remaining, pa_buffer_size);
+      bytes_remaining -= pa_buffer_size;
       continue;
     }
 
@@ -238,30 +234,22 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     audio_bus_->Scale(volume_);
 
     size_t frame_offset_in_bus = 0;
-    CHECK_GT(unwritten_frames_in_bus, 0u);
     while (unwritten_frames_in_bus > 0) {
       const size_t frames_to_copy = std::min(
           unwritten_frames_in_bus, pa_span.size() / audio_bus_->channels());
 
-      auto interleave_dest =
-          pa_span.first(frames_to_copy * audio_bus_->channels());
-
       // We skip clipping since that occurs at the shared memory boundary.
       audio_bus_->ToInterleavedPartial<Float32SampleTypeTraitsNoClip>(
-          frame_offset_in_bus, interleave_dest);
+          frame_offset_in_bus,
+          pa_span.first(frames_to_copy * audio_bus_->channels()));
 
-      const size_t bytes_written =
-          base::as_bytes(base::allow_nonunique_obj, interleave_dest).size();
-
-      // Only commit the `bytes_written`, not the full `pa_buffer_size`.
-      if (pa_stream_write(pa_stream_, pa_buffer, bytes_written, nullptr, 0LL,
+      if (pa_stream_write(pa_stream_, pa_buffer, pa_buffer_size, nullptr, 0LL,
                           PA_SEEK_RELATIVE) < 0) {
         source_callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
         return;
       }
 
-      CHECK_LE(bytes_written, bytes_remaining, base::NotFatalUntil::M153);
-      bytes_remaining -= std::min(bytes_remaining, bytes_written);
+      bytes_remaining -= pa_buffer_size;
       frame_offset_in_bus += frames_to_copy;
       unwritten_frames_in_bus -= frames_to_copy;
 
