@@ -21,6 +21,26 @@
 namespace variations {
 namespace {
 
+// Returns true if start <= reference_time <= end, where start and end are
+// non-negative seconds since Unix epoch, or min/max base::Time, respectively.
+bool IsBetween(int64_t start, int64_t end, base::Time reference_time) {
+  const auto start_time = start <= 0
+                              ? base::Time::Min()
+                              : base::Time::FromSecondsSinceUnixEpoch(start);
+  const auto end_time =
+      end <= 0 ? base::Time::Max() : base::Time::FromSecondsSinceUnixEpoch(end);
+  return start_time <= reference_time && reference_time <= end_time;
+}
+
+// Returns true if study is active (consuming entropy) at the given reference
+// time.
+bool IsActive(const Study& study, base::Time reference_time) {
+  const auto& filter = study.filter();
+  return IsBetween(filter.start_date(), filter.end_date(), reference_time) &&
+         IsBetween(study.google_web_visibility_start_date(),
+                   study.google_web_visibility_end_date(), reference_time);
+}
+
 // Converts a probability value (represented by numerator/denominator) to an
 // entropy value. Callers should ensure that both arguments are strictly
 // positive and that `numerator` <= `denominator`. This always returns a
@@ -95,8 +115,10 @@ double GetLayerMemberEntropy(const Layer::LayerMember& member,
 
 LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
     const Layer& layer,
-    double entropy_limit_in_bits)
+    double entropy_limit_in_bits,
+    base::Time current_time)
     : entropy_limit_in_bits_(entropy_limit_in_bits),
+      entropy_evaluation_time_(current_time),
       limited_layer_id_(layer.id()) {
   // The caller should have already validated the layer. However, as the layer
   // data comes from an external source, we verify it here again for safety,
@@ -186,6 +208,11 @@ bool LimitedLayerEntropyCostTracker::AddEntropyUsedByStudy(const Study& study) {
   // entropy limit, meaning no more study can be assigned to the limited layer.
   if (entropy_limit_exceeded_) {
     return false;
+  }
+
+  // Returns true if the study is not active at entropy_evaluation_time_.
+  if (!IsActive(study, entropy_evaluation_time_)) {
+    return true;
   }
 
   // Returns true if the study does not consume entropy at all (e.g. a study

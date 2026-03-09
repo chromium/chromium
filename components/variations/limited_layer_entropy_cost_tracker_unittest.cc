@@ -30,6 +30,10 @@ inline constexpr std::string_view kTestClientId = "test_client_id";
 inline constexpr std::string_view kTestLimitedEntropyRandomizationSource =
     "limited_entropy_randomization_source_964";
 
+int64_t Timestamp(base::Time time) {
+  return static_cast<int64_t>(time.InSecondsFSinceUnixEpoch());
+}
+
 Study::Experiment CreateExperiment(int weight) {
   Study::Experiment experiment;
   experiment.set_probability_weight(weight);
@@ -333,6 +337,90 @@ TEST_F(LimitedLayerEntropyCostTrackerTest,
   EXPECT_FALSE(limited_entropy_tracker.AddEntropyUsedByStudy(test_study_2));
   EXPECT_EQ(4, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
   EXPECT_TRUE(limited_entropy_tracker.IsEntropyLimitExceeded());
+}
+
+TEST_F(LimitedLayerEntropyCostTrackerTest,
+       TestAddEntropyUsedByStudy_IsTimeAware) {
+  std::vector<Study::Experiment> experiments = {
+      CreateGoogleWebExperiment(1, 100001),
+      CreateGoogleWebExperiment(1, 200002),
+  };
+
+  // Use a fixed time to to ensure it doesn't overlap with the current time.
+  base::Time now;
+  ASSERT_TRUE(base::Time::FromString("2026-02-27 12:34:56", &now));
+
+  constexpr auto kOneDay = base::Days(1);
+
+  // Create a layer with 2 slots, and one layer member using one of the slots
+  // (this consuming 1 bit of entropy). The other slot is unused.
+  auto test_layer = CreateLayer(
+      kTestLayerId, /*num_slots=*/2, /*entropy_mode=*/Layer::LIMITED,
+      {CreateLayerMember(kTestLayerMemberId, {{0, 0}})});
+
+  // Create a study that is not active at the current time (ended in the past).
+  auto past_study = CreateTestStudy(
+      experiments,
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  past_study.mutable_filter()->set_end_date(Timestamp(now - kOneDay));
+  auto future_study = CreateTestStudy(
+      experiments,
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  future_study.set_google_web_visibility_start_date(Timestamp(now + kOneDay));
+  auto current_study = CreateTestStudy(
+      experiments,
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  LimitedLayerEntropyCostTracker limited_entropy_tracker(test_layer, 4, now);
+
+  // The past study is not active, so it shouldn't consume any entropy.
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(past_study));
+  ASSERT_EQ(0, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // The future study is not active, so it shouldn't consume any entropy.
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(future_study));
+  ASSERT_EQ(0, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // The current study is active, so it should consume entropy.
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(current_study));
+  ASSERT_EQ(2, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // Adding more past studies shouldn't consume any entropy.
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(past_study));
+  ASSERT_EQ(2, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // Adding more future studies shouldn't consume any entropy.
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(future_study));
+  ASSERT_EQ(2, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // Adding more current studies should consume entropy. Let's set some explicit
+  // study start/end time constraints, instead of defaulting to min/max values.
+  auto* filter = current_study.mutable_filter();
+  filter->set_start_date(Timestamp(now - kOneDay));
+  filter->set_end_date(Timestamp(now + kOneDay));
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(current_study));
+  ASSERT_EQ(3, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // Adding more current studies should consume entropy. Let's set some explicit
+  // web visibility time constraints on the study filter, instead of defaulting
+  // to min/max values.
+  filter->clear_start_date();
+  filter->clear_end_date();
+  current_study.set_google_web_visibility_start_date(Timestamp(now - kOneDay));
+  current_study.set_google_web_visibility_end_date(Timestamp(now + kOneDay));
+  ASSERT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(current_study));
+  ASSERT_EQ(4, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_FALSE(limited_entropy_tracker.IsEntropyLimitExceeded());
+
+  // No more active studies can be added to the layer.
+  ASSERT_FALSE(limited_entropy_tracker.AddEntropyUsedByStudy(current_study));
+  ASSERT_EQ(5, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+  ASSERT_TRUE(limited_entropy_tracker.IsEntropyLimitExceeded());
 }
 
 TEST_F(LimitedLayerEntropyCostTrackerTest,
