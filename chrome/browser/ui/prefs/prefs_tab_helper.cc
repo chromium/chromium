@@ -397,8 +397,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
                                 pref_defaults.password_echo_enabled_touch);
   registry->RegisterIntegerPref(prefs::kAccessibilityFontWeightAdjustment, 0);
   registry->RegisterBooleanPref(
-      prefs::kAccessibilityTouchpadOverscrollHistoryNavigation,
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE);
+      prefs::kAccessibilityTouchpadOverscrollHistoryNavigation, true);
 
 #endif
 
