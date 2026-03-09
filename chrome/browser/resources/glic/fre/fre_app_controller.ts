@@ -5,7 +5,6 @@
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
-import {isFullWebView} from '/shared/web_view_type.js';
 import type {WebViewType} from '/shared/web_view_type.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
@@ -439,12 +438,10 @@ export class FreAppController {
       webview.setAttribute('maxheight', window.screen.availHeight.toString());
     }
 
-    if (isFullWebView(webview)) {
-      this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
-          webview, loadTimeData.getString('chromeVersion'),
-          loadTimeData.getString('chromeChannel'),
-          loadTimeData.getString('glicHeaderRequestTypes'));
-    }
+    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+        webview, loadTimeData.getString('chromeVersion'),
+        loadTimeData.getString('chromeChannel'),
+        loadTimeData.getString('glicHeaderRequestTypes'));
 
     this.webviewContainer.appendChild(webview);
 

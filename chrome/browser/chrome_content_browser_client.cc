@@ -637,8 +637,13 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
-#elif BUILDFLAG(IS_ANDROID)
+#else  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/guest_view/chrome_content_browser_client_guest_view_part.h"
+#endif
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/slim_web_view/slim_web_view_url_loader_factory_interceptor.h"  // nogncheck
+#endif
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -6521,6 +6526,11 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     contextual_tasks::MaybeInterceptURLLoaderFactory(frame, factory_builder);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  guest_view::MaybeInterceptURLLoaderFactoryForSlimWebView(
+      frame, factory_builder, header_client);
+#endif
 
   // WARNING: This must be the last interceptor in the chain as the proxying
   // URLLoaderFactory installed by this needs to be the one actually sending

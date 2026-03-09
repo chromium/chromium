@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_SLIM_WEB_VIEW_SLIM_WEB_VIEW_GUEST_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_SLIM_WEB_VIEW_SLIM_WEB_VIEW_GUEST_H_
 
+#include <optional>
+
+#include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_permission_helper.h"
 #include "net/base/net_errors.h"
 
@@ -30,8 +34,17 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   SlimWebViewGuest& operator=(const SlimWebViewGuest&) = delete;
   ~SlimWebViewGuest() override;
 
+  base::WeakPtr<SlimWebViewGuest> GetWeakPtr();
+
   SlimWebViewPermissionHelper& permission_helper() {
     return permission_helper_;
+  }
+
+  // Returns the `BeforeSendHeadersParams` if they have been set, otherwise
+  // returns `std::nullopt`.
+  const std::optional<BeforeSendHeadersParams>& before_send_headers_params()
+      const {
+    return before_send_headers_params_;
   }
 
   void Navigate(const GURL& url);
@@ -96,7 +109,11 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   void LoadAbort(bool is_top_level, const GURL& url, net::Error error_code);
 
+  std::optional<BeforeSendHeadersParams> before_send_headers_params_;
+
   SlimWebViewPermissionHelper permission_helper_{this};
+
+  base::WeakPtrFactory<SlimWebViewGuest> weak_ptr_factory_{this};
 };
 
 }  // namespace guest_view

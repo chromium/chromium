@@ -4,14 +4,18 @@
 
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
 
-#include <utility>
+#include <optional>
+#include <string>
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_histogram_value.h"
 #include "components/guest_view/browser/slim_web_view/grit/slim_web_view_strings.h"
+#include "components/guest_view/browser/slim_web_view/request_utils.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_constants.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -23,6 +27,8 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+namespace guest_view {
 
 namespace {
 
@@ -57,6 +63,63 @@ void ParsePartitionParam(const base::DictValue& create_params,
     *storage_partition_id = *partition_str;
     *persist_storage = false;
   }
+}
+
+// Parses the creation params for the `beforeSendHeaders` option. Returns
+// the parsed params or an error message.
+base::expected<std::optional<BeforeSendHeadersParams>, std::string>
+ParseBeforeSendHeadersParams(const base::DictValue& create_params) {
+  const base::DictValue* before_send_headers_dict =
+      create_params.FindDict("beforeSendHeaders");
+  if (!before_send_headers_dict) {
+    return base::ok(std::nullopt);
+  }
+  std::optional<BeforeSendHeadersParams> params;
+  params.emplace();
+  const auto* resource_types =
+      before_send_headers_dict->FindList("resourceTypes");
+  if (resource_types) {
+    for (const auto& resource_type : *resource_types) {
+      if (!resource_type.is_string()) {
+        return base::unexpected("resourceTypes elements must be strings.");
+      }
+      std::optional<RequestResourceType> parsed_resource_type =
+          ParseRequestResourceType(resource_type.GetString());
+      if (!parsed_resource_type) {
+        return base::unexpected("Invalid resourceType provided.");
+      }
+      params->resource_types.insert(*parsed_resource_type);
+    }
+  }
+  auto include_sub_frame_requests =
+      before_send_headers_dict->FindBool("includeSubFrameRequests");
+  if (include_sub_frame_requests) {
+    params->include_sub_frame_requests = *include_sub_frame_requests;
+  }
+  const auto* add_headers = before_send_headers_dict->FindList("addHeaders");
+  if (add_headers) {
+    for (const auto& add_header : *add_headers) {
+      if (!add_header.is_dict()) {
+        return base::unexpected("addHeaders elements must be dictionaries.");
+      }
+      const auto* name = add_header.GetDict().FindString("name");
+      if (!name) {
+        return base::unexpected(
+            "addHeaders dictionary must contain a 'name' string.");
+      }
+      const auto* value = add_header.GetDict().FindString("value");
+      if (!value) {
+        return base::unexpected(
+            "addHeaders dictionary must contain a 'value' string.");
+      }
+      params->add_headers.SetHeader(*name, *value);
+    }
+  }
+  if (params->IsEmpty()) {
+    // These params have no effect, so we can ignore them.
+    return base::ok(std::nullopt);
+  }
+  return base::ok(std::move(params));
 }
 
 std::string WindowOpenDispositionToString(
@@ -118,8 +181,6 @@ std::string TerminationStatusToString(base::TerminationStatus status) {
 
 }  // namespace
 
-namespace guest_view {
-
 // static
 const guest_view::GuestViewHistogramValue SlimWebViewGuest::HistogramValue =
     guest_view::GuestViewHistogramValue::kSlimWebView;
@@ -131,6 +192,10 @@ std::unique_ptr<GuestViewBase> SlimWebViewGuest::Create(
 }
 
 SlimWebViewGuest::~SlimWebViewGuest() = default;
+
+base::WeakPtr<SlimWebViewGuest> SlimWebViewGuest::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 void SlimWebViewGuest::Navigate(const GURL& url) {
   // TODO(acondor): Implement other security and navigation params, such as
@@ -332,6 +397,15 @@ void SlimWebViewGuest::CreateInnerPage(
     DVLOG(2) << "Rejected new window creation";
     return;
   }
+
+  auto parse_result = ParseBeforeSendHeadersParams(create_params);
+  if (!parse_result.has_value()) {
+    DVLOG(2) << "Failed to parse beforeSendHeaders: " << parse_result.error();
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
+    return;
+  }
+  before_send_headers_params_ = std::move(parse_result.value());
+
   std::string storage_partition_id;
   bool persist_storage = false;
   ParsePartitionParam(create_params, &storage_partition_id, &persist_storage);

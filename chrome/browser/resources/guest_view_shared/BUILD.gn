@@ -15,6 +15,7 @@ build_webui("build") {
 
   ts_files = [
     "event_dispatcher.ts",
+    "request_throttlers.ts",
     "slim_web_view.ts",
     "slim_web_view.html.ts",
     "slim_web_view_browser_proxy.ts",

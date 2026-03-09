@@ -137,12 +137,12 @@ export class WebviewController {
   ) {
     this.webview = document.createElement('webview');
 
-    if (isFullWebView(this.webview)) {
-      this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
-          this.webview, loadTimeData.getString('chromeVersion'),
-          loadTimeData.getString('chromeChannel'),
-          loadTimeData.getString('glicHeaderRequestTypes'));
+    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+        this.webview, loadTimeData.getString('chromeVersion'),
+        loadTimeData.getString('chromeChannel'),
+        loadTimeData.getString('glicHeaderRequestTypes'));
 
+    if (isFullWebView(this.webview)) {
       // Intercept all main frame requests, and block them if they are not
       // allowed origins.
       const onBeforeRequest = this.onBeforeRequest.bind(this);

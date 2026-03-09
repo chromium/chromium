@@ -9,6 +9,7 @@ import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/valu
 
 import {EventDispatcher} from './event_dispatcher.js';
 import type {EventDict, EventMap} from './event_dispatcher.js';
+import type {OnBeforeSendHeadersParams} from './request_throttlers.js';
 import {getCss} from './slim_web_view.css.js';
 import {getHtml} from './slim_web_view.html.js';
 import {BrowserProxyImpl, PermissionResponseAction} from './slim_web_view_browser_proxy.js';
@@ -303,12 +304,26 @@ export class SlimWebViewElement extends CrLitElement {
   private containerId: number|null = null;
   private guestInstanceId: number|null = null;
   private eventDispatcher: EventDispatcher|null = null;
+  private onBeforeSendHeadersParamsInternal: OnBeforeSendHeadersParams|null =
+      null;
 
   constructor() {
     super();
 
     chrome.slimWebViewPrivate.registerView(this.viewInstanceId, this);
   }
+
+  get onBeforeSendHeadersParams(): OnBeforeSendHeadersParams|null {
+    return this.onBeforeSendHeadersParamsInternal;
+  }
+
+  set onBeforeSendHeadersParams(params: OnBeforeSendHeadersParams) {
+    assert(
+        this.guestInstanceId === null,
+        'Cannot set beforeSendHeadersParams once the guest is created');
+    this.onBeforeSendHeadersParamsInternal = params;
+  }
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -375,6 +390,10 @@ export class SlimWebViewElement extends CrLitElement {
         partition: {stringValue: this.partition},
       },
     };
+    if (this.onBeforeSendHeadersParams !== null) {
+      createParams.storage['beforeSendHeaders'] =
+          this.onBeforeSendHeadersParams.toValue();
+    }
     const result =
         await BrowserProxyImpl.getInstance().handler.createGuest(createParams);
     // We immediately attach the guest to the embedder frame. The browser knows

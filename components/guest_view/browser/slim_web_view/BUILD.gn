@@ -10,12 +10,16 @@ assert(enable_guest_view)
 
 static_library("slim_web_view") {
   sources = [
+    "request_utils.cc",
+    "request_utils.h",
     "slim_web_view_constants.cc",
     "slim_web_view_constants.h",
     "slim_web_view_guest.cc",
     "slim_web_view_guest.h",
     "slim_web_view_permission_helper.cc",
     "slim_web_view_permission_helper.h",
+    "slim_web_view_url_loader_factory_interceptor.cc",
+    "slim_web_view_url_loader_factory_interceptor.h",
   ]
 
   deps = [

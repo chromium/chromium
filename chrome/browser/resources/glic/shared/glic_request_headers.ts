@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="not enable_extensions_core">
+import {OnBeforeSendHeadersParams} from '/shared/guest_view/request_throttlers.js';
+// </if>
+import type {Header} from '/shared/guest_view/request_throttlers.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
+
+import {isFullWebView} from './web_view_type.js';
+import type {WebViewType} from './web_view_type.js';
 
 // Attaches the X-Glic headers to all main-frame requests.
 // X-Glic: 1
@@ -11,23 +18,31 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 export class GlicRequestHeaderInjector {
   private onDestroy: () => void = () => {};
   constructor(
-      webview: chrome.webviewTag.WebView, private chromeVersion: string,
+      webview: WebViewType, private chromeVersion: string,
       private chromeChannel: string, requestTypes: string) {
     if (requestTypes === '') {
       return;
     }
-    const onBeforeSendHeaders = this.onBeforeSendHeaders.bind(this);
-    webview.request.onBeforeSendHeaders.addListener(
-        onBeforeSendHeaders, {
-          // These should be valid values from web_request.d.ts.
-          types: requestTypes.split(',') as chrome.webRequest.ResourceType[],
-          urls: ['<all_urls>'],
-        },
-        ['blocking', 'requestHeaders', 'extraHeaders']);
+    if (isFullWebView(webview)) {
+      const onBeforeSendHeaders = this.onBeforeSendHeaders.bind(this);
+      webview.request.onBeforeSendHeaders.addListener(
+          onBeforeSendHeaders, {
+            // These should be valid values from web_request.d.ts.
+            types: requestTypes.split(',') as chrome.webRequest.ResourceType[],
+            urls: ['<all_urls>'],
+          },
+          ['blocking', 'requestHeaders', 'extraHeaders']);
 
-    this.onDestroy = () => {
-      webview.request.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);
-    };
+      this.onDestroy = () => {
+        webview.request.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);
+      };
+    } else {
+      // <if expr="not enable_extensions_core">
+      webview.onBeforeSendHeadersParams = new OnBeforeSendHeadersParams(
+          requestTypes.split(','),
+          /* includeSubFrameRequests= */ false, this.headers());
+      // </if>
+    }
   }
 
   destroy() {
@@ -42,20 +57,26 @@ export class GlicRequestHeaderInjector {
               return {};
             }
             const requestHeaders = details.requestHeaders || [];
-            requestHeaders.push({
-              name: 'X-Glic',
-              value: '1',
-            });
-            requestHeaders.push({
-              name: 'X-Glic-Chrome-Version',
-              value: this.chromeVersion,
-            });
-            requestHeaders.push({
-              name: 'X-Glic-Chrome-Channel',
-              value: this.chromeChannel,
-            });
+            requestHeaders.push(...this.headers());
             return {requestHeaders};
           };
+
+  private headers(): Header[] {
+    return [
+      {
+        name: 'X-Glic',
+        value: '1',
+      },
+      {
+        name: 'X-Glic-Chrome-Version',
+        value: this.chromeVersion,
+      },
+      {
+        name: 'X-Glic-Chrome-Channel',
+        value: this.chromeChannel,
+      },
+    ];
+  }
 }
 
 type ChromeEventFunctionType<T> =
