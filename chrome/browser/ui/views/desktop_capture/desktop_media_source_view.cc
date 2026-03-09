@@ -114,11 +114,13 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
         kCornerRadius));
+    label_->SetEnabledColor(ui::kColorSysOnTonalContainer);
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::BOLD));
     parent_->OnSelectionChanged();
   } else {
     SetBackground(nullptr);
+    label_->SetEnabledColor(ui::kColorLabelForeground);
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::NORMAL));
   }
