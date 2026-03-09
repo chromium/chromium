@@ -62,6 +62,10 @@ class NET_EXPORT_PRIVATE CanaryDomainService
   void SetOnProbeCompleteCallbackForTesting(base::OnceClosure callback);
 
  private:
+  // Returns true if the canary domain should be probed. Otherwise, calls to
+  // Start() and OnDohServerUnavailable() will be no-ops.
+  bool ShouldProbe();
+
   // Probes a canary domain that reports whether Secure DNS (DoH) fallback is
   // allowed, and then runs `OnSecureDnsProbeComplete()` with the result.
   // Should cancel any previous probe that is still pending.

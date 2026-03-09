@@ -200,4 +200,104 @@ TEST_P(CanaryDomainServiceTest, CanaryDomainResolutionIsNotCached) {
             CanaryDomainCheckStatus::kNegative);
 }
 
+class CanaryDomainServiceDisabledTest : public testing::Test,
+                                        public WithTaskEnvironment {
+ protected:
+  CanaryDomainServiceDisabledTest()
+      : url_request_context_(CreateTestURLRequestContextBuilder()->Build()),
+        resolve_context_(url_request_context_.get(), /*enable_caching=*/false) {
+  }
+
+  void SetUp() override {
+    // Set up a session with AUTOMATIC mode and fallback upgrade enabled.
+    DnsConfig config;
+    config.secure_dns_mode = SecureDnsMode::kAutomatic;
+    config.should_perform_doh_fallback_upgrade = true;
+    session_ = base::MakeRefCounted<DnsSession>(
+        config, base::BindRepeating([](int min, int max) -> int { return 0; }),
+        /*net_log=*/nullptr);
+    resolve_context_.InvalidateCachesAndPerSessionData(session_.get(), false);
+  }
+
+  void OnDohServerUnavailableAndWaitForProbeComplete() {
+    canary_domain_service_->SetOnProbeCompleteCallbackForTesting(
+        probe_complete_future_.GetCallback());
+    canary_domain_service_->OnDohServerUnavailable(/*network_change=*/false);
+    EXPECT_TRUE(probe_complete_future_.Wait());
+    probe_complete_future_.Clear();
+  }
+
+  std::unique_ptr<URLRequestContext> url_request_context_;
+  ResolveContext resolve_context_;
+  MockHostResolver host_resolver_;
+  base::test::TestFuture<void> probe_complete_future_;
+  scoped_refptr<DnsSession> session_;
+  std::unique_ptr<CanaryDomainService> canary_domain_service_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(CanaryDomainServiceDisabledTest, NoProbeWhenFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(features::kProbeSecureDnsCanaryDomain);
+
+  canary_domain_service_ = std::make_unique<CanaryDomainService>(
+      resolve_context_.AsSafeRef(), host_resolver_.AsSafeRef());
+
+  canary_domain_service_->Start();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+
+  OnDohServerUnavailableAndWaitForProbeComplete();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+}
+
+TEST_F(CanaryDomainServiceDisabledTest, NoProbeWhenHostEmpty) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kProbeSecureDnsCanaryDomain,
+      {{features::kSecureDnsCanaryDomainHost.name, ""}});
+
+  canary_domain_service_ = std::make_unique<CanaryDomainService>(
+      resolve_context_.AsSafeRef(), host_resolver_.AsSafeRef());
+
+  canary_domain_service_->Start();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+
+  OnDohServerUnavailableAndWaitForProbeComplete();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+}
+
+TEST_F(CanaryDomainServiceDisabledTest, NoProbeWhenConfigDisallows) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kProbeSecureDnsCanaryDomain,
+      {{features::kSecureDnsCanaryDomainHost.name, "test.test"}});
+
+  // Set up a session with mode SECURE (not AUTOMATIC).
+  DnsConfig config;
+  config.secure_dns_mode = SecureDnsMode::kSecure;
+  config.should_perform_doh_fallback_upgrade = true;
+  session_ = base::MakeRefCounted<DnsSession>(
+      config, base::BindRepeating([](int min, int max) -> int { return 0; }),
+      /*net_log=*/nullptr);
+  resolve_context_.InvalidateCachesAndPerSessionData(session_.get(), false);
+
+  canary_domain_service_ = std::make_unique<CanaryDomainService>(
+      resolve_context_.AsSafeRef(), host_resolver_.AsSafeRef());
+
+  canary_domain_service_->Start();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+
+  OnDohServerUnavailableAndWaitForProbeComplete();
+  EXPECT_EQ(resolve_context_.doh_fallback_canary_domain_check_status(),
+            CanaryDomainCheckStatus::kNotStarted);
+  EXPECT_EQ(host_resolver_.num_resolve(), 0u);
+}
+
 }  // namespace net
