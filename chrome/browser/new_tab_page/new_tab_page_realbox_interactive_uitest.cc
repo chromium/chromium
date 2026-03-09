@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/check_deref.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -67,6 +68,16 @@ static constexpr std::string_view kInputTypeAddFile = "Add file";
 static constexpr std::string_view kToolCreateImages = "Create images";
 static constexpr std::string_view kToolCanvas = "Canvas";
 
+std::string GetModeSelector(omnibox::ToolMode mode) {
+  return ".dropdown-item[data-mode='" +
+         base::NumberToString(static_cast<int>(mode)) + "']";
+}
+
+std::string GetModelSelector(omnibox::ModelMode model) {
+  return ".dropdown-item[data-model='" +
+         base::NumberToString(static_cast<int>(model)) + "']";
+}
+
 const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "cr-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
@@ -76,10 +87,12 @@ const DeepQuery kComposeboxInput = {"ntp-app", "#composebox", "#input"};
 const DeepQuery kComposeboxSubmitButton = {"ntp-app", "#composebox",
                                            "#submitContainer"};
 const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
-const DeepQuery kCreateImagesItem = {"ntp-app", "cr-searchbox", "#context",
-                                     "#menu", ".dropdown-item[data-mode='4']"};
-const DeepQuery kCanvasItem = {"ntp-app", "cr-searchbox", "#context", "#menu",
-                               ".dropdown-item[data-mode='2']"};
+const DeepQuery kCreateImagesItem = {
+    "ntp-app", "cr-searchbox", "#context", "#menu",
+    GetModeSelector(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)};
+const DeepQuery kCanvasItem = {
+    "ntp-app", "cr-searchbox", "#context", "#menu",
+    GetModeSelector(omnibox::ToolMode::TOOL_MODE_CANVAS)};
 const DeepQuery kCanvasChip = {"ntp-app", "cr-composebox", "#context",
                                "#canvasChip"};
 const DeepQuery kCreateImagesChip = {"ntp-app", "cr-composebox", "#context",
@@ -224,27 +237,30 @@ std::unique_ptr<KeyedService> BuildMockContextualSearchServiceInstance(
 
 }  // namespace
 
-class NtpRealboxNextUiTestBase
+class NtpRealboxUiTestBase
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  NtpRealboxNextUiTestBase() = default;
-  ~NtpRealboxNextUiTestBase() override = default;
+  NtpRealboxUiTestBase() = default;
+  ~NtpRealboxUiTestBase() override = default;
 
  protected:
   static std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures(
-      RealboxLayoutMode layout_mode) {
+      std::optional<RealboxLayoutMode> layout_mode = std::nullopt,
+      bool compose_button_enabled = true) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams realbox_params;
-    realbox_params[ntp_realbox::kRealboxLayoutMode.name] = [=]() {
-      switch (layout_mode) {
-        case RealboxLayoutMode::kTallBottomContext:
-          return ntp_realbox::kRealboxLayoutModeTallBottomContext;
-        case RealboxLayoutMode::kTallTopContext:
-          return ntp_realbox::kRealboxLayoutModeTallTopContext;
-        case RealboxLayoutMode::kCompact:
-          return ntp_realbox::kRealboxLayoutModeCompact;
-      }
-    }();
+    if (layout_mode.has_value()) {
+      realbox_params[ntp_realbox::kRealboxLayoutMode.name] = [=]() {
+        switch (layout_mode.value()) {
+          case RealboxLayoutMode::kTallBottomContext:
+            return ntp_realbox::kRealboxLayoutModeTallBottomContext;
+          case RealboxLayoutMode::kTallTopContext:
+            return ntp_realbox::kRealboxLayoutModeTallTopContext;
+          case RealboxLayoutMode::kCompact:
+            return ntp_realbox::kRealboxLayoutModeCompact;
+        }
+      }();
+    }
     enabled_features.emplace_back(ntp_realbox::kNtpRealboxNext, realbox_params);
     enabled_features.emplace_back(omnibox::kAimEnabled,
                                   base::FieldTrialParams());
@@ -253,12 +269,14 @@ class NtpRealboxNextUiTestBase
     enabled_features.emplace_back(omnibox::kAimUsePecApi,
                                   base::FieldTrialParams());
 
-    base::FieldTrialParams composebox_params;
-    composebox_params[ntp_composebox::kShowRecentTabChip.name] = "true";
-    composebox_params[ntp_composebox::kContextMenuEnableMultiTabSelection
-                          .name] = "true";
-    enabled_features.emplace_back(ntp_composebox::kNtpComposebox,
-                                  composebox_params);
+    if (compose_button_enabled) {
+      base::FieldTrialParams composebox_params;
+      composebox_params[ntp_composebox::kShowRecentTabChip.name] = "true";
+      composebox_params[ntp_composebox::kContextMenuEnableMultiTabSelection
+                            .name] = "true";
+      enabled_features.emplace_back(ntp_composebox::kNtpComposebox,
+                                    composebox_params);
+    }
 
     return enabled_features;
   }
@@ -273,34 +291,17 @@ class NtpRealboxNextUiTestBase
   }
 };
 
-class NtpRealboxUiTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest>,
+class NtpRealboxUiScreenshotTest
+    : public NtpRealboxUiTestBase,
       public testing::WithParamInterface<NtpRealboxUiTestParams> {
  public:
-  NtpRealboxUiTest() = default;
-  ~NtpRealboxUiTest() override = default;
+  NtpRealboxUiScreenshotTest() = default;
+  ~NtpRealboxUiScreenshotTest() override = default;
 
   void SetUp() override {
-    // Enable Realbox Next and specify layout mode.
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    base::FieldTrialParams realbox_params;
-    realbox_params[ntp_realbox::kRealboxLayoutMode.name] = [=]() {
-      switch (GetParam().layout_mode) {
-        case RealboxLayoutMode::kTallBottomContext:
-          return ntp_realbox::kRealboxLayoutModeTallBottomContext;
-        case RealboxLayoutMode::kTallTopContext:
-          return ntp_realbox::kRealboxLayoutModeTallTopContext;
-        case RealboxLayoutMode::kCompact:
-          return ntp_realbox::kRealboxLayoutModeCompact;
-      }
-    }();
-    enabled_features.emplace_back(ntp_realbox::kNtpRealboxNext, realbox_params);
-    enabled_features.emplace_back(omnibox::kAimEnabled,
-                                  base::FieldTrialParams());
-    enabled_features.emplace_back(omnibox::kAimServerEligibilityEnabled,
-                                  base::FieldTrialParams());
-    enabled_features.emplace_back(omnibox::kAimUsePecApi,
-                                  base::FieldTrialParams());
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures(GetParam().layout_mode,
+                           GetParam().compose_button_enabled);
 
     // Disable NTP features that load asynchronously to prevent page shifts.
     // TODO(crbug.com/452928336): Wait for a signal that the NTP's layout is
@@ -314,25 +315,18 @@ class NtpRealboxUiTest
         ntp_features::kNtpShortcuts};
 
     // Conditionally enable or disable Compose Entrypoint features.
-    if (GetParam().compose_button_enabled) {
-      base::FieldTrialParams composebox_params;
-      composebox_params[ntp_composebox::kShowRecentTabChip.name] = "true";
-      composebox_params[ntp_composebox::kContextMenuEnableMultiTabSelection
-                            .name] = "true";
-      enabled_features.emplace_back(ntp_composebox::kNtpComposebox,
-                                    composebox_params);
-    } else {
+    if (!GetParam().compose_button_enabled) {
       disabled_features.push_back(ntp_composebox::kNtpComposebox);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
 
-    WebUiInteractiveTestMixin::SetUp();
+    NtpRealboxUiTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
-    WebUiInteractiveTestMixin::SetUpOnMainThread();
+    NtpRealboxUiTestBase::SetUpOnMainThread();
     // Sanity check that the NtpRealboxUiTestParams setup actually took; if it
     // didn't, then we can't accurately perform the test.
     ASSERT_EQ(RealboxLayoutModeToString(ntp_realbox::kRealboxLayoutMode.Get()),
@@ -341,13 +335,12 @@ class NtpRealboxUiTest
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
+    // Bypass NtpRealboxUiTestBase to avoid mocking ContextualSearchService
     InteractiveBrowserTest::SetUpBrowserContextKeyedServices(context);
     if (GetParam().compose_button_enabled) {
       AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
           context,
           base::BindOnce(BuildMockAimServiceEligibilityServiceInstance));
-      ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
-          context, base::BindOnce(BuildMockContextualSearchServiceInstance));
     }
   }
 
@@ -365,7 +358,7 @@ class NtpRealboxUiTest
 // with other variables that warrant pixel-style validation.
 INSTANTIATE_TEST_SUITE_P(
     ,
-    NtpRealboxUiTest,
+    NtpRealboxUiScreenshotTest,
     ValuesIn(std::vector<NtpRealboxUiTestParams>{
 // TODO(crbug.com/454668186): Test fails on Windows builders for Compact and
 // Compact_dark_rtl
@@ -411,22 +404,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-using NtpRealboxNextUiTest = NtpRealboxUiTest;
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    NtpRealboxNextUiTest,
-    ValuesIn(std::vector<NtpRealboxUiTestParams>{
-        {
-            .layout_mode = RealboxLayoutMode::kCompact,
-        },
-    }),
-    [](const testing::TestParamInfo<NtpRealboxUiTestParams>& info) {
-      return info.param.ToString();
-    });
-
 // TODO(crbug.com/454761015): Re-enable after fixing.
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
+IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, DISABLED_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
   // Page bounds.
   auto screen_size = gfx::Size(1000, 1200);
@@ -447,8 +426,8 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
           .num_page_load_animations());
 
   const DeepQuery kSearchboxContainer = {"ntp-app", "#content"};
-  const DeepQuery kContextMenuEntrypoint = {
-      "ntp-app", "cr-searchbox", "#context"};
+  const DeepQuery kContextMenuEntrypoint = {"ntp-app", "cr-searchbox",
+                                            "#context"};
 
   RunTestSequence(
       // 1. Open 1P new tab page.
@@ -469,8 +448,19 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
                           /*baseline_cl=*/"7055903")));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest, AimButtonOpensComposebox) {
+class NtpRealboxInteractiveTest : public NtpRealboxUiTestBase {
+ public:
+  NtpRealboxInteractiveTest() {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, AimButtonOpensComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxDialogOpenEvent);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxInputClearedEvent);
 
   const DeepQuery kComposeButton = {"ntp-app", "cr-searchbox",
                                     "#composeButton"};
@@ -480,6 +470,11 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest, AimButtonOpensComposebox) {
   composebox_dialog_open.where = kComposeboxDialog;
   composebox_dialog_open.test_function =
       "(el) => el && el.hasAttribute('open')";
+
+  WebContentsInteractionTestUtil::StateChange composebox_input_cleared;
+  composebox_input_cleared.event = kComposeboxInputClearedEvent;
+  composebox_input_cleared.where = kComposeboxInput;
+  composebox_input_cleared.test_function = "(el) => el && el.value === ''";
 
   RunTestSequence(
       // 1. Open a site.
@@ -492,11 +487,23 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest, AimButtonOpensComposebox) {
       WaitForElementToRender(kNtpElementId, kComposeButton),
       // 4. Click on the compose button.
       ClickElement(kNtpElementId, kComposeButton),
-      // 5. Observe/assert that the contextual dialog is open.
-      WaitForStateChange(kNtpElementId, composebox_dialog_open));
+      // 5. Observe/assert that the composebox dialog is open.
+      WaitForStateChange(kNtpElementId, composebox_dialog_open),
+      // 6. Insert text into composebox.
+      ExecuteJsAt(kNtpElementId, kComposeboxInput,
+                  "(el) => { el.value = 'hello'; el.dispatchEvent(new "
+                  "Event('input', {bubbles: true, composed: true})); }"),
+      // 7. Hit ESC.
+      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
+      // 8. Wait for composebox input to clear.
+      WaitForStateChange(kNtpElementId, composebox_input_cleared),
+      // 9. Hit ESC again.
+      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
+      // 10. Check that composebox dialog has been removed.
+      EnsureNotPresent(kNtpElementId, kComposeboxDialog));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
                        ContextualEntrypointMenuHasOptions) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
 
@@ -505,20 +512,16 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
   context_menu_open.where = kContextMenuDialog;
   context_menu_open.test_function = "(el) => el && el.open";
 
-  const DeepQuery kImageUploadItem = {"ntp-app",
-                                      "cr-searchbox",
-                                      "#context",
-                                      "#menu",
-                                      "#imageUpload"};
-  const DeepQuery kFileUploadItem = {"ntp-app",
-                                     "cr-searchbox",
-                                     "#context",
-                                     "#menu",
-                                     "#fileUpload"};
-  const DeepQuery kFastModelItem = {"ntp-app", "cr-searchbox", "#context",
-                                    "#menu", ".dropdown-item[data-model='1']"};
-  const DeepQuery kProModelItem = {"ntp-app", "cr-searchbox", "#context",
-                                   "#menu", ".dropdown-item[data-model='2']"};
+  const DeepQuery kImageUploadItem = {"ntp-app", "cr-searchbox", "#context",
+                                      "#menu", "#imageUpload"};
+  const DeepQuery kFileUploadItem = {"ntp-app", "cr-searchbox", "#context",
+                                     "#menu", "#fileUpload"};
+  const DeepQuery kFastModelItem = {
+      "ntp-app", "cr-searchbox", "#context", "#menu",
+      GetModelSelector(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR)};
+  const DeepQuery kProModelItem = {
+      "ntp-app", "cr-searchbox", "#context", "#menu",
+      GetModelSelector(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO)};
 
   RunTestSequence(
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
@@ -555,7 +558,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
                           std::string(kModelProLabel) + "')"));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
                        ContextualEntrypointAttachTabTriggersComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuClosedEvent);
@@ -635,26 +638,18 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
               "https://www.google.com/search?q=Summarize+this+page")));
 }
 
-struct NtpRealboxNextToolUiTestParams {
-  RealboxLayoutMode layout_mode = RealboxLayoutMode::kCompact;
+struct NtpRealboxToolInteractiveTestParams {
   DeepQuery tool_context_menu_item;
   DeepQuery tool_chip;
   std::string tool_label;
-
-  std::string ToString() const {
-    std::string name = tool_label;
-    base::ReplaceChars(name, " ", "", &name);
-    return name;
-  }
 };
 
-class NtpRealboxNextToolUiTest
-    : public NtpRealboxNextUiTestBase,
-      public testing::WithParamInterface<NtpRealboxNextToolUiTestParams> {
+class NtpRealboxToolInteractiveTest
+    : public NtpRealboxUiTestBase,
+      public testing::WithParamInterface<NtpRealboxToolInteractiveTestParams> {
  public:
-  NtpRealboxNextToolUiTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(GetParam().layout_mode), {});
+  NtpRealboxToolInteractiveTest() {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
   }
 
  private:
@@ -663,8 +658,8 @@ class NtpRealboxNextToolUiTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    NtpRealboxNextToolUiTest,
-    ValuesIn(std::vector<NtpRealboxNextToolUiTestParams>{
+    NtpRealboxToolInteractiveTest,
+    ValuesIn(std::vector<NtpRealboxToolInteractiveTestParams>{
         {
             .tool_context_menu_item = kCanvasItem,
             .tool_chip = kCanvasChip,
@@ -675,12 +670,9 @@ INSTANTIATE_TEST_SUITE_P(
             .tool_chip = kCreateImagesChip,
             .tool_label = std::string(kToolCreateImages),
         },
-    }),
-    [](const testing::TestParamInfo<NtpRealboxNextToolUiTestParams>& info) {
-      return info.param.ToString();
-    });
+    }));
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxNextToolUiTest,
+IN_PROC_BROWSER_TEST_P(NtpRealboxToolInteractiveTest,
                        ContextualEntrypointOpenComposeboxWithChip) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
 
