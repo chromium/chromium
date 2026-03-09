@@ -1651,7 +1651,8 @@ gfx::Rect TabContainerImpl::GetDropBounds(
 
   // If the rect doesn't fit on the monitor, push the arrow to the bottom.
   display::Screen* screen = display::Screen::Get();
-  display::Display display = screen->GetDisplayMatching(drop_bounds);
+  display::Display display =
+      screen->GetDisplayNearestView(GetWidget()->GetNativeView());
   const bool is_beneath = !display.bounds().Contains(drop_bounds);
   *direction =
       is_beneath ? DropArrow::Direction::kUp : DropArrow::Direction::kDown;

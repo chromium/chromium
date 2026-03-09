@@ -867,7 +867,8 @@ gfx::Rect VerticalTabStripRegionView::GetLinkDropBounds(
 
   // If the rect doesn't fit on the monitor, push the arrow to the other side.
   display::Screen* screen = display::Screen::Get();
-  display::Display display = screen->GetDisplayMatching(drop_bounds);
+  display::Display display =
+      screen->GetDisplayNearestView(GetWidget()->GetNativeView());
 
   if (!display.bounds().Contains(drop_bounds)) {
     // Only left/right arrows should be outside the display bounds.
@@ -880,7 +881,7 @@ gfx::Rect VerticalTabStripRegionView::GetLinkDropBounds(
           -GetBoundsInScreen().width() - drop_arrow_size.height(), 0);
     } else {
       *direction = DropArrow::Direction::kLeft;
-      drop_bounds.Offset(GetBoundsInScreen().right() + drop_arrow_size.height(),
+      drop_bounds.Offset(GetBoundsInScreen().width() + drop_arrow_size.height(),
                          0);
     }
   }
