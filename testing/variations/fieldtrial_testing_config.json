@@ -12686,6 +12686,9 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "RemovePageContext": "true",
+                        "ShowAboveSearchImage": "true",
+                        "ShowBelowSearchImage": "false",
                         "ShowFRERow": "true"
                     },
                     "enable_features": [
