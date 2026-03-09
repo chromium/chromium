@@ -1333,16 +1333,8 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables HTTPS-First Mode by default in Incognito Mode. (The related feature
-// kHttpsFirstModeIncognitoNewSettings controls whether new settings controls
-// are available for opting out of this default behavior.)
+// Enables HTTPS-First Mode by default in Incognito Mode.
 BASE_FEATURE(kHttpsFirstModeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Changes the binary opt-in to HTTPS-First Mode with a tri-state setting (HFM
-// everywhere, HFM in Incognito, or no HFM) with HFM-in-Incognito the new
-// default setting. This feature is dependent on kHttpsFirstModeIncognito.
-BASE_FEATURE(kHttpsFirstModeIncognitoNewSettings,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Experimental image replacement feature. b/482792874
 BASE_FEATURE(kIndigo, base::FEATURE_DISABLED_BY_DEFAULT);

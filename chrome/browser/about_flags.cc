@@ -9054,12 +9054,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsFirstModeIncognito)},
 
-    {"https-first-mode-incognito-new-settings",
-     flag_descriptions::kHttpsFirstModeIncognitoNewSettingsName,
-     flag_descriptions::kHttpsFirstModeIncognitoNewSettingsDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kHttpsFirstModeIncognitoNewSettings)},
-
     {"https-first-mode-for-typically-secure-users",
      flag_descriptions::kHttpsFirstModeForTypicallySecureUsersName,
      flag_descriptions::kHttpsFirstModeForTypicallySecureUsersDescription,

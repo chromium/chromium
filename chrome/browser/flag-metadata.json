@@ -5748,14 +5748,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "https-first-mode-incognito-new-settings",
-    "owners": [
-      "cthomp@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expiry_milestone": 133
-  },
-  {
     "name": "https-first-mode-v2-for-engaged-sites",
     "owners": [
       "meacer@chromium.org",
