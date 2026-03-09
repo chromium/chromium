@@ -621,6 +621,60 @@ TEST(SharedDictionaryOnDiskTest, UnexpectedDataSize) {
   EXPECT_TRUE(read_all_finished);
 }
 
+TEST(SharedDictionaryOnDiskTest, DeleteInReadAllCallback) {
+  size_t expected_size = kTestData.size();
+  net::SHA256HashValue hash({{0x00, 0x01}});
+  base::UnguessableToken disk_cache_key_token =
+      base::UnguessableToken::Create();
+
+  auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>();
+  disk_cache->Initialize();
+
+  disk_cache::EntryResultCallback open_entry_callback;
+  EXPECT_CALL(*disk_cache->backend(), OpenEntry)
+      .WillOnce([&](const std::string& key, net::RequestPriority priority,
+                    disk_cache::EntryResultCallback callback) {
+        open_entry_callback = std::move(callback);
+        return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
+      });
+
+  std::unique_ptr<disk_cache::EntryMock> entry =
+      std::make_unique<disk_cache::EntryMock>();
+
+  EXPECT_CALL(*entry, GetDataSize).WillOnce([&](int index) -> int32_t {
+    return expected_size;
+  });
+
+  EXPECT_CALL(*entry, ReadData)
+      .WillOnce([&](int index, int offset, net::IOBuffer* buf, int buf_len,
+                    net::CompletionOnceCallback callback) -> int {
+        buf->span().copy_prefix_from(base::as_byte_span(kTestData));
+        return base::checked_cast<int>(expected_size);
+      });
+
+  auto dictionary = base::MakeRefCounted<SharedDictionaryOnDisk>(
+      expected_size, hash, /*id=*/"", disk_cache_key_token, *disk_cache,
+      /*disk_cache_error_callback=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_deleted_closure_runner=*/base::ScopedClosureRunner());
+
+  std::optional<int> callback1_rv;
+  dictionary->ReadAll(base::BindLambdaForTesting([&](int rv) {
+    callback1_rv = rv;
+    dictionary.reset();
+  }));
+
+  std::optional<int> callback2_rv;
+  dictionary->ReadAll(
+      base::BindLambdaForTesting([&](int rv) { callback2_rv = rv; }));
+
+  ASSERT_TRUE(open_entry_callback);
+  std::move(open_entry_callback)
+      .Run(disk_cache::EntryResult::MakeOpened(entry.release()));
+
+  EXPECT_EQ(callback1_rv, net::OK);
+  EXPECT_EQ(callback2_rv, net::OK);
+}
+
 }  // namespace
 
 }  // namespace network
