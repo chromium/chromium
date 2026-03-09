@@ -192,6 +192,8 @@ public class UpdateStatusProvider {
             mMetrics.startUpdate();
 
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mStatus.updateUrl));
+            // Ensure that the app vs browser disambiguation dialog is not shown.
+            intent.addFlags(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER);
             if (newTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
