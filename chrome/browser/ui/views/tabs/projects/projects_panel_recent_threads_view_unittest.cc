@@ -23,6 +23,7 @@ contextual_tasks::Thread CreateThread(
     std::optional<const std::string> server_id = std::nullopt) {
   return contextual_tasks::Thread(contextual_tasks::ThreadType::kAiMode,
                                   server_id.value_or(""), title,
+                                  /*last_turn_time_unix_epoch_millis=*/1,
                                   /*conversation_turn_id=*/"");
 }
 

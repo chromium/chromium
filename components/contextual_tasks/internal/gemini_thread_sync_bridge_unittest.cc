@@ -294,6 +294,15 @@ TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, TestRemoveObserver) {
                                         std::move(delete_changes));
 }
 
+TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, GetThreads) {
+  const auto& threads = bridge()->GetThreads();
+  EXPECT_EQ(1u, threads.size());
+  EXPECT_EQ(kInitConversationId, threads[0].server_id);
+  EXPECT_EQ(kInitTitle, threads[0].title);
+  EXPECT_EQ(kInitLastTurnTimeUnixEpochMillis,
+            threads[0].last_turn_time.InMillisecondsSinceUnixEpoch());
+}
+
 }  // namespace
 
 }  // namespace contextual_tasks

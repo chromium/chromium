@@ -189,6 +189,7 @@ TEST_F(AiThreadSyncBridgeTest, GetThreads) {
   specifics.set_server_id("server_id_1");
   specifics.set_title("Title 1");
   specifics.set_conversation_turn_id("turn_id_1");
+  specifics.set_last_turn_time_unix_epoch_millis(42);
   syncer::EntityData entity_data;
   *entity_data.specifics.mutable_ai_thread() = specifics;
   entity_change_list.push_back(
@@ -198,6 +199,7 @@ TEST_F(AiThreadSyncBridgeTest, GetThreads) {
   specifics_2.set_server_id("server_id_2");
   specifics_2.set_title("Title 2");
   specifics_2.set_conversation_turn_id("turn_id_2");
+  specifics_2.set_last_turn_time_unix_epoch_millis(43);
   syncer::EntityData entity_data_2;
   *entity_data_2.specifics.mutable_ai_thread() = specifics_2;
   entity_change_list.push_back(
@@ -215,10 +217,16 @@ TEST_F(AiThreadSyncBridgeTest, GetThreads) {
   EXPECT_EQ(threads[thread_1_index].server_id, "server_id_1");
   EXPECT_EQ(threads[thread_1_index].title, "Title 1");
   EXPECT_EQ(threads[thread_1_index].conversation_turn_id, "turn_id_1");
+  EXPECT_EQ(
+      threads[thread_1_index].last_turn_time.InMillisecondsFSinceUnixEpoch(),
+      42);
 
   EXPECT_EQ(threads[thread_2_index].server_id, "server_id_2");
   EXPECT_EQ(threads[thread_2_index].title, "Title 2");
   EXPECT_EQ(threads[thread_2_index].conversation_turn_id, "turn_id_2");
+  EXPECT_EQ(
+      threads[thread_2_index].last_turn_time.InMillisecondsFSinceUnixEpoch(),
+      43);
 }
 
 }  // namespace

@@ -856,7 +856,8 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
   const std::string server_id = "1234";
   const std::string title = "title";
   const std::string turn_id = "5678";
-  Thread thread(ThreadType::kAiMode, server_id, title, turn_id);
+  int64_t last_turn_time = 1;
+  Thread thread(ThreadType::kAiMode, server_id, title, last_turn_time, turn_id);
 
   task.SetTitle(title);
   task.AddThread(thread);

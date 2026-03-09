@@ -1498,7 +1498,7 @@ TEST_F(ContextualTasksServiceImplTest,
 
   // Only the thread for the first task is returned by the AiThreadSyncBridge.
   Thread thread(ThreadType::kAiMode, thread_id, "Thread Title",
-                "conversation_turn_id");
+                /*last_turn_time_unix_epoch_millis=*/1, "conversation_turn_id");
   ON_CALL(*mock_ai_thread_bridge, GetThread(thread_id))
       .WillByDefault(Return(thread));
   ON_CALL(*mock_ai_thread_bridge, GetThreads())
@@ -1528,6 +1528,9 @@ TEST_F(ContextualTasksServiceImplTest,
   ASSERT_TRUE(result_thread.has_value());
   EXPECT_EQ(thread_id, result_thread->server_id);
   EXPECT_EQ(result_tasks[0].GetTitle(), result_thread->title);
+  EXPECT_EQ(1, result_tasks[0]
+                   .GetThread()
+                   ->last_turn_time.InMillisecondsSinceUnixEpoch());
 
   service_->RemoveObserver(&observer_);
 }
@@ -1545,8 +1548,9 @@ TEST_F(ContextualTasksServiceImplTest,
 
   // Add two threads where one isn't owned by a task.
   Thread thread(ThreadType::kAiMode, thread_id, "Thread 1",
-                "conversation_turn_id");
+                /*last_turn_time_unix_epoch_millis=*/1, "conversation_turn_id");
   Thread thread_2(ThreadType::kAiMode, thread_id_2, "Thread 2",
+                  /*last_turn_time_unix_epoch_millis=*/1,
                   "conversation_turn_id");
 
   ON_CALL(*mock_ai_thread_bridge, GetThread(thread_id))
@@ -1585,6 +1589,9 @@ TEST_F(ContextualTasksServiceImplTest,
   ASSERT_TRUE(result_thread_2.has_value());
   EXPECT_EQ(thread_id_2, result_thread_2->server_id);
   EXPECT_EQ("Thread 2", result_tasks[thread_2_task_index].GetTitle());
+  EXPECT_EQ(1, result_tasks[thread_2_task_index]
+                   .GetThread()
+                   ->last_turn_time.InMillisecondsSinceUnixEpoch());
 
   service_->RemoveObserver(&observer_);
 }
@@ -1643,6 +1650,8 @@ TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely) {
   proto::AiThreadEntity updated_thread_entity;
   updated_thread_entity.mutable_specifics()->set_server_id(server_id);
   updated_thread_entity.mutable_specifics()->set_title("New Title");
+  updated_thread_entity.mutable_specifics()
+      ->set_last_turn_time_unix_epoch_millis(2);
   updated_thread_entity.mutable_specifics()->set_conversation_turn_id(
       "new_turn_id");
   updated_thread_entity.mutable_specifics()->set_type(
@@ -1654,6 +1663,8 @@ TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely) {
       server_id);
   updated_thread_entity_wrong_type.mutable_specifics()->set_title(
       "Wrong Type Title");
+  updated_thread_entity_wrong_type.mutable_specifics()
+      ->set_last_turn_time_unix_epoch_millis(3);
   updated_thread_entity_wrong_type.mutable_specifics()
       ->set_conversation_turn_id("wrong_type_turn_id");
   updated_thread_entity_wrong_type.mutable_specifics()->set_type(
@@ -1674,6 +1685,8 @@ TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely) {
         EXPECT_EQ("New Title", updated_task.GetThread()->title);
         EXPECT_EQ("new_turn_id",
                   updated_task.GetThread()->conversation_turn_id);
+        EXPECT_EQ(2, updated_task.GetThread()
+                         ->last_turn_time.InMillisecondsFSinceUnixEpoch());
         run_loop2.Quit();
       });
 
@@ -1686,6 +1699,9 @@ TEST_F(ContextualTasksServiceImplTest, OnThreadAddedOrUpdatedRemotely) {
   ASSERT_TRUE(result_task.has_value());
   ASSERT_TRUE(result_task->GetThread().has_value());
   EXPECT_EQ("New Title", result_task->GetThread()->title);
+  EXPECT_EQ(
+      2,
+      result_task->GetThread()->last_turn_time.InMillisecondsSinceUnixEpoch());
 
   service_->RemoveObserver(&observer_);
 }

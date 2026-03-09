@@ -228,7 +228,8 @@ std::vector<Thread> GeminiThreadSyncBridge::GetThreads() const {
   std::vector<Thread> threads;
   for (const auto& [conversation_id, specifics] : gemini_thread_specifics_) {
     threads.emplace_back(ThreadType::kGemini, conversation_id,
-                         specifics.title());
+                         specifics.title(),
+                         specifics.last_turn_time_unix_epoch_millis());
   }
   return threads;
 }

@@ -306,8 +306,9 @@ void ContextualTasksServiceImpl::UpdateThreadForTask(
   }
 
   // Add or update the thread information within the task.
-  it->second.AddThread(
-      Thread(thread_type, server_id, new_title, new_conversation_turn_id));
+  it->second.AddThread(Thread(thread_type, server_id, new_title,
+                              base::Time::Now().InMillisecondsSinceUnixEpoch(),
+                              new_conversation_turn_id));
 
   if (is_new_task) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -566,10 +567,11 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
     if (old_thread->conversation_turn_id !=
             new_thread_entity.specifics().conversation_turn_id() ||
         old_thread->title != new_thread_entity.specifics().title()) {
-      task.AddThread(
-          Thread(ThreadType::kAiMode, new_thread_entity.specifics().server_id(),
-                 new_thread_entity.specifics().title(),
-                 new_thread_entity.specifics().conversation_turn_id()));
+      task.AddThread(Thread(
+          ThreadType::kAiMode, new_thread_entity.specifics().server_id(),
+          new_thread_entity.specifics().title(),
+          new_thread_entity.specifics().last_turn_time_unix_epoch_millis(),
+          new_thread_entity.specifics().conversation_turn_id()));
       NotifyTaskUpdated(task, TriggerSource::kRemote);
     }
 
@@ -584,6 +586,7 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
     Thread thread(ToThreadType(thread_entity.specifics().type()),
                   thread_entity.specifics().server_id(),
                   thread_entity.specifics().title(),
+                  thread_entity.specifics().last_turn_time_unix_epoch_millis(),
                   thread_entity.specifics().conversation_turn_id());
     ContextualTask new_task =
         CreateTaskForThread(thread, supports_ephemeral_only_);
@@ -628,9 +631,10 @@ void ContextualTasksServiceImpl::OnGeminiThreadAddedOrUpdatedRemotely(
     const sync_pb::GeminiThreadSpecifics& new_thread_entity = it->second;
     const std::optional<Thread>& old_thread = task.GetThread();
     if (old_thread->title != new_thread_entity.title()) {
-      task.AddThread(Thread(ThreadType::kGemini,
-                            new_thread_entity.conversation_id(),
-                            new_thread_entity.title()));
+      task.AddThread(
+          Thread(ThreadType::kGemini, new_thread_entity.conversation_id(),
+                 new_thread_entity.title(),
+                 new_thread_entity.last_turn_time_unix_epoch_millis()));
       NotifyTaskUpdated(task, TriggerSource::kRemote);
     }
 
@@ -640,7 +644,8 @@ void ContextualTasksServiceImpl::OnGeminiThreadAddedOrUpdatedRemotely(
   // Create new task for specifics which didn't have an existing task.
   for (const auto& [thread_id, specifics] : thread_map) {
     Thread thread(ThreadType::kGemini, specifics.conversation_id(),
-                  specifics.title());
+                  specifics.title(),
+                  specifics.last_turn_time_unix_epoch_millis());
     ContextualTask new_task =
         CreateTaskForThread(thread, supports_ephemeral_only_);
     const auto it =

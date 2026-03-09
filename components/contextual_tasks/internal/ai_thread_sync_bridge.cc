@@ -193,15 +193,17 @@ std::optional<Thread> AiThreadSyncBridge::GetThread(
   }
   sync_pb::AiThreadSpecifics specifics = it->second.specifics();
   return Thread(ThreadType::kAiMode, server_id, specifics.title(),
+                specifics.last_turn_time_unix_epoch_millis(),
                 specifics.conversation_turn_id());
 }
 
 std::vector<Thread> AiThreadSyncBridge::GetThreads() const {
   std::vector<Thread> threads;
   for (const auto& [server_id, thread_entity] : ai_thread_entities_) {
-    threads.emplace_back(ThreadType::kAiMode, server_id,
-                         thread_entity.specifics().title(),
-                         thread_entity.specifics().conversation_turn_id());
+    threads.emplace_back(
+        ThreadType::kAiMode, server_id, thread_entity.specifics().title(),
+        thread_entity.specifics().last_turn_time_unix_epoch_millis(),
+        thread_entity.specifics().conversation_turn_id());
   }
   return threads;
 }

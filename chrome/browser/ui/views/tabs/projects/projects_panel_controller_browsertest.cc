@@ -39,7 +39,8 @@ class ProjectsPanelControllerBrowserTest : public InProcessBrowserTest {
                                       const base::Uuid& task_id) {
     contextual_tasks::ContextualTask task(task_id);
     task.AddThread(contextual_tasks::Thread(
-        contextual_tasks::ThreadType::kAiMode, server_id, "Thread", "turn_id"));
+        contextual_tasks::ThreadType::kAiMode, server_id, "Thread",
+        /*last_turn_time_unix_epoch_millis=*/1, "turn_id"));
 
     std::vector<contextual_tasks::ContextualTask> tasks;
     tasks.push_back(task);

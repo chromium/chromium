@@ -15,10 +15,13 @@ namespace contextual_tasks {
 Thread::Thread(ThreadType type,
                const std::string& server_id,
                const std::string& title,
+               int64_t last_turn_time_unix_epoch_millis,
                std::optional<std::string> conversation_turn_id)
     : type(type),
       server_id(server_id),
       title(title),
+      last_turn_time(base::Time::FromMillisecondsSinceUnixEpoch(
+          last_turn_time_unix_epoch_millis)),
       conversation_turn_id(conversation_turn_id) {
   DCHECK(type != ThreadType::kAiMode || conversation_turn_id);
 }
