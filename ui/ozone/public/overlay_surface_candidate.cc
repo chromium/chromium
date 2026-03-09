@@ -38,12 +38,10 @@ bool OverlaySurfaceCandidate::operator<(
           : gfx::OVERLAY_TRANSFORM_INVALID;
 
   return std::tie(plane_z_order, format, lrect, lwidth, lheight, ltransform,
-                  crop_rect, is_opaque, opacity, native_pixmap_unique_id,
-                  color_space, overlay_type) <
+                  crop_rect, is_opaque, opacity, color_space, overlay_type) <
          std::tie(param.plane_z_order, param.format, rrect, rwidth, rheight,
                   rtransform, param.crop_rect, param.is_opaque, param.opacity,
-                  param.native_pixmap_unique_id, color_space,
-                  param.overlay_type);
+                  color_space, param.overlay_type);
 }
 
 }  // namespace ui

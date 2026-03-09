@@ -76,11 +76,6 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   // Optionally contains a pointer to the NativePixmap corresponding to this
   // candidate.
   scoped_refptr<gfx::NativePixmap> native_pixmap;
-  // A unique ID corresponding to |native_pixmap|. The ID is not reused even if
-  // |native_pixmap| is destroyed. Zero if |native_pixmap| is null.
-  // TODO(samans): This will not be necessary once Ozone/DRM not longer uses a
-  // cache for overlay testing. https://crbug.com/1034559
-  uint32_t native_pixmap_unique_id = 0;
   // To be modified by the implementer if this candidate can go into
   // an overlay.
   bool overlay_handled = false;

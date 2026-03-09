@@ -72,7 +72,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   bool ShouldCreatePrimaryPlane() const override;
 
  private:
-  // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|
+  // Populates |native_pixmap| in |candidate|
   // based on |mailbox|. |is_primary| should be true if this is the primary
   // surface. Return false if the corresponding NativePixmap cannot be found.
   bool SetNativePixmapForCandidate(ui::OverlaySurfaceCandidate* candidate,

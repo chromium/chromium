@@ -535,7 +535,6 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
   }
 
   candidate->native_pixmap = std::move(native_pixmap);
-  candidate->native_pixmap_unique_id = mailbox.ToU32();
   return true;
 }
 
