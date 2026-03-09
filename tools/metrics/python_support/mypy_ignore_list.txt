@@ -1,7 +1,6 @@
 setup_modules_lib.py:29: error: Name "setup_extra_modules" already defined on line 22  [no-redef]
 tools/metrics/tests_helpers.py:37: error: Need type annotation for "all_test_files" (hint: "all_test_files: list[<type>] = ...")  [var-annotated]
 tools/metrics/setup_modules_lib.py:29: error: Name "setup_extra_modules" already defined on line 22  [no-redef]
-tools/metrics/metrics_python_tests.py:12: error: Cannot find implementation or library stub for module named "typ"  [import-not-found]
 tools/metrics/structured/sync/model_util.py:55: error: Argument 2 to "fullmatch" has incompatible type "str | None"; expected "str"  [arg-type]
 tools/metrics/structured/sync/model_util.py:84: error: Item "None" of "str | None" has no attribute "strip"  [union-attr]
 tools/metrics/structured/sync/model_util.py:91: error: Incompatible default for argument "regex" (default has type "None", argument has type "str")  [assignment]

@@ -37,6 +37,7 @@ _STUB_MAPPINGS: Dict[str, str] = {
     'chromium_src': '.',
     'setup_modules_lib.py': 'tools/metrics/python_support/setup_modules_lib.py',
     'setup_modules.py': 'tools/metrics/setup_modules.py',
+    'typ': 'third_party/catapult/third_party/typ',
 }
 
 # List of regex patterns for errors to ignore.
