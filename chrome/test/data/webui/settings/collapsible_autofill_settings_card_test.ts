@@ -9,7 +9,7 @@ import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/l
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -383,51 +383,169 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertTrue(toggle.checked);
       });
 
-  test('EnterprisePolicyObserver', async function() {
-    const card = await createCollapsibleAutofillSettingsCard();
+  test(
+      'EnterprisePolicyObserverTakeIntoAccountAutofillAiPolicy',
+      async function() {
+        const card = await createCollapsibleAutofillSettingsCard();
 
-    // Expand the card to make the logging bullet visible.
-    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
-    assertTrue(!!expandButton);
-    expandButton.click();
-    await flushTasks();
+        // Expand the card to make the logging bullet visible.
+        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        assertTrue(!!expandButton);
+        expandButton.click();
+        await flushTasks();
 
-    const getLoggingBullet = () =>
-        card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
-            '#enterpriseInfoBullet');
+        const getLoggingBullet = () =>
+            card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+                '#enterpriseInfoBullet');
 
-    // Initial state: Policy `ALLOW`.
-    assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
-    assertFalse(!!getLoggingBullet());
+        // Initial state: Policy `ALLOW`.
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(!!getLoggingBullet());
 
-    // State: Policy `DISABLE`.
-    card.setPrefValue(
-        AiEnterpriseFeaturePrefName.AUTOFILL_AI,
-        ModelExecutionEnterprisePolicyValue.DISABLE);
-    await flushTasks();
+        // State: Policy `DISABLE`.
+        card.setPrefValue(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+            ModelExecutionEnterprisePolicyValue.DISABLE);
+        await flushTasks();
 
-    assertFalse(card.get('enhancedAutofillOptedIn_.value'));
-    assertEquals(
-        chrome.settingsPrivate.Enforcement.ENFORCED,
-        card.get('enhancedAutofillOptedIn_.enforcement'));
-    assertEquals(
-        chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        card.get('enhancedAutofillOptedIn_.controlledBy'));
-    assertTrue(!!getLoggingBullet());
+        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            chrome.settingsPrivate.Enforcement.ENFORCED,
+            card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.USER_POLICY,
+            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(!!getLoggingBullet());
 
-    // State: Policy `ALLOW` again.
-    card.setPrefValue(
-        AiEnterpriseFeaturePrefName.AUTOFILL_AI,
-        ModelExecutionEnterprisePolicyValue.ALLOW);
-    await flushTasks();
+        // State: Policy `ALLOW` again.
+        card.setPrefValue(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+            ModelExecutionEnterprisePolicyValue.ALLOW);
+        await flushTasks();
 
-    assertTrue(card.get('enhancedAutofillOptedIn_.value'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
-    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
-    assertFalse(!!getLoggingBullet());
-  });
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(!!getLoggingBullet());
+      });
+
+  test(
+      'EnterprisePolicyObserverTakeIntoAccountAddressEnabledPolicy',
+      async function() {
+        loadTimeData.overrideValues({
+          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+        });
+        const card = await createCollapsibleAutofillSettingsCard();
+
+        // Expand the card to make the logging bullet visible.
+        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        assertTrue(!!expandButton);
+        expandButton.click();
+        await flushTasks();
+
+        const getPolicyIcon = () =>
+            card.$.optInToggle.shadowRoot!
+                .querySelector<CrPolicyPrefIndicatorElement>(
+                    'cr-policy-pref-indicator');
+
+        // Initial state: Policy `ALLOW`.
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(!!getPolicyIcon());
+
+        // State: Policy `DISABLE`.
+        card.set('prefs.autofill.profile_enabled', {
+          value: false,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        });
+        await flushTasks();
+
+        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            chrome.settingsPrivate.Enforcement.ENFORCED,
+            card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.USER_POLICY,
+            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(!!getPolicyIcon());
+
+        // State: Policy `ALLOW` again.
+        card.set('prefs.autofill.profile_enabled', {value: true});
+        await flushTasks();
+
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertEquals('none', getPolicyIcon()!.style.display);
+      });
+
+  test(
+      'EnterprisePolicyObserverTakeIntoAccountAddressEnabledExtension',
+      async function() {
+        loadTimeData.overrideValues({
+          enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+        });
+        const card = await createCollapsibleAutofillSettingsCard();
+
+        // Expand the card to make the logging bullet visible.
+        const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+        assertTrue(!!expandButton);
+        expandButton.click();
+        await flushTasks();
+
+        const getExtensionIndicator = () =>
+            card.shadowRoot!.querySelector('#autofillExtensionIndicator');
+
+        // Initial state: Policy `ALLOW`.
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertFalse(!!getExtensionIndicator());
+
+        // State: Policy `DISABLE`.
+        card.set('prefs.autofill.profile_enabled', {
+          value: false,
+          enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+          controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+          extensionId: 'test-extension-id',
+        });
+        await flushTasks();
+
+        assertFalse(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            chrome.settingsPrivate.Enforcement.ENFORCED,
+            card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.EXTENSION,
+            card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertTrue(!!getExtensionIndicator());
+
+        // State: Policy `ALLOW` again.
+        card.set('prefs.autofill.profile_enabled', {value: true});
+        await flushTasks();
+
+        assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+        assertEquals(
+            undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+        assertEquals(
+            'none', getExtensionIndicator()!.parentElement!.style.display);
+      });
 
   test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
     loadTimeData.overrideValues(

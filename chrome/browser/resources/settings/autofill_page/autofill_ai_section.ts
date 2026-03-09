@@ -7,6 +7,7 @@
  * for Autofill AI.
  */
 
+import '/shared/settings/controls/extension_controlled_indicator.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
@@ -145,6 +146,14 @@ export class SettingsAutofillAiSectionElement extends
           return loadTimeData.getBoolean('autofillAiAvailableByDefault');
         },
       },
+
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableYourSavedInfoPolicyAndExtentionToggleIndicators');
+        },
+      },
     };
   }
 
@@ -152,6 +161,10 @@ export class SettingsAutofillAiSectionElement extends
     return [
       `onAutofillAddressPrefChanged_(
           prefs.autofill.profile_enabled.value)`,
+      `onEnterprisePolicyChanged_(prefs.${
+          AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value,
+          prefs.autofill.profile_enabled.*,
+          ineligibleUser)`,
     ];
   }
 
@@ -164,6 +177,8 @@ export class SettingsAutofillAiSectionElement extends
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
+  declare private enableYourSavedInfoPolicyAndExtentionToggleIndicators_:
+      boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -171,22 +186,68 @@ export class SettingsAutofillAiSectionElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.entityDataManager_.getOptInStatus().then(
-        optedIn => this.set('optedIn_.value', !this.ineligibleUser && optedIn));
-    const policyDisabled =
-        this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
-        ModelExecutionEnterprisePolicyValue.DISABLE;
-    if (policyDisabled) {
-      this.set(
-          'optedIn_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
-      this.set(
-          'optedIn_.controlledBy',
-          chrome.settingsPrivate.ControlledBy.USER_POLICY);
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      this.entityDataManager_.getOptInStatus().then(
+          optedIn =>
+              this.set('optedIn_.value', !this.ineligibleUser && optedIn));
+      const policyDisabled =
+          this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
+          ModelExecutionEnterprisePolicyValue.DISABLE;
+      if (policyDisabled) {
+        this.set(
+            'optedIn_.enforcement',
+            chrome.settingsPrivate.Enforcement.ENFORCED);
+        this.set(
+            'optedIn_.controlledBy',
+            chrome.settingsPrivate.ControlledBy.USER_POLICY);
+      }
     }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+  }
+
+  private async onEnterprisePolicyChanged_() {
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return;
+    }
+
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
+    if (addressAutofillEnabled.enforcement ===
+            chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !this.autofillAddOtherDatatypesPrefIsEnabled_) {
+      this.set(
+          'optedIn_.value',
+          !this.ineligibleUser && addressAutofillEnabled.value);
+      this.set('optedIn_.enforcement', addressAutofillEnabled.enforcement);
+      this.set('optedIn_.controlledBy', addressAutofillEnabled.controlledBy);
+      return;
+    }
+
+    const optedIn = await this.entityDataManager_.getOptInStatus();
+    const autofillAiPolicyDisabled =
+        this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
+        ModelExecutionEnterprisePolicyValue.DISABLE;
+    if (autofillAiPolicyDisabled) {
+      this.set(
+          'optedIn_.enforcement', chrome.settingsPrivate.Enforcement.ENFORCED);
+      this.set(
+          'optedIn_.controlledBy',
+          chrome.settingsPrivate.ControlledBy.USER_POLICY);
+    } else {
+      this.set('optedIn_.enforcement', undefined);
+      this.set('optedIn_.controlledBy', undefined);
+    }
+
+    if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
+      this.set('optedIn_.value', !this.ineligibleUser && optedIn);
+    } else {
+      this.set(
+          'optedIn_.value',
+          !this.ineligibleUser && optedIn && addressAutofillEnabled.value);
+    }
   }
 
   private async onOptInToggleChange_() {
@@ -224,6 +285,9 @@ export class SettingsAutofillAiSectionElement extends
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAddressPrefChanged_(prefValue: boolean) {
+    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return;
+    }
     if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
       return;
     }
@@ -246,6 +310,28 @@ export class SettingsAutofillAiSectionElement extends
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  private showExtensionControlledIndicator_() {
+    if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      return false;
+    }
+
+    const addressAutofillEnabled =
+        this.getPref<boolean>('autofill.profile_enabled');
+    return !!addressAutofillEnabled.extensionId;
+  }
+
+  private optInToggleDisabled_(): boolean {
+    if (this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
+      const addressAutofillEnabled =
+          this.getPref<boolean>('autofill.profile_enabled');
+      return this.ineligibleUser ||
+          addressAutofillEnabled.enforcement ===
+          chrome.settingsPrivate.Enforcement.ENFORCED;
+    } else {
+      return this.ineligibleUser;
+    }
   }
 }
 

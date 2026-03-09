@@ -11,7 +11,7 @@ import { assertEquals, assertFalse, assertTrue } from 'chrome://webui-test/chai_
 import { isVisible } from 'chrome://webui-test/test_util.js';
 // </if>
 import { CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue } from 'chrome://settings/settings.js';
-import type { SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement } from 'chrome://settings/settings.js';
+import type { SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement, CrPolicyPrefIndicatorElement } from 'chrome://settings/settings.js';
 import type { SettingsAutofillAiSectionElement } from 'chrome://settings/lazy_load.js';
 import { AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
 
@@ -301,6 +301,10 @@ suite('AutofillAiSectionUiTest', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
+    settingsPrefs.set('prefs.autofill.profile_enabled', {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    });
   });
 
   teardown(function() {
@@ -311,6 +315,7 @@ suite('AutofillAiSectionUiTest', function() {
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
       autofillAiAvailableByDefault: autofillAiAvailableByDefault,
+      AutofillAddOtherDatatypesPrefIsEnabled: false,
     });
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = settingsPrefs.prefs;
@@ -417,6 +422,54 @@ suite('AutofillAiSectionUiTest', function() {
                 'autofillAiSubpageSublabelLoggingManagedDisabled'),
             enterpriseLogginInfoBullet.loggingManagedDisabledCustomLabel);
       });
+
+  test('ToggleRespectsAddressAutofillPolicy', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    settingsPrefs.set('prefs.autofill.profile_enabled', {
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    });
+    await createSection();
+
+    const policyIcon = section.$.prefToggle.shadowRoot!
+                           .querySelector<CrPolicyPrefIndicatorElement>(
+                               'cr-policy-pref-indicator');
+    assertEquals(
+        chrome.settingsPrivate.Enforcement.ENFORCED,
+        section.get('optedIn_.enforcement'));
+    assertEquals(
+        chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        section.get('optedIn_.controlledBy'));
+    assertFalse(section.get('optedIn_.value'));
+    assertTrue(!!policyIcon);
+  });
+
+  test('ToggleRespectsAddressAutofillExtension', async function() {
+    loadTimeData.overrideValues({
+      enableYourSavedInfoPolicyAndExtentionToggleIndicators: true,
+    });
+    settingsPrefs.set('prefs.autofill.profile_enabled', {
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'test-extension-id',
+    });
+    await createSection();
+
+    const extensionIndicator =
+        section.shadowRoot!.querySelector('#autofillExtensionIndicator');
+    assertEquals(
+        chrome.settingsPrivate.Enforcement.ENFORCED,
+        section.get('optedIn_.enforcement'));
+    assertEquals(
+        chrome.settingsPrivate.ControlledBy.EXTENSION,
+        section.get('optedIn_.controlledBy'));
+    assertFalse(section.get('optedIn_.value'));
+    assertTrue(!!extensionIndicator);
+  });
 
   test('ToggleIsDisabledWhenUserIsNotEligible', async function() {
     await createSection();
