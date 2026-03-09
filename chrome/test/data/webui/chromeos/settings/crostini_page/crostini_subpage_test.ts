@@ -69,6 +69,7 @@ suite('<settings-crostini-subpage> for baguette', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
+      arcAdbSideloadingSupported: true,
     });
 
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
@@ -96,6 +97,8 @@ suite('<settings-crostini-subpage> for baguette', () => {
         subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
     assertTrue(isVisible(
         subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
+    assertTrue(isVisible(
+        subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow')));
     assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
     assertFalse(isVisible(
         subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));
@@ -149,6 +152,7 @@ suite('<settings-crostini-subpage>', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
+      arcAdbSideloadingSupported: true,
     });
 
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
@@ -177,6 +181,8 @@ suite('<settings-crostini-subpage>', () => {
           subpage.shadowRoot!.querySelector('#crostiniSharedUsbDevicesRow')));
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniExportImportRow')));
+      assertTrue(isVisible(
+          subpage.shadowRoot!.querySelector('#crostiniEnableArcAdbRow')));
       assertTrue(isVisible(subpage.shadowRoot!.querySelector('#remove')));
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#crostiniPortForwardingRow')));

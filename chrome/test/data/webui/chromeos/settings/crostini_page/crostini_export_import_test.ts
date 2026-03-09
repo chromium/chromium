@@ -89,6 +89,7 @@ suite('<settings-crostini-export-import>', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
+      arcAdbSideloadingSupported: true,
     });
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
     crostiniBrowserProxy.containerInfo = singleContainer;
