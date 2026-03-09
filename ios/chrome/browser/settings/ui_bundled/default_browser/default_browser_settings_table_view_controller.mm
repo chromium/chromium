@@ -166,8 +166,8 @@ enum class DefaultBrowserSettingsPageUsage {
                    hasRemindMeLater:NO
           useDefaultAppsDestination:_useDefaultAppsDestination
                            hasSteps:YES
-                      actionHandler:self
                           titleText:nil];
+  _instructionsViewController.actionHandler = self;
   [self addChildViewController:_instructionsViewController];
 
   self.tableView.backgroundView = [[UIView alloc] init];

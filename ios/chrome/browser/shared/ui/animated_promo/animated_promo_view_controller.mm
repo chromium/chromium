@@ -25,15 +25,10 @@ constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
 // Default spacing applied between elements in the alert screen layout.
 constexpr CGFloat kCustomSpacing = 8;
 
-// Offset to raise the alertScreen's top anchor for devices with a regular
-// size class.
-constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
+// Vertical center offset for tablets.
+constexpr CGFloat kTabletCenterOffset = 40;
 
 }  // namespace
-
-@interface AnimatedPromoViewController ()
-
-@end
 
 @implementation AnimatedPromoViewController {
 
@@ -125,8 +120,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 // The offset from center Y to place the divider between the animation and the
 // confirmation alert screen.
 - (CGFloat)centerYOffset {
-  return CanShowTabStrip(_alertScreen) ? kCustomTopOffsetForRegularSizeClass
-                                       : 0;
+  return CanShowTabStrip(_alertScreen) ? -kTabletCenterOffset : 0;
 }
 
 // Creates and returns the LottieAnimation view for the `animationAssetName`.

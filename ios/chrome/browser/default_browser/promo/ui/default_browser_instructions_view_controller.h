@@ -7,8 +7,6 @@
 
 #import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
 
-@protocol ConfirmationAlertActionHandler;
-
 // The accessibility identifier of the default browser instructions view
 // animation id.
 extern NSString* const kDefaultBrowserInstructionsViewAnimationViewId;
@@ -26,8 +24,6 @@ extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
                      hasRemindMeLater:(BOOL)hasRemindMeLater
             useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
-                        actionHandler:
-                            (id<ConfirmationAlertActionHandler>)actionHandler
                             titleText:(NSString*)titleText;
 
 @end

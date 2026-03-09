@@ -10,11 +10,9 @@
 #import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -49,8 +47,6 @@ NSString* const kChromeKeypath = @"IDS_CHROME";
 NSString* const kChromeSecondaryKeypath = @"IDS_CHROME_SECONDARY";
 NSString* const kSettingsKeypath = @"IDS_IOS_SETTINGS";
 
-// Vertical center offset for tablets.
-constexpr CGFloat kTabletCenterOffset = 40;
 }  // namespace
 
 NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
@@ -67,14 +63,10 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   NSString* _titleText;
 }
 
-// TODO(crbug.com/489791419): `actionHandler` is passed via the initializer here
-// but exposed as a property on the base class. Reconcile this inconsistency.
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
             useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
-                        actionHandler:
-                            (id<ConfirmationAlertActionHandler>)actionHandler
                             titleText:(NSString*)titleText {
   if ((self = [super init])) {
     _hasDismissButton = hasDismissButton;
@@ -84,7 +76,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                                   IsUseDefaultAppsDestinationForPromosEnabled();
     _hasSteps = hasSteps;
     _titleText = titleText;
-    self.actionHandler = actionHandler;
   }
   return self;
 }
@@ -176,17 +167,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                        withAction:@selector(configureAnimationColors)];
     [self configureAnimationColors];
   }
-}
-
-#pragma mark - AnimatedPromoViewController
-
-// TODO(crbug.com/489791418): Move this offset to AnimatedPromoViewController
-// once verified it works for all animated promos on iPad.
-- (CGFloat)centerYOffset {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return -kTabletCenterOffset;
-  }
-  return [super centerYOffset];
 }
 
 #pragma mark - Private

@@ -80,7 +80,6 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO
-                      actionHandler:nil
                           titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
@@ -100,7 +99,6 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest, CreateViewWithStepsTest) {
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:YES
-                      actionHandler:nil
                           titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
@@ -121,7 +119,6 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO
-                      actionHandler:nil
                           titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
@@ -142,7 +139,6 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
                    hasRemindMeLater:YES
           useDefaultAppsDestination:NO
                            hasSteps:NO
-                      actionHandler:nil
                           titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
@@ -162,7 +158,6 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest, AnimationViewTest) {
                    hasRemindMeLater:NO
           useDefaultAppsDestination:NO
                            hasSteps:NO
-                      actionHandler:nil
                           titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);

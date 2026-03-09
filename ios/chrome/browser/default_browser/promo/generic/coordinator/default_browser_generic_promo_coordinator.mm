@@ -212,8 +212,8 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
                                     ? IsDefaultAppsPictureInPictureVariant()
                                     : _promoWasFromOffCycleTrigger
                        hasSteps:NO
-                  actionHandler:self
                       titleText:nil];
+  _viewController.actionHandler = self;
 
   UIViewController* viewControllerToPresent = _viewController;
   if (IsPersistentDefaultBrowserPromoEnabled()) {
