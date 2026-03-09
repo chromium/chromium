@@ -367,9 +367,13 @@ cr-button>span {
   display: block;
 }
 
-:host([reduced-motion-preferred]) .action-chips-container,
-:host([reduced-motion-preferred]) .action-chip {
-  animation: none;
-  opacity: 1;
-  transform: none;
+@container style(--cr-animations-disabled: 1) {
+  :host([show-simplified-ui_]) .action-chips-container,
+  :host(:not([show-simplified-ui_])) .action-chips-container,
+  :host([show-simplified-ui_]) .action-chip,
+  :host(:not([show-simplified-ui_])) .action-chip {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }

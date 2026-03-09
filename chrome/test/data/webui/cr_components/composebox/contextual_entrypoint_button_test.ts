@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_button
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -111,5 +111,69 @@ suite('ContextualEntrypointButton', () => {
     // Assert narrow state.
     description = $$(testElement, '#description');
     assertFalse(!!description);
+  });
+
+  test('disables animations when --cr-animations-disabled is 1', async () => {
+    document.body.style.setProperty('--cr-animations-disabled', '1');
+    const testElement = createEntrypointButton();
+    testElement.showContextMenuDescription = true;
+    testElement.setAttribute('glif-animation-state', 'started');
+    await microtasksFinished();
+
+    // selector: The query selector for the element to check.
+    // style_assertion: The expected styles for the element.
+    const checks = [
+      {
+        selector: '.aim-gradient-outer-blur',
+        style_assertion: {
+          'display': 'none',
+        },
+      },
+      {
+        selector: '.aim-gradient-solid',
+        style_assertion: {
+          'display': 'none',
+        },
+      },
+      {
+        selector: '.aim-background',
+        style_assertion: {
+          'display': 'none',
+        },
+      },
+      {
+        selector: '#entrypoint',
+        style_assertion: {
+          'animation-name': 'none',
+        },
+      },
+      {
+        selector: '#description',
+        style_assertion: {
+          'animation-name': 'none',
+          'opacity': '1',
+          'transform': 'none',
+        },
+      },
+    ];
+
+    for (const check of checks) {
+      const element = $$(testElement, check.selector);
+      assertTrue(!!element, `Expect an element with ${check.selector}`);
+      const style = window.getComputedStyle(element);
+      const actualStyles: Record<string, string> = {};
+      for (const property of Object.keys(check.style_assertion)) {
+        actualStyles[property] =
+            style[property as keyof CSSStyleDeclaration] as unknown as string;
+      }
+      assertDeepEquals(
+          actualStyles, check.style_assertion,
+          `Expect ${check.selector} to have the following styles: ${
+              JSON.stringify(check.style_assertion)}, got: ${
+              JSON.stringify(actualStyles)}`);
+    }
+
+    // Clean up
+    document.body.style.removeProperty('--cr-animations-disabled');
   });
 });

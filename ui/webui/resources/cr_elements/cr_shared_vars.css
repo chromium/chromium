@@ -365,3 +365,9 @@ html {
     --cr-fallback-color-disabled-foreground: GrayText;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    --cr-animations-disabled: 1;
+  }
+}
