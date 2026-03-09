@@ -4960,6 +4960,19 @@ chromium-metrics-reviews@google.com.
   <token key="DHCPProvisionReason" variants="DHCPProvisionReason"/>
 </histogram>
 
+<histogram name="Network.SyntheticResponse.IsHeaderConsistent" enum="Boolean"
+    expires_after="2026-07-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the committed response headers are consistent with the
+    headers from the network when the service worker synthetic response is used.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers.
+  </summary>
+</histogram>
+
 <histogram name="Network.TrafficCounters.{Technology}.AverageDailyDataUsage"
     units="MB" expires_after="2026-12-31">
   <owner>khegde@google.com</owner>

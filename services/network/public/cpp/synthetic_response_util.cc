@@ -19,6 +19,9 @@ namespace network {
 
 namespace {
 
+constexpr char kHistogramIsHeaderConsistent[] =
+    "Network.SyntheticResponse.IsHeaderConsistent";
+
 // Returns a vector of header names to be ignored, parsed from the feature flag.
 const std::vector<std::string>& GetIgnoredHeadersForSyntheticResponse() {
   static const base::NoDestructor<std::vector<std::string>>
@@ -117,6 +120,7 @@ bool CheckHeaderConsistencyForSyntheticResponseImpl(
       collect_significant_headers(expected_headers);
 
   bool result = significant_actual_headers == significant_expected_headers;
+  base::UmaHistogramBoolean(kHistogramIsHeaderConsistent, result);
   if (!result) {
     MaybeReportHeaderInconsistency(significant_actual_headers,
                                    significant_expected_headers);

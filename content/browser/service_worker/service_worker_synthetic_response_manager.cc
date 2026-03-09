@@ -38,8 +38,6 @@
 
 namespace {
 
-constexpr char kHistogramIsHeaderConsistent[] =
-    "ServiceWorker.SyntheticResponse.IsHeaderConsistent";
 constexpr char kHistogramIsHeaderStored[] =
     "ServiceWorker.SyntheticResponse.IsHeaderStored";
 constexpr char kHistogramStartRequestToReceiveResponse[] =
@@ -496,13 +494,12 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
         }
         return;
       }
-      bool is_header_consistent = false;
       if (version_->GetResponseHeadForSyntheticResponse()) {
-        is_header_consistent = CheckHeaderConsistency(response_head->headers);
-        if (is_header_consistent) {
+        if (CheckHeaderConsistency(response_head->headers)) {
           TransferResponseBody(std::move(body),
                                write_buffer_manager_->ReleaseProducerHandle());
-        } else {          // Clear the stored header when it's inconsistent with the header from
+        } else {
+          // Clear the stored header when it's inconsistent with the header from
           // the network so that the next navigation won't get the header
           // mismatch and reloading consistently.
           //
@@ -522,8 +519,6 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
         RecordReloadReason(
             SyntheticResponseReloadReason::kCachedResponseHeadCleared);
       }
-      base::UmaHistogramBoolean(kHistogramIsHeaderConsistent,
-                                is_header_consistent);
       break;
     }
     case SyntheticResponseStatus::kNotReady:
@@ -548,8 +543,8 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
                             did_start_synthetic_response_);
       SCOPED_CRASH_KEY_BOOL("SWSR", "is_initiated_by_prefetch",
                             is_initiated_by_prefetch_);
-      SCOPED_CRASH_KEY_BOOL(
-          "SWSR", "is_shared_producer_pipe_valid", shared_producer_->pipe.is_valid());
+      SCOPED_CRASH_KEY_BOOL("SWSR", "is_shared_producer_pipe_valid",
+                            shared_producer_->pipe.is_valid());
       SCOPED_CRASH_KEY_BOOL("SWSR", "is_guest", is_guest_);
       SCOPED_CRASH_KEY_NUMBER("SWSR", "interceptor_count",
                               factory_interceptor_count_);
