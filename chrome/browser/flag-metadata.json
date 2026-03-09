@@ -5362,6 +5362,15 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-disable-actor-safety-checks",
+    "owners": [
+      "robertogden@chromium.org",
+      "mcnee@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-entrypoint-variations",
     "owners": [
       "iwells@chromium.org",

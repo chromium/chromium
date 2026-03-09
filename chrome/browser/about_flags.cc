@@ -33,6 +33,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
+#include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
@@ -10952,6 +10953,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
      flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicSelectionPrompt)},
+
+    {"glic-disable-actor-safety-checks",
+     flag_descriptions::kGlicDisableActorSafetyChecksName,
+     flag_descriptions::kGlicDisableActorSafetyChecksDescription, kOsDesktop,
+     SINGLE_VALUE_TYPE(actor::switches::kDisableActorSafetyChecks)},
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,

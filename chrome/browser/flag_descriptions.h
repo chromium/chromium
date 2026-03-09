@@ -1493,6 +1493,11 @@ inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
 inline constexpr char kGlicGuestUrlPresetsDescription[] =
     "Overrides the Bluebird environment URL used for Glic with user-configured "
     "values. Intended for manual testing only.";
+inline constexpr char kGlicDisableActorSafetyChecksName[] =
+    "Glic disable actor safety checks";
+inline constexpr char kGlicDisableActorSafetyChecksDescription[] =
+    "Disables actor safety checks in Glic. Use with extreme caution, intended "
+    "for testing only.";
 
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";
