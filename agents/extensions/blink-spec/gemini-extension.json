@@ -4,7 +4,10 @@
   "mcpServers": {
     "blink-spec": {
       "command": "vpython3",
-      "args": ["third_party/blink/tools/mcp_servers/blink_spec/server.py"]
+      "args": ["${workspacePath}${/}third_party${/}blink${/}tools${/}mcp_servers${/}blink_spec${/}server.py"],
+      "env": {
+        "BLINK_SPEC_GITHUB_API_KEY": "${BLINK_SPEC_GITHUB_API_KEY}"
+      }
     }
   }
 }

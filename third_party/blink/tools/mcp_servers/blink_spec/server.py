@@ -7,6 +7,7 @@
 import json
 import os
 import re
+import sys
 import requests
 
 # vpython-provided modules
@@ -55,6 +56,9 @@ def get_github_issue_with_comments(issue_url: str) -> str:
         A JSON formatted string containing the original post and all comments,
         each with an author, date, and comment. Returns an error message on failure.
     """
+
+    if not GITHUB_API_KEY:
+        return "Error: BLINK_SPEC_GITHUB_API_KEY environment variable is not set."
 
     pattern = r"https://github\.com/([^/]+)/([^/]+)/issues/(\d+)"
     match = re.match(pattern, issue_url)
@@ -135,8 +139,8 @@ def get_github_issue_with_comments(issue_url: str) -> str:
 if __name__ == '__main__':
     if GITHUB_API_KEY == "":
         print(
-            "Error: BLINK_SPEC_GITHUB_API_KEY not set. See //agents/extensions/blink_spec/README.md"
-        )
+            "Warning: BLINK_SPEC_GITHUB_API_KEY not set. Some tools will not work. See //agents/extensions/blink_spec/README.md",
+            file=sys.stderr)
     else:
-        print("Starting Blink Spec MCP server")
-        mcp.run()
+        print("Starting Blink Spec MCP server", file=sys.stderr)
+    mcp.run()

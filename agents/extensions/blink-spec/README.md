@@ -7,7 +7,7 @@ are located.
 ## Installation
 
 ```
-$ agents/extensions/install.py add blink_spec
+$ agents/extensions/install.py add blink-spec
 ```
 
 ## Setup
@@ -15,14 +15,12 @@ $ agents/extensions/install.py add blink_spec
 In order to use the github API, each person who installs the extension is
 required to create a personal access token:
 
-Direct link: https://github.com/settings/personal-access-tokens
-Or:
+Direct link: https://github.com/settings/personal-access-tokens Or:
+
 - In github, click your avatar at the top-right,
 - Click `Settings`
 - Click `Developer Settings`
 - Under `Personal access tokens`, navigate to `Fine-grained tokens`
-
-
 - Create a token and save it somewhere.
   - Note that some groups (w3c) require that the token has an expiration time
     less than 366 days.
@@ -31,6 +29,7 @@ Or:
 
 Add the access token as a `BLINK_SPEC_GITHUB_API_KEY` environment variable prior
 to invoking gemini:
+
 ```
 $ echo "export BLINK_SPEC_GITHUB_API_KEY=your_key" >> ~/.bashrc
 $ source ~/.bashrc
@@ -39,15 +38,7 @@ $ source ~/.bashrc
 ## Usage
 
 Sample query (after starting gemini-cli):
-```
-> summarize css issue 12336
-```
 
-(Googlers only)
-Note that if the extension is blocked due to not being allowlisted, you can try
-it by invoking gemini with a mcpdev flag:
 ```
-$ gemini --mcpdev
+> summarize css spec issue 12336
 ```
-
-TODO(https://issues.chromium.org/439574172): Allowlist this mcp.
