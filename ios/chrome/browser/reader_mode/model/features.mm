@@ -33,7 +33,7 @@ BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeTranslationWithInfobar,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
 
