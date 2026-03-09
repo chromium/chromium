@@ -12,8 +12,7 @@
 
 namespace sandbox {
 
-SBOX_TESTS_COMMAND int HandleInheritanceTests_PrintToStdout(int argc,
-                                                            wchar_t** argv) {
+SBOX_TEST_COMMAND(HandleInheritanceTests_PrintToStdout) {
   printf("Example output to stdout\n");
   return SBOX_TEST_SUCCEEDED;
 }
@@ -34,9 +33,9 @@ TEST(HandleInheritanceTests, TestStdoutInheritance) {
                  OPEN_EXISTING, 0, nullptr));
   ASSERT_TRUE(tmp_handle.is_valid());
 
-  TestRunner runner;
+  HandleInheritanceTests_PrintToStdoutTestRunner runner;
   ASSERT_EQ(SBOX_ALL_OK, runner.GetPolicy()->SetStdoutHandle(tmp_handle.get()));
-  int result = runner.RunTest(L"HandleInheritanceTests_PrintToStdout");
+  int result = runner.RunTest();
   ASSERT_EQ(SBOX_TEST_SUCCEEDED, result);
 
   std::string data;

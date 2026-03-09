@@ -19,7 +19,7 @@
 
 namespace sandbox {
 
-SBOX_TESTS_COMMAND int WarmupRandomness(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(WarmupRandomness) {
   static int state = BEFORE_INIT;
 
   switch (state++) {
@@ -43,7 +43,7 @@ SBOX_TESTS_COMMAND int WarmupRandomness(int argc, wchar_t** argv) {
 // applies without crashing. The hooked call within dwrite.dll is not
 // straightforward to trigger, so this test mainly validates that the import to
 // hook is present.
-SBOX_TESTS_COMMAND int HookDwrite(int argc, wchar_t** argv) {
+SBOX_TEST_COMMAND(HookDwrite) {
   static int state = BEFORE_INIT;
   static HMODULE dwrite_mod = nullptr;
 
@@ -85,19 +85,19 @@ SBOX_TESTS_COMMAND int HookDwrite(int argc, wchar_t** argv) {
 }
 
 TEST(SandboxPolicyWarmup, Randomness) {
-  TestRunner runner;
+  WarmupRandomnessTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"WarmupRandomness"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 }
 
 TEST(SandboxPolicyWarmup, HookDwrite) {
-  TestRunner runner;
+  HookDwriteTestRunner runner;
   runner.SetTimeout(2000);
   runner.SetTestState(EVERY_STATE);
 
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"HookDwrite"));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest());
 }
 
 }  // namespace sandbox
