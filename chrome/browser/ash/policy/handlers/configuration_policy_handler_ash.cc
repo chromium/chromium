@@ -453,8 +453,8 @@ bool DefaultHandlersForFileExtensionsPolicyHandler::CheckPolicySettings(
   return true;
 }
 
-// Applies an inverse mapping to `prefs::kDefaultHandlersForFileExtensions`:
-// file_extension -> id.
+// Applies an inverse mapping to
+// `ash::prefs::kDefaultHandlersForFileExtensions`: file_extension -> id.
 void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
@@ -480,7 +480,7 @@ void DefaultHandlersForFileExtensionsPolicyHandler::ApplyPolicySettings(
     }
   }
 
-  prefs->SetValue(prefs::kDefaultHandlersForFileExtensions,
+  prefs->SetValue(ash::prefs::kDefaultHandlersForFileExtensions,
                   base::Value(std::move(pref_mapping)));
 }
 

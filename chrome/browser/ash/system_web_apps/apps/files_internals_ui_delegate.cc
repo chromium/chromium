@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_ui_delegate.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/files/file_enumerator.h"
 #include "base/strings/escape.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/api/file_handlers/directory_util.h"
@@ -260,7 +260,7 @@ void ChromeFilesInternalsUIDelegate::SetSmbfsEnableVerboseLogging(
 std::string ChromeFilesInternalsUIDelegate::GetOfficeFileHandlers() const {
   Profile* profile = Profile::FromWebUI(web_ui_);
   const base::DictValue& extension_task_prefs =
-      profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
+      profile->GetPrefs()->GetDict(ash::prefs::kDefaultTasksBySuffix);
   base::DictValue filtered_prefs;
 
   for (const std::string& extension :
@@ -299,7 +299,7 @@ void ChromeFilesInternalsUIDelegate::ClearOfficeFileHandlers() {
     return;
   }
   ScopedDictPrefUpdate mime_type_pref(profile->GetPrefs(),
-                                      prefs::kDefaultTasksByMimeType);
+                                      ash::prefs::kDefaultTasksByMimeType);
   for (const std::string& mime_type :
        file_manager::file_tasks::WordGroupMimeTypes()) {
     mime_type_pref->Remove(mime_type);
@@ -314,7 +314,7 @@ void ChromeFilesInternalsUIDelegate::ClearOfficeFileHandlers() {
   }
 
   ScopedDictPrefUpdate extension_pref(profile->GetPrefs(),
-                                      prefs::kDefaultTasksBySuffix);
+                                      ash::prefs::kDefaultTasksBySuffix);
   for (const std::string& extension :
        file_manager::file_tasks::WordGroupExtensions()) {
     extension_pref->Remove(extension);

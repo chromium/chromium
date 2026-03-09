@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_future.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
-#include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -102,7 +102,7 @@ class FileHandlingSubManagerConfigureTest : public WebAppTest {
       pref_dict.Set(handler.file_extension, handler.policy_id);
     }
     profile()->GetTestingPrefService()->SetDict(
-        prefs::kDefaultHandlersForFileExtensions, std::move(pref_dict));
+        ash::prefs::kDefaultHandlersForFileExtensions, std::move(pref_dict));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

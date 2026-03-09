@@ -13,7 +13,6 @@
 #include <variant>
 #include <vector>
 
-#include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
@@ -55,7 +54,6 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -66,6 +64,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #endif
 
@@ -1605,7 +1605,7 @@ bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
 #if BUILDFLAG(IS_CHROMEOS)
   const std::string* file_extension_policy_id =
       profile_->GetPrefs()
-          ->GetDict(prefs::kDefaultHandlersForFileExtensions)
+          ->GetDict(ash::prefs::kDefaultHandlersForFileExtensions)
           .FindString(file_extension);
   if (!file_extension_policy_id) {
     return false;
@@ -1630,8 +1630,8 @@ bool WebAppRegistrar::IsAppPolicyDefinedHandlerForFileExtension(
 bool WebAppRegistrar::IsAppSetAsPolicyDefinedFileHandlerForAnyFileExtension(
     const webapps::AppId& app_id) const {
 #if BUILDFLAG(IS_CHROMEOS)
-  const base::DictValue& default_handlers =
-      profile_->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
+  const base::DictValue& default_handlers = profile_->GetPrefs()->GetDict(
+      ash::prefs::kDefaultHandlersForFileExtensions);
 
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app) {

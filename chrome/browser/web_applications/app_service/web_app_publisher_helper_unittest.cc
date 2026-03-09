@@ -9,6 +9,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -391,7 +391,7 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
 
   base::DictValue pref_value;
   pref_value.Set(".txt", "https://example.com/path/index.html");
-  profile()->GetPrefs()->SetDict(prefs::kDefaultHandlersForFileExtensions,
+  profile()->GetPrefs()->SetDict(ash::prefs::kDefaultHandlersForFileExtensions,
                                  std::move(pref_value));
   {
     ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();

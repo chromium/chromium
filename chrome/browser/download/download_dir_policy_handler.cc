@@ -26,6 +26,10 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 DownloadDirPolicyHandler::DownloadDirPolicyHandler()
     : TypeCheckingPolicyHandler(policy::key::kDownloadDirectory,
                                 base::Value::Type::STRING) {}
@@ -115,10 +119,10 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
 
   // Set the Files App default folder, regardless of policy enforcement.
   if (download_to_drive) {
-    prefs->SetString(prefs::kFilesAppDefaultLocation,
+    prefs->SetString(ash::prefs::kFilesAppDefaultLocation,
                      download_dir_util::kLocationGoogleDrive);
   } else if (download_to_one_drive) {
-    prefs->SetString(prefs::kFilesAppDefaultLocation,
+    prefs->SetString(ash::prefs::kFilesAppDefaultLocation,
                      download_dir_util::kLocationOneDrive);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

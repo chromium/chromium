@@ -17,6 +17,7 @@
 
 #include "apps/launcher.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/barrier_callback.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_pref_names.h"
@@ -360,11 +360,10 @@ void OpenFilesWithBrowser(Profile* profile,
           [](FileTaskFinishedCallback done,
              const std::vector<std::optional<apps::LaunchResult::State>>&
                  opens) {
-            const int num_opened =
-                std::ranges::count_if(opens, [](auto& o) {
-                  return o.has_value() &&
-                         o.value() == apps::LaunchResult::State::kSuccess;
-                });
+            const int num_opened = std::ranges::count_if(opens, [](auto& o) {
+              return o.has_value() &&
+                     o.value() == apps::LaunchResult::State::kSuccess;
+            });
 
             if (num_opened > 0) {
               std::move(done).Run(
@@ -478,14 +477,15 @@ ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Default handlers according to policy.
-  registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kDefaultHandlersForFileExtensions);
 
   // Dictionaries to keep track of default tasks in the file browser.
   registry->RegisterDictionaryPref(
-      prefs::kDefaultTasksByMimeType,
+      ash::prefs::kDefaultTasksByMimeType,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDictionaryPref(
-      prefs::kDefaultTasksBySuffix,
+      ash::prefs::kDefaultTasksBySuffix,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   RegisterOfficeProfilePrefs(registry);
@@ -641,7 +641,7 @@ void UpdateDefaultTask(Profile* profile,
 
   if (!mime_types_to_set.empty()) {
     ScopedDictPrefUpdate mime_type_pref(pref_service,
-                                        prefs::kDefaultTasksByMimeType);
+                                        ash::prefs::kDefaultTasksByMimeType);
     for (const std::string& mime_type : mime_types_to_set) {
       if (!replace_existing && mime_type_pref->contains(mime_type)) {
         continue;
@@ -652,7 +652,7 @@ void UpdateDefaultTask(Profile* profile,
 
   if (!suffixes.empty()) {
     ScopedDictPrefUpdate suffix_pref(pref_service,
-                                     prefs::kDefaultTasksBySuffix);
+                                     ash::prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes_to_set) {
       if (!replace_existing && suffix_pref->contains(suffix)) {
         continue;
@@ -679,7 +679,7 @@ void RemoveDefaultTask(Profile* profile,
       [](const std::string& suffix) { return base::ToLowerASCII(suffix); });
 
   ScopedDictPrefUpdate mime_type_pref(pref_service,
-                                      prefs::kDefaultTasksByMimeType);
+                                      ash::prefs::kDefaultTasksByMimeType);
   for (const auto& mime_type : mime_types) {
     std::string* pref_value = mime_type_pref->FindString(mime_type);
     if (pref_value && *pref_value == task_id) {
@@ -687,7 +687,8 @@ void RemoveDefaultTask(Profile* profile,
     }
   }
 
-  ScopedDictPrefUpdate suffix_pref(pref_service, prefs::kDefaultTasksBySuffix);
+  ScopedDictPrefUpdate suffix_pref(pref_service,
+                                   ash::prefs::kDefaultTasksBySuffix);
   for (const auto& suffix : suffixes_to_remove) {
     std::string* pref_value = suffix_pref->FindString(suffix);
     if (pref_value && *pref_value == task_id) {
@@ -704,7 +705,7 @@ std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
           << " and suffix: " << suffix;
   if (!mime_type.empty()) {
     const base::DictValue& mime_task_prefs =
-        pref_service.GetDict(prefs::kDefaultTasksByMimeType);
+        pref_service.GetDict(ash::prefs::kDefaultTasksByMimeType);
     const std::string* task_id = mime_task_prefs.FindString(mime_type);
     if (task_id) {
       VLOG(1) << "Found MIME default handler: " << *task_id;
@@ -713,7 +714,7 @@ std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
   }
 
   const base::DictValue& suffix_task_prefs =
-      pref_service.GetDict(prefs::kDefaultTasksBySuffix);
+      pref_service.GetDict(ash::prefs::kDefaultTasksBySuffix);
   std::string lower_suffix = base::ToLowerASCII(suffix);
 
   const std::string* task_id = suffix_task_prefs.FindString(lower_suffix);

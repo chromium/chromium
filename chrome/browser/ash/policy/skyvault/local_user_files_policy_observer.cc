@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 
 namespace policy::local_user_files {
 
@@ -22,8 +22,9 @@ LocalUserFilesPolicyObserver::LocalUserFilesPolicyObserver()
   const base::RepeatingClosure cb = base::BindRepeating(
       &LocalUserFilesPolicyObserver::OnLocalUserFilesPolicyChanged,
       base::Unretained(this));
-  pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
-  pref_change_registrar_->Add(prefs::kLocalUserFilesMigrationDestination, cb);
+  pref_change_registrar_->Add(ash::prefs::kLocalUserFilesAllowed, cb);
+  pref_change_registrar_->Add(ash::prefs::kLocalUserFilesMigrationDestination,
+                              cb);
 }
 
 LocalUserFilesPolicyObserver::~LocalUserFilesPolicyObserver() {

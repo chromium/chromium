@@ -9,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -121,22 +121,25 @@ bool AnyFileNeedsUploadToDrive(
 }  // namespace
 
 void RegisterOfficeProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToDrive, false);
-  registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToOneDrive, false);
-  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForDrive,
+  registry->RegisterBooleanPref(ash::prefs::kOfficeFilesAlwaysMoveToDrive,
                                 false);
-  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForOneDrive,
+  registry->RegisterBooleanPref(ash::prefs::kOfficeFilesAlwaysMoveToOneDrive,
                                 false);
   registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForLocalToDrive, false);
+      ash::prefs::kOfficeMoveConfirmationShownForDrive, false);
   registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, false);
+      ash::prefs::kOfficeMoveConfirmationShownForOneDrive, false);
   registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForCloudToDrive, false);
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToDrive, false);
   registry->RegisterBooleanPref(
-      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, false);
-  registry->RegisterTimePref(prefs::kOfficeFileMovedToOneDrive, base::Time());
-  registry->RegisterTimePref(prefs::kOfficeFileMovedToGoogleDrive,
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToDrive, false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, false);
+  registry->RegisterTimePref(ash::prefs::kOfficeFileMovedToOneDrive,
+                             base::Time());
+  registry->RegisterTimePref(ash::prefs::kOfficeFileMovedToGoogleDrive,
                              base::Time());
 }
 
@@ -518,7 +521,7 @@ bool HasExplicitDefaultFileHandler(Profile* profile,
                                    const std::string& extension) {
   std::string lower_extension = base::ToLowerASCII(extension);
   const base::DictValue& extension_task_prefs =
-      profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
+      profile->GetPrefs()->GetDict(ash::prefs::kDefaultTasksBySuffix);
   return extension_task_prefs.contains(lower_extension);
 }
 
@@ -598,95 +601,97 @@ void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
   SetPowerPointFileHandler(profile, task, replace_existing);
 }
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool always_move) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive,
+  profile->GetPrefs()->SetBoolean(ash::prefs::kOfficeFilesAlwaysMoveToDrive,
                                   always_move);
 }
 
 bool GetAlwaysMoveOfficeFilesToDrive(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive);
+  return profile->GetPrefs()->GetBoolean(
+      ash::prefs::kOfficeFilesAlwaysMoveToDrive);
 }
 
 void SetAlwaysMoveOfficeFilesToOneDrive(Profile* profile, bool always_move) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToOneDrive,
+  profile->GetPrefs()->SetBoolean(ash::prefs::kOfficeFilesAlwaysMoveToOneDrive,
                                   always_move);
 }
 
 bool GetAlwaysMoveOfficeFilesToOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeFilesAlwaysMoveToOneDrive);
+      ash::prefs::kOfficeFilesAlwaysMoveToOneDrive);
 }
 
 void SetOfficeMoveConfirmationShownForDrive(Profile* profile, bool complete) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeMoveConfirmationShownForDrive,
-                                  complete);
+  profile->GetPrefs()->SetBoolean(
+      ash::prefs::kOfficeMoveConfirmationShownForDrive, complete);
 }
 
 bool GetOfficeMoveConfirmationShownForDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForDrive);
 }
 
 void SetOfficeMoveConfirmationShownForOneDrive(Profile* profile,
                                                bool complete) {
   profile->GetPrefs()->SetBoolean(
-      prefs::kOfficeMoveConfirmationShownForOneDrive, complete);
+      ash::prefs::kOfficeMoveConfirmationShownForOneDrive, complete);
 }
 
 bool GetOfficeMoveConfirmationShownForOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForOneDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForOneDrive);
 }
 
 void SetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile,
                                                    bool shown) {
   profile->GetPrefs()->SetBoolean(
-      prefs::kOfficeMoveConfirmationShownForLocalToDrive, shown);
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToDrive, shown);
 }
 
 bool GetOfficeMoveConfirmationShownForLocalToDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForLocalToDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToDrive);
 }
 
 void SetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile,
                                                       bool shown) {
   profile->GetPrefs()->SetBoolean(
-      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, shown);
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToOneDrive, shown);
 }
 
 bool GetOfficeMoveConfirmationShownForLocalToOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForLocalToOneDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForLocalToOneDrive);
 }
 
 void SetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile,
                                                    bool shown) {
   profile->GetPrefs()->SetBoolean(
-      prefs::kOfficeMoveConfirmationShownForCloudToDrive, shown);
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToDrive, shown);
 }
 
 bool GetOfficeMoveConfirmationShownForCloudToDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForCloudToDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToDrive);
 }
 
 void SetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile,
                                                       bool shown) {
   profile->GetPrefs()->SetBoolean(
-      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, shown);
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToOneDrive, shown);
 }
 
 bool GetOfficeMoveConfirmationShownForCloudToOneDrive(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      prefs::kOfficeMoveConfirmationShownForCloudToOneDrive);
+      ash::prefs::kOfficeMoveConfirmationShownForCloudToOneDrive);
 }
 
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved) {
-  profile->GetPrefs()->SetTime(prefs::kOfficeFileMovedToOneDrive, moved);
+  profile->GetPrefs()->SetTime(ash::prefs::kOfficeFileMovedToOneDrive, moved);
 }
 
 void SetOfficeFileMovedToGoogleDrive(Profile* profile, base::Time moved) {
-  profile->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive, moved);
+  profile->GetPrefs()->SetTime(ash::prefs::kOfficeFileMovedToGoogleDrive,
+                               moved);
 }
 
 void RemoveFilesSWAWordFileHandler(Profile* profile,

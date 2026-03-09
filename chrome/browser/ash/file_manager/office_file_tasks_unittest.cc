@@ -7,13 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -33,18 +33,19 @@ class FileManagerOfficeFileTasksTest : public testing::Test {
 
   const base::DictValue& tasks_by_mime_type() {
     return profile()->GetTestingPrefService()->GetDict(
-        prefs::kDefaultTasksByMimeType);
+        ash::prefs::kDefaultTasksByMimeType);
   }
 
   const base::DictValue& tasks_by_suffix() {
     return profile()->GetTestingPrefService()->GetDict(
-        prefs::kDefaultTasksBySuffix);
+        ash::prefs::kDefaultTasksBySuffix);
   }
 
   void ClearPrefs() {
     profile()->GetTestingPrefService()->ClearPref(
-        prefs::kDefaultTasksByMimeType);
-    profile()->GetTestingPrefService()->ClearPref(prefs::kDefaultTasksBySuffix);
+        ash::prefs::kDefaultTasksByMimeType);
+    profile()->GetTestingPrefService()->ClearPref(
+        ash::prefs::kDefaultTasksBySuffix);
   }
 
  protected:

@@ -320,7 +320,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[drive::prefs::kDisableDrive] =
       settings_api::PrefType::kBoolean;
 #if BUILDFLAG(IS_CHROMEOS)
-  (*s_allowlist)[::prefs::kNetworkFileSharesAllowed] =
+  (*s_allowlist)[ash::prefs::kNetworkFileSharesAllowed] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kMostRecentlyUsedNetworkFileShareURL] =
       settings_api::PrefType::kString;
@@ -493,11 +493,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Files page.
-  (*s_allowlist)[::prefs::kOfficeFilesAlwaysMoveToDrive] =
+  (*s_allowlist)[ash::prefs::kOfficeFilesAlwaysMoveToDrive] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kOfficeFilesAlwaysMoveToOneDrive] =
+  (*s_allowlist)[ash::prefs::kOfficeFilesAlwaysMoveToOneDrive] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[::prefs::kLocalUserFilesAllowed] =
+  (*s_allowlist)[ash::prefs::kLocalUserFilesAllowed] =
       settings_api::PrefType::kBoolean;
 
   // Nearby Share.
@@ -1346,8 +1346,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicUserStatus] =
         settings_api::PrefType::kDictionary;
-    (*s_allowlist)[prefs::kGeminiSettings] =
-        settings_api::PrefType::kNumber;
+    (*s_allowlist)[prefs::kGeminiSettings] = settings_api::PrefType::kNumber;
     (*s_allowlist)[glic::prefs::kGlicUserEnabledActuationOnWeb] =
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled] =
@@ -1754,8 +1753,9 @@ PrefService* PrefsUtil::FindServiceForPref(const std::string& pref_name) {
   // explicitly mapped to profile prefs when changed in chrome://settings.
   if (pref_name == prefs::kDnsOverHttpsMode ||
       pref_name == prefs::kDnsOverHttpsTemplates) {
-    // Only look at user profiles (e.g., doing this for the Sign-in Profile would lead to
-    // problems because it can change its "managed" state during enrollment).
+    // Only look at user profiles (e.g., doing this for the Sign-in Profile
+    // would lead to problems because it can change its "managed" state during
+    // enrollment).
     if (ash::IsUserBrowserContext(profile_) &&
         profile_->GetProfilePolicyConnector()->IsManaged()) {
       return g_browser_process->local_state();

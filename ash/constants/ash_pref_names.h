@@ -2908,6 +2908,114 @@ inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
 inline constexpr char kUserTimezone[] = "settings.timezone";
 
 //-----------------------------------------------------------------------------
+// File manager/file system related Prefs
+//-----------------------------------------------------------------------------
+
+// Map of default tasks, associated by MIME type.
+inline constexpr char kDefaultTasksByMimeType[] =
+    "filebrowser.tasks.default_by_mime_type";
+
+// Map of default tasks, associated by file suffix.
+inline constexpr char kDefaultTasksBySuffix[] =
+    "filebrowser.tasks.default_by_suffix";
+
+// Maps file extensions to handlers according to the
+// DefaultHandlersForFileExtensions policy.
+inline constexpr char kDefaultHandlersForFileExtensions[] =
+    "filebrowser.default_handlers_for_file_extensions";
+
+// Pref that contains the value of the default location/volume that the user
+// should see in the Files App. Normally this is MyFiles. If
+// LocalUserFilesAllowed is False, this might be Google Drive or OneDrive,
+// depending on the value of the DownloadDirectory policy.
+inline constexpr char kFilesAppDefaultLocation[] =
+    "filebrowser.default_location";
+
+// Pref that contains the value of the LocalUserFilesAllowed policy.
+inline constexpr char kLocalUserFilesAllowed[] =
+    "filebrowser.local_user_files_allowed";
+
+// Pref that contains the value of the LocalUserFilesMigrationDestination
+// policy.
+inline constexpr char kLocalUserFilesMigrationDestination[] =
+    "filebrowser.local_user_files_migration_destination";
+
+// Boolean pref indicating whether a user is allowed to use the Network File
+// Shares for Chrome OS feature.
+inline constexpr char kNetworkFileSharesAllowed[] =
+    "network_file_shares.allowed";
+
+// Whether we should always move office files to Google Drive without prompting
+// the user first.
+inline constexpr char kOfficeFilesAlwaysMoveToDrive[] =
+    "filebrowser.office.always_move_to_drive";
+
+inline constexpr char kOfficeFilesAlwaysMoveToDriveSyncable[] =
+    "filebrowser.office.always_move_to_drive_syncable";
+
+// Whether we should always move office files to OneDrive without prompting the
+// user first.
+inline constexpr char kOfficeFilesAlwaysMoveToOneDrive[] =
+    "filebrowser.office.always_move_to_onedrive";
+
+inline constexpr char kOfficeFilesAlwaysMoveToOneDriveSyncable[] =
+    "filebrowser.office.always_move_to_onedrive_syncable";
+
+// The timestamp of the latest office file automatically moved to OneDrive.
+inline constexpr char kOfficeFileMovedToOneDrive[] =
+    "filebrowser.office.file_moved_one_drive";
+
+// The timestamp of the latest office file automatically moved to Google Drive.
+inline constexpr char kOfficeFileMovedToGoogleDrive[] =
+    "filebrowser.office.file_moved_google_drive";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// cloud files to Drive.
+inline constexpr char kOfficeMoveConfirmationShownForCloudToDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_drive";
+
+inline constexpr char kOfficeMoveConfirmationShownForCloudToDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_drive_syncable";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// cloud files to OneDrive.
+inline constexpr char kOfficeMoveConfirmationShownForCloudToOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive";
+
+inline constexpr char kOfficeMoveConfirmationShownForCloudToOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_cloud_to_onedrive_syncable";
+
+// Whether the move confirmation dialog has been shown before for Google Drive.
+inline constexpr char kOfficeMoveConfirmationShownForDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_drive";
+
+inline constexpr char kOfficeMoveConfirmationShownForDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_drive_syncable";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// local files to Drive.
+inline constexpr char kOfficeMoveConfirmationShownForLocalToDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_drive";
+
+inline constexpr char kOfficeMoveConfirmationShownForLocalToDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_drive_syncable";
+
+// Whether the move confirmation dialog has been shown before for uploading
+// local files to OneDrive.
+inline constexpr char kOfficeMoveConfirmationShownForLocalToOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_onedrive";
+
+inline constexpr char kOfficeMoveConfirmationShownForLocalToOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_local_to_onedrive_syncable";
+
+// Whether the move confirmation dialog has been shown before for OneDrive.
+inline constexpr char kOfficeMoveConfirmationShownForOneDrive[] =
+    "filebrowser.office.move_confirmation_shown_for_onedrive";
+
+inline constexpr char kOfficeMoveConfirmationShownForOneDriveSyncable[] =
+    "filebrowser.office.move_confirmation_shown_for_onedrive_syncable";
+
+//-----------------------------------------------------------------------------
 // Printing related Prefs
 //-----------------------------------------------------------------------------
 

@@ -85,8 +85,9 @@ namespace {
 bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
                              const GURL& url) {
   for (const apps::IconInfo& info : icon_infos) {
-    if (info.url.EqualsIgnoringRef(url))
+    if (info.url.EqualsIgnoringRef(url)) {
       return true;
+    }
   }
   return false;
 }
@@ -370,7 +371,7 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy() {
       /*allow_close_and_relaunch=*/base::FeatureList::IsEnabled(
           features::kForcedAppRelaunchOnPlaceholderUpdate));
   pref_change_registrar_.Add(
-      prefs::kDefaultHandlersForFileExtensions,
+      ash::prefs::kDefaultHandlersForFileExtensions,
       base::BindRepeating(
           &WebAppPolicyManager::SynchronizeOsWithPolicyDefinedFileHandlers,
           weak_ptr_factory_.GetWeakPtr()));
@@ -536,8 +537,9 @@ void WebAppPolicyManager::ParsePolicySettings() {
     const auto& dict = iter.GetDict();
     const std::string* web_app_id_str = dict.FindString(kManifestId);
 
-    if (*web_app_id_str == kWildcard)
+    if (*web_app_id_str == kWildcard) {
       continue;
+    }
 
     GURL url = GURL(*web_app_id_str);
     if (!url.is_valid()) {
@@ -694,8 +696,9 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
   const std::string* custom_name = entry.FindString(kCustomNameKey);
   if (custom_name) {
     install_options.override_name = *custom_name;
-    if (install_gurl.is_valid())
+    if (install_gurl.is_valid()) {
       custom_manifest_values_by_url_[install_gurl].SetName(*custom_name);
+    }
   }
 
   const base::DictValue* custom_icon = entry.FindDict(kCustomIconKey);
@@ -705,8 +708,9 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
       GURL icon_gurl = GURL(*icon_url);
       if (icon_gurl.SchemeIs(url::kHttpsScheme)) {
         install_options.override_icon_url = icon_gurl;
-        if (install_gurl.is_valid())
+        if (install_gurl.is_valid()) {
           custom_manifest_values_by_url_[install_gurl].SetIcon(icon_gurl);
+        }
       } else {
         LOG(WARNING) << "Policy-installed web app " << *install_url
                      << " has non-https custom icon URL " << *icon_url
@@ -727,8 +731,9 @@ RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByManifestId(
     const std::string& manifest_id) const {
   auto it = settings_by_url_.find(manifest_id);
-  if (it != settings_by_url_.end())
+  if (it != settings_by_url_.end()) {
     return it->second.run_on_os_login_policy;
+  }
   return default_settings_.run_on_os_login_policy;
 }
 
@@ -765,11 +770,13 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   // This doesn't override the manifest properly on a non primary page since it
   // checks the url from PreRedirectionURLObserver that works only on a primary
   // page.
-  if (!frame_host->IsInPrimaryMainFrame())
+  if (!frame_host->IsInPrimaryMainFrame()) {
     return;
+  }
 
-  if (!manifest)
+  if (!manifest) {
     return;
+  }
 
   // For policy-installed apps there are two ways for getting to the manifest:
   // via the policy install URL, or via the manifest-specified identity
@@ -799,8 +806,9 @@ void WebAppPolicyManager::MaybeOverrideManifest(
   const webapps::PreRedirectionURLObserver* const pre_redirect =
       webapps::PreRedirectionURLObserver::FromWebContents(
           content::WebContents::FromRenderFrameHost(frame_host));
-  if (!pre_redirect)
+  if (!pre_redirect) {
     return;
+  }
   GURL install_url = pre_redirect->last_url();
   if (custom_manifest_values_by_url_.contains(install_url)) {
     OverrideManifest(install_url, manifest);
@@ -849,11 +857,13 @@ void WebAppPolicyManager::OnAppsSynchronized(
     std::map<GURL, webapps::UninstallResultCode> uninstall_results) {
   is_refreshing_ = false;
 
-  if (!install_results.empty())
+  if (!install_results.empty()) {
     ApplyPolicySettings();
+  }
 
-  if (needs_refresh_)
+  if (needs_refresh_) {
     RefreshPolicyInstalledApps();
+  }
 
   for (const auto& url_and_result : install_results) {
     base::UmaHistogramEnumeration(kInstallResultHistogramName,
@@ -975,8 +985,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   }
 
   PrefService* const local_state = g_browser_process->local_state();
-  if (!local_state)  // Sometimes it's not available in tests.
+  if (!local_state) {  // Sometimes it's not available in tests.
     return;
+  }
 
   const base::ListValue& disabled_system_features_pref =
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);

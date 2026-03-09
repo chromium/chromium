@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
@@ -1257,7 +1257,7 @@ class SkyVaultFilesAppBrowserTest
       std::optional<bool> enabled = value.FindBool("enabled");
       CHECK(enabled.has_value());
       g_browser_process->local_state()->SetBoolean(
-          prefs::kLocalUserFilesAllowed, enabled.value());
+          ash::prefs::kLocalUserFilesAllowed, enabled.value());
       return true;
     }
 
@@ -1268,7 +1268,7 @@ class SkyVaultFilesAppBrowserTest
             *provider == download_dir_util::kLocationOneDrive ||
             *provider == "delete");
       g_browser_process->local_state()->SetString(
-          prefs::kLocalUserFilesMigrationDestination, *provider);
+          ash::prefs::kLocalUserFilesMigrationDestination, *provider);
       return true;
     }
 
@@ -1284,7 +1284,7 @@ class SkyVaultFilesAppBrowserTest
       CHECK(defaultLocation &&
             (*defaultLocation == download_dir_util::kLocationGoogleDrive ||
              *defaultLocation == download_dir_util::kLocationOneDrive));
-      profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
+      profile()->GetPrefs()->SetString(ash::prefs::kFilesAppDefaultLocation,
                                        *defaultLocation);
       return true;
     }

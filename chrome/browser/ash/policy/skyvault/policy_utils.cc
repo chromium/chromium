@@ -66,7 +66,7 @@ bool LocalUserFilesAllowed() {
     return true;
   }
   return g_browser_process->local_state()->GetBoolean(
-      prefs::kLocalUserFilesAllowed);
+      ash::prefs::kLocalUserFilesAllowed);
 }
 
 MigrationDestination GetMigrationDestination() {
@@ -76,7 +76,7 @@ MigrationDestination GetMigrationDestination() {
   }
 
   const std::string destination = g_browser_process->local_state()->GetString(
-      prefs::kLocalUserFilesMigrationDestination);
+      ash::prefs::kLocalUserFilesMigrationDestination);
 
   if (destination == kMigrationDestinationGoogleDrive) {
     return MigrationDestination::kGoogleDrive;

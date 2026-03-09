@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -118,7 +118,7 @@ TEST_F(UpdateFileHandlerCommandTest, ApprovalStateOverridenByPolicy) {
       ApiApprovalState::kRequiresPrompt);
 
   profile()->GetTestingPrefService()->SetDict(
-      prefs::kDefaultHandlersForFileExtensions,
+      ash::prefs::kDefaultHandlersForFileExtensions,
       base::DictValue().Set("pdf", kTestAppPolicyId));
 
   EXPECT_EQ(provider()->registrar_unsafe().GetAppFileHandlerApprovalState(

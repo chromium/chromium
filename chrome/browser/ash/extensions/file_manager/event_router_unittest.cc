@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
@@ -407,7 +407,7 @@ class FileManagerEventRouterLocalFilesTest : public FileManagerEventRouterTest {
 
   void SetLocalUserFilesPolicy(bool allowed) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kLocalUserFilesAllowed, allowed);
+        ash::prefs::kLocalUserFilesAllowed, allowed);
   }
 
  private:

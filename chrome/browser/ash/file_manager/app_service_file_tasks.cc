@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/feature_list.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -245,14 +245,10 @@ void FindAppServiceTasks(Profile* profile,
       proxy->GetAppsForFiles(std::move(intent_files));
 
   std::vector<apps::AppType> supported_app_types = {
-      apps::AppType::kArc,
-      apps::AppType::kWeb,
-      apps::AppType::kSystemWeb,
-      apps::AppType::kChromeApp,
-      apps::AppType::kExtension,
-      apps::AppType::kBruschetta,
-      apps::AppType::kCrostini,
-      apps::AppType::kPluginVm,
+      apps::AppType::kArc,       apps::AppType::kWeb,
+      apps::AppType::kSystemWeb, apps::AppType::kChromeApp,
+      apps::AppType::kExtension, apps::AppType::kBruschetta,
+      apps::AppType::kCrostini,  apps::AppType::kPluginVm,
   };
   for (auto& launch_entry : intent_launch_info) {
     auto app_type = proxy->AppRegistryCache().GetAppType(launch_entry.app_id);
@@ -388,8 +384,8 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
     Profile* profile,
     const std::vector<extensions::EntryInfo>& entries,
     ResultingTasks* resulting_tasks) {
-  const auto& policy_default_handlers =
-      profile->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
+  const auto& policy_default_handlers = profile->GetPrefs()->GetDict(
+      ash::prefs::kDefaultHandlersForFileExtensions);
 
   // Check that there are no conflicting assignments for the given set of
   // entries.

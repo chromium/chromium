@@ -732,15 +732,15 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(arc::prefs::kArcEnabled, cb);
     pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia, cb);
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);
-    pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive, cb);
-    pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive, cb);
+    pref_change_registrar_->Add(ash::prefs::kOfficeFileMovedToOneDrive, cb);
+    pref_change_registrar_->Add(ash::prefs::kOfficeFileMovedToGoogleDrive, cb);
   }
 
   {
     const base::RepeatingClosure cb = base::BindRepeating(
         &EventRouter::BroadcastOnAppsUpdatedEvent, weak_factory_.GetWeakPtr());
-    pref_change_registrar_->Add(prefs::kDefaultTasksByMimeType, cb);
-    pref_change_registrar_->Add(prefs::kDefaultTasksBySuffix, cb);
+    pref_change_registrar_->Add(ash::prefs::kDefaultTasksByMimeType, cb);
+    pref_change_registrar_->Add(ash::prefs::kDefaultTasksBySuffix, cb);
   }
 
   ash::system::TimezoneSettings::GetInstance()->AddObserver(this);

@@ -611,17 +611,15 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
 
   base::RunLoop run_loop;
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
-      base::BindLambdaForTesting(
-          [&run_loop](apps::AppLaunchParams params) {
-            EXPECT_EQ(params.override_url,
-                      "https://www.example.com/handle_file");
-            EXPECT_EQ(params.launch_files.size(), 2U);
-            EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
-                                       "foo.jpeg"));
-            EXPECT_TRUE(base::EndsWith(params.launch_files.at(1).MaybeAsASCII(),
-                                       "bar.png"));
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&run_loop](apps::AppLaunchParams params) {
+        EXPECT_EQ(params.override_url, "https://www.example.com/handle_file");
+        EXPECT_EQ(params.launch_files.size(), 2U);
+        EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
+                                   "foo.jpeg"));
+        EXPECT_TRUE(base::EndsWith(params.launch_files.at(1).MaybeAsASCII(),
+                                   "bar.png"));
+        run_loop.Quit();
+      }));
 
   base::FilePath file1 =
       util::GetMyFilesFolderForProfile(profile).AppendASCII("foo.jpeg");

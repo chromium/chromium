@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -23,7 +23,7 @@ namespace ash::smb_client {
 namespace {
 
 bool IsAllowedByPolicy(const Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kNetworkFileSharesAllowed);
+  return profile->GetPrefs()->GetBoolean(ash::prefs::kNetworkFileSharesAllowed);
 }
 
 bool DoesProfileHaveUser(const Profile* profile) {

@@ -3481,7 +3481,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     std::optional<int64_t> timestamp = value.FindDouble("timestamp");
     ASSERT_TRUE(timestamp.has_value());
     profile()->GetPrefs()->SetTime(
-        prefs::kOfficeFileMovedToGoogleDrive,
+        ash::prefs::kOfficeFileMovedToGoogleDrive,
         base::Time::FromMillisecondsSinceUnixEpoch(timestamp.value()));
     return;
   }

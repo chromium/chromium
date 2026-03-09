@@ -164,9 +164,9 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
                                 false);
-  registry->RegisterBooleanPref(::prefs::kLocalUserFilesAllowed, true);
-  registry->RegisterStringPref(::prefs::kLocalUserFilesMigrationDestination,
-                               "read_only");
+  registry->RegisterBooleanPref(ash::prefs::kLocalUserFilesAllowed, true);
+  registry->RegisterStringPref(
+      ash::prefs::kLocalUserFilesMigrationDestination, "read_only");
   registry->RegisterListPref(prefs::kDnsOverHttpsExcludedDomains,
                              base::ListValue());
   registry->RegisterListPref(prefs::kDnsOverHttpsIncludedDomains,
@@ -671,7 +671,7 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorGroupCache);
   registry->RegisterDictionaryPref(prefs::kAshAppIconSortableColorHueCache);
 
-  registry->RegisterStringPref(::prefs::kFilesAppDefaultLocation,
+  registry->RegisterStringPref(ash::prefs::kFilesAppDefaultLocation,
                                std::string());
 
   registry->RegisterIntegerPref(

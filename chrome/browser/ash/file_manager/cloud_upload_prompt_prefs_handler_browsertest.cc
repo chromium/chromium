@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <tuple>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -260,33 +261,36 @@ INSTANTIATE_TEST_SUITE_P(
     CloudUploadPromptPrefsHandlerTest,
     testing::Values(
         std::make_tuple(CloudProvider::kGoogleDrive,
-                        prefs::kOfficeFilesAlwaysMoveToDrive,
-                        prefs::kOfficeFilesAlwaysMoveToDriveSyncable),
-        std::make_tuple(CloudProvider::kGoogleDrive,
-                        prefs::kOfficeMoveConfirmationShownForDrive,
-                        prefs::kOfficeMoveConfirmationShownForDriveSyncable),
+                        ash::prefs::kOfficeFilesAlwaysMoveToDrive,
+                        ash::prefs::kOfficeFilesAlwaysMoveToDriveSyncable),
         std::make_tuple(
             CloudProvider::kGoogleDrive,
-            prefs::kOfficeMoveConfirmationShownForLocalToDrive,
-            prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable),
+            ash::prefs::kOfficeMoveConfirmationShownForDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForDriveSyncable),
         std::make_tuple(
             CloudProvider::kGoogleDrive,
-            prefs::kOfficeMoveConfirmationShownForCloudToDrive,
-            prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable),
+            ash::prefs::kOfficeMoveConfirmationShownForLocalToDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForLocalToDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kGoogleDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForCloudToDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForCloudToDriveSyncable),
         std::make_tuple(CloudProvider::kOneDrive,
-                        prefs::kOfficeFilesAlwaysMoveToOneDrive,
-                        prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable),
-        std::make_tuple(CloudProvider::kOneDrive,
-                        prefs::kOfficeMoveConfirmationShownForOneDrive,
-                        prefs::kOfficeMoveConfirmationShownForOneDriveSyncable),
+                        ash::prefs::kOfficeFilesAlwaysMoveToOneDrive,
+                        ash::prefs::kOfficeFilesAlwaysMoveToOneDriveSyncable),
         std::make_tuple(
             CloudProvider::kOneDrive,
-            prefs::kOfficeMoveConfirmationShownForLocalToOneDrive,
-            prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable),
+            ash::prefs::kOfficeMoveConfirmationShownForOneDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForOneDriveSyncable),
         std::make_tuple(
             CloudProvider::kOneDrive,
-            prefs::kOfficeMoveConfirmationShownForCloudToOneDrive,
-            prefs::kOfficeMoveConfirmationShownForCloudToOneDriveSyncable)),
+            ash::prefs::kOfficeMoveConfirmationShownForLocalToOneDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForLocalToOneDriveSyncable),
+        std::make_tuple(
+            CloudProvider::kOneDrive,
+            ash::prefs::kOfficeMoveConfirmationShownForCloudToOneDrive,
+            ash::prefs::
+                kOfficeMoveConfirmationShownForCloudToOneDriveSyncable)),
     &CloudUploadPromptPrefsHandlerTest::ParamToString);
 
 }  // namespace chromeos::cloud_upload

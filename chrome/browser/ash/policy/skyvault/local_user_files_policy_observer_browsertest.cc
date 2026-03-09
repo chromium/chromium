@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -24,7 +24,7 @@ class TestObserver : LocalUserFilesPolicyObserver {
  public:
   void OnLocalUserFilesPolicyChanged() override {
     local_user_files_allowed_ = g_browser_process->local_state()->GetBoolean(
-        prefs::kLocalUserFilesAllowed);
+        ash::prefs::kLocalUserFilesAllowed);
   }
 
   bool local_user_files_allowed() { return local_user_files_allowed_; }

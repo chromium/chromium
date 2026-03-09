@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -166,7 +167,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
       const std::string& destination = download_dir_util::kLocationOneDrive) {
     SetLocalUserFilesAllowed(local_user_files_allowed);
     TestingBrowserProcess::GetGlobal()->local_state()->SetString(
-        prefs::kLocalUserFilesMigrationDestination, destination);
+        ash::prefs::kLocalUserFilesMigrationDestination, destination);
 
     profile()->GetPrefs()->SetInteger(prefs::kSkyVaultMigrationState,
                                       static_cast<int>(state));
@@ -175,13 +176,13 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   // Sets the local user files allowed pref value.
   void SetLocalUserFilesAllowed(bool local_user_files_allowed) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
-        prefs::kLocalUserFilesAllowed, local_user_files_allowed);
+        ash::prefs::kLocalUserFilesAllowed, local_user_files_allowed);
   }
 
   // Sets the local user files migration destination pref value.
   void SetMigrationDestination(const std::string& destination) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetString(
-        prefs::kLocalUserFilesMigrationDestination, destination);
+        ash::prefs::kLocalUserFilesMigrationDestination, destination);
   }
 
   void SetRetryCount(int count) {
