@@ -316,7 +316,7 @@ UIView* SecondaryToolbarLocationBarContainerView(
                                       kToolbarSeparatorHeight)],
   ]];
   [NSLayoutConstraint activateConstraints:@[
-    [self.separator.bottomAnchor constraintEqualToAnchor:self.topAnchor],
+    [self.separator.topAnchor constraintEqualToAnchor:self.topAnchor],
   ]];
 }
 
