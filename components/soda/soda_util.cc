@@ -55,13 +55,7 @@ bool IsSupportedLinux() {
 
 #if BUILDFLAG(IS_WIN)
 bool IsSupportedWin() {
-#if defined(ARCH_CPU_ARM64)
-  // The Speech On-Device API (SODA) component does not support Windows on
-  // arm64.
-  return false;
-#else
   return true;
-#endif  // defined(ARCH_CPU_ARM64)
 }
 #endif  // BUILDFLAG(IS_WIN)
 
