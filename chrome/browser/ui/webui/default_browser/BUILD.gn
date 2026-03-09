@@ -32,6 +32,7 @@ source_set("default_browser_modal") {
     "//ui/base/interaction",
     "//ui/gfx",
     "//ui/views",
+    "//ui/views/controls/webview",
     "//ui/web_dialogs",
     "//ui/webui",
     "//url",
@@ -53,6 +54,7 @@ source_set("pixel_tests") {
   deps = [
     ":default_browser_modal",
     "//base",
+    "//chrome/browser/default_browser",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",

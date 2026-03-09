@@ -99,15 +99,10 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding-top: 45px;
+  padding-top: 32px;
   padding-right: 32px;
   box-shadow: 0 6px 10px 4px rgba(0, 0, 0, 0.15),
     0 2px 3px 0 rgba(0, 0, 0, 0.30);
-}
-
-:host(:not([use-settings-illustration])) #illustration img {
-  padding-top: 45px;
-  padding-right: 32px;
 }
 
 #bottom-section {

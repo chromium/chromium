@@ -31,14 +31,14 @@ void DefaultBrowserModalDialogManager::ShowForBrowser(
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   CHECK(browser_view);
 
-  gfx::NativeView parent_view = gfx::NativeView();
+  gfx::NativeWindow parent_window = gfx::NativeWindow();
   if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
           browser_view->GetNativeWindow())) {
-    parent_view = widget->GetNativeView();
+    parent_window = widget->GetNativeWindow();
   }
 
   views::Widget* widget = DefaultBrowserModalDialog::Show(
-      browser->GetProfile(), parent_view, use_settings_illustration_,
+      browser->GetProfile(), parent_window, use_settings_illustration_,
       can_pin_to_taskbar());
   if (widget) {
     dialog_widgets_[browser] = widget->GetWeakPtr();

@@ -25,6 +25,7 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/false) {
   bool use_settings_illustration = false;
   bool can_pin_to_taskbar = false;
+  bool is_modal = false;
   std::string value;
   if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
                                  "illustration", &value)) {
@@ -33,6 +34,10 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
   if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
                                  "can_pin_to_taskbar", &value)) {
     can_pin_to_taskbar = value == "true";
+  }
+  if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
+                                 "is_modal", &value)) {
+    is_modal = value == "true";
   }
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -67,6 +72,7 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
   source->AddResourcePath("chrome_logo.svg", IDR_PRODUCT_LOGO_SVG);
 
   source->AddBoolean("useSettingsIllustration", use_settings_illustration);
+  source->AddBoolean("isModal", is_modal);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DefaultBrowserModalUI)

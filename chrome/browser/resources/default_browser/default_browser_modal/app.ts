@@ -34,8 +34,27 @@ export class DefaultBrowserModalAppElement extends CrLitElement {
     };
   }
 
+  override firstUpdated() {
+    requestAnimationFrame(() => {
+      // Prefer using `document.body.offsetHeight` instead of
+      // `document.body.scrollHeight` as it returns the correct height of the
+      // page even when the page zoom in Chrome is different than 100% or the
+      // system display scale.
+      if (!this.isModal_) {
+        return;
+      }
+      BrowserProxy.getInstance().handler.contentReady(
+          document.body.offsetHeight);
+      // The web dialog size has been initialized, so reset the body width to
+      // auto to make sure that the body only takes up the viewable width.
+      document.body.style.width = 'auto';
+    });
+  }
+
   accessor useSettingsIllustration: boolean =
       loadTimeData.getBoolean('useSettingsIllustration');
+
+  private isModal_: boolean = loadTimeData.getBoolean('isModal');
 
   protected onCancelClick_() {
     BrowserProxy.getInstance().handler.cancel();

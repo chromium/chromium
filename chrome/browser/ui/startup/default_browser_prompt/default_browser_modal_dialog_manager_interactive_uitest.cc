@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -23,6 +24,21 @@
 class DefaultBrowserModalDialogManagerInteractiveTest
     : public InteractiveBrowserTest {
  protected:
+  DefaultBrowserModalDialogManagerInteractiveTest() = default;
+  ~DefaultBrowserModalDialogManagerInteractiveTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        default_browser::kDefaultBrowserPromptSurfaces,
+        {{"prompt_surface", "modal_dialog_without_settings_illustration"}});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void TearDownOnMainThread() override {
+    manager_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   void ShowDialogManager(bool use_settings_illustration) {
     manager_ =
         std::make_unique<default_browser::DefaultBrowserModalDialogManager>(
@@ -35,11 +51,6 @@ class DefaultBrowserModalDialogManagerInteractiveTest
   void DismissDialogs() {
     manager_->HandleDismiss();
     manager_->CloseAll();
-  }
-
-  void TearDownOnMainThread() override {
-    manager_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   MultiStep VerifyHistogram(const std::string& histogram_name,
@@ -55,6 +66,7 @@ class DefaultBrowserModalDialogManagerInteractiveTest
 
   std::unique_ptr<default_browser::DefaultBrowserModalDialogManager> manager_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserModalDialogManagerInteractiveTest,

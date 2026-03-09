@@ -13,9 +13,14 @@
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_surface_manager.h"
+#include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/display/screen.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 DefaultBrowserModalHandler::DefaultBrowserModalHandler(
     content::WebUI* web_ui,
@@ -47,5 +52,39 @@ void DefaultBrowserModalHandler::Confirm() {
 
   if (web_ui_ && web_ui_->GetWebContents()) {
     web_ui_->GetWebContents()->Close();
+  }
+}
+
+void DefaultBrowserModalHandler::ContentReady(uint32_t content_height) {
+  if (!web_ui_ || !web_ui_->GetWebContents()) {
+    return;
+  }
+
+  gfx::NativeWindow native_window =
+      web_ui_->GetWebContents()->GetTopLevelNativeWindow();
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  if (!widget) {
+    return;
+  }
+
+  display::Display display =
+      display::Screen::Get()->GetDisplayNearestWindow(native_window);
+  // Dialog height cannot be bigger than the screen height.
+  const auto screen_height =
+      static_cast<uint32_t>(display.work_area().height());
+
+  if (content_height < 0 || content_height > screen_height) {
+    return;
+  }
+
+  if (auto* delegate = widget->widget_delegate()->AsDialogDelegate()) {
+    if (auto* dialog = static_cast<default_browser::DefaultBrowserModalDialog*>(
+            delegate)) {
+      dialog->ResizeNativeViewHeight(content_height);
+
+      CHECK(!widget->IsVisible());
+      widget->Show();
+    }
   }
 }

@@ -13,6 +13,7 @@ export class TestDefaultBrowserPageHandler extends TestBrowserProxy implements
     super([
       'cancel',
       'confirm',
+      'contentReady',
     ]);
   }
 
@@ -22,6 +23,10 @@ export class TestDefaultBrowserPageHandler extends TestBrowserProxy implements
 
   confirm() {
     this.methodCalled('confirm');
+  }
+
+  contentReady(contentHeight: number) {
+    this.methodCalled('contentReady', contentHeight);
   }
 }
 
