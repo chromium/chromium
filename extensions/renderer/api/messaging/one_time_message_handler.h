@@ -174,7 +174,6 @@ class OneTimeMessageHandler {
   // been collected and can no longer be called in v8. Doesn't close the channel
   // because another receiver may reply.
   void OnAllCallbacksCollected(ScriptContext* script_context,
-                               v8::Local<v8::Context> context,
                                const PortId& port_id);
 
   // Helper methods to deliver a message to an opener/receiver.
@@ -191,10 +190,10 @@ class OneTimeMessageHandler {
                         const PortId& port_id,
                         const std::string& error_message);
 
-  // Closes the receiver message port and cleans up all the port's state if
-  // `close_channel` is false. If `close_channel` is true, then we request the
-  // entire channel to close. `error` can be provided to provide an error to the
-  // message sender when closing the channel.
+  // Closes the receiver message port if `close_channel` is false. If
+  // `close_channel` is true, then we request the entire channel to close.
+  // `error` can be provided to provide an error to the message sender when
+  // closing the channel.
   void CloseReceiverMessagePortOrChannel(ScriptContext* script_context,
                                          const PortId& port_id,
                                          bool close_channel,
