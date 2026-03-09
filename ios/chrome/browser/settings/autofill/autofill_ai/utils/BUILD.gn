@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "autofill_ai_date_util.h",
+    "autofill_ai_date_util.mm",
+  ]
+  deps = [ "//components/autofill/core/browser" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_ai_date_util_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//testing/gtest",
+  ]
+}
