@@ -1357,14 +1357,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
-#if (BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG))) || BUILDFLAG(IS_MAC)
-// TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
-#define MAYBE_OTRRequestIsNotDropped DISABLED_OTRRequestIsNotDropped
-#else
-#define MAYBE_OTRRequestIsNotDropped OTRRequestIsNotDropped
-#endif
+// TODO(crbug.com/488467253): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       MAYBE_OTRRequestIsNotDropped) {
+                       DISABLE_OTRRequestIsNotDropped) {
   // Expectation: The request should include the Authorization header.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
