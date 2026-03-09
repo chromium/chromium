@@ -22180,22 +22180,6 @@
             ]
         }
     ],
-    "ServiceWorkerSubresourceCancelPendingCallbacksBeforeFetchRestart": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CancelPendingCallbacksBeforeFetchRestart"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerSyntheticResponse": [
         {
             "platforms": [

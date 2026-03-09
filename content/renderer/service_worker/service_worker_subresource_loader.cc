@@ -83,12 +83,7 @@ network::mojom::URLResponseHeadPtr RewriteResponseHead(
 
 // A feature flag to enable the speculative fix for crbug.com/463388771.
 BASE_FEATURE(kCancelPendingCallbacksBeforeFetchRestart,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A wrapper URLLoaderClient that invokes the given RewriteHeaderCallback
 // whenever a response or redirect is received.
