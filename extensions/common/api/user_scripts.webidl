@@ -1,0 +1,222 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[ExternalExtensionType="extensionTypes.RunAt"]
+typedef object ExtensionTypesRunAt;
+
+// The JavaScript world for a user script to execute within.
+enum ExecutionWorld {
+  // Specifies the execution environment of the DOM, which is the execution
+  // environment shared with the host page's JavaScript.
+  "MAIN",
+  // Specifies the execution environment that is specific to user scripts and
+  // is exempt from the page's CSP.
+  "USER_SCRIPT"
+};
+
+// The source of the script to inject.
+dictionary ScriptSource {
+  // A string containing the JavaScript code to inject. Exactly one of
+  // <code>file</code> or <code>code</code> must be specified.
+  DOMString code;
+  // The path of the JavaScript file to inject relative to the extension's
+  // root directory. Exactly one of <code>file</code> or <code>code</code>
+  // must be specified.
+  DOMString file;
+};
+
+// Describes a user script to be injected into a web page registered through
+// this API. The script is injected into a page if its URL matches any of
+// "matches" or "include_globs" patterns, and the URL doesn't match
+// "exclude_matches" and "exclude_globs" patterns.
+dictionary RegisteredUserScript {
+  // If true, it will inject into all frames, even if the frame is not the
+  // top-most frame in the tab. Each frame is checked independently for URL
+  // requirements; it will not inject into child frames if the URL
+  // requirements are not met. Defaults to false, meaning that only the top
+  // frame is matched.
+  boolean allFrames;
+  // Excludes pages that this user script would otherwise be injected into.
+  // See <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+  // details on the syntax of these strings.
+  sequence<DOMString> excludeMatches;
+  // The ID of the user script specified in the API call. This property must
+  // not start with a '_' as it's reserved as a prefix for generated script
+  // IDs.
+  required DOMString id;
+  // Specifies wildcard patterns for pages this user script will be injected
+  // into.
+  sequence<DOMString> includeGlobs;
+  // Specifies wildcard patterns for pages this user script will NOT be
+  // injected into.
+  sequence<DOMString> excludeGlobs;
+  // The list of ScriptSource objects defining sources of scripts to be
+  // injected into matching pages.
+  // This property must be specified for  ${ref:register}, and when specified
+  // it must be a non-empty array.
+  sequence<ScriptSource> js;
+  // Specifies which pages this user script will be injected into. See
+  // <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+  // details on the syntax of these strings. This property must be specified for
+  // ${ref:register}.
+  sequence<DOMString> matches;
+  // Specifies when JavaScript files are injected into the web page. The
+  // preferred and default value is <code>document_idle</code>.
+  ExtensionTypesRunAt runAt;
+  // The JavaScript execution environment to run the script in. The default is
+  // <code>`USER_SCRIPT`</code>.
+  ExecutionWorld world;
+  // Specifies the user script world ID to execute in. If omitted, the script
+  // will execute in the default user script world. Only valid if `world` is
+  // omitted or is `USER_SCRIPT`. Values with leading underscores (`_`) are
+  // reserved.
+  DOMString worldId;
+};
+
+// An object used to filter user scripts for ${ref:getScripts}.
+dictionary UserScriptFilter {
+  // $(ref:getScripts) only returns scripts with the IDs specified in this
+  // list.
+  sequence<DOMString> ids;
+};
+
+dictionary InjectionTarget {
+  // Whether the script should inject into all frames within the tab. Defaults
+  // to false. This must not be true if <code>frameIds</code> is specified.
+  boolean allFrames;
+  // The IDs of specific documentIds to inject into. This must not be set if
+  // <code>frameIds</code> is set.
+  sequence<DOMString> documentIds;
+  // The IDs of specific frames to inject into.
+  sequence<long> frameIds;
+  // The ID of the tab into which to inject.
+  required long tabId;
+};
+
+dictionary InjectionResult {
+  // The document associated with the injection.
+  required DOMString documentId;
+  // The frame associated with the injection.
+  required long frameId;
+  // The result of the script execution.
+  any result;
+  // The error, if any. <code>error</code> and <code>result</code> are
+  // mutually exclusive.
+  DOMString error;
+};
+
+dictionary UserScriptInjection {
+  // Whether the injection should be triggered in the target as soon as
+  // possible. Note that this is not a guarantee that injection will occur
+  // prior to page load, as the page may have already loaded by the time the
+  // script reaches the target.
+  boolean injectImmediately;
+  // The list of ScriptSource objects defining sources of scripts to be
+  // injected into the target.
+  required sequence<ScriptSource> js;
+  // Details specifying the target into which to inject the script.
+  required InjectionTarget target;
+  // The JavaScript "world" to run the script in. The default is
+  // <code>USER_SCRIPT</code>.
+  ExecutionWorld world;
+  // Specifies the user script world ID to execute in. If omitted, the script
+  // will execute in the default user script world. Only valid if `world` is
+  // omitted or is `USER_SCRIPT`. Values with leading underscores (`_`) are
+  // reserved.
+  DOMString worldId;
+};
+
+// An object used to update the <code>`USER_SCRIPT`</code> world
+// configuration. If a property is not specified, it will reset it to its
+// default value.
+dictionary WorldProperties{
+  // Specifies the ID of the specific user script world to update.
+  // If not provided, updates the properties of the default user script world.
+  // Values with leading underscores (`_`) are reserved.
+  DOMString worldId;
+
+  // Specifies the world csp. The default is the <code>`ISOLATED`</code>
+  // world csp.
+  DOMString csp;
+
+  // Specifies whether messaging APIs are exposed. The default is
+  // <code>false</code>.
+  boolean messaging;
+};
+
+// Use the <code>userScripts</code> API to execute user scripts in the User
+// Scripts context.
+interface UserScripts {
+  // Registers one or more user scripts for this extension.
+  // |scripts|: Contains a list of user scripts to be registered.
+  // |Returns|: Promise that resolves once scripts have been fully
+  // registered. The promise will be rejected if an error occurs.
+  static Promise<undefined> register(
+      sequence<RegisteredUserScript> scripts);
+
+  // Returns all dynamically-registered user scripts for this extension.
+  // |filter|: If specified, this method returns only the user scripts that
+  // match it.
+  // |Returns|: Promise that resolves with the registered scripts.
+  // The promise will be rejected if an error occurs.
+  // |PromiseValue|: scripts
+  [requiredCallback] static Promise<sequence<RegisteredUserScript>> getScripts(
+      optional UserScriptFilter filter);
+
+  // Unregisters all dynamically-registered user scripts for this extension.
+  // |filter|: If specified, this method unregisters only the user scripts
+  // that match it.
+  // |Returns|: Promise that resolves once scripts have been fully
+  // unregistered. The promise will be rejected if an error occurs.
+  [requiredCallback] static Promise<undefined> unregister(
+      optional UserScriptFilter filter);
+
+  // Updates one or more user scripts for this extension.
+  // |scripts|: Contains a list of user scripts to be updated. A property is
+  // only updated for the existing script if it is specified in this object.
+  // If there are errors during script parsing/file validation, or if the IDs
+  // specified do not correspond to a fully registered script, then no scripts
+  // are updated.
+  // |Returns|: Promise that resolves once scripts have been fully updated.
+  // The promise will be rejected if an error occurs.
+  static Promise<undefined> update(
+      sequence<RegisteredUserScript> scripts);
+
+  // Injects a script into a target context. By default, the script will be
+  // run at <code>document_idle</code>, or immediately if the page has already
+  // loaded. If the <code>injectImmediately</code> property is set, the script
+  // will inject without waiting, even if the page has not finished loading.
+  // If the script evaluates to a promise, the browser will wait for the
+  // promise to settle and return the resulting value.
+  // |PromiseValue|: result
+  static Promise<sequence<InjectionResult>> execute(
+      UserScriptInjection injection);
+
+  // Configures the <code>`USER_SCRIPT`</code> execution environment.
+  // |properties|: Contains the user script world configuration.
+  // |Returns|: Promise that resolves once the world has been
+  // configured.
+  static Promise<undefined> configureWorld(
+      WorldProperties properties);
+
+  // Retrieves all registered world configurations.
+  // |Returns|: Promise that resolves with the registered world
+  // configurations.
+  // |PromiseValue|: worlds
+  [requiredCallback]
+  static Promise<sequence<WorldProperties>> getWorldConfigurations();
+
+  // Resets the configuration for a user script world. Any scripts that inject
+  // into the world with the specified ID will use the default world
+  // configuration.
+  // |worldId|: The ID of the user script world to reset. If omitted, resets
+  // the default world's configuration.
+  // |Returns|: Promise that resolves when the configuration is reset.
+  [requiredCallback] static Promise<undefined> resetWorldConfiguration(
+      optional DOMString worldId);
+};
+
+partial interface Browser {
+  static attribute UserScripts userScripts;
+};

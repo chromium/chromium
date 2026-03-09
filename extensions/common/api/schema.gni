@@ -31,7 +31,7 @@ extensions_api_schema_files_ = [
   "system_network.webidl",
   "test.json",
   "types.json",
-  "user_scripts.idl",
+  "user_scripts.webidl",
   "web_request.json",
 ]
 
