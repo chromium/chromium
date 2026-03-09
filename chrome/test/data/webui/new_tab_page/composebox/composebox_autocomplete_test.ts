@@ -19,65 +19,8 @@ enum Attributes {
   SELECTED = 'selected',
 }
 
-suite('NewTabPageComposeboxAutocompleteTest', () => {
+suite('NewTabPageComposeboxAutocompleteDropdownTest', () => {
   const testProxy = setupComposeboxTest();
-
-  test('escape key behavior with suggestions', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({matches}));
-    await microtasksFinished();
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    // Case 1: composeboxCloseByEscape_ = false. Escape should clear the text.
-    (testProxy.element as any).composeboxCloseByEscape_ = false;
-    const closePromise = eventToPromise('close-composebox', testProxy.element);
-    let closed = false;
-    closePromise.then(() => closed = true);
-
-    testProxy.element.$.input.value = 'test';
-    testProxy.element.$.input.dispatchEvent(new Event('input'));
-    await microtasksFinished();
-
-    testProxy.element.$.input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'Escape', bubbles: true, composed: true}));
-    await microtasksFinished();
-
-    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
-    assertFalse(closed);
-    assertEquals('', testProxy.element.$.input.value);
-
-    // Case 2: composeboxCloseByEscape_ = true. Escape should close the
-    // composebox.
-    (testProxy.element as any).composeboxCloseByEscape_ = true;
-    const whenCloseComposebox =
-        eventToPromise('close-composebox', testProxy.element);
-    testProxy.element.$.input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'Escape', bubbles: true, composed: true}));
-    await whenCloseComposebox;
-    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 2);
-  });
-
-  test('composebox queries autocomplete on load', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Autocomplete should be queried when the composebox is created.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
-
-    // Restore.
-    loadTimeData.overrideValues({composeboxShowZps: false});
-  });
 
   test('dropdown shows when suggestions enabled', async () => {
     loadTimeData.overrideValues(
@@ -208,84 +151,6 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
     assertTrue(composeboxDropdown!.hidden);
   });
 
-  test('arrow keys work for typed suggest', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-
-    // Add typed input.
-    testProxy.element.$.input.value = 'Test';
-    testProxy.element.$.input.dispatchEvent(new Event('input'));
-    await microtasksFinished();
-
-    const composeboxDropdown =
-        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
-
-    const matches = [
-      createSearchMatchForTesting(
-          {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-          input: 'Test',
-        }));
-    await microtasksFinished();
-
-    // Dropdown should show for when matches are available.
-    assertFalse(composeboxDropdown!.hidden);
-
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(4, matchEls.length);
-    const matchEl = matchEls[0];
-    // Verbatim match does not show for typed suggest.
-    assertStyle(matchEl!, 'display', 'none');
-
-    // Arrow down should do default action.
-    const arrowDownEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowDown',
-    });
-
-    testProxy.element.$.input.dispatchEvent(arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
-
-    // First SHOWN match (second match) is selected.
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world 2', testProxy.element.$.input.value);
-
-    // Arrow down should do default action.
-    const arrowUpEvent = new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,  // So it propagates across shadow DOM boundary.
-      key: 'ArrowUp',
-    });
-
-    testProxy.element.$.input.dispatchEvent(arrowUpEvent);
-    await microtasksFinished();
-    assertTrue(arrowUpEvent.defaultPrevented);
-    // Last match gets selected when arrowing up from the first
-    // shown match.
-    assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world 4', testProxy.element.$.input.value);
-
-    // When arrowing up from last match, first SHOWN match should be selected.
-    testProxy.element.$.input.dispatchEvent(arrowDownEvent);
-    await microtasksFinished();
-    assertTrue(arrowDownEvent.defaultPrevented);
-    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
-    assertEquals('hello world 2', testProxy.element.$.input.value);
-  });
-
   test('dropdown does not show when no typed suggestions enabled', async () => {
     loadTimeData.overrideValues(
         {composeboxShowZps: true, composeboxShowTypedSuggest: false});
@@ -400,6 +265,181 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
         // Dropdown should not show when only the verbatim match is present.
         assertTrue(composeboxDropdown!.hidden);
       });
+
+  test('composebox does not show verbatim match', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Add zps input.
+    testProxy.element.$.input.value = '';
+    testProxy.element.$.input.dispatchEvent(new Event('input'));
+
+    const matches = [
+      createSearchMatchForTesting(),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+    let matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+        'cr-composebox-match');
+    assertEquals(2, matchEls.length);
+    let matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+    // First match shows for zps.
+    assertStyle(matchEl, 'display', 'block');
+
+    // Add typed input
+    testProxy.element.$.input.value = 'awesome';
+    testProxy.element.$.input.dispatchEvent(new Event('input'));
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: 'awesome',
+          matches: matches,
+        }));
+    assertTrue(await areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+    matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+        'cr-composebox-match');
+    assertEquals(2, matchEls.length);
+    matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+    // Verbatim match does not show for typed suggest.
+    assertStyle(matchEl, 'display', 'none');
+  });
+});
+
+suite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest', () => {
+  const testProxy = setupComposeboxTest();
+
+  test('escape key behavior with suggestions', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatchForTesting(),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({matches}));
+    await microtasksFinished();
+    assertTrue(await areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+    // Case 1: composeboxCloseByEscape_ = false. Escape should clear the text.
+    (testProxy.element as any).composeboxCloseByEscape_ = false;
+    const closePromise = eventToPromise('close-composebox', testProxy.element);
+    let closed = false;
+    closePromise.then(() => closed = true);
+
+    testProxy.element.$.input.value = 'test';
+    testProxy.element.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    testProxy.element.$.input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
+    assertFalse(closed);
+    assertEquals('', testProxy.element.$.input.value);
+
+    // Case 2: composeboxCloseByEscape_ = true. Escape should close the
+    // composebox.
+    (testProxy.element as any).composeboxCloseByEscape_ = true;
+    const whenCloseComposebox =
+        eventToPromise('close-composebox', testProxy.element);
+    testProxy.element.$.input.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Escape', bubbles: true, composed: true}));
+    await whenCloseComposebox;
+    assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 2);
+  });
+
+  test('arrow keys work for typed suggest', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Add typed input.
+    testProxy.element.$.input.value = 'Test';
+    testProxy.element.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const composeboxDropdown =
+        testProxy.element.shadowRoot.querySelector<HTMLElement>('#matches');
+
+    const matches = [
+      createSearchMatchForTesting(
+          {fillIntoEdit: 'hello world 1', allowedToBeDefaultMatch: true}),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 3'}),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 4'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          matches: matches,
+          input: 'Test',
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are available.
+    assertFalse(composeboxDropdown!.hidden);
+
+    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+        'cr-composebox-match');
+    assertEquals(4, matchEls.length);
+    const matchEl = matchEls[0];
+    // Verbatim match does not show for typed suggest.
+    assertStyle(matchEl!, 'display', 'none');
+
+    // Arrow down should do default action.
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+
+    testProxy.element.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First SHOWN match (second match) is selected.
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world 2', testProxy.element.$.input.value);
+
+    // Arrow down should do default action.
+    const arrowUpEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowUp',
+    });
+
+    testProxy.element.$.input.dispatchEvent(arrowUpEvent);
+    await microtasksFinished();
+    assertTrue(arrowUpEvent.defaultPrevented);
+    // Last match gets selected when arrowing up from the first
+    // shown match.
+    assertTrue(matchEls[3]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world 4', testProxy.element.$.input.value);
+
+    // When arrowing up from last match, first SHOWN match should be selected.
+    testProxy.element.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertTrue(arrowDownEvent.defaultPrevented);
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world 2', testProxy.element.$.input.value);
+  });
 
   test('arrow up/down moves selection / focus', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
@@ -544,6 +584,10 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
         // Restore.
         loadTimeData.overrideValues({composeboxShowZps: false});
       });
+});
+
+suite('NewTabPageComposeboxAutocompleteMatchRemovalTest', () => {
+  const testProxy = setupComposeboxTest();
 
   test('Selection is restored after selected match is removed', async () => {
     loadTimeData.overrideValues(
@@ -653,6 +697,74 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
     assertEquals('hello world 2', testProxy.element.$.input.value);
   });
 
+  test('delete button removes match', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    const matches = [
+      createSearchMatchForTesting(),
+      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
+    ];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: '',
+          matches,
+          suggestionGroupsMap: {},
+        }));
+
+    assertTrue(await areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+
+    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
+        'cr-composebox-match');
+    assertEquals(2, matchEls.length);
+    const matchEl = matchEls[0];
+    assertTrue(!!matchEl);
+
+    const matchIndex = 0;
+    const destinationUrl = 'http://google.com';
+    matchEl.matchIndex = matchIndex;
+    matchEl.match.destinationUrl = destinationUrl;
+
+    // By pressing 'Enter' on the button.
+    const keydownEvent = (new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'Enter',
+    }));
+    assertTrue(!!matchEl.$.remove);
+    matchEl.$.remove.dispatchEvent(keydownEvent);
+    assertTrue(keydownEvent.defaultPrevented);
+    const keydownArgs =
+        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    await microtasksFinished();
+    assertEquals(matchIndex, keydownArgs[0]);
+    assertEquals(destinationUrl, keydownArgs[1]);
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+    // Pressing the 'Enter' button doesn't accidentally trigger navigation.
+    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+    testProxy.searchboxHandler.reset();
+    testProxy.handler.reset();
+
+    matchEl.$.remove.click();
+    const clickArgs =
+        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
+    await microtasksFinished();
+    assertEquals(matchIndex, clickArgs[0]);
+    assertEquals(destinationUrl, clickArgs[1]);
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
+    // Clicking the button doesn't accidentally trigger navigation.
+    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+  });
+});
+
+suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
+  const testProxy = setupComposeboxTest();
+
   test('smart compose response added', async () => {
     createComposeboxElement(testProxy);
     await microtasksFinished();
@@ -750,118 +862,22 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
 
     assertFalse(!!$$<HTMLElement>(testProxy.element, '#smartCompose'));
   });
+});
 
-  test('composebox does not show verbatim match', async () => {
-    loadTimeData.overrideValues(
-        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
+suite('NewTabPageComposeboxAutocompleteQueryingTest', () => {
+  const testProxy = setupComposeboxTest();
 
-    // Add zps input.
-    testProxy.element.$.input.value = '';
-    testProxy.element.$.input.dispatchEvent(new Event('input'));
-
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    let matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    let matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-    // First match shows for zps.
-    assertStyle(matchEl, 'display', 'block');
-
-    // Add typed input
-    testProxy.element.$.input.value = 'awesome';
-    testProxy.element.$.input.dispatchEvent(new Event('input'));
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: 'awesome',
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-    // Verbatim match does not show for typed suggest.
-    assertStyle(matchEl, 'display', 'none');
-  });
-
-  test('delete button removes match', async () => {
+  test('composebox queries autocomplete on load', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
     createComposeboxElement(testProxy);
     await microtasksFinished();
 
-    const matches = [
-      createSearchMatchForTesting(),
-      createSearchMatchForTesting({fillIntoEdit: 'hello world 2'}),
-    ];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: '',
-          matches,
-          suggestionGroupsMap: {},
-        }));
-
-    assertTrue(await areMatchesShowing(
-        testProxy.element, testProxy.searchboxCallbackRouterRemote));
-
-    const matchEls = testProxy.element.$.matches.shadowRoot.querySelectorAll(
-        'cr-composebox-match');
-    assertEquals(2, matchEls.length);
-    const matchEl = matchEls[0];
-    assertTrue(!!matchEl);
-
-    const matchIndex = 0;
-    const destinationUrl = 'http://google.com';
-    matchEl.matchIndex = matchIndex;
-    matchEl.match.destinationUrl = destinationUrl;
-
-    // By pressing 'Enter' on the button.
-    const keydownEvent = (new KeyboardEvent('keydown', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      key: 'Enter',
-    }));
-    assertTrue(!!matchEl.$.remove);
-    matchEl.$.remove.dispatchEvent(keydownEvent);
-    assertTrue(keydownEvent.defaultPrevented);
-    const keydownArgs =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    await microtasksFinished();
-    assertEquals(matchIndex, keydownArgs[0]);
-    assertEquals(destinationUrl, keydownArgs[1]);
+    // Autocomplete should be queried when the composebox is created.
     assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
-    // Pressing the 'Enter' button doesn't accidentally trigger navigation.
-    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
-    testProxy.searchboxHandler.reset();
-    testProxy.handler.reset();
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
 
-    matchEl.$.remove.click();
-    const clickArgs =
-        await testProxy.searchboxHandler.whenCalled('deleteAutocompleteMatch');
-    await microtasksFinished();
-    assertEquals(matchIndex, clickArgs[0]);
-    assertEquals(destinationUrl, clickArgs[1]);
-    assertEquals(
-        1, testProxy.searchboxHandler.getCallCount('deleteAutocompleteMatch'));
-    // Clicking the button doesn't accidentally trigger navigation.
-    assertEquals(0, testProxy.searchboxHandler.getCallCount('submitQuery'));
+    // Restore.
+    loadTimeData.overrideValues({composeboxShowZps: false});
   });
 
   test('composebox stops autocomplete when clearing input', async () => {
@@ -892,6 +908,10 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 3);
   });
+});
+
+suite('NewTabPageComposeboxAutocompleteContextTest', () => {
+  const testProxy = setupComposeboxTest();
 
   test('setSearchContext sets input and queries autocomplete', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
@@ -921,103 +941,6 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
   });
-
-  test('`autoSubmitVoiceSearchQuery` disabled updates input', async () => {
-    // Set loadTimeData so that voice search does not auto submit.
-    loadTimeData.overrideValues({
-      autoSubmitVoiceSearchQuery: false,
-      expandedComposeboxShowVoiceSearch: true,
-      steadyComposeboxShowVoiceSearch: true,
-      composeboxShowZps: true,  // For predictable queryAutocomplete count.
-    });
-    createComposeboxElement(testProxy);
-    await microtasksFinished();
-    testProxy.searchboxHandler.reset();
-
-    const voiceQuery = 'hello';
-    testProxy.element.$.voiceSearch.dispatchEvent(new CustomEvent(
-        'voice-search-final-result',
-        {detail: voiceQuery, bubbles: true, composed: true}));
-    await microtasksFinished();
-
-    // Assertions.
-    assertEquals(testProxy.element.$.input.value, voiceQuery);
-    // Ensure the query isn't auto submitted.
-    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
-    // Ensure autocomplete is queried since there's input in the composebox.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
-    assertEquals(
-        voiceQuery,
-        testProxy.searchboxHandler.getArgs('queryAutocomplete')[0][0]);
-
-    // Mock an autocomplete result so that submitQuery assertion passes.
-    const matches =
-        [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
-    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: voiceQuery,
-          matches,
-        }));
-    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    assertFalse(testProxy.element.$.input.hidden);
-    assertEquals(
-        testProxy.element.shadowRoot.activeElement, testProxy.element.$.input);
-
-    // Simulate submit button click.
-    getSubmitContainer(testProxy).dispatchEvent(new FocusEvent('focusin'));
-    getSubmitContainer(testProxy).click();
-
-    // Since a match is selected, openAutocompleteMatch is called instead of
-    // submitQuery.
-    await testProxy.searchboxHandler.whenCalled('openAutocompleteMatch');
-    await microtasksFinished();
-
-    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
-    const [index] =
-        testProxy.searchboxHandler.getArgs('openAutocompleteMatch')[0];
-    assertEquals(index, 0);
-  });
-
-  test(
-      '`autoSubmitVoiceSearchQuery` enabled submits w/o querying autocomplete',
-      async () => {
-        // Set loadTimeData so that voice search does auto submit.
-        loadTimeData.overrideValues({
-          autoSubmitVoiceSearchQuery: true,
-          expandedComposeboxShowVoiceSearch: true,
-          steadyComposeboxShowVoiceSearch: true,
-          composeboxShowZps: true,  // For predictable queryAutocomplete count.
-        });
-        createComposeboxElement(testProxy);
-        await microtasksFinished();
-        testProxy.searchboxHandler.reset();
-
-        const voiceSearchActionPromise =
-            eventToPromise('voice-search-action', testProxy.element);
-        const voiceQuery = 'hello';
-        testProxy.element.$.voiceSearch.dispatchEvent(new CustomEvent(
-            'voice-search-final-result',
-            {detail: voiceQuery, bubbles: true, composed: true}));
-
-        // Assert event fired.
-        const voiceSearchActionEvent = await voiceSearchActionPromise;
-        assertEquals(
-            VoiceSearchAction.QUERY_SUBMITTED,
-            voiceSearchActionEvent.detail.value);
-        await microtasksFinished();
-
-        assertEquals(
-            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
-        assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 1);
-        assertEquals(
-            voiceQuery,
-            testProxy.searchboxHandler.getArgs('submitQuery')[0][0]);
-      });
 
   test('autocomplete queried when autochip removed', async () => {
     createComposeboxElement(testProxy);
@@ -1250,3 +1173,106 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
             testProxy.element.$.carousel.files[0]!.name);
       });
 });
+
+suite('NewTabPageComposeboxAutocompleteVoiceSearchTest', () => {
+  const testProxy = setupComposeboxTest();
+
+  test('`autoSubmitVoiceSearchQuery` disabled updates input', async () => {
+    // Set loadTimeData so that voice search does not auto submit.
+    loadTimeData.overrideValues({
+      autoSubmitVoiceSearchQuery: false,
+      expandedComposeboxShowVoiceSearch: true,
+      steadyComposeboxShowVoiceSearch: true,
+      composeboxShowZps: true,  // For predictable queryAutocomplete count.
+    });
+    createComposeboxElement(testProxy);
+    await microtasksFinished();
+    testProxy.searchboxHandler.reset();
+
+    const voiceQuery = 'hello';
+    testProxy.element.$.voiceSearch.dispatchEvent(new CustomEvent(
+        'voice-search-final-result',
+        {detail: voiceQuery, bubbles: true, composed: true}));
+    await microtasksFinished();
+
+    // Assertions.
+    assertEquals(testProxy.element.$.input.value, voiceQuery);
+    // Ensure the query isn't auto submitted.
+    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
+    // Ensure autocomplete is queried since there's input in the composebox.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+    assertEquals(
+        voiceQuery,
+        testProxy.searchboxHandler.getArgs('queryAutocomplete')[0][0]);
+
+    // Mock an autocomplete result so that submitQuery assertion passes.
+    const matches =
+        [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: voiceQuery,
+          matches,
+        }));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertFalse(testProxy.element.$.input.hidden);
+    assertEquals(
+        testProxy.element.shadowRoot.activeElement, testProxy.element.$.input);
+
+    // Simulate submit button click.
+    getSubmitContainer(testProxy).dispatchEvent(new FocusEvent('focusin'));
+    getSubmitContainer(testProxy).click();
+
+    // Since a match is selected, openAutocompleteMatch is called instead of
+    // submitQuery.
+    await testProxy.searchboxHandler.whenCalled('openAutocompleteMatch');
+    await microtasksFinished();
+
+    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
+    const [index] =
+        testProxy.searchboxHandler.getArgs('openAutocompleteMatch')[0];
+    assertEquals(index, 0);
+  });
+
+  test(
+      '`autoSubmitVoiceSearchQuery` enabled submits w/o querying autocomplete',
+      async () => {
+        // Set loadTimeData so that voice search does auto submit.
+        loadTimeData.overrideValues({
+          autoSubmitVoiceSearchQuery: true,
+          expandedComposeboxShowVoiceSearch: true,
+          steadyComposeboxShowVoiceSearch: true,
+          composeboxShowZps: true,  // For predictable queryAutocomplete count.
+        });
+        createComposeboxElement(testProxy);
+        await microtasksFinished();
+        testProxy.searchboxHandler.reset();
+
+        const voiceSearchActionPromise =
+            eventToPromise('voice-search-action', testProxy.element);
+        const voiceQuery = 'hello';
+        testProxy.element.$.voiceSearch.dispatchEvent(new CustomEvent(
+            'voice-search-final-result',
+            {detail: voiceQuery, bubbles: true, composed: true}));
+
+        // Assert event fired.
+        const voiceSearchActionEvent = await voiceSearchActionPromise;
+        assertEquals(
+            VoiceSearchAction.QUERY_SUBMITTED,
+            voiceSearchActionEvent.detail.value);
+        await microtasksFinished();
+
+        assertEquals(
+            testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
+        assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 1);
+        assertEquals(
+            voiceQuery,
+            testProxy.searchboxHandler.getArgs('submitQuery')[0][0]);
+      });
+});
+
+

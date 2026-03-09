@@ -98,15 +98,39 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
   RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
 }
 
-// TODO(https://crbug.com/490326237): flaky on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_ComposeboxAutocomplete DISABLED_ComposeboxAutocomplete
-#else
-#define MAYBE_ComposeboxAutocomplete ComposeboxAutocomplete
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxAutocomplete) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteDropdown) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
-          "mocha.run()");
+          "runMochaSuite('NewTabPageComposeboxAutocompleteDropdownTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteKeyboardNavigation) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteKeyboardNavigationTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteMatchRemoval) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteMatchRemovalTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteSmartCompose) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteSmartComposeTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteQuerying) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteQueryingTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteContext) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteContextTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocompleteVoiceSearch) {
+  RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
+          "runMochaSuite('NewTabPageComposeboxAutocompleteVoiceSearchTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenu) {
