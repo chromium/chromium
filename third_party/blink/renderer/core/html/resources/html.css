@@ -2598,18 +2598,20 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
     padding-block-end: -internal-auto-base(1px, 0);
   }
 
+  /* These are redundant with the style rules in the FilterableSelect block.
+   * They should be removed when the FilterableSelect flag is removed. */
   datalist option:active-option {
     outline: black auto 1px;
   }
-
-  /* This is redundant with the option:filtered rule in the FilterableSelect
-   * block. It should be removed when either of the flags are removed. */
   option:filtered {
     display: none;
   }
 }
 
 @supports blink-feature(FilterableSelect) {
+  option:active-option {
+    outline: black auto 1px;
+  }
   option:filtered {
     display: none;
   }

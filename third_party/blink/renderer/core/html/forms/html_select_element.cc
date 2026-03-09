@@ -2096,7 +2096,10 @@ void HTMLSelectElement::MoveActiveOptionForwards() {
   CHECK(active_option_);
   if (HTMLOptionElement* new_option =
           GetOptionList().FindNextOption(*active_option_, &SupportsActive)) {
+    HTMLOptionElement* old_active_option = active_option_;
     active_option_ = new_option;
+    old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+    active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
   }
 }
 
@@ -2106,7 +2109,10 @@ void HTMLSelectElement::MoveActiveOptionBackwards() {
   CHECK(active_option_);
   if (HTMLOptionElement* new_option = GetOptionList().FindPreviousOption(
           *active_option_, &SupportsActive)) {
+    HTMLOptionElement* old_active_option = active_option_;
     active_option_ = new_option;
+    old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
+    active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
   }
 }
 

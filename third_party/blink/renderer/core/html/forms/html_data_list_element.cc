@@ -181,9 +181,10 @@ void HTMLDataListElement::MoveActiveOption(Direction direction) {
     HTMLOptionElement* next_option = option_list->Item(index);
     CHECK(next_option);
     if (next_option->SupportsActiveOptionPseudo()) {
+      HTMLOptionElement* old_active_option = active_option_;
       active_option_ = next_option;
+      old_active_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
       active_option_->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
-      next_option->PseudoStateChanged(CSSSelector::kPseudoActiveOption);
       return;
     }
   }

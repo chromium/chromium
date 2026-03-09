@@ -2,26 +2,29 @@
 <html class=reftest-wait>
 <link rel=author href="mailto:jarhar@chromium.org">
 <link rel=help href="https://open-ui.org/components/combobox.explainer/">
-<link rel=match href="customizable-combobox-appearance-ref.html">
+<link rel=match href="filterable-select-appearance-ref.html">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 
+
 <style>
-input, datalist {
+input, select {
   appearance: base;
+  display: block;
 }
 input {
-  height: 1lh;
   width: 150px;
+  height: 20px;
 }
 </style>
 
-<input list=datalist>
-<datalist id=datalist>
+<input filter=select>
+<select id=select size=4>
   <option>one</option>
   <option>two</option>
-</datalist>
+  <option>three</option>
+</select>
 
 <script>
 (async () => {
