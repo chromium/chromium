@@ -256,7 +256,7 @@ class AutofillBottomSheetTabHelper
   // Password generation provider used to trigger proactive password generation
   id<PasswordGenerationProvider> generation_provider_;
 
-  // Handler used to request showing the credential bottom sheet.
+  // Handler used to request showing the Autofill bottom sheet.
   __weak id<AutofillCommands> commands_handler_;
 
   // The WebState with which this object is associated.
