@@ -131,7 +131,11 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
             mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
         }
         mThinWebView.attachWebContents(
-                mWebContents, mWebContentView, delegate, mContextMenuPopulatorFactory);
+                mWebContents,
+                mWebContentView,
+                delegate,
+                mContextMenuPopulatorFactory,
+                /* selectionDropdownMenuDelegate= */ null);
 
         // Initialize the supplier of {@link ShareDelegate} for the WindowAndroid used by
         // ThinWebView.  The {@link ShareDelegate} itself is not set by design in order to leave

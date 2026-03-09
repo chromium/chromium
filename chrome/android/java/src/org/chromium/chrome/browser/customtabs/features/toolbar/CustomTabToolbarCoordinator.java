@@ -308,7 +308,8 @@ public class CustomTabToolbarCoordinator {
                         /* tabModelNotificationDotSupplier= */ ObservableSuppliers.createNonNull(
                                 TabModelDotInfo.HIDE),
                         /* undoBarThrottle= */ null,
-                        /* contextMenuPopulatorFactory= */ null);
+                        /* contextMenuPopulatorFactory= */ null,
+                        /* selectionDropdownMenuDelegate= */ null);
         mInitializedToolbarWithNative = true;
     }
 

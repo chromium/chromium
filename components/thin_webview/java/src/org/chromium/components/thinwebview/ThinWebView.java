@@ -11,6 +11,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 
 /**
  * An android view backed by a {@link Surface} that is able to display a cc::Layer. Either, a {@link
@@ -55,7 +56,8 @@ public interface ThinWebView {
             WebContents webContents,
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory);
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate);
 
     /**
      * Sets opacity for the view. {@link ThinWebViewConstraints#supportsOpacity} must be true for

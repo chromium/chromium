@@ -27,6 +27,7 @@ import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
@@ -88,7 +89,8 @@ class ExtensionActionPopup implements Destroyable {
             View anchorView,
             String actionId,
             ExtensionActionPopupContents contents,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         mActivity = activity;
         mActionId = actionId;
         mContents = contents;
@@ -128,7 +130,11 @@ class ExtensionActionPopup implements Destroyable {
         }
 
         mThinWebView.attachWebContents(
-                webContents, mContentView, /* delegate= */ null, contextMenuPopulatorFactory);
+                webContents,
+                mContentView,
+                /* delegate= */ null,
+                contextMenuPopulatorFactory,
+                selectionDropdownMenuDelegate);
 
         mPopupWindow =
                 new AnchoredPopupWindow(

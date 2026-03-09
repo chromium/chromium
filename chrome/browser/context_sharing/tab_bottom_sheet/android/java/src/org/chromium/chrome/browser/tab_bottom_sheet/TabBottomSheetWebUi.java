@@ -63,7 +63,8 @@ public class TabBottomSheetWebUi {
                     mWebContents,
                     contentView,
                     /* delegate= */ null,
-                    /* contextMenuPopulatorFactory= */ null);
+                    /* contextMenuPopulatorFactory= */ null,
+                    /* selectionDropdownMenuDelegate= */ null);
         } else {
             resetThinWebView();
         }

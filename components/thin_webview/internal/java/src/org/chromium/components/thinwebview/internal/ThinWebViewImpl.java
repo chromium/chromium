@@ -26,6 +26,7 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -112,7 +113,11 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate) {
         attachWebContents(
-                webContents, contentView, delegate, /* contextMenuPopulatorFactory= */ null);
+                webContents,
+                contentView,
+                delegate,
+                /* contextMenuPopulatorFactory= */ null,
+                /* selectionDropdownMenuDelegate= */ null);
     }
 
     @Override
@@ -120,7 +125,8 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             WebContents webContents,
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         if (mNativeThinWebViewImpl == 0) return;
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = delegate;
@@ -129,6 +135,9 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
 
         // Allow highlighting text.
         SelectionPopupController controller = SelectionPopupController.fromWebContents(webContents);
+        if (selectionDropdownMenuDelegate != null) {
+            controller.setDropdownMenuDelegate(selectionDropdownMenuDelegate);
+        }
         controller.setActionModeCallback(new ThinWebViewActionModeCallback(webContents));
         controller.setSelectionClient(SelectionClient.createSmartSelectionClient(webContents));
 

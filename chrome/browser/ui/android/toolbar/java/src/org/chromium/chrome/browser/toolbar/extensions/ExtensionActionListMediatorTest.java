@@ -177,7 +177,8 @@ public class ExtensionActionListMediatorTest {
                         mCurrentTabSupplier,
                         mActionAnchorViewProvider,
                         mExtensionsToolbarBridge,
-                        /* contextMenuPopulatorFactory= */ null) {
+                        /* contextMenuPopulatorFactory= */ null,
+                        /* selectionDropdownMenuDelegate= */ null) {
                     @Override
                     Bitmap getIconForAction(String actionId, WebContents webContents) {
                         ActionData action = mActions.get(actionId);

@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -61,7 +62,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             ViewGroup rootView,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         mContext = context;
         mContainer = container;
 
@@ -76,7 +78,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         currentTabSupplier,
                         this::getButtonViewForId,
                         extensionsToolbarBridge,
-                        contextMenuPopulatorFactory);
+                        contextMenuPopulatorFactory,
+                        selectionDropdownMenuDelegate);
 
         ExtensionsToolbarDragTouchHandler dragTouchHandler =
                 new ExtensionsToolbarDragTouchHandler(context, mModels);

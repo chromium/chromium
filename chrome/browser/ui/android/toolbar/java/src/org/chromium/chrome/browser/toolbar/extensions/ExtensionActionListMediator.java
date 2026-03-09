@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -91,6 +92,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ExtensionActionListCoordinator.ActionAnchorViewProvider mActionAnchorViewProvider;
     private final @Nullable ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
+    private final @Nullable SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
@@ -113,7 +115,8 @@ class ExtensionActionListMediator implements Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionActionListCoordinator.ActionAnchorViewProvider actionAnchorViewProvider,
             ExtensionsToolbarBridge extensionsToolbarBridge,
-            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
@@ -123,6 +126,7 @@ class ExtensionActionListMediator implements Destroyable {
         mActionAnchorViewProvider = actionAnchorViewProvider;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
+        mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
 
         mExtensionsToolbarBridge.setDelegate(mToolbarDelegate);
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
@@ -363,7 +367,8 @@ class ExtensionActionListMediator implements Destroyable {
                         buttonView,
                         actionId,
                         contents,
-                        mContextMenuPopulatorFactory);
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate);
         popup.loadInitialPage();
         popup.addOnDismissListener(this::closePopup);
         mActionState = new ActionState.PopupActive(popup, actionId);
