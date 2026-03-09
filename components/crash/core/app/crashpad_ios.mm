@@ -4,6 +4,7 @@
 
 #include "components/crash/core/app/crashpad.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/apple/bridging.h"
@@ -11,6 +12,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -24,6 +26,12 @@ namespace crash_reporter {
 
 namespace {
 
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+constexpr std::string_view kPlatformName = "iOS";
+#else
+constexpr std::string_view kPlatformName = "tvOS";
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+
 const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
   static std::map<std::string, std::string> annotations = []() -> auto {
     std::map<std::string, std::string> process_annotations;
@@ -36,7 +44,7 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
           [outer_bundle objectForInfoDictionaryKey:base::apple::CFToNSPtrCast(
                                                        kCFBundleNameKey)]);
       process_annotations["prod"] =
-          base::SysNSStringToUTF8(product).append("_iOS");
+          base::SysNSStringToUTF8(product).append("_").append(kPlatformName);
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -55,7 +63,7 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
           base::apple::ObjCCast<NSString>([base::apple::FrameworkBundle()
               objectForInfoDictionaryKey:@"CFBundleVersion"]);
       process_annotations["ver"] = base::SysNSStringToUTF8(version);
-      process_annotations["plat"] = std::string("iOS");
+      process_annotations["plat"] = kPlatformName;
     }  // @autoreleasepool
     return process_annotations;
   }
