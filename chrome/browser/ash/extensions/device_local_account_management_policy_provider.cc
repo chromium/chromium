@@ -59,6 +59,7 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     case policy::DeviceLocalAccountType::kKioskApp:
     case policy::DeviceLocalAccountType::kWebKioskApp:
     case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
+    case policy::DeviceLocalAccountType::kArcvmKioskApp:
       // For single-app kiosk sessions, allow platform apps, extensions and
       // shared modules.
       if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||
@@ -66,9 +67,6 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
           extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
         return true;
       }
-      break;
-    case policy::DeviceLocalAccountType::kArcvmKioskApp:
-      // No companion extensions in ARC VM kiosk.
       break;
   }
 

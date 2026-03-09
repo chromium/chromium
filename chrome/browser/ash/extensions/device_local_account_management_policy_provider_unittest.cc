@@ -311,6 +311,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSessions) {
   static constexpr policy::DeviceLocalAccountType kTypes[] = {
       policy::DeviceLocalAccountType::kKioskApp,
       policy::DeviceLocalAccountType::kWebKioskApp,
+      policy::DeviceLocalAccountType::kArcvmKioskApp,
   };
 
   for (auto type : kTypes) {
