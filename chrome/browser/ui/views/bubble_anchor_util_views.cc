@@ -98,9 +98,13 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
       browser_view->GetLocationBar()
           ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
-    return {browser_view->GetLocationBar()->GetAnchorOrNull(),
-            PermissionChipView::kPermissionRequestChipElementId,
-            views::BubbleBorder::TOP_LEFT};
+    ui::TrackedElement* tracked_element =
+        browser_view->GetLocationBar()->GetAnchorOrNull();
+    if (tracked_element) {
+      return {tracked_element,
+              PermissionChipView::kPermissionRequestChipElementId,
+              views::BubbleBorder::TOP_LEFT};
+    }
   }
   return GetPageInfoAnchorConfiguration(browser);
 }
