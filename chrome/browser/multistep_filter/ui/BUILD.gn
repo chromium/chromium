@@ -19,6 +19,7 @@ source_set("ui") {
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:tabs_public",
       "//components/multistep_filter/core",
+      "//ui/base/unowned_user_data",
     ]
 
     deps += [
@@ -41,10 +42,10 @@ source_set("unit_tests") {
       ":ui",
       "//base/test:test_support",
       "//chrome/browser/multistep_filter/core",
-      "//chrome/browser/multistep_filter/test_utils",
       "//chrome/test:test_support",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
+      "//components/tabs:test_support",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",

@@ -15,8 +15,16 @@
 
 namespace multistep_filter {
 
+DEFINE_USER_DATA(FilterUiController);
+
+// static
+FilterUiController* FilterUiController::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
 FilterUiController::FilterUiController(tabs::TabInterface& tab)
-    : tabs::ContentsObservingTabFeature(tab) {}
+    : tabs::ContentsObservingTabFeature(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 FilterUiController::~FilterUiController() = default;
 
@@ -35,6 +43,10 @@ FilterUiController::GetSuggestionCallback() {
 }
 
 void FilterUiController::ClearSuggestion() {
+  weak_factory_.InvalidateWeakPtrs();
+  if (!current_url_filter_suggestion_) {
+    return;
+  }
   current_url_filter_suggestion_.reset();
   HideSuggestionUi();
 }

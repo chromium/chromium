@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
 class TabInterface;
@@ -22,6 +23,10 @@ namespace multistep_filter {
 // suggestions within a tab.
 class FilterUiController : public tabs::ContentsObservingTabFeature {
  public:
+  DECLARE_USER_DATA(FilterUiController);
+
+  static FilterUiController* From(tabs::TabInterface* tab);
+
   explicit FilterUiController(tabs::TabInterface& tab);
   FilterUiController(const FilterUiController&) = delete;
   FilterUiController& operator=(const FilterUiController&) = delete;
@@ -51,6 +56,8 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
   virtual void NavigateTo(const GURL& url);
 
  private:
+  ui::ScopedUnownedUserData<FilterUiController> scoped_unowned_user_data_;
+
   // The current suggestion that is displayed in the UI. Cached here so that
   // when the user accepts the suggestion, we have access to the details without
   // needing to pass them back from the UI layer.
