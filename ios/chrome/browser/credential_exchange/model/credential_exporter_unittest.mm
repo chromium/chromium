@@ -6,6 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -17,7 +18,8 @@ class CredentialExporterTest : public PlatformTest {
  protected:
   void SetUp() override {
     mock_delegate_ = OCMProtocolMock(@protocol(CredentialExporterDelegate));
-    window_ = [[UIWindow alloc] init];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     exporter_ = [[CredentialExporter alloc] initWithWindow:window_
                                                   delegate:mock_delegate_];
   }
