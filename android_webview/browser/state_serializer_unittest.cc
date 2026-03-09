@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "android_webview/common/aw_features.h"
 #include "base/check_op.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_entry.h"
@@ -29,6 +31,7 @@ namespace android_webview {
 
 namespace {
 
+// Helper methods
 std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
     string url = "http://url") {
   std::unique_ptr<content::NavigationEntry> entry(
@@ -48,6 +51,7 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
   const base::Time timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(12345);
   const int http_status_code = 404;
+  const string extra_header = "X-Navigation-Extra-Header: Testing";
 
   entry->SetURL(gurl);
   entry->SetVirtualURL(virtual_url);
@@ -64,26 +68,39 @@ std::unique_ptr<content::NavigationEntry> CreateNavigationEntry(
   entry->SetIsOverridingUserAgent(is_overriding_user_agent);
   entry->SetTimestamp(timestamp);
   entry->SetHttpStatusCode(http_status_code);
+  entry->AddExtraHeaders(extra_header);
 
   return entry;
 }
 
-void AssertEntriesEqual(content::NavigationEntry* lhs,
-                        content::NavigationEntry* rhs) {
-  EXPECT_EQ(lhs->GetURL(), rhs->GetURL());
-  EXPECT_EQ(lhs->GetVirtualURL(), rhs->GetVirtualURL());
-  EXPECT_EQ(lhs->GetReferrer().url, rhs->GetReferrer().url);
-  EXPECT_EQ(lhs->GetReferrer().policy, rhs->GetReferrer().policy);
-  EXPECT_EQ(lhs->GetTitle(), rhs->GetTitle());
-  EXPECT_EQ(lhs->GetPageState(), rhs->GetPageState());
-  EXPECT_EQ(lhs->GetHasPostData(), rhs->GetHasPostData());
-  EXPECT_EQ(lhs->GetOriginalRequestURL(), rhs->GetOriginalRequestURL());
-  EXPECT_EQ(lhs->GetBaseURLForDataURL(), rhs->GetBaseURLForDataURL());
-  EXPECT_EQ(lhs->GetDataURLAsString()->as_string(),
-            rhs->GetDataURLAsString()->as_string());
-  EXPECT_EQ(lhs->GetIsOverridingUserAgent(), rhs->GetIsOverridingUserAgent());
-  EXPECT_EQ(lhs->GetTimestamp(), rhs->GetTimestamp());
-  EXPECT_EQ(lhs->GetHttpStatusCode(), rhs->GetHttpStatusCode());
+void VerifyRestoredNavigation(uint32_t state_version,
+                              content::NavigationEntry* original,
+                              content::NavigationEntry* copy) {
+  EXPECT_EQ(original->GetURL(), copy->GetURL());
+  EXPECT_EQ(original->GetVirtualURL(), copy->GetVirtualURL());
+  EXPECT_EQ(original->GetReferrer().url, copy->GetReferrer().url);
+  EXPECT_EQ(original->GetReferrer().policy, copy->GetReferrer().policy);
+  EXPECT_EQ(original->GetTitle(), copy->GetTitle());
+  EXPECT_EQ(original->GetPageState(), copy->GetPageState());
+  EXPECT_EQ(original->GetHasPostData(), copy->GetHasPostData());
+  EXPECT_EQ(original->GetOriginalRequestURL(), copy->GetOriginalRequestURL());
+  EXPECT_EQ(original->GetBaseURLForDataURL(), copy->GetBaseURLForDataURL());
+  if (state_version >= internal::AW_STATE_VERSION_DATA_URL) {
+    EXPECT_EQ(original->GetDataURLAsString()->as_string(),
+              copy->GetDataURLAsString()->as_string());
+  } else {
+    EXPECT_FALSE(copy->GetDataURLAsString());
+  }
+  EXPECT_EQ(original->GetIsOverridingUserAgent(),
+            copy->GetIsOverridingUserAgent());
+  EXPECT_EQ(original->GetTimestamp(), copy->GetTimestamp());
+  EXPECT_EQ(original->GetHttpStatusCode(), copy->GetHttpStatusCode());
+  if (state_version >= internal::AW_STATE_VERSION_INCLUDE_HEADERS &&
+      base::FeatureList::IsEnabled(features::kWebViewSaveStateIncludeHeaders)) {
+    EXPECT_EQ(original->GetExtraHeaders(), copy->GetExtraHeaders());
+  } else {
+    EXPECT_TRUE(copy->GetExtraHeaders().empty());
+  }
 }
 
 class AndroidWebViewStateSerializerTest : public testing::Test {
@@ -108,7 +125,7 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
   content::ContentBrowserClient browser_client_;
 };
 
-// A fake navigation controller that holes a simple list of navigation entries,
+// A fake navigation controller that holds a simple list of navigation entries,
 // and can restore to that list.
 class TestNavigationController : public internal::NavigationHistory,
                                  public internal::NavigationHistorySink {
@@ -145,21 +162,23 @@ class TestNavigationController : public internal::NavigationHistory,
   std::vector<std::unique_ptr<content::NavigationEntry>> entries_;
 };
 
-void AssertHistoriesEqual(TestNavigationController& lhs,
-                          TestNavigationController& rhs) {
-  EXPECT_EQ(lhs.GetEntryCount(), rhs.GetEntryCount());
-  EXPECT_EQ(lhs.GetCurrentEntry(), rhs.GetCurrentEntry());
-  for (int i = 0; i < lhs.GetEntryCount(); i++) {
-    AssertEntriesEqual(lhs.GetEntryAtIndex(i), rhs.GetEntryAtIndex(i));
+void VerifyRestoredNavigationHistory(uint32_t state_version,
+                                     TestNavigationController& original,
+                                     TestNavigationController& copy) {
+  EXPECT_EQ(original.GetEntryCount(), copy.GetEntryCount());
+  EXPECT_EQ(original.GetCurrentEntry(), copy.GetCurrentEntry());
+  for (int i = 0; i < original.GetEntryCount(); i++) {
+    VerifyRestoredNavigation(state_version, original.GetEntryAtIndex(i),
+                             copy.GetEntryAtIndex(i));
   }
 }
 
-void WriteToPickleLegacy_VersionDataUrl(internal::NavigationHistory& history,
-                                        base::Pickle* pickle) {
+void WriteToPickle_LegacyVersion(internal::NavigationHistory& history,
+                                 base::Pickle* pickle,
+                                 uint32_t state_version) {
   DCHECK(pickle);
-  int state_version = internal::AW_STATE_VERSION_DATA_URL;
 
-  internal::WriteHeaderToPickle(state_version, pickle);
+  internal::WriteHeaderToPickle(pickle, state_version);
 
   const int entry_count = history.GetEntryCount();
   const int selected_entry = history.GetCurrentEntry();
@@ -172,41 +191,28 @@ void WriteToPickleLegacy_VersionDataUrl(internal::NavigationHistory& history,
   pickle->WriteInt(entry_count);
   pickle->WriteInt(selected_entry);
   for (int i = 0; i < entry_count; ++i) {
-    internal::WriteNavigationEntryToPickle(state_version,
-                                           *history.GetEntryAtIndex(i), pickle);
+    internal::WriteNavigationEntryToPickle(*history.GetEntryAtIndex(i), pickle,
+                                           state_version);
   }
-
-  // Please update AW_STATE_VERSION and IsSupportedVersion() if serialization
-  // format is changed.
-  // Make sure the serialization format is updated in a backwards compatible
-  // way.
 }
 
 }  // namespace
 
 TEST_F(AndroidWebViewStateSerializerTest, TestHeaderSerialization) {
-  base::Pickle pickle;
-  internal::WriteHeaderToPickle(&pickle);
+  for (uint32_t version : internal::AW_STATE_SUPPORTED_VERSIONS) {
+    base::Pickle pickle;
+    internal::WriteHeaderToPickle(&pickle, version);
 
-  base::PickleIterator iterator(pickle);
-  uint32_t version = internal::RestoreHeaderFromPickle(&iterator);
-  EXPECT_GT(version, 0U);
-}
-
-TEST_F(AndroidWebViewStateSerializerTest,
-       TestLegacyVersionHeaderSerialization) {
-  base::Pickle pickle;
-  internal::WriteHeaderToPickle(internal::AW_STATE_VERSION_INITIAL, &pickle);
-
-  base::PickleIterator iterator(pickle);
-  uint32_t version = internal::RestoreHeaderFromPickle(&iterator);
-  EXPECT_EQ(version, internal::AW_STATE_VERSION_INITIAL);
+    base::PickleIterator iterator(pickle);
+    uint32_t restored_version = internal::RestoreHeaderFromPickle(&iterator);
+    EXPECT_EQ(restored_version, version);
+  }
 }
 
 TEST_F(AndroidWebViewStateSerializerTest,
        TestUnsupportedVersionHeaderSerialization) {
   base::Pickle pickle;
-  internal::WriteHeaderToPickle(20000101, &pickle);
+  internal::WriteHeaderToPickle(&pickle, 20000101);
 
   base::PickleIterator iterator(pickle);
   uint32_t version = internal::RestoreHeaderFromPickle(&iterator);
@@ -214,55 +220,29 @@ TEST_F(AndroidWebViewStateSerializerTest,
 }
 
 TEST_F(AndroidWebViewStateSerializerTest, TestNavigationEntrySerialization) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebViewSaveStateIncludeHeaders);
   std::unique_ptr<content::NavigationEntry> entry(CreateNavigationEntry());
 
-  base::Pickle pickle;
-  internal::WriteNavigationEntryToPickle(*entry, &pickle);
+  for (uint32_t version : internal::AW_STATE_SUPPORTED_VERSIONS) {
+    // Create pickle and save navigation entry to it
+    base::Pickle pickle;
+    internal::WriteNavigationEntryToPickle(*entry, &pickle, version);
 
-  std::unique_ptr<content::NavigationEntry> copy(
-      content::NavigationEntry::Create());
-  base::PickleIterator iterator(pickle);
-  std::unique_ptr<content::NavigationEntryRestoreContext> context =
-      content::NavigationEntryRestoreContext::Create();
-  bool result = internal::RestoreNavigationEntryFromPickle(
-      &iterator, copy.get(), context.get());
-  EXPECT_TRUE(result);
+    // Restore navigation entry from pickle
+    std::unique_ptr<content::NavigationEntry> copy(
+        content::NavigationEntry::Create());
+    base::PickleIterator iterator(pickle);
+    std::unique_ptr<content::NavigationEntryRestoreContext> context =
+        content::NavigationEntryRestoreContext::Create();
+    bool result = internal::RestoreNavigationEntryFromPickle(
+        &iterator, copy.get(), context.get(), version);
+    EXPECT_TRUE(result);
 
-  AssertEntriesEqual(entry.get(), copy.get());
-}
-
-TEST_F(AndroidWebViewStateSerializerTest,
-       TestLegacyNavigationEntrySerialization) {
-  std::unique_ptr<content::NavigationEntry> entry(CreateNavigationEntry());
-
-  base::Pickle pickle;
-  internal::WriteNavigationEntryToPickle(internal::AW_STATE_VERSION_INITIAL,
-                                         *entry, &pickle);
-
-  std::unique_ptr<content::NavigationEntry> copy(
-      content::NavigationEntry::Create());
-  base::PickleIterator iterator(pickle);
-  std::unique_ptr<content::NavigationEntryRestoreContext> context =
-      content::NavigationEntryRestoreContext::Create();
-  bool result = internal::RestoreNavigationEntryFromPickle(
-      internal::AW_STATE_VERSION_INITIAL, &iterator, copy.get(), context.get());
-  EXPECT_TRUE(result);
-
-  EXPECT_EQ(entry->GetURL(), copy->GetURL());
-  EXPECT_EQ(entry->GetVirtualURL(), copy->GetVirtualURL());
-  EXPECT_EQ(entry->GetReferrer().url, copy->GetReferrer().url);
-  EXPECT_EQ(entry->GetReferrer().policy, copy->GetReferrer().policy);
-  EXPECT_EQ(entry->GetTitle(), copy->GetTitle());
-  EXPECT_EQ(entry->GetPageState(), copy->GetPageState());
-  EXPECT_EQ(entry->GetHasPostData(), copy->GetHasPostData());
-  EXPECT_EQ(entry->GetOriginalRequestURL(), copy->GetOriginalRequestURL());
-  EXPECT_EQ(entry->GetBaseURLForDataURL(), copy->GetBaseURLForDataURL());
-  // DataURL not supported by 20130814 format
-  EXPECT_FALSE(copy->GetDataURLAsString());
-  EXPECT_EQ(entry->GetIsOverridingUserAgent(),
-            copy->GetIsOverridingUserAgent());
-  EXPECT_EQ(entry->GetTimestamp(), copy->GetTimestamp());
-  EXPECT_EQ(entry->GetHttpStatusCode(), copy->GetHttpStatusCode());
+    // Check that the navigation entry restored correctly based on the version
+    // it was saved against
+    VerifyRestoredNavigation(version, entry.get(), copy.get());
+  }
 }
 
 // This is a regression test for https://crbug.com/999078 - it checks that code
@@ -310,7 +290,8 @@ TEST_F(AndroidWebViewStateSerializerTest,
   std::unique_ptr<content::NavigationEntryRestoreContext> context =
       content::NavigationEntryRestoreContext::Create();
   bool result = internal::RestoreNavigationEntryFromPickle(
-      &iterator, copy.get(), context.get());
+      &iterator, copy.get(), context.get(),
+      internal::AW_STATE_VERSION_DATA_URL);
   EXPECT_TRUE(result);
 
   // In https://crbug.com/999078, the empty PageState would clobber the URL
@@ -338,13 +319,17 @@ TEST_F(AndroidWebViewStateSerializerTest,
   EXPECT_EQ(http_status_code, copy->GetHttpStatusCode());
 }
 
+// Note the below tests only test against the current version used for saving
+// state
+
 TEST_F(AndroidWebViewStateSerializerTest, TestEmptyDataURLSerialization) {
   std::unique_ptr<content::NavigationEntry> entry(
       content::NavigationEntry::Create());
   EXPECT_FALSE(entry->GetDataURLAsString());
 
   base::Pickle pickle;
-  internal::WriteNavigationEntryToPickle(*entry, &pickle);
+  internal::WriteNavigationEntryToPickle(*entry, &pickle,
+                                         internal::AW_STATE_VERSION);
 
   std::unique_ptr<content::NavigationEntry> copy(
       content::NavigationEntry::Create());
@@ -352,7 +337,7 @@ TEST_F(AndroidWebViewStateSerializerTest, TestEmptyDataURLSerialization) {
   std::unique_ptr<content::NavigationEntryRestoreContext> context =
       content::NavigationEntryRestoreContext::Create();
   bool result = internal::RestoreNavigationEntryFromPickle(
-      &iterator, copy.get(), context.get());
+      &iterator, copy.get(), context.get(), internal::AW_STATE_VERSION);
   EXPECT_TRUE(result);
   EXPECT_FALSE(entry->GetDataURLAsString());
 }
@@ -369,7 +354,8 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHugeDataURLSerialization) {
   }
 
   base::Pickle pickle;
-  internal::WriteNavigationEntryToPickle(*entry, &pickle);
+  internal::WriteNavigationEntryToPickle(*entry, &pickle,
+                                         internal::AW_STATE_VERSION);
 
   std::unique_ptr<content::NavigationEntry> copy(
       content::NavigationEntry::Create());
@@ -377,43 +363,42 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHugeDataURLSerialization) {
   std::unique_ptr<content::NavigationEntryRestoreContext> context =
       content::NavigationEntryRestoreContext::Create();
   bool result = internal::RestoreNavigationEntryFromPickle(
-      &iterator, copy.get(), context.get());
+      &iterator, copy.get(), context.get(), internal::AW_STATE_VERSION);
   EXPECT_TRUE(result);
   EXPECT_EQ(huge_data_url, copy->GetDataURLAsString()->as_string());
 }
 
-TEST_F(AndroidWebViewStateSerializerTest,
-       TestDeserializeLegacy_VersionDataUrl) {
-  TestNavigationController controller;
-
-  controller.Add(CreateNavigationEntry("http://url1"));
-  controller.Add(CreateNavigationEntry("http://url2"));
-  controller.Add(CreateNavigationEntry("http://url3"));
-
-  base::Pickle pickle;
-  WriteToPickleLegacy_VersionDataUrl(controller, &pickle);
-
-  TestNavigationController copy;
-  base::PickleIterator iterator(pickle);
-  internal::RestoreFromPickle(&iterator, copy);
-
-  AssertHistoriesEqual(controller, copy);
-}
-
 TEST_F(AndroidWebViewStateSerializerTest, TestHistorySerialization) {
-  TestNavigationController controller;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebViewSaveStateIncludeHeaders);
 
+  // Create navigation history
+  TestNavigationController controller;
   controller.Add(CreateNavigationEntry("http://url1"));
   controller.Add(CreateNavigationEntry("http://url2"));
   controller.Add(CreateNavigationEntry("http://url3"));
 
-  base::Pickle pickle = internal::WriteToPickle(controller).value();
+  // Check for each supported version that the state is saved and restored
+  // correctly
+  for (uint32_t version : internal::AW_STATE_SUPPORTED_VERSIONS) {
+    // Create pickle and save history to it
+    base::Pickle pickle;
+    if (version < internal::AW_STATE_VERSION_MOST_RECENT_FIRST) {
+      WriteToPickle_LegacyVersion(controller, &pickle, version);
+    } else {
+      pickle = internal::WriteToPickle(controller, version).value();
+    }
 
-  TestNavigationController copy;
-  base::PickleIterator iterator(pickle);
-  internal::RestoreFromPickle(&iterator, copy);
+    // Restore history from pickle
+    TestNavigationController copy;
+    base::PickleIterator iterator(pickle);
+    bool result = internal::RestoreFromPickle(&iterator, copy);
+    EXPECT_TRUE(result);
 
-  AssertHistoriesEqual(controller, copy);
+    // Check that the history restored correctly based on the version it was
+    // saved against
+    VerifyRestoredNavigationHistory(version, controller, copy);
+  }
 }
 
 TEST_F(AndroidWebViewStateSerializerTest, TestHistoryTruncation) {
@@ -422,20 +407,23 @@ TEST_F(AndroidWebViewStateSerializerTest, TestHistoryTruncation) {
   TestNavigationController expected;
   expected.Add(CreateNavigationEntry("http://url2"));
   expected.Add(CreateNavigationEntry("http://url3"));
-  size_t max_size = internal::WriteToPickle(expected)->size();
+  size_t max_size =
+      internal::WriteToPickle(expected, internal::AW_STATE_VERSION)->size();
 
   TestNavigationController controller;
   controller.Add(CreateNavigationEntry("http://url1"));
   controller.Add(CreateNavigationEntry("http://url2"));
   controller.Add(CreateNavigationEntry("http://url3"));
 
-  base::Pickle pickle = internal::WriteToPickle(controller, max_size).value();
+  base::Pickle pickle =
+      internal::WriteToPickle(controller, internal::AW_STATE_VERSION, max_size)
+          .value();
 
   TestNavigationController copy;
   base::PickleIterator iterator(pickle);
   EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
 
-  AssertHistoriesEqual(expected, copy);
+  VerifyRestoredNavigationHistory(internal::AW_STATE_VERSION, expected, copy);
 }
 
 TEST_F(AndroidWebViewStateSerializerTest,
@@ -448,7 +436,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   controller.Add(CreateNavigationEntry("http://url3"));
 
   std::optional<base::Pickle> maybe_pickle =
-      internal::WriteToPickle(controller, max_size);
+      internal::WriteToPickle(controller, internal::AW_STATE_VERSION, max_size);
 
   EXPECT_FALSE(maybe_pickle.has_value());
 }
@@ -460,7 +448,8 @@ TEST_F(AndroidWebViewStateSerializerTest,
   TestNavigationController expected;
   expected.Add(CreateNavigationEntry("http://url1"));
   expected.Add(CreateNavigationEntry("http://url2"));
-  size_t max_size = internal::WriteToPickle(expected)->size();
+  size_t max_size =
+      internal::WriteToPickle(expected, internal::AW_STATE_VERSION)->size();
 
   TestNavigationController controller;
   controller.Add(CreateNavigationEntry("http://url1"));
@@ -469,7 +458,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   controller.SetCurrentEntry(1);
 
   base::Pickle pickle =
-      internal::WriteToPickle(controller, max_size,
+      internal::WriteToPickle(controller, internal::AW_STATE_VERSION, max_size,
                               /* save_forward_history= */ false)
           .value();
 
@@ -477,7 +466,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   base::PickleIterator iterator(pickle);
   EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
 
-  AssertHistoriesEqual(expected, copy);
+  VerifyRestoredNavigationHistory(internal::AW_STATE_VERSION, expected, copy);
 }
 
 TEST_F(AndroidWebViewStateSerializerTest,
@@ -493,7 +482,8 @@ TEST_F(AndroidWebViewStateSerializerTest,
     TestNavigationController controller;
     controller.Add(CreateNavigationEntry("http://url2"));
     controller.Add(CreateNavigationEntry("http://url3"));
-    max_size = internal::WriteToPickle(controller)->size();
+    max_size =
+        internal::WriteToPickle(controller, internal::AW_STATE_VERSION)->size();
   }
 
   TestNavigationController expected;
@@ -505,13 +495,15 @@ TEST_F(AndroidWebViewStateSerializerTest,
   controller.Add(CreateNavigationEntry("http://url3"));
   controller.SetCurrentEntry(0);
 
-  base::Pickle pickle = internal::WriteToPickle(controller, max_size).value();
+  base::Pickle pickle =
+      internal::WriteToPickle(controller, internal::AW_STATE_VERSION, max_size)
+          .value();
 
   TestNavigationController copy;
   base::PickleIterator iterator(pickle);
   EXPECT_TRUE(internal::RestoreFromPickle(&iterator, copy));
 
-  AssertHistoriesEqual(expected, copy);
+  VerifyRestoredNavigationHistory(internal::AW_STATE_VERSION, expected, copy);
 }
 
 }  // namespace android_webview

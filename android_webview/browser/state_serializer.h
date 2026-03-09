@@ -9,7 +9,8 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <vector>
+
+#include "base/containers/fixed_flat_set.h"
 
 namespace base {
 
@@ -51,6 +52,15 @@ const uint32_t AW_STATE_VERSION_MOST_RECENT_FIRST = 20250213;
 // on the feature kWebViewSaveStateIncludeHeaders
 const uint32_t AW_STATE_VERSION_INCLUDE_HEADERS = 20260226;
 
+inline constexpr auto AW_STATE_SUPPORTED_VERSIONS =
+    base::MakeFixedFlatSet<uint32_t>({
+        AW_STATE_VERSION_INITIAL,
+        AW_STATE_VERSION_DATA_URL,
+        AW_STATE_VERSION_MOST_RECENT_FIRST,
+        AW_STATE_VERSION_INCLUDE_HEADERS,
+    });
+const uint32_t AW_STATE_VERSION = internal::AW_STATE_VERSION_INCLUDE_HEADERS;
+
 // The navigation history to be saved. Primarily exists for testing.
 class NavigationHistory {
  public:
@@ -73,30 +83,26 @@ class NavigationHistorySink {
 // They are broken up for unit testing, and should not be called out side of
 // tests.
 
+[[nodiscard]] bool IsSupportedVersion(uint32_t state_version);
+
+void WriteHeaderToPickle(base::Pickle* pickle, uint32_t state_version);
 std::optional<base::Pickle> WriteToPickle(
     NavigationHistory& history,
+    uint32_t state_version,
     size_t max_size = std::numeric_limits<size_t>::max(),
     bool save_forward_history = true);
-void WriteHeaderToPickle(base::Pickle* pickle);
-void WriteHeaderToPickle(uint32_t state_version, base::Pickle* pickle);
-[[nodiscard]] uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator);
-[[nodiscard]] bool IsSupportedVersion(uint32_t state_version);
 void WriteNavigationEntryToPickle(content::NavigationEntry& entry,
-                                  base::Pickle* pickle);
-void WriteNavigationEntryToPickle(uint32_t state_version,
-                                  content::NavigationEntry& entry,
-                                  base::Pickle* pickle);
+                                  base::Pickle* pickle,
+                                  uint32_t state_version);
+
+[[nodiscard]] uint32_t RestoreHeaderFromPickle(base::PickleIterator* iterator);
 bool RestoreFromPickle(base::PickleIterator* iterator,
                        NavigationHistorySink& sink);
 [[nodiscard]] bool RestoreNavigationEntryFromPickle(
     base::PickleIterator* iterator,
     content::NavigationEntry* entry,
-    content::NavigationEntryRestoreContext* context);
-[[nodiscard]] bool RestoreNavigationEntryFromPickle(
-    uint32_t state_version,
-    base::PickleIterator* iterator,
-    content::NavigationEntry* entry,
-    content::NavigationEntryRestoreContext* context);
+    content::NavigationEntryRestoreContext* context,
+    uint32_t state_version);
 
 }  // namespace internal
 
