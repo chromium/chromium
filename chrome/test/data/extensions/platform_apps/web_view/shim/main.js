@@ -3721,6 +3721,28 @@ function testInsertIntoDetachedIframe() {
   document.body.appendChild(iframe);
 }
 
+// Calling `documentPictureInPicture.requestWindow` from a webview shouldn't
+// crash.
+function testPictureInPictureRequestWindow() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    let requestPipWindow = async () => {
+      await window.documentPictureInPicture.requestWindow();
+    };
+
+    try {
+      await evalInWebView(webview, requestPipWindow, []);
+    } catch (ex) {
+      embedder.test.fail();
+    }
+
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
 function testCannotRequestUsb() {
   let webview = document.createElement('webview');
   webview.src = embedder.emptyGuestURL;
@@ -4093,6 +4115,7 @@ embedder.test.testList = {
   'testBluetoothDisabled': testBluetoothDisabled,
   'testFileSystemAccessAvailable': testFileSystemAccessAvailable,
   'testCannotLockKeyboard': testCannotLockKeyboard,
+  'testPictureInPictureRequestWindow': testPictureInPictureRequestWindow,
 };
 
 onload = function() {

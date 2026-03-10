@@ -6513,6 +6513,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PreserveNameAcrossNavigationsAndCrashes) {
   EXPECT_EQ("foo", content::EvalJs(GetGuestRenderFrameHost(), "window.name"));
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewTest, PictureInPictureRequestWindow) {
+  TestHelper("testPictureInPictureRequestWindow", "web_view/shim",
+             NEEDS_TEST_SERVER);
+}
+
 // Domain which the Webstore hosted app is associated with in production.
 constexpr char kWebstoreURL[] = "https://chrome.google.com/";
 // Domain which the new Webstore is associated with in production.

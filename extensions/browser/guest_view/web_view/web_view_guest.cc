@@ -154,6 +154,8 @@ uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
   return mask;
 }
 
+// May return an empty string to indicate a disposition that is not supported by
+// the API.
 std::string WindowOpenDispositionToString(
     WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
@@ -172,7 +174,7 @@ std::string WindowOpenDispositionToString(
     case WindowOpenDisposition::NEW_POPUP:
       return "new_popup";
     default:
-      NOTREACHED() << "Unknown Window Open Disposition";
+      return "";
   }
 }
 
@@ -2218,6 +2220,14 @@ void WebViewGuest::RequestNewWindowPermission(
 
   const int guest_instance_id = new_guest->guest_instance_id();
 
+  const std::string disposition_str =
+      WindowOpenDispositionToString(disposition);
+  if (disposition_str.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(new_guest));
+    return;
+  }
+
   base::DictValue request_info;
   request_info.Set(webview::kInitialHeight, initial_bounds.height());
   request_info.Set(webview::kInitialWidth, initial_bounds.width());
@@ -2227,8 +2237,7 @@ void WebViewGuest::RequestNewWindowPermission(
   // We pass in partition info so that window-s created through newwindow
   // API can use it to set their partition attribute.
   request_info.Set(webview::kStoragePartitionId, storage_partition_id);
-  request_info.Set(webview::kWindowOpenDisposition,
-                   WindowOpenDispositionToString(disposition));
+  request_info.Set(webview::kWindowOpenDisposition, disposition_str);
 
   GuestViewManager::FromBrowserContext(browser_context())
       ->ManageOwnership(std::move(new_guest));
