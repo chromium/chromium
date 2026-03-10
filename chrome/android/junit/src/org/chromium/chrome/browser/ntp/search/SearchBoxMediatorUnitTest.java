@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
@@ -47,6 +48,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.Supplier;
@@ -99,6 +101,7 @@ public class SearchBoxMediatorUnitTest {
         mPropertyModel.set(
                 SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, mock(View.OnDragListener.class));
         mPropertyModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER, mock(TextWatcher.class));
+        mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, new ColorDrawable(Color.RED));
 
         assertNotNull(mPropertyModel.get(SearchBoxProperties.LENS_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));
@@ -106,6 +109,7 @@ public class SearchBoxMediatorUnitTest {
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         assertNotNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
+        assertNotNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
 
         mMediator.initialize(mActivityLifecycleDispatcher);
         mMediator.onDestroy();
@@ -118,6 +122,32 @@ public class SearchBoxMediatorUnitTest {
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK));
         assertNull(mPropertyModel.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
+        assertNull(mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+    }
+
+    @Test
+    public void testSetSearchEngineIcon() {
+        Drawable drawable = new ColorDrawable(Color.RED);
+        StatusIconResource newIcon = new StatusIconResource(drawable);
+        mMediator.setSearchEngineIcon(newIcon);
+        assertEquals(drawable, mPropertyModel.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
+    }
+
+    @Test
+    public void testSetSearchEngineIcon_Google() {
+        StatusIconResource googleIcon = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
+        mMediator.setSearchEngineIcon(googleIcon);
+        assertEquals(
+                R.drawable.ic_logo_googleg_24dp,
+                mPropertyModel.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
+    }
+
+    @Test
+    public void testSetSearchEngineIcon_Null() {
+        mMediator.setSearchEngineIcon(null);
+        assertEquals(
+                R.drawable.ic_search_24dp,
+                mPropertyModel.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
     }
 
     @Test

@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 
@@ -97,5 +99,19 @@ public class SearchBoxViewBinderUnitTest {
 
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
         verify(mSearchBoxLayout).applyWhiteBackgroundWithShadow(eq(false));
+    }
+
+    @Test
+    public void testSetDseIconResource() {
+        int resId = 123;
+        mPropertyModel.set(SearchBoxProperties.DSE_ICON_RESOURCE_ID, resId);
+        verify(mSearchBoxLayout).setDseIconResource(eq(resId));
+    }
+
+    @Test
+    public void testSetDseIconDrawable() {
+        Drawable drawable = mock(Drawable.class);
+        mPropertyModel.set(SearchBoxProperties.DSE_ICON_DRAWABLE, drawable);
+        verify(mSearchBoxLayout).setDseIconDrawable(eq(drawable));
     }
 }

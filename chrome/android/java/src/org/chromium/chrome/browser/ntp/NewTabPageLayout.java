@@ -17,11 +17,9 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -52,7 +50,6 @@ import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
-import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -68,7 +65,6 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -136,7 +132,6 @@ public class NewTabPageLayout extends LinearLayout {
 
     private float mUrlFocusChangePercent;
     private boolean mDisableUrlFocusChangeAnimations;
-    private boolean mIsViewMoving;
 
     /** Flag used to request some layout changes after the next layout pass is completed. */
     private boolean mTileCountChanged;
@@ -167,11 +162,9 @@ public class NewTabPageLayout extends LinearLayout {
     // Previous visibility states for metrics.
     private @Nullable Boolean mPreviousVoiceSearchButtonVisible;
     private @Nullable Boolean mPreviousLensButtonVisible;
-    private @Nullable ImageView mDseIconView;
     private SearchEngineUtils mSearchEngineUtils;
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
-    private final int mFakeSearchBoxStartPaddingWithDseLogo;
     private final boolean mEnableLogs;
     private int mCurrentNtpFakeSearchBoxTransitionStartOffset;
     private int mTopInset;
@@ -192,9 +185,6 @@ public class NewTabPageLayout extends LinearLayout {
         mNtpSearchBoxTransitionStartOffset =
                 resources.getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset);
 
-        mFakeSearchBoxStartPaddingWithDseLogo =
-                resources.getDimensionPixelSize(
-                        R.dimen.fake_search_box_start_padding_with_dse_logo);
         mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
     }
 
@@ -297,8 +287,7 @@ public class NewTabPageLayout extends LinearLayout {
         initializeMostVisitedTilesCoordinator(
                 mProfile, lifecycleDispatcher, tileGroupDelegate, touchEnabledDelegate);
 
-        initializeDseIconView();
-        mSearchEngineIconObserver = this::onSearchEngineIconChanged;
+        mSearchEngineIconObserver = (newIcon) -> mSearchBoxCoordinator.setSearchEngineIcon(newIcon);
         mSearchEngineUtils.addIconObserver(mSearchEngineIconObserver);
         setSearchBoxTextAppearance();
 
@@ -409,52 +398,9 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.end(TAG + ".initializeSearchBoxTextView()");
     }
 
-    private void initializeDseIconView() {
-        View fakeSearchBoxLayout = findViewById(R.id.search_box);
-        mDseIconView = fakeSearchBoxLayout.findViewById(R.id.search_box_engine_icon);
-
-        // Configures icon rounding.
-        mDseIconView.setOutlineProvider(
-                new RoundedCornerOutlineProvider(
-                        getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.omnibox_search_engine_logo_composed_size)
-                                / 2));
-        mDseIconView.setClipToOutline(true);
-        ImageViewCompat.setImageTintList(mDseIconView, null);
-        setDseIconViewVisibility();
-    }
-
-    public void onSearchEngineIconChanged(StatusProperties.@Nullable StatusIconResource newIcon) {
-        if (mDseIconView == null) return;
-        if (newIcon == null) {
-            mDseIconView.setImageResource(R.drawable.ic_search_24dp);
-            return;
-        }
-
-        // When DSE is Google, onSearchEngineIconChanged() is called before setSearchProviderInfo().
-        // Thus, we check the icon's resource id to change the icon to be
-        // R.drawable.ic_logo_googleg_24dp which doesn't have a padding.
-        if (newIcon.getIconRes() == R.drawable.ic_logo_googleg_20dp) {
-            mDseIconView.setImageResource(R.drawable.ic_logo_googleg_24dp);
-            return;
-        }
-
-        mDseIconView.setImageDrawable(newIcon.getDrawable(mContext, mContext.getResources()));
-    }
-
     public void onSearchBoxHintTextChanged() {
         mSearchBoxCoordinator.setSearchBoxHintText(
                 mSearchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
-    }
-
-    private void setDseIconViewVisibility() {
-        if (mDseIconView == null) return;
-
-        if (mDseIconView.getVisibility() == VISIBLE) return;
-
-        mDseIconView.setVisibility(VISIBLE);
-        mSearchBoxCoordinator.setStartPadding(mFakeSearchBoxStartPaddingWithDseLogo);
     }
 
     private void setSearchBoxTextAppearance() {
@@ -658,7 +604,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     /** Updates the search box when the parent view's scroll position is changed. */
     void updateSearchBoxOnScroll() {
-        if (mDisableUrlFocusChangeAnimations || mIsViewMoving) return;
+        if (mDisableUrlFocusChangeAnimations) return;
 
         // When the page changes (tab switching or new page loading), it is possible that events
         // (e.g. delayed view change notifications) trigger calls to these methods after
@@ -775,10 +721,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         // Hide or show the views above the most visited tiles as needed, e.g, spacers. The
         // visibility of Logo is handled by LogoCoordinator.
-        if (mDseIconView != null) {
-            setDseIconViewVisibility();
-            setSearchBoxTextAppearance();
-        }
+        setSearchBoxTextAppearance();
 
         // Skips if the flag hasn't been initialized since the initialization of the following
         // components will be called again in #initialize().
@@ -868,7 +811,7 @@ public class NewTabPageLayout extends LinearLayout {
          * during page load causing this method to be called. Disabling this for all cases on this
          * form-factor since this translation does not WAI. (see crbug.com/40910640)
          */
-        if (mDisableUrlFocusChangeAnimations || mIsViewMoving || mIsTablet) return;
+        if (mDisableUrlFocusChangeAnimations || mIsTablet) return;
 
         // Translate so that the search box is at the top, but only upwards.
         int basePosition = mScrollDelegate.getVerticalScrollOffset() + getPaddingTop();

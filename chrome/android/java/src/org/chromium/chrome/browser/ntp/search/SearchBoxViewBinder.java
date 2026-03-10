@@ -114,6 +114,12 @@ class SearchBoxViewBinder
             ((SearchBoxContainerView) searchBoxlayout)
                     .applyWhiteBackgroundWithShadow(
                             model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        } else if (SearchBoxProperties.DSE_ICON_RESOURCE_ID == propertyKey) {
+            ((SearchBoxContainerView) searchBoxlayout)
+                    .setDseIconResource(model.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));
+        } else if (SearchBoxProperties.DSE_ICON_DRAWABLE == propertyKey) {
+            ((SearchBoxContainerView) searchBoxlayout)
+                    .setDseIconDrawable(model.get(SearchBoxProperties.DSE_ICON_DRAWABLE));
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }
