@@ -36,6 +36,11 @@ bool IsOtherWebPage(OEP::PageClassification classification) {
          (classification == OEP::OTHER_ZPS_PREFETCH);
 }
 
+bool IsNtpOmnibox(OEP::PageClassification classification) {
+  return (classification == OEP::NTP) ||
+         (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+}
+
 bool IsLensContextualSearchbox(OEP::PageClassification classification) {
   return classification == OEP::CONTEXTUAL_SEARCHBOX;
 }

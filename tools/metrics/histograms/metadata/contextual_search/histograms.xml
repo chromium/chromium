@@ -23,6 +23,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContextualSearchAiModeButtonSurface">
+  <variant name="NtpOmnibox" summary="NTP Omnibox"/>
+  <variant name="NtpRealbox" summary="NTP Realbox"/>
+  <variant name="SrpOmnibox" summary="SRP Omnibox"/>
+  <variant name="WebOmnibox" summary="Web Omnibox"/>
+</variants>
+
 <variants name="ContextualSearchContextState">
   <variant name="WithNonTabContext"
       summary="recorded when a query is submitted with non-tab context"/>
@@ -85,6 +92,19 @@ chromium-metrics-reviews@google.com.
     tab.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AiModeButtonClick.{ContextualSearchAiModeButtonSurface}"
+    enum="Boolean" expires_after="2026-08-09">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when the AI mode button is clicked on the
+    {ContextualSearchAiModeButtonSurface}. Always recorded as true.
+  </summary>
+  <token key="ContextualSearchAiModeButtonSurface"
+      variants="ContextualSearchAiModeButtonSurface"/>
 </histogram>
 
 <histogram name="ContextualSearch.ConfigParseSuccess.{ContextualSearchSource}"

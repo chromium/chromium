@@ -109,6 +109,13 @@ should be able to be added at any place in this file.
   <variant name=".UnpinItem" summary="Remove a custom item."/>
 </variants>
 
+<variants name="ContextualSearchAiModeButtonSurface">
+  <variant name="NtpOmnibox" summary="NTP Omnibox"/>
+  <variant name="NtpRealbox" summary="NTP Realbox"/>
+  <variant name="SrpOmnibox" summary="SRP Omnibox"/>
+  <variant name="WebOmnibox" summary="Web Omnibox"/>
+</variants>
+
 <variants name="ContextualSearchContextState">
   <variant name="WithNonTabContext"
       summary="with non-tab context (e.g. files)"/>
@@ -10729,6 +10736,18 @@ should be able to be added at any place in this file.
     From a context menu on Android, the user clicked an item which was
     registered by an extension.
   </description>
+</action>
+
+<action
+    name="ContextualSearch.AiModeButtonClick.{ContextualSearchAiModeButtonSurface}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the AI mode button is clicked on the
+    {ContextualSearchAiModeButtonSurface}.
+  </description>
+  <token key="ContextualSearchAiModeButtonSurface"
+      variants="ContextualSearchAiModeButtonSurface"/>
 </action>
 
 <action name="ContextualSearch.BackPressClose">
