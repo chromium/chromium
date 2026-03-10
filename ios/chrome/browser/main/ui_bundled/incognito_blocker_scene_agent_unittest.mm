@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -46,7 +47,8 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
 
 TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
   // Pretend there's only one window on this scene.
-  UIWindow* window = [[UIWindow alloc] init];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
 
   id applicationWindowMock = nil;
   OCMStub([scene_mock_ windows]).andReturn(@[ window ]);
@@ -93,10 +95,12 @@ TEST_F(IncognitoBlockerSceneAgentTest, ShowIncognitoBlocker) {
 // fullscreen video playing in incognito in a scene, the overlay is added to it.
 TEST_F(IncognitoBlockerSceneAgentTest, ShowBlockerOnTopWindow) {
   // Pretend there's two windows on this scene.
-  UIWindow* bottomWindow = [[UIWindow alloc] init];
+  UIWindow* bottomWindow = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   bottomWindow.windowLevel = UIWindowLevelNormal;
 
-  UIWindow* topWindow = [[UIWindow alloc] init];
+  UIWindow* topWindow = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   topWindow.windowLevel = UIWindowLevelStatusBar + 1;
 
   NSArray* windows = @[ topWindow, bottomWindow ];
