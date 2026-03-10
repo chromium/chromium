@@ -318,7 +318,12 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
       std::vector<raw_ptr<SurfaceAllocationGroup, VectorExperimental>>>
       frame_sink_id_to_allocation_groups_;
   base::flat_map<SurfaceId, std::unique_ptr<Surface>> surface_map_;
-  base::ObserverList<SurfaceObserver>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SurfaceObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::flat_map<SurfaceId, base::TimeTicks> surfaces_to_destroy_;
