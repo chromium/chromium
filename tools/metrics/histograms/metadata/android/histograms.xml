@@ -8666,7 +8666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SendBrowsingIntent"
-    enum="WebViewSendIntentState" expires_after="2026-04-01">
+    enum="WebViewSendIntentState" expires_after="2027-03-01">
   <owner>pbirk@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
