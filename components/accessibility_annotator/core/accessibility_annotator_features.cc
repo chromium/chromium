@@ -32,5 +32,7 @@ const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation{
     &kContentAnnotator, "content_annotator_enable_full_annotation", false};
 const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled{
     &kContentAnnotator, "content_annotator_language_check_enabled", true};
+const base::FeatureParam<int> kContentAnnotatorMaxCacheAnnotations{
+    &kContentAnnotator, "content_annotator_max_cache_annotations", 10};
 
 }  // namespace accessibility_annotator

@@ -14,6 +14,7 @@ namespace accessibility_annotator {
 BASE_DECLARE_FEATURE(kContentAnnotator);
 BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
 
+// TODO(crbug.com/490523104): Update declaration to recommended style.
 extern const base::FeatureParam<int> kContentAnnotatorMaxPendingUrls;
 extern const base::FeatureParam<std::string>
     kContentAnnotatorClassifierTitleKeywordRules;
@@ -28,6 +29,7 @@ extern const base::FeatureParam<base::TimeDelta>
     kContentAnnotatorAnnotationTimeout;
 extern const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation;
 extern const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled;
+extern const base::FeatureParam<int> kContentAnnotatorMaxCacheAnnotations;
 
 }  // namespace accessibility_annotator
 

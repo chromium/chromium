@@ -6,7 +6,9 @@
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_ACCESSIBILITY_ANNOTATOR_BACKEND_H_
 
 #include <memory>
+#include <string>
 
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,6 +16,7 @@
 #include "components/accessibility_annotator/core/storage/accessibility_annotation_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_store.h"
+#include "url/gurl.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -55,11 +58,26 @@ class AccessibilityAnnotatorBackend
   void OnAccessibilityAnnotationChanged() override;
   void OnAccessibilityAnnotationSyncBridgeLoaded() override;
 
+  // Reads from Content Annotations cache.
+  std::optional<std::string> GetContentAnnotationsCacheData(
+      const GURL& url) const;
+
+  // Writes to Content Annotations cache.
+  void SetContentAnnotationsCacheData(const GURL& url, std::string annotations);
+
+  // Pulls cache data into a formatted string to use in the debug UI.
+  std::string GetDebugUIFormattedCacheData() const;
+
  private:
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
   std::unique_ptr<AccessibilityAnnotationSyncBridge>
       accessibility_annotation_sync_bridge_;
+
+  // Stores annotations keyed by the URL they are associated with. The cache
+  // size is `kContentAnnotatorMaxCacheAnnotations`. When the cache is full, the
+  // least recently used entry is evicted.
+  base::LRUCache<GURL, std::string> content_annotations_cache_;
 
   base::ScopedObservation<AccessibilityAnnotationSyncBridge,
                           AccessibilityAnnotationSyncBridge::Observer>

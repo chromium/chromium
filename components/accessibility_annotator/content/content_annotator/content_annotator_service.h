@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
@@ -48,7 +49,8 @@ class ContentAnnotatorService
           page_content_extraction_service,
       optimization_guide::RemoteModelExecutor&
           optimization_guide_remote_model_executor,
-      page_content_annotations::PageEmbeddingsService& page_embeddings_service);
+      page_content_annotations::PageEmbeddingsService& page_embeddings_service,
+      AccessibilityAnnotatorBackend& accessibility_annotator_backend);
 
   ~ContentAnnotatorService() override;
 
@@ -91,6 +93,7 @@ class ContentAnnotatorService
       optimization_guide::RemoteModelExecutor&
           optimization_guide_remote_model_executor,
       page_content_annotations::PageEmbeddingsService& page_embeddings_service,
+      AccessibilityAnnotatorBackend& accessibility_annotator_backend,
       std::unique_ptr<ContentClassifier> content_classifier);
 
  private:
@@ -105,11 +108,14 @@ class ContentAnnotatorService
   // annotation eligibility.
   void MaybeAnnotate(CacheIterator it);
 
-  // Generates annotations based on the provided `page_context`.
-  void GenerateAnnotations(optimization_guide::proto::PageContext page_context);
+  // Generates annotations for the given URL based on the provided
+  // `page_context`.
+  void GenerateAnnotations(optimization_guide::proto::PageContext page_context,
+                           const GURL& url);
 
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(
+      const GURL& url,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -126,6 +132,8 @@ class ContentAnnotatorService
 
   const raw_ref<page_content_annotations::PageEmbeddingsService>
       page_embeddings_service_;
+
+  const raw_ref<AccessibilityAnnotatorBackend> accessibility_annotator_backend_;
 
   base::ScopedObservation<
       page_content_annotations::PageContentExtractionService,

@@ -5,6 +5,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -15,6 +16,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
@@ -27,7 +29,9 @@
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -95,11 +99,13 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
             optimization_guide_remote_model_executor,
         page_content_annotations::PageEmbeddingsService&
             page_embeddings_service,
+        AccessibilityAnnotatorBackend& accessibility_annotator_backend,
         std::unique_ptr<ContentClassifier> content_classifier)
         : ContentAnnotatorService(page_content_annotations_service,
                                   page_content_extraction_service,
                                   optimization_guide_remote_model_executor,
                                   page_embeddings_service,
+                                  accessibility_annotator_backend,
                                   std::move(content_classifier)) {}
   };
 
@@ -108,6 +114,8 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     // Initialize services here to ensure BrowserContext and TaskEnvironment are
     // ready.
@@ -125,6 +133,13 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     mock_page_embeddings_service_ = std::make_unique<MockPageEmbeddingsService>(
         &page_content_extraction_service_.value());
 
+    accessibility_annotator_backend_ =
+        std::make_unique<AccessibilityAnnotatorBackend>(
+            version_info::Channel::UNKNOWN,
+            syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+            temp_dir_.GetPath().Append(
+                FILE_PATH_LITERAL("AccessibilityAnnotatorDatabase")));
+
     auto mock_classifier =
         std::make_unique<testing::StrictMock<MockContentClassifier>>();
     mock_classifier_ = mock_classifier.get();
@@ -132,7 +147,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     service_ = std::make_unique<TestContentAnnotatorService>(
         *page_content_annotations_service_, *page_content_extraction_service_,
         *mock_remote_model_executor_, *mock_page_embeddings_service_,
-        std::move(mock_classifier));
+        *accessibility_annotator_backend_, std::move(mock_classifier));
   }
 
   void TearDown() override {
@@ -144,6 +159,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     page_content_annotations_service_.reset();
     page_content_extraction_service_.reset();
     mock_remote_model_executor_.reset();
+    accessibility_annotator_backend_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -200,8 +216,11 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<optimization_guide::MockRemoteModelExecutor>
       mock_remote_model_executor_;
   std::unique_ptr<MockPageEmbeddingsService> mock_page_embeddings_service_;
+  std::unique_ptr<AccessibilityAnnotatorBackend>
+      accessibility_annotator_backend_;
   std::unique_ptr<ContentAnnotatorService> service_;
   raw_ptr<testing::StrictMock<MockContentClassifier>> mock_classifier_;
+  base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
@@ -438,6 +457,7 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
 
   GURL url("https://example.com/full");
   base::Time base_time = base::Time::Now();
+  std::string data = "some extracted data";
 
   // 2. Mock Classify to return a result that satisfies the `reached_annotation`
   // condition.
@@ -489,7 +509,7 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
   // 4. Simulate the model execution by running the captured callback.
   ASSERT_TRUE(captured_callback);
   optimization_guide::proto::ContentAnnotationResponse mock_response_proto;
-  mock_response_proto.set_extracted_data("some extracted data");
+  mock_response_proto.set_extracted_data(data);
 
   optimization_guide::proto::Any any_proto;
   any_proto.set_type_url(base::StrCat(
@@ -502,6 +522,11 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
   ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
                               .Run(std::move(mock_result),
                                    /*log_entry=*/nullptr));
+
+  // 5. Verify that the data is cached in the backend.
+  std::optional<std::string> cached_data =
+      accessibility_annotator_backend_->GetContentAnnotationsCacheData(url);
+  EXPECT_THAT(cached_data, testing::Optional(data));
 }
 
 TEST_F(ContentAnnotatorServiceTest,

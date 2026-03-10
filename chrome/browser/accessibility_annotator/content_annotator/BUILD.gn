@@ -12,6 +12,7 @@ source_set("content_annotator") {
 
   deps = [
     "//base",
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:extraction_service",
@@ -36,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":content_annotator",
     "//base/test:test_support",
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:extraction_service",
@@ -43,6 +45,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/core/storage",
     "//components/history/core/browser",
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/core:test_support",
