@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "components/accessibility_annotator/core/accessibility_annotation_service.h"
@@ -58,28 +59,23 @@ EntityDataManager::EntityDataManager(
   // allow rollbacks.
   if (base::FeatureList::IsEnabled(
           features::kAutofillAiSetSyncablePrefFromAccountPref)) {
-    const PrefService::Preference* synced_pref =
-        pref_service->FindPreference(prefs::kAutofillAiSyncedOptInStatus);
-    CHECK(synced_pref);
+    using enum AutofillAiPrefMigrationStatus;
+    AutofillAiPrefMigrationStatus pref_migration =
+        kPrefNotMigratedAccountPrefNeverSet;
     if (HasSetLocalAutofillAiOptInStatus(pref_service, identity_manager)) {
-      if (!synced_pref->HasUserSetting()) {
+      const PrefService::Preference& synced_pref = CHECK_DEREF(
+          pref_service->FindPreference(prefs::kAutofillAiSyncedOptInStatus));
+      if (!synced_pref.HasUserSetting()) {
         pref_service->SetBoolean(prefs::kAutofillAiSyncedOptInStatus,
                                  user_is_opted_in);
-        base::UmaHistogramEnumeration(
-            "Autofill.Ai.OptIn.PrefMigration",
-            user_is_opted_in
-                ? AutofillAiPrefMigrationStatus::kPrefMigratedEnabled
-                : AutofillAiPrefMigrationStatus::kPrefMigratedDisabled);
+        pref_migration =
+            user_is_opted_in ? kPrefMigratedEnabled : kPrefMigratedDisabled;
       } else {
-        base::UmaHistogramEnumeration(
-            "Autofill.Ai.OptIn.PrefMigration",
-            AutofillAiPrefMigrationStatus::kPrefNotMigratedAlreadySet);
+        pref_migration = kPrefNotMigratedAlreadySet;
       }
-    } else {
-      base::UmaHistogramEnumeration(
-          "Autofill.Ai.OptIn.PrefMigration",
-          AutofillAiPrefMigrationStatus::kPrefNotMigratedAccountPrefNeverSet);
     }
+    base::UmaHistogramEnumeration("Autofill.Ai.OptIn.PrefMigration",
+                                  pref_migration);
   }
 
   // This assumes that `EntityDataManager` is created once on profile creation.
