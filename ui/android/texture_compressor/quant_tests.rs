@@ -9,7 +9,9 @@ chromium::import! {
     "//ui/android:texture_compressor";
 }
 
-use texture_compressor::quant::{fast_div_255_round, prepare_averages, quantize_averages};
+use texture_compressor::quant::{
+    fast_div_255_round, prepare_averages, quantize_averages, SubblockStats,
+};
 
 #[gtest(TextureCompressorTest, FastDiv255)]
 fn test() {
@@ -26,10 +28,10 @@ fn test() {
 fn test() {
     let values = [[0, 255, 0, 255]; 4].map(|row| row.map(|x| [Simd::splat(x); 3]));
     let result = prepare_averages(&values);
-    for i in 0..4 {
+    for SubblockStats { sum, avg } in result.into_iter() {
         // NB: Each subblock is 8 pixels.
-        expect_eq!(result[i].sum, [Simd::splat(255 * 2 * 2); 3]);
-        expect_eq!(result[i].avg, [Simd::splat(128); 3]);
+        expect_eq!(sum, [Simd::splat(255 * 2 * 2); 3]);
+        expect_eq!(avg, [Simd::splat(128); 3]);
     }
 }
 
@@ -38,10 +40,10 @@ fn test() {
 fn test() {
     let values = [[255; 4]; 4].map(|row| row.map(|x| [Simd::splat(x); 3]));
     let result = prepare_averages(&values);
-    for i in 0..4 {
+    for SubblockStats { sum, avg } in result.into_iter() {
         // NB: Each subblock is 8 pixels.
-        expect_eq!(result[i].sum, [Simd::splat(255 * 4 * 2); 3]);
-        expect_eq!(result[i].avg, [Simd::splat(255); 3]);
+        expect_eq!(sum, [Simd::splat(255 * 4 * 2); 3]);
+        expect_eq!(avg, [Simd::splat(255); 3]);
     }
 }
 
@@ -61,8 +63,8 @@ fn test() {
 
 #[gtest(TextureCompressorTest, QuantIndiv)]
 fn test() {
-    let c1 = [0, 0, 0].map(|x| Simd::splat(x));
-    let c2 = [255, 255, 255].map(|x| Simd::splat(x));
+    let c1 = [0, 0, 0].map(Simd::splat);
+    let c2 = [255, 255, 255].map(Simd::splat);
     let values = [[c1, c1, c2, c2]; 4];
     let result = quantize_averages(&values);
     expect_eq!(result.scaled0, [Simd::splat(0); 3]);

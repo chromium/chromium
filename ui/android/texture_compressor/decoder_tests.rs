@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Bits of inputs are grouped in a way that follows their inner structure.
+#![allow(clippy::unusual_byte_groupings)]
+
 chromium::import! {
     "//ui/android:texture_compressor";
 }

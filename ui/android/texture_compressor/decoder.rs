@@ -53,7 +53,7 @@ fn parse_individual_base(patch: u64) -> [[i32; 3]; 2] {
 // - Minimum: 0b_0000(0) becomes 0b_00000000(0).
 // - Maximum: 0b_1111(15) becomes 0b_11111111(255).
 pub fn scale_4bit_to_8bit(input: i32) -> i32 {
-    assert!(input >= 0 && input < 16);
+    assert!((0..16).contains(&input));
     input << 4 | input
 }
 
@@ -77,7 +77,7 @@ fn parse_differential_base(patch: u64) -> [[i32; 3]; 2] {
         ((patch >> shift) & 0b11111) as i32
     });
 
-    let base_1 = base_1_5bit.map(|i| scale_5bit_to_8bit(i));
+    let base_1 = base_1_5bit.map(scale_5bit_to_8bit);
 
     let base_2 = [0, 1, 2].map(|i| {
         let shift = 56 - 8 * i;
@@ -115,7 +115,7 @@ pub fn read_delta_bits(input: u32) -> i32 {
 // - Minimum: 0b_00000(0) becomes 0b_00000000(0).
 // - Maximum: 0b_11111(31) becomes 0b_11111111(255).
 pub fn scale_5bit_to_8bit(input: i32) -> i32 {
-    assert!(input >= 0 && input < 32);
+    assert!((0..32).contains(&input));
     input << 3 | input >> 2
 }
 
@@ -178,8 +178,8 @@ pub fn apply_modifier(base: [i32; 3], subblock_mod: u32, pixel_mod: u32) -> u32 
 
     let mut output_rgba: u32 = 0xFF000000; // Set alpha channel to 255
 
-    for i in 0..3 {
-        let channel_color = (base[i] + modifier_delta).clamp(0, 255) as u32;
+    for (i, orig_color) in base.into_iter().enumerate() {
+        let channel_color = (orig_color + modifier_delta).clamp(0, 255) as u32;
         // Pack the R,G,B values into a single 32-bit
         let shift = i * 8;
         output_rgba |= channel_color << shift;
@@ -220,6 +220,7 @@ fn get_pixel_modifier_index(row: usize, col: usize, morton_interleaved: u32) -> 
     (morton_interleaved >> shift) & 0b11
 }
 
+#[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     let metadata = parse_block_metadata(input_etc1);
     assert!(metadata.table_idx_1 < 8);
@@ -232,7 +233,7 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     //  [ b f j n ],
     //  [ c g k o ],
     //  [ d h l p ]].
-    let mut output = [[0 as u32; 4]; 4];
+    let mut output = [[0_u32; 4]; 4];
 
     // In ETC1, each block can be divided into two subblocks, either vertically or
     // horizontally depending on the flip bit. Regardless of the direction, the

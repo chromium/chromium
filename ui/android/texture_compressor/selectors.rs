@@ -78,6 +78,7 @@ pub struct Fit {
 /// `data` should be in flipped layout, i.e. 4x2.
 ///
 /// The error function used here is a bit quirky, see code comment for details.
+#[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 #[inline]
 pub fn search_table_and_selectors_subblock(data: &[[[Reg; 3]; 4]], base_color: [Reg; 3]) -> Fit {
     assert_eq!(data.len(), 2);
@@ -173,7 +174,7 @@ pub fn search_table_and_selectors(
     // subblock to the top half and the second to bottom half. We will fix up
     // the shuffled results in the end.
     let flip = (hdr0 & (UReg::splat(1))).simd_ne(UReg::splat(0));
-    let permuted_data = flip_pixels(&data, !flip);
+    let permuted_data = flip_pixels(data, !flip);
 
     let mut selector_lo = UReg::splat(0);
     let mut selector_hi = UReg::splat(0);

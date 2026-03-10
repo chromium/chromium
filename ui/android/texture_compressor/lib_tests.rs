@@ -47,6 +47,7 @@ fn test() {
     }
 }
 
+#[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 #[gtest(TextureCompressorTest, LoadInputMirror1x1)]
 fn test() {
     let input = [0x999999];

@@ -74,8 +74,8 @@ pub fn interleave_etc1(regs: [UReg; 4]) -> [Simd<u64, QUARTER_WIDTH>; 4] {
     // Step 2: [aaaa, bbbb] to [baba, baba]
     let regs = [conv_16_to_32([regs[1]], [regs[0]]), conv_16_to_32([regs[3]], [regs[2]])];
     // Step 3: [baba, baba], [dcdc, dcdc] to [dcba, dcba], [dcba, dcba]
-    let regs = conv_32_to_64(regs[1], regs[0]);
-    regs
+
+    conv_32_to_64(regs[1], regs[0])
 }
 
 /// Load `SIMD_WIDTH` blocks from a region `4*SIMD_WIDTH` wide and `4` tall,
@@ -87,6 +87,7 @@ pub fn interleave_etc1(regs: [UReg; 4]) -> [Simd<u64, QUARTER_WIDTH>; 4] {
 /// Returns a 3D array of SIMD vectors. Each block is mapped to a SIMD lane
 /// (from left to right), and each pixel in the block is accessed as
 /// `[y][x][channel]`.
+#[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 #[inline]
 pub fn load_input_block(
     src: &[u32],
@@ -187,7 +188,7 @@ pub fn compress_etc1(
             staging_row[dst_x0 as usize / SIMD_WIDTH] = codewords;
         }
         let dst_row = &mut dst[(dst_y * dst_row_width) as usize * ETC1_BLOCK_BYTES..];
-        let staging_row_bytes = cast_slice(&*staging_row);
+        let staging_row_bytes = cast_slice(&staging_row);
         dst_row[..copy_len].copy_from_slice(&staging_row_bytes[..copy_len]);
     }
 }
@@ -228,8 +229,7 @@ pub fn decompress_etc1(
             // The ETC1 specification ("Khronos Data Format Specification v1.1 rev 9")
             // defines the 64-bit block data as big endian.
             let src_x = (x / 4) as usize;
-            let output_rgba_block =
-                decode_etc1_block(u64::from_be(staging_row_u64[src_x as usize]));
+            let output_rgba_block = decode_etc1_block(u64::from_be(staging_row_u64[src_x]));
             for y_in_block in 0..4 {
                 for x_in_block in 0..4 {
                     let dst_x = x + x_in_block;

@@ -23,6 +23,7 @@ pub fn fast_div_255_round(x: Reg) -> Reg {
 /// Compute subblock (2x4 or 4x2) sums and averages.
 ///
 /// Returns: subblock averages in order of top, bottom, left, right.
+#[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 #[inline]
 pub fn prepare_averages(data: &[[[Reg; 3]; 4]; 4]) -> [SubblockStats; 4] {
     let mut sum_2x2 = [[Reg::default(); 3]; 4];
@@ -219,7 +220,7 @@ fn quantize_endpoint_pairs(
 /// Search through flip / no-flip and individual / differential modes, and
 /// return the result with the least MSE from original pixels.
 pub fn quantize_averages(data: &[[[Reg; 3]; 4]; 4]) -> QuantResult {
-    let stats = prepare_averages(&data);
+    let stats = prepare_averages(data);
 
     let flip =
         quantize_endpoint_pairs(stats[0].avg, stats[1].avg, stats[0].sum, stats[1].sum, true);
