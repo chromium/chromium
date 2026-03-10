@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_commands_global_registry.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/base/base_window.h"
 #include "ui/base/test/ui_controls.h"
@@ -100,6 +104,57 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalDuplicatedMediaKey) {
   // We should get two success results.
   ASSERT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(catcher.GetNextResult());
+}
+
+// Tests unloading a global-shortcut extension is safe in normal mode.
+IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, UnloadExtensionIsSafe) {
+  ASSERT_TRUE(RunExtensionTest("keybinding/global")) << message_;
+
+  auto* extension_registry = ExtensionRegistry::Get(profile());
+  ASSERT_TRUE(extension_registry);
+  const auto expect_enabled = [&](const std::string& extension_id) {
+    EXPECT_TRUE(
+        extension_registry->enabled_extensions().Contains(extension_id));
+  };
+  const auto unload_and_expect_disabled = [&](const std::string& extension_id) {
+    UnloadExtension(extension_id);
+    EXPECT_FALSE(
+        extension_registry->enabled_extensions().Contains(extension_id));
+  };
+
+  auto* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+  expect_enabled(extension_id);
+
+  unload_and_expect_disabled(extension_id);
+}
+
+// Tests unloading a global-shortcut extension is safe while shortcut handling
+// is suspended.
+IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest,
+                       UnloadExtensionWithSuspendedHandlingIsSafe) {
+  ASSERT_TRUE(RunExtensionTest("keybinding/global")) << message_;
+
+  auto* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  auto* global_registry = ExtensionCommandsGlobalRegistry::Get(profile());
+  ASSERT_TRUE(global_registry);
+  EXPECT_FALSE(global_registry->shortcut_handling_suspended());
+  {
+    global_registry->SetShortcutHandlingSuspended(true);
+    EXPECT_TRUE(global_registry->shortcut_handling_suspended());
+    base::ScopedClosureRunner restore_shortcut_handling(base::BindOnce(
+        [](ExtensionCommandsGlobalRegistry* registry) {
+          registry->SetShortcutHandlingSuspended(false);
+        },
+        global_registry));
+
+    UnloadExtension(extension->id());
+    EXPECT_TRUE(global_registry->shortcut_handling_suspended());
+  }
+  EXPECT_FALSE(global_registry->shortcut_handling_suspended());
 }
 
 }  // namespace extensions

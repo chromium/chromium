@@ -67,6 +67,10 @@ class ExtensionCommandsGlobalRegistry
   // window or on the global registry.
   bool IsRegistered(const ui::Accelerator& accelerator);
 
+ protected:
+  // Overridable in tests to inject a fake global accelerator listener.
+  virtual ui::GlobalAcceleratorListener* GetGlobalAcceleratorListener() const;
+
  private:
   friend class BrowserContextKeyedAPIFactory<ExtensionCommandsGlobalRegistry>;
 

@@ -73,7 +73,7 @@ ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
 
 ExtensionCommandsGlobalRegistry::~ExtensionCommandsGlobalRegistry() {
   ui::GlobalAcceleratorListener* global_shortcut_listener =
-      ui::GlobalAcceleratorListener::GetInstance();
+      GetGlobalAcceleratorListener();
   if (!global_shortcut_listener) {
     return;
   }
@@ -113,6 +113,11 @@ ExtensionCommandsGlobalRegistry* ExtensionCommandsGlobalRegistry::Get(
       context);
 }
 
+ui::GlobalAcceleratorListener*
+ExtensionCommandsGlobalRegistry::GetGlobalAcceleratorListener() const {
+  return ui::GlobalAcceleratorListener::GetInstance();
+}
+
 bool ExtensionCommandsGlobalRegistry::IsRegistered(
     const ui::Accelerator& accelerator) {
   return (registry_for_active_window() &&
@@ -123,7 +128,7 @@ bool ExtensionCommandsGlobalRegistry::IsRegistered(
 bool ExtensionCommandsGlobalRegistry::PopulateCommands(
     const Extension* extension,
     ui::CommandMap* commands) {
-  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
+  auto* instance = GetGlobalAcceleratorListener();
   if (!instance) {
     return false;
   }
@@ -166,7 +171,7 @@ bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(
     const ui::Accelerator& accelerator,
     const ExtensionId& extension_id,
     const std::string& command_name) {
-  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
+  auto* instance = GetGlobalAcceleratorListener();
   if (!instance) {
     return false;
   }
@@ -175,7 +180,7 @@ bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(
 
 void ExtensionCommandsGlobalRegistry::UnregisterAccelerator(
     const ui::Accelerator& accelerator) {
-  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
+  auto* instance = GetGlobalAcceleratorListener();
   if (!instance) {
     return;
   }
@@ -184,7 +189,7 @@ void ExtensionCommandsGlobalRegistry::UnregisterAccelerator(
 
 void ExtensionCommandsGlobalRegistry::OnShortcutHandlingSuspended(
     bool suspended) {
-  auto* instance = ui::GlobalAcceleratorListener::GetInstance();
+  auto* instance = GetGlobalAcceleratorListener();
   if (!instance) {
     return;
   }
