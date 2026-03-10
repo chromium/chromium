@@ -58,6 +58,7 @@ build_webui_tests("build") {
     "file_system_site_list_test.ts",
     "fingerprint_progress_arc_test.ts",
     "geolocation_page_test.ts",
+    "glic_login_permissions_page_test.ts",
     "glic_page_test.ts",
     "glic_subpage_focus_test.ts",
     "glic_subpage_test.ts",

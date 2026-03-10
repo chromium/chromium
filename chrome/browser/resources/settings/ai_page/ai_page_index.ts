@@ -80,6 +80,12 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
         type: Boolean,
         value: () => loadTimeData.getBoolean('showTabOrganizationControl'),
       },
+
+      actorLoginFederatedLoginSupportEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled'),
+      },
     };
   }
 
@@ -90,6 +96,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
   declare private showComposeControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showTabOrganizationControl_: boolean;
+  declare private actorLoginFederatedLoginSupportEnabled_: boolean;
 
   private showDefaultViews_() {
     const defaultViews: string[] = ['aiInfoCard'];
@@ -104,6 +111,11 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
 
     this.$.viewManager.switchViews(
         defaultViews, 'no-animation', 'no-animation');
+  }
+
+  private shouldShowPermissionsPage_(): boolean {
+    return this.showGlicSettings_ &&
+        this.actorLoginFederatedLoginSupportEnabled_;
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -140,6 +152,12 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
           assert(this.showGlicSettings_);
           this.$.viewManager.switchView(
               'gemini', 'no-animation', 'no-animation');
+          break;
+        case routes.GEMINI_LOGIN:
+          assert(this.showGlicSettings_);
+          assert(this.actorLoginFederatedLoginSupportEnabled_);
+          this.$.viewManager.switchView(
+              'geminiLoginPermissions', 'no-animation', 'no-animation');
           break;
         default:
           // Nothing to do. Other parent elements are responsible for updating

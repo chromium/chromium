@@ -209,6 +209,9 @@ function createRoutes(): SettingsRoutes {
     }
     if (loadTimeData.getBoolean('showGlicSettings')) {
       r.GEMINI = r.AI.createChild('/ai/gemini');
+      if (loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled')) {
+        r.GEMINI_LOGIN = r.GEMINI.createChild('/ai/gemini/login');
+      }
     }
   }
 

@@ -1,0 +1,86 @@
+<style include="shared-style cr-shared-style">
+  .permission-item {
+    align-items: center;
+    border-bottom: var(--cr-separator-line);
+    display: flex;
+    flex: 1;
+    min-height: 48px;
+  }
+
+  .flex-centered {
+    align-items: center;
+    display: flex;
+  }
+
+  .favicon {
+    margin-inline-end: 16px;
+    margin-inline-start: 16px;
+  }
+
+  .section {
+    margin-inline-end: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-padding);
+  }
+
+  .no-sites {
+    padding-bottom: 32px;
+    padding-top: 16px;
+    padding-inline-start: 40px;
+  }
+
+  .header-container {
+    padding-bottom: 14px;
+  }
+
+  .url-column {
+    flex: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .username-column {
+    flex: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+  }
+</style>
+<settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}"
+    route-path$="[[routePath]]">
+  <div class="header-container section">
+    <div id="actorLoginPermissionsTitle">
+      $i18n{glicLoginPermissionsPageTitle}
+    </div>
+    <div id="actorLoginPermissionsHeader" class="cr-secondary-text">
+      $i18n{glicLoginPermissionsPageDescription}
+    </div>
+  </div>
+  <div id="actorLoginPermissionsList" class="section">
+    <div class="no-sites cr-secondary-text"
+        hidden="[[actorLoginPermissions_.length]]">
+      $i18n{glicLoginPermissionsNoSites}
+    </div>
+    <template is="dom-repeat" items="[[actorLoginPermissions_]]">
+      <div class="flex-centered">
+        <site-favicon class="favicon" url="[[item.url]]">
+        </site-favicon>
+        <div class="permission-item">
+          <div class="url-column">[[item.url]]</div>
+          <div class="username-column">[[item.username]]</div>
+          <cr-icon-button
+              class="icon-clear"
+              on-click="onRemoveActorLoginPermissionClick_"
+              title="$i18n{remove}"
+              aria-label="[[i18n('glicRevokeActorLoginPermissionAriaLabel',
+                      item.url)]]">
+          </cr-icon-button>
+        </div>
+      </div>
+    </template>
+  </div>
+</settings-subpage>

@@ -432,6 +432,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpage) {
           "runMochaSuite('GlicSubpage Default')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicLoginPermissionsPage) {
+  RunTest("settings/glic_login_permissions_page_test.js", "mocha.run()");
+}
+
 class SettingsGlicSubpageLearnMoreTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubpageLearnMoreTest() {

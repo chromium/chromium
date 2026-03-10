@@ -101,6 +101,7 @@ build_webui("build") {
     "controls/settings_toggle_button.ts",
     "downloads_page/downloads_page.ts",
     "glic_page/glic_page.ts",
+    "glic_page/glic_login_permissions_page.ts",
     "glic_page/glic_subpage.ts",
     "on_startup_page/on_startup_page.ts",
     "on_startup_page/startup_url_dialog.ts",

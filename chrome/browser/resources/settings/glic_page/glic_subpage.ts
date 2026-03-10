@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
 import '../settings_page/settings_subpage.js';
+import './glic_login_permissions_page.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
@@ -31,6 +32,8 @@ import {AiPageActions} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {GlicBrowserProxy} from './glic_browser_proxy.js';
@@ -259,7 +262,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         type: String,
         computed: `computeWebActuationLearnMoreUrl_(prefs.${
             SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
 
+      actorLoginFederatedLoginSupportEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('actorLoginFederatedLoginSupportEnabled'),
       },
     };
   }
@@ -315,6 +323,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private webActuationDisabledForEnterprisePref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   declare private webActuationEnabledExpanded_: boolean;
+  declare private actorLoginFederatedLoginSupportEnabled_: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -482,6 +491,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         this.i18n('glicActivityButtonUrl'));
   }
 
+  private onActorLoginPermissionsRowClick_() {
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
+  }
+
   private onExtensionsRowClick_() {
     // TODO(crbug.com/434213151): Append url param when ready.
     const url = new URL(this.i18n('glicExtensionsManagementUrl'));
@@ -605,6 +618,15 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'geminiLoginPermissions');
+    const element = this.shadowRoot!.querySelector<HTMLElement>(
+        '#actorLoginPermissionsButton');
+    assert(element);
+    return element;
   }
 
   private onWebActuationToggleChange_(event: CustomEvent) {

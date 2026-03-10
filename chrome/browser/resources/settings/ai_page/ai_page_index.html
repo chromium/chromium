@@ -25,6 +25,15 @@
     </settings-glic-subpage>
   </template>
 
+   <template is="dom-if" if="[[shouldShowPermissionsPage_(showGlicSettings_,
+        actorLoginFederatedLoginSupportEnabled_)]]">
+    <settings-glic-login-permissions-page slot="view"
+        id="geminiLoginPermissions"
+        data-parent-view-id="gemini" prefs="{{prefs}}"
+        route-path$="[[routes_.GEMINI_LOGIN.path]]">
+    </settings-glic-login-permissions-page>
+  </template>
+
   <template is="dom-if" if="[[showAiPageAiFeatureSection_]]">
     <settings-ai-page slot="view" id="parent" prefs="{{prefs}}">
     </settings-ai-page>

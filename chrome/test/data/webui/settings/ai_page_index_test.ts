@@ -40,6 +40,7 @@ suite('AiPageIndex', function() {
       showHistorySearchControl: true,
       showTabOrganizationControl: true,
       showGlicSettings: true,
+      actorLoginFederatedLoginSupportEnabled: true,
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -74,6 +75,10 @@ suite('AiPageIndex', function() {
     Router.getInstance().navigateTo(routes.GEMINI);
     await microtasksFinished();
     assertActiveViews(['gemini']);
+
+    Router.getInstance().navigateTo(routes.GEMINI_LOGIN);
+    await microtasksFinished();
+    assertActiveViews(['geminiLoginPermissions']);
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -110,6 +115,8 @@ suite('AiPageIndex', function() {
 
     assertTrue(!!index.$.viewManager.querySelector(
         '#gemini[slot=view][data-parent-view-id=glic]'));
+    assertTrue(!!index.$.viewManager.querySelector(
+        '#geminiLoginPermissions[slot=view][data-parent-view-id=gemini]'));
   });
 
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is

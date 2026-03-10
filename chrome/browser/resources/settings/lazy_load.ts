@@ -19,6 +19,7 @@ import './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
 // </if>
 import './clear_browsing_data_dialog/clear_browsing_data_dialog_v2.js';
 import './clear_browsing_data_dialog/clear_browsing_data_time_picker.js';
+import './glic_page/glic_login_permissions_page.js';
 import './privacy_page/cookies_page.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
@@ -211,6 +212,8 @@ export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js'
 export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export type {DownloadsBrowserProxy} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
+export {SettingsGlicLoginPermissionsPageElement} from './glic_page/glic_login_permissions_page.js';
+export type {LoginPermission} from './glic_page/glic_login_permissions_page.js';
 // <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';
 // <if expr="not is_macosx">
