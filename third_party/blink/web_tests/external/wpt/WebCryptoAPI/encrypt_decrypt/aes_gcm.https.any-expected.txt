@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 304 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importKey step: AES-GCM 192-bit key, 32-bit tag, 96-bit iv
   assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv
@@ -140,6 +140,118 @@ Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with altered plaintext after call
   assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 4 but got 483
+[FAIL] AES-GCM 128-bit key, no additional data, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 4 but got 483
+[FAIL] AES-GCM 128-bit key, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 8 but got 487
+[FAIL] AES-GCM 128-bit key, no additional data, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 8 but got 487
+[FAIL] AES-GCM 128-bit key, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 12 but got 491
+[FAIL] AES-GCM 128-bit key, no additional data, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 12 but got 491
+[FAIL] AES-GCM 128-bit key, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 13 but got 492
+[FAIL] AES-GCM 128-bit key, no additional data, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 13 but got 492
+[FAIL] AES-GCM 128-bit key, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 14 but got 493
+[FAIL] AES-GCM 128-bit key, no additional data, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 14 but got 493
+[FAIL] AES-GCM 128-bit key, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 15 but got 494
+[FAIL] AES-GCM 128-bit key, no additional data, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 15 but got 494
+[FAIL] AES-GCM 128-bit key, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 16 but got 495
+[FAIL] AES-GCM 128-bit key, no additional data, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 16 but got 495
+[FAIL] importKey step: AES-GCM 192-bit key, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 4 but got 483
+[FAIL] AES-GCM 256-bit key, no additional data, 32-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 4 but got 483
+[FAIL] AES-GCM 256-bit key, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 8 but got 487
+[FAIL] AES-GCM 256-bit key, no additional data, 64-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 8 but got 487
+[FAIL] AES-GCM 256-bit key, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 12 but got 491
+[FAIL] AES-GCM 256-bit key, no additional data, 96-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 12 but got 491
+[FAIL] AES-GCM 256-bit key, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 13 but got 492
+[FAIL] AES-GCM 256-bit key, no additional data, 104-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 13 but got 492
+[FAIL] AES-GCM 256-bit key, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 14 but got 493
+[FAIL] AES-GCM 256-bit key, no additional data, 112-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 14 but got 493
+[FAIL] AES-GCM 256-bit key, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 15 but got 494
+[FAIL] AES-GCM 256-bit key, no additional data, 120-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 15 but got 494
+[FAIL] AES-GCM 256-bit key, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 16 but got 495
+[FAIL] AES-GCM 256-bit key, no additional data, 128-bit tag, 96-bit iv with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 16 but got 495
+[FAIL] importKey step: AES-GCM 192-bit key, 32-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 64-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 96-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 104-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 112-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 120-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, 128-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-GCM 192-bit key, 32-bit tag, 96-bit iv
   assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv
@@ -279,6 +391,118 @@ Found 192 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importKey step for decryption: AES-GCM 192-bit key, 128-bit tag, 96-bit iv with altered ciphertext after call
   assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with altered ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 32-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 32-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 64-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 64-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 96-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 96-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 104-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 104-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 112-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 112-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 120-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 120-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, 128-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 128-bit key, no additional data, 128-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 128-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 32-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 64-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 96-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 104-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 112-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 120-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 128-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 32-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 32-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 64-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 64-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 96-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 96-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 104-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 104-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 112-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 112-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 120-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 120-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, 128-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] AES-GCM 256-bit key, no additional data, 128-bit tag, 96-bit iv decryption with transferred ciphertext during call
+  assert_unreached: decrypt should not have succeeded for AES-GCM 256-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 32-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 32-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 64-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 64-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 96-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 96-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 104-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 104-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 112-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 112-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 120-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 120-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, 128-bit tag, 96-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-GCM 192-bit key, 128-bit tag, 96-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv with transferred ciphertext after call
   assert_unreached: importKey failed for AES-GCM 192-bit key, no additional data, 128-bit tag, 96-bit iv Reached unreachable code
 [FAIL] importKey step: AES-GCM 192-bit key, 32-bit tag, 96-bit iv without encrypt usage
   assert_unreached: importKey failed for AES-GCM 192-bit key, 32-bit tag, 96-bit iv Reached unreachable code

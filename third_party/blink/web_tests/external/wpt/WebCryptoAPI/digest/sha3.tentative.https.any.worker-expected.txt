@@ -11,11 +11,19 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with short source data and altered buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with short source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with short source data and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with short source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with short source data and altered buffer during call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with short source data and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with short source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with short source data and transferred buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with short source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
@@ -23,11 +31,19 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with short source data and altered buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with short source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with short source data and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with medium source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with medium source data and altered buffer during call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with medium source data and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with medium source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with medium source data and transferred buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with medium source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
@@ -35,11 +51,19 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with medium source data and altered buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with medium source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with medium source data and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with medium source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with medium source data and altered buffer during call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with medium source data and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with medium source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with medium source data and transferred buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with long source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
@@ -47,17 +71,29 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-256 with long source data and altered buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with long source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-256 with long source data and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with long source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with long source data and altered buffer during call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-384 with long source data and altered buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with long source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-384 with long source data and transferred buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with long source data
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with long source data and altered buffer during call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] SHA3-512 with long source data and altered buffer after call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with long source data and transferred buffer during call
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] SHA3-512 with long source data and transferred buffer after call
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'digest' on 'SubtleCrypto': Algorithm: Unrecognized name"
 Harness: the test ran to completion.
 

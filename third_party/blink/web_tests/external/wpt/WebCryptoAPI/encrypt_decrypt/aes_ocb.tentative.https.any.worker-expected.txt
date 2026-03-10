@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 276 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importKey step: AES-OCB 128-bit key, 64-bit tag, 120-bit iv
   assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv
@@ -108,6 +108,78 @@ Found 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with altered plaintext after call
   assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with transferred plaintext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-OCB 128-bit key, 64-bit tag, 120-bit iv
   assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv
@@ -215,6 +287,78 @@ Found 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importKey step for decryption: AES-OCB 256-bit key, 128-bit tag, 120-bit iv with altered ciphertext after call
   assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with altered ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, 128-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 128-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, 128-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 192-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 64-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 96-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, 128-bit tag, 120-bit iv with transferred ciphertext after call
+  assert_unreached: importKey failed for AES-OCB 256-bit key, 128-bit tag, 120-bit iv Reached unreachable code
+[FAIL] importKey step for decryption: AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv with transferred ciphertext after call
   assert_unreached: importKey failed for AES-OCB 256-bit key, no additional data, 128-bit tag, 120-bit iv Reached unreachable code
 [FAIL] importKey step: AES-OCB 128-bit key, 64-bit tag, 120-bit iv without encrypt usage
   assert_unreached: importKey failed for AES-OCB 128-bit key, 64-bit tag, 120-bit iv Reached unreachable code

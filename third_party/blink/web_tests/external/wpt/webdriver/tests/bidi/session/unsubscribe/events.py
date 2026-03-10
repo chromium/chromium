@@ -11,7 +11,7 @@ from tests.bidi import wait_for_bidi_events
 
 
 @pytest.mark.asyncio
-async def test_unsubscribe_from_module(bidi_session, new_tab, inline):
+async def test_unsubscribe_from_module(bidi_session, configuration, new_tab, inline):
     await bidi_session.session.subscribe(events=["browsingContext"])
     await bidi_session.session.unsubscribe(events=["browsingContext"])
 
@@ -33,7 +33,7 @@ async def test_unsubscribe_from_module(bidi_session, new_tab, inline):
     )
 
     with pytest.raises(TimeoutException):
-        await wait_for_bidi_events(bidi_session, events, 1, timeout=0.5)
+        await wait_for_bidi_events(bidi_session, configuration, events, 1, timeout=0.5)
 
     remove_listener_domContentLoaded()
     remove_listener_load()

@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+Found 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importKey step: AES-CTR 192-bit key
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] AES-CTR 128-bit key with altered plaintext during call
@@ -9,6 +10,14 @@ This is a testharness.js-based test.
   assert_true: Should return expected result expected true got false
 [FAIL] importKey step: AES-CTR 192-bit key with altered plaintext after call
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 128-bit key with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 0 but got 479
+[FAIL] importKey step: AES-CTR 192-bit key with transferred plaintext during call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 256-bit key with transferred plaintext during call
+  assert_equals: Transferred plaintext yields an empty ciphertext expected 0 but got 479
+[FAIL] importKey step: AES-CTR 192-bit key with transferred plaintext after call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] importKey step for decryption: AES-CTR 192-bit key
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] AES-CTR 128-bit key decryption with altered ciphertext during call
@@ -18,6 +27,14 @@ This is a testharness.js-based test.
 [FAIL] AES-CTR 256-bit key decryption with altered ciphertext during call
   assert_true: Should return expected result expected true got false
 [FAIL] importKey step for decryption: AES-CTR 192-bit key with altered ciphertext after call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 128-bit key decryption with transferred ciphertext during call
+  assert_equals: Transferred ciphertext yields empty plaintext expected 0 but got 479
+[FAIL] importKey step for decryption: AES-CTR 192-bit key with transferred ciphertext during call
+  assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
+[FAIL] AES-CTR 256-bit key decryption with transferred ciphertext during call
+  assert_equals: Transferred ciphertext yields empty plaintext expected 0 but got 479
+[FAIL] importKey step for decryption: AES-CTR 192-bit key with transferred ciphertext after call
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code
 [FAIL] importKey step: AES-CTR 192-bit key without encrypt usage
   assert_unreached: importKey failed for AES-CTR 192-bit key Reached unreachable code

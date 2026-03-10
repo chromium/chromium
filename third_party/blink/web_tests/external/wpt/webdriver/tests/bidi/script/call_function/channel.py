@@ -121,6 +121,7 @@ async def test_channel_with_multiple_arguments(
 @pytest.mark.asyncio
 async def test_two_channels(
     bidi_session,
+    configuration,
     top_context,
     subscribe_events,
 ):
@@ -149,7 +150,7 @@ async def test_two_channels(
     )
 
     # Wait for both events
-    await wait_for_bidi_events(bidi_session, events, 2, timeout=0.5)
+    await wait_for_bidi_events(bidi_session, configuration, events, 2, timeout=0.5)
 
     recursive_compare(
         {

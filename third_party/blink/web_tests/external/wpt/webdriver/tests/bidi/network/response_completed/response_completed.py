@@ -364,7 +364,7 @@ async def test_response_mime_type_file(
 
 
 @pytest.mark.asyncio
-async def test_redirect(bidi_session, url, fetch, setup_network_test):
+async def test_redirect(bidi_session, configuration, url, fetch, setup_network_test):
     text_url = url(PAGE_EMPTY_TEXT)
     redirect_url = url(
         f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}"
@@ -377,7 +377,7 @@ async def test_redirect(bidi_session, url, fetch, setup_network_test):
 
     # Wait until we receive two events, one for the initial request and one for
     # the redirection.
-    await wait_for_bidi_events(bidi_session, events, 2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 2)
     expected_request = {"method": "GET", "url": redirect_url}
     assert_response_event(
         events[0], expected_event={"request": expected_request, "redirectCount": 0}
@@ -402,7 +402,7 @@ async def test_redirect(bidi_session, url, fetch, setup_network_test):
 )
 @pytest.mark.asyncio
 async def test_redirect_document(
-    bidi_session, new_tab, url, setup_network_test, inline, protocol, parameters
+    bidi_session, configuration, new_tab, url, setup_network_test, inline, protocol, parameters
 ):
     network_events = await setup_network_test(events=[RESPONSE_COMPLETED_EVENT])
     events = network_events[RESPONSE_COMPLETED_EVENT]
@@ -435,7 +435,7 @@ async def test_redirect_document(
     # Wait until we receive three events:
     # - one for the initial request
     # - two for the second navigation and its redirect
-    await wait_for_bidi_events(bidi_session, events, 3, timeout=2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 3, timeout=2)
 
     expected_request = {"method": "GET", "url": initial_url}
     assert_response_event(

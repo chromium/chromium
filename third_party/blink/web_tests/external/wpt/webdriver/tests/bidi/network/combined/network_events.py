@@ -15,7 +15,7 @@ from .. import (
 
 
 @pytest.mark.asyncio
-async def test_cors_preflight_request(bidi_session, url, fetch, setup_network_test):
+async def test_cors_preflight_request(bidi_session, configuration, url, fetch, setup_network_test):
     network_events = await setup_network_test(
         events=[
             BEFORE_REQUEST_SENT_EVENT,
@@ -51,7 +51,7 @@ async def test_cors_preflight_request(bidi_session, url, fetch, setup_network_te
         fetch(fetch_url, method="GET", headers={"Content-Type": "custom/type"})
     )
 
-    await wait_for_bidi_events(bidi_session, events, 6, timeout=2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 6, timeout=2)
 
     # Check that all events for the CORS preflight request are received before
     # receiving events for the actual request
@@ -363,7 +363,7 @@ async def test_subscribe_to_one_context(
 
 @pytest.mark.asyncio
 async def test_event_order_with_redirect(
-    bidi_session, top_context, subscribe_events, url, fetch
+    bidi_session, configuration, top_context, subscribe_events, url, fetch
 ):
     events = [
         BEFORE_REQUEST_SENT_EVENT,
@@ -394,7 +394,7 @@ async def test_event_order_with_redirect(
 
     # Wait until we receive two events, one for the initial request and one for
     # the redirection.
-    await wait_for_bidi_events(bidi_session, response_completed_events, 2, timeout=2)
+    await wait_for_bidi_events(bidi_session, configuration, response_completed_events, 2, timeout=2)
 
     events_in_expected_order = [
         {"event": "network.beforeRequestSent", "url": redirect_url},

@@ -316,7 +316,7 @@ async def test_request_timing_info(
 
 
 @pytest.mark.asyncio
-async def test_redirect(bidi_session, wait_for_event, url, fetch, setup_network_test):
+async def test_redirect(bidi_session, configuration, wait_for_event, url, fetch, setup_network_test):
     text_url = url(PAGE_EMPTY_TEXT)
     redirect_url = url(
         f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}"
@@ -329,7 +329,7 @@ async def test_redirect(bidi_session, wait_for_event, url, fetch, setup_network_
 
     # Wait until we receive two events, one for the initial request and one for
     # the redirection.
-    await wait_for_bidi_events(bidi_session, events, 2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 2)
     expected_request = {"method": "GET", "url": redirect_url}
     assert_before_request_sent_event(
         events[0], expected_event={"request": expected_request, "redirectCount": 0}
@@ -345,7 +345,7 @@ async def test_redirect(bidi_session, wait_for_event, url, fetch, setup_network_
 
 @pytest.mark.asyncio
 async def test_redirect_http_equiv(
-    bidi_session, top_context, wait_for_event, url, setup_network_test
+    bidi_session, configuration, top_context, wait_for_event, url, setup_network_test
 ):
     # PAGE_REDIRECT_HTTP_EQUIV should redirect to PAGE_REDIRECTED_HTML immediately
     http_equiv_url = url(PAGE_REDIRECT_HTTP_EQUIV)
@@ -362,7 +362,7 @@ async def test_redirect_http_equiv(
 
     # Wait until we receive two events, one for the initial request and one for
     # the http-equiv "redirect".
-    await wait_for_bidi_events(bidi_session, events, 2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 2)
     expected_request = {"method": "GET", "url": http_equiv_url}
     assert_before_request_sent_event(
         events[0],

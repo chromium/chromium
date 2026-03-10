@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 102 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importVectorKeys step: KMAC128 with no customization verification
   assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC128 with customization verification
@@ -36,6 +36,30 @@ Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC256 with large data and customization verification with altered signature after call
   assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with no customization verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with customization verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC128 with customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with large data and customization verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC128 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with customization and 512-bit output verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC256 with customization and 512-bit output. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and no customization verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and customization verification with transferred signature during call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with no customization verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with customization verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC128 with customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with large data and customization verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC128 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with customization and 512-bit output verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC256 with customization and 512-bit output. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and no customization verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and customization verification with transferred signature after call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC128 with no customization with altered plaintext during call
   assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC128 with customization with altered plaintext during call
@@ -59,6 +83,30 @@ Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] importVectorKeys step: KMAC256 with large data and no customization with altered plaintext after call
   assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC256 with large data and customization with altered plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with no customization with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with customization with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC128 with customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with large data and customization with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC128 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with customization and 512-bit output with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC256 with customization and 512-bit output. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and no customization with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and customization with transferred plaintext during call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with no customization with transferred plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with customization with transferred plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC128 with customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC128 with large data and customization with transferred plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC128 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with customization and 512-bit output with transferred plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC256 with customization and 512-bit output. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and no customization with transferred plaintext after call
+  assert_unreached: importVectorKeys failed for KMAC256 with large data and no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
+[FAIL] importVectorKeys step: KMAC256 with large data and customization with transferred plaintext after call
   assert_unreached: importVectorKeys failed for KMAC256 with large data and customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code
 [FAIL] importVectorKeys step: KMAC128 with no customization no verify usage
   assert_unreached: importVectorKeys failed for KMAC128 with no customization. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' Reached unreachable code

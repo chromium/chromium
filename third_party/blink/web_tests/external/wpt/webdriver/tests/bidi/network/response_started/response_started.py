@@ -368,7 +368,7 @@ async def test_www_authenticate(
 
 
 @pytest.mark.asyncio
-async def test_redirect(bidi_session, url, fetch, setup_network_test):
+async def test_redirect(bidi_session, configuration, url, fetch, setup_network_test):
     text_url = url(PAGE_EMPTY_TEXT)
     redirect_url = url(
         f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}"
@@ -381,7 +381,7 @@ async def test_redirect(bidi_session, url, fetch, setup_network_test):
 
     # Wait until we receive two events, one for the initial request and one for
     # the redirection.
-    await wait_for_bidi_events(bidi_session, events, 2)
+    await wait_for_bidi_events(bidi_session, configuration, events, 2)
     expected_request = {"method": "GET", "url": redirect_url}
     assert_response_event(
         events[0], expected_event={"request": expected_request, "redirectCount": 0}

@@ -18,7 +18,7 @@ NAVIGATION_STARTED = "browsingContext.navigationStarted"
 # This fixture is a workaround until we can cancel downloads.
 # https://github.com/w3c/webdriver-bidi/issues/1031
 @pytest_asyncio.fixture
-async def expect_download_end(bidi_session, subscribe_events):
+async def expect_download_end(bidi_session, configuration, subscribe_events):
     await subscribe_events(events=[DOWNLOAD_END])
 
     download_end_events = []
@@ -35,11 +35,11 @@ async def expect_download_end(bidi_session, subscribe_events):
 
     yield _expect_download_end
 
-    await wait_for_bidi_events(bidi_session, download_end_events, expected_events, timeout=2)
+    await wait_for_bidi_events(bidi_session, configuration, download_end_events, expected_events, timeout=2)
     remove_listener()
 
 
-async def test_unsubscribe(bidi_session, inline, new_tab, expect_download_end):
+async def test_unsubscribe(bidi_session, configuration, inline, new_tab, expect_download_end):
     filename = f"some_file_name{random.random()}.txt"
     download_link = "data:text/plain;charset=utf-8,"
     url = inline(
@@ -72,13 +72,14 @@ async def test_unsubscribe(bidi_session, inline, new_tab, expect_download_end):
     )
 
     with pytest.raises(TimeoutException):
-        await wait_for_bidi_events(bidi_session, events, 1, timeout=0.5)
+        await wait_for_bidi_events(bidi_session, configuration, events, 1, timeout=0.5)
 
     remove_listener()
 
 
 async def test_download_attribute(
     bidi_session,
+    configuration,
     subscribe_events,
     new_tab,
     inline,
@@ -136,7 +137,7 @@ async def test_download_attribute(
     # Check that no browsingContext.navigationStarted event was emitted
     with pytest.raises(TimeoutException):
         await wait_for_bidi_events(
-            bidi_session, navigation_started_events, 1, timeout=0.5
+            bidi_session, configuration, navigation_started_events, 1, timeout=0.5
         )
 
     remove_listener()

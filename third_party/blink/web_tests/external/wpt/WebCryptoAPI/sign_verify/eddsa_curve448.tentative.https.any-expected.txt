@@ -5,9 +5,17 @@ This is a testharness.js-based test.
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
 [FAIL] EdDSA Ed448 verification with altered signature after call
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 verification with transferred signature during call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 verification with transferred signature after call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
 [FAIL] EdDSA Ed448 with altered data during call
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
 [FAIL] EdDSA Ed448 with altered data after call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 with transferred data during call
+  assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
+[FAIL] EdDSA Ed448 with transferred data after call
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true
 [FAIL] EdDSA Ed448 using privateKey to verify
   assert_false: importKey failed for EdDSA Ed448. Message: ''Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name'' expected false got true

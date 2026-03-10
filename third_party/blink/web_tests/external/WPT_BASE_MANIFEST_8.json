@@ -351916,11 +351916,11 @@
     },
     "digest": {
      "cshake.tentative.https.any-expected.txt": [
-      "bb27f057705482aaa8f248b66d75dfe24d38f9c8",
+      "b1e63d1c5afbd4ce558a96215fb3fde0bf097a1b",
       []
      ],
      "cshake.tentative.https.any.worker-expected.txt": [
-      "bb27f057705482aaa8f248b66d75dfe24d38f9c8",
+      "b1e63d1c5afbd4ce558a96215fb3fde0bf097a1b",
       []
      ],
      "digest.https.any-expected.txt": [
@@ -351932,11 +351932,11 @@
       []
      ],
      "sha3.tentative.https.any-expected.txt": [
-      "0b9ed3384c51d2084b20a7f4c492c1df2ec1b41e",
+      "92f825b25b81dd1dee80afba8425814e0c1e24f1",
       []
      ],
      "sha3.tentative.https.any.worker-expected.txt": [
-      "0b9ed3384c51d2084b20a7f4c492c1df2ec1b41e",
+      "92f825b25b81dd1dee80afba8425814e0c1e24f1",
       []
      ]
     },
@@ -351968,15 +351968,15 @@
     },
     "encrypt_decrypt": {
      "aes.js": [
-      "b157a94a0dc4fbb823ca0d15d55feabe2fdc17f0",
+      "456f66423419c879a470f78afd9f6ec2a92b0b32",
       []
      ],
      "aes_cbc.https.any-expected.txt": [
-      "8c8e6f0bf018dbebb0b4b1b7392b2e011b8f24d9",
+      "c57a8fb92f605219f499c6a1f83ea819b3a2e890",
       []
      ],
      "aes_cbc.https.any.worker-expected.txt": [
-      "8c8e6f0bf018dbebb0b4b1b7392b2e011b8f24d9",
+      "c57a8fb92f605219f499c6a1f83ea819b3a2e890",
       []
      ],
      "aes_cbc_vectors.js": [
@@ -351984,11 +351984,11 @@
       []
      ],
      "aes_ctr.https.any-expected.txt": [
-      "64f82f874b02b3f51caa5c76e7678eb0b5ec1d9d",
+      "557ac001fb7a9a07f5f2c39b4c640171afb65990",
       []
      ],
      "aes_ctr.https.any.worker-expected.txt": [
-      "64f82f874b02b3f51caa5c76e7678eb0b5ec1d9d",
+      "557ac001fb7a9a07f5f2c39b4c640171afb65990",
       []
      ],
      "aes_ctr_vectors.js": [
@@ -351996,19 +351996,19 @@
       []
      ],
      "aes_gcm.https.any-expected.txt": [
-      "349d5581eb119bff375cb0fb8ad5b258a2bd54e9",
+      "49ba09fe922d965192bbe54116ffd0215176ef94",
       []
      ],
      "aes_gcm.https.any.worker-expected.txt": [
-      "349d5581eb119bff375cb0fb8ad5b258a2bd54e9",
+      "49ba09fe922d965192bbe54116ffd0215176ef94",
       []
      ],
      "aes_gcm_256_iv.https.any-expected.txt": [
-      "b2fc381e30f577aee1f21f9c9f231974f7dabb54",
+      "c58361085e7d343bb7f501231c9099ff1f0444e9",
       []
      ],
      "aes_gcm_256_iv.https.any.worker-expected.txt": [
-      "b2fc381e30f577aee1f21f9c9f231974f7dabb54",
+      "c58361085e7d343bb7f501231c9099ff1f0444e9",
       []
      ],
      "aes_gcm_256_iv_fixtures.js": [
@@ -352024,11 +352024,11 @@
       []
      ],
      "aes_ocb.tentative.https.any-expected.txt": [
-      "0ba6deb178d825234885899f0069cc0d3f29560b",
+      "ec16f6a0ee0e2b651b3b5b30682bf958e3e5b574",
       []
      ],
      "aes_ocb.tentative.https.any.worker-expected.txt": [
-      "0ba6deb178d825234885899f0069cc0d3f29560b",
+      "ec16f6a0ee0e2b651b3b5b30682bf958e3e5b574",
       []
      ],
      "aes_ocb_fixtures.js": [
@@ -352048,15 +352048,15 @@
       []
      ],
      "rsa.js": [
-      "76c90809783205af9112468e568e6016b7b2a715",
+      "6f585cbe1ffcef1218425570bde86f785a06e9b3",
       []
      ],
      "rsa_oaep.https.any-expected.txt": [
-      "733c5e7bb8fe03994908f8573601c7eac525a4b6",
+      "6927f77f6eab4eda541206477ad4e84a16f0216d",
       []
      ],
      "rsa_oaep.https.any.worker-expected.txt": [
-      "733c5e7bb8fe03994908f8573601c7eac525a4b6",
+      "6927f77f6eab4eda541206477ad4e84a16f0216d",
       []
      ],
      "rsa_vectors.js": [
@@ -352390,15 +352390,15 @@
     },
     "sign_verify": {
      "ecdsa.https.any-expected.txt": [
-      "52207bbdd4ab13230b32b34f34c0cf0cdc8a4d6e",
+      "e15e8fe07415c73772410d8f485511c78ecb336b",
       []
      ],
      "ecdsa.https.any.worker-expected.txt": [
-      "52207bbdd4ab13230b32b34f34c0cf0cdc8a4d6e",
+      "e15e8fe07415c73772410d8f485511c78ecb336b",
       []
      ],
      "ecdsa.js": [
-      "9b47868fe32bfb74dc6d369757aa8436d6e2b6d4",
+      "b2e0bf606b5feecd29f985fcfb801f4eb560c3e0",
       []
      ],
      "ecdsa_vectors.js": [
@@ -352406,23 +352406,23 @@
       []
      ],
      "eddsa.js": [
-      "4bf1887b2ae9bb120a257615d60ac25f6faf0c14",
+      "5ff6f21150c2723b452dff968db075809834b170",
       []
      ],
      "eddsa_curve25519.https.any-expected.txt": [
-      "e406689b29f862fccb4e34e97262a1053308490d",
+      "0d1a17cd379fe31c0b002a8033ff790daab61bb9",
       []
      ],
      "eddsa_curve25519.https.any.worker-expected.txt": [
-      "e406689b29f862fccb4e34e97262a1053308490d",
+      "0d1a17cd379fe31c0b002a8033ff790daab61bb9",
       []
      ],
      "eddsa_curve448.tentative.https.any-expected.txt": [
-      "61f636ac4bf0979c6a3208b353eb7baa26354688",
+      "377a39e3dd91d125c63da4961e625bd417dddfa7",
       []
      ],
      "eddsa_curve448.tentative.https.any.worker-expected.txt": [
-      "61f636ac4bf0979c6a3208b353eb7baa26354688",
+      "377a39e3dd91d125c63da4961e625bd417dddfa7",
       []
      ],
      "eddsa_small_order_points.https.any-expected.txt": [
@@ -352442,15 +352442,15 @@
       []
      ],
      "hmac.https.any-expected.txt": [
-      "fba310ca175e4cccc3bed793fb4165618ff12118",
+      "ec5fa125bc1da3b1f2f1d3171c4f271beca95935",
       []
      ],
      "hmac.https.any.worker-expected.txt": [
-      "fba310ca175e4cccc3bed793fb4165618ff12118",
+      "ec5fa125bc1da3b1f2f1d3171c4f271beca95935",
       []
      ],
      "hmac.js": [
-      "dff8c994d83de0dbac17129277bdad2e5d4600d4",
+      "8a099f4ce9377aa8a630d26bfe6df4d59a0ce835",
       []
      ],
      "hmac_vectors.js": [
@@ -352458,15 +352458,15 @@
       []
      ],
      "kmac.js": [
-      "57c9dc6f34790a42cd4599509e7f29fcb10c986b",
+      "f3cc9b4cd1dbfdb68ffd398d863873eb08f718e8",
       []
      ],
      "kmac.tentative.https.any-expected.txt": [
-      "506f663127400532d8367d893be4ef1a2da73097",
+      "1ab2cec911ed44ab4ea58e7a3ffeaf2904106392",
       []
      ],
      "kmac.tentative.https.any.worker-expected.txt": [
-      "506f663127400532d8367d893be4ef1a2da73097",
+      "1ab2cec911ed44ab4ea58e7a3ffeaf2904106392",
       []
      ],
      "kmac_vectors.js": [
@@ -352474,15 +352474,15 @@
       []
      ],
      "mldsa.js": [
-      "88143a33879ed759ec70dc3da3500ede7f369d87",
+      "9c654685c74f310b1d68b7a4910ee298c6ab0830",
       []
      ],
      "mldsa.tentative.https.any-expected.txt": [
-      "f5875ac69ce4d617a034ab40d4c7bd0a7ae93727",
+      "08e0658d91944222380d9899129c889156ef14bd",
       []
      ],
      "mldsa.tentative.https.any.worker-expected.txt": [
-      "f5875ac69ce4d617a034ab40d4c7bd0a7ae93727",
+      "08e0658d91944222380d9899129c889156ef14bd",
       []
      ],
      "mldsa_vectors.js": [
@@ -352490,15 +352490,15 @@
       []
      ],
      "rsa.js": [
-      "f808714cfb11d47a2a65b7426416a30fef135a45",
+      "09c7ceb767510790199a468824937a7ea01fd2ea",
       []
      ],
      "rsa_pkcs.https.any-expected.txt": [
-      "d2753deaaa43ff7768280e9d318d1d12337a51a7",
+      "4b04985c483637fef140c69f5780b00daa00536b",
       []
      ],
      "rsa_pkcs.https.any.worker-expected.txt": [
-      "d2753deaaa43ff7768280e9d318d1d12337a51a7",
+      "4b04985c483637fef140c69f5780b00daa00536b",
       []
      ],
      "rsa_pkcs_vectors.js": [
@@ -352506,11 +352506,11 @@
       []
      ],
      "rsa_pss.https.any-expected.txt": [
-      "8797f2feffc7fc240e1af407a42e9791eaaae702",
+      "2b440d605bf21acae3f33a793b205e8e4a3db20a",
       []
      ],
      "rsa_pss.https.any.worker-expected.txt": [
-      "8797f2feffc7fc240e1af407a42e9791eaaae702",
+      "2b440d605bf21acae3f33a793b205e8e4a3db20a",
       []
      ],
      "rsa_pss_vectors.js": [
@@ -394114,6 +394114,10 @@
      "line-clamp": {
       "WEB_FEATURES.yml": [
        "fe3e3bc96f8e6faae93b66eaf79dd4145cccaa9f",
+       []
+      ],
+      "block-ellipsis-crash-001.html": [
+       "8d78532aa9edb19919fb46b972ffe795e682e367",
        []
       ],
       "discard": {
@@ -475383,7 +475387,7 @@
        []
       ],
       "__init__.py": [
-       "78d4fc55b28b92fd791e6deb166fb16ff3d6f287",
+       "ccae40b627ff48c90f06ff57d040237945b2111f",
        []
       ],
       "browser": {
@@ -503922,7 +503926,7 @@
     },
     "digest": {
      "cshake.tentative.https.any.js": [
-      "d5f790e42b498243069cf26c815a6bfc51572086",
+      "d0c23c09ada4a9018b704c0964318558027ee650",
       [
        "WebCryptoAPI/digest/cshake.tentative.https.any.html",
        {
@@ -503957,7 +503961,7 @@
       ]
      ],
      "digest.https.any.js": [
-      "e0c85f8f6b30e4922ad660fec1878f68ad987404",
+      "47bc220d44fb7068ea404a7b77aa40e6e6bc0c44",
       [
        "WebCryptoAPI/digest/digest.https.any.html",
        {
@@ -503992,7 +503996,7 @@
       ]
      ],
      "sha3.tentative.https.any.js": [
-      "fc33608e07ab14daa350b4656c2b4f0065156dbb",
+      "4ae99791b8c95fd3db5a83d867bf8ad95f48998b",
       [
        "WebCryptoAPI/digest/sha3.tentative.https.any.html",
        {
@@ -667354,6 +667358,13 @@
        ],
        "2d.text.measure.actualBoundingBox.html": [
         "e59cf14cac3c804edfebd4472a29ee889a8fcb50",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.measure.actualBoundingBox.small-font.html": [
+        "4e95712839aa62b6edb4c433b04f2add1267360f",
         [
          null,
          {}
@@ -900240,7 +900251,7 @@
          ]
         ],
         "user_context.py": [
-         "1f6dfd3ec26b41dd02ccc160f6782d247a53321c",
+         "67479ea1caf16d5099b66fa5c2eef08a06685add",
          [
           null,
           {}
@@ -900371,7 +900382,7 @@
        },
        "context_created": {
         "context_created.py": [
-         "ac88dea9c7e1f73c8d1af542af0c891f97c49e6e",
+         "dad5b51de8ad7fbc391d4366fe34a66c68c8a1e9",
          [
           null,
           {}
@@ -900394,7 +900405,7 @@
        },
        "context_destroyed": {
         "context_destroyed.py": [
-         "91c8bba713fd039ad28b42564122dd4c43847f73",
+         "580cb535a129e11298cd352e244fc3ed28f6521a",
          [
           null,
           {}
@@ -900447,7 +900458,7 @@
        },
        "dom_content_loaded": {
         "dom_content_loaded.py": [
-         "4c0db68adf92cb3bb6d51dad4749f0c310ec8c83",
+         "8f32195d938a664077d94e8a1c13fe949cd6e5bb",
          [
           null,
           {}
@@ -900472,7 +900483,7 @@
        },
        "download_will_begin": {
         "download_will_begin.py": [
-         "a796cab67290bc3510bebf940bf6d299ebe36a15",
+         "9d763c4d73cc69bc91ed7b730f942900adc871f7",
          [
           null,
           {}
@@ -900481,7 +900492,7 @@
        },
        "fragment_navigated": {
         "fragment_navigated.py": [
-         "00846fd9018ba76a8316ff515d27f6e5fe6c0e2b",
+         "6ad9162e169afddc6a1f160f67e753b8acc05f9f",
          [
           null,
           {}
@@ -900490,7 +900501,7 @@
        },
        "get_tree": {
         "frames.py": [
-         "c7bad0d8f3a867dc6573b66e463f923d8e5967e0",
+         "d6490c69e8b8e46430c41c97f1028a6aeda9d22c",
          [
           null,
           {}
@@ -900552,7 +900563,7 @@
        },
        "load": {
         "load.py": [
-         "a91978417b82fc969cf6ccdd3d97f135f21e32bd",
+         "041a81763800d6575f96350f8386f46ee2abc7f0",
          [
           null,
           {}
@@ -900677,7 +900688,7 @@
        },
        "navigation_committed": {
         "navigation_committed.py": [
-         "af002333fe34e977d47e4faaff8ff951ee30518b",
+         "ad9c0f7291c45db92b67cc80481cab19d5328d37",
          [
           null,
           {}
@@ -900693,7 +900704,7 @@
        },
        "navigation_failed": {
         "navigation_failed.py": [
-         "235d5fa9ac4b4fb649da237c4f31403014316945",
+         "6b1ad8340badb53a6d61f35c6554e81fba376184",
          [
           null,
           {}
@@ -900709,7 +900720,7 @@
          ]
         ],
         "navigation_started.py": [
-         "b48aa1ced857e9dcaf76a048400129fe6e98dc8a",
+         "10b4c28bddc3f6ba6cc430964b9dc60e025040bd",
          [
           null,
           {}
@@ -900893,7 +900904,7 @@
          ]
         ],
         "user_prompt_closed.py": [
-         "11932eb84ce229da360a93b1bf735c4cea350090",
+         "ade70c1cc28e9de6186c932786a1bf186d163d1e",
          [
           null,
           {}
@@ -900916,7 +900927,7 @@
          ]
         ],
         "user_prompt_opened.py": [
-         "20fd3d63209552f2842ce2954c39f6f5ec92c65a",
+         "74363a22ccb3fd7311a21dd3954fa623192feec2",
          [
           null,
           {}
@@ -901505,7 +901516,7 @@
       "input": {
        "file_dialog_opened": {
         "file_dialog_opened.py": [
-         "356bab7c6c7e7156073dda6d8630624931835168",
+         "050c9dbb6696192d279e1b5c60063ecf1c481d3d",
          [
           null,
           {}
@@ -901906,7 +901917,7 @@
        },
        "auth_required": {
         "auth_required.py": [
-         "d1270ce057476fee7049515b33d70ce40a314a37",
+         "7816d1f871b17505a8d26be57aa10408afab46f5",
          [
           null,
           {}
@@ -901922,21 +901933,21 @@
        },
        "before_request_sent": {
         "before_request_sent.py": [
-         "229519b1ec61e7a0702841b8c7087f7c314c35d0",
+         "be667e4b1d59806955a694411f3f5f4a3c230bac",
          [
           null,
           {}
          ]
         ],
         "before_request_sent_cached.py": [
-         "e591f6e6242be685597a3f1475789da5bd537afa",
+         "833931346d541a97279b311344faa02dae278b21",
          [
           null,
           {}
          ]
         ],
         "unique_request_ids.py": [
-         "a9b28269ff4a7b5b611b57118790843668f6fec2",
+         "eee14a6ac876d76ca3b4824a94e85fc19acb2a44",
          [
           null,
           {}
@@ -901945,7 +901956,7 @@
        },
        "combined": {
         "network_events.py": [
-         "f0cdc41f4c92e62723c7a0b9985c9c7a78ef054c",
+         "f97b587de274bd1d9f3161cf2212251bb63c3215",
          [
           null,
           {}
@@ -902060,7 +902071,7 @@
        },
        "continue_with_auth": {
         "action.py": [
-         "cc279f7a27b6a49d5b282ebf64d72a30401a250b",
+         "834958c4f37fd7ce30f88dc605a1d21be25f165d",
          [
           null,
           {}
@@ -902115,7 +902126,7 @@
        },
        "fetch_error": {
         "fetch_error.py": [
-         "35290048e0b4bd0a34b429258af0617cf38ca9c5",
+         "b6db6e7df2034dfea89c4b5d637b07f62f0b9c89",
          [
           null,
           {}
@@ -902124,7 +902135,7 @@
        },
        "get_data": {
         "cached_tentative.py": [
-         "03f753a2349437587ac8d2fb37f65256d0c4ec54",
+         "395093deae4869d2fd9c939ca03d35e5a4737eba",
          [
           null,
           {}
@@ -902262,14 +902273,14 @@
        },
        "response_completed": {
         "response_completed.py": [
-         "7ac8e2db6aae987d4a990cf29f9a3fbeaf7767ba",
+         "fc796a95ab1b7efd1aa3b9bc2e2595db07e91a3e",
          [
           null,
           {}
          ]
         ],
         "response_completed_cached.py": [
-         "2323567e49829808aa275d45aa6d8037e161f5d5",
+         "0b83e75e53e65db0d9062dd4aab6e94aafd12015",
          [
           null,
           {}
@@ -902278,14 +902289,14 @@
        },
        "response_started": {
         "response_started.py": [
-         "0d5426bbffd26eec51a2fcab61b8b135cf7dd42e",
+         "39395eab413738c428a27602add712ba73494c04",
          [
           null,
           {}
          ]
         ],
         "response_started_cached.py": [
-         "6b781bba72bc59d8a3203e6a0252d90f59210068",
+         "ed57d79b576542ed07fbede0df50cd0beb1c1f04",
          [
           null,
           {}
@@ -902363,7 +902374,7 @@
          ]
         ],
         "arguments.py": [
-         "644b43e38665b5e192274e9d6eb54dc3db182460",
+         "f9337a33c04c4ff15de6e78af4ee1acaaf91ffee",
          [
           null,
           {}
@@ -902421,7 +902432,7 @@
          ]
         ],
         "channel.py": [
-         "29df3d1c6520b30907486f8aa7bcdca79713b972",
+         "f322e06c5edbb10084f75c38e213f8b25be1e6b1",
          [
           null,
           {}
@@ -902723,7 +902734,7 @@
        },
        "message": {
         "message.py": [
-         "0bd39c9145430fa0619c0f9aa3e0a8984bf5a0d1",
+         "e8d309543957455244b5b525b3bd01e1a176844e",
          [
           null,
           {}
@@ -902732,7 +902743,7 @@
        },
        "realm_created": {
         "realm_created.py": [
-         "f8e7e3c91524b263399c0499bdef5e65b88f9c95",
+         "aaee04c12873afbda47eaca0066ecdcd06986cfd",
          [
           null,
           {
@@ -902741,7 +902752,7 @@
          ]
         ],
         "window_open.py": [
-         "b5c159f457ff1e99ab703f07e4b97937f56cb8b4",
+         "95c1215823a8a3dc6aec111c0577c81ea397f9a1",
          [
           null,
           {}
@@ -902750,7 +902761,7 @@
        },
        "realm_destroyed": {
         "realm_destroyed.py": [
-         "0d05b2755dab827039ddfc35fbe5bac992f791fe",
+         "223b9acb23131c493982ef0407063685629e000c",
          [
           null,
           {}
@@ -902872,7 +902883,7 @@
        },
        "unsubscribe": {
         "events.py": [
-         "752d83532ad2f5a27c10ef2f17a287c749178fc4",
+         "18fddd13eb5fbdff993dee936a0d7b3c3c8da9eb",
          [
           null,
           {}
