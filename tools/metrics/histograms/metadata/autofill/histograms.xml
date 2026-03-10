@@ -1245,6 +1245,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<!-- TODO(crbug.com/491115361): Remove note after YourSavedInfo rename -->
+
 <histogram name="Autofill.AddressesSettingsPage.VisitReferrer"
     enum="AutofillSettingsReferrer" expires_after="2026-09-15">
   <owner>ireneuszszulc@google.com</owner>
@@ -1254,6 +1256,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     'Addresses' settings page from a tracked entry point. This metric is emitted
     on navigation to the page, with the enum values distinguishing the entry
     points (different ways of reaching the page).
+
+    Note: With YourSavedInfoSettingsPage experiment on this metric is recorded
+    under `Autofill.YourSavedInfo.VisitReferrer` instead.
   </summary>
 </histogram>
 
@@ -9585,6 +9590,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>The time taken to display suggestion.</summary>
 </histogram>
 
+<!-- TODO(crbug.com/491115361): Rename YourSavedInfoSettingsPage to AddressesSettingsPage -->
+
 <histogram name="Autofill.YourSavedInfoSettingsPage.CategoryLinkClick"
     enum="YourSavedInfoDataCategory" expires_after="2026-10-28">
   <owner>ireneuszszulc@google.com</owner>
@@ -9594,6 +9601,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Emitted on every click on such a data category. Recorded on Desktop only.
   </summary>
 </histogram>
+
+<!-- TODO(crbug.com/491115361): Rename YourSavedInfoSettingsPage to AddressesSettingsPage -->
 
 <histogram name="Autofill.YourSavedInfoSettingsPage.DataChipClick"
     enum="YourSavedInfoDataChip" expires_after="2026-10-28">
@@ -9605,6 +9614,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<!-- TODO(crbug.com/491115361): Rename YourSavedInfoSettingsPage to AddressesSettingsPage -->
+
 <histogram name="Autofill.YourSavedInfoSettingsPage.RelatedServiceLinkClick"
     enum="YourSavedInfoRelatedService" expires_after="2026-10-28">
   <owner>ireneuszszulc@google.com</owner>
@@ -9615,6 +9626,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Desktop only.
   </summary>
 </histogram>
+
+<!-- TODO(crbug.com/491115361): Merge this metric with the existing Autofill.AddressesSettingsPage.VisitReferrer -->
 
 <histogram name="Autofill.YourSavedInfoSettingsPage.VisitReferrer"
     enum="AutofillSettingsReferrer" expires_after="2026-10-28">
