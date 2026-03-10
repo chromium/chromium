@@ -148,8 +148,14 @@ bool IsScrollMarkerFromScrollerInTabsMode(const Element& maybe_scroll_marker) {
   if (!scroll_marker) {
     return false;
   }
-  Element* scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
-  DCHECK(scroller);
+  ScrollMarkerGroupPseudoElement* group = scroll_marker->ScrollMarkerGroup();
+  if (!group) {
+    return false;
+  }
+  Element* scroller = group->parentElement();
+  if (!scroller) {
+    return false;
+  }
   return IsScrollerInMode(*scroller,
                           ScrollMarkerGroup::ScrollMarkerMode::kTabs);
 }
@@ -231,8 +237,13 @@ Element* GetNextForCarouselPseudoInFocusOrder(
     PseudoId pseudo_id = current.GetPseudoId();
     // Adjust for ::scroll-marker.
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
-      scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
-      pseudo_id = scroll_marker->ScrollMarkerGroup()->GetPseudoId();
+      ScrollMarkerGroupPseudoElement* group =
+          scroll_marker->ScrollMarkerGroup();
+      if (!group) {
+        return nullptr;
+      }
+      scroller = group->parentElement();
+      pseudo_id = group->GetPseudoId();
       // If the scroll-marker-group mode of the scroller is `links`, every
       // scroll marker is a tab stop.
       if (IsScrollerInLinksMode(*scroller)) {
@@ -277,8 +288,13 @@ Element* GetPreviousForCarouselPseudoInFocusOrder(
     PseudoId pseudo_id = current.GetPseudoId();
     // Adjust for ::scroll-marker.
     if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
-      scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
-      pseudo_id = scroll_marker->ScrollMarkerGroup()->GetPseudoId();
+      ScrollMarkerGroupPseudoElement* group =
+          scroll_marker->ScrollMarkerGroup();
+      if (!group) {
+        return nullptr;
+      }
+      scroller = group->parentElement();
+      pseudo_id = group->GetPseudoId();
       // If the scroll-marker-group mode of the scroller is `links`, every
       // scroll marker is a tab stop.
       if (IsScrollerInLinksMode(*scroller)) {
@@ -320,7 +336,11 @@ Element* PreAdjustPreviousForCarouselFocusOrder(
   Element* scroller = current.parentElement();
   // Adjust for ::scroll-marker.
   if (auto* scroll_marker = DynamicTo<ScrollMarkerPseudoElement>(current)) {
-    scroller = scroll_marker->ScrollMarkerGroup()->parentElement();
+    ScrollMarkerGroupPseudoElement* group = scroll_marker->ScrollMarkerGroup();
+    if (!group) {
+      return nullptr;
+    }
+    scroller = group->parentElement();
   }
   return ElementTraversal::Previous(*scroller, stay_within);
 }
