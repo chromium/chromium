@@ -1,0 +1,29 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++region name='Highlighted television shows' roleDescription='carousel'
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++button name='Stop automatic slide show'
+++++++++++++++staticText name='Pause'
+++++++++++++++++inlineTextBox name='Pause'
+++++++++++++button name='Previous Slide' controlsIds=genericContainer
+++++++++++++++staticText name='Prev'
+++++++++++++++++inlineTextBox name='Prev'
+++++++++++++button name='Next Slide' controlsIds=genericContainer
+++++++++++++++staticText name='Next'
+++++++++++++++++inlineTextBox name='Next'
+++++++++++genericContainer
+++++++++++++group name='1 of 6' roleDescription='slide'
+++++++++++++++genericContainer
+++++++++++++++++link name='Walking Tour in Amsterdam'
+++++++++++++++++++image name='Walking Tour in Amsterdam'
+++++++++++++++genericContainer ignored
+++++++++++++++++heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++link name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++staticText name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++++++++inlineTextBox name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++++++genericContainer ignored
+++++++++++++++++++paragraph
+++++++++++++++++++++staticText name='7 pm Tuesday, March 3, on TV'
+++++++++++++++++++++++inlineTextBox name='7 pm Tuesday, March 3, on TV'

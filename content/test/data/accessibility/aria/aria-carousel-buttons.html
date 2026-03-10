@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- HTML snippet based on W3C ARIA Carousel (Buttons for Slide Control) Pattern -->
+    <!-- https://www.w3.org/WAI/ARIA/apg/patterns/carousel/examples/carousel-1-prev-next/ -->
+    <!-- The HTML snippet is slightly modified to remove unnecessary noise -->
+  <section id="myCarousel"
+           class="carousel"
+           aria-roledescription="carousel"
+           aria-label="Highlighted television shows">
+    <div class="carousel-inner">
+      <!-- Controls (SVGs removed to reduce tree noise, using text instead) -->
+      <div class="controls">
+        <button type="button" class="rotation pause" aria-label="Stop automatic slide show">Pause</button>
+        <button type="button" class="previous" aria-controls="myCarousel-items" aria-label="Previous Slide">Prev</button>
+        <button type="button" class="next" aria-controls="myCarousel-items" aria-label="Next Slide">Next</button>
+      </div>
+      <div id="myCarousel-items" class="carousel-items" aria-live="off">
+        <!-- Slide 1 (Active/Visible) -->
+        <div class="carousel-item active"
+             role="group"
+             aria-roledescription="slide"
+             aria-label="1 of 6">
+          <div class="carousel-image">
+            <a href="#">
+              <img src="." alt="Walking Tour in Amsterdam">
+            </a>
+          </div>
+          <div class="carousel-caption">
+            <h3>
+              <a href="#" id="carousel-label-1">
+                Dynamic Europe: Amsterdam, Prague, Berlin
+              </a>
+            </h3>
+            <div class="hidden-xs hidden-sm">
+              <p>
+                <span class="contrast">
+                  7 pm Tuesday, March 3, on TV
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Slide 2 (Inactive - 'hidden' attribute added to mimic CSS behavior) -->
+        <div class="carousel-item"
+             role="group"
+             aria-roledescription="slide"
+             aria-label="2 of 6"
+             hidden>
+          <div class="carousel-image">
+            <a href="#">
+              <img src="." alt="Land's End in Cornwall">
+            </a>
+          </div>
+          <div class="carousel-caption">
+            <h3>
+              <a href="#" id="carousel-label-2">
+                Travel to Southwest England and Paris
+              </a>
+            </h3>
+            <div>
+              <p>
+                <span class="contrast">
+                  Sept. 14 to Sept. 24 or 27
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

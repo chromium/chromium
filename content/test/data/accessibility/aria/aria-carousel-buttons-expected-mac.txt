@@ -1,0 +1,16 @@
+AXWebArea
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='Highlighted television shows'
+++++AXGroup
+++++++AXButton AXDescription='Stop automatic slide show'
+++++++AXButton AXDescription='Previous Slide'
+++++++AXButton AXDescription='Next Slide'
+++++AXGroup
+++++++AXGroup AXSubrole=AXApplicationGroup AXDescription='1 of 6'
+++++++++AXGroup
+++++++++++AXLink AXDescription='Walking Tour in Amsterdam'
+++++++++++++AXImage AXDescription='Walking Tour in Amsterdam'
+++++++++AXHeading AXTitle='Dynamic Europe: Amsterdam, Prague, Berlin' AXValue=3
+++++++++++AXLink AXDescription='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++AXStaticText AXValue='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='7 pm Tuesday, March 3, on TV'

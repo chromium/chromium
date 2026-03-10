@@ -1,0 +1,16 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_LANDMARK name='Highlighted television shows'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_PUSHBUTTON name='Stop automatic slide show' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Previous Slide' FOCUSABLE
+++++++ROLE_SYSTEM_PUSHBUTTON name='Next Slide' FOCUSABLE
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_GROUPING name='1 of 6'
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_LINK name='Walking Tour in Amsterdam' FOCUSABLE
+++++++++++++ROLE_SYSTEM_GRAPHIC name='Walking Tour in Amsterdam' READONLY
+++++++++IA2_ROLE_HEADING name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++ROLE_SYSTEM_LINK name='Dynamic Europe: Amsterdam, Prague, Berlin' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++ROLE_SYSTEM_STATICTEXT name='7 pm Tuesday, March 3, on TV'

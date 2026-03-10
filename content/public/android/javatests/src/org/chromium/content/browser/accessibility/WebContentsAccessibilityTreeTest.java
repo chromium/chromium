@@ -337,6 +337,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaCarouselButtons() {
+        performAriaTest("aria-carousel-buttons.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaCaption() {
         performAriaTest("aria-caption.html");
     }
