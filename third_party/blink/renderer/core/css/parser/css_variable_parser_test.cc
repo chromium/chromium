@@ -68,23 +68,31 @@ const char* valid_attr_values[] = {
     "attr(p type( <color>))",
     "attr(p type(  <color> ))",
     "attr(p type(<color>) )",
-    // clang-format on
-};
-
-const char* invalid_attr_values[] = {
-    // clang-format off
+    "attr(var(--x), attr(data-foo))",
+    "attr(attr(data-foo))",
+    "attr(attr(data-foo),)",
     "attr(p type(< length>))",
     "attr(p type(<angle> !))",
     "attr(p type(<number >))",
     "attr(p type(<number> +))",
     "attr(p type(<transform-list>+))",
     "attr(p type(!))",
-    "attr(p !)",
     "attr(p <px>)",
     "attr(p <string>)",
     "attr(p type(<color>) red)",
+    "attr(p type(<color>), red, red)",
     "attr(p type(<url>))",
     "attr(p string)",
+    "attr(p, p, p)",
+    // clang-format on
+};
+
+const char* invalid_attr_values[] = {
+    // clang-format off
+    "attr(!)",
+    "attr(p !)",
+    "attr(, p)",
+    "attr(p;, p)",
     // clang-format on
 };
 

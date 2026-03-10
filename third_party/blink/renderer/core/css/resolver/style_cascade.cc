@@ -89,6 +89,14 @@ AtomicString ConsumeVariableName(CSSParserTokenStream& stream) {
   return ident_token.Value().ToAtomicString();
 }
 
+AtomicString ConsumeIfVariableName(CSSParserTokenStream& stream) {
+  stream.ConsumeWhitespace();
+  if (stream.Peek().GetType() != kIdentToken) {
+    return g_null_atom;
+  }
+  return stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+}
+
 AtomicString ConsumeAndComputeVariableName(CSSParserTokenStream& stream,
                                            const CSSParserContext& context,
                                            StyleResolverState& state) {
@@ -2346,20 +2354,46 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    FunctionContext* function_context,
                                    TokenSequence& out) {
-  AtomicString local_name = ConsumeVariableName(stream);
+  AtomicString local_name;
+  std::optional<CSSAttrType> attr_type;
+  bool missing_attr_type = false;
+  if (RuntimeEnabledFeatures::CSSArgumentGrammarEnabled()) {
+    TokenSequence first_arg_token_sequence;
+    if (!ResolveTokensInto(
+            stream, tree_scope, resolver, context, function_context,
+            /*stop_type=*/kCommaToken, first_arg_token_sequence)) {
+      return false;
+    }
+    CSSParserTokenStream first_arg_stream(
+        first_arg_token_sequence.OriginalText());
+
+    local_name = ConsumeIfVariableName(first_arg_stream);
+    attr_type = CSSAttrType::Consume(first_arg_stream);
+    if (!attr_type.has_value()) {
+      missing_attr_type = true;
+      attr_type = CSSAttrType::GetDefaultValue();
+    }
+
+    if (local_name.IsNull() || !first_arg_stream.AtEnd()) {
+      return false;
+    }
+  } else {
+    local_name = ConsumeVariableName(stream);
+    attr_type = CSSAttrType::Consume(stream);
+    if (!attr_type.has_value()) {
+      missing_attr_type = true;
+      attr_type = CSSAttrType::GetDefaultValue();
+    }
+  }
+
+  DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
+
   CascadeResolver::CycleNode cycle_node = {
       .type = CascadeResolver::CycleNode::Type::kAttribute, .name = local_name};
   if (resolver.DetectCycle(cycle_node)) {
     return false;
   }
   CascadeResolver::AutoLock lock(cycle_node, resolver);
-  std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
-  bool missing_attr_type = false;
-  if (!attr_type.has_value()) {
-    missing_attr_type = true;
-    attr_type = CSSAttrType::GetDefaultValue();
-  }
-  DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
 
   Element& element = state_.GetUltimateOriginatingElementOrSelf();
   // TODO(crbug.com/387281256): Support namespaces.

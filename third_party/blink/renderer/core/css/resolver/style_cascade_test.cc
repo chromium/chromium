@@ -1365,6 +1365,56 @@ TEST_F(StyleCascadeTest, CycleAttrWithVar) {
   EXPECT_FALSE(cascade.ComputedValue("--x"));
 }
 
+TEST_F(StyleCascadeTest, AttrInvalidArgumentGrammar) {
+  Element* element = DocumentElement();
+  TestCascade cascade(GetDocument(), element);
+  element->setAttribute(AtomicString("data-foo"), AtomicString("abc"));
+
+  cascade.Reset();
+  cascade.Add("--x", "attr(data-foo string)");
+  cascade.Apply();
+
+  EXPECT_FALSE(cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, AttrArgumentGrammarWithAttr) {
+  Element* element = DocumentElement();
+  TestCascade cascade(GetDocument(), element);
+  element->setAttribute(AtomicString("data-bar"), AtomicString("3"));
+  element->setAttribute(AtomicString("data-foo"), AtomicString("data-bar"));
+
+  cascade.Reset();
+  cascade.Add("--x", "attr(attr(data-foo type(<custom-ident>)))");
+  cascade.Apply();
+
+  EXPECT_EQ("\"3\"", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, AttrArgumentGrammarWithVar) {
+  Element* element = DocumentElement();
+  TestCascade cascade(GetDocument(), element);
+
+  element->setAttribute(AtomicString("data-foo"), AtomicString("3"));
+
+  cascade.Reset();
+  cascade.Add("--y", "data-foo type(<number>)");
+  cascade.Add("--x", "attr(var(--y))");
+  cascade.Apply();
+
+  EXPECT_EQ("3", cascade.ComputedValue("--x"));
+}
+
+TEST_F(StyleCascadeTest, AttrArgumentGrammarCycle) {
+  Element* element = DocumentElement();
+  TestCascade cascade(GetDocument(), element);
+
+  cascade.Reset();
+  cascade.Add("--x", "attr(var(--x))");
+  cascade.Apply();
+
+  EXPECT_FALSE(cascade.ComputedValue("--x"));
+}
+
 TEST_F(StyleCascadeTest, EmUnit) {
   TestCascade cascade(GetDocument());
   cascade.Add("font-size", "10px");

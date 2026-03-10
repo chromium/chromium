@@ -210,7 +210,10 @@ static bool ConsumeEnvVariableReference(CSSParserTokenStream& stream,
 }
 
 // attr() = attr( <attr-name> [ type(<syntax>) | string | <unit> ]?,
-// <declaration-value>?) https://drafts.csswg.org/css-values-5/#attr-notation
+// <declaration-value>?)
+// Argument grammar:
+// <attr-args> = attr( <declaration-value>, <declaration-value>? )
+// https://drafts.csswg.org/css-values-5/#attr-notation
 static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
                                       bool& has_references,
                                       bool& has_font_units,
@@ -220,30 +223,48 @@ static bool ConsumeAttributeReference(CSSParserTokenStream& stream,
                                       const CSSParserContext& context) {
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
-  // Parse <attr-name>.
-  if (stream.Peek().GetType() != kIdentToken) {
-    return false;
-  }
-  stream.ConsumeIncludingWhitespace();  // kIdentToken
-  if (stream.AtEnd()) {
-    // attr = attr(<attr-name>) is allowed, so return true.
-    return true;
+
+  if (RuntimeEnabledFeatures::CSSArgumentGrammarEnabled()) {
+    wtf_size_t start_offset = stream.Offset();
+    if (!ConsumeUnparsedValue(stream, /*restricted_value=*/false,
+                              /*comma_ends_declaration=*/true, has_references,
+                              has_font_units, has_root_font_units,
+                              has_line_height_units, has_dashed_functions,
+                              context) ||
+        stream.Offset() == start_offset) {
+      return false;
+    }
+  } else {
+    // Parse <attr-name>.
+    if (stream.Peek().GetType() != kIdentToken) {
+      return false;
+    }
+    stream.ConsumeIncludingWhitespace();  // kIdentToken
+    if (stream.AtEnd()) {
+      // attr = attr(<attr-name>) is allowed, so return true.
+      return true;
+    }
+
+    std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
+    if (attr_type.has_value()) {
+      // attr = attr(<attr-name> [ type(<syntax>) | string | <unit> ]) is
+      // allowed, so return true.
+      return true;
+    }
   }
 
-  std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
-  if (stream.AtEnd() && attr_type.has_value()) {
-    // attr = attr(<attr-name> [ type(<syntax>) | string | <unit> ]) is
-    // allowed, so return true.
+  if (stream.AtEnd()) {
+    // The fallback is optional.
     return true;
   }
 
   if (stream.Peek().GetType() != kCommaToken) {
     return false;
   }
-  stream.Consume();
+  stream.ConsumeIncludingWhitespace();
+
   if (stream.AtEnd()) {
-    // attr = attr(<attr-name> [ type(<syntax>) | string | <unit> ]?,) is
-    // allowed, so return true.
+    // The fallback may be empty.
     return true;
   }
 

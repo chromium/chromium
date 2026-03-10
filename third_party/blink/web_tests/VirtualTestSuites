@@ -6308,5 +6308,21 @@
       "freedebreuil@google.com"
     ],
     "expires": "Jan 1, 2027"
+  },
+  {
+    "prefix": "css-argument-grammar-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-values/attr-namespace-wildcard.html",
+      "external/wpt/css/cssom/serialize-values.html",
+      "fast/css/attr-parsing.html",
+      "wpt_internal/css/css-values/attr-type-url-invalid.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--disable-blink-features=CSSArgumentGrammar"],
+    "owners": [
+      "moonira@google.com"
+    ],
+    "expires": "Jan 1, 2027"
   }
 ]

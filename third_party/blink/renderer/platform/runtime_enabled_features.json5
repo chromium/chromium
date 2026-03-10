@@ -1407,6 +1407,11 @@
       status: "experimental",
     },
     {
+      // https://drafts.csswg.org/css-values-5/#early-resolution
+      name: "CSSArgumentGrammar",
+      status: "test",
+    },
+    {
       // Whether <image> values are allowed as counter style <symbol>
       name: "CSSAtRuleCounterStyleImageSymbols",
     },
