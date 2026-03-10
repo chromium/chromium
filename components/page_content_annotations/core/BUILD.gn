@@ -20,6 +20,7 @@ component("features") {
 
 static_library("core") {
   sources = [
+    "page_category_classifier_bridge.h",
     "page_content_annotation_job.cc",
     "page_content_annotation_job.h",
     "page_content_annotation_type.cc",
@@ -39,6 +40,8 @@ static_library("core") {
     "page_content_extraction_types.h",
     "page_content_store.cc",
     "page_content_store.h",
+    "page_embeddings_common.cc",
+    "page_embeddings_common.h",
     "web_state_wrapper.cc",
     "web_state_wrapper.h",
   ]

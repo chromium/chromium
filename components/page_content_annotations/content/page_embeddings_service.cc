@@ -36,14 +36,6 @@ passage_embeddings::PassagePriority ConvertToPassagePriority(
 }
 }  // namespace
 
-PassageEmbedding::PassageEmbedding() = default;
-PassageEmbedding::~PassageEmbedding() = default;
-PassageEmbedding::PassageEmbedding(const PassageEmbedding& other) = default;
-PassageEmbedding::PassageEmbedding(
-    std::pair<std::string, EmbeddingPassageType> passage,
-    passage_embeddings::Embedding embedding)
-    : passage(std::move(passage)), embedding(std::move(embedding)) {}
-
 // Passages have been produced for the page, but embedding computation has not
 // yet started.
 struct PageEmbeddingsService::Pending {

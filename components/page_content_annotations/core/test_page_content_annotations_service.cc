@@ -18,9 +18,7 @@ std::unique_ptr<TestPageContentAnnotationsService>
 TestPageContentAnnotationsService::Create(
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
-    history::HistoryService* history_service,
-    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    passage_embeddings::Embedder* embedder) {
+    history::HistoryService* history_service) {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider;
   optimization_guide::OptimizationGuideModelProvider* model_provider_to_use =
@@ -44,8 +42,7 @@ TestPageContentAnnotationsService::Create(
   }
 
   auto test_service = base::WrapUnique(new TestPageContentAnnotationsService(
-      model_provider_to_use, history_service_to_use, embedder_metadata_provider,
-      embedder));
+      model_provider_to_use, history_service_to_use));
   test_service->temp_dir_ = std::move(temp_dir);
   test_service->test_model_provider_ = std::move(test_model_provider);
   test_service->test_history_service_ = std::move(test_history_service);
@@ -71,9 +68,7 @@ TestPageContentAnnotationsService::~TestPageContentAnnotationsService() {
 TestPageContentAnnotationsService::TestPageContentAnnotationsService(
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
-    history::HistoryService* history_service,
-    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
-    passage_embeddings::Embedder* embedder)
+    history::HistoryService* history_service)
     : PageContentAnnotationsService(
           /*application_locale=*/"en-US",
           /*country_code=*/"US",
@@ -85,8 +80,6 @@ TestPageContentAnnotationsService::TestPageContentAnnotationsService(
           /*database_dir=*/base::FilePath(),
           /*optimization_guide_logger=*/nullptr,
           /*optimization_guide_decider=*/nullptr,
-          embedder_metadata_provider,
-          embedder,
           /*background_task_runner=*/nullptr) {}
 
 }  // namespace page_content_annotations

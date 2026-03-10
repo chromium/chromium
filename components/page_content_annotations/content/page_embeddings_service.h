@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
@@ -30,23 +31,6 @@ class WebContents;
 namespace page_content_annotations {
 
 class PageContentExtractionService;
-
-enum EmbeddingPassageType {
-  kPageContent,
-  kTitle,
-};
-
-// A passage from a page along with its computed embedding.
-struct PassageEmbedding {
-  PassageEmbedding();
-  PassageEmbedding(std::pair<std::string, EmbeddingPassageType> passage,
-                   passage_embeddings::Embedding embedding);
-  PassageEmbedding(const PassageEmbedding&);
-  ~PassageEmbedding();
-
-  std::pair<std::string, EmbeddingPassageType> passage;
-  passage_embeddings::Embedding embedding;
-};
 
 class PageEmbeddingsService : public KeyedService,
                               public PageContentExtractionService::Observer {

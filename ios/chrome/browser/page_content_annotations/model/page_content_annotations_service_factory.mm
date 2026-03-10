@@ -61,8 +61,6 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
       proto_db_provider, profile_path,
       optimization_guide_keyed_service->GetOptimizationGuideLogger(),
       optimization_guide_keyed_service,
-      /*embedder_metadata_provider=*/nullptr,
-      /*embedder=*/nullptr,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }

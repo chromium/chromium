@@ -172,8 +172,6 @@ class PageContentAnnotationsServiceTest : public testing::Test {
         /*database_dir=*/base::FilePath(),
         /*optimization_guide_logger=*/nullptr,
         optimization_guide_decider_.get(),
-        /*embedder_metadata_provider=*/nullptr,
-        /*embedder_=*/nullptr,
         /*background_task_runner=*/nullptr);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
