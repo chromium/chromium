@@ -143,24 +143,15 @@ MATCHER_P(IsRemoveEventForNodeWithIndex, remove_info, "") {
 // The easiest way to re-enable the test for desktop Android is to modernize and
 // rewrite it.
 #if !BUILDFLAG(IS_ANDROID)
-class BookmarksApiTest : public ExtensionApiTest,
-                         public testing::WithParamInterface<ContextType> {
+class BookmarksApiTest : public ExtensionApiTest {
  public:
-  BookmarksApiTest() : ExtensionApiTest(GetParam()) {}
+  BookmarksApiTest() = default;
   ~BookmarksApiTest() override = default;
   BookmarksApiTest(const BookmarksApiTest&) = delete;
   BookmarksApiTest& operator=(const BookmarksApiTest&) = delete;
 };
 
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         BookmarksApiTest,
-                         ::testing::Values(ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         BookmarksApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
+IN_PROC_BROWSER_TEST_F(BookmarksApiTest, Bookmarks) {
   // Add test managed bookmarks to verify that the bookmarks API can read them
   // and can't modify them.
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
@@ -190,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(BookmarksApiTest, Bookmarks) {
   ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(BookmarksApiTest, RootNodeId) {
+IN_PROC_BROWSER_TEST_F(BookmarksApiTest, RootNodeId) {
   ExtensionTestMessageListener listener;
 
   ASSERT_TRUE(RunExtensionTest("bookmarks_root_node_id"));
