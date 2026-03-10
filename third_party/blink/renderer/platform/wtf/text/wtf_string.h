@@ -632,13 +632,6 @@ inline bool CodeUnitCompareLessThan(const String& a, const String& b) {
   return CodeUnitCompare(a.Impl(), b.Impl()) < 0;
 }
 
-WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const String&, const char*);
-
-inline bool CodeUnitCompareIgnoringASCIICaseLessThan(const String& a,
-                                                     const String& b) {
-  return CodeUnitCompareIgnoringASCIICase(a.Impl(), b.Impl()) < 0;
-}
-
 template <bool isSpecialCharacter(UChar)>
 inline bool String::IsAllSpecialCharacters() const {
   return StringView(*this).IsAllSpecialCharacters<isSpecialCharacter>();

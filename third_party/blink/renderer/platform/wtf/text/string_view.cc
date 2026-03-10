@@ -42,6 +42,12 @@ class StackStringViewAllocator {
   StringView::StackBackingStore& backing_store_;
 };
 
+template <typename CharType1, typename CharType2>
+int CodeUnitCompareIgnoringAsciiCase(base::span<const CharType1> c1,
+                                     base::span<const CharType2> c2) {
+  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
+}
+
 }  // namespace
 
 StringView::StringView(const UChar* chars)
@@ -371,7 +377,7 @@ StringView StringView::LowerASCIIMaybeUsingBuffer(
                           StackStringViewAllocator(buffer));
 }
 
-int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b) {
+int CodeUnitCompareIgnoringAsciiCase(const StringView& a, const StringView& b) {
   if (a.Is8Bit()) {
     return b.Is8Bit() ? CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span8())
                       : CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span16());

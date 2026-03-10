@@ -77,11 +77,6 @@ int CodeUnitCompare(const String& a, const String& b) {
   return CodeUnitCompare(a.Impl(), b.Impl());
 }
 
-int CodeUnitCompareIgnoringASCIICase(const String& a, const char* b) {
-  return CodeUnitCompareIgnoringASCIICase(a.Impl(),
-                                          reinterpret_cast<const LChar*>(b));
-}
-
 String::size_type String::Find(
     base::RepeatingCallback<bool(UChar)> match_callback,
     size_type index) const {

@@ -1355,34 +1355,4 @@ bool EqualIgnoringNullity(StringImpl* a, StringImpl* b) {
   return Equal(a, b);
 }
 
-template <typename CharacterType>
-int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
-                                     base::span<const CharacterType> string2) {
-  if (!string1) {
-    return !string2.empty() ? -1 : 0;
-  }
-  return VisitCharacters(*string1, [string2](auto string1_chars) {
-    return CodeUnitCompareIgnoringAsciiCase(string1_chars, string2);
-  });
-}
-
-int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
-                                     const LChar* string2) {
-  if (!string2) {
-    return string1 && string1->length() ? 1 : 0;
-  }
-  std::string_view string2_view(reinterpret_cast<const char*>(string2));
-  return CodeUnitCompareIgnoringASCIICase(string1, base::span(string2_view));
-}
-
-int CodeUnitCompareIgnoringASCIICase(const StringImpl* string1,
-                                     const StringImpl* string2) {
-  if (!string2) {
-    return string1 && string1->length() ? 1 : 0;
-  }
-  return VisitCharacters(*string2, [string1](auto string2_chars) {
-    return CodeUnitCompareIgnoringASCIICase(string1, string2_chars);
-  });
-}
-
 }  // namespace blink

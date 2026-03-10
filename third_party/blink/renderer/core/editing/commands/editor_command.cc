@@ -109,10 +109,10 @@ EditingCommandType EditingCommandTypeFromCommandName(
   const CommandNameEntry* result = std::lower_bound(
       std::begin(kCommandNameEntries), std::end(kCommandNameEntries),
       command_name, [](const CommandNameEntry& entry, const String& needle) {
-        return CodeUnitCompareIgnoringASCIICase(needle, entry.name) > 0;
+        return CodeUnitCompareIgnoringAsciiCase(needle, entry.name) > 0;
       });
   if (result != std::end(kCommandNameEntries) &&
-      CodeUnitCompareIgnoringASCIICase(command_name, result->name) == 0) {
+      CodeUnitCompareIgnoringAsciiCase(command_name, result->name) == 0) {
     return result->type;
   }
   return EditingCommandType::kInvalid;

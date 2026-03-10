@@ -22,7 +22,7 @@ class CORE_EXPORT FetchHeaderList final
  public:
   struct ByteCaseInsensitiveCompare {
     bool operator()(const String& lhs, const String& rhs) const {
-      return CodeUnitCompareIgnoringASCIICaseLessThan(lhs, rhs);
+      return CodeUnitCompareIgnoringAsciiCaseLessThan(lhs, rhs);
     }
   };
 

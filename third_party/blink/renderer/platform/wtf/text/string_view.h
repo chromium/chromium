@@ -527,9 +527,10 @@ inline bool EqualIgnoringAsciiCase(const StringView& a,
                     : EqualIgnoringAsciiCase(a.Span16(), span);
 }
 
-WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b);
-inline bool CodeUnitCompareIgnoringAsciiCaseLessThan(StringView a,
-                                                     StringView b) {
+WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(const StringView& a,
+                                                const StringView& b);
+inline bool CodeUnitCompareIgnoringAsciiCaseLessThan(const StringView& a,
+                                                     const StringView& b) {
   return CodeUnitCompareIgnoringAsciiCase(a, b) < 0;
 }
 
