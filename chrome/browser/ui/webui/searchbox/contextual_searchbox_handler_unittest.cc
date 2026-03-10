@@ -45,6 +45,7 @@
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -56,6 +57,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/webui/web_ui_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using contextual_search::SessionState;
 
@@ -221,6 +226,9 @@ class ContextualSearchboxHandlerTest
   std::unique_ptr<FakeContextualSearchboxHandler> handler_;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::NetworkHandlerTestHelper network_handler_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   TestWebContentsDelegate delegate_;
@@ -1437,23 +1445,47 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
   EXPECT_EQ(tabs[1]->tab_id, gmail_tab->GetHandle().raw_value());
 }
 
-TEST_F(ContextualSearchboxHandlerTestTabsTest,
+class ContextualSearchboxHandlerSignedInTestTabsTest
+    : public ContextualSearchboxHandlerTestTabsTest {
+ public:
+  ContextualSearchboxHandlerSignedInTestTabsTest()
+      : get_variations_ids_provider_(
+            variations::VariationsIdsProvider::Mode::kUseSignedInState) {}
+
+ private:
+  variations::test::ScopedVariationsIdsProvider get_variations_ids_provider_;
+};
+
+TEST_F(ContextualSearchboxHandlerSignedInTestTabsTest,
        GetRecentTabs_SetsShowInRecentTabChip) {
+  // Disable modules so that NTP does not try to initialize modules as
+  // test set up does not support this flow.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{},
+                                /*disabled_features=*/{
+                                    ntp_features::kNtpCalendarModule,
+                                    ntp_features::kNtpOutlookCalendarModule,
+                                    ntp_features::kNtpDriveModule,
+                                    ntp_features::kNtpPhotosModule,
+                                });
   // Add a regular tab, a google search tab, and another regular tab.
   auto* example_tab = AddTab(GURL("https://www.example.com"));
   auto* search_tab = AddTab(GURL("https://www.google.com/search?q=test"));
   auto* chromium_tab = AddTab(GURL("https://www.chromium.org"));
+
+  // Navigate to NTP
+  AddTab(GURL("chrome://newtab"));
 
   // Get the recent tabs.
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
   handler().GetRecentTabs(future.GetCallback());
   auto tabs = future.Take();
 
-  // Expect all three tabs to be returned.
+  // Expect all three non chrome WebUI tabs to be returned.
   ASSERT_EQ(tabs.size(), 3u);
   EXPECT_EQ(tabs[0]->tab_id, chromium_tab->GetHandle().raw_value());
-  EXPECT_TRUE(tabs[0]->show_in_current_tab_chip);
-  EXPECT_FALSE(tabs[0]->show_in_previous_tab_chip);
+  EXPECT_FALSE(tabs[0]->show_in_current_tab_chip);
+  EXPECT_TRUE(tabs[0]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[1]->tab_id, search_tab->GetHandle().raw_value());
   EXPECT_FALSE(tabs[1]->show_in_previous_tab_chip);
   EXPECT_EQ(tabs[2]->tab_id, example_tab->GetHandle().raw_value());

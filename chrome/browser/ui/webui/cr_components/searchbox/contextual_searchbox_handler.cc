@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -111,11 +112,14 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     for (tabs::TabInterface* tab : *tab_strip_model) {
       content::WebContents* web_contents = tab->GetContents();
       const auto& last_committed_url = web_contents->GetLastCommittedURL();
-      // Skip tabs that are still loading, and skip webui.
+      // Skip tabs that are still loading, and skip webui that are not the
+      // contextual tasks webui.
       const bool is_invalid_url = !last_committed_url.is_valid();
       const bool is_internal_page =
-          last_committed_url.SchemeIs(content::kChromeUIScheme) ||
-          last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme);
+          (last_committed_url.SchemeIs(content::kChromeUIScheme) ||
+           last_committed_url.SchemeIs(content::kChromeUIUntrustedScheme)) &&
+          !last_committed_url.spec().starts_with(
+              chrome::kChromeUIContextualTasksURL);
 
       if (is_invalid_url || is_internal_page) {
         continue;
@@ -135,6 +139,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
       tab_data->show_in_previous_tab_chip =
           !google_util::IsGoogleSearchUrl(last_committed_url) &&
           tab_context_controller->GetInitialPageContextEligibility() &&
+          last_committed_url == chrome::kChromeUINewTabURL &&
           !show_in_current_tab_chip;
       tab_data->last_active =
           std::max(web_contents->GetLastActiveTimeTicks(),
@@ -185,9 +190,13 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     for (tabs::TabInterface* tab : *tab_strip_model) {
       content::WebContents* web_contents = tab->GetContents();
       const GURL& url = web_contents->GetLastCommittedURL();
+      // Skip tabs that are still loading, and skip webui (internal pages)
+      // except contextual tasks webui.
       // Skip tabs that are still loading, and skip webui (internal pages).
-      if (url.is_valid() && !url.SchemeIs(content::kChromeUIScheme) &&
-          !url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+      if (url.is_valid() &&
+          ((!url.SchemeIs(content::kChromeUIScheme) &&
+            !url.SchemeIs(content::kChromeUIUntrustedScheme)) ||
+           url.spec().starts_with(chrome::kChromeUIContextualTasksURL))) {
         tab_times.push_back({
             .tab = tab,
             .time = std::max(web_contents->GetLastActiveTimeTicks(),
@@ -228,6 +237,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
       tab_data->show_in_previous_tab_chip =
           !google_util::IsGoogleSearchUrl(last_committed_url) &&
           tab_context_controller->GetInitialPageContextEligibility() &&
+          tab_strip_model->GetActiveWebContents()->GetLastCommittedURL() ==
+              chrome::kChromeUINewTabURL &&
           !show_in_current_tab_chip;
       tab_data->last_active = tab_time.time;
       tabs.push_back(std::move(tab_data));
