@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -29,27 +30,23 @@ namespace tabs {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDialogViewId);
 
-class TabDialogManagerDesktopWidgetUiTest : public InteractiveBrowserTest {
+class TabDialogManagerUiTest : public InteractiveBrowserTest {
  public:
-  TabDialogManagerDesktopWidgetUiTest() {
-    feature_list_.InitAndEnableFeature(features::kTabModalUsesDesktopWidget);
-  }
+  TabDialogManagerUiTest() = default;
 
-  TabDialogManagerDesktopWidgetUiTest(
-      const TabDialogManagerDesktopWidgetUiTest&) = delete;
-  TabDialogManagerDesktopWidgetUiTest& operator=(
-      const TabDialogManagerDesktopWidgetUiTest&) = delete;
+  TabDialogManagerUiTest(const TabDialogManagerUiTest&) = delete;
+  TabDialogManagerUiTest& operator=(const TabDialogManagerUiTest&) = delete;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
 #if BUILDFLAG(IS_LINUX)
-  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
-    // Activation fails on Weston but passes on Mutter, but we don't have
-    // a way to detect which backend we're using.
-    GTEST_SKIP()
-        << "Programmatic window activation is not supported in the Weston "
-           "reference implementation of Wayland used by test bots.";
-  }
+    if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+      // Activation fails on Weston but passes on Mutter, but we don't have
+      // a way to detect which backend we're using.
+      GTEST_SKIP()
+          << "Programmatic window activation is not supported in the Weston "
+             "reference implementation of Wayland used by test bots.";
+    }
 #endif
   }
 
@@ -77,6 +74,16 @@ class TabDialogManagerDesktopWidgetUiTest : public InteractiveBrowserTest {
     TabInterface* tab_interface = browser()->GetActiveTabInterface();
     CHECK(tab_interface);
     return tab_interface->GetTabFeatures()->tab_dialog_manager();
+  }
+};
+
+// ChromeOS does not use desktop widgets.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+class TabDialogManagerDesktopWidgetUiTest : public TabDialogManagerUiTest {
+ public:
+  TabDialogManagerDesktopWidgetUiTest() {
+    feature_list_.InitAndEnableFeature(features::kTabModalUsesDesktopWidget);
   }
 
  private:
@@ -196,6 +203,42 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerDesktopWidgetUiTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(browser()->window()->IsActive());
   EXPECT_FALSE(widget->IsActive());
+}
+#endif  // BUILDFLAG(!IS_CHROMEOS)
+
+// Regression tests for crbug.com/460178087.
+// Tests that showing a dialog in an inactive browser window does not activate
+// the browser window.
+// The original bug describes forced space switching caused by unintended dialog
+// activation. Because space switching is difficult to test, we test window
+// activation instead.
+IN_PROC_BROWSER_TEST_F(TabDialogManagerUiTest, DoesNotActivateInactiveWindow) {
+  // 1. Create a second browser window and activate it.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+
+  std::unique_ptr<views::Widget> widget;
+
+  RunTestSequence(
+      ObserveState(views::test::kCurrentWidgetFocus),
+      Do([&]() { browser2->window()->Activate(); }),
+      WaitForState(
+          views::test::kCurrentWidgetFocus,
+          [&]() {
+            return BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget();
+          }),
+      Check([&]() { return browser2->window()->IsActive(); },
+            "browser2 active"),
+      Check([&]() { return !browser()->window()->IsActive(); },
+            "browser inactive"),
+
+      // 2. Open a dialog in the first (inactive) browser window.
+      Do([&]() { widget = CreateAndShowTestDialog(); }),
+      // Wait for the dialog to be visible.
+      WaitForShow(kDialogViewId));
+
+  // 3. Ensure the first browser window is still inactive.
+  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(browser2->window()->IsActive());
 }
 
 }  // namespace tabs
