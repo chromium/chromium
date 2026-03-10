@@ -2930,7 +2930,7 @@
   {
     "name": "enable-audio-monitoring-on-android",
     "owners": [ "polardz@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 150
   },
   {
     "name": "enable-auto-disable-accessibility",
