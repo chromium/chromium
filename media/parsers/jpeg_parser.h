@@ -82,7 +82,24 @@ const size_t kJpegMaxQuantizationTableNum = 4;
 
 // Parsing result of JPEG DHT marker.
 struct JpegHuffmanTable {
-  bool operator==(const JpegHuffmanTable&) const = default;
+  bool operator==(const JpegHuffmanTable& other) const {
+    if (valid != other.valid) {
+      return false;
+    }
+    if (!valid) {
+      return true;
+    }
+    if (code_length != other.code_length) {
+      return false;
+    }
+    size_t num_codes = 0;
+    for (uint8_t len : code_length) {
+      num_codes += len;
+    }
+    num_codes = std::min(num_codes, code_value.size());
+    return base::span(code_value).first(num_codes) ==
+           base::span(other.code_value).first(num_codes);
+  }
   bool valid;
   std::array<uint8_t, 16> code_length;
   std::array<uint8_t, 162> code_value;
@@ -131,7 +148,18 @@ struct JpegComponent {
 
 // Parsing result of a JPEG SOF marker.
 struct JpegFrameHeader {
-  bool operator==(const JpegFrameHeader&) const = default;
+  bool operator==(const JpegFrameHeader& other) const {
+    if (visible_width != other.visible_width ||
+        visible_height != other.visible_height ||
+        coded_width != other.coded_width ||
+        coded_height != other.coded_height ||
+        num_components != other.num_components) {
+      return false;
+    }
+    size_t n = std::min<size_t>(num_components, components.size());
+    return base::span(components).first(n) ==
+           base::span(other.components).first(n);
+  }
   uint16_t visible_width;
   uint16_t visible_height;
   uint16_t coded_width;
@@ -142,7 +170,14 @@ struct JpegFrameHeader {
 
 // Parsing result of JPEG SOS marker.
 struct JpegScanHeader {
-  bool operator==(const JpegScanHeader&) const = default;
+  bool operator==(const JpegScanHeader& other) const {
+    if (num_components != other.num_components) {
+      return false;
+    }
+    size_t n = std::min<size_t>(num_components, components.size());
+    return base::span(components).first(n) ==
+           base::span(other.components).first(n);
+  }
   uint8_t num_components;
   struct Component {
     bool operator==(const Component&) const = default;
