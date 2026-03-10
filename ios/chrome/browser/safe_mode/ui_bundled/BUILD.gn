@@ -89,6 +89,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/common/crash_report",
+    "//ios/chrome/test/app:test_support",
     "//ios/testing:block_swizzler",
     "//testing/gtest",
     "//third_party/crashpad/crashpad/client",

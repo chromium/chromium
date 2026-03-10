@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -19,7 +20,8 @@ class SafeModeCoordinatorTest : public PlatformTest {
     scene_session_mock_ = OCMClassMock([UISceneSession class]);
     OCMStub([scene_session_mock_ persistentIdentifier])
         .andReturn([[NSUUID UUID] UUIDString]);
-    scene_mock_ = OCMClassMock([UIWindowScene class]);
+    UIWindowScene* scene = chrome_test_util::GetAnyWindowScene();
+    scene_mock_ = OCMPartialMock(scene);
     OCMStub([scene_mock_ session]).andReturn(scene_session_mock_);
     scene_state_.scene = scene_mock_;
   }
@@ -36,10 +38,9 @@ class SafeModeCoordinatorTest : public PlatformTest {
 TEST_F(SafeModeCoordinatorTest, RootVC) {
   // Expect that starting a safe mode coordinator will populate the root view
   // controller.
-  UIWindow* window = [[ChromeOverlayWindow alloc] init];
-  ;
+  UIWindow* window =
+      [[ChromeOverlayWindow alloc] initWithWindowScene:scene_state_.scene];
 
-  id applicationWindowMock = nil;
   OCMStub([scene_mock_ windows]).andReturn(@[ window ]);
 
   UIViewController* initial_root_view_controller =
@@ -49,6 +50,4 @@ TEST_F(SafeModeCoordinatorTest, RootVC) {
   [safe_mode_coordinator start];
   EXPECT_NE(scene_state_.window.rootViewController,
             initial_root_view_controller);
-
-  [applicationWindowMock stopMocking];
 }
