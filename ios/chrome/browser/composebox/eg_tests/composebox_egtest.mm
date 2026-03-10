@@ -257,6 +257,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that typing in the Composebox shows the Send button.
 - (void)testComposeboxSendButtonVisibility {
+  // TODO(crbug.com/491478626): Fix test on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
