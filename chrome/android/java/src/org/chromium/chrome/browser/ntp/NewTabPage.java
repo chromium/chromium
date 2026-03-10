@@ -880,11 +880,15 @@ public class NewTabPage
                 - mTabStripHeightSupplier.get();
     }
 
-    /**
-     * @return The view container for the new tab layout.
-     */
+    /** Returns the instance of {@link NewTabPageLayout}. */
     @VisibleForTesting
     public NewTabPageLayout getNewTabPageLayout() {
+        return mNewTabPageLayout;
+    }
+
+    /** Returns the view container for the new tab layout. */
+    @VisibleForTesting
+    public View getLayout() {
         return mNewTabPageLayout;
     }
 

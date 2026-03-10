@@ -488,7 +488,7 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
-        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View ntpLayout = ntp.getLayout();
         View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
 
         // Orientation changes are not supported on automotive.
@@ -634,7 +634,7 @@ public class ShowNtpAtStartupTest {
             int expectedSingleTabCardBottomMargin,
             boolean isNtpHomepage,
             NewTabPage ntp) {
-        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View ntpLayout = ntp.getLayout();
         View mvTilesContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
         Assert.assertEquals(
                 "The bottom margin of the most visited tiles container is wrong.",
@@ -654,7 +654,7 @@ public class ShowNtpAtStartupTest {
             NewTabPage ntp) {
         if (!isNtpHomepage) return;
         View singleTabCardContainer =
-                ntp.getNewTabPageLayout().findViewById(R.id.tab_switcher_module_container);
+                ntp.getLayout().findViewById(R.id.tab_switcher_module_container);
         MarginLayoutParams singleTabCardContainerMarginParams =
                 (MarginLayoutParams) singleTabCardContainer.getLayoutParams();
         Assert.assertEquals(
@@ -697,7 +697,7 @@ public class ShowNtpAtStartupTest {
 
     private void verifyFakeSearchBoxWidth(
             int expectedLandScapeWidth, int expectedPortraitWidth, NewTabPage ntp) {
-        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View ntpLayout = ntp.getLayout();
         View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
 
         // Orientation changes are not supported on automotive.
@@ -729,7 +729,7 @@ public class ShowNtpAtStartupTest {
     private void verifyFakeSearchBoxWidthForCurrentOrientation(
             int expectedLandScapeWidth,
             int expectedPortraitWidth,
-            NewTabPageLayout ntpLayout,
+            View ntpLayout,
             View searchBoxLayout) {
         int expectedWidth;
         try {
@@ -754,7 +754,7 @@ public class ShowNtpAtStartupTest {
             int expectedEdgeMargin,
             int expectedIntervalMargin,
             NewTabPage ntp) {
-        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View ntpLayout = ntp.getLayout();
         View mvtContainer = ntpLayout.findViewById(R.id.mv_tiles_container);
         TilesLinearLayout mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
         int mvt1LeftMargin =
@@ -808,7 +808,7 @@ public class ShowNtpAtStartupTest {
             int expectedContainerWidth,
             int expectedEdgeMargin,
             int expectedIntervalMargin,
-            NewTabPageLayout ntpLayout,
+            View ntpLayout,
             View mvtContainer,
             int mvt1LeftMargin,
             int mvt2LeftMargin) {

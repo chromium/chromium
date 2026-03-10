@@ -489,7 +489,7 @@ public class NewTabPageTest {
                     @Override
                     public void run() {
                         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-                        View logoView = ntpLayout.findViewById(R.id.search_provider_logo);
+                        View logoView = mNtp.getLayout().findViewById(R.id.search_provider_logo);
                         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
 
                         ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ true);
@@ -866,7 +866,7 @@ public class NewTabPageTest {
         verifyMostVisitedTileMargin();
 
         Resources res = mActivityTestRule.getActivity().getResources();
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View ntpLayout = mNtp.getLayout();
         TilesLinearLayout mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
 
         int expectedTitleTopMargin =
@@ -905,7 +905,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage"})
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
     public void testAiModeButton() {
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
                         .findViewById(
@@ -923,7 +923,7 @@ public class NewTabPageTest {
 
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
                         .findViewById(
@@ -942,7 +942,7 @@ public class NewTabPageTest {
         OmniboxFeatures.sRedirectComposeplateButton.setForTesting(false);
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
                         .findViewById(
@@ -969,7 +969,7 @@ public class NewTabPageTest {
 
     private void verifyMostVisitedTileMargin() {
         Resources res = mActivityTestRule.getActivity().getResources();
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+        View ntpLayout = mNtp.getLayout();
         View mvTilesContainer =
                 ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_container);
 
