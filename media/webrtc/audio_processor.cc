@@ -246,8 +246,10 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     raw_ptr<const tflite::FlatBufferModel>
         neural_residual_echo_estimator_model) {
   log_callback.Run(base::StringPrintf(
-      "AudioProcessor::Create({multi_channel_capture_processing=%s})",
-      base::ToString(settings.multi_channel_capture_processing)));
+      "AudioProcessor::Create({multi_channel_capture_processing=%s, "
+      "neural_residual_echo_estimator_present=%s})",
+      base::ToString(settings.multi_channel_capture_processing),
+      base::ToString(neural_residual_echo_estimator_model != nullptr)));
 
   auto [webrtc_audio_processing, added_aec_delay] =
       media::CreateWebRtcAudioProcessingModule(
