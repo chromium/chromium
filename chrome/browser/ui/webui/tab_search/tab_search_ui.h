@@ -64,8 +64,6 @@ class TabSearchUI : public TopChromeWebUIController,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
 
-  bool ShowTabOrganizationFRE();
-
   std::unique_ptr<TabSearchPageHandler> page_handler_;
 
   mojo::Receiver<tab_search::mojom::PageHandlerFactory> page_factory_receiver_{

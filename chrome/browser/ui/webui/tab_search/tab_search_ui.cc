@@ -11,14 +11,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,64 +91,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
       {"viewSourceSource", IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE},
-      // Auto tab groups UI strings
-      {"a11yTabExcludedFromGroup", IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED},
-      {"clearAriaLabel", IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL},
-      {"clearSuggestions", IDS_TAB_ORGANIZATION_CLEAR_SUGGESTIONS},
-      {"createGroup", IDS_TAB_ORGANIZATION_CREATE_GROUP},
-      {"createGroups", IDS_TAB_ORGANIZATION_CREATE_GROUPS},
-      {"dismiss", IDS_TAB_ORGANIZATION_DISMISS},
-      {"editAriaLabel", IDS_TAB_ORGANIZATION_EDIT_ARIA_LABEL},
-      {"failureBodyGeneric", IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC},
-      {"failureBodyGrouping", IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING},
-      {"failureTitleGeneric", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GENERIC},
-      {"failureTitleGrouping", IDS_TAB_ORGANIZATION_FAILURE_TITLE_GROUPING},
-      {"inProgressTitle", IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE},
-      {"inputAriaLabel", IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL},
-      {"learnMore", IDS_TAB_ORGANIZATION_LEARN_MORE},
-      {"learnMoreAriaLabel", IDS_TAB_ORGANIZATION_LEARN_MORE_ARIA_LABEL},
-      {"learnMoreDisclaimer1", IDS_TAB_ORGANIZATION_DISCLAIMER_1},
-      {"learnMoreDisclaimer2", IDS_TAB_ORGANIZATION_DISCLAIMER_2},
-      {"newTabs", IDS_TAB_ORGANIZATION_NEW_TABS},
-      {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
-      {"notStartedBodyFREHeader",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_HEADER},
-      {"notStartedBodyFREBullet1",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_1},
-      {"notStartedBodyFREBullet2",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_2},
-      {"notStartedBodyFREBullet3",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE_BULLET_3},
-      {"notStartedBodySignedOut",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT},
-      {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
-      {"notStartedButtonAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL},
-      {"notStartedButtonFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE},
-      {"notStartedButtonFREAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL},
-      {"notStartedButtonSignedOut",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT},
-      {"notStartedButtonSignedOutAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT_ARIA_LABEL},
-      {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
-      {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
-      {"rejectAriaLabel", IDS_TAB_ORGANIZATION_REJECT_ARIA_LABEL},
-      {"successMissingActiveTabTitle",
-       IDS_TAB_ORGANIZATION_SUCCESS_MISSING_ACTIVE_TAB_TITLE},
-      {"successTitleSingle", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_SINGLE},
-      {"successTitleMulti", IDS_TAB_ORGANIZATION_SUCCESS_TITLE_MULTI},
-      {"tabOrganizationCloseTabAriaLabel",
-       IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL},
-      {"tabOrganizationCloseTabTooltip",
-       IDS_TAB_ORGANIZATION_CLOSE_TAB_TOOLTIP},
-      {"tabOrganizationTabName", IDS_TAB_ORGANIZATION_TAB_NAME},
-      {"tipAction", IDS_TAB_ORGANIZATION_TIP_ACTION},
-      {"tipAriaDescription", IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION},
-      {"tipBody", IDS_TAB_ORGANIZATION_TIP_BODY},
-      {"tipTitle", IDS_TAB_ORGANIZATION_TIP_TITLE},
-      {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
-      {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Split view new tab page strings
       {"splitViewEmptyBody", IDS_SPLIT_VIEW_NTP_EMPTY_BODY},
       {"splitViewEmptyTitle", IDS_SPLIT_VIEW_NTP_EMPTY_TITLE},
@@ -168,24 +106,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   source->AddInteger("recentlyClosedDefaultItemDisplayCount",
                      TabSearchPageHandler::kMinRecentlyClosedItemDisplayCount);
-
-  bool tab_organization_enabled = false;
-  if (TabOrganizationUtils::GetInstance()->IsEnabled(profile)) {
-    const auto* const tab_organization_service =
-        TabOrganizationServiceFactory::GetForProfile(profile);
-    if (tab_organization_service) {
-      tab_organization_enabled = true;
-    }
-  }
-  source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
-  source->AddBoolean(
-      "tabOrganizationModelStrategyEnabled",
-      base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
-  source->AddBoolean(
-      "TabOrganizationUserInstructionEnabled",
-      base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction));
-
-  source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
 
   source->AddResourcePath("alert_indicators/tab_media_glic_active.svg",
                           IDR_GLIC_TAB_MEDIA_GLIC_ACTIVE);
@@ -258,9 +178,4 @@ void TabSearchUI::CreatePageHandler(
   if (!page_handler_creation_callback_.is_null()) {
     std::move(page_handler_creation_callback_).Run();
   }
-}
-
-bool TabSearchUI::ShowTabOrganizationFRE() {
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  return prefs->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
 }
