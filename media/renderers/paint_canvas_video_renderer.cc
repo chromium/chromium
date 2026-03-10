@@ -866,15 +866,13 @@ void CopyVideoFrameDirectlyToGLTexture(
   CHECK(raster_context_provider);
 
   const auto shared_image = video_frame->shared_image();
+  std::unique_ptr<gpu::RasterScopedAccess> destination_access;
   if (CanCopySharedImageToGLTextureViaTextureCopy(shared_image)) {
     CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
-
-    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                              raster_context_provider->ContextSupport());
   } else {
     CHECK(CanCopySharedImageToGLTextureViaSkia(
         video_frame->format(), shared_image->GetTextureTarget(), target,
@@ -893,7 +891,7 @@ void CopyVideoFrameDirectlyToGLTexture(
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
                       type, /*level=*/0, video_frame->visible_rect().size());
 
-    auto destination_access = shared_image->BeginGLAccessForCopySharedImage(
+    destination_access = shared_image->BeginGLAccessForCopySharedImage(
         destination_gl, video_frame->acquire_sync_token(), /*readonly=*/true);
 
     // Copy shared image to gl texture for hardware video decode with
@@ -905,10 +903,10 @@ void CopyVideoFrameDirectlyToGLTexture(
         video_frame->visible_rect().height(), is_dst_origin_top_left,
         shared_image->mailbox().name);
 
-    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                              raster_context_provider->ContextSupport(),
-                              std::move(destination_access));
   }
+  SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+                            raster_context_provider->ContextSupport(),
+                            std::move(destination_access));
 }
 
 SkImageInfo GetVideoImageGeneratorSkImageInfo(
