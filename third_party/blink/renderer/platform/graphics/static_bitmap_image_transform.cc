@@ -300,7 +300,6 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
   cc::SkiaPaintCanvas canvas(surface->getCanvas());
   BlitToCanvas(canvas, source_paint_image, source_orientation,
                SkRect::Make(source_rect), dest_size, options);
-  canvas.flush();
   return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot(),
                                                 source_orientation);
 }
