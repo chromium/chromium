@@ -11,7 +11,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
+#import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/app/task_request+testing.h"
@@ -51,7 +51,7 @@ class TaskRequestForShortcutItemTest : public PlatformTest {
     PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
 
-    tab_opener_ = [[MockTabOpener alloc] init];
+    tab_opener_ = [[FakeTabOpener alloc] init];
     fake_scene_state_ =
         [[FakeSceneState alloc] initWithAppState:nil profile:profile_.get()];
     fake_scene_state_.controller = (SceneController*)tab_opener_;
@@ -65,7 +65,7 @@ class TaskRequestForShortcutItemTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
-  MockTabOpener* tab_opener_;
+  FakeTabOpener* tab_opener_;
   FakeSceneState* fake_scene_state_;
   base::HistogramTester histogram_tester_;
 };

@@ -8,7 +8,7 @@
 
 #import "base/check_op.h"
 #import "base/test/with_feature_override.h"
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
+#import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -106,8 +106,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
   // The array with the different states to tests (active, not active).
   NSArray* applicationStatesToTest = @[ @YES, @NO ];
 
-  // Mock of TabOpening, preventing the creation of a new tab.
-  MockTabOpener* tabOpener = [[MockTabOpener alloc] init];
+  FakeTabOpener* tabOpener = [[FakeTabOpener alloc] init];
 
   // The keys for this dictionary is the URL to call openURL:. The value
   // from the key is either YES or NO to indicate if this is a valid URL
@@ -281,7 +280,7 @@ TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   URLOpenerParams* urlOpenerParams = [[URLOpenerParams alloc] initWithURL:url
                                                         sourceApplication:nil];
 
-  MockTabOpener* tab_opener_mock_ = [[MockTabOpener alloc] init];
+  FakeTabOpener* tab_opener_mock_ = [[FakeTabOpener alloc] init];
 
   __block ChromeAppStartupParameters* params = nil;
   OCMExpect([connection_information_mock_

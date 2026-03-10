@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/application_delegate/mock_tab_opener.h"
+#import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/app/application_mode.h"
@@ -11,7 +11,7 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
-@implementation MockTabOpener {
+@implementation FakeTabOpener {
   std::vector<GURL> _URLs;
 }
 
