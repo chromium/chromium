@@ -9,8 +9,8 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
+#include "chrome/browser/ui/side_panel/side_panel_content_proxy.h"
+#include "chrome/browser/ui/side_panel/side_panel_util.h"
 
 SidePanelEntryWaiter::SidePanelEntryWaiter() = default;
 SidePanelEntryWaiter::~SidePanelEntryWaiter() = default;
@@ -22,7 +22,7 @@ void SidePanelEntryWaiter::WaitForEntry(
   ResetLoadingEntryIfNecessary();
   auto content_view = entry->GetContent();
   SidePanelContentProxy* content_proxy =
-      SidePanelHelper::GetSidePanelContentProxy(content_view.get());
+      SidePanelUtil::GetSidePanelContentProxy(content_view.get());
   if (content_proxy->IsAvailable() || show_immediately_for_testing_) {
     std::move(callback).Run(entry, std::move(content_view));
   } else {

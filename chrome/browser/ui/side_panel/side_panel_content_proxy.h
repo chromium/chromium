@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_
-
-#include <algorithm>
-#include <memory>
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_
 
 #include "base/functional/callback.h"
-#include "ui/views/view.h"
+#include "ui/base/class_property.h"
 
 // SidePanelContentProxy is used by the SidePanelCoordinator to check that the
 // content view provided in the callback from the SidePanelEntry constructor is
@@ -38,4 +35,4 @@ class SidePanelContentProxy final {
 extern const ui::ClassProperty<SidePanelContentProxy*>* const
     kSidePanelContentProxyKey;
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_CONTENT_PROXY_H_

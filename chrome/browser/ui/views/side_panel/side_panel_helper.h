@@ -31,11 +31,6 @@ class SidePanelHelper {
   static void PopulateGlobalEntries(Browser* browser,
                                     SidePanelRegistry* global_registry);
 
-  // Gets the SidePanelContentProxy for the provided view. If one does not
-  // exist, this creates one indicating the view is available.
-  static SidePanelContentProxy* GetSidePanelContentProxy(
-      views::View* content_view);
-
   static actions::ActionItem* GetActionItem(Browser* browser,
                                             SidePanelEntryKey entry_key);
 };

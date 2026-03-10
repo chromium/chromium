@@ -17,8 +17,6 @@
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -67,19 +65,10 @@ void SidePanelHelper::PopulateGlobalEntries(
   }
 }
 
-SidePanelContentProxy* SidePanelHelper::GetSidePanelContentProxy(
-    views::View* content_view) {
-  if (!content_view->GetProperty(kSidePanelContentProxyKey)) {
-    content_view->SetProperty(
-        kSidePanelContentProxyKey,
-        std::make_unique<SidePanelContentProxy>(true).release());
-  }
-  return content_view->GetProperty(kSidePanelContentProxyKey);
-}
-
+// static
 actions::ActionItem* SidePanelHelper::GetActionItem(
     Browser* browser,
-    SidePanelEntry::Key entry_key) {
+    SidePanelEntryKey entry_key) {
   BrowserActions* const browser_actions = browser->browser_actions();
   if (entry_key.id() == SidePanelEntryId::kExtension) {
     std::optional<actions::ActionId> extension_action_id =

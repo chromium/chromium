@@ -6,6 +6,8 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("side_panel") {
   sources = [
+    "side_panel_content_proxy.cc",
+    "side_panel_content_proxy.h",
     "side_panel_entry_id.cc",
     "side_panel_entry_id.h",
     "side_panel_entry_key.cc",
@@ -17,6 +19,8 @@ source_set("side_panel") {
     "side_panel_native_view.h",
     "side_panel_prefs.cc",
     "side_panel_prefs.h",
+    "side_panel_util.cc",
+    "side_panel_util.h",
   ]
 
   public_deps = [
