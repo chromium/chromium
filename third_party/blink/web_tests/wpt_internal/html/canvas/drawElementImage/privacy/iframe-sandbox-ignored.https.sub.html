@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>drawElementImage does not draw sandboxed same-origin iframes</title>
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <style>
+  #child {
+    width: 100px;
+    height: 200px;
+    background: green;
+  }
+  #sameOrigin {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+  }
+  #sandboxedSameOrigin {
+    position: absolute;
+    left: 0px;
+    top: 100px;
+  }
+  </style>
+</head>
+<body>
+  <canvas id=canvas width="100" height="200" layoutsubtree>
+    <div id=child>
+      <iframe id=sameOrigin width=100 height=100 src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/privacy/resources/iframe-blue.html"></iframe>
+      <iframe id=sandboxedSameOrigin width=100 height=100 src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/privacy/resources/sandboxed-iframe-red.html"></iframe>
+    </div>
+  </canvas>
+
+  <script>
+    let sPendingIframesToLoad = 2;
+
+    function pendingIframeLoaded() {
+      if (!--sPendingIframesToLoad) {
+        promise_test(async function(t) {
+          await new Promise(requestAnimationFrame);
+          await new Promise(setTimeout);
+
+          var context = canvas.getContext("2d");
+          context.drawElementImage(child, 0, 0);
+
+          // Same-origin iframe should be drawn.
+          let pixel = context.getImageData(50, 50, 1, 1).data;
+          assert_array_equals(pixel, [0, 0, 255, 255], "Same origin should draw");
+
+          // Sandboxed same-origin iframe should NOT be drawn.
+          // We should see the green background of the parent div.
+          pixel = context.getImageData(50, 150, 1, 1).data;
+          assert_array_equals(pixel, [0, 128, 0, 255], "Sandboxed same-origin should not draw");
+        }, "drawElementImage should ignore sandboxed same-origin iframes");
+      }
+    }
+
+    sameOrigin.onload = pendingIframeLoaded;
+    sandboxedSameOrigin.onload = pendingIframeLoaded;
+  </script>
+</body>
+</html>
