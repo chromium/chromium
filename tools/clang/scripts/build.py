@@ -830,6 +830,7 @@ def main():
 
 
   if args.build_dir:
+    args.build_dir = os.path.abspath(args.build_dir)
     LLVM_BUILD_DIR = args.build_dir
     # These files record that we've done a local build of clang, and may be
     # checked by the build system to validate the compiler. If we have a custom
