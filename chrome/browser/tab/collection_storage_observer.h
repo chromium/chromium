@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_observer.h"
 
 namespace tabs {
@@ -34,6 +35,10 @@ class CollectionStorageObserver
   void OnChildMoved(const TabCollection::Position& to_position,
                     const NodeData& node_data) override;
   void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
+
+  // Removes `collection` and all its descendants from storage.
+  static void ClearSubTree(const TabCollection* collection,
+                           TabStateStorageService* service);
 
  private:
   raw_ptr<TabStateStorageService> service_;

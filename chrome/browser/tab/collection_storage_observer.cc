@@ -5,9 +5,31 @@
 #include "chrome/browser/tab/collection_storage_observer.h"
 
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_collection.h"
 
 namespace tabs {
+
+// Traverses a TabCollection subtree and removes all encountered collections
+// and tabs from the provided TabStateStorageService.
+class SubTreeRemoveCrawler : public DirectChildWalker::Processor {
+ public:
+  SubTreeRemoveCrawler(const TabCollection* collection,
+                       TabStateStorageService* service)
+      : root_(collection), service_(service) {}
+
+  void ProcessTab(const TabInterface* tab) override { service_->Remove(tab); }
+
+  void ProcessCollection(const TabCollection* collection) override {
+    service_->Remove(collection);
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
+  }
+
+ private:
+  raw_ptr<const TabCollection> root_;
+  raw_ptr<TabStateStorageService> service_;
+};
 
 CollectionStorageObserver::CollectionStorageObserver(
     tabs::TabStateStorageService* service)
@@ -60,7 +82,7 @@ void CollectionStorageObserver::OnChildrenRemoved(
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =
           std::get<TabCollection::Handle>(handle).Get();
-      service_->Remove(collection);
+      ClearSubTree(collection, service_);
     } else {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
       service_->Remove(tab);
@@ -86,9 +108,20 @@ void CollectionStorageObserver::OnChildMoved(
 
   DCHECK(curr_parent) << "Child node should have parent";
   service_->SaveChildren(curr_parent);
+  service_->Save(curr_parent);
   if (curr_parent != prev_parent) {
     service_->SaveChildren(prev_parent);
+    service_->Save(prev_parent);
   }
+}
+
+// static
+void CollectionStorageObserver::ClearSubTree(const TabCollection* collection,
+                                             TabStateStorageService* service) {
+  service->Remove(collection);
+  SubTreeRemoveCrawler crawler(collection, service);
+  DirectChildWalker walker(collection, &crawler);
+  walker.Walk();
 }
 
 }  // namespace tabs

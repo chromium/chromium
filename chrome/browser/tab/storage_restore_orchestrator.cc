@@ -220,11 +220,14 @@ void StorageRestoreOrchestrator::OnChildrenAdded(
 void StorageRestoreOrchestrator::OnChildrenRemoved(
     const TabCollection::Position& position,
     const TabCollectionNodes& handles) {
+  auto batch = service_->CreateScopedBatch();
+
   // Cannot remove without adding first, so we can assume that these nodes are
   // already associated.
   for (const auto& handle : handles) {
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
-      service_->Remove(std::get<TabCollection::Handle>(handle).Get());
+      CollectionStorageObserver::ClearSubTree(
+          std::get<TabCollection::Handle>(handle).Get(), service_);
     } else if (std::holds_alternative<TabHandle>(handle)) {
       service_->Remove(std::get<TabHandle>(handle).Get());
     }
