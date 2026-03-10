@@ -81,10 +81,8 @@ namespace glic {
 
 BASE_FEATURE(kGlicBindOnlyForDaisyChainingFromFloatingUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kGlicActorDaisyChainingFromFloatingUiDoesntClose,
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 BASE_FEATURE(kGlicBindOnPinFromFloatingUiDoesntShowSidePanel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicRemoveBlankInstancesOnClose,
@@ -1355,15 +1353,11 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
 void GlicInstanceImpl::OnTabAddedToTask(
     actor::TaskId task_id,
     const tabs::TabInterface::Handle& tab_handle) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: actor not yet ported
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !task_id) {
     instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                    /*success=*/false);
     return;
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
-    service_->OnTabAddedToTask(task_id, tab_handle);
   }
   SidePanelShowOptions side_panel_options{*tab};
   side_panel_options.suppress_opening_animation = true;
@@ -1378,7 +1372,6 @@ void GlicInstanceImpl::OnTabAddedToTask(
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                  /*success=*/true, tab);
-#endif
 }
 
 void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(
