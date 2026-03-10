@@ -17510,6 +17510,7 @@
     "OnDeviceModelLitertLmBackend": [
         {
             "platforms": [
+                "chromeos",
                 "windows",
                 "mac",
                 "linux"
