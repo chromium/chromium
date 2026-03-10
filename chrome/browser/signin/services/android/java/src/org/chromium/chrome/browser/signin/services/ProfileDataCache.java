@@ -256,7 +256,9 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
         }
         mPerAccountBadgeConfig.put(accountId, badgeConfig);
         var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(accountId);
-        onExtendedAccountInfoUpdated(accountInfo);
+        if (accountInfo != null) {
+            onExtendedAccountInfoUpdated(accountInfo);
+        }
     }
 
     /**
@@ -290,12 +292,11 @@ public class ProfileDataCache implements IdentityManager.Observer, AccountsChang
 
     /** Implements {@link IdentityManager.Observer}. */
     @Override
-    public void onExtendedAccountInfoUpdated(@Nullable AccountInfo accountInfo) {
+    public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
         // We don't update the cache if the account information and ProfileDataCache config mean
         // that we would just be returning the default profile data.
-        if (accountInfo != null
-                && (accountInfo.hasDisplayableInfo()
-                        || getBadgeConfigForAccount(accountInfo.getId()) != null)) {
+        if (accountInfo.hasDisplayableInfo()
+                || getBadgeConfigForAccount(accountInfo.getId()) != null) {
             var displayableProfileData = toDisplayableProfileData(accountInfo);
             mAccountsCache.putAccount(
                     new AccountsCache.AccountEntry(accountInfo.getId(), displayableProfileData));
