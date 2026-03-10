@@ -64,4 +64,40 @@ GlicEntrypoint GetEntrypointFromInvocationSource(
   }
 }
 
+std::string GetEntrypointString(GlicEntrypoint entrypoint) {
+  switch (entrypoint) {
+    case GlicEntrypoint::kAutoOpenedByContextualCue:
+      return "AutoOpenedByContextualCue";
+    case GlicEntrypoint::kAutoOpenedForPdf:
+      return "AutoOpenedForPdf";
+    case GlicEntrypoint::kIph:
+      return "Iph";
+    case GlicEntrypoint::kNavigationCapture:
+      return "NavigationCapture";
+    case GlicEntrypoint::kNudge:
+      return "Nudge";
+    case GlicEntrypoint::kOsButton:
+      return "OsButton";
+    case GlicEntrypoint::kOsHotkey:
+      return "OsHotkey";
+    case GlicEntrypoint::kOther:
+      return "Other";
+    case GlicEntrypoint::kPdfSummarizeButton:
+      return "PdfSummarizeButton";
+    case GlicEntrypoint::kSharedImage:
+      return "SharedImage";
+    case GlicEntrypoint::kSharedTab:
+      return "SharedTab";
+    case GlicEntrypoint::kSkills:
+      return "Skills";
+    case GlicEntrypoint::kThreeDotsMenu:
+      return "ThreeDotsMenu";
+    case GlicEntrypoint::kTopChromeButton:
+      return "TopChromeButton";
+    case GlicEntrypoint::kWhatsNew:
+      return "WhatsNew";
+    default:
+      return "Other";
+  }
+}
 }  // namespace glic

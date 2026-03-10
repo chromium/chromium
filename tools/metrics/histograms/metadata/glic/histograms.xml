@@ -1368,6 +1368,34 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
+<histogram name="Glic.Instance.{Entrypoint}.SidePanelFirstOpenDuration"
+    units="ms" expires_after="2026-08-02">
+  <owner>basiaz@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open. Recorded for the first
+    time side panel was open for an instance without an error. Switching away
+    from a tab with side panel counts as closure for the purpose of this metric.
+  </summary>
+  <token key="Entrypoint">
+    <variant name="AutoOpenedByContextualCue"/>
+    <variant name="AutoOpenedForPdf"/>
+    <variant name="Iph"/>
+    <variant name="NavigationCapture"/>
+    <variant name="Nudge"/>
+    <variant name="OsButton"/>
+    <variant name="OsHotkey"/>
+    <variant name="Other"/>
+    <variant name="PdfSummarizeButton"/>
+    <variant name="SharedImage"/>
+    <variant name="SharedTab"/>
+    <variant name="Skills"/>
+    <variant name="ThreeDotsMenu"/>
+    <variant name="TopChromeButton"/>
+    <variant name="WhatsNew"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Interaction.SwitchConversationTarget"
     enum="GlicSwitchConversationTarget" expires_after="2026-08-02">
   <owner>birnie@google.com</owner>
