@@ -69,6 +69,8 @@
 #include "components/page_info/page_info.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permissions_client.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -1764,4 +1766,35 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTestAutoPip,
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON));
   EXPECT_EQ(chrome::GetSettingsUrl(chrome::kAutoPictureInPictureSubPage),
             new_tab_observer.GetWebContents()->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
+                       NotificationsEmbargoStateLabel) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  permissions::PermissionDecisionAutoBlocker* autoblocker =
+      permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
+          browser()->profile());
+  // Place under embargo for multiple dismissals.
+  autoblocker->RecordDismissAndEmbargo(url, ContentSettingsType::NOTIFICATIONS,
+                                       /*dismissed_prompt_was_quiet=*/false);
+  autoblocker->RecordDismissAndEmbargo(url, ContentSettingsType::NOTIFICATIONS,
+                                       /*dismissed_prompt_was_quiet=*/false);
+  autoblocker->RecordDismissAndEmbargo(url, ContentSettingsType::NOTIFICATIONS,
+                                       /*dismissed_prompt_was_quiet=*/false);
+
+  OpenPageInfoBubble(browser());
+
+  // Open the Notifications subpage view.
+  auto* page_info_bubble = static_cast<PageInfoBubbleView*>(
+      PageInfoBubbleView::GetPageInfoBubbleForTesting());
+  page_info_bubble->OpenPermissionPage(ContentSettingsType::NOTIFICATIONS);
+
+  // Verify that the state label shows the auto-blocked message.
+  views::Label* state_label = static_cast<views::Label*>(GetView(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBTITLE_LABEL));
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_AUTOMATICALLY_BLOCKED),
+      state_label->GetText());
 }

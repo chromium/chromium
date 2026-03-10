@@ -42,6 +42,8 @@
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permissions_client.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
@@ -204,6 +206,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
     constexpr char kMixedContent[] = "MixedContent";
     constexpr char kAllowAllPermissions[] = "AllowAllPermissions";
     constexpr char kBlockAllPermissions[] = "BlockAllPermissions";
+    constexpr char kNotificationsEmbargoed[] = "NotificationsEmbargoed";
 
     const GURL internal_url("chrome://settings");
     const GURL internal_extension_url("chrome-extension://example");
@@ -218,7 +221,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
     GURL url = http_url;
     if (name == kSecure || name == kEvSecure || name == kMixedContentForm ||
         name == kMixedContent || name == kAllowAllPermissions ||
-        name == kBlockAllPermissions || name == kMalwareAndBadCert) {
+        name == kBlockAllPermissions || name == kMalwareAndBadCert ||
+        name == kNotificationsEmbargoed) {
       url = https_url;
     }
     if (name == kInternal) {
@@ -303,6 +307,22 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
       identity.connection_status =
           PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE;
+    }
+
+    if (name == kNotificationsEmbargoed) {
+      permissions::PermissionDecisionAutoBlocker* autoblocker =
+          permissions::PermissionsClient::Get()
+              ->GetPermissionDecisionAutoBlocker(browser()->profile());
+      // Place under embargo for multiple dismissals.
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
+      autoblocker->RecordDismissAndEmbargo(
+          url, ContentSettingsType::NOTIFICATIONS,
+          /*dismissed_prompt_was_quiet=*/false);
     }
 
     if (name == kAllowAllPermissions || name == kBlockAllPermissions) {
@@ -507,6 +527,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
   // Last updated in crrev.com/c/7233078.
   set_baseline("7233078");
+  ShowAndVerifyUi();
+}
+
+// Shows the Page Info bubble with Notifications permission under embargo.
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
+                       InvokeUi_NotificationsEmbargoed) {
   ShowAndVerifyUi();
 }
 

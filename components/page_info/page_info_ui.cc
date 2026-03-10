@@ -742,7 +742,7 @@ std::u16string PageInfoUI::PermissionAutoBlockedToUIString(
   // to contain all needed information regarding Automatically Blocked flag.
   auto* info = PermissionSettingsRegistry::GetInstance()->Get(permission.type);
   CHECK(info);
-  if (permission.setting && !info->delegate().IsBlocked(*permission.setting) &&
+  if (permission.setting &&
       permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission.type)) {
     content::PermissionResult permission_result(

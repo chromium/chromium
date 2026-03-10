@@ -104,6 +104,8 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       views::style::STYLE_BODY_4));
   state_label_->SetEnabledColor(kColorPageInfoSubtitleForeground);
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  state_label_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBTITLE_LABEL);
 
   // Add extra details as sublabel.
   std::u16string detail = ui_delegate_->GetPermissionDetail(type);
