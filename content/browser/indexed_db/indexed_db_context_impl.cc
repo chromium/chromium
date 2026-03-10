@@ -481,7 +481,7 @@ void IndexedDBContextImpl::DidForceCloseForDeleteBucketData(
 void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
                                       storage::mojom::ForceCloseReason reason,
                                       base::OnceClosure closure) {
-  auto bucket_locator = LookUpBucket(bucket_id);
+  std::optional<BucketLocator> bucket_locator = LookUpBucket(bucket_id);
   if (bucket_locator) {
     ForceClose(*bucket_locator, reason, std::move(closure));
   } else if (closure) {
@@ -548,7 +548,7 @@ void IndexedDBContextImpl::DownloadBucketData(
     DownloadBucketDataCallback callback) {
   bool success = false;
 
-  auto bucket_locator = LookUpBucket(bucket_id);
+  std::optional<BucketLocator> bucket_locator = LookUpBucket(bucket_id);
   // Make sure the database hasn't been deleted.
   if (!bucket_locator) {
     std::move(callback).Run(success, base::FilePath(), base::FilePath());
@@ -1100,7 +1100,7 @@ size_t IndexedDBContextImpl::GetOpenBucketCountForTesting() const {
 
 base::SequenceBound<BucketContext>*
 IndexedDBContextImpl::GetBucketContextForTesting(const storage::BucketId& id) {
-  auto bucket_locator = LookUpBucket(id);
+  std::optional<BucketLocator> bucket_locator = LookUpBucket(id);
   if (!bucket_locator) {
     return nullptr;
   }
@@ -1155,10 +1155,6 @@ void IndexedDBContextImpl::EnsureBucketContext(
   bucket_delegate.on_content_changed = base::BindPostTask(
       idb_task_runner_,
       base::BindRepeating(&IndexedDBContextImpl::NotifyIndexedDBContentChanged,
-                          weak_factory_.GetWeakPtr(), bucket_locator));
-  bucket_delegate.on_receiver_bounced = base::BindPostTask(
-      idb_task_runner_,
-      base::BindRepeating(&IndexedDBContextImpl::BindIndexedDB,
                           weak_factory_.GetWeakPtr(), bucket_locator));
   bucket_delegate.on_files_written = base::BindPostTask(
       idb_task_runner_,
