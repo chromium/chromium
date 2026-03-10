@@ -21,6 +21,9 @@
 // Stops Quick Delete.
 - (void)stopQuickDelete;
 
+// Stops the Quick Delete UI and opens the "Password Settings" page.
+- (void)stopQuickDeleteAndOpenPasswordSettingsPage;
+
 // Dismisses the Quick Delete UI along with any other UIs that triggered it. In
 // practice, it dismisses everything on top of the BrowserViewController. On
 // dismissal completion, runs `completion` followed by actually stopping Quick

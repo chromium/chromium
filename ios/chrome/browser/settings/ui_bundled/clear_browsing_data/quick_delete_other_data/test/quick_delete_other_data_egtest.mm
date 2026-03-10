@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -27,6 +30,8 @@ using chrome_test_util::NavigationBarTitleWithAccessibilityLabelId;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsSearchEngineButton;
+using password_manager_test_utils::PasswordSettingsTableView;
+using password_manager_test_utils::ReauthenticationController;
 using testing::NavigationBarBackButton;
 
 namespace {
@@ -116,6 +121,16 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
 @end
 
 @implementation QuickDeleteOtherDataTestCase
+
+- (void)setUp {
+  [super setUp];
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+}
+
+- (void)tearDownHelper {
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
+  [super tearDownHelper];
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
@@ -252,6 +267,65 @@ void ExpectCellVisibilities(bool passwords_and_passkeys_cell,
 
   ExpectCellVisibilities(/*passwords_and_passkeys_cell=*/YES,
                          /*search_history_cell=*/YES, /*my_activity_cell=*/YES);
+}
+
+// Tests that the "Search history" cell opens the correct link.
+- (void)testSearchHistoryCellLinkOpens {
+  [self signIn];
+  // Open the Quick Delete Other Data page.
+  OpenQuickDeleteOtherDataPage(/*is_dse_google=*/YES);
+
+  // Tap on the "Search history" cell.
+  [[EarlGrey selectElementWithMatcher:SearchHistoryCellMatcher()]
+      performAction:grey_tap()];
+
+  // Check that the "My Activity" link was opened.
+  [ChromeEarlGrey
+      waitForWebStateVisibleURL:GURL(
+                                    kClearBrowsingDataDSESearchUrlInFooterURL)];
+}
+
+// Tests that the "My Activity" cell opens the correct link.
+- (void)testMyActivityCellLinkOpens {
+  [self signIn];
+  // Open the Quick Delete Other Data page.
+  OpenQuickDeleteOtherDataPage(/*is_dse_google=*/YES);
+
+  // Tap on the "My Activity" cell.
+  [[EarlGrey selectElementWithMatcher:MyActivityCellMatcher()]
+      performAction:grey_tap()];
+
+  // Check that the "My Activity" link was opened.
+  [ChromeEarlGrey waitForWebStateVisibleURL:
+                      GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)];
+}
+
+// Tests that the "Passwords and passkeys" cell opens the "Password Settings"
+// page.
+- (void)testPasswordsAndPasskeysCellRedirection {
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // Disable skipping so that the re-authentication view controller persists
+  // long enough for EarlGrey to detect it.
+  [PasswordSettingsAppInterface mockReauthenticationModuleShouldSkipReAuth:NO];
+
+  // Open the Quick Delete Other Data page.
+  OpenQuickDeleteOtherDataPage(/*is_dse_google=*/YES);
+
+  // Tap on the "Passwords and passkeys" cell to trigger redirection.
+  [[EarlGrey selectElementWithMatcher:PasswordsAndPasskeysCellMatcher()]
+      performAction:grey_tap()];
+
+  // Verify that the re-authentication UI appears.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:ReauthenticationController()];
+
+  // Manually trigger the successful re-authentication result.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+
+  // Verify that the redirection to Password Settings is successful.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:PasswordSettingsTableView()];
 }
 
 @end

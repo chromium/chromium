@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_view_controller.h"
 
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/public/quick_delete_other_data_commands.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
@@ -165,6 +170,33 @@ NSString* AccessibilityIdentifierForItemIdentifier(
 
 #pragma mark - UITableViewDelegate
 
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  ItemIdentifier itemType = static_cast<ItemIdentifier>(
+      [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
+  switch (itemType) {
+    case kPasswordsAndPasskeysIdentifier: {
+      [self.quickDeleteHandler stopQuickDeleteAndOpenPasswordSettingsPage];
+      return;
+    }
+    case kSearchHistoryIdentifier: {
+      // The "Search history" cell only redirects the user when the default
+      // search engine is Google.
+      if (_defaultSearchEngineState != DefaultSearchEngineState::kGoogle) {
+        return;
+      }
+      [self openUrl:GURL(kClearBrowsingDataDSESearchUrlInFooterURL)];
+      return;
+    }
+    case kMyActivityIdentifier: {
+      [self openUrl:GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)];
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 - (UIView*)tableView:(UITableView*)tableView
     viewForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
@@ -182,7 +214,7 @@ NSString* AccessibilityIdentifierForItemIdentifier(
     }
     case kPasswordsAndPasskeysSection:
     case kGoogleAccountDataSection:
-      // No footer is required for these sections.
+      // These sections don't have a footer.
       return nil;
   }
   NOTREACHED();
@@ -241,21 +273,37 @@ NSString* AccessibilityIdentifierForItemIdentifier(
 
 #pragma mark - Private
 
-// Returns the cell for the corresponding `itemIdentifier`.
-- (UITableViewCell*)cellForTableView:(UITableView*)tableView
-                           indexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(ItemIdentifier)itemIdentifier {
-  UITableViewCell* cell;
-  cell = [self
-          createCellWithTitle:TitleForItemIdentifier(itemIdentifier)
-                     subtitle:[self subtitleForItemIdentifier:itemIdentifier]
-                         icon:IconForItemIdentifier(itemIdentifier)
-      accessibilityIdentifier:AccessibilityIdentifierForItemIdentifier(
-                                  itemIdentifier)];
+// Opens the given `url` in a new tab, ensuring that any presented views are
+// closed first.
+- (void)openUrl:(const GURL&)url {
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:url];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
+}
 
-  [self setAccessoryTypeForCell:cell itemIdentifier:itemIdentifier];
-
-  return cell;
+// Sets the accessory type of the cell.
+- (void)setAccessoryTypeForCell:(UITableViewCell*)cell
+                 itemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case kPasswordsAndPasskeysIdentifier:
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      return;
+    case kSearchHistoryIdentifier:
+      if (_defaultSearchEngineState != DefaultSearchEngineState::kGoogle) {
+        return;
+      }
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+      cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+      return;
+    case kMyActivityIdentifier:
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+      cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+      return;
+  }
+  NOTREACHED();
 }
 
 // Creates a cell for the table view.
@@ -290,6 +338,25 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+// Returns the cell for the corresponding `itemIdentifier`.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                           indexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(ItemIdentifier)itemIdentifier {
+  UITableViewCell* cell;
+  cell = [self
+          createCellWithTitle:TitleForItemIdentifier(itemIdentifier)
+                     subtitle:[self subtitleForItemIdentifier:itemIdentifier]
+                         icon:IconForItemIdentifier(itemIdentifier)
+      accessibilityIdentifier:AccessibilityIdentifierForItemIdentifier(
+                                  itemIdentifier)];
+
+  // The "Search history" cell does not have an accessory type when the default
+  // search engine is not Google as it will not redirect the user.
+  [self setAccessoryTypeForCell:cell itemIdentifier:itemIdentifier];
+
+  return cell;
+}
+
 // Applies a snapshot to the `kGoogleAccountDataSection` based on the visibility
 // flags.
 - (void)applySnapshotForGoogleAccountDataSectionAnimatingDifferences {
@@ -319,31 +386,6 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
-}
-
-// Sets the accessory type of the cell.
-- (void)setAccessoryTypeForCell:(UITableViewCell*)cell
-                 itemIdentifier:(ItemIdentifier)itemIdentifier {
-  switch (itemIdentifier) {
-    case kPasswordsAndPasskeysIdentifier:
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      return;
-    case kSearchHistoryIdentifier:
-      // The "Search history" cell does not have an accessory type when the
-      // default search engine is not Google as it will not redirect the user to
-      // Google account data.
-      if (_defaultSearchEngineState != DefaultSearchEngineState::kGoogle) {
-        return;
-      }
-      [[fallthrough]];
-    case kMyActivityIdentifier:
-      cell.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kExternalLinkSymbol)];
-      cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
-      return;
-  }
-  NOTREACHED();
 }
 
 // Returns the subtitle for the given `itemIdentifier`.

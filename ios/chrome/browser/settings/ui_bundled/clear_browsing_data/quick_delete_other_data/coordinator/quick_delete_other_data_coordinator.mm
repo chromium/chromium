@@ -7,7 +7,11 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/coordinator/quick_delete_other_data_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -53,6 +57,12 @@
   _mediator.consumer = _viewController;
   _viewController.quickDeleteOtherDataHandler =
       self.quickDeleteOtherDataHandler;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _viewController.quickDeleteHandler =
+      HandlerForProtocol(dispatcher, QuickDeleteCommands);
+  _viewController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
+
   [_baseNavigationController pushViewController:_viewController animated:YES];
 }
 

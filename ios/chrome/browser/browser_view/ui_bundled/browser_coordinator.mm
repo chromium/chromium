@@ -5145,6 +5145,22 @@ const char kChromeAppStoreUrl[] =
   _quickDeleteCoordinator = nil;
 }
 
+- (void)stopQuickDeleteAndOpenPasswordSettingsPage {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissalCompletion = ^{
+    [weakSelf stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed];
+  };
+  [self.viewController dismissViewControllerAnimated:YES
+                                          completion:dismissalCompletion];
+}
+
+// Stop quick delete and open the password settings after all the
+// VC on top of BrowserViewController have been dismissed.
+- (void)stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed {
+  [self stopQuickDelete];
+  [self openPasswordSettings];
+}
+
 - (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
   // If BrowserViewController has not presented any view controller (i.e. QD has
   // been dismissed) and the tab grid is also not visible, then just trigger
