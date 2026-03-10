@@ -154,7 +154,20 @@ is customized for a desktop form factor.
 
 ### ChromeOS
 
-Chrome follows the [ChromeOS auto-update
+Chrome for ChromeOS supports both x86-64 and ARM architectures. For
+development and testing, the linux-chromeos build serves as an emulator,
+providing a functional ChromeOS environment on Linux.
+
+Unlike its counterparts on other platforms, Chrome for ChromeOS is not merely
+a web browser; it is a monolithic binary responsible for the System UI, Window
+Management, and core system services. While //ash currently encapsulates the
+System UIs and Window Manager and //chromeos houses platform-specific
+components, the //chrome directory still retains significant legacy
+system-level logic. Active refactoring is underway to migrate these
+non-browser concerns into //ash and //chromeos to improve modular isolation
+and reduce technical debt.
+
+Chrome for ChromeOS follows the [ChromeOS auto-update
 policy](https://support.google.com/chrome/a/answer/6220366).
 
 ### Linux
