@@ -293,6 +293,10 @@ void FamilyLinkSettingsService::WaitUntilReadyToSync(base::OnceClosure done) {
   }
 }
 
+void FamilyLinkSettingsService::ClearWaitUntilReadyToSyncTrap() {
+  wait_until_ready_to_sync_trap_ = false;
+}
+
 std::optional<syncer::ModelError>
 FamilyLinkSettingsService::MergeDataAndStartSyncing(
     DataType type,
@@ -489,13 +493,20 @@ void FamilyLinkSettingsService::OnInitializationCompleted(bool success) {
 
   DCHECK(IsReady());
 
-  if (wait_until_ready_to_sync_cb_) {
-    wait_until_ready_to_sync_trap_ = true;
-    std::move(wait_until_ready_to_sync_cb_).Run();
+  if (!wait_until_ready_to_sync_cb_) {
+    // Proceed synchronously and exit early.
+    InformSubscribers();
+    return;
   }
 
-  InformSubscribers();
-  wait_until_ready_to_sync_trap_ = false;
+  wait_until_ready_to_sync_trap_ = true;
+  std::move(wait_until_ready_to_sync_cb_)
+      .Then(base::BindOnce(&FamilyLinkSettingsService::InformSubscribers,
+                           weak_ptr_factory_.GetWeakPtr()))
+      .Then(base::BindOnce(
+          &FamilyLinkSettingsService::ClearWaitUntilReadyToSyncTrap,
+          weak_ptr_factory_.GetWeakPtr()))
+      .Run();
 }
 
 const base::DictValue& FamilyLinkSettingsService::LocalSettingsForTest() const {

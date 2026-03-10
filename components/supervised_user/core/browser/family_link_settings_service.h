@@ -239,6 +239,8 @@ class FamilyLinkSettingsService : public KeyedService,
   // last time a notification was sent.
   void InformSubscribers();
 
+  void ClearWaitUntilReadyToSyncTrap();
+
   // Used for persisting the settings. Unlike other PrefStores, this one is not
   // directly hooked up to the PrefService.
   scoped_refptr<PersistentPrefStore> store_;
