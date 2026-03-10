@@ -68,19 +68,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h:SessionRestoreInfoBarAction) -->
 
-<enum name="SessionStorageFormat">
-  <int value="0" label="Legacy"/>
-  <int value="1" label="Optimized"/>
-</enum>
-
-<enum name="SessionStorageMigrationStatus">
-  <int value="0" label="MigrationSucceeded">The migration was successful.</int>
-  <int value="1" label="MigrationFailure">The migration failed.</int>
-  <int value="2" label="MigrationInterrupted">
-    The application crashed (or was terminated by the user) during migration.
-  </int>
-</enum>
-
 <enum name="SmartRestartability">
   <int value="0" label="None"/>
   <int value="1" label="Incognito"/>
