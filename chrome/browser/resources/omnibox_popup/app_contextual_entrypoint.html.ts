@@ -10,7 +10,8 @@ export function getHtml(this: OmniboxPopupAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="context-menu-container">
-  ${this.shouldHideEntrypointButton_ ? nothing : html`
+  ${this.shouldHideEntrypointButton_ || !this.hasAllowedInputs_() ? nothing :
+    html`
     <cr-composebox-contextual-entrypoint-button id="context"
         class="upload-button"
         ?show-context-menu-description="${

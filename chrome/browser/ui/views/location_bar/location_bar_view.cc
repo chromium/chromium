@@ -106,6 +106,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -115,6 +117,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
@@ -125,6 +128,7 @@
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -2086,25 +2090,85 @@ bool LocationBarView::IsEditingOrEmpty() const {
 }
 
 bool LocationBarView::OpenContextMenu() {
-  if (browser_ &&
-      GetOmniboxController()->edit_model()->ShouldShowAddContextButton()) {
-    if (!omnibox_popup_aim_presenter_ ||
-        !omnibox_popup_aim_presenter_->GetWebUIContent() ||
-        !omnibox_popup_aim_presenter_->GetWebUIContent()
-             ->GetWrappedWebContents()) {
+  if (browser_ && ShouldShowAddContextButton()) {
+    auto* web_contents = GetWrappedWebContents();
+    if (!web_contents) {
       return false;
     }
 
     omnibox_context_menu_ = std::make_unique<OmniboxContextMenu>(
-        GetWidget(), omnibox_popup_file_selector_.get(),
-        omnibox_popup_aim_presenter_->GetWebUIContent()
-            ->GetWrappedWebContents());
+        GetWidget(), omnibox_popup_file_selector_.get(), web_contents);
     gfx::Point point(0, location_icon_view_->height());
     views::View::ConvertPointToScreen(location_icon_view_, &point);
     run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);
     return true;
   }
   return false;
+}
+
+bool LocationBarView::ShouldShowAddContextButton() {
+  if (!browser_ || !omnibox_controller_) {
+    return false;
+  }
+
+  bool aim_button_pref = browser_->GetProfile()->GetPrefs()->GetBoolean(
+      omnibox::kShowAiModeOmniboxButton);
+  bool is_aim_popup_enabled =
+      omnibox_controller_->client()->IsAimPopupEnabled();
+  bool is_variant_inline =
+      omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
+      omnibox::AddContextButtonVariant::kInline;
+  bool is_popup_open = omnibox_controller_->IsPopupOpen();
+
+  return aim_button_pref && is_aim_popup_enabled && is_variant_inline &&
+         is_popup_open && HasAllowedInputs();
+}
+
+bool LocationBarView::HasAllowedInputs() {
+  OmniboxPopupUI* popup_ui = GetOmniboxPopupUI();
+  if (!popup_ui) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    return omnibox::IsContentSharingEnabled(
+               profile_, popup_ui->GetOrCreateContextualSessionHandle()) ||
+           omnibox::IsCreateImagesEnabled(profile_) ||
+           omnibox::IsDeepSearchEnabled(profile_);
+  }
+
+  ComposeboxHandler* handler = popup_ui->composebox_handler();
+  if (!handler) {
+    return false;
+  }
+  contextual_search::InputStateModel* model = handler->input_state_model();
+  if (!model) {
+    return false;
+  }
+  const omnibox::InputState& state = model->GetInputState();
+  return !state.allowed_input_types.empty() || !state.allowed_tools.empty() ||
+         !state.allowed_models.empty();
+}
+
+OmniboxPopupUI* LocationBarView::GetOmniboxPopupUI() {
+  auto* web_contents = GetWrappedWebContents();
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  if (content::WebUI* web_ui = web_contents->GetWebUI()) {
+    return web_ui->GetController()->GetAs<OmniboxPopupUI>();
+  }
+  return nullptr;
+}
+
+content::WebContents* LocationBarView::GetWrappedWebContents() {
+  if (!omnibox_popup_aim_presenter_ ||
+      !omnibox_popup_aim_presenter_->GetWebUIContent()) {
+    return nullptr;
+  }
+  return omnibox_popup_aim_presenter_->GetWebUIContent()
+      ->GetWrappedWebContents();
 }
 
 void LocationBarView::OnLocationIconGestureEvent(ui::GestureEvent* event) {
@@ -2201,7 +2265,7 @@ bool LocationBarView::ShowPageInfoDialog() {
 }
 
 ui::ImageModel LocationBarView::GetLocationIcon(
-    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) {
   bool dark_mode = false;
   if (location_icon_view_) {
     auto* background = location_icon_view_->GetBackground();
@@ -2211,11 +2275,15 @@ ui::ImageModel LocationBarView::GetLocationIcon(
           background->color().ResolveToSkColor(color_provider));
     }
   }
+  const int dip_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
+
+  if (ShouldShowAddContextButton()) {
+    return GetOmniboxController()->edit_model()->GetAddContextIcon(dip_size);
+  }
 
   return omnibox_view_
              ? omnibox_view_->GetIcon(
-                   GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
-                   location_icon_view_->GetForegroundColor(),
+                   dip_size, location_icon_view_->GetForegroundColor(),
                    View::GetColorProvider()->GetColor(kColorOmniboxResultsIcon),
                    View::GetColorProvider()->GetColor(
                        kColorOmniboxResultsStarterPackIcon),
