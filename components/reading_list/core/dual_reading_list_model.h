@@ -180,7 +180,12 @@ class DualReadingListModel : public ReadingListModel,
 
   unsigned int current_batch_updates_count_ = 0;
 
-  base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ReadingListModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
