@@ -203,13 +203,18 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  int new_index = tab_strip_->GetModelIndexOf(new_tab).value();
-  if (highlighted_tab_ == -1 &&
-      new_index == browser_->GetBrowser().tab_strip_model()->active_index()) {
+  std::optional<int> new_index = tab_strip_->GetModelIndexOf(new_tab);
+  if (!new_index) {
     return;
   }
 
-  if (new_index != highlighted_tab_) {
+  if (highlighted_tab_ == -1 &&
+      new_index.value() ==
+          browser_->GetBrowser().tab_strip_model()->active_index()) {
+    return;
+  }
+
+  if (new_index.value() != highlighted_tab_) {
     if (activate_timer_.IsRunning()) {
       activate_timer_.Reset();
     } else {
@@ -217,7 +222,7 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
     }
   }
 
-  UpdateHighlightedTab(new_tab, new_index);
+  UpdateHighlightedTab(new_tab, new_index.value());
 
   if (highlighted_tab_ != -1) {
     gfx::Point hover_point(swipe_x_, swipe_y_);
