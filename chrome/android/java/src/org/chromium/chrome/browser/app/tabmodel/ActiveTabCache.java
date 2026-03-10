@@ -15,6 +15,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -28,6 +31,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
 import java.io.File;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /**
  * Responsible for caching the active tab's state. This allows for loading the active tab's state
@@ -42,7 +48,10 @@ public class ActiveTabCache {
 
     private static final String REGULAR_SUFFIX = "_regular";
     private static final String INCOGNITO_SUFFIX = "_incognito";
+
     private static @Nullable File sActiveTabDirectory;
+    // Use a SequencedTaskRunner to prevent concurrent access to static variables.
+    private static @Nullable SequencedTaskRunner sTaskRunner;
 
     /** Creates an instance of {@link ActiveTabCache}. */
     @FunctionalInterface
@@ -67,11 +76,17 @@ public class ActiveTabCache {
     private final String mRegularTabFileName;
     private final String mIncognitoTabFileName;
 
+    private @Nullable FutureTask<@Nullable LoadedTabState> mRegularTabTask;
+    private @Nullable FutureTask<@Nullable LoadedTabState> mIncognitoTabTask;
+
     /**
      * @param windowTag The tag for the window being tracked.
+     * @param selector The selector associated with the window.
+     * @param cipherFactory The cipher factory for the store.
      */
     public ActiveTabCache(
             String windowTag, TabModelSelector selector, @Nullable CipherFactory cipherFactory) {
+        assertOnUiThread();
         mTabModelSelector = selector;
         mCipherFactory = cipherFactory;
 
@@ -80,6 +95,19 @@ public class ActiveTabCache {
 
         if (cipherFactory == null) {
             clearActiveTab(/* incognito= */ true);
+        }
+
+        Callable<@Nullable LoadedTabState> regularTabCallable =
+                () -> restoreActiveTab(/* incognito= */ false);
+        Callable<@Nullable LoadedTabState> incognitoTabCallable =
+                () -> restoreActiveTab(/* incognito= */ true);
+
+        mRegularTabTask = new FutureTask<@Nullable LoadedTabState>(regularTabCallable);
+        getTaskRunner().execute(mRegularTabTask);
+
+        if (cipherFactory != null) {
+            mIncognitoTabTask = new FutureTask<@Nullable LoadedTabState>(incognitoTabCallable);
+            getTaskRunner().execute(mIncognitoTabTask);
         }
     }
 
@@ -93,6 +121,7 @@ public class ActiveTabCache {
      */
     public void saveActiveTab(Tab tab) {
         assertOnUiThread();
+        cancelTasks();
 
         boolean isOffTheRecord = tab.isOffTheRecord();
         assert !isOffTheRecord || mCipherFactory != null;
@@ -114,11 +143,35 @@ public class ActiveTabCache {
      *
      * @param isOffTheRecord Whether to restore the incognito active tab.
      */
-    public @Nullable LoadedTabState restoreActiveTab(boolean isOffTheRecord) {
+    public @Nullable LoadedTabState getPreLoadedActiveTabOrLoad(boolean incognito) {
         assertOnUiThread();
-        assert !isOffTheRecord || mCipherFactory != null;
+        FutureTask<@Nullable LoadedTabState> task = maybeTakeTask(incognito);
+        if (task != null) {
+            try {
+                return task.get();
+            } catch (ExecutionException | InterruptedException e) {
+                // Ignore and attempt to restore on the UI thread.
+            }
+        }
+        return restoreActiveTab(incognito);
+    }
 
-        String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
+    private @Nullable FutureTask<@Nullable LoadedTabState> maybeTakeTask(boolean incognito) {
+        FutureTask<@Nullable LoadedTabState> task;
+        if (incognito) {
+            task = mIncognitoTabTask;
+            mIncognitoTabTask = null;
+        } else {
+            task = mRegularTabTask;
+            mRegularTabTask = null;
+        }
+        return task;
+    }
+
+    private @Nullable LoadedTabState restoreActiveTab(boolean incognito) {
+        assert !incognito || mCipherFactory != null;
+
+        String fileName = incognito ? mIncognitoTabFileName : mRegularTabFileName;
         File file = new File(getOrCreateCacheDirectory(), fileName);
         if (!file.exists()) return null;
 
@@ -126,23 +179,27 @@ public class ActiveTabCache {
         if (tabId == INVALID_TAB_ID) return null;
 
         TabState tabState =
-                TabStateFileManager.restoreTabStateInternal(file, isOffTheRecord, mCipherFactory);
+                TabStateFileManager.restoreTabStateInternal(file, incognito, mCipherFactory);
         if (tabState == null) return null;
 
         return new LoadedTabState(tabId, tabState);
     }
 
     public void startTracking(boolean incognito) {
+        assertOnUiThread();
+        cancelTasks();
+
         TabModel model = mTabModelSelector.getModel(incognito);
 
         NullableObservableSupplier<Tab> currentTabSupplier = model.getCurrentTabSupplier();
         Callback<@Nullable Tab> onActiveTabChanged = getActiveTabChangedCallback(incognito);
 
-        currentTabSupplier.addSyncObserver(onActiveTabChanged);
+        currentTabSupplier.addSyncObserverAndCallIfNonNull(onActiveTabChanged);
         onActiveTabChanged.onResult(currentTabSupplier.get());
     }
 
     public void stopTracking(boolean incognito) {
+        assertOnUiThread();
         TabModel model = mTabModelSelector.getModel(incognito);
         NullableObservableSupplier<Tab> currentTabSupplier = model.getCurrentTabSupplier();
         currentTabSupplier.removeObserver(getActiveTabChangedCallback(incognito));
@@ -162,6 +219,17 @@ public class ActiveTabCache {
     public void clearCurrentWindow() {
         clearActiveTab(false);
         clearActiveTab(true);
+    }
+
+    private void cancelTasks() {
+        if (mRegularTabTask != null) {
+            mRegularTabTask.cancel(false);
+            mRegularTabTask = null;
+        }
+        if (mIncognitoTabTask != null) {
+            mIncognitoTabTask.cancel(false);
+            mIncognitoTabTask = null;
+        }
     }
 
     /**
@@ -197,6 +265,14 @@ public class ActiveTabCache {
         }
         sActiveTabDirectory = null;
         getSharedPreferences().edit().clear().apply();
+    }
+
+    private static SequencedTaskRunner getTaskRunner() {
+        assertOnUiThread();
+        if (sTaskRunner == null) {
+            sTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
+        }
+        return sTaskRunner;
     }
 
     private static File getOrCreateCacheDirectory() {
