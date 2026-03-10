@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/url_matcher/url_matcher_factory.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -134,9 +135,10 @@ std::string EventFilter::RemoveEventMatcher(
   std::string event_name = it->second;
   EventMatcherMap& matcher_map = event_matchers_[event_name];
   auto matcher_it = matcher_map.find(id);
-  if (matcher_it == matcher_map.end()) {
-    return "";
-  }
+  // `id_to_event_name_` and `event_matchers_[event_name]` should be the inverse
+  // of each other.
+  CHECK(matcher_it != matcher_map.end(), base::NotFatalUntil::M149)
+      << event_name;
 
   const std::vector<base::MatcherStringPattern::ID>& condition_set_ids =
       matcher_it->second->condition_set_ids();
