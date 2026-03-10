@@ -10808,6 +10808,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualSearch.RecentTabChipClick.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when a recent tab chip is clicked in the composebox on
+    {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
 <action name="ContextualSearch.SearchBarTapClose">
   <owner>donnd@chromium.org</owner>
   <description>

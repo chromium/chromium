@@ -65,6 +65,9 @@ export class RecentTabChipElement extends RecentTabChipBase {
     e.stopPropagation();
     assert(this.recentTab);
 
+    chrome.histograms.recordUserAction(
+        `ContextualSearch.RecentTabChipClick.${this.composeboxSource_}`);
+
     this.fire('add-tab-context', {
       id: this.recentTab.tabId,
       title: this.recentTab.title,
