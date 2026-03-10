@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -20,10 +19,14 @@
 #include "base/strings/string_util_win.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/display_finder.h"
-#include "ui/display/types/display_constants.h"
+#include "ui/display/display_list.h"
+#include "ui/display/headless/headless_screen_util.h"
 #include "ui/display/win/display_info.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win_display.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_conversions.h"
+#include "ui/gfx/geometry/insets_f.h"
 
 namespace display::win {
 
@@ -72,6 +75,30 @@ void SetHeadlessDisplayDeviceName(MONITORINFOEX& monitor_info,
   base::span<WCHAR> device_name_buf = monitor_info.szDevice;
   std::copy(device_name.begin(), device_name.end(), device_name_buf.begin());
   device_name_buf[device_name.length()] = L'\0';
+}
+
+void UpdateMonitorInfoBoundsAndWorkArea(MONITORINFOEX& monitor_info,
+                                        const Display& display) {
+  // Display maintains its bounds scaled, so convert it to physical pixels.
+  gfx::Rect bounds_in_pixels = display.bounds();
+  if (display.device_scale_factor() != 1.0f) {
+    bounds_in_pixels = gfx::ScaleToEnclosingRect(bounds_in_pixels,
+                                                 display.device_scale_factor());
+  }
+  monitor_info.rcMonitor = bounds_in_pixels.ToRECT();
+
+  // Display maintains its work area scaled, so convert it to physical pixels.
+  gfx::Insets work_area_insets_pixels = display.GetWorkAreaInsets();
+  if (display.device_scale_factor() != 1.0f) {
+    gfx::InsetsF insets =
+        static_cast<gfx::InsetsF>(display.GetWorkAreaInsets());
+    insets.Scale(display.device_scale_factor());
+    work_area_insets_pixels = gfx::ToCeiledInsets(insets);
+  }
+
+  gfx::Rect work_area_in_pixels = bounds_in_pixels;
+  work_area_in_pixels.Inset(work_area_insets_pixels);
+  monitor_info.rcWork = work_area_in_pixels.ToRECT();
 }
 
 }  // namespace
@@ -166,8 +193,15 @@ Display ScreenWinHeadless::GetDisplayMatching(
 }
 
 Display ScreenWinHeadless::GetPrimaryDisplay() const {
-  // In headless the primary display is always the first display.
-  return GetNumDisplays() ? GetAllDisplays()[0] : Display::GetDefaultDisplay();
+  // In most cases the primary display is the very first display in the list and
+  // the display count is low, so linear search should not be a problem here.
+  for (const Display& display : GetAllDisplays()) {
+    if (display.id() == primary_display_id_) {
+      return display;
+    }
+  }
+
+  return Display::GetDefaultDisplay();
 }
 
 HMONITOR ScreenWinHeadless::HMONITORFromScreenPoint(
@@ -372,20 +406,7 @@ int64_t ScreenWinHeadless::AddDisplay(const Display& display) {
 
   MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
-
-  // Display's bounds and work area have scale factor already applied, so we
-  // have to unscale them to get the correct monitor info geometry.
-  if (display.device_scale_factor() == 1.0f) {
-    monitor_info.rcMonitor = display.bounds().ToRECT();
-    monitor_info.rcWork = display.work_area().ToRECT();
-  } else {
-    const float scale_factor = display.device_scale_factor();
-    monitor_info.rcMonitor =
-        gfx::ScaleToEnclosingRect(display.bounds(), scale_factor).ToRECT();
-    monitor_info.rcWork =
-        gfx::ScaleToEnclosingRect(display.work_area(), scale_factor).ToRECT();
-  }
-
+  UpdateMonitorInfoBoundsAndWorkArea(monitor_info, display);
   SetHeadlessDisplayDeviceName(monitor_info, display_id);
 
   headless_monitor_info_.insert({display_id, monitor_info});
@@ -407,8 +428,14 @@ int64_t ScreenWinHeadless::AddDisplay(const Display& display) {
 }
 
 void ScreenWinHeadless::UpdateDisplay(const Display& display) {
-  // TODO(crbug.com/397350115): Implement.
-  NOTIMPLEMENTED();
+  std::vector<Display> displays = GetAllDisplays();
+  for (auto& it : displays) {
+    if (it.id() == display.id()) {
+      it = display;
+      UpdateFromDisplays(displays);
+      break;
+    }
+  }
 }
 
 void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
@@ -426,8 +453,20 @@ void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
 }
 
 void ScreenWinHeadless::SetPrimaryDisplay(int64_t display_id) {
-  // TODO(crbug.com/397350115): Implement.
-  NOTIMPLEMENTED();
+  DisplayList display_list;
+  for (const Display& display : GetAllDisplays()) {
+    display_list.AddDisplay(display, display.id() == primary_display_id_
+                                         ? DisplayList::Type::PRIMARY
+                                         : DisplayList::Type::NOT_PRIMARY);
+  }
+
+  headless::SetPrimaryDisplay(display_list, display_id);
+
+  CHECK_EQ(display_list.GetPrimaryDisplayIterator()->id(), display_id);
+
+  primary_display_id_ = display_id;
+
+  UpdateFromDisplays(display_list.displays());
 }
 
 std::vector<internal::DisplayInfo>
@@ -439,6 +478,8 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
   if (Display::HasForceDeviceScaleFactor()) {
     forced_device_scale_factor = Display::GetForcedDeviceScaleFactor();
   }
+
+  primary_display_id_ = kInvalidDisplayId;
 
   bool is_primary = true;
   std::vector<internal::DisplayInfo> display_infos;
@@ -467,6 +508,10 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
     // Maintain display id to monitor info association for all the
     // MonitorInfoFromScreen*() functions below.
     headless_monitor_info_.insert({display_id, monitor_info});
+
+    if (is_primary) {
+      primary_display_id_ = display_id;
+    }
 
     internal::DisplayInfo display_info(
         display_id, monitor_info, device_scale_factor, screen_info.color_depth,
@@ -546,6 +591,33 @@ std::optional<MONITORINFOEX> ScreenWinHeadless::GetMONITORINFOFromDisplayId(
   }
 
   return it->second;
+}
+
+void ScreenWinHeadless::UpdateFromDisplays(
+    const std::vector<Display>& displays) {
+  std::vector<internal::DisplayInfo> display_infos;
+  for (const Display& display : displays) {
+    CHECK(headless_monitor_info_.find(display.id()) !=
+          headless_monitor_info_.cend());
+    MONITORINFOEX& monitor_info = headless_monitor_info_[display.id()];
+    UpdateMonitorInfoBoundsAndWorkArea(monitor_info, display);
+    if (display.id() == primary_display_id_) {
+      monitor_info.dwFlags |= MONITORINFOF_PRIMARY;
+    } else {
+      monitor_info.dwFlags &= ~MONITORINFOF_PRIMARY;
+    }
+
+    internal::DisplayInfo display_info(
+        display.id(), monitor_info, display.device_scale_factor(),
+        display.color_depth(), kSdrWhiteLevel, display.rotation(),
+        kDisplayFrequency,
+        GetDisplayPhysicalPixelsPerInch(display.device_scale_factor()),
+        GetOutputTechnology(display.IsInternal()), display.label());
+
+    display_infos.push_back(display_info);
+  }
+
+  UpdateFromDisplayInfos(display_infos);
 }
 
 DISPLAY_EXPORT ScreenWinHeadless* GetScreenWinHeadless() {

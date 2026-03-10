@@ -483,8 +483,6 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
-// Emulation.UpdateScreen is not yet supported on Windows.
-#if !BUILDFLAG(IS_WIN)
 HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenBounds,
                             "shared/update-screen-bounds.js")
 
@@ -507,15 +505,11 @@ HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenLabel, "shared/update-screen-label.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenIsInternal,
                             "shared/update-screen-is-internal.js")
-#endif
 
-// Emulation.SetPrimaryScreen is not yet supported on Windows.
-#if !BUILDFLAG(IS_WIN)
 HEADLESS_MODE_PROTOCOL_TEST(SetPrimaryScreen, "shared/set-primary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(SetPrimaryScreenScaled,
                             "shared/set-primary-screen-scaled.js")
-#endif
 
 HEADLESS_MODE_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
                             "shared/range-mouse-event-after-node-removal.js")
