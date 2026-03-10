@@ -15,9 +15,11 @@ enum class CapabilityFlags {
   kImageInput,
   // Model supports audio input.
   kAudioInput,
+  // Model supports tool use (declarations, calls, and responses).
+  kToolUse,
 
   kMinValue = kImageInput,
-  kMaxValue = kAudioInput,
+  kMaxValue = kToolUse,
 };
 using Capabilities = base::EnumSet<CapabilityFlags,
                                    CapabilityFlags::kMinValue,

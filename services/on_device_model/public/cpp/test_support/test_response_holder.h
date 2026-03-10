@@ -78,6 +78,7 @@ class TestResponseHolder
   // mojom::StreamingResponder:
   void OnResponse(mojom::ResponseChunkPtr chunk) override;
   void OnComplete(mojom::ResponseSummaryPtr summary) override;
+  void OnToolCalls(std::vector<mojom::ToolCallPtr> tool_calls) override;
 
   void DisconnectOnMessage();
 

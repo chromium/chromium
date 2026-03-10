@@ -6,7 +6,10 @@
 
 #include <algorithm>
 
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/numerics/checked_math.h"
+#include "base/values.h"
 
 namespace mojo {
 
@@ -73,6 +76,12 @@ UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::GetTag(
   if (std::holds_alternative<ml::AudioBuffer>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kAudio;
   }
+  if (std::holds_alternative<ml::ToolDeclaration>(input_piece)) {
+    return on_device_model::mojom::InputPieceDataView::Tag::kToolDeclaration;
+  }
+  if (std::holds_alternative<ml::ToolResponse>(input_piece)) {
+    return on_device_model::mojom::InputPieceDataView::Tag::kToolResponse;
+  }
   if (std::holds_alternative<bool>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kUnknownType;
   }
@@ -113,6 +122,22 @@ bool UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::
         return false;
       }
       *out = std::move(audio);
+      return true;
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kToolDeclaration: {
+      ml::ToolDeclaration tool_declaration;
+      if (!in.ReadToolDeclaration(&tool_declaration)) {
+        return false;
+      }
+      *out = std::move(tool_declaration);
+      return true;
+    }
+    case on_device_model::mojom::InputPieceDataView::Tag::kToolResponse: {
+      ml::ToolResponse tool_response;
+      if (!in.ReadToolResponse(&tool_response)) {
+        return false;
+      }
+      *out = std::move(tool_response);
       return true;
     }
     case on_device_model::mojom::InputPieceDataView::Tag::kUnknownType: {
@@ -207,6 +232,148 @@ bool StructTraits<on_device_model::mojom::AudioDataDataView, ml::AudioBuffer>::
   out->data.reserve(data_view.size());
   std::copy_n(data_view.data(), data_view.size(),
               std::back_inserter(out->data));
+  return true;
+}
+
+// TODO(crbug.com/422803232): Explore keeping structured types (base::DictValue)
+// through the system and deferring JSON serialization to the C API boundary,
+// rather than converting at the typemap layer. The ml::* tool types in the :api
+// target use JSON strings because :api cannot depend on //base.
+
+// static
+base::DictValue
+StructTraits<on_device_model::mojom::ToolCallDataView, ml::ToolCall>::arguments(
+    const ml::ToolCall& input) {
+  // Parse JSON string back to base::DictValue for mojom serialization.
+  auto parsed_json =
+      base::JSONReader::Read(input.arguments_json, base::JSON_PARSE_RFC);
+  if (parsed_json.has_value() && parsed_json->is_dict()) {
+    return std::move(parsed_json->GetDict());
+  }
+  return base::DictValue();
+}
+
+// static
+bool StructTraits<on_device_model::mojom::ToolCallDataView, ml::ToolCall>::Read(
+    on_device_model::mojom::ToolCallDataView in,
+    ml::ToolCall* out) {
+  if (!in.ReadCallId(&out->call_id) || !in.ReadName(&out->name)) {
+    return false;
+  }
+
+  base::DictValue arguments;
+  if (!in.ReadArguments(&arguments)) {
+    return false;
+  }
+
+  std::string json_string;
+  if (!base::JSONWriter::Write(arguments, &json_string)) {
+    return false;
+  }
+  out->arguments_json = std::move(json_string);
+  return true;
+}
+
+// static
+std::optional<base::Value>
+StructTraits<on_device_model::mojom::ToolResponseDataView,
+             ml::ToolResponse>::result(const ml::ToolResponse& input) {
+  // Parse JSON string back to base::Value for mojom serialization.
+  if (input.result_json.empty()) {
+    return std::nullopt;
+  }
+  auto parsed_json =
+      base::JSONReader::Read(input.result_json, base::JSON_PARSE_RFC);
+  if (parsed_json.has_value()) {
+    return std::move(parsed_json.value());
+  }
+  return std::nullopt;
+}
+
+// static
+std::optional<std::string>
+StructTraits<on_device_model::mojom::ToolResponseDataView,
+             ml::ToolResponse>::error_message(const ml::ToolResponse& input) {
+  if (input.error_message.empty()) {
+    return std::nullopt;
+  }
+  return input.error_message;
+}
+
+// static
+bool StructTraits<
+    on_device_model::mojom::ToolResponseDataView,
+    ml::ToolResponse>::Read(on_device_model::mojom::ToolResponseDataView in,
+                            ml::ToolResponse* out) {
+  if (!in.ReadCallId(&out->call_id) || !in.ReadName(&out->name)) {
+    return false;
+  }
+  std::optional<std::string> error_message;
+  if (!in.ReadErrorMessage(&error_message)) {
+    return false;
+  }
+  std::optional<base::Value> result_value;
+  if (!in.ReadResult(&result_value)) {
+    return false;
+  }
+
+  // Validate mutual exclusivity: exactly one of error_message or result must be
+  // set.
+  bool has_error = error_message.has_value() && !error_message->empty();
+  bool has_result = result_value.has_value() && !result_value->is_none();
+  if ((has_error && has_result) || (!has_error && !has_result)) {
+    // Both set or neither set - invalid state.
+    return false;
+  }
+
+  // Store error_message if present.
+  if (has_error) {
+    out->error_message = std::move(error_message.value());
+  }
+
+  // Store result if present.
+  if (has_result) {
+    std::string json_string;
+    if (!base::JSONWriter::Write(*result_value, &json_string)) {
+      return false;
+    }
+    out->result_json = std::move(json_string);
+  }
+
+  return true;
+}
+
+// static
+base::DictValue StructTraits<
+    on_device_model::mojom::ToolDeclarationDataView,
+    ml::ToolDeclaration>::input_schema(const ml::ToolDeclaration& input) {
+  // Parse JSON string back to base::DictValue for mojom serialization.
+  auto parsed_json =
+      base::JSONReader::Read(input.input_schema_json, base::JSON_PARSE_RFC);
+  if (parsed_json.has_value() && parsed_json->is_dict()) {
+    return std::move(parsed_json->GetDict());
+  }
+  return base::DictValue();
+}
+
+// static
+bool StructTraits<on_device_model::mojom::ToolDeclarationDataView,
+                  ml::ToolDeclaration>::
+    Read(on_device_model::mojom::ToolDeclarationDataView in,
+         ml::ToolDeclaration* out) {
+  if (!in.ReadName(&out->name) || !in.ReadDescription(&out->description)) {
+    return false;
+  }
+  // Convert mojo DictValue to JSON string for ml:: layer storage.
+  base::DictValue input_schema;
+  if (!in.ReadInputSchema(&input_schema)) {
+    return false;
+  }
+  std::string json_string;
+  if (!base::JSONWriter::Write(input_schema, &json_string)) {
+    return false;
+  }
+  out->input_schema_json = std::move(json_string);
   return true;
 }
 

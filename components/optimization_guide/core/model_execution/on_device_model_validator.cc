@@ -111,6 +111,13 @@ void OnDeviceModelValidator::OnComplete(
   ValidateNextPrompt();
 }
 
+void OnDeviceModelValidator::OnToolCalls(
+    std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) {
+  // Validation prompts are simple text queries without tool declarations.
+  // Tool calls during validation indicate unexpected model behavior.
+  FinishValidation(OnDeviceModelValidationResult::kNonMatchingOutput);
+}
+
 void OnDeviceModelValidator::FinishValidation(
     OnDeviceModelValidationResult result) {
   // Reset sessions to avoid further callbacks.

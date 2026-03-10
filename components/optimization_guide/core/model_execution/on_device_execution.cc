@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -342,6 +343,16 @@ void OnDeviceExecution::OnComplete(
   opts_.model_client->OnResponseCompleted();
 
   RunRawOutputSafetyCheck(ResponseCompleteness::kComplete);
+}
+
+void OnDeviceExecution::OnToolCalls(
+    std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) {
+  // Tool calls are unexpected in the optimization guide execution path since
+  // it never declares tools. Report as a bad message from the backend.
+  receiver_.ReportBadMessage(
+      "Unexpected tool calls in optimization guide execution path.");
+  CancelPendingResponse(Result::kDisconnectAndCancel,
+                        OnDeviceError::kGenericFailure);
 }
 
 void OnDeviceExecution::OnComplete(uint32_t tokens_processed) {

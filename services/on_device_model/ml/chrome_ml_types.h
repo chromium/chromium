@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
+#include "services/on_device_model/ml/chrome_ml_tool_types.h"
 
 class SkBitmap;
 
@@ -27,7 +28,7 @@ enum class Token {
   kUser,
   // End a system/model/user section.
   kEnd,
-  // Prefix for tool call (function invocation by the model).
+  // Prefix for tool call (model requesting tool execution).
   kToolCall,
   // Prefix for tool response (results from tool execution).
   kToolResponse,
@@ -36,8 +37,13 @@ enum class Token {
 // If an InputPiece holds a `bool`, then the operation should fail. This means
 // the input came from a future client version and can't be handled in the
 // current library version.
-using InputPiece =
-    std::variant<Token, std::string, SkBitmap, AudioBuffer, bool>;
+using InputPiece = std::variant<Token,
+                                std::string,
+                                SkBitmap,
+                                AudioBuffer,
+                                ToolDeclaration,
+                                ToolResponse,
+                                bool>;
 
 // Options for specifying the performance characteristics of the model to load.
 enum class ModelPerformanceHint {

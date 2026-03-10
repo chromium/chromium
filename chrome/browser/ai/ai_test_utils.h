@@ -40,6 +40,9 @@ class AITestUtils {
     // Returns true on successful completion and false on error.
     bool WaitForCompletion();
 
+    // Returns true after tool calls are received.
+    bool WaitForToolCalls();
+
     void WaitForContextOverflow();
 
     blink::mojom::ModelStreamingResponseStatus error_status() const {
@@ -60,6 +63,10 @@ class AITestUtils {
 
     uint64_t current_tokens() const { return current_tokens_; }
 
+    const std::vector<blink::mojom::ToolCallPtr>& tool_calls() const {
+      return tool_calls_;
+    }
+
    private:
     // blink::mojom::ModelStreamingResponder:
     void OnError(blink::mojom::ModelStreamingResponseStatus status,
@@ -74,8 +81,10 @@ class AITestUtils {
     std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;
     blink::mojom::QuotaErrorInfoPtr quota_error_info_;
     std::vector<std::string> responses_;
+    std::vector<blink::mojom::ToolCallPtr> tool_calls_;
     uint64_t current_tokens_ = 0;
     base::RunLoop run_loop_;
+    base::RunLoop tool_calls_run_loop_;
     base::RunLoop context_overflow_run_loop_;
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
   };

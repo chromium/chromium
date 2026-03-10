@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
@@ -164,13 +165,59 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
   NOTREACHED();
 }
 
-// Get the capabilities specified from the expected input or output types.
-on_device_model::Capabilities GetExpectedCapabilities(
-    const std::optional<std::vector<blink::mojom::AILanguageModelExpectedPtr>>&
-        expected_vector) {
+// Checks if capabilities contain image or audio input (multimodal
+// capabilities).
+bool HasMultimodalInputCapabilities(
+    const on_device_model::Capabilities& capabilities) {
+  return capabilities.Has(on_device_model::CapabilityFlags::kImageInput) ||
+         capabilities.Has(on_device_model::CapabilityFlags::kAudioInput);
+}
+
+// Returns whether the model supports the given capabilities. Tool use is
+// assumed supported since it is gated by RuntimeEnabledFeatures in Blink.
+// TODO(crbug.com/422803232): Expose actual model tool use capability from
+// model metadata instead of assuming support.
+bool ModelSupportsCapabilities(
+    OptimizationGuideKeyedService* service,
+    const on_device_model::Capabilities& capabilities) {
+  auto model_caps = service->GetOnDeviceCapabilities();
+  model_caps.Put(on_device_model::CapabilityFlags::kToolUse);
+  return model_caps.HasAll(capabilities);
+}
+
+// Checks if the expected outputs contain any invalid types.
+// Models can generate text and tool calls, but not images, audio, or tool
+// responses.
+bool HasInvalidOutputTypes(
+    base::optional_ref<
+        const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
+        expected_outputs) {
+  if (!expected_outputs.has_value()) {
+    return false;
+  }
+  for (const auto& expected_entry : expected_outputs.value()) {
+    switch (expected_entry->type) {
+      case blink::mojom::AILanguageModelPromptType::kText:
+      case blink::mojom::AILanguageModelPromptType::kToolCall:
+        // Valid output types.
+        break;
+      case blink::mojom::AILanguageModelPromptType::kImage:
+      case blink::mojom::AILanguageModelPromptType::kAudio:
+      case blink::mojom::AILanguageModelPromptType::kToolResponse:
+        // Invalid output types - models don't generate these.
+        return true;
+    }
+  }
+  return false;
+}
+
+on_device_model::Capabilities GetExpectedInputCapabilities(
+    base::optional_ref<
+        const std::vector<blink::mojom::AILanguageModelExpectedPtr>>
+        expected_inputs) {
   on_device_model::Capabilities capabilities;
-  if (expected_vector) {
-    for (const auto& expected_entry : expected_vector.value()) {
+  if (expected_inputs.has_value()) {
+    for (const auto& expected_entry : expected_inputs.value()) {
       switch (expected_entry->type) {
         case blink::mojom::AILanguageModelPromptType::kText:
           // Text capabilities are included by default.
@@ -183,7 +230,8 @@ on_device_model::Capabilities GetExpectedCapabilities(
           break;
         case blink::mojom::AILanguageModelPromptType::kToolCall:
         case blink::mojom::AILanguageModelPromptType::kToolResponse:
-          // TODO(crbug.com/422803232): Implement tool capabilities.
+          // Tool use capability is signaled by the presence of tool
+          // declarations, not by expected input/output types.
           break;
       }
     }
@@ -374,14 +422,27 @@ void AIManager::CanCreateLanguageModel(
 
   on_device_model::Capabilities input_capabilities;
   if (options) {
-    input_capabilities = GetExpectedCapabilities(options->expected_inputs);
-    if (!GetExpectedCapabilities(options->expected_outputs).empty() ||
-        (!input_capabilities.empty() &&
-         !base::FeatureList::IsEnabled(
-             blink::features::kAIPromptAPIMultimodalInput))) {
+    input_capabilities = GetExpectedInputCapabilities(options->expected_inputs);
+    // Check if outputs request invalid types (image/audio/tool response).
+    // Models can generate text and tool calls, but not multimodal content or
+    // tool responses.
+    if (HasInvalidOutputTypes(options->expected_outputs)) {
       std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                   kUnavailableModelAdaptationNotAvailable);
       return;
+    }
+    // Check if multimodal input (image/audio) is used without the feature flag.
+    if (HasMultimodalInputCapabilities(input_capabilities) &&
+        !base::FeatureList::IsEnabled(
+            blink::features::kAIPromptAPIMultimodalInput)) {
+      std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableModelAdaptationNotAvailable);
+      return;
+    }
+    // Note: Tool use capabilities are gated by RuntimeEnabledFeatures in Blink.
+    // Tool use capability is signaled by the presence of tool declarations.
+    if (options->tools.has_value() && !options->tools->empty()) {
+      input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
   }
 
@@ -465,14 +526,29 @@ void AIManager::CreateLanguageModelInternal(
 
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context_));
-  params->capabilities = GetExpectedCapabilities(options->expected_inputs);
-  on_device_model::Capabilities output_capabilities =
-      GetExpectedCapabilities(options->expected_outputs);
-  if (!params->capabilities.empty() || !output_capabilities.empty()) {
-    if (!output_capabilities.empty() ||
-        !base::FeatureList::IsEnabled(
-            blink::features::kAIPromptAPIMultimodalInput) ||
-        !service->GetOnDeviceCapabilities().HasAll(params->capabilities)) {
+  params->capabilities = GetExpectedInputCapabilities(options->expected_inputs);
+  // Tool use capability is signaled by the presence of tool declarations.
+  if (options->tools.has_value() && !options->tools->empty()) {
+    params->capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
+  }
+  // Check if outputs request invalid types (image/audio/tool response).
+  // Models can generate text and tool calls, but not multimodal content or
+  // tool responses.
+  if (HasInvalidOutputTypes(options->expected_outputs)) {
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote(std::move(client));
+    on_device_ai::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+  if (!params->capabilities.empty()) {
+    // Check if multimodal input (image/audio) is used without the feature flag
+    // or if the model doesn't support the requested capabilities.
+    if ((HasMultimodalInputCapabilities(params->capabilities) &&
+         !base::FeatureList::IsEnabled(
+             blink::features::kAIPromptAPIMultimodalInput)) ||
+        !ModelSupportsCapabilities(service, params->capabilities)) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(client));
       on_device_ai::SendClientRemoteError(
@@ -492,7 +568,12 @@ void AIManager::CreateLanguageModelInternal(
       service->GetOptimizationGuideLogger()
           ? service->GetOptimizationGuideLogger()->GetWeakPtr()
           : nullptr);
-  model->Initialize(std::move(options->initial_prompts), std::move(client));
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  if (options->tools.has_value()) {
+    tools = std::move(options->tools.value());
+  }
+  model->Initialize(std::move(options->initial_prompts), std::move(tools),
+                    std::move(client));
 
   context_bound_object_set_.AddContextBoundObject(std::move(model));
 
@@ -876,7 +957,7 @@ void AIManager::FinishCanCreateSession(
   }
 
   if (!capabilities.empty() &&
-      !service->GetOnDeviceCapabilities().HasAll(capabilities)) {
+      !ModelSupportsCapabilities(service, capabilities)) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableModelAdaptationNotAvailable);
     return;

@@ -77,6 +77,8 @@ class OnDeviceModelValidator
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
+  void OnToolCalls(
+      std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) override;
 
   void FinishValidation(OnDeviceModelValidationResult result);
 

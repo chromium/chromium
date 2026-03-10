@@ -139,6 +139,8 @@ class OnDeviceExecution final
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override;
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override;
+  void OnToolCalls(
+      std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) override;
 
   // on_device_model::mojom::ContextClient:
   void OnComplete(uint32_t tokens_processed) override;

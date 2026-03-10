@@ -14,6 +14,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -48,6 +49,34 @@ namespace {
 
 using ::optimization_guide::proto::PromptApiMetadata;
 
+std::optional<ml::ToolResponse> GetToolResponseFromDict(
+    const base::DictValue& dict) {
+  const std::string* call_id = dict.FindString("callID");
+  const std::string* name = dict.FindString("name");
+  const base::Value* result = dict.Find("result");
+  const std::string* error_message = dict.FindString("errorMessage");
+
+  // Validate: callID and name required; exactly one of result or errorMessage.
+  if (!call_id || !name || (result && error_message) ||
+      (!result && !error_message)) {
+    return std::nullopt;
+  }
+
+  ml::ToolResponse response;
+  response.call_id = *call_id;
+  response.name = *name;
+
+  if (result) {
+    if (!base::JSONWriter::Write(*result, &response.result_json)) {
+      return std::nullopt;
+    }
+  } else {
+    response.error_message = *error_message;
+  }
+
+  return response;
+}
+
 ml::Token ConvertToToken(blink::mojom::AILanguageModelPromptRole role) {
   switch (role) {
     case blink::mojom::AILanguageModelPromptRole::kSystem:
@@ -59,12 +88,42 @@ ml::Token ConvertToToken(blink::mojom::AILanguageModelPromptRole role) {
   }
 }
 
+// Serializes blink tool declarations into ml::ToolDeclaration input pieces.
+bool AppendToolDeclarations(
+    const std::vector<blink::mojom::AILanguageModelToolDeclarationPtr>& tools,
+    std::vector<ml::InputPiece>& pieces) {
+  for (const auto& tool : tools) {
+    ml::ToolDeclaration tool_decl;
+    tool_decl.name = tool->name;
+    tool_decl.description = tool->description;
+    if (!base::JSONWriter::Write(tool->input_schema,
+                                 &tool_decl.input_schema_json)) {
+      return false;
+    }
+    pieces.push_back(std::move(tool_decl));
+  }
+  return true;
+}
+
 on_device_model::mojom::InputPtr ConvertToInput(
     const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts,
-    const on_device_model::Capabilities& capabilities) {
+    const on_device_model::Capabilities& capabilities,
+    const std::vector<blink::mojom::AILanguageModelToolDeclarationPtr>& tools) {
   auto input = on_device_model::mojom::Input::New();
+  bool tools_embedded = false;
   for (const auto& prompt : prompts) {
     input->pieces.push_back(ConvertToToken(prompt->role));
+
+    // Embed tool declarations in the first system prompt.
+    if (!tools_embedded &&
+        prompt->role == blink::mojom::AILanguageModelPromptRole::kSystem &&
+        !tools.empty()) {
+      tools_embedded = true;
+      if (!AppendToolDeclarations(tools, input->pieces)) {
+        return nullptr;
+      }
+    }
+
     for (const auto& content : prompt->content) {
       switch (content->which()) {
         case blink::mojom::AILanguageModelPromptContent::Tag::kText:
@@ -94,9 +153,17 @@ on_device_model::mojom::InputPtr ConvertToInput(
           break;
         }
         case blink::mojom::AILanguageModelPromptContent::Tag::kToolCall:
-        case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse:
           // TODO(crbug.com/422803232): Support on_device_model tool use.
           return nullptr;
+        case blink::mojom::AILanguageModelPromptContent::Tag::kToolResponse: {
+          // TODO(crbug.com/422803232): Support image/audio result types.
+          auto response = GetToolResponseFromDict(content->get_tool_response());
+          if (!response) {
+            return nullptr;
+          }
+          input->pieces.push_back(std::move(*response));
+          break;
+        }
       }
     }
     if (!prompt->is_prefix) {
@@ -109,7 +176,7 @@ on_device_model::mojom::InputPtr ConvertToInput(
 on_device_model::mojom::InputPtr ConvertToInputForExecute(
     const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts,
     const on_device_model::Capabilities& capabilities) {
-  auto input = ConvertToInput(prompts, capabilities);
+  auto input = ConvertToInput(prompts, capabilities, /*tools=*/{});
   if (!input) {
     return nullptr;
   }
@@ -300,6 +367,26 @@ class AILanguageModel::PromptState
         full_response_, optimization_guide::ResponseCompleteness::kComplete,
         base::BindOnce(&PromptState::OnFullResponseCheckComplete,
                        weak_factory_.GetWeakPtr(), std::move(summary)));
+  }
+
+  void OnToolCalls(
+      std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) override {
+    // Forward tool calls from the model.
+    if (!responder_) {
+      return;
+    }
+
+    // Convert on_device_model::mojom::ToolCall to blink::mojom::ToolCall.
+    std::vector<blink::mojom::ToolCallPtr> blink_tool_calls;
+    blink_tool_calls.reserve(tool_calls.size());
+    for (auto& tc : tool_calls) {
+      auto blink_tc = blink::mojom::ToolCall::New();
+      blink_tc->call_id = std::move(tc->call_id);
+      blink_tc->name = std::move(tc->name);
+      blink_tc->arguments = std::move(tc->arguments);
+      blink_tool_calls.push_back(std::move(blink_tc));
+    }
+    responder_->OnToolCalls(std::move(blink_tool_calls));
   }
 
   void RequestSafetyChecksComplete(
@@ -587,12 +674,27 @@ PromptApiMetadata AILanguageModel::ParseMetadata(
 
 void AILanguageModel::Initialize(
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         create_client) {
+  tools_ = std::move(tools);
+
+  // If tools are provided but no system prompt exists, prepend a synthetic
+  // system prompt so tool declarations have a place to be embedded.
+  if (!tools_.empty() &&
+      !std::ranges::any_of(initial_prompts, [](const auto& prompt) {
+        return prompt->role == blink::mojom::AILanguageModelPromptRole::kSystem;
+      })) {
+    auto prompt = blink::mojom::AILanguageModelPrompt::New();
+    prompt->role = blink::mojom::AILanguageModelPromptRole::kSystem;
+    initial_prompts.insert(initial_prompts.begin(), std::move(prompt));
+  }
+
   if (initial_prompts.empty()) {
     InitializeGetInputSizeComplete(nullptr, std::move(create_client), 0);
   } else {
-    auto input = ConvertToInput(initial_prompts, session_params_->capabilities);
+    auto input =
+        ConvertToInput(initial_prompts, session_params_->capabilities, tools_);
     if (!input) {
       mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
           client_remote(std::move(create_client));
@@ -649,8 +751,8 @@ void AILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     MeasureInputUsageCallback callback) {
   EnsureSessionConnected();
-  auto input =
-      ConvertToInput(std::move(prompts), session_params_->capabilities);
+  auto input = ConvertToInput(std::move(prompts), session_params_->capabilities,
+                              /*tools=*/{});
   if (!input) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -689,6 +791,12 @@ AILanguageModel::GetLanguageModelInstanceInfo() {
         break;
       case on_device_model::CapabilityFlags::kAudioInput:
         input_types.insert(blink::mojom::AILanguageModelPromptType::kAudio);
+        break;
+      case on_device_model::CapabilityFlags::kToolUse:
+        // TODO(crbug.com/422803232): Expose tool support as a dedicated
+        // bool field on AILanguageModelInstanceInfo instead of an input type.
+        input_types.insert(
+            blink::mojom::AILanguageModelPromptType::kToolResponse);
         break;
     }
   }
@@ -822,6 +930,9 @@ void AILanguageModel::ForkInternal(
       *context_bound_object_set_, session_params_.Clone(), model_client_,
       std::move(session), logger_);
   clone->context_ = std::make_unique<Context>(*context_);
+
+  clone->tools_ = mojo::Clone(tools_);
+
   current_session_->Clone(clone->current_session_.BindNewPipeAndPassReceiver());
 
   remote->OnResult(clone->BindRemote(), clone->GetLanguageModelInstanceInfo());
@@ -983,7 +1094,8 @@ void AILanguageModel::AppendInternal(
     return;
   }
 
-  auto input = ConvertToInput(prompts, session_params_->capabilities);
+  auto input =
+      ConvertToInput(prompts, session_params_->capabilities, /*tools=*/{});
   if (!input) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));

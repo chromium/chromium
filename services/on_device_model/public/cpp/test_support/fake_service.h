@@ -52,6 +52,9 @@ struct FakeOnDeviceServiceSettings final {
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 
+  // If non-empty, tool calls are simulated during Generate().
+  std::vector<mojom::ToolCallPtr> simulated_tool_calls;
+
   std::optional<ServiceDisconnectReason> service_disconnect_reason;
 
   std::optional<ModelDisconnectReason> drop_connection_request;

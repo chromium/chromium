@@ -154,6 +154,7 @@ class AILanguageModel : public AIContextBoundObject,
   // and reports to `create_client`.
   void Initialize(
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
+      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
       mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
           create_client);
 
@@ -240,6 +241,8 @@ class AILanguageModel : public AIContextBoundObject,
   // remotes (e.g. a service crash).
   mojo::Remote<on_device_model::mojom::Session> initial_session_;
   on_device_model::mojom::InputPtr initial_input_;
+  // The tools declared for this session.
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools_;
 
   // Contains the current committed session state. This will be replaced after a
   // successful prompt with the latest session state.

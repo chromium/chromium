@@ -12,6 +12,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -55,29 +56,43 @@ std::string Placeholder(ml::Token token) {
 
 std::string OnDeviceInputToString(const mojom::Input& input,
                                   const Capabilities& capabilities) {
-  std::ostringstream oss;
+  std::string result;
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<ml::Token>(piece)) {
-      oss << Placeholder(std::get<ml::Token>(piece));
+      result += Placeholder(std::get<ml::Token>(piece));
     } else if (std::holds_alternative<std::string>(piece)) {
-      oss << std::get<std::string>(piece);
+      result += std::get<std::string>(piece);
     } else if (std::holds_alternative<SkBitmap>(piece)) {
       if (capabilities.Has(CapabilityFlags::kImageInput)) {
-        oss << "<image>";
+        result += "<image>";
       } else {
-        oss << "<unsupported>";
+        result += "<unsupported>";
       }
     } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
       if (capabilities.Has(CapabilityFlags::kAudioInput)) {
-        oss << "<audio>";
+        result += "<audio>";
       } else {
-        oss << "<unsupported>";
+        result += "<unsupported>";
       }
+    } else if (std::holds_alternative<ml::ToolResponse>(piece)) {
+      const auto& response = std::get<ml::ToolResponse>(piece);
+      base::StrAppend(&result, {"<tool-response id=", response.call_id,
+                                " name=", response.name});
+      if (!response.result_json.empty()) {
+        base::StrAppend(&result, {" result=", response.result_json});
+      }
+      if (!response.error_message.empty()) {
+        base::StrAppend(&result, {" error=\"", response.error_message, "\""});
+      }
+      result += ">";
+    } else if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
+      const auto& decl = std::get<ml::ToolDeclaration>(piece);
+      base::StrAppend(&result, {"<tool name=", decl.name, ">"});
     } else {
-      oss << "<unknown>";
+      result += "<unknown>";
     }
   }
-  return oss.str();
+  return result;
 }
 
 std::string CtxToString(const mojom::AppendOptions& input,
@@ -289,6 +304,16 @@ void FakeOnDeviceSession::GenerateImpl(
       remote->OnResponse(std::move(chunk));
     }
   }
+
+  // Simulate tool calls if configured.
+  if (!settings_->simulated_tool_calls.empty()) {
+    std::vector<mojom::ToolCallPtr> tool_calls;
+    for (const auto& tc : settings_->simulated_tool_calls) {
+      tool_calls.push_back(tc->Clone());
+    }
+    remote->OnToolCalls(std::move(tool_calls));
+  }
+
   if (options->max_output_tokens &&
       output_token_count > options->max_output_tokens) {
     output_token_count = options->max_output_tokens;

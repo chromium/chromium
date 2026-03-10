@@ -8,7 +8,6 @@
 
 #include <cstddef>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <variant>
 #include <vector>
@@ -16,6 +15,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
@@ -370,21 +370,40 @@ SubstitutionResult& SubstitutionResult::operator=(SubstitutionResult&&) =
     default;
 
 std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
-  std::ostringstream oss;
+  std::string result;
+  // TODO(crbug.com/422803232): Rewrite this formatter with `std::visit()`.
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
-      oss << std::get<std::string>(piece);
+      result += std::get<std::string>(piece);
     } else if (std::holds_alternative<ml::Token>(piece)) {
-      oss << PlaceholderForToken(std::get<ml::Token>(piece));
+      result += PlaceholderForToken(std::get<ml::Token>(piece));
     } else if (std::holds_alternative<SkBitmap>(piece)) {
-      oss << "<image>";
+      result += "<image>";
     } else if (std::holds_alternative<ml::AudioBuffer>(piece)) {
-      oss << "<audio>";
+      result += "<audio>";
+    } else if (std::holds_alternative<ml::ToolResponse>(piece)) {
+      // Tool responses include result or error for safety checking.
+      const auto& response = std::get<ml::ToolResponse>(piece);
+      base::StrAppend(&result, {"<tool-response id=", response.call_id,
+                                " name=", response.name});
+      if (!response.result_json.empty()) {
+        base::StrAppend(&result, {" result=", response.result_json});
+      }
+      if (!response.error_message.empty()) {
+        base::StrAppend(&result, {" error=\"", response.error_message, "\""});
+      }
+      result += ">";
+    } else if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
+      // Tool declarations include description and schema for safety checking.
+      const auto& decl = std::get<ml::ToolDeclaration>(piece);
+      base::StrAppend(&result, {"<tool name=", decl.name, " description=\"",
+                                decl.description,
+                                "\" schema=", decl.input_schema_json, ">"});
     } else {
       NOTREACHED();
     }
   }
-  return oss.str();
+  return result;
 }
 
 std::string SubstitutionResult::ToString() const {

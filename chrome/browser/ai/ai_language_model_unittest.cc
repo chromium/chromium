@@ -12,6 +12,8 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -1526,6 +1528,455 @@ TEST_F(AILanguageModelTest, Priority) {
 
   main_rfh()->GetRenderWidgetHost()->GetView()->Show();
   EXPECT_THAT(Prompt(*session, MakeInput("baz")), ElementsAre("hi"));
+}
+
+// Test class for `Tool Use` functionality.
+class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
+ protected:
+  // Override CreateConfig to use higher max tokens for `Tool Use` testing.
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
+      override {
+    auto config = AILanguageModelTest::CreateConfig();
+    // Use higher max tokens to accommodate tool declarations/responses.
+    config.mutable_input_config()->set_max_context_tokens(3000);
+    return config;
+  }
+
+  // Helper to create a weather tool for testing.
+  blink::mojom::AILanguageModelToolDeclarationPtr CreateWeatherTool() {
+    auto tool = blink::mojom::AILanguageModelToolDeclaration::New();
+    tool->name = "get_weather";
+    tool->description = "Get current weather for a location";
+
+    auto schema = base::JSONReader::ReadDict(R"({
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "City name"
+        }
+      },
+      "required": ["location"]
+    })",
+                                             base::JSON_PARSE_RFC);
+    CHECK(schema);
+    tool->input_schema = std::move(*schema);
+    return tool;
+  }
+
+  // Helper to configure simulated tool call.
+  void SetupSimulatedToolCall(const std::string& call_id,
+                              const std::string& tool_name,
+                              const std::string& location) {
+    base::DictValue args;
+    args.Set("location", location);
+
+    auto tool_call = on_device_model::mojom::ToolCall::New();
+    tool_call->call_id = call_id;
+    tool_call->name = tool_name;
+    tool_call->arguments = std::move(args);
+
+    std::vector<on_device_model::mojom::ToolCallPtr> simulated_calls;
+    simulated_calls.push_back(std::move(tool_call));
+    fake_broker_->settings().simulated_tool_calls = std::move(simulated_calls);
+  }
+
+  // Helper to create session with tools and system prompt.
+  mojo::Remote<blink::mojom::AILanguageModel>
+  CreateSessionWithToolsAndSystemPrompt(
+      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools,
+      const std::string& system_prompt = "You are a helpful assistant.") {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->tools = std::move(tools);
+    options->initial_prompts.push_back(
+        MakePrompt(Role::kSystem, system_prompt));
+    return CreateSession(std::move(options));
+  }
+
+  // Helper to setup tool call simulation and create session with tools.
+  mojo::Remote<blink::mojom::AILanguageModel> SetupToolCallTestSession(
+      const std::string& call_id,
+      const std::string& location) {
+    SetupSimulatedToolCall(call_id, "get_weather", location);
+
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+    tools.push_back(CreateWeatherTool());
+    return CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+  }
+
+  // Helper to disable tool call simulation.
+  void DisableToolCallSimulation() {
+    fake_broker_->settings().simulated_tool_calls.clear();
+  }
+};
+
+// Test that tools are embedded in the session's initial context.
+TEST_F(AILanguageModelOpenLoopToolTest, ToolsEmbeddedInSystemPrompt) {
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  // Verify tool declarations are passed to the on_device_model service.
+  // The fake service echoes back its accumulated context, which includes tool
+  // declarations formatted as "<tool name=...>".
+  auto responses = Prompt(*session, MakeInput("Test"));
+  ASSERT_THAT(responses, testing::SizeIs(testing::Ge(1)));
+
+  std::string full_response = base::JoinString(responses, "");
+  // Verify tool declaration content was embedded in context.
+  EXPECT_THAT(full_response, testing::HasSubstr("<tool name=get_weather>"));
+}
+
+// Test that empty tools array doesn't break session creation or prompting.
+TEST_F(AILanguageModelOpenLoopToolTest, EmptyToolsArrayHandled) {
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> empty_tools;
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(empty_tools));
+
+  // Session should work normally with empty tools array.
+  auto responses = Prompt(*session, MakeInput("Hello"));
+  ASSERT_THAT(responses, testing::SizeIs(testing::Ge(1)));
+
+  // Verify the prompt was echoed back (no tool declarations should appear).
+  std::string full_response = base::JoinString(responses, "");
+  EXPECT_THAT(full_response, testing::HasSubstr("Hello"));
+  EXPECT_THAT(full_response, testing::Not(testing::HasSubstr("<tool name=")));
+}
+
+// Test that tools without a system prompt are embedded in a synthetic system
+// prompt.
+TEST_F(AILanguageModelOpenLoopToolTest, ToolsEmbeddedWithoutSystemPrompt) {
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  options->tools = std::move(tools);
+  // No initial_prompts (no system prompt).
+  auto session = CreateSession(std::move(options));
+
+  auto responses = Prompt(*session, MakeInput("Test"));
+  ASSERT_THAT(responses, testing::SizeIs(testing::Ge(1)));
+
+  // Tool declarations should appear in the echo from a synthetic system prompt.
+  std::string full_response = base::JoinString(responses, "");
+  EXPECT_THAT(full_response, testing::HasSubstr("<tool name="));
+}
+
+// Test that multiple tools are properly embedded in system prompt.
+TEST_F(AILanguageModelOpenLoopToolTest, MultipleToolsSupported) {
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+
+  // Add a calculator tool.
+  auto calc_tool = blink::mojom::AILanguageModelToolDeclaration::New();
+  calc_tool->name = "calculate";
+  calc_tool->description = "Perform calculations";
+  auto calc_schema = base::JSONReader::ReadDict(R"({
+    "type": "object",
+    "properties": {
+      "expression": {
+        "type": "string",
+        "description": "Math expression"
+      }
+    },
+    "required": ["expression"]
+  })",
+                                                base::JSON_PARSE_RFC);
+  ASSERT_TRUE(calc_schema);
+  calc_tool->input_schema = std::move(*calc_schema);
+  tools.push_back(std::move(calc_tool));
+
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  // Verify both tool declarations are passed to the on_device_model service.
+  auto responses = Prompt(*session, MakeInput("Test"));
+  ASSERT_THAT(responses, testing::SizeIs(testing::Ge(1)));
+
+  std::string full_response = base::JoinString(responses, "");
+  // Verify tool declarations were embedded in the context.
+  EXPECT_THAT(full_response, testing::HasSubstr("<tool name=get_weather>"));
+  EXPECT_THAT(full_response, testing::HasSubstr("<tool name=calculate>"));
+}
+
+// Test that OnToolCalls from the on_device_model service side is forwarded to
+// Blink responder.
+TEST_F(AILanguageModelOpenLoopToolTest, OnToolCallsForwardedToBlink) {
+  auto session = SetupToolCallTestSession("call_123", "Seattle");
+
+  // Execute prompt and verify tool calls are received.
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeInput("What's the weather?"), /*constraint=*/nullptr,
+                  responder.BindRemote());
+
+  // Wait for tool calls to be forwarded.
+  EXPECT_TRUE(responder.WaitForToolCalls());
+  ASSERT_EQ(responder.tool_calls().size(), 1u);
+  EXPECT_EQ(responder.tool_calls()[0]->call_id, "call_123");
+  EXPECT_EQ(responder.tool_calls()[0]->name, "get_weather");
+}
+
+// Test that tool response is handled.
+TEST_F(AILanguageModelOpenLoopToolTest, ToolResponseHandled) {
+  auto session = SetupToolCallTestSession("call_456", "Tokyo");
+
+  // Get tool call.
+  AITestUtils::TestStreamingResponder responder1;
+  session->Prompt(MakeInput("Weather in Tokyo?"), /*constraint=*/nullptr,
+                  responder1.BindRemote());
+  EXPECT_TRUE(responder1.WaitForToolCalls());
+
+  // Disable tool simulation.
+  DisableToolCallSimulation();
+
+  // Send structured tool response with nested objects/arrays.
+  base::DictValue tool_response_dict;
+  tool_response_dict.Set("callID", "call_456");
+  tool_response_dict.Set("name", "get_weather");
+
+  base::DictValue result;
+  result.Set("temperature", 28);
+  result.Set("condition", "Rainy");
+  result.Set("humidity", 85);
+
+  base::ListValue forecast;
+  base::DictValue day1;
+  day1.Set("day", "today");
+  day1.Set("high", 30);
+  day1.Set("low", 25);
+  forecast.Append(std::move(day1));
+
+  base::DictValue day2;
+  day2.Set("day", "tomorrow");
+  day2.Set("high", 32);
+  day2.Set("low", 27);
+  forecast.Append(std::move(day2));
+
+  result.Set("forecast", std::move(forecast));
+
+  base::ListValue alerts;
+  alerts.Append("Heavy rain warning");
+  result.Set("alerts", std::move(alerts));
+
+  tool_response_dict.Set("result", std::move(result));
+
+  // Create prompt with tool response as structured content with kUser role.
+  std::vector<blink::mojom::AILanguageModelPromptPtr> tool_response_prompts;
+  auto prompt = blink::mojom::AILanguageModelPrompt::New();
+  prompt->role = blink::mojom::AILanguageModelPromptRole::kUser;
+  prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(tool_response_dict)));
+  tool_response_prompts.push_back(std::move(prompt));
+
+  // Verify model receives and processes structured data.
+  AITestUtils::TestStreamingResponder responder2;
+  session->Prompt(std::move(tool_response_prompts), /*constraint=*/nullptr,
+                  responder2.BindRemote());
+  EXPECT_TRUE(responder2.WaitForCompletion());
+
+  std::string response = base::JoinString(responder2.responses(), "");
+  // The fake service echoes back its accumulated context. The context includes
+  // the ToolResponse formatted by fake_service.cc's OnDeviceInputToString().
+  // Verify that tool response was properly formatted.
+  EXPECT_THAT(response, testing::HasSubstr(
+                            "<tool-response id=call_456 name=get_weather"));
+  // Verify the result JSON was serialized and included.
+  EXPECT_THAT(response, testing::HasSubstr("\"temperature\":28"));
+  EXPECT_THAT(response, testing::HasSubstr("\"condition\":\"Rainy\""));
+  EXPECT_THAT(response, testing::HasSubstr("\"humidity\":85"));
+  // Verify nested arrays in the result JSON.
+  EXPECT_THAT(response, testing::HasSubstr("\"forecast\":["));
+  EXPECT_THAT(response, testing::HasSubstr("\"day\":\"today\""));
+  EXPECT_THAT(response, testing::HasSubstr("\"day\":\"tomorrow\""));
+  EXPECT_THAT(response, testing::HasSubstr("\"high\":30"));
+  EXPECT_THAT(response, testing::HasSubstr("\"high\":32"));
+  // Verify alerts array.
+  EXPECT_THAT(response,
+              testing::HasSubstr("\"alerts\":[\"Heavy rain warning\"]"));
+}
+
+// Test that tool response with error is handled.
+TEST_F(AILanguageModelOpenLoopToolTest, ToolResponseWithError) {
+  auto session = SetupToolCallTestSession("call_789", "InvalidCity");
+
+  // Get tool call.
+  AITestUtils::TestStreamingResponder responder1;
+  session->Prompt(MakeInput("Weather in InvalidCity?"), /*constraint=*/nullptr,
+                  responder1.BindRemote());
+  EXPECT_TRUE(responder1.WaitForToolCalls());
+
+  // Disable simulation.
+  DisableToolCallSimulation();
+
+  // Send tool error response.
+  base::DictValue error_response_dict;
+  error_response_dict.Set("callID", "call_789");
+  error_response_dict.Set("name", "get_weather");
+  error_response_dict.Set("errorMessage",
+                          "Unable to find weather data for InvalidCity");
+
+  std::vector<blink::mojom::AILanguageModelPromptPtr> error_prompts;
+  auto prompt = blink::mojom::AILanguageModelPrompt::New();
+  prompt->role = blink::mojom::AILanguageModelPromptRole::kUser;
+  prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(error_response_dict)));
+  error_prompts.push_back(std::move(prompt));
+
+  // Verify model handles error gracefully.
+  AITestUtils::TestStreamingResponder responder2;
+  session->Prompt(std::move(error_prompts), /*constraint=*/nullptr,
+                  responder2.BindRemote());
+  EXPECT_TRUE(responder2.WaitForCompletion());
+
+  std::string response = base::JoinString(responder2.responses(), "");
+  // The fake service echoes back its accumulated context. The context includes
+  // the ToolResponse formatted by fake_service.cc's OnDeviceInputToString().
+  // Verify that tool response error was properly formatted.
+  EXPECT_THAT(response, testing::HasSubstr(
+                            "<tool-response id=call_789 name=get_weather"));
+  // Verify error message was included (not result JSON).
+  EXPECT_THAT(response,
+              testing::HasSubstr(
+                  "error=\"Unable to find weather data for InvalidCity\""));
+  EXPECT_THAT(response, testing::Not(testing::HasSubstr("result=")));
+}
+
+// Test complete open-loop tool call flow.
+TEST_F(AILanguageModelOpenLoopToolTest, CompleteOpenLoopToolCallFlow) {
+  // ========== STEP 1: Setup tool call simulation ==========
+  auto session = SetupToolCallTestSession("call_123", "Seattle");
+
+  // ========== STEP 2: Send initial prompt, receive tool call ==========
+  AITestUtils::TestStreamingResponder responder1;
+  session->Prompt(MakeInput("What's the weather in Seattle?"),
+                  /*constraint=*/nullptr, responder1.BindRemote());
+
+  EXPECT_TRUE(responder1.WaitForToolCalls());
+  ASSERT_EQ(responder1.tool_calls().size(), 1u);
+  EXPECT_EQ(responder1.tool_calls()[0]->call_id, "call_123");
+  EXPECT_EQ(responder1.tool_calls()[0]->name, "get_weather");
+
+  // Tool call arguments should match what we expect.
+  const std::string* location =
+      responder1.tool_calls()[0]->arguments.FindString("location");
+  ASSERT_TRUE(location);
+  EXPECT_EQ(*location, "Seattle");
+
+  // ========== STEP 3: Disable tool simulation for next prompt ==========
+  // Important! Otherwise the model will trigger tools again.
+  DisableToolCallSimulation();
+
+  // ========== STEP 4: Create and send tool response as new prompt ==========
+  // Compose the result for ToolResponse.
+  base::DictValue tool_result_dict;
+  tool_result_dict.Set("callID", "call_123");
+  tool_result_dict.Set("name", "get_weather");
+
+  base::DictValue result;
+  result.Set("temperature", 72);
+  result.Set("condition", "Sunny");
+  result.Set("location", "Seattle");
+  tool_result_dict.Set("result", std::move(result));
+
+  std::vector<blink::mojom::AILanguageModelPromptPtr> tool_result_prompts;
+  auto tool_prompt = blink::mojom::AILanguageModelPrompt::New();
+  tool_prompt->role = blink::mojom::AILanguageModelPromptRole::kUser;
+  tool_prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(tool_result_dict)));
+  tool_result_prompts.push_back(std::move(tool_prompt));
+
+  // ========== STEP 5: Send tool result and verify final response ==========
+  AITestUtils::TestStreamingResponder responder2;
+  session->Prompt(std::move(tool_result_prompts), /*constraint=*/nullptr,
+                  responder2.BindRemote());
+
+  // Should receive completion, NOT another tool call.
+  EXPECT_TRUE(responder2.WaitForCompletion());
+  EXPECT_EQ(responder2.tool_calls().size(), 0u);  // No more tool calls.
+
+  // ========== STEP 6: Verify final response uses tool result ==========
+  ASSERT_GT(responder2.responses().size(), 0u);
+  std::string final_response = base::JoinString(responder2.responses(), "");
+
+  // The fake service echoes back its accumulated context. The context includes
+  // the ToolResponse formatted by fake_service.cc's OnDeviceInputToString().
+  // Verify that tool response was properly formatted.
+  EXPECT_THAT(
+      final_response,
+      testing::HasSubstr("<tool-response id=call_123 name=get_weather"));
+  // Verify the result JSON was serialized and included.
+  EXPECT_THAT(final_response, testing::HasSubstr("\"temperature\":72"));
+  EXPECT_THAT(final_response, testing::HasSubstr("\"condition\":\"Sunny\""));
+  EXPECT_THAT(final_response, testing::HasSubstr("\"location\":\"Seattle\""));
+}
+
+// Test that cloned sessions preserve tools and tool call functionality.
+TEST_F(AILanguageModelOpenLoopToolTest, ClonedSessionPreservesTools) {
+  // ========== STEP 1: Create original session with tools ==========
+  SetupSimulatedToolCall("call_clone_001", "get_weather", "Paris");
+
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools;
+  tools.push_back(CreateWeatherTool());
+  auto session = CreateSessionWithToolsAndSystemPrompt(std::move(tools));
+
+  // ========== STEP 2: Send prompt to original session ==========
+  AITestUtils::TestStreamingResponder responder1;
+  session->Prompt(MakeInput("What's the weather in Paris?"),
+                  /*constraint=*/nullptr, responder1.BindRemote());
+  EXPECT_TRUE(responder1.WaitForToolCalls());
+  ASSERT_EQ(responder1.tool_calls().size(), 1u);
+  EXPECT_EQ(responder1.tool_calls()[0]->call_id, "call_clone_001");
+  EXPECT_EQ(responder1.tool_calls()[0]->name, "get_weather");
+
+  // ========== STEP 3: Clone the session ==========
+  mojo::Remote<blink::mojom::AILanguageModel> cloned_session = Fork(*session);
+
+  // ========== STEP 4: Verify tool calls work in cloned session ==========
+  // Configure new tool call for cloned session.
+  SetupSimulatedToolCall("call_clone_002", "get_weather", "London");
+
+  AITestUtils::TestStreamingResponder responder2;
+  cloned_session->Prompt(MakeInput("What's the weather in London?"),
+                         /*constraint=*/nullptr, responder2.BindRemote());
+  EXPECT_TRUE(responder2.WaitForToolCalls());
+  ASSERT_EQ(responder2.tool_calls().size(), 1u);
+  EXPECT_EQ(responder2.tool_calls()[0]->call_id, "call_clone_002");
+  EXPECT_EQ(responder2.tool_calls()[0]->name, "get_weather");
+
+  // ========== STEP 5: Verify tool responses work in cloned session ==========
+  // Disable tool simulation.
+  DisableToolCallSimulation();
+
+  // Send tool response to cloned session.
+  base::DictValue tool_response_dict;
+  tool_response_dict.Set("callID", "call_clone_002");
+  tool_response_dict.Set("name", "get_weather");
+
+  base::DictValue result;
+  result.Set("temperature", 18);
+  result.Set("condition", "Cloudy");
+  tool_response_dict.Set("result", std::move(result));
+
+  std::vector<blink::mojom::AILanguageModelPromptPtr> tool_result_prompts;
+  auto tool_prompt = blink::mojom::AILanguageModelPrompt::New();
+  tool_prompt->role = blink::mojom::AILanguageModelPromptRole::kUser;
+  tool_prompt->content.push_back(
+      blink::mojom::AILanguageModelPromptContent::NewToolResponse(
+          std::move(tool_response_dict)));
+  tool_result_prompts.push_back(std::move(tool_prompt));
+
+  AITestUtils::TestStreamingResponder responder3;
+  cloned_session->Prompt(std::move(tool_result_prompts),
+                         /*constraint=*/nullptr, responder3.BindRemote());
+  EXPECT_TRUE(responder3.WaitForCompletion());
+
+  // Verify tool response was properly formatted in cloned session.
+  std::string final_response = base::JoinString(responder3.responses(), "");
+  EXPECT_THAT(
+      final_response,
+      testing::HasSubstr("<tool-response id=call_clone_002 name=get_weather"));
+  EXPECT_THAT(final_response, testing::HasSubstr("\"temperature\":18"));
+  EXPECT_THAT(final_response, testing::HasSubstr("\"condition\":\"Cloudy\""));
 }
 
 }  // namespace
