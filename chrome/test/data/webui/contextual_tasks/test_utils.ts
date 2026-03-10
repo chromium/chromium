@@ -25,6 +25,8 @@ export const HANDSHAKE_RESPONSE_BYTES = new Uint8Array([10, 2, 8, 0]);
 export const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
 export const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDFF';
 
+export const fixtureUrl = 'chrome://webui-test/contextual_tasks/test.html';
+
 export function assertHTMLElement(element: Element|null|undefined):
     asserts element is HTMLElement {
   assertTrue(!!element);
@@ -108,7 +110,7 @@ export async function setupAutocompleteResults(
     createAutocompleteMatch({
       allowedToBeDefaultMatch: true,
       contents: testQuery,
-      destinationUrl: `https://google.com/search?q=${testQuery}`,
+      destinationUrl: `${fixtureUrl}/search?q=${testQuery}`,
       type: 'search-what-you-typed',
       fillIntoEdit: testQuery,
     }),

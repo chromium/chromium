@@ -10,8 +10,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-
-const fixtureUrl = 'chrome://webui-test/contextual_tasks/test.html';
+import {fixtureUrl} from './test_utils.js';
 
 suite('ContextualTasksAppTest', function() {
   let initialUrl: string;
@@ -396,7 +395,7 @@ suite('ContextualTasksAppTest', function() {
 
     document.body.appendChild(document.createElement('contextual-tasks-app'));
 
-    const aimUrl = 'https://www.google.com/search?q=123';
+    const aimUrl = `${fixtureUrl}/search?q=123`;
     proxy.callbackRouterRemote.setAimUrl(aimUrl);
     await proxy.callbackRouterRemote.$.flushForTesting();
 
@@ -1034,7 +1033,11 @@ suite('ContextualTasksAppTest', function() {
         'isFrameLoading should be true');
 
     // Simulate load abort.
-    appElement.onThreadFrameLoadAbortForTesting();
+    const loadAbortEvent = new CustomEvent('loadabort') as any;
+    loadAbortEvent.isTopLevel = true;
+    loadAbortEvent.url = fixtureUrl;
+    loadAbortEvent.reason = 'ERR_CONNECTION_RESET';
+    appElement.onThreadFrameLoadAbortForTesting(loadAbortEvent);
     await microtasksFinished();
 
     // Verify isFrameLoading is false.
