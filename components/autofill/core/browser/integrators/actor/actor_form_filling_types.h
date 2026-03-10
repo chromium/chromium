@@ -78,7 +78,8 @@ struct ActorFormFillingRequest {
   // See the FormFillingRequest.RequestedData enum in actions_data.proto.
   using RequestedData =
       optimization_guide::proto::FormFillingRequest_RequestedData;
-  RequestedData requested_data;
+  RequestedData requested_data =
+      RequestedData::FormFillingRequest_RequestedData_REQUESTED_DATA_UNKNOWN;
   url::Origin request_origin;
   std::vector<ActorSuggestion> suggestions;
 };
