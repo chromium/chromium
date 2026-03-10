@@ -52,7 +52,7 @@ bool CanUseItemForNeedsPaint(const InlineItem& item) {
     case InlineItem::kInitialLetterBox:
       break;
   }
-  return item.TextType() == TextItemType::kNormal && item.GetLayoutObject();
+  return item.GetLayoutObject();
 }
 
 const LayoutObject& LayoutObjectForLineClampEllipsis(
