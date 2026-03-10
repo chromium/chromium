@@ -215,6 +215,7 @@ void VerticalTabGroupView::ToggleCollapsedState(
 
   collection_node_->GetController()->ToggleTabGroupCollapsedState(
       GetTabGroupFromNode(collection_node_), origin);
+  InvalidateLayout();
 }
 
 views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
