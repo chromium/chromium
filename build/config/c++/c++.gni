@@ -86,8 +86,15 @@ declare_args() {
       !enable_kythe_annotations && is_clang &&
       clang_modules_platform_supported && using_tested_sysroot &&
       # reclient and icecc don't handle headers in modulemap config.
-      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc"
+      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc" &&
+      # TODO: crbug.com/440481921 - Fix conflicting function types when enabling
+      # fuzzer & coverage with modules.
+      !(use_clang_coverage && use_libfuzzer)
 }
+
+assert(
+    !(use_clang_modules && use_clang_coverage && use_libfuzzer),
+    "crbug.com/440481921: Can't enable use_clang_modules when use_clang_coverage and use_libfuzzer are enabled.")
 
 # The saigo libc++ is distinct from the custom hermetic libc++. However, since
 # the Chrome team controls the saigo toolchain, it is safe to unconditionally
