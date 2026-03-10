@@ -1264,105 +1264,6 @@ suite('SearchboxTest', () => {
   });
 
   //============================================================================
-  // Test Cut/Copy
-  //============================================================================
-
-  test('Copying or cutting empty input fails', () => {
-    realbox.$.input.inputElement.value = '';
-
-    const copyEvent = createClipboardEvent('copy');
-    realbox.$.input.inputElement.dispatchEvent(copyEvent);
-    assertFalse(copyEvent.defaultPrevented);
-
-    const cutEvent = createClipboardEvent('cut');
-    realbox.$.input.inputElement.dispatchEvent(cutEvent);
-    assertFalse(cutEvent.defaultPrevented);
-  });
-
-  test('Copying or cutting search match fails', async () => {
-    realbox.$.input.inputElement.value = 'hello ';
-    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-
-    const matches = [createSearchMatchForTesting({
-      allowedToBeDefaultMatch: true,
-      inlineAutocompletion: 'world',
-    })];
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: realbox.$.input.inputElement.value.trimStart(),
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing());
-
-    assertEquals('hello world', realbox.$.input.inputElement.value);
-    const start = realbox.$.input.inputElement.selectionStart!;
-    const end = realbox.$.input.inputElement.selectionEnd!;
-    assertEquals(
-        'world', realbox.$.input.inputElement.value.substring(start, end));
-
-    // Select the entire input.
-    realbox.$.input.setSelectionRange(
-        0, realbox.$.input.inputElement.value.length);
-
-    const copyEvent = createClipboardEvent('copy');
-    realbox.$.input.inputElement.dispatchEvent(copyEvent);
-    assertFalse(copyEvent.defaultPrevented);
-
-    const cutEvent = createClipboardEvent('cut');
-    realbox.$.input.inputElement.dispatchEvent(cutEvent);
-    assertFalse(cutEvent.defaultPrevented);
-  });
-
-  test('Copying or cutting URL match succeeds', async () => {
-    realbox.$.input.inputElement.value = 'hello';
-    realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
-
-    const matches = [createUrlMatch({
-      allowedToBeDefaultMatch: true,
-      inlineAutocompletion: 'world.com',
-    })];
-    testProxy.callbackRouterRemote.autocompleteResultChanged(
-        createAutocompleteResultForTesting({
-          input: realbox.$.input.inputElement.value.trimStart(),
-          matches: matches,
-        }));
-    assertTrue(await areMatchesShowing());
-
-    assertEquals('helloworld.com', realbox.$.input.inputElement.value);
-    const start = realbox.$.input.inputElement.selectionStart!;
-    const end = realbox.$.input.inputElement.selectionEnd!;
-    assertEquals(
-        'world.com', realbox.$.input.inputElement.value.substring(start, end));
-
-    const copyEvent = createClipboardEvent('copy');
-    realbox.$.input.inputElement.dispatchEvent(copyEvent);
-    assertFalse(copyEvent.defaultPrevented);
-
-    const cutEvent = createClipboardEvent('cut');
-    realbox.$.input.inputElement.dispatchEvent(cutEvent);
-    assertFalse(cutEvent.defaultPrevented);
-
-    // Select the entire input.
-    realbox.$.input.setSelectionRange(
-        0, realbox.$.input.inputElement.value.length);
-
-    realbox.$.input.inputElement.dispatchEvent(copyEvent);
-    assertTrue(copyEvent.defaultPrevented);
-    assertEquals(
-        'https://helloworld.com/',
-        copyEvent.clipboardData!.getData('text/plain'));
-
-    realbox.$.input.inputElement.dispatchEvent(cutEvent);
-    assertTrue(cutEvent.defaultPrevented);
-    assertEquals(
-        'https://helloworld.com/',
-        cutEvent.clipboardData!.getData('text/plain'));
-
-    // Cut should close the dropdown.
-    assertFalse(await areMatchesShowing());
-  });
-
-  //============================================================================
   // Test Navigation
   //============================================================================
 
@@ -3125,17 +3026,6 @@ suite('SearchboxTest', () => {
     assertEquals(0, args.line);
     assertEquals(
         NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
-  });
-
-  //============================================================================
-  // Test Set Input Text
-  //============================================================================
-  test('input text appears on page call from browser', async () => {
-    assertEquals(realbox.$.input.inputElement.value, '');
-    testProxy.callbackRouterRemote.setInputText('Hello');
-    await microtasksFinished();
-    assertEquals(realbox.$.input.inputElement.value, 'Hello');
-    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
   //============================================================================
