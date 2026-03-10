@@ -218,9 +218,6 @@ BASE_FEATURE(kShoppingList, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kShoppingPDPMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSubscriptionsApi, base::FEATURE_DISABLED_BY_DEFAULT);

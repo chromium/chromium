@@ -25,12 +25,6 @@ const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
 const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =
     "Enable the locale key for price tracking subscription service";
 
-const char kPriceTrackingSubscriptionServiceProductVersionName[] =
-    "Price Tracking Subscription Service Product Version";
-const char kPriceTrackingSubscriptionServiceProductVersionDescription[] =
-    "Enable the product version logging for price tracking subscription "
-    "service";
-
 const char kDiscountAutofillName[] = "Discount Autofill";
 const char kDiscountAutofillDescription[] =
     "Enable discount autofill experiment.";

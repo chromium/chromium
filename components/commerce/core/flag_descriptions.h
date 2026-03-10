@@ -27,9 +27,6 @@ extern const char kShoppingPageTypesDescription[];
 extern const char kPriceTrackingSubscriptionServiceLocaleKeyName[];
 extern const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[];
 
-extern const char kPriceTrackingSubscriptionServiceProductVersionName[];
-extern const char kPriceTrackingSubscriptionServiceProductVersionDescription[];
-
 extern const char kDiscountAutofillName[];
 extern const char kDiscountAutofillDescription[];
 

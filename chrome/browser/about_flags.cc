@@ -7158,15 +7158,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kPriceTrackingSubscriptionServiceLocaleKey)},
 
-    {"price-tracking-subscription-service-product-version",
-     commerce::flag_descriptions::
-         kPriceTrackingSubscriptionServiceProductVersionName,
-     commerce::flag_descriptions::
-         kPriceTrackingSubscriptionServiceProductVersionDescription,
-     kOsAndroid | kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         commerce::kPriceTrackingSubscriptionServiceProductVersion)},
-
     {"composebox-uses-chrome-compose-client",
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientName,
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,

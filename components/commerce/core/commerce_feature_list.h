@@ -46,7 +46,6 @@ std::string ShopCardExperiment();
 
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
-BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
 BASE_DECLARE_FEATURE(kShoppingPDPMetrics);
 BASE_DECLARE_FEATURE(kSubscriptionsApi);
