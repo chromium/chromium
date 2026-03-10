@@ -9,6 +9,8 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable dinosaur easter egg game
   value: true

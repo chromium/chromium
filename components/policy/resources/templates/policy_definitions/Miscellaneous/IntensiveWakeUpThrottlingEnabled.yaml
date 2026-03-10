@@ -22,6 +22,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Force throttling of background JavaScript timers
   value: true

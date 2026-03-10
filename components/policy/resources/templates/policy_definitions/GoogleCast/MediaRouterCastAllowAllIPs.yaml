@@ -11,6 +11,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Allow <ph name="PRODUCT_NAME">Google Cast</ph> to connect to devices on
     all IP addresses

@@ -15,6 +15,7 @@ future_on:
 - android
 - chrome.*
 - chrome_os
+- fuchsia
 features:
   dynamic_refresh: true
   per_profile: true

@@ -14,6 +14,8 @@ example_value: 60
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - bzielinski@google.com
 - dorianbrandon@google.com

@@ -15,6 +15,8 @@ features:
   dynamic_refresh: true
   metapolicy_type: precedence
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Cloud machine policies take precedence over platform machine policies
   value: true

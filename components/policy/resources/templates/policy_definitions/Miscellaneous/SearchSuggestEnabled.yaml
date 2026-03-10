@@ -11,6 +11,8 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable search suggestions
   value: true

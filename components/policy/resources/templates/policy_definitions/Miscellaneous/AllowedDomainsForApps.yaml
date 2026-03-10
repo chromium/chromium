@@ -13,6 +13,8 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - igorcov@chromium.org
 - atwilson@chromium.org

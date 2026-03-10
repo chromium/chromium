@@ -25,6 +25,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- fuchsia
 - ios
 owners:
 - chromeos-commercial-networking-team@google.com

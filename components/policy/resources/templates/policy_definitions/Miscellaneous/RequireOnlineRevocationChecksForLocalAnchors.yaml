@@ -10,6 +10,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Perform revocation checks for successfully validated server certificates
     signed by locally installed CA certificates

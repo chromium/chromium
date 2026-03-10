@@ -10,6 +10,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Allow online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks to be performed
   value: true

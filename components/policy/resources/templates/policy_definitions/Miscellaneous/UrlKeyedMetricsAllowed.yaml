@@ -15,6 +15,7 @@ future_on:
 - chrome_os
 - android
 - ios
+- fuchsia
 items:
 - caption: URL-keyed metrics collection is allowed
   value: true

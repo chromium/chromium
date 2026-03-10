@@ -12,6 +12,8 @@ example_value: 300
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - awscreen@chromium.org
 - file://printing/OWNERS

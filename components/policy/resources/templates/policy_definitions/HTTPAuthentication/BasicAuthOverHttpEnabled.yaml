@@ -10,6 +10,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: <ph name="BASIC_AUTH">Basic</ph> authentication is allowed on HTTP connections
   value: true

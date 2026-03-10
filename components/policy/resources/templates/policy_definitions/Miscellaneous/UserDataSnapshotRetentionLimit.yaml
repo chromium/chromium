@@ -11,6 +11,8 @@ example_value: 3
 features:
   dynamic_refresh: false
   per_profile: false
+future_on:
+- fuchsia
 owners:
 - ydago@chromium.org
 - grt@chromium.org

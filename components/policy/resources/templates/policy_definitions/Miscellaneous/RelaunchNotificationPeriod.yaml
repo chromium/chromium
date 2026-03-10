@@ -10,6 +10,8 @@ example_value: 604800000
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 label: Time period (milliseconds)
 owners:
 - grt@chromium.org

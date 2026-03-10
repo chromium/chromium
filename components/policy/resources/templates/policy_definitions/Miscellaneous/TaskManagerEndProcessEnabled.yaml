@@ -8,6 +8,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Allow users to end processes with the Chrome task manager
   value: true

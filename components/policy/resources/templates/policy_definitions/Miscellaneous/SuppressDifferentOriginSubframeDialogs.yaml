@@ -12,6 +12,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Block JavaScript dialogs triggered from a different origin subframe.
   value: true

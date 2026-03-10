@@ -23,6 +23,7 @@ supported_on:
 - android:133-
 - chrome.*:133-
 - chrome_os:133-
+- fuchsia:133-
 items:
 - caption: Enable advanced JavaScript optimizations on all sites
   name: AllowJavaScriptOptimizer

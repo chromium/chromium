@@ -20,6 +20,8 @@ example_value: default
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: WebRTC will use all available interfaces when searching for the best path.
   name: default

@@ -14,6 +14,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> region search.
   value: true

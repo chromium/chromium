@@ -13,6 +13,8 @@ features:
   dynamic_refresh: true
   per_profile: false
   platform_only: true
+future_on:
+- fuchsia
 items:
 - caption: Allow remote support connections to this machine
   value: true

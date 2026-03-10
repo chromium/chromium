@@ -20,6 +20,8 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - domfc@chromium.org
 - cbe-cep-eng@google.com

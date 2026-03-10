@@ -13,6 +13,8 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable access to the default search provider context menu
   value: true

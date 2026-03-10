@@ -13,6 +13,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Show the Google Lens button in the search box on the New Tab page.
   value: true

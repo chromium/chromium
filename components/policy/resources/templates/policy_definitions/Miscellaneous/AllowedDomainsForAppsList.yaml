@@ -26,6 +26,7 @@ future_on:
 - chrome.*
 - chrome_os
 - android
+- fuchsia
 tags:
 - filtering
 type: list

@@ -11,6 +11,8 @@ example_value:
 features:
   dynamic_refresh: false
   per_profile: false
+future_on:
+- fuchsia
 owners:
 - estark@chromium.org
 schema:

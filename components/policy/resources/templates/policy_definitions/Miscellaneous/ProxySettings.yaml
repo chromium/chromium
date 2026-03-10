@@ -39,6 +39,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - acostinas@google.com
 - file://components/proxy_config/OWNERS

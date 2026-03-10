@@ -8,6 +8,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Accept web contents served as Signed HTTP Exchanges
   value: true

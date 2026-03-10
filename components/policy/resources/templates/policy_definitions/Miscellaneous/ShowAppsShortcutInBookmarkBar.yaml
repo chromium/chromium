@@ -8,6 +8,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Show the apps shortcut in the bookmark bar
   value: true

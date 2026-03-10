@@ -27,6 +27,7 @@ features:
   per_profile: true
 future_on:
 - android
+- fuchsia
 items:
 - caption: Disallow usage of the Developer Tools on apps and extensions
     installed by enterprise policy or, since version 114 and if this is a

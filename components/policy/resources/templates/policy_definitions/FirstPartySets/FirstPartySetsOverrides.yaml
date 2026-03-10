@@ -62,6 +62,7 @@ supported_on:
 - chrome.*:113-
 - chrome_os:113-
 - android:113-
+- fuchsia:113-
 owners:
 - kaklilu@chromium.org
 - chrome-first-party-sets@chromium.org

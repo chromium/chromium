@@ -10,6 +10,8 @@ supported_on:
 - chrome.*:110-
 - chrome_os:110-
 
+future_on:
+- fuchsia
 
 features:
   dynamic_refresh: true

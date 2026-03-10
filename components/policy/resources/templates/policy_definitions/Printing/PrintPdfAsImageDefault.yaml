@@ -12,6 +12,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Print as image option defaults to set for print previews of PDF documents
     when it is available.

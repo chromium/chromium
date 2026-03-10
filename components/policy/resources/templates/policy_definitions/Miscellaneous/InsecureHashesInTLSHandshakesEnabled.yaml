@@ -26,6 +26,7 @@ supported_on:
 - chrome.*:114-123
 - chrome_os:114-123
 - android:114-123
+- fuchsia:114-123
 tags:
 - system-security
 type: main

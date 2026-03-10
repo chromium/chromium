@@ -10,6 +10,7 @@ features:
   per_profile: true
 future_on:
 - android
+- fuchsia
 items:
 - caption: Enable deleting browser and download history
   value: true

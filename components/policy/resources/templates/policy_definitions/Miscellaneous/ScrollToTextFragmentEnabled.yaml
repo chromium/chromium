@@ -10,6 +10,8 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Allow sites to scroll to specific text fragments via URL
   value: true

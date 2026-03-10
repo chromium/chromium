@@ -30,5 +30,6 @@ supported_on:
 - android:134-
 - chrome.*:134-
 - chrome_os:134-
+- fuchsia:134-
 tags: []
 type: main

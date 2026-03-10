@@ -17,6 +17,8 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Do not uppercase request methods except for DELETE/GET/HEAD/OPTIONS/POST/PUT
   value: true

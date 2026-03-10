@@ -17,6 +17,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Zeroconf-based (mDNS + DNS-SD) protocol destinations (Deprecated)
   name: privet

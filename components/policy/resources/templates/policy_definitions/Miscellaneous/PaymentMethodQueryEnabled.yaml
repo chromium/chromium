@@ -10,6 +10,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Allow websites to check if the user has payment methods saved
   value: true

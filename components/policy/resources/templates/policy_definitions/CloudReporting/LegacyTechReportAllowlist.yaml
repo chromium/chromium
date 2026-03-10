@@ -26,6 +26,7 @@ supported_on:
 - android:119-
 future_on:
 - chrome_os
+- fuchsia
 owners:
 - zmin@chromium.org
 - file://components/enterprise/browser/reporting/OWNERS

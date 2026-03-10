@@ -55,5 +55,6 @@ supported_on:
 - chrome.*:94-
 - chrome_os:94-
 - android:94-
+- fuchsia:112-
 tags: []
 type: string-enum

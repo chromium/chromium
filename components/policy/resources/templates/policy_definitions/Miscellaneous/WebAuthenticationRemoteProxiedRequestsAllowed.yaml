@@ -13,6 +13,8 @@ features:
   internal_only: true
   per_profile: true
   platform_only: true
+future_on:
+- fuchsia
 items:
 - caption: Allow CRD to execute WebAuthn API requests proxied from a remote host.
   value: true

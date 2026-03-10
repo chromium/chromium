@@ -10,6 +10,8 @@ example_value:
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - asymmetric@chromium.org
 - rsleevi@chromium.org

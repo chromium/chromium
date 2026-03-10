@@ -7,6 +7,8 @@ example_value: 10000-11999
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - guidou@chromium.org
 schema:

@@ -8,6 +8,8 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Allow users to use <ph name="PRODUCT_NAME">Google Cast</ph>
   value: true

@@ -13,6 +13,8 @@ example_value: 2
 features:
   dynamic_refresh: false
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Disable browser sign-in
   name: Disable

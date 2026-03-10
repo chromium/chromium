@@ -7,6 +7,8 @@ desc: |-
   ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes is a Chrome feature designed to make cross-process and same-process cross-origin iframes consistent in their rendering behavior. For further details on cross-process vs. same-process throttling, refer to https://chromestatus.com/feature/5175574929080320.
 
   This enterprise policy exists to allow administrators to control whether their users are able to turn the additional throttling on or not. When the policy is set to disabled it prevents enabling the throttling. When the policy is set to enabled or not set, the user can opt-in to throttling, or it may be enabled via Chrome variations.
+future_on:
+- fuchsia
 supported_on:
 - android:110-123
 - chrome.*:110-123

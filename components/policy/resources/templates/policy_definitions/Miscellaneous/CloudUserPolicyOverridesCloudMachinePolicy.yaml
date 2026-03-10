@@ -14,6 +14,8 @@ features:
   dynamic_refresh: true
   metapolicy_type: precedence
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Allow user cloud policies to override machine cloud policies.
   value: true

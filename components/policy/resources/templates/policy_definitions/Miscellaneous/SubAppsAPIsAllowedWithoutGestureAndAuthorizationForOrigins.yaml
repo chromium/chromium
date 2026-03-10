@@ -33,5 +33,7 @@ schema:
   type: array
 supported_on:
   - chrome_os:123-
+future_on:
+  - fuchsia
 tags: []
 type: list

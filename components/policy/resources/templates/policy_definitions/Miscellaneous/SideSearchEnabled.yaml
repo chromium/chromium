@@ -9,6 +9,8 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable showing default search engine results pages in a Browser side panel.
   value: true

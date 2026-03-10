@@ -14,6 +14,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+ - fuchsia
 items:
 - caption: Allow users to turn on or off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> Site-suggested ads setting on their device.
   value: true

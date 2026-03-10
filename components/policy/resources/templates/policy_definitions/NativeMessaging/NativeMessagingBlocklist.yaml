@@ -9,6 +9,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 label: Names of the forbidden native messaging hosts (or * for all)
 owners:
 - file://components/policy/OWNERS

@@ -11,6 +11,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 supported_on:
 - chrome.*:110-
 - chrome_os:110-

@@ -10,6 +10,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Do not show the Chrome Web Store icon in the <ph name="PRODUCT_OS_NAME">$2<ex>Google
     ChromeOS</ex></ph> launcher or on the new tab page

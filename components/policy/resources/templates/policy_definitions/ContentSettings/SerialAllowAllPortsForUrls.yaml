@@ -12,6 +12,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 owners:
 - reillyg@chromium.org
 - file://content/browser/serial/OWNERS

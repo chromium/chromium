@@ -67,6 +67,7 @@ supported_on:
 - chrome.*:120-
 - chrome_os:120-
 - android:120-
+- fuchsia:120-
 owners:
 - sandormajor@chromium.org
 - chrome-first-party-sets@chromium.org

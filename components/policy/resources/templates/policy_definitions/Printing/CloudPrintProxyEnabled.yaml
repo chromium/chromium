@@ -9,6 +9,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy
   value: true

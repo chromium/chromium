@@ -27,5 +27,6 @@ schema:
 supported_on:
 - chrome.*:115-
 - chrome_os:115-
+- fuchsia:115-
 tags: []
 type: main

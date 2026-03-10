@@ -43,6 +43,7 @@ supported_on:
 - android:86-
 - webview_android:86-
 - ios:98-
+- fuchsia:106-
 tags:
 - filtering
 type: list

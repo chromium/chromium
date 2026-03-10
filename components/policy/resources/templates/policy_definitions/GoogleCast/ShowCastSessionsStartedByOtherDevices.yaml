@@ -11,6 +11,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Show media controls for <ph name="PRODUCT_NAME">Google Cast</ph> sessions started by other devices
   value: true

@@ -9,6 +9,8 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Enable updates for all components
   value: true

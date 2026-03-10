@@ -24,6 +24,8 @@ items:
 owners:
 - nidhijaju@chromium.org
 - file://net/OWNERS
+future_on:
+- fuchsia
 schema:
   type: boolean
 supported_on:

@@ -13,6 +13,7 @@ supported_on:
 - chrome.*:116-
 - chrome_os:116-
 - android:116-
+- fuchsia:117-
 deprecated: false
 device_only: false
 features:

@@ -27,6 +27,8 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: By default, documents may be put in origin-keyed agent clusters. document.domain
     is not settable for such documents.

@@ -9,6 +9,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
+- fuchsia
 - android
 items:
 - caption: Allow all sites to show all images

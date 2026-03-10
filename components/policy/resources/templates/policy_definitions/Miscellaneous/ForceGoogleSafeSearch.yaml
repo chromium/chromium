@@ -9,6 +9,8 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 items:
 - caption: Force the use of SafeSearch in Google Search
   value: true

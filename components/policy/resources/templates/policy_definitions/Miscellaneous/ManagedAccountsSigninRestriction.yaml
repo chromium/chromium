@@ -30,6 +30,7 @@ features:
   per_profile: true
 future_on:
 - chrome_os
+- fuchsia
 items:
 - caption: A Managed account must be a primary account and importing existing browsing
     data is allowed at the time of profile creation

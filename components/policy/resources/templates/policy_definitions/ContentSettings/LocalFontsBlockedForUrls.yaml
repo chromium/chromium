@@ -11,6 +11,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+future_on:
+- fuchsia
 owners:
 - dslee@chromium.org
 - storage-dev@chromium.org

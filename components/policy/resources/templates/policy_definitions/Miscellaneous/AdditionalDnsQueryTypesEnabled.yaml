@@ -12,6 +12,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Allow additional DNS query types
   value: true

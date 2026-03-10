@@ -13,6 +13,8 @@ features:
   can_be_recommended: true
   dynamic_refresh: false
   per_profile: false
+future_on:
+- fuchsia
 items:
 - caption: Enable reporting of usage and crash-related data
   value: true
