@@ -359,8 +359,8 @@ void TaskManagerView::ExecuteCommand(int id, int event_flags) {
 }
 
 void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
-  menu_model_.reset();
   menu_runner_.reset();
+  menu_model_.reset();
 }
 
 void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
