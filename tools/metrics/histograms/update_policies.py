@@ -10,6 +10,7 @@ If the file was pretty-printed, the updated version is pretty-printed too.
 
 from __future__ import print_function
 
+import argparse
 import os
 import sys
 from xml.dom import minidom
@@ -74,10 +75,13 @@ def UpdatePoliciesHistogramDefinitions(policy_ids, doc):
 
 
 def main():
-  if len(sys.argv) > 1:
-    print('No arguments expected!', file=sys.stderr)
-    sys.stderr.write(__doc__)
-    sys.exit(1)
+  args_parser = argparse.ArgumentParser()
+  args_parser.add_argument(
+      '--yes', '-y',
+      action='store_true',
+      help='Skip confirmation before diffing.',
+  )
+  args = args_parser.parse_args()
 
   with open(os.path.join(POLICY_LIST_PATH), encoding='utf-8') as f:
     policy_list_content = pyyaml.safe_load(f)
@@ -90,8 +94,12 @@ def main():
   UpdatePoliciesHistogramDefinitions(policy_list_content['policies'],
                                      histograms_doc)
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
-  if diff_util.PromptUserToAcceptDiff(xml, new_xml,
-                                      'Is the updated version acceptable?'):
+  if args.yes:
+    make_edits = True
+  else:
+    make_edits = diff_util.PromptUserToAcceptDiff(
+        xml, new_xml, 'Is the updated version acceptable?')
+  if make_edits:
     with open(ENUMS_PATH, 'wb') as f:
       f.write(new_xml.encode('utf-8'))
 
