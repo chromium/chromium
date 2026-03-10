@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (máis nos dispositivos sincronizados)}other{# sitios (máis nos dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
+<translation id="2877733045396505765">Eliminarase a información seleccionada gardada neste dispositivo e na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2883151425485251736">Consulta e edita temas que ocultaches na túa conta</translation>
 <translation id="288655811176831528">Pechar pestana</translation>
 <translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
@@ -1878,6 +1879,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="775755486779745798">Autocompletar o mes de caducidade <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcionais</translation>
+<translation id="7763878244904387570">Eliminarase a información seleccionada gardada neste dispositivo.</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772948288262733182">Dámosche a benvida de novo</translation>

@@ -1060,6 +1060,7 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung für den Fall, dass di
       Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
 
       Hinweis: Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen.</translation>
+<translation id="1732435945666510577">Logging von DOM-Aktivitäten für Erweiterungen deaktivieren</translation>
 <translation id="1733092875104864334">Erfassen von WebRTC-Textprotokollen aus Google-Diensten nicht zulassen</translation>
 <translation id="1733768596873041559">Standardmäßig zum SAML-Identitätsanbieter weiterleiten (vor <ph name="PRODUCT_NAME" />-Version 99 ist eine Bestätigung durch den Nutzer erforderlich)</translation>
 <translation id="1736032188431871940">Zugriff auf eine Liste von URLs im Inkognitomodus blockieren.</translation>
@@ -1898,6 +1899,7 @@ Der Wert für „Schriftgröße“ wird in Punkten angegeben.</translation>
 <translation id="2290270645214705008">Wenn diese Richtlinie deaktiviert ist, kann der Host für den Remote-Zugriff keine eingehenden Verbindungen annehmen.  Diese Richtlinien wirkt sich nicht auf die Remote-Unterstützung aus.
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
+<translation id="2291341836547307786">Logging von DOM-Aktivitäten für Erweiterungen aktivieren</translation>
 <translation id="2292482441027364457">Wenn diese Richtlinie konfiguriert ist, werden die App-IDs festgelegt, die unter <ph name="PRODUCT_OS_NAME" /> als angepinnte Apps in der Launcher-Leiste angezeigt werden. Sie können nicht von Nutzern geändert werden.
 
 Chrome-Apps werden mit ihrer ID angegeben, z. B. „pjkljhegncpnkpknbcohdijeoejaedia“, Android-Apps mit ihrem Paketnamen, z. B. „com.google.android.gm“, Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. „https://google.com/maps“, und System-Web-Apps mit ihrem Snake-Case-Namen, z. B. „<ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />“.
@@ -2162,6 +2164,51 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 <translation id="2489558694350871332">Zulassen, dass das Gerät virtuelle Maschinen ausführt</translation>
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
+<translation id="2496898792336137342">Dadurch werden die Regeln konfiguriert, die bestimmen, welchen Proxy der Browser je nach Ziel-URL und bestimmten Netzwerkbedingungen verwendet.
+
+Diese Richtlinie hat Vorrang vor der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, der Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ und manuellen Nutzereinstellungen. Wenn keine der Regeln in dieser Richtlinie zutrifft, greift der Browser auf die in „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ definierten Einstellungen zurück.
+
+Der Browser wertet Einträge in der Liste „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach aus. Eine Regel wird nur angewendet, wenn alle folgenden Kriterien erfüllt sind:
+
+  * Übereinstimmung: Es besteht eine Übereinstimmung mit mindestens einem URL-Muster in „<ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />“.
+
+  * Ausschluss: Es besteht keine Übereinstimmung mit den URL-Mustern in „<ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />“.
+
+  * Bedingungen: Wenn „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ angegeben ist, müssen alle aufgeführten Bedingungen erfüllt sein. Wenn nicht konfiguriert, wird diese Anforderung ignoriert.
+
+Die URL-Muster für Abgleiche sind unter https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns dokumentiert.
+
+Das Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" />“ definiert eine Failover-Liste. Der erste erreichbare Eintrag wird verwendet; ungültige Einträge werden ignoriert. Du kannst Strings im PAC-Stil oder URL-ähnliche Spezifizierer verwenden:
+
+Strings im PAC-Stil:
+
+  * DIRECT
+
+  * PROXY host:port
+
+  * HTTPS host:port
+
+  * SOCKS4 host:port
+
+  * SOCKS5 host:port
+
+URL-ähnliche Spezifizierer:
+
+  * http://host:port
+
+  * https://host:port
+
+  * socks4://host:port
+
+  * socks5://host:port
+
+Die Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ prüft, ob „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ zu einer IP-Adresse aufgelöst wird.
+
+* Unterstützt Hostnamen (z. B. example.com) oder URI-ähnliche Strings (z. B. https://example.com:123). Die Verwendung eines sicheren Schemas (HTTPS) kann eine HTTPS-Eintraganfrage auslösen (siehe RFC 9460).
+
+* Lege „<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />“ fest, damit die Bedingung bei erfolgreicher Auflösung erfüllt ist, oder „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“, damit die Bedingung erfüllt ist, wenn die Auflösung fehlschlägt.
+
+Die Anwendung dieser Richtlinie auf verwalteten Geräten wird durch die Richtlinie „<ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" />“ auf Geräteebene auf den Plattformen beeinflusst, auf denen sie unterstützt wird. Standardmäßig wird die Verwendung von Überschreibungsregeln verhindert, die von nicht verknüpften Nutzern konfiguriert wurden.</translation>
 <translation id="2497751676088107779">Nutzerskript</translation>
 <translation id="249798396824949930"> Über diese Richtlinie wird geregelt, ob der Browser den obligatorischen Anwendungsbereich von Richtlinien unter <ph name="MAC_OS_NAME" /> erkennen kann.
 
@@ -6466,6 +6513,7 @@ Auf Desktop-Plattformen kann das Herunterladen von Modellen auch über die Richt
 <translation id="5309944663104291505">Isolierten Web-Apps mit erzwungener Installation und Kiosk-Apps nicht erlauben, die Device Attributes API zu verwenden</translation>
 <translation id="5311275381462687162">Einstellung für das alte Standardverhalten des "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Cookies</translation>
 <translation id="5312253627576569499">Prozentsatz, um den die Verzögerung für die Bildschirmabdunkelung skaliert wird, wenn bei abgedunkeltem Bildschirm oder kurz nach dem Abschalten des Bildschirms Nutzeraktivität erkannt wird.</translation>
+<translation id="5313663675323027439">Logging von DOM-Aktivitäten für Erweiterungen verwalten</translation>
 <translation id="5316856058059940708">Großen Cursor deaktivieren</translation>
 <translation id="5318185076587284965">Verwendung von Relayservern durch den Host für den Remote-Zugriff gestatten</translation>
 <translation id="5321624917465764266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können der Browser‑ und der Downloadverlauf in Chrome gelöscht werden und Nutzer können diese Einstellung nicht ändern.
@@ -9721,6 +9769,14 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte eine Liste der Netzwerkschnittstellen mit deren Typen und Hardwareadressen gemeldet.
 
       Ist sie deaktiviert, melden registrierte Geräte keine Netzwerkschnittstellen.</translation>
+<translation id="7387190801932161230">Legt fest, ob das Logging von DOM-Aktivitäten von Erweiterungen für Unternehmensnutzer aktiviert ist.
+
+Wenn die Richtlinie aktiviert ist, werden Telemetriedaten für die DOM-Aktivität der Erweiterung erhoben. Dazu gehört die Prüfung von Code-Einschleusungen und Zugriff auf sensible Daten durch Erweiterungen.
+
+Wenn diese Richtlinie aktiviert ist, erhebt und überträgt <ph name="PRODUCT_NAME" /> Signale zu Erweiterungsinteraktionen mit Webseiten an den Telemetriedienst für Erweiterungen zur Sicherheitsprüfung.
+Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden diese Signale für Unternehmensnutzer nicht erhoben oder übertragen.
+
+Tatsächliche Werte sensibler Daten (z. B. Cookies oder Eingabewerte) werden NICHT erhoben, sondern nur die Information, ob auf sie zugegriffen wurde.</translation>
 <translation id="7389872682701720082">Wenn du diese Einstellung aktivierst, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>

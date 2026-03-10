@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />votre employeur ou votre établissement scolaire;
           <ph name="LIST_ITEM" />votre fournisseur d'accès Internet.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Pays émetteur</translation>
 <translation id="1337692097987160377">Partager cet onglet</translation>
 <translation id="1339601241726513588">Domaine d'enregistrement :</translation>
 <translation id="1340482604681802745">Adresse de ramassage</translation>
@@ -2465,6 +2466,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour lancer la recherche</translation>
 <translation id="4930153903256238152">Grande capacité</translation>
 <translation id="4930714375720679147">Activer</translation>
+<translation id="4931347573573430180">Date d'émission</translation>
 <translation id="4932035752129140860">Le texte que vous collez ou que vous joignez est envoyé à Google Cloud ou à des tiers afin d'être analysé. Par exemple, il peut être analysé pour déterminer s'il contient des données confidentielles et peut être stocké en fonction des politiques de l'entreprise et être visible pour votre administrateur.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4933788293078559286">Payer avec Pix</translation>
@@ -3096,6 +3098,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5950901984834744590">Rasoirs</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
 <translation id="5952076224478208938">Marque</translation>
+<translation id="5952196777020238475">Numéro de permis</translation>
 <translation id="5953516610448771166">Les sous-titres instantanés ne sont pas offerts pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
 <translation id="5960795367348889467">Vérification</translation>
 <translation id="5963413905009737549">Section</translation>
@@ -4594,6 +4597,7 @@ Détails supplémentaires :
 <translation id="8288320283441806607">Pour utiliser cette fonctionnalité, activez le paramètre Améliorer les recherches et la navigation</translation>
 <translation id="8288807391153049143">Afficher le certificat</translation>
 <translation id="8289355894181816810">Communiquez avec votre administrateur réseau si vous n'êtes pas certain de ce que cela signifie.</translation>
+<translation id="8291367150570302588">Carte d'identité</translation>
 <translation id="829335040383910391">Son</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Les témoins et d'autres données relatives aux sites sont utilisés pour se souvenir de vous, comme pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, voir <ph name="SETTINGS" />.</translation>

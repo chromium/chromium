@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (et plus sur les appareils synchronisés)}one{# site (et plus sur les appareils synchronisés)}other{# sites (et plus sur les appareils synchronisés)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
+<translation id="2877733045396505765">Cette action supprime les renseignements sélectionnés enregistrés sur cet appareil et dans votre compte Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Affichez et modifiez les sujets que vous avez masqués dans votre compte</translation>
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
@@ -1878,6 +1879,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="775755486779745798">Remplir automatiquement le mois d'expiration <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Thème violet</translation>
 <translation id="7759809451544302770">Facultatif</translation>
+<translation id="7763878244904387570">Cette action supprime les informations sélectionnées enregistrées sur cet appareil.</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7772948288262733182">Bon retour</translation>

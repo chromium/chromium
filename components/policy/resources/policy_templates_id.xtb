@@ -1105,6 +1105,7 @@ untuk kebijakan ini adalah versi 121. Kebijakan tersebut dihapus di versi 122.</
       Tidak menyetel kebijakan tidak akan memengaruhi kontrol layar pengguna atau fitur kecerahan otomatis.
 
       Catatan: Nilai kebijakan harus ditentukan dalam persen dari 0 sampai 100.</translation>
+<translation id="1732435945666510577">Nonaktifkan logging aktivitas DOM ekstensi</translation>
 <translation id="1733092875104864334">Jangan izinkan pengumpulan log teks WebRTC dari Layanan Google</translation>
 <translation id="1733768596873041559">Alihkan ke IdP SAML secara default (sebelum <ph name="PRODUCT_NAME" /> 99, perlu konfirmasi pengguna)</translation>
 <translation id="1736032188431871940">Memblokir akses ke daftar URL dalam mode Samaran.</translation>
@@ -1963,6 +1964,7 @@ Nilai default: opasitas isian 4, opasitas garis tepi 6, dan ukuran font 24.
 <translation id="2290270645214705008">Jika kebijakan ini disetel ke Nonaktif, layanan host akses jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.  Kebijakan ini tidak memengaruhi skenario dukungan jarak jauh.
 
           Kebijakan ini tidak berpengaruh jika disetel ke Aktif, dibiarkan kosong, atau tidak disetel.</translation>
+<translation id="2291341836547307786">Aktifkan logging aktivitas DOM ekstensi</translation>
 <translation id="2292482441027364457">Jika kebijakan ini disetel, ID aplikasi yang ditampilkan oleh <ph name="PRODUCT_OS_NAME" /> akan ditetapkan sebagai aplikasi tersemat di kotak peluncur, dan pengguna tidak dapat mengubahnya.
 
 Tentukan aplikasi Chrome menurut ID-nya, seperti pjkljhegncpnkpknbcohdijeoejaedia;
@@ -2260,6 +2262,51 @@ pilihan default.</translation>
 <translation id="2489558694350871332">Izinkan perangkat menjalankan mesin virtual</translation>
 <translation id="2492240920793040106">Aktifkan pelaporan informasi sistem dan konten halaman untuk membantu meningkatkan Safe Browsing</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
+<translation id="2496898792336137342">Mengonfigurasi aturan yang menentukan proxy mana yang digunakan browser berdasarkan URL tujuan dan kondisi jaringan tertentu.
+
+Kebijakan ini lebih diutamakan daripada kebijakan <ph name="PROXY_SETTINGS_POLICY_NAME" />, API ekstensi <ph name="PROXY_SETTINGS_EXTENSION_API" />, dan setelan pengguna manual. Jika tidak ada aturan dalam kebijakan ini yang cocok, browser akan kembali ke setelan yang ditentukan dalam <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Browser mengevaluasi entri dalam daftar <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> secara berurutan. Aturan hanya diterapkan jika semua kriteria berikut terpenuhi:
+
+  * Cocok: Setidaknya satu pola URL di <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> cocok.
+
+  * Kecualikan: Tidak ada pola URL di <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> yang cocok.
+
+  * Kondisi: Jika <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> ditentukan, semua kondisi yang tercantum harus dipenuhi. Jika tidak disetel, persyaratan ini akan diabaikan.
+
+Pola URL untuk pencocok didokumentasikan di https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Kolom <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> menentukan daftar failover. Entri pertama yang dapat dijangkau akan digunakan; entri yang tidak valid akan diabaikan. Anda dapat menggunakan string gaya PAC atau penentu seperti URL:
+
+String gaya PAC:
+
+  * DIRECT
+
+  * PROXY host:port
+
+  * HTTPS host:port
+
+  * SOCKS4 host:port
+
+  * SOCKS5 host:port
+
+Penentu seperti URL:
+
+  * http://host:port
+
+  * https://host:port
+
+  * socks4://host:port
+
+  * socks5://host:port
+
+Kondisi <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> memeriksa apakah <ph name="PROXY_OVERRIDE_RULES_HOST" /> dapat di-resolve ke alamat IP.
+
+* Mendukung nama host (misalnya, example.com) atau string bergaya URI (misalnya, https://example.com:123). Menggunakan skema aman (https) dapat memicu permintaan data HTTPS (lihat RFC 9460).
+
+* Setel ke "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" untuk memenuhi kondisi jika resolusi berhasil, atau "<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />" untuk memenuhi kondisi jika resolusi gagal.
+
+Penerapan kebijakan ini pada perangkat terkelola dipengaruhi oleh kebijakan tingkat perangkat <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> di platform yang didukung. Secara default, kebijakan ini mencegah penggunaan aturan penggantian yang dikonfigurasi oleh pengguna yang tidak terafiliasi.</translation>
 <translation id="2497751676088107779">Skrip pengguna</translation>
 <translation id="249798396824949930"> Mengontrol apakah browser dapat mendeteksi cakupan kebijakan wajib di <ph name="MAC_OS_NAME" /> atau tidak.
 
@@ -6722,6 +6769,7 @@ Di platform desktop, download model juga dapat dinonaktifkan oleh <ph name="COMP
 <translation id="5309944663104291505">Jangan izinkan Aplikasi Web Terisolasi (IWA) yang diinstal otomatis dan aplikasi kios menggunakan Device Attributes API</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="5312253627576569499">Persentase yang digunakan untuk menskalakan penundaan peredupan layar ketika terdapat aktivitas pengguna saat layar redup atau segera setelah layar dimatikan.</translation>
+<translation id="5313663675323027439">Mengontrol logging aktivitas DOM ekstensi</translation>
 <translation id="5316856058059940708">Nonaktifkan kursor besar</translation>
 <translation id="5318185076587284965">Aktifkan penggunaan server relay oleh hosting akses jarak jauh</translation>
 <translation id="5321624917465764266">Jika kebijakan disetel ke Aktif atau tidak disetel, histori browser dan histori download dapat dihapus di Chrome, dan pengguna tidak dapat mengubah setelan ini.
@@ -10178,6 +10226,14 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
       Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar antarmuka jaringan beserta jenis dan alamat hardware-nya.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan antarmuka jaringan.</translation>
+<translation id="7387190801932161230">Mengontrol apakah logging aktivitas DOM ekstensi diaktifkan untuk pengguna versi bisnis.
+
+Jika kebijakan ini disetel ke Aktif, telemetri untuk aktivitas DOM ekstensi akan diaktifkan. Hal ini mencakup pemantauan injeksi kode dan akses data sensitif oleh ekstensi.
+
+Jika kebijakan ini disetel ke Aktif, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan mengirimkan sinyal tentang interaksi ekstensi dengan halaman web ke Layanan Telemetri Ekstensi untuk audit keamanan.
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, sinyal ini tidak akan dikumpulkan atau dikirimkan untuk pengguna versi bisnis.
+
+Nilai sebenarnya dari data sensitif (seperti cookie atau nilai input) TIDAK dikumpulkan, hanya fakta bahwa data tersebut diakses.</translation>
 <translation id="7389872682701720082">Jika setelan ini diaktifkan, plugin yang masih berlaku selalu berjalan.
 
       Jika setelan ini dinonaktifkan atau tidak ditetapkan, pengguna akan dimintai izin untuk menjalankan plugin yang memerlukan otorisasi. Ini adalah plugin yang dapat membahayakan keamanan.</translation>

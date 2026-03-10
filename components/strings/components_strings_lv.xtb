@@ -217,6 +217,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
           <ph name="LIST_ITEM" />jūsu darba devējam vai mācību iestādei;
           <ph name="LIST_ITEM" />jūsu interneta pakalpojumu sniedzējam.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Izsniedzējvalsts</translation>
 <translation id="1337692097987160377">Koplietot šo cilni</translation>
 <translation id="1339601241726513588">Reģistrācijas domēns:</translation>
 <translation id="1340482604681802745">Saņemšanas adrese</translation>
@@ -2463,6 +2464,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai meklētu, nospiediet tabulēšanas taustiņu un pēc tam taustiņu Enter</translation>
 <translation id="4930153903256238152">Liela ietilpība</translation>
 <translation id="4930714375720679147">Ieslēgt</translation>
+<translation id="4931347573573430180">Izsniegšanas datums</translation>
 <translation id="4932035752129140860">Jūsu ielīmētais vai pievienotais teksts tiek nosūtīts uz Google Cloud vai trešajām pusēm, lai veiktu analīzi. Piemēram, šis teksts var tikt pārmeklēts, lai konstatētu, vai tajā ir sensitīvi dati, un uzglabāts saskaņā ar uzņēmuma politikām, turklāt tas var būt redzams jūsu administratoram.</translation>
 <translation id="4932733599132424254">Datums</translation>
 <translation id="4933788293078559286">Maksāt, izmantojot Pix</translation>
@@ -3094,6 +3096,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5950901984834744590">Skuvekļi</translation>
 <translation id="5951495562196540101">Neizdevās reģistrēt, izmantojot patērētāja kontu (pieejama komplektā iekļauta licence).</translation>
 <translation id="5952076224478208938">Ražotājs</translation>
+<translation id="5952196777020238475">Apliecības numurs</translation>
 <translation id="5953516610448771166">Subtitri reāllaikā nav pieejami šim multivides saturam. Lai iegūtu subtitrus, bloķējiet noteiktus iestatījumus (<ph name="CONTENT_SETTINGS" />) šai vietnei.</translation>
 <translation id="5960795367348889467">Verifikācija</translation>
 <translation id="5963413905009737549">Sadaļa</translation>
@@ -4593,6 +4596,7 @@ Papildu informācija:
 <translation id="8288320283441806607">Ieslēdziet iestatījumu “Uzlabot meklēšanu un pārlūkošanu”, lai izmantotu šo funkciju.</translation>
 <translation id="8288807391153049143">Rādīt sertifikātu</translation>
 <translation id="8289355894181816810">Sazinieties ar tīkla administratoru, ja neesat pārliecināts, ko tas nozīmē.</translation>
+<translation id="8291367150570302588">ID karte</translation>
 <translation id="829335040383910391">skaņa</translation>
 <translation id="8294431847097064396">Avots</translation>
 <translation id="8297545700510100061">Sīkfaili un citi vietņu dati tiek izmantoti, lai saglabātu jūsu datus un tos izmantotu, piemēram, kad pierakstāties, vai reklāmu personalizēšanai. Lai pārvaldītu visu vietņu sīkfailus, pārejiet uz sadaļu <ph name="SETTINGS" />.</translation>

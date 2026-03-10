@@ -916,7 +916,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6999752561504308105">ChromeVox ట్యుటోరియల్‌కు స్వాగతం. ఏ సమయంలోనైనా ట్యుటోరియల్ నుండి నిష్క్రమించడానికి, రెండు వేళ్లతో కుడి నుండి ఎడమ వైపునకు స్వైప్ చేయండి. ఏ సమయంలోనైనా ChromeVoxను ఆన్ లేదా ఆఫ్ చేయడానికి రెండు వాల్యూమ్ బటన్‌లను ఐదు సెకన్ల పాటు నొక్కి, పట్టుకోండి. మీరు సిద్ధంగా ఉన్నప్పుడు, తర్వాతి పాఠానికి వెళ్లడానికి ఒక వేలుతో స్క్రీన్‌పై రెండు సార్లు నొక్కండి.</translation>
 <translation id="700202842116345659">వివరణపట్టి నమోదు</translation>
 <translation id="7005146664810010831">URL కనుగొనబడలేదు</translation>
-<translation id="7026338066939101231">తరుగుదల</translation>
+<translation id="7026338066939101231">తగ్గించండి</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{వైట్ బుల్లెట్}} *{{{$$COUNT} వైట్ బుల్లెట్‌లు}}</translation>
 <translation id="7037042857287298941">మునుపటి లిస్ట్‌</translation>
@@ -1065,7 +1065,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7972507042926081808">చాక్లెట్ రంగు</translation>
 <translation id="7974390230414479278">మెనూ అంశం</translation>
 <translation id="8004507136466386272">పదాలు</translation>
-<translation id="8004512796067398576">పెరుగుదల</translation>
+<translation id="8004512796067398576">పెంచండి</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">ప్రసంగాన్ని ఆఫ్ చేయండి</translation>
 <translation id="801990297710781303">ఫుట్‌నోట్</translation>

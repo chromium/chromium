@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />雇用主または学校
           <ph name="LIST_ITEM" />ご利用のインターネット サービス プロバイダ
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">発行国</translation>
 <translation id="1337692097987160377">このタブを共有</translation>
 <translation id="1339601241726513588">登録ドメイン:</translation>
 <translation id="1340482604681802745">受け取り場所の住所</translation>
@@ -2465,6 +2466,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと検索します</translation>
 <translation id="4930153903256238152">大容量</translation>
 <translation id="4930714375720679147">ON にする</translation>
+<translation id="4931347573573430180">発行日</translation>
 <translation id="4932035752129140860">貼り付けまたは添付したテキストは分析のため Google Cloud または第三者に送信されます。たとえば、機密データがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4933788293078559286">Pix で支払う</translation>
@@ -3096,6 +3098,7 @@
 <translation id="5950901984834744590">かみそり、シェーバー</translation>
 <translation id="5951495562196540101">一般ユーザー向けアカウントでは登録できません（ライセンス パッケージが利用可能です）。</translation>
 <translation id="5952076224478208938">メーカー</translation>
+<translation id="5952196777020238475">ライセンス番号</translation>
 <translation id="5953516610448771166">このメディアでは自動字幕起こしを使用できません。字幕を使用するには、このサイトで <ph name="CONTENT_SETTINGS" /> をブロックしてください。</translation>
 <translation id="5960795367348889467">認証</translation>
 <translation id="5963413905009737549">セクション</translation>
@@ -4595,6 +4598,7 @@
 <translation id="8288320283441806607">この機能を使用するには、[検索とブラウジングを改善する] をオンにしてください</translation>
 <translation id="8288807391153049143">証明書を表示</translation>
 <translation id="8289355894181816810">確認方法がわからない場合は、ネットワーク管理者までお問い合わせください。</translation>
+<translation id="8291367150570302588">ID カード</translation>
 <translation id="829335040383910391">音声</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" />をご覧ください。</translation>

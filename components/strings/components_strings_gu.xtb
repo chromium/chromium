@@ -210,6 +210,7 @@
 <translation id="1323433172918577554">વધુ બતાવો</translation>
 <translation id="1329916999021038454">રિપોર્ટ મોકલો</translation>
 <translation id="1330449323196174374">ડાબી બાજુએ ગેટ ફોલ્ડ</translation>
+<translation id="133173645041092770">વેબસાઇટ બંધ કરો</translation>
 <translation id="1333745675627230582">Chrome Dino ગેમ રમો</translation>
 <translation id="1333989956347591814">તમારી પ્રવૃત્તિ <ph name="BEGIN_EMPHASIS" />હજીપણ દૃશ્યક્ષમ હોય શકે છે<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -635,6 +636,7 @@
 <translation id="2027465737841872819">પ્લાસ્ટિક</translation>
 <translation id="2027707238798802149">કાર્ડ ઉપલબ્ધ નથી</translation>
 <translation id="2029735183873159415">કુળ અને વંશવેલો</translation>
+<translation id="2031095660415483845">ગમે ત્યાંથી શોધો અને ભરો...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />પ્રૉક્સી અને ફાયરવૉલ ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426"><ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> દ્વારા વ્યાખ્યાયિત ડિફૉલ્ટ શોધ પ્રદાતાના કીવર્ડ અને શૉર્ટકટમાંનું લખાણ, બન્ને એક સરખું ન હોઈ શકે: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">કોઈપણ રીતે સાચવો</translation>
@@ -935,12 +937,14 @@
 <translation id="2466004615675155314">વેબ પરથી માહિતી બતાવો</translation>
 <translation id="2466682894498377850">તમારા <ph name="DEVICE_NAME" />માંથી મોકલેલું ટૅબ</translation>
 <translation id="2467272921457885625">ડિવાઇસના હાર્ડવેરની વિશિષ્ટતાઓ અને આંકડાઓ, જેમ કે CPU/RAMના ઉપયોગનો ઇતિહાસ</translation>
+<translation id="2467421459221956357">સેન્સરનો ઉપયોગ કરીએ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-થી-N સુધીનો ક્રમ</translation>
 <translation id="24699311393038040">પેપર (કોટેડ)</translation>
 <translation id="2471632709106952369">સરખામણી ટેબલ</translation>
 <translation id="2473810985261856484">કાનૂની સેવાઓ</translation>
 <translation id="2477607419416067650">અન્ય Google ડેટા</translation>
+<translation id="247903268499247848">મોશન અને લાઇટ સેન્સરને મંજૂરી આપવામાં આવી નથી</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2479410451996844060">અમાન્ય શોધ URL.</translation>
 <translation id="2480300195898055381">તમારા Google એકાઉન્ટમાં, <ph name="USER_EMAIL" /></translation>
@@ -1065,6 +1069,7 @@
 <translation id="2674524144218093528">ઘરનું રંગકામ અને ફીનિશિંગ</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2677748264148917807">છોડો</translation>
+<translation id="2679216653373462289">તમારા મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરો</translation>
 <translation id="2679659833697380">તમારી માહિતી તમારા ડિવાઇસમાં સાચવવામાં આવી છે</translation>
 <translation id="2683195745483370038">અન્ય પરિણામો મળ્યા</translation>
 <translation id="2686919536310834199">લખવામાં મારી મદદ કરો સુવિધા માટે પ્રતિસાદ મોકલો.</translation>
@@ -1145,6 +1150,7 @@
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
+<translation id="2828797285817981634">હાલ પૂરતું મોશન સેન્સરને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="2833637280516285136">ટૉક રેડિયો</translation>
 <translation id="2835170189407361413">ફોર્મ સાફ કરો</translation>
 <translation id="2835907903001172712">બ્રાઉઝરનો ઓવરવ્યૂ</translation>
@@ -1270,6 +1276,7 @@
 <translation id="3030331669969285614">આ ફ્લૅગ, નિષ્ફળ કરનાર ફેરફારને રોકે અથવા પાછો ફેરવે છે અને તે મર્યાદિત સમય માટે જ ઉપલબ્ધ રહેશે.</translation>
 <translation id="3030542417256082866">શું વાહનની માહિતી સાચવીએ?</translation>
 <translation id="3033200136993730761">તમારી ઘરનું સરનામું તમને Googleની સેવાઓ પર કાર્યો કરવામાં મદદ કરી શકે છે, જેમ કે વધુ સુસંગત શોધ પરિણામો અને Google Mapsમાં દિશાનિર્દેશો. તમે <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટ <ph name="ACCOUNT" />માં<ph name="END_LINK" /> તમારા સરનામામાં ફેરફાર કરી શકો છો કે તેને ડિલીટ કરી શકો છો.</translation>
+<translation id="3033777742142108756">હાલ પૂરતું મોશન અને લાઇટ સેન્સરને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="3034526003882782781">સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી છે</translation>
 <translation id="3036894576201005614">ઘરની સાફસફાઈ માટેની વસ્તુઓના પુરવઠા</translation>
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
@@ -2287,6 +2294,7 @@
 <translation id="4658638640878098064">ઉપર ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
 <translation id="4658801711339831733">સ્કૅન Google Driveમાં સાચવવામાં આવ્યું</translation>
 <translation id="4660592918803576381">Driveમાં ખોલો</translation>
+<translation id="4660780573807106293">તમારા મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="4661556981531699496">પાળેલાં પશુઓ અને પ્રાણીઓ</translation>
 <translation id="4661868874067696603">ખરીદવાના વધુ વિકલ્પો શોધો</translation>
 <translation id="4663373278480897665">કૅમેરાને મંજૂરી</translation>
@@ -2739,6 +2747,7 @@
 <translation id="5371425731340848620">કાર્ડને અપડેટ કરો</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />એ કોઈ ટૅબમાં ફેરફાર કર્યો</translation>
 <translation id="5374324662289354619">આંતરિક ડિબગીંગ પેજ હાલમાં બંધ છે.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> તમારા મોશન સેન્સરનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"તમારી ઘડિયાળ પાછળ છે" અથવા "તમારી ઘડિયાળ આગળ છે" અથવા "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">તમારા બધા ડિવાઇસ પર આ પાસવર્ડ મેળવવા માટે, આ તમે જ હોવાની ચકાસણી કરો</translation>
@@ -2788,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">વધુ ઝડપી ચેકઆઉટ માટે, આ CVCને Google Wallet (<ph name="ACCOUNT_EMAIL" />)માં સાચવો</translation>
 <translation id="5436307623797390637">ડિવાઇસ પરની ઍપ</translation>
+<translation id="543656192084990644">મોશન સેન્સરને મંજૂરી આપવામાં આવી નથી</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, જે <ph name="PREVIOUS_VALUE" /> હતી</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેમને મંજૂરી આપો</translation>
@@ -3078,6 +3088,7 @@
 <translation id="5918847752193018339">તમારા CVCs સાચવેલા હોય ત્યારે ઝડપથી ચેકઆઉટ કરી શકાય છે. <ph name="LINK_BEGIN" />સાચવેલા સુરક્ષા કોડ ડિલીટ કરો<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ચાલુ</translation>
+<translation id="5921432337686792850">તમારા મોશન સેન્સરનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="5921639886840618607">Google એકાઉન્ટમાં કાર્ડ સાચવીએ?</translation>
 <translation id="5921952831792678223">પિકઅપ ટ્રક</translation>
 <translation id="5923492272538889093">શું CVCને બદલે ડિવાઇસ અનલૉક કરવાની સુવિધાનો ઉપયોગ કરીએ?</translation>
@@ -3145,6 +3156,7 @@
 <translation id="6028591542479806248">મોબાઇલ અને ઇમેઇલ નોટિફિકેશન મેનેજ કરો</translation>
 <translation id="6028833024483927901">વિશ્વના વિવિધ સ્થાનોના પકવાનો</translation>
 <translation id="603068602130820122">જમણી બાજુએ બે સ્ટેપલ લગાવો</translation>
+<translation id="6031824805267965302">તમારા મોશન સેન્સરનો ઉપયોગ કરો</translation>
 <translation id="6032524144326295339">મેઇલબૉક્સ 2</translation>
 <translation id="6032955021262906325">ડાબી બાજુએ જોડો</translation>
 <translation id="6034000775414344507">આછો ગ્રે</translation>
@@ -3226,6 +3238,7 @@
 <translation id="6133984428121856852">ફાઇલનું એક્સ્ટેન્શન ખાલી અથવા દૂષિત છે.</translation>
 <translation id="6139975341602920272">17 x 22 ઇંચ</translation>
 <translation id="6143097244789397208">ઑગ્મેન્ટેડ અને વર્ચ્યુઅલ રિયાલિટી</translation>
+<translation id="614327212146763975">મોશન અને લાઇટ સેન્સરને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="6146055958333702838">કોઈપણ કેબલ્સ તપાસો અને તમે કદાચ ઉપયોગમાં લઇ રહ્યાં હોય તેવા કોઇપણ રાઉટર્સ, મૉડેમ્સ 
     અથવા અન્ય નેટવર્ક ઉપકરણોને રીબૂટ કરો.</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
@@ -3603,6 +3616,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">કૅમેરા</translation>
 <translation id="6734506549556896534">સિમ્યુલેશન ગેમ</translation>
+<translation id="6735589846038045679">ચુકવણીના પ્લાન યોગ્યતાને આધીન છે. <ph name="BEGIN_BOLD" />આ વિકલ્પો ઑફર કરવા માટે ચેકઆઉટ પેજ પરનું કન્ટેન્ટ Google સાથે શેર કરવામાં આવે છે.<ph name="END_BOLD" /> પછીથી ચુકવણી કરવાના વિકલ્પો છુપાવવા માટે, <ph name="BEGIN_LINK" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK" /> પર જાઓ</translation>
 <translation id="6737708609449480586">બૅક કરેલી વસ્તુઓ</translation>
 <translation id="6738516213925468394">તમારો ડેટા <ph name="TIME" />ના રોજ તમારા <ph name="BEGIN_LINK" />સિંક પાસફ્રેઝ<ph name="END_LINK" /> સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
 <translation id="6740851646645036700">તમે અત્યારે તમારી લેખન સંબંધી સહાયની મર્યાદા સુધી પહોંચી ગયા છો. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -3616,6 +3630,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> એન્ટ્રી ડિલીટ કરો</translation>
 <translation id="6754547388777247439">બચત ખાતા</translation>
 <translation id="6757797048963528358">તમારું ઉપકરણ નિષ્ક્રિય થઈ ગયું હતું.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> તમારા મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="6766558780547452153">કૂકીંગ અને રૅસિપિ</translation>
 <translation id="6770747695101757579">પેપર (કૉટન)</translation>
 <translation id="677257480647123231">ઇન્ટરનેટ પર બાળકોની સલામતી</translation>
@@ -4372,6 +4387,7 @@
 <translation id="79338296614623784">એક માન્ય ફોન નંબર દાખલ કરો</translation>
 <translation id="7934414805353235750"><ph name="URL" /> સુરક્ષિત કન્ટેન્ટ ચલાવવા માગે છે. Google દ્વારા તમારા ડિવાઇસની ઓળખ ચકાસવામાં આવશે.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">મોશન સેન્સરને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="7937163678541954811">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા ડિવાઇસ પર સાચવવામાં આવશે</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="7938958445268990899">સર્વરનું પ્રમાણપત્ર હજી માન્ય નથી.</translation>
@@ -4998,6 +5014,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમારો બ્રાઉઝિંગ ઇતિહાસ જોવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="8987663052629670333">ફોટો પ્રિન્ટિંગ સેવાઓ</translation>
 <translation id="8987927404178983737">મહિનો</translation>
+<translation id="8988966534058783995">મોશન સેન્સરનો ઉપયોગ કરીએ?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> જાણવા માગે છે કે તમે સક્રિય રૂપે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો</translation>
 <translation id="8997023839087525404">સર્વરે એવું પ્રમાણપત્ર પ્રસ્તુત કર્યું કે જે પ્રમાણપત્ર પારદર્શિતા નીતિનો ઉપયોગ કરીને સાર્વજનિક રીતે જાહેર કર્યું ન હતું. આ કેટલાક પ્રમાણપત્રો માટે એ ખાતરી કરવા હેતુ આવશ્યક છે કે તેઓ વિશ્વસનીય છે અને હુમલાખારો સામે રક્ષણ કરે છે.</translation>

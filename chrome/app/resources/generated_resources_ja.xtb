@@ -335,7 +335,6 @@
 <translation id="1210376751550516429">オーディオ出力デバイスを選択</translation>
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
-<translation id="1213254615020057352">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="1215411991991485844">新しいバックグラウンド アプリが追加されました</translation>
 <translation id="1216542092748365687">指紋の削除</translation>
 <translation id="1216891999012841486">更新エラー修正の詳細</translation>
@@ -395,7 +394,6 @@
 <translation id="1246863218384630739"><ph name="VM_NAME" /> をインストールできませんでした: 画像 URL から <ph name="HTTP_ERROR" /> エラーが返されました。管理者にお問い合わせください。</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{1 件のサイトで通知をブロックしています}other{{NUM_SITES} 件のサイトで通知をブロックしています}}</translation>
-<translation id="1250051134109624637">プロジェクトを表示</translation>
 <translation id="125097549534200450">消去</translation>
 <translation id="1251366534849411931">開始の中かっこがありません: <ph name="ERROR_LINE" /></translation>
 <translation id="1251578593170406502">モバイルデータ ネットワークをスキャンしています...</translation>
@@ -439,7 +437,6 @@
 <translation id="1277020343994096713">現在の PIN とは異なる新しい PIN を作成してください</translation>
 <translation id="1277597051786235230">新しいタブで「<ph name="SEARCH_TERMS" />」を <ph name="SEARCH_ENGINE" /> 検索(&amp;S)</translation>
 <translation id="127849925363482083">固定タブを閉じるには、もう一度 <ph name="SHORTCUT_TEXT" /> キーを押してください</translation>
-<translation id="1278859221870828664">Google Play のアプリとサービスの確認</translation>
 <translation id="1279024913354609713">許可しない</translation>
 <translation id="127946606521051357">付近のデバイスが共有中です</translation>
 <translation id="1280332775949918163">ウィンドウをスナップする</translation>
@@ -498,6 +495,7 @@
 <translation id="1317637799698924700">ドッキング ステーションは USB Type-C 互換モードで動作します。</translation>
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> サブページの戻るボタン</translation>
 <translation id="1322046419516468189"><ph name="SAVED_PASSWORDS_STORE" /> での保存パスワードの表示と管理</translation>
+<translation id="1323433172918577554">もっと見る</translation>
 <translation id="132539964543492755">X キーを使用してマウスボタンの選択を左ボタン、右ボタン、両方の間で切り替える</translation>
 <translation id="1325611581149097457">文章作成支援</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
@@ -569,6 +567,7 @@
 <translation id="1375938286942050085">セットアップは完了です。デバイスでゲームをお楽しみください</translation>
 <translation id="137651782282853227">保存した住所がここに表示されます</translation>
 <translation id="1376771218494401509">ウィンドウに名前を付ける(&amp;W)...</translation>
+<translation id="1376836354785490390">折りたたむ</translation>
 <translation id="1377438103060664754">パスワードのデータ侵害が検出された場合、Google パスワード マネージャーによって、安全なパスワードに変更するかどうかを確認するメッセージが表示されます</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
 <translation id="1378613616312864539">この設定は <ph name="NAME" /> により制御されています</translation>
@@ -1231,7 +1230,6 @@
 <translation id="1823768272150895732">フォント</translation>
 <translation id="1823781806707127806">既存の閲覧データを管理対象プロファイルに追加する</translation>
 <translation id="1824499847634940868">アプリの更新を確認</translation>
-<translation id="18245044880483936">バックアップ データは、お子様のドライブの保存容量にはカウントされません。</translation>
 <translation id="1824870205483790748">ブックマーク バーにグループを固定</translation>
 <translation id="1825073796163165618">リンクを有効にする</translation>
 <translation id="1825565032302550710">ポートは 1024～65535 の範囲で指定してください</translation>
@@ -1467,7 +1465,6 @@
     <ph name="BEGIN_DESCRIPTION3" />トラブルシューティングのために、組織はリモートでデバイスのセッションにアクセスできます。<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />アクセスの有効化<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />組織のアプリ、サービス、ネットワークは登録済みデバイスでしか使用できないことがあります。<ph name="END_DESCRIPTION4" /></translation>
-<translation id="1979095679518582070">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="1979582938184524893">含める個人情報を手動で選択する</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
@@ -1876,7 +1873,6 @@
 <translation id="2259337945538989999">他のデバイスと同じタブを使用するには、本人確認を行ってください。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="22614517036276112">このドキュメントまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。</translation>
 <translation id="2262477216570151239">リピートまでの時間</translation>
-<translation id="2263189956353037928">ログアウトして再度ログイン</translation>
 <translation id="2263371730707937087">画面のリフレッシュ レート</translation>
 <translation id="2263679799334060788">お送りいただいたフィードバックは、Google Cast の改善に役立てさせていただきます。Google Cast に関する問題のトラブルシューティングについては、<ph name="BEGIN_LINK" />ヘルプセンター<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="22649924370461580">保存したタブグループ</translation>
@@ -2021,7 +2017,6 @@
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="234889437187286781">データの読み込み中にエラーが発生しました</translation>
 <translation id="2349610121459545414">このサイトによる位置情報へのアクセスを引き続き許可する</translation>
-<translation id="2349896577940037438">[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。データの確認、削除、アカウント設定の変更は、account.google.com で行うことができます。</translation>
 <translation id="2350133097354918058">再読み込みされました</translation>
 <translation id="2350182423316644347">アプリケーションを初期化しています...</translation>
 <translation id="235028206512346451">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を使用しない場合、デバイスはロックされずにスリープ状態になります。</translation>
@@ -3055,7 +3050,6 @@
 <translation id="3031557471081358569">インポートするデータを選択:</translation>
 <translation id="3032204772252313646">自動字幕</translation>
 <translation id="3032272345862007156">最近の AI テーマ <ph name="INDEX" /></translation>
-<translation id="303283648048257083">プロジェクトを非表示</translation>
 <translation id="3033167916029856961">マナーモードを有効にしました</translation>
 <translation id="3033348223765101500">データの管理</translation>
 <translation id="3036327949511794916">この <ph name="DEVICE_TYPE" />の返却期限が過ぎています。</translation>
@@ -3393,6 +3387,7 @@
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
+<translation id="3292966601422448005"><ph name="APP_NAME" /> に許可した権限は、インストール済みの関連アプリにも適用されます。</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="329324683265785818">再生 / 一時停止、キーボード ショートカット K キー</translation>
 <translation id="3293644607209440645">このページを送信</translation>
@@ -3455,7 +3450,6 @@
 <translation id="3328489342742826322">バックアップから復元すると、Linux ファイル フォルダの既存の Linux アプリケーションとデータは削除されます。</translation>
 <translation id="3331321258768829690">（<ph name="UTCOFFSET" />）<ph name="LONGTZNAME" />（<ph name="EXEMPLARCITY" />）</translation>
 <translation id="3331974543021145906">アプリ情報</translation>
-<translation id="3333190335304955291">このサービスは [設定] でオフにできます。</translation>
 <translation id="3333961966071413176">すべての連絡先</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ピクチャー イン ピクチャー モードで再生中の動画</translation>
 <translation id="3335380372402547327">点滅による通知をプレビュー</translation>
@@ -3546,7 +3540,6 @@
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3394072120086516913">PC は有線、キャスト デバイスは Wi-Fi で接続されている</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
-<translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="339722927132407568">固まる</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> Hz）インターレース</translation>
@@ -3598,7 +3591,6 @@
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434025015623587566">Google パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="3434272557872943250">お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。</translation>
 <translation id="3434475275396485144">この設定はスマートフォンの管理者によって管理されています</translation>
 <translation id="3434512374684753970">音声と動画</translation>
 <translation id="3435688026795609344">「<ph name="EXTENSION_NAME" />」が <ph name="CODE_TYPE" /> をリクエストしています</translation>
@@ -3762,6 +3754,7 @@
 <translation id="354060433403403521">AC アダプター</translation>
 <translation id="354068948465830244">サイトデータの読み取りと変更を行います</translation>
 <translation id="3541823293333232175">割り当て済み</translation>
+<translation id="354323442562085715">文章作成、計画立案、コーディングなど</translation>
 <translation id="3543296862747913985">機能</translation>
 <translation id="3543298914473315872">アップデータの処理</translation>
 <translation id="3543393733900874979">更新できませんでした（エラー: <ph name="ERROR_NUMBER" />）</translation>
@@ -4087,7 +4080,6 @@
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> とペア設定するには　PIN を入力してください</translation>
 <translation id="3744219658596020825">パスワードはインポートされませんでした</translation>
 <translation id="3745306754941902605">キッチン</translation>
-<translation id="3747077776423672805">アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
 <translation id="3748424433435232460">このアカウントのパスワードはすでにこのデバイスに保存されています</translation>
 <translation id="3748466028423001972">下のビューと入れ替え</translation>
 <translation id="3748706263662799310">バグを報告</translation>
@@ -4245,7 +4237,6 @@
 <translation id="3830470485672984938">別のパスキーを使用する</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{管理者が 1 個の有害な可能性がある拡張機能を再度有効にしました}other{管理者が {NUM_EXTENSIONS} 個の有害な可能性がある拡張機能を再度有効にしました}}</translation>
 <translation id="3834728400518755610">マイクの設定を変更するには、Linux をシャットダウンする必要があります。続行するには Linux をシャットダウンしてください。</translation>
-<translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3837569373891539515">該当するものをすべて選択できます。これらのオプションは、<ph name="DEVICE_TYPE" /> の設定完了後に [設定] でも確認できます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>
@@ -4431,8 +4422,6 @@
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> Hz）</translation>
 <translation id="3954953195017194676">最近記録された WebRTC イベントログはありません。</translation>
 <translation id="3955321697524543127">サイトに USB デバイスへの接続を許可しない</translation>
-<translation id="3955896417885489542">設定後に Google Play オプションを確認する</translation>
-<translation id="3957079323242030166">バックアップ データは、ドライブの保存容量にはカウントされません。</translation>
 <translation id="3957663711862465084">USB の設定</translation>
 <translation id="3957844511978444971">[同意する] をタップすると、この Google サービスの設定の選択内容を確認したことになります。</translation>
 <translation id="3958088479270651626">ブックマークと設定のインポート</translation>
@@ -4813,7 +4802,6 @@
 <translation id="4236163961381003811">他の拡張機能を見る</translation>
 <translation id="4237282663517880406">Google ドライブの検索候補を表示する</translation>
 <translation id="4241140145060464825">アプリのコンテンツ</translation>
-<translation id="4241182343707213132">再起動して組織のアプリを更新してください</translation>
 <translation id="4241224519481557898">品詞</translation>
 <translation id="4242145785130247982">サポートされていないクライアント証明書が複数あります</translation>
 <translation id="4242533952199664413">設定を開く</translation>
@@ -4830,6 +4818,7 @@
 <translation id="4249373718504745892">このページではカメラとマイクへのアクセスがブロックされています。</translation>
 <translation id="4249785854468467847">AI で Chrome の機能を強化</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
+<translation id="4250596587221570622">プロファイルのテーマを選択してください</translation>
 <translation id="4250680216510889253">いいえ</translation>
 <translation id="4251243704979202079"><ph name="ORIGIN" /> は「<ph name="FOLDERNAME" />」内のファイルを表示し、独自のコピーを作成できます</translation>
 <translation id="4251377547188244181">キオスクとサイネージ デバイスの登録</translation>
@@ -5431,7 +5420,6 @@
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
 <translation id="4660540330091848931">サイズを変更しています</translation>
-<translation id="4661407454952063730">アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。</translation>
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
 <translation id="4662788913887017617">このブックマークは iPhone と共有できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
@@ -5615,6 +5603,7 @@
 <translation id="4794910597689955457"><ph name="NUM_OF_FILES" /> 個のファイルを <ph name="CLOUD_PROVIDER" /> に移動して開きますか？</translation>
 <translation id="479536056609751218">ウェブページ、HTML のみ</translation>
 <translation id="4795670271446126525">砕け散る波</translation>
+<translation id="479664067938200069"><ph name="APP_NAME" /> からインストールされたアプリケーション</translation>
 <translation id="4797314204379834752">オンライン ショッピングなど、タスクの整理にタブグループを使用できます</translation>
 <translation id="4799574323027833817">有効になっているポリシーはありません。</translation>
 <translation id="479989351350248267">検索</translation>
@@ -5846,7 +5835,6 @@
 <translation id="4943927218331934807">パスワードを入力してください</translation>
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4945439665401275950">指紋を設定するには、お子様に電源ボタンをタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
-<translation id="4946215577126251136">プロジェクト パネルのボタンを表示する</translation>
 <translation id="4946998421534856407">ランチャー+上矢印</translation>
 <translation id="4947376546135294974">アクセスしているサイトのデータ</translation>
 <translation id="4950100687509657457">プロフィールの作成</translation>
@@ -5937,7 +5925,6 @@
 <translation id="5017250179386090956">メインノードのアノテーション ファイルをダウンロードしています</translation>
 <translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
-<translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="5019487038187875030">MacOS からインポートした証明書を表示する</translation>
 <translation id="5020008942039547742">別のウィンドウを選択</translation>
 <translation id="5020651427400641814">読み上げのログを有効にする</translation>
@@ -6010,7 +5997,6 @@
 <translation id="5071892329440114717">標準保護機能の詳細を表示</translation>
 <translation id="5072500507106264618">システム サービスのみが位置情報を使用できます</translation>
 <translation id="5072836811783999860">管理対象のブックマークを表示</translation>
-<translation id="5072900412896857127">Google Play 利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />、<ph name="FILE2" />}other{<ph name="FILE1" />、<ph name="FILE2" />、他 # 件}}</translation>
 <translation id="5074318175948309511">新しい設定を有効にするには、ページの再読み込みが必要な可能性があります。</translation>
 <translation id="5074761966806028321">設定を完了するには権限が必要です</translation>
@@ -6065,7 +6051,6 @@
 <translation id="5106350808162641062">削除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> はファミリー リンクによって管理されています。保護者の管理の下で学校のリソースにアクセスするための学校用アカウントを追加できます。</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> を今後表示しない</translation>
-<translation id="5108967062857032718">設定 - Android アプリの削除</translation>
 <translation id="5109044022078737958">ミア</translation>
 <translation id="5109816792918100764"><ph name="LANGUAGE_NAME" /> を削除</translation>
 <translation id="5111326646107464148">新しいウィンドウでグループを開く</translation>
@@ -6151,7 +6136,6 @@
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> では通知が許可されていません</translation>
 <translation id="516747639689914043">ハイパーテキスト トランスポート プロトコル（HTTP）</translation>
-<translation id="5167736746160955799">プロジェクトを表示</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5171343362375269016">スワップ対象メモリ</translation>
@@ -6199,7 +6183,6 @@
 <translation id="5196790039230503600">ジェスチャーを行ってから、頭を動かしてアイテムをドロップする場所を示します。ジェスチャーをもう一度行って、アイテムをドロップします。</translation>
 <translation id="5197150086680615104">タブグループの候補はいつでも確認できます</translation>
 <translation id="5197255632782567636">インターネット</translation>
-<translation id="5198430103906431024">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="5198511590127424515">Gemini に戻るには、<ph name="FOCUS_TOGGLE_HOTKEY" /> キーを押します</translation>
 <translation id="5199729219167945352">試験運用機能</translation>
 <translation id="5200191131577845078"><ph name="DOMAIN" /> からの通知を許可しました</translation>
@@ -6228,7 +6211,6 @@
 <translation id="5215502535566372932">国を選択</translation>
 <translation id="5216674789212441076">自動字幕起こしを自動的に翻訳します。字幕は翻訳のために Google に送信されます。</translation>
 <translation id="5216951551945455224">{NUM_TABS,plural, =1{Gemini とのタブの共有を停止}other{Gemini との # 個のタブの共有を停止}}</translation>
-<translation id="5217883660859035687">ブックマークのスペースを増やすため、タブグループを移動します。</translation>
 <translation id="5220011581825921581">検索+上矢印</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> をキャストできません</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
@@ -6414,7 +6396,6 @@
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="5355498626146154079">「Borealis Enabled」フラグをオンにする必要があります</translation>
 <translation id="5355501370336370394">企業のデバイスを登録</translation>
-<translation id="5356155057455921522">管理者が適用した更新を実行すると、組織のアプリをすばやく起動できるようになります。この処理には数分かかることがあります。</translation>
 <translation id="5357010010552553606">全画面表示への自動切り替えを許可しないサイト</translation>
 <translation id="5359910752122114278">検索結果 1 件</translation>
 <translation id="5359944933953785675"><ph name="NUM" /> 個のタブ</translation>
@@ -7116,7 +7097,6 @@
 <translation id="5846455742152785308">シャドウなし</translation>
 <translation id="5846504156837627898">サイトの権限を管理</translation>
 <translation id="5846749317653566506">色補正の設定を調整して、色が区別できるようにしてください</translation>
-<translation id="5846807460505171493">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
 <translation id="5848054741303781539">位置情報を使用せず、手動で設定する</translation>
 <translation id="5848319660029558352">読み上げとテキストの形式</translation>
 <translation id="5849212445710944278">すでに追加されています</translation>
@@ -7719,7 +7699,6 @@
 <translation id="625827534921607067">これまでに接続または設定したネットワークが複数ある場合は、このネットワークが優先されます</translation>
 <translation id="6259776178973198997">Wi-Fi Direct 所有者情報を更新</translation>
 <translation id="6261688934280090835">ChromeOS キオスクアプリのログ</translation>
-<translation id="6262371516389954471">バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="6263082573641595914">Microsoft CA バージョン</translation>
 <translation id="6263284346895336537">非重要</translation>
 <translation id="6264060420924719834">このアプリには他のサイトのウェブ コンテンツが含まれています</translation>
@@ -8246,7 +8225,6 @@
 <translation id="6635362468090274700">デバイスを公開するまでは、誰もあなたとコンテンツを共有できません。<ph name="BR" /><ph name="BR" />一時的に公開するには、ステータス領域を開いて、ニアバイシェアをオンにします。</translation>
 <translation id="6635674640674343739">ネットワーク接続を確立できません。ネットワーク接続を確認して、もう一度お試しください。</translation>
 <translation id="663569763553406962">拡張機能がサイトから読み取りまたは変更できる内容を確認する</translation>
-<translation id="6635944431854494329">所有者はこの機能を [設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] で管理できます。</translation>
 <translation id="6636258750460740634">履歴</translation>
 <translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
@@ -8580,7 +8558,6 @@
 <translation id="6848716236260083778">指紋を設定するには、お子様に指紋認証センサーをタッチしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="6850286078059909152">テキストの色</translation>
 <translation id="6850925512806464982">全員がこのタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
-<translation id="6851181413209322061">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="6851497530878285708">アプリは有効です</translation>
 <translation id="6852290167968069627">ネットワークの問題により、ChromeOS で前のセッションを再開できません。安定したネットワークに接続して、もう一度お試しください。</translation>
 <translation id="6852529053326738838">組織に問い合わせるか、仕事用メールアドレスを使用して登録を行い、アカウントが対象かどうかを確認します。</translation>
@@ -8695,6 +8672,7 @@
 <translation id="6929126689972602640">保護者による使用制限は学校用アカウントではサポートされていません。学校用アカウントを追加し、Google Classroom や他のウェブサイトにアクセスして自宅で学習できるようにするには、まずお子様の個人アカウントでログインしてください。学校用アカウントは設定の後半で追加できます。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{1 個の拡張機能が拒否されました}other{# 個の拡張機能が拒否されました}}</translation>
 <translation id="6930337524857202955">新しいダウンロードがあります</translation>
+<translation id="6930477763029357444"><ph name="APP_NAME" /> に許可した権限は、<ph name="PARENT_APP_NAME" /> とインストール済みの関連アプリにも適用されます。</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">クリックの感度</translation>
 <translation id="6933321725007230600">同期を有効にする(&amp;S)...</translation>
@@ -9079,7 +9057,6 @@
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="7206252555702853828">スマートカード リーダーを制御しています</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{ページを離れる}other{ページを離れる}}</translation>
-<translation id="7207457272187520234">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="7207631048330366454">アプリを検索</translation>
 <translation id="7209958456051239069">正確な位置情報を共有すると、Gemini がより正確に質問に回答できるようになります</translation>
 <translation id="7210257969463271891">インストールしたウェブアプリがここに表示されます</translation>
@@ -9204,7 +9181,6 @@
 <translation id="7292147651179697920">保護者の方に [設定] でアクセスを許可してもらってください</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" />（<ph name="VARIANT" />）</translation>
 <translation id="7293774463163321848">検索履歴、Gemini の履歴、パスワードは管理設定で削除できます</translation>
-<translation id="7295614427631867477">なお、Android、Play、および関連付けられているアプリには、それぞれ独自のデータ収集と使用のポリシーが適用されます。</translation>
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> フォルダを選択</translation>
 <translation id="7297228218361240128">表示したページ上の情報を Google ウォレットに保存</translation>
 <translation id="7297726121602187087">暗い緑</translation>
@@ -9821,7 +9797,6 @@
 <translation id="7701869757853594372">USER の操作</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> へのキャストを停止する</translation>
 <translation id="7704305437604973648">タスク</translation>
-<translation id="7704521324619958564">Play ストアを開く</translation>
 <translation id="7705085181312584869">文書作成サポート</translation>
 <translation id="7705276765467986571">ブックマーク モデルを読み込むことができませんでした。</translation>
 <translation id="7705334495398865155">ハードウェアの ID（BSSID）をランダム化して、他のユーザーがこのデバイスを追跡できないようにします。</translation>
@@ -10793,6 +10768,7 @@
 <translation id="8353420862507374944">キャスト、保存、共有</translation>
 <translation id="8353683614194668312">次の権限にアクセス可能:</translation>
 <translation id="8354034204605718473">お子様の PIN を追加しました</translation>
+<translation id="8354125743472063725"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />親アプリの権限を管理<ph name="END_LINK" /></translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8356409598322585307">このデバイスはすでに登録されています。再度登録する必要はありません。</translation>
 <translation id="8357388086258943206">Linux のインストール中にエラーが発生しました</translation>
@@ -11191,7 +11167,6 @@
 <translation id="8636514272606969031">サイドパネルを固定しました</translation>
 <translation id="8637688295594795546">システムのアップデートが見つかりました。ダウンロードの準備をしています...</translation>
 <translation id="8638719155236856752">ChromeOS ネットワーク健全性</translation>
-<translation id="8639635302972078117">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="8639963783467694461">自動入力の設定</translation>
 <translation id="8640575194957831802">最終使用日</translation>
 <translation id="8641946446576357115">iOS デバイスでパスワードを使用する</translation>
@@ -11206,7 +11181,6 @@
 <translation id="8645920082661222035">危険なイベントの発生を予測して警告します</translation>
 <translation id="8646209145740351125">同期の無効化</translation>
 <translation id="864637694230589560">サイトは最新情報やチャット メッセージなどを知らせる目的で通知を送信します</translation>
-<translation id="8647385344110255847">保護者の方が許可した場合、お子様は Google Play からアプリをインストールできます</translation>
 <translation id="8647834505253004544">有効なウェブアドレスではありません</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />または<ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">夜間モードの色温度</translation>
@@ -11371,7 +11345,6 @@
 <translation id="8740672167979365981">ChromeOS Flex の更新が必要です</translation>
 <translation id="8741944563400125534">スイッチ アクセス設定ガイド</translation>
 <translation id="8742395827132970586">インストールに失敗したため、クリーンアップしています</translation>
-<translation id="8742998548129056176">送信されるのは、お使いのデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。この情報は Android の改善に使用され、統計情報の一部は、Google アプリや、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="8743357966416354615">管理対象の開発環境（<ph name="GENERAL_NAME" />）</translation>
 <translation id="8744641000906923997">ローマ字</translation>
 <translation id="8744913471985800082">更新する前に、URL の変更に問題がないことを確認してください。</translation>
@@ -11621,7 +11594,6 @@
 <translation id="8909298138148012791"><ph name="APP_NAME" /> のアンインストールが完了しました</translation>
 <translation id="8909833622202089127">サイトで現在地が追跡されています</translation>
 <translation id="8910222113987937043">ブックマーク、履歴、パスワードなどの設定に行った変更は Google アカウントと同期されなくなります。ただし、既存のデータは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
-<translation id="8911914282056933784">プロジェクトを非表示</translation>
 <translation id="8912362522468806198">Google アカウントを使用</translation>
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>
 <translation id="8913485523736543337">アップデータ</translation>
@@ -11652,7 +11624,6 @@
 <translation id="8929738682246584251">拡大鏡のオン / オフ</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8930925309304109522">この言語をインストールするには、デバイスの空き容量を増やしてください</translation>
-<translation id="8931076093143205651">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="8931475688782629595">同期する内容の管理</translation>
 <translation id="8931693637927865341">小惑星</translation>
 <translation id="8931713990831679796">これらのプリンタは接続されていて、使用できる状態です。プロフィールに保存すると、簡単にアクセスできるようになります。</translation>
@@ -11808,7 +11779,6 @@
 <translation id="9023015617655685412">このタブをブックマークに追加...</translation>
 <translation id="902319268551617004">デバイスのカメラで QR コードをスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください。</translation>
 <translation id="9023723490232936872">チチェン イッツァ</translation>
-<translation id="9023909777842748145">この機能を OFF にしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="9024127637873500333">新しいタブで開く(&amp;O)</translation>
 <translation id="9024158959543687197">共有フォルダのマウントエラー。ファイルの共有 URL を確認してもう一度お試しください。</translation>
 <translation id="9024692527554990034">アドレスバーにショートカットを入力して、特定のサイト内をすばやく検索したり、別の検索エンジンを使用したりできます</translation>
@@ -11822,7 +11792,6 @@
 <translation id="9030515284705930323">組織の設定により、アカウントで Google Play ストアをご利用いただくことができません。詳しくは管理者にお尋ねください。</translation>
 <translation id="9030754204056345429">速め</translation>
 <translation id="9030855135435061269">「<ph name="PLUGIN_NAME" />」のサポートは終了しました</translation>
-<translation id="9031549947500880805">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。</translation>
 <translation id="9031811691986152304">もう一度試す</translation>
 <translation id="9032004780329249150">iOS デバイスでパスワードを使用する</translation>
 <translation id="9032097289595078011">ファスト ペアリングを無効にする</translation>
@@ -12041,7 +12010,6 @@
 <translation id="9172270007201309670">フォントサイズを大きくしました</translation>
 <translation id="9173063514323762371">ブックマーク バーを非表示(&amp;H)</translation>
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
-<translation id="9174401638287877180">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
 <translation id="9174854240439014335">ウィンドウの左端または右端で分割ビューのドラッグ＆ドロップを許可する</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - Bluetooth デバイスに接続されています</translation>
 <translation id="9177859716483578738">続行すると、<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> からこのサイトに <ph name="FIELDS_STRING" /> が共有されます。このサイトの<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />をご確認ください。</translation>
@@ -12194,7 +12162,6 @@
 <translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> がモバイル デバイスから情報を取得しようとしています</translation>
 <translation id="988320949174893488">たまに引っかかる</translation>
 <translation id="988978206646512040">パスフレーズは必ず指定してください</translation>
-<translation id="989685714699739712">タブをグループ化して整理し、カスタムの名前と色でラベルを付けることができます</translation>
 <translation id="992032470292211616">拡張機能、アプリ、テーマはお使いのデバイスに悪影響を与える可能性があります。続行してもよろしいですか？</translation>
 <translation id="992256792861109788">ピンク</translation>
 <translation id="992592832486024913">ChromeVox（音声フィードバック）を無効にする</translation>

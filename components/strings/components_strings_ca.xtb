@@ -217,6 +217,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <ph name="LIST_ITEM" />la teva empresa o el teu centre educatiu
 <ph name="LIST_ITEM" />el teu proveïdor d'Internet
 <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">País emissor</translation>
 <translation id="1337692097987160377">Comparteix aquesta pestanya</translation>
 <translation id="1339601241726513588">Domini d'inscripció:</translation>
 <translation id="1340482604681802745">Adreça de recollida</translation>
@@ -2465,6 +2466,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem el tabulador i després Retorn per fer una cerca</translation>
 <translation id="4930153903256238152">Gran capacitat</translation>
 <translation id="4930714375720679147">Activa</translation>
+<translation id="4931347573573430180">Data d'emissió</translation>
 <translation id="4932035752129140860">El text que enganxes o adjuntes s'envia a Google Cloud o a tercers perquè s'analitzi. Per exemple, pot ser que s'analitzi per detectar-hi dades sensibles, que s'emmagatzemi d'acord amb les polítiques de l'empresa i que el teu administrador el pugui veure.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Paga amb Pix</translation>
@@ -3096,6 +3098,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5950901984834744590">Màquines i fulles d'afaitar</translation>
 <translation id="5951495562196540101">El dispositiu no es pot inscriure amb un compte de consumidor (hi ha una llicència associada disponible).</translation>
 <translation id="5952076224478208938">Marca</translation>
+<translation id="5952196777020238475">Número de llicència</translation>
 <translation id="5953516610448771166">La funció Subtítols instantanis no està disponible per a aquest contingut multimèdia. Per obtenir subtítols, bloqueja <ph name="CONTENT_SETTINGS" /> per a aquest lloc web.</translation>
 <translation id="5960795367348889467">Verificació</translation>
 <translation id="5963413905009737549">Secció</translation>
@@ -4595,6 +4598,7 @@ Detalls addicionals:
 <translation id="8288320283441806607">Per utilitzar aquesta funció, activa l'opció Millora les cerques i la navegació</translation>
 <translation id="8288807391153049143">Mostra el certificat</translation>
 <translation id="8289355894181816810">Si no esteu segur de què significa això, contacteu amb l'administrador de la xarxa.</translation>
+<translation id="8291367150570302588">Document d'identitat</translation>
 <translation id="829335040383910391">so</translation>
 <translation id="8294431847097064396">Font</translation>
 <translation id="8297545700510100061">Les galetes i altres dades dels llocs web s'utilitzen per recordar-te amb finalitats com ara iniciar la teva sessió o personalitzar anuncis. Per gestionar les galetes de tots els llocs web, consulta <ph name="SETTINGS" />.</translation>

@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">ChromeVox பயிற்சிக்கு வரவேற்கிறோம். இரண்டு விரல்களால் வலதுபுறத்திலிருந்து இடதுபுறம் ஸ்வைப் செய்து இந்தப் பயிற்சியில் இருந்து எப்போது வேண்டுமானாலும் வெளியேறலாம். ChromeVoxஸை எப்போது வேண்டுமானாலும் இயக்க/முடக்க, ஒலியளவு பட்டன்கள் இரண்டையும் ஐந்து வினாடிகளுக்கு அழுத்திப் பிடிக்கவும். நீங்கள் தயாரானதும் அடுத்த பாடத்திற்குச் செல்ல, ஒரு விரலால் திரையை இருமுறை தட்டவும்.</translation>
 <translation id="700202842116345659">நூல்விவர அட்டவணை உள்ளீடு</translation>
 <translation id="7005146664810010831">URL இல்லை</translation>
-<translation id="7026338066939101231">குறை</translation>
+<translation id="7026338066939101231">குறைக்கும்</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">முந்தைய பட்டியல்</translation>
@@ -1064,7 +1064,7 @@
 <translation id="7972507042926081808">சாக்லேட்</translation>
 <translation id="7974390230414479278">மெனு உருப்படி</translation>
 <translation id="8004507136466386272">சொற்கள்</translation>
-<translation id="8004512796067398576">அதிகரி</translation>
+<translation id="8004512796067398576">அதிகரிகரிக்கும்</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">பேச்சை முடக்கும்</translation>
 <translation id="801990297710781303">அடிக்குறிப்பு</translation>

@@ -217,6 +217,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
           <ph name="LIST_ITEM" />Your employer or school
           <ph name="LIST_ITEM" />Your Internet service provider
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Issuing country</translation>
 <translation id="1337692097987160377">Share this tab</translation>
 <translation id="1339601241726513588">Enrolment domain:</translation>
 <translation id="1340482604681802745">Pickup address</translation>
@@ -2465,6 +2466,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press 'Tab', then 'Enter' to search</translation>
 <translation id="4930153903256238152">Large capacity</translation>
 <translation id="4930714375720679147">Turn on</translation>
+<translation id="4931347573573430180">Date issued</translation>
 <translation id="4932035752129140860">Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="4932733599132424254">Date</translation>
 <translation id="4933788293078559286">Pay with Pix</translation>
@@ -3096,6 +3098,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5950901984834744590">Razors and shavers</translation>
 <translation id="5951495562196540101">Can't enrol with consumer account (packaged licence available).</translation>
 <translation id="5952076224478208938">Make</translation>
+<translation id="5952196777020238475">Licence number</translation>
 <translation id="5953516610448771166">Live Caption is not available for this media. To get captions, block <ph name="CONTENT_SETTINGS" /> for this site.</translation>
 <translation id="5960795367348889467">Verification</translation>
 <translation id="5963413905009737549">Section</translation>
@@ -4595,6 +4598,7 @@ Additional details:
 <translation id="8288320283441806607">To use this feature, turn on Make searches and browsing better</translation>
 <translation id="8288807391153049143">Show certificate</translation>
 <translation id="8289355894181816810">Contact your network administrator if you're not sure what this means.</translation>
+<translation id="8291367150570302588">ID card</translation>
 <translation id="829335040383910391">sound</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="SETTINGS" />.</translation>

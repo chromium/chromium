@@ -210,6 +210,7 @@
 <translation id="1323433172918577554">మరింత చూపు</translation>
 <translation id="1329916999021038454">రిపోర్ట్‌ను పంపండి</translation>
 <translation id="1330449323196174374">ఎడమవైపు గేట్‌ ఫోల్డ్</translation>
+<translation id="133173645041092770">వెబ్‌సైట్‌ను మూసివేయండి</translation>
 <translation id="1333745675627230582">Chrome Dino గేమ్‌ను ఆడండి</translation>
 <translation id="1333989956347591814">మీ యాక్టివిటీ వీటికి లేదా వీరికి <ph name="BEGIN_EMPHASIS" />ఇప్పటికీ కనిపించవచ్చు<ph name="END_EMPHASIS" />: <ph name="BEGIN_LIST" /> <ph name="LIST_ITEM" />మీరు తెరిచే వెబ్‌సైట్‌లు<ph name="LIST_ITEM" />మీరు ఉద్యోగం చేస్తోన్న సంస్థ లేదా స్కూల్ అడ్మిన్<ph name="LIST_ITEM" />మీ ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్<ph name="END_LIST" /></translation>
 <translation id="133753543318803399">జారీ చేసిన దేశం</translation>
@@ -630,6 +631,7 @@
 <translation id="2027465737841872819">ప్లాస్టిక్</translation>
 <translation id="2027707238798802149">కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="2029735183873159415">సంతతి &amp; వంశ పరిణామ క్రమం</translation>
+<translation id="2031095660415483845">ఎక్కడి నుండైనా సెర్చ్ చేసి, ఫిల్ చేయండి...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ప్రాక్సీని, ఫైర్‌వాల్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">షార్ట్‌కట్ అనేది <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> ద్వారా నిర్వచించబడిన ఆటోమేటిక్ సెర్చ్ ప్రొవైడర్ కీవర్డ్ లాగా ఉండకూడదు: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">ఏదేమైనా సేవ్ చేయండి</translation>
@@ -930,12 +932,14 @@
 <translation id="2466004615675155314">వెబ్ నుండి సమాచారాన్ని చూపించు</translation>
 <translation id="2466682894498377850">మీ <ph name="DEVICE_NAME" /> నుండి పంపిన ట్యాబ్</translation>
 <translation id="2467272921457885625">CPU/RAM వినియోగ హిస్టరీ వంటి పరికర హార్డ్‌వేర్ స్పెసిఫికేషన్‌లు, గణాంకాలు</translation>
+<translation id="2467421459221956357">సెన్సార్‌లను ఉపయోగించాలా?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />నెట్‌వర్క్ సమస్య విశ్లేషణలను అమలు చేయడం<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-నుండి-N వరకు ఉన్న క్రమం</translation>
 <translation id="24699311393038040">పేపర్ (కోటెడ్)</translation>
 <translation id="2471632709106952369">టేబుల్స్‌ను కంపార్ చేయండి</translation>
 <translation id="2473810985261856484">చట్టపరమైన సర్వీస్‌లు</translation>
 <translation id="2477607419416067650">ఇతర Google డేటా</translation>
+<translation id="247903268499247848">మోషన్, లైట్ సెన్సార్‌లకు అనుమతి లేదు</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2479410451996844060">శోధన URL చెల్లదు.</translation>
 <translation id="2480300195898055381">మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో</translation>
@@ -1060,6 +1064,7 @@
 <translation id="2674524144218093528">ఇంటి పెయింటింగ్ &amp; ఫినిషింగ్</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> ట్యాబ్ గ్రూప్‌లు ఇకపై అందుబాటులో ఉండవు</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
+<translation id="2679216653373462289">మీ మోషన్, లైట్ సెన్సార్‌లను ఉపయోగించండి</translation>
 <translation id="2679659833697380">మీ సమాచారాన్ని మీ డివైజ్‌లో సేవ్ చేశారు</translation>
 <translation id="2683195745483370038">ఇతర ఫలితాలు కనుగొనబడ్డాయి</translation>
 <translation id="2686919536310834199">ఫీడ్‌బ్యాక్‌ను పంపండి, రాయడంలో అది నాకు సహాయపడగలదు.</translation>
@@ -1140,6 +1145,7 @@
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
 <translation id="2824775600643448204">అడ్రస్‌ మరియు శోధన బార్</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" />ను ఉపయోగించి కనెక్షన్ ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది, ప్రామాణీకరించబడింది మరియు <ph name="KX" />ను కీలకమైన పరివర్తన విధానంగా ఉపయోగిస్తుంది.</translation>
+<translation id="2828797285817981634">మోషన్ సెన్సార్‌లకు ప్రస్తుతం అనుమతి ఉంది</translation>
 <translation id="2833637280516285136">టాక్ రేడియో</translation>
 <translation id="2835170189407361413">ఫారమ్‌ను క్లియర్ చేయండి</translation>
 <translation id="2835907903001172712">బ్రౌజర్ ఓవర్‌వ్యూ</translation>
@@ -1265,6 +1271,7 @@
 <translation id="3030331669969285614">ఈ ఫ్లాగ్‌లు తాజా మార్పును నిరోధిస్తాయి లేదా పూర్వస్థితికి మార్చుతాయి, పరిమిత సమయం వరకు మాత్రమే అందుబాటులో ఉంటాయి.</translation>
 <translation id="3030542417256082866">వెహికిల్‌ను సేవ్ చేయాలా?</translation>
 <translation id="3033200136993730761">మీ ఇంటి అడ్రస్ Google సర్వీస్‌ల అంతటా పనులు పూర్తి చేయడంలో మీకు సహాయపడుతుంది, ఉదాహరణకు Google Mapsలో మరింత సంబంధిత సెర్చ్ ఫలితాలు, దిశలు. మీరు మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="ACCOUNT" /><ph name="END_LINK" />లో మీ అడ్రస్‌ను ఎడిట్ చేయవచ్చు లేదా తొలగించవచ్చు.</translation>
+<translation id="3033777742142108756">మోషన్, లైట్ సెన్సార్‌లను ఉపయోగించడానికి ప్రస్తుతం అనుమతించబడింది</translation>
 <translation id="3034526003882782781">స్క్రోల్ చేయడం, జూమ్ చేయడం అనుమతించబడింది</translation>
 <translation id="3036894576201005614">ఇంటిని శుభ్రం చేయడానికి ఉపయోగించే వస్తువులు</translation>
 <translation id="3037177537145227281">ధరను ట్రాక్ చేయడం</translation>
@@ -2282,6 +2289,7 @@
 <translation id="4658638640878098064">ఎడమవైపు ఎగువ భాగంలో స్టేపుల్</translation>
 <translation id="4658801711339831733">స్కాన్ Google Driveలో సేవ్ చేయబడింది</translation>
 <translation id="4660592918803576381">Driveలో తెరవండి</translation>
+<translation id="4660780573807106293">మీ మోషన్, లైట్ సెన్సార్‌లను ఉపయోగించమని అడగవచ్చు</translation>
 <translation id="4661556981531699496">పెంపుడు జంతువులు &amp; ఇతర జంతువులు</translation>
 <translation id="4661868874067696603">మరిన్ని కొనుగోలు ఆప్షన్‌లను సెర్చ్ చేయండి</translation>
 <translation id="4663373278480897665">కెమెరా అనుమతించబడింది</translation>
@@ -2734,6 +2742,7 @@
 <translation id="5371425731340848620">కార్డ్‌ని అప్‌డేట్ చేయండి</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ట్యాబ్‌ను మార్చారు</translation>
 <translation id="5374324662289354619">అంతర్గత డీబగ్గింగ్ పేజీలు ప్రస్తుతం డిజేబుల్ చేయబడ్డాయి.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> మీ మోషన్ సెన్సార్‌లను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"మీ గడియారం ఆలస్యంగా నడుస్తోంది" లేదా "మీ గడియారం ముందుగా ఉంది" లేదా "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">మీ పరికరాలన్నింటిలో ఈ పాస్‌వర్డ్‌ను పొందడానికి, మీ గుర్తింపును వెరిఫై చేయండి</translation>
@@ -2783,6 +2792,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">వేగంగా చెక్ అవుట్ చేయడం కోసం, ఈ CVCని Google Walletలో (<ph name="ACCOUNT_EMAIL" />) సేవ్ చేయండి</translation>
 <translation id="5436307623797390637">డివైజ్‌లోని యాప్‌లు</translation>
+<translation id="543656192084990644">మోషన్ సెన్సార్‌లకు అనుమతి లేదు</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, గతంలో <ph name="PREVIOUS_VALUE" /> ఉండేది</translation>
 <translation id="5443468954631487277">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ అప్</translation>
 <translation id="5447235695608032700">పేజీలు మీ గురించి సేవ్ చేసిన సమాచారాన్ని ఉపయోగించడానికి <ph name="SITE" /> వెబ్‌సైట్‌ను అనుమతించండి</translation>
@@ -3073,6 +3083,7 @@
 <translation id="5918847752193018339">మీ CVCలు సేవ్ అయినప్పుడు వేగవంతంగా చెక్ అవుట్ చేయవచ్చు. <ph name="LINK_BEGIN" />సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లను తొలగించండి<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">ఆన్ చేయబడ్డాయి</translation>
+<translation id="5921432337686792850">మీ మోషన్ సెన్సార్‌లను ఉపయోగించడానికి సైట్ అనుమతిని అడగవచ్చు</translation>
 <translation id="5921639886840618607">Google ఖాతాకు కార్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5921952831792678223">పికప్ ట్రక్‌లు</translation>
 <translation id="5923492272538889093">CVCకి బదులుగా పరికర అన్‌లాక్‌ను ఉపయోగించాలా?</translation>
@@ -3140,6 +3151,7 @@
 <translation id="6028591542479806248">మొబైల్, ఈమెయిల్ నోటిఫికేషన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6028833024483927901">వివిధ దేశాల వంటకాలు</translation>
 <translation id="603068602130820122">కుడివైపు డ్యుయల్ స్టేపుల్</translation>
+<translation id="6031824805267965302">మీ మోషన్ సెన్సార్‌లను ఉపయోగించండి</translation>
 <translation id="6032524144326295339">మెయిల్‌బాక్స్ 2</translation>
 <translation id="6032955021262906325">ఎడమవైపు బైండ్</translation>
 <translation id="6034000775414344507">లేత బూడిద రంగు</translation>
@@ -3221,6 +3233,7 @@
 <translation id="6133984428121856852">ఫైల్ ఎక్స్‌టెన్షన్ ఖాళీగా ఉంది లేదా తప్పుగా ఫార్మాట్ చేయబడింది.</translation>
 <translation id="6139975341602920272">17 x 22 అంగుళాలు</translation>
 <translation id="6143097244789397208">అగ్‌మెంటెడ్ &amp; వర్చువల్ రియాలిటీ</translation>
+<translation id="614327212146763975">మోషన్, లైట్ సెన్సార్‌లు అనుమతించబడ్డాయి</translation>
 <translation id="6146055958333702838">ఏవైనా కేబుళ్లను చెక్ చేయండి మరియు మీరు ఉపయోగించే ఏవైనా రూటర్‌లు, మోడెమ్‌లు
         లేదా ఇతర నెట్‌వర్క్ పరికరాలను రీబూట్ చేయండి.</translation>
 <translation id="614940544461990577">ఇలా చేసి ప్రయత్నించండి:</translation>
@@ -3598,6 +3611,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">కెమెరా</translation>
 <translation id="6734506549556896534">సిమ్యులేషన్ గేమ్‌లు</translation>
+<translation id="6735589846038045679">పేమెంట్ ప్లాన్‌లు అర్హతకు లోబడి ఉంటాయి. <ph name="BEGIN_BOLD" />ఈ ఆప్షన్‌లను అందించడానికి చెక్ అవుట్ పేజీలోని కంటెంట్ Googleతో షేర్ అవుతుంది.<ph name="END_BOLD" /> తర్వాత పేమెంట్ చేసే ఆప్షన్‌లను దాచడానికి, <ph name="BEGIN_LINK" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK" />కు వెళ్లండి</translation>
 <translation id="6737708609449480586">బేక్ చేసిన పదార్థాలు</translation>
 <translation id="6738516213925468394"><ph name="TIME" /> తేదీన మీ <ph name="BEGIN_LINK" />సింక్‌ రహస్య పదబంధం <ph name="END_LINK" />తో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="6740851646645036700">మీరు ప్రస్తుతం మీ రాయడంలో సహాయ పరిమితిని రీచ్ అయ్యారు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
@@ -3611,6 +3625,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ఎంట్రీని తొలగించండి</translation>
 <translation id="6754547388777247439">పొదుపు ఖాతాలు</translation>
 <translation id="6757797048963528358">మీ పరికరం నిద్రావస్థకు వెళ్లింది.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> మీ మోషన్, లైట్ సెన్సార్‌లను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="6766558780547452153">వంట &amp; వంటకాలు</translation>
 <translation id="6770747695101757579">పేపర్ (కాటన్)</translation>
 <translation id="677257480647123231">పిల్లలకు సంబంధించిన ఇంటర్నెట్ భద్రత</translation>
@@ -4367,6 +4382,7 @@
 <translation id="79338296614623784">చెల్లుబాటు అయ్యే ఫోన్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="7934414805353235750"><ph name="URL" /> రక్షిత కంటెంట్‌ను ప్లే చేయాలనుకుంటోంది. మీ పరికర గుర్తింపును Google ధృవీకరిస్తుంది.</translation>
 <translation id="7935318582918952113">DOM డిస్టిల్లర్</translation>
+<translation id="7935520077478121175">మోషన్ సెన్సార్‌లను అనుమతించడం జరిగింది</translation>
 <translation id="7937163678541954811">వేగవంతమైన చెక్అవుట్ కోసం ఈ కార్డ్ CVC ఎన్‌క్రిప్ట్ చేయబడుతుంది, మీ పరికరంలో సేవ్ చేయబడుతుంది</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />న గడువు ముగుస్తుంది</translation>
 <translation id="7938958445268990899">సర్వర్ ప్రమాణపత్రం ఇంకా చెల్లుబాటులో లేదు.</translation>
@@ -4993,6 +5009,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో మీ బ్రౌజింగ్ హిస్టరీని చూడడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="8987663052629670333">ఫోటో ప్రింటింగ్ సర్వీస్‌లు</translation>
 <translation id="8987927404178983737">నెల</translation>
+<translation id="8988966534058783995">మోషన్ సెన్సార్‌లను ఉపయోగించాలా?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">మీరు ఈ డివైజ్‌ను యాక్టివ్‌గా ఉపయోగిస్తున్నప్పుడు <ph name="URL" /> ఆ విషయాన్ని తెలుసుకోవాలనుకుంటుంది</translation>
 <translation id="8997023839087525404">సర్టిఫికెట్ పారదర్శకత విధానాన్ని ఉపయోగించి పబ్లిక్‌గా బహిరంగపరచబడని సర్టిఫికెట్‌ను ఈ సర్వర్ అందించింది. కొన్ని సర్టిఫికెట్‌లకు, అవి విశ్వసనీయమైనవని మరియు దాడి చేసేవారి నుండి రక్షణ కల్పించగలవని నిర్ధారించడానికి, ఇది ఆవశ్యకం.</translation>

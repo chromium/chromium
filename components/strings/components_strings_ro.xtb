@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />angajatorul sau școala ta;
           <ph name="LIST_ITEM" />furnizorul de servicii de internet.
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Țara emitentă</translation>
 <translation id="1337692097987160377">Distribuie această filă</translation>
 <translation id="1339601241726513588">Domeniu de înregistrare:</translation>
 <translation id="1340482604681802745">Adresa de preluare</translation>
@@ -2465,6 +2466,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a căuta</translation>
 <translation id="4930153903256238152">Capacitate mare</translation>
 <translation id="4930714375720679147">Activează</translation>
+<translation id="4931347573573430180">Data emiterii</translation>
 <translation id="4932035752129140860">Textul pe care îl introduci sau atașezi este trimis la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile și poate să fie stocat conform politicilor companiei și să fie vizibil pentru administrator.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Plătește cu Pix</translation>
@@ -3096,6 +3098,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5950901984834744590">Aparate și lame de ras</translation>
 <translation id="5951495562196540101">Nu te poți înscrie cu contul de consumator (este disponibilă o licență din pachet).</translation>
 <translation id="5952076224478208938">Stabilește</translation>
+<translation id="5952196777020238475">Numărul permisului</translation>
 <translation id="5953516610448771166">Subtitrările live nu sunt disponibile pentru acest conținut media. Pentru a primi subtitrări, blochează <ph name="CONTENT_SETTINGS" /> pentru acest site.</translation>
 <translation id="5960795367348889467">Confirmare</translation>
 <translation id="5963413905009737549">Secțiune</translation>
@@ -4595,6 +4598,7 @@ Detalii suplimentare:
 <translation id="8288320283441806607">Pentru a folosi această funcție, activează opțiunea Îmbunătățește căutările și navigarea</translation>
 <translation id="8288807391153049143">Afișează certificatul</translation>
 <translation id="8289355894181816810">Dacă nu știți sigur ce înseamnă aceasta, contactați administratorul de rețea.</translation>
+<translation id="8291367150570302588">Cardul de identitate</translation>
 <translation id="829335040383910391">Sunet</translation>
 <translation id="8294431847097064396">Sursă</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>

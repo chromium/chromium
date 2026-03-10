@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2371084566192454134">Mga tab at grupo ng tab</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
+<translation id="2476179388576975626">Picture-in-picture</translation>
 <translation id="2498435670446402865">I-rename: grupo ng tab</translation>
 <translation id="2536366509642644298">Hindi na available ang mga grupo ng tab na "<ph name="TAB_GROUP_NAME_1" />" at "<ph name="TAB_GROUP_NAME_2" />"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>

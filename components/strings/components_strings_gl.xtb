@@ -217,6 +217,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
           <ph name="LIST_ITEM" />A túa empresa ou centro educativo
           <ph name="LIST_ITEM" />O teu fornecedor de servizos de Internet
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">País no que se expediu</translation>
 <translation id="1337692097987160377">Compartir esta pestana</translation>
 <translation id="1339601241726513588">Dominio de inscrición:</translation>
 <translation id="1340482604681802745">Enderezo de recollida</translation>
@@ -2465,6 +2466,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para realizar unha busca, preme Tab e despois Intro</translation>
 <translation id="4930153903256238152">Gran capacidade</translation>
 <translation id="4930714375720679147">Activar</translation>
+<translation id="4931347573573430180">Data de emisión</translation>
 <translation id="4932035752129140860">O texto que pegues ou anexes enviarase a Google Cloud ou a terceiros para a súa análise. Por exemplo, podería examinarse para ver se contén datos confidenciais e almacenarse en función das políticas da empresa. Tamén podería velo a persoa administradora.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="4933788293078559286">Pagar con Pix</translation>
@@ -3096,6 +3098,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5950901984834744590">Coitelas e máquinas de afeitar</translation>
 <translation id="5951495562196540101">Non se pode realizar a inscrición coa conta de uso particular (licenza en paquete dispoñible).</translation>
 <translation id="5952076224478208938">Marca</translation>
+<translation id="5952196777020238475">Número de licenza</translation>
 <translation id="5953516610448771166">A función Subtítulos instantáneos non está dispoñible para este contido multimedia. Se queres ver subtítulos, bloquea os <ph name="CONTENT_SETTINGS" /> para este sitio.</translation>
 <translation id="5960795367348889467">Verificación</translation>
 <translation id="5963413905009737549">Sección</translation>
@@ -4594,6 +4597,7 @@ Detalles adicionais:
 <translation id="8288320283441806607">Para usar esta función, activa a opción Mellorar as buscas e a navegación</translation>
 <translation id="8288807391153049143">Mostrar certificado</translation>
 <translation id="8289355894181816810">Ponte en contacto co administrador da túa rede se non estás seguro de que quere dicir isto.</translation>
+<translation id="8291367150570302588">Carné de identidade</translation>
 <translation id="829335040383910391">son</translation>
 <translation id="8294431847097064396">Fonte</translation>
 <translation id="8297545700510100061">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="SETTINGS" />.</translation>

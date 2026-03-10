@@ -217,6 +217,7 @@
           <ph name="LIST_ITEM" />Жұмыс берушіңіз немесе мектебіңіз
           <ph name="LIST_ITEM" />Интернет провайдері
         <ph name="END_LIST" /></translation>
+<translation id="133753543318803399">Берген ел</translation>
 <translation id="1337692097987160377">Осы қойындыны бөлісу</translation>
 <translation id="1339601241726513588">Тіркеу домені:</translation>
 <translation id="1340482604681802745">Алып кету мекенжайы</translation>
@@ -2464,6 +2465,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Іздеу үшін алдымен Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4930153903256238152">Үлкен сыйымдылық</translation>
 <translation id="4930714375720679147">Қосу</translation>
+<translation id="4931347573573430180">Шығарылған күн</translation>
 <translation id="4932035752129140860">Сіз қоятын немесе тіркейтін мәтін Google Cloud қызметіне немесе үшінші тараптарға талдау үшін жіберіледі. Мысалы, ол құпия деректерді немесе зиянды бағдарламаны анықтау үшін сканерленуі, компания саясаттарына сәйкес сақталуы және әкімшіге көрінуі мүмкін.</translation>
 <translation id="4932733599132424254">Күні</translation>
 <translation id="4933788293078559286">Pix-пен төлеу</translation>
@@ -3095,6 +3097,7 @@
 <translation id="5950901984834744590">Қырыну құралдары</translation>
 <translation id="5951495562196540101">Тұтынушының аккаунтымен тіркеу мүмкін емес (лицензия пакеті бар).</translation>
 <translation id="5952076224478208938">Марка</translation>
+<translation id="5952196777020238475">Лицензия нөмірі</translation>
 <translation id="5953516610448771166">Автоматты субтитр функциясы бұл медиа үшін қолжетімсіз. Субтитрлерді шығару керек болса, бұл сайт үшін <ph name="CONTENT_SETTINGS" /> бөгеңіз.</translation>
 <translation id="5960795367348889467">Растау</translation>
 <translation id="5963413905009737549">Бөлім</translation>
@@ -4593,6 +4596,7 @@
 <translation id="8288320283441806607">Бұл функцияны пайдалану үшін "Іздеу және браузерді қолдану нәтижелерін жақсарту" параметрін қосыңыз</translation>
 <translation id="8288807391153049143">Сертификатты көрсету</translation>
 <translation id="8289355894181816810">Бұның нені білдіретінін білмесеңіз, желі әкімшісіне хабарласыңыз.</translation>
+<translation id="8291367150570302588">Жеке куәлік</translation>
 <translation id="829335040383910391">дыбыс</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8297545700510100061">Cookie файлдары мен басқа сайт деректері сізді есте сақтау, соның ішінде аккаунтыңызға кіруді жеңілдету не жарнамаларды жекелендіру үшін қолданылады. Барлық сайт бойынша cookie файлдарын басқару үшін "<ph name="SETTINGS" />" бөліміне кіріңіз.</translation>

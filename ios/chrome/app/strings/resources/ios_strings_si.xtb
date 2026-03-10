@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{අඩවි 1ක් (සමමුහුර්ත කළ උපාංග මත තවත්)}one{අඩවි #ක් (සමමුහුර්ත කළ උපාංග මත තවත්)}other{අඩවි #ක් (සමමුහුර්ත කළ උපාංග මත තවත්)}}</translation>
 <translation id="2870560284913253234">අඩවිය</translation>
 <translation id="2876369937070532032">ඔබේ ආරක්‍ෂාව අවදානමේ තිබෙන විට, Google වෙත ඔබ පැමිණෙන සමහර පිටුවල URL යවන්න</translation>
+<translation id="2877733045396505765">මෙය මෙම උපාංගයේ සහ ඔබේ Google ගිණුමේ <ph name="USER_EMAIL" /> සුරකින ලද තෝරාගත් තතු මකා දමයි.</translation>
 <translation id="2883151425485251736">ඔබ ඔබගේ ගිණුමෙන් සඟවා ඇති මාතෘකා බලන්න සහ සංස්කරණය කරන්න</translation>
 <translation id="288655811176831528">පටිත්ත වසන්න</translation>
 <translation id="2888631381369839306">මිල හඹා යාමේ දැනුම්දීම් ක්‍රියාත්මකයි</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798"><ph name="MONTH" /> කල් ඉකුත් වීම් මාසය ස්වයංක්‍රීයව පුරවන්න</translation>
 <translation id="7758789811447313947">වයලට් තේමාව</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
+<translation id="7763878244904387570">මෙය මෙම උපාංගයෙහි සුරකින ලද තෝරාගත් තතු මකා දමයි.</translation>
 <translation id="7765158879357617694">චලනය කරන්න</translation>
 <translation id="7772032839648071052">රහස්පදය ස්ථිර කරන්න</translation>
 <translation id="7772948288262733182">ආපසු සාදරයෙන් පිළිගනිමු</translation>

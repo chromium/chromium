@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
+<translation id="2476179388576975626">Obraz w obrazie</translation>
 <translation id="2498435670446402865">Zmień nazwę grupy kart</translation>
 <translation id="2536366509642644298">Grupy kart „<ph name="TAB_GROUP_NAME_1" />” i „<ph name="TAB_GROUP_NAME_2" />” nie są już dostępne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
