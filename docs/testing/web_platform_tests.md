@@ -375,6 +375,10 @@ If GitHub status is red on the PR, please try to resolve the failures before
 merging. If you run into any issues, or if you have a CL with WPT changes that
 the exporter did not pick up, please reach out to blink-dev@chromium.org.
 
+If you want to run the exporter before your CL is ready to submit, you can add
+the tag `Force-WPT-Export: true` to your CL description. This might be useful in
+order to check WPT results on GitHub before sending the CL for review.
+
 Additional things to note:
 
 -   CLs that change over 1000 files will not be exported.
