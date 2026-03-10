@@ -233,6 +233,8 @@ GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
       IsGeminiFloatyAllPagesEnabled()) {
     gemini_page_context.geminiPageContextComputationState =
         ios::provider::GeminiPageContextComputationState::kBlocked;
+    gemini_page_context.geminiPageContextAttachmentState =
+        ios::provider::GetCurrentPageContextAttachmentState();
     return gemini_page_context;
   }
   gemini_page_context.geminiPageContextComputationState =

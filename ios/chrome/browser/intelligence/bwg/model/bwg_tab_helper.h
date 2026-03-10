@@ -136,6 +136,9 @@ class BwgTabHelper : public web::WebStateObserver,
   void UpdatePresentedSource(gemini::FloatyUpdateSource source,
                              bool is_presented);
 
+  // Notifies observers of the web state that the page context changed.
+  void NotifyPageContextUpdated(web::WebState* web_state);
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
@@ -164,9 +167,6 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Clears the zero-state suggestions and resets the service.
   void ClearZeroStateSuggestions();
-
-  // Notifies observers of the web state that the page context changed.
-  void NotifyPageContextUpdated(web::WebState* web_state);
 
   // Populates the page context fields if the wrapper exists.
   void PopulatePageContextFields();

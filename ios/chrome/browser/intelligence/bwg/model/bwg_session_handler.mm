@@ -277,6 +277,10 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
   }
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   BWGTabHelper->DeleteBwgSessionInStorage();
+  // Ensure page context is attached for a new chat.
+  ios::provider::UpdatePageAttachmentState(
+      ios::provider::GeminiPageContextAttachmentState::kAttached);
+  BWGTabHelper->NotifyPageContextUpdated(webState);
   // Record the new chat metric.
   RecordGeminiNewChatButtonTapped();
 }

@@ -1080,6 +1080,11 @@ void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
     gemini_page_context.geminiPageContextAttachmentState =
         ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
+  } else if (IsGeminiCopresenceEnabled() && is_floaty_invoked_ &&
+             ios::provider::GetCurrentPageContextAttachmentState() ==
+                 ios::provider::GeminiPageContextAttachmentState::kDetached) {
+    gemini_page_context.geminiPageContextAttachmentState =
+        ios::provider::GeminiPageContextAttachmentState::kDetached;
   } else {
     // If page context is not disabled by the user, page context is always
     // available and should be attached. Note page context is only partially
