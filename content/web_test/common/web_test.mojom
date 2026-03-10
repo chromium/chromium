@@ -371,6 +371,17 @@ interface WebTestControlHost {
 
   // Disable Auto Resize mode, resizing the contents to `new_size`.
   DisableAutoResize(gfx.mojom.Size new_size);
+
+  // Returns whether specific clipboard read methods were called on the mock
+  // clipboard host since the last reset. Used to verify lazy read behavior.
+  [Sync]
+  GetClipboardReadState() => (bool read_text_called,
+                              bool read_html_called,
+                              bool read_unsanitized_custom_format_called,
+                              bool read_available_formats_called);
+
+  // Resets the clipboard read tracking state on the mock clipboard host.
+  ResetClipboardReadTracking();
 };
 
 // Web test messages sent from the renderer process to the browser.

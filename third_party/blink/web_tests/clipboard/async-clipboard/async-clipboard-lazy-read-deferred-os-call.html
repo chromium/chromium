@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Async Clipboard API: Verify lazy read defers OS clipboard calls to getType()</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<body>Body needed for user activation</body>
+<script>
+'use strict';
+
+// Verifies that navigator.clipboard.read() does NOT issue OS-level clipboard
+// read calls for the actual data. The real data read should only happen when
+// getType() is called (lazy read behavior).
+//
+// This test uses testRunner.getClipboardReadState() and
+// testRunner.resetClipboardReadTracking() to inspect which clipboard host
+// mock methods were called.
+
+promise_test(async t => {
+  assert_true(!!window.testRunner,
+    'This test requires testRunner (content_shell web test mode)');
+
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  // --- Setup: write plain text to the clipboard ---
+  await waitForUserActivation();
+  await navigator.clipboard.writeText('Hello clipboard');
+
+  // Reset tracking after write (write may trigger some reads internally).
+  testRunner.resetClipboardReadTracking();
+
+  // --- Step 1: navigator.clipboard.read() should NOT call ReadText ---
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
+
+  let state = testRunner.getClipboardReadState();
+  assert_false(state.readTextCalled,
+    'ReadText should NOT be called during navigator.clipboard.read()');
+  assert_true(state.readAvailableFormatsCalled,
+    'ReadAvailableFormats should be called during navigator.clipboard.read()');
+
+  // --- Step 2: getType('text/plain') SHOULD trigger ReadText ---
+  testRunner.resetClipboardReadTracking();
+
+  await waitForUserActivation();
+  const blob = await clipboardItems[0].getType('text/plain');
+  const text = await blob.text();
+  assert_equals(text, 'Hello clipboard', 'Should read correct text');
+
+  state = testRunner.getClipboardReadState();
+  assert_true(state.readTextCalled,
+    'ReadText should be called when getType("text/plain") is invoked');
+
+}, 'navigator.clipboard.read() defers OS read call to getType() for text/plain');
+
+promise_test(async t => {
+  assert_true(!!window.testRunner,
+    'This test requires testRunner (content_shell web test mode)');
+
+  await test_driver.set_permission(
+      {name: 'clipboard-read', allowWithoutSanitization: true}, 'granted');
+  await test_driver.set_permission(
+      {name: 'clipboard-write', allowWithoutSanitization: true}, 'granted');
+
+  // --- Setup: write custom format data to the clipboard ---
+  const customFormat = 'web text/custom';
+  const customData = 'Custom format payload';
+  const blob = new Blob([customData], {type: customFormat});
+  const item = new ClipboardItem({[customFormat]: blob});
+
+  await waitForUserActivation();
+  await navigator.clipboard.write([item]);
+
+  // Reset tracking after write.
+  testRunner.resetClipboardReadTracking();
+
+  // --- Step 1: navigator.clipboard.read() should NOT call
+  //     ReadUnsanitizedCustomFormat ---
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
+
+  let state = testRunner.getClipboardReadState();
+  assert_false(state.readUnsanitizedCustomFormatCalled,
+    'ReadUnsanitizedCustomFormat should NOT be called during ' +
+    'navigator.clipboard.read()');
+
+  // --- Step 2: getType() on the custom format SHOULD trigger
+  //     ReadUnsanitizedCustomFormat ---
+  testRunner.resetClipboardReadTracking();
+
+  await waitForUserActivation();
+  const resultBlob = await clipboardItems[0].getType(customFormat);
+  const resultText = await resultBlob.text();
+  assert_equals(resultText, customData, 'Should read correct custom data');
+
+  state = testRunner.getClipboardReadState();
+  assert_true(state.readUnsanitizedCustomFormatCalled,
+    'ReadUnsanitizedCustomFormat should be called when getType() is invoked ' +
+    'for a custom format');
+
+}, 'navigator.clipboard.read() defers OS read call to getType() for custom formats');
+</script>

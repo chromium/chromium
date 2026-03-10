@@ -4,6 +4,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -13,10 +14,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
-#include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
@@ -35,8 +34,8 @@ namespace {  // anonymous namespace for ClipboardReader's derived classes.
 class ClipboardPngReader final : public ClipboardReader {
  public:
   explicit ClipboardPngReader(SystemClipboard* system_clipboard,
-                              ClipboardPromise* promise)
-      : ClipboardReader(system_clipboard, promise) {}
+                              ClipboardReaderResultHandler* result_handler)
+      : ClipboardReader(system_clipboard, result_handler) {}
   ~ClipboardPngReader() override = default;
 
   ClipboardPngReader(const ClipboardPngReader&) = delete;
@@ -48,10 +47,12 @@ class ClipboardPngReader final : public ClipboardReader {
         system_clipboard()->ReadPng(mojom::blink::ClipboardBuffer::kStandard);
 
     Blob* blob = nullptr;
-    if (data.size()) {
+    if (RuntimeEnabledFeatures::
+            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
+        data.size()) {
       blob = Blob::Create(data, ui::kMimeTypePng);
     }
-    promise_->OnRead(blob);
+    result_handler_->OnRead(blob, ui::kMimeTypePng);
   }
 
  private:
@@ -62,8 +63,8 @@ class ClipboardPngReader final : public ClipboardReader {
 class ClipboardTextReader final : public ClipboardReader {
  public:
   explicit ClipboardTextReader(SystemClipboard* system_clipboard,
-                               ClipboardPromise* promise)
-      : ClipboardReader(system_clipboard, promise) {}
+                               ClipboardReaderResultHandler* result_handler)
+      : ClipboardReader(system_clipboard, result_handler) {}
   ~ClipboardTextReader() override = default;
 
   ClipboardTextReader(const ClipboardTextReader&) = delete;
@@ -114,10 +115,12 @@ class ClipboardTextReader final : public ClipboardReader {
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
-    if (utf8_bytes.size()) {
+    if (RuntimeEnabledFeatures::
+            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
+        utf8_bytes.size()) {
       blob = Blob::Create(utf8_bytes, ui::kMimeTypePlainText);
     }
-    promise_->OnRead(blob);
+    result_handler_->OnRead(blob, ui::kMimeTypePlainText);
   }
 };
 
@@ -125,18 +128,20 @@ class ClipboardTextReader final : public ClipboardReader {
 class ClipboardHtmlReader final : public ClipboardReader {
  public:
   explicit ClipboardHtmlReader(SystemClipboard* system_clipboard,
-                               ClipboardPromise* promise,
+                               ClipboardReaderResultHandler* result_handler,
                                bool sanitize_html)
-      : ClipboardReader(system_clipboard, promise),
+      : ClipboardReader(system_clipboard, result_handler),
         sanitize_html_(sanitize_html) {}
   ~ClipboardHtmlReader() override = default;
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    promise_->GetExecutionContext()->CountUse(
-        sanitize_html_ ? WebFeature::kHtmlClipboardApiRead
-                       : WebFeature::kHtmlClipboardApiUnsanitizedRead);
+    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+      context->CountUse(sanitize_html_
+                            ? WebFeature::kHtmlClipboardApiRead
+                            : WebFeature::kHtmlClipboardApiUnsanitizedRead);
+    }
     system_clipboard()->ReadHTML(
         BindOnce(&ClipboardHtmlReader::OnRead, WrapPersistent(this)));
   }
@@ -151,7 +156,7 @@ class ClipboardHtmlReader final : public ClipboardReader {
     DCHECK_LE(fragment_end, html_string.length());
     DCHECK_LE(fragment_start, fragment_end);
 
-    LocalFrame* frame = promise_->GetLocalFrame();
+    LocalFrame* frame = result_handler_->GetLocalFrame();
     if (!frame || html_string.empty()) {
       NextRead(Vector<uint8_t>());
       return;
@@ -198,10 +203,12 @@ class ClipboardHtmlReader final : public ClipboardReader {
   void NextRead(Vector<uint8_t> utf8_bytes) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     Blob* blob = nullptr;
-    if (utf8_bytes.size()) {
+    if (RuntimeEnabledFeatures::
+            ReadClipboardDataOnClipboardItemGetTypeEnabled() ||
+        utf8_bytes.size()) {
       blob = Blob::Create(utf8_bytes, ui::kMimeTypeHtml);
     }
-    promise_->OnRead(blob);
+    result_handler_->OnRead(blob, ui::kMimeTypeHtml);
   }
 
   bool sanitize_html_ = true;
@@ -211,8 +218,8 @@ class ClipboardHtmlReader final : public ClipboardReader {
 class ClipboardSvgReader final : public ClipboardReader {
  public:
   ClipboardSvgReader(SystemClipboard* system_clipboard,
-                              ClipboardPromise* promise)
-      : ClipboardReader(system_clipboard, promise) {}
+                     ClipboardReaderResultHandler* result_handler)
+      : ClipboardReader(system_clipboard, result_handler) {}
   ~ClipboardSvgReader() override = default;
 
   // This must be called on the main thread because XML DOM nodes can
@@ -220,7 +227,9 @@ class ClipboardSvgReader final : public ClipboardReader {
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    promise_->GetExecutionContext()->CountUse(WebFeature::kClipboardSvgRead);
+    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+      context->CountUse(WebFeature::kClipboardSvgRead);
+    }
     system_clipboard()->ReadSvg(
         BindOnce(&ClipboardSvgReader::OnRead, WrapPersistent(this)));
   }
@@ -229,7 +238,7 @@ class ClipboardSvgReader final : public ClipboardReader {
   void OnRead(const String& svg_string) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    LocalFrame* frame = promise_->GetLocalFrame();
+    LocalFrame* frame = result_handler_->GetLocalFrame();
     if (!frame) {
       NextRead(Vector<uint8_t>());
       return;
@@ -279,7 +288,7 @@ class ClipboardSvgReader final : public ClipboardReader {
     if (utf8_bytes.size()) {
       blob = Blob::Create(utf8_bytes, ui::kMimeTypeSvg);
     }
-    promise_->OnRead(blob);
+    result_handler_->OnRead(blob, ui::kMimeTypeSvg);
   }
 };
 
@@ -287,17 +296,20 @@ class ClipboardSvgReader final : public ClipboardReader {
 // custom MIME type content.
 class ClipboardCustomFormatReader final : public ClipboardReader {
  public:
-  explicit ClipboardCustomFormatReader(SystemClipboard* system_clipboard,
-                                       ClipboardPromise* promise,
-                                       const String& mime_type)
-      : ClipboardReader(system_clipboard, promise), mime_type_(mime_type) {}
+  explicit ClipboardCustomFormatReader(
+      SystemClipboard* system_clipboard,
+      ClipboardReaderResultHandler* result_handler,
+      const String& mime_type)
+      : ClipboardReader(system_clipboard, result_handler),
+        mime_type_(mime_type) {}
   ~ClipboardCustomFormatReader() override = default;
 
   void Read() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    promise_->GetExecutionContext()->CountUse(
-        WebFeature::kClipboardCustomFormatRead);
+    if (ExecutionContext* context = result_handler_->GetExecutionContext()) {
+      context->CountUse(WebFeature::kClipboardCustomFormatRead);
+    }
     system_clipboard()->ReadUnsanitizedCustomFormat(
         mime_type_, BindOnce(&ClipboardCustomFormatReader::OnCustomFormatRead,
                              WrapPersistent(this)));
@@ -305,7 +317,7 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 
   void OnCustomFormatRead(mojo_base::BigBuffer data) {
     Blob* blob = Blob::Create(data, mime_type_);
-    promise_->OnRead(blob);
+    result_handler_->OnRead(blob, mime_type_);
   }
 
  private:
@@ -319,10 +331,11 @@ class ClipboardCustomFormatReader final : public ClipboardReader {
 // ClipboardReader functions.
 
 // static
-ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
-                                         const String& mime_type,
-                                         ClipboardPromise* promise,
-                                         bool sanitize_html) {
+ClipboardReader* ClipboardReader::Create(
+    SystemClipboard* system_clipboard,
+    const String& mime_type,
+    ClipboardReaderResultHandler* result_handler,
+    bool sanitize_html) {
   CHECK(ClipboardItem::supports(mime_type));
   // If this is a web custom format then read the unsanitized version.
   if (!Clipboard::ParseWebCustomFormat(mime_type).empty()) {
@@ -330,24 +343,27 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
     // These MIME types are found in the web custom format map written by
     // native applications.
     return MakeGarbageCollected<ClipboardCustomFormatReader>(
-        system_clipboard, promise, mime_type);
+        system_clipboard, result_handler, mime_type);
   }
 
   if (mime_type == ui::kMimeTypePng) {
-    return MakeGarbageCollected<ClipboardPngReader>(system_clipboard, promise);
+    return MakeGarbageCollected<ClipboardPngReader>(system_clipboard,
+                                                    result_handler);
   }
 
   if (mime_type == ui::kMimeTypePlainText) {
-    return MakeGarbageCollected<ClipboardTextReader>(system_clipboard, promise);
+    return MakeGarbageCollected<ClipboardTextReader>(system_clipboard,
+                                                     result_handler);
   }
 
   if (mime_type == ui::kMimeTypeHtml) {
-    return MakeGarbageCollected<ClipboardHtmlReader>(system_clipboard, promise,
-                                                     sanitize_html);
+    return MakeGarbageCollected<ClipboardHtmlReader>(
+        system_clipboard, result_handler, sanitize_html);
   }
 
   if (mime_type == ui::kMimeTypeSvg) {
-    return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard, promise);
+    return MakeGarbageCollected<ClipboardSvgReader>(system_clipboard,
+                                                    result_handler);
   }
 
   NOTREACHED()
@@ -355,17 +371,18 @@ ClipboardReader* ClipboardReader::Create(SystemClipboard* system_clipboard,
 }
 
 ClipboardReader::ClipboardReader(SystemClipboard* system_clipboard,
-                                 ClipboardPromise* promise)
-    : clipboard_task_runner_(promise->GetExecutionContext()->GetTaskRunner(
-          TaskType::kUserInteraction)),
-      promise_(promise),
+                                 ClipboardReaderResultHandler* result_handler)
+    : clipboard_task_runner_(
+          result_handler->GetExecutionContext()->GetTaskRunner(
+              TaskType::kUserInteraction)),
+      result_handler_(result_handler),
       system_clipboard_(system_clipboard) {}
 
 ClipboardReader::~ClipboardReader() = default;
 
 void ClipboardReader::Trace(Visitor* visitor) const {
   visitor->Trace(system_clipboard_);
-  visitor->Trace(promise_);
+  visitor->Trace(result_handler_);
 }
 
 }  // namespace blink

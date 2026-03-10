@@ -272,6 +272,8 @@ class WebTestControlHost : public WebContentsObserver,
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
+  void GetClipboardReadState(GetClipboardReadStateCallback callback) override;
+  void ResetClipboardReadTracking() override;
   void SetLCPPNavigationHint(
       blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr hint)
       override;

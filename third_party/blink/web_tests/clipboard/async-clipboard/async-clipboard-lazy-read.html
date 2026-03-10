@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Async Clipboard API Lazy Reading Test</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+
+<script>
+'use strict';
+
+// Test that gettype throws error if clipboard changes after read.
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  const initialText = 'Initial clipboard content';
+  const changedText = 'Changed clipboard content';
+
+  // Set initial content
+  await navigator.clipboard.writeText(initialText);
+
+  // Read clipboard items
+  const clipboardItems = await navigator.clipboard.read();
+  const item = clipboardItems[0];
+
+  // Change clipboard content
+  await navigator.clipboard.writeText(changedText);
+
+  // getType() should throw DataError because the clipboard sequence changed.
+  await promise_rejects_dom(t, 'DataError', item.getType('text/plain'),
+    'getType should throw DataError when clipboard has changed');
+
+}, 'Clipboard change detection should throw DataError');
+</script>
+

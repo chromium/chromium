@@ -42,6 +42,14 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
     platform_permission_state_ = state;
   }
 #endif
+
+  // Method call tracking for testing
+  int ReadTextCallCount() const { return read_text_call_count_; }
+  int ReadHtmlCallCount() const { return read_html_call_count_; }
+  int ReadAvailableFormatsCallCount() const {
+    return read_available_formats_call_count_;
+  }
+
  private:
   // mojom::ClipboardHost
   void GetSequenceNumber(mojom::ClipboardBuffer clipboard_buffer,
@@ -112,6 +120,11 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   mojom::blink::PlatformClipboardPermissionState platform_permission_state_ =
       mojom::blink::PlatformClipboardPermissionState::kAsk;
 #endif
+
+  // Method call tracking
+  int read_text_call_count_ = 0;
+  int read_html_call_count_ = 0;
+  int read_available_formats_call_count_ = 0;
 };
 
 }  // namespace blink

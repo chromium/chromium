@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -28,6 +29,17 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   void Bind(mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
   // Clears all clipboard data.
   void Reset();
+
+  // Call tracking for tests.
+  bool read_text_called() const { return read_text_called_; }
+  bool read_html_called() const { return read_html_called_; }
+  bool read_unsanitized_custom_format_called() const {
+    return read_unsanitized_custom_format_called_;
+  }
+  bool read_available_custom_and_standard_formats_called() const {
+    return read_available_custom_and_standard_formats_called_;
+  }
+  void ResetReadTracking();
 
   // blink::mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
@@ -77,6 +89,15 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   void GetPlatformPermissionState(
       GetPlatformPermissionStateCallback callback) override;
 #endif
+  enum class StandardFormat {
+    kPlainText,
+    kHtml,
+    kSvg,
+    kPng,
+  };
+
+  bool HasStandardFormat(StandardFormat format) const;
+
  private:
   std::vector<std::u16string> ReadStandardFormatNames();
   void OnClipboardDataChanged();
@@ -87,12 +108,19 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   std::u16string plain_text_;
   std::u16string html_text_;
   std::u16string svg_text_;
+  absl::flat_hash_set<StandardFormat> standard_formats_present_;
   GURL url_;
   std::vector<uint8_t> png_;
   std::map<std::u16string, std::u16string> custom_data_;
   bool write_smart_paste_ = false;
   bool needs_reset_ = false;
   std::map<std::u16string, std::vector<uint8_t>> unsanitized_custom_data_map_;
+
+  // Call tracking.
+  bool read_text_called_ = false;
+  bool read_html_called_ = false;
+  bool read_unsanitized_custom_format_called_ = false;
+  bool read_available_custom_and_standard_formats_called_ = false;
 };
 
 }  // namespace content

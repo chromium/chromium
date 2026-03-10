@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async Clipboard write/read empty blobs</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+
+<body>Body needed for test_driver click activation.</body>
+
+<script>
+async function grantClipboardPermissions() {
+  if (!window.test_driver) {
+    return;
+  }
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+}
+
+async function activatePage() {
+  await test_driver.click(document.body);
+}
+
+async function writeThenReadSingleType(inputBlob, mimeType) {
+  await grantClipboardPermissions();
+
+  const clipboardItem = new ClipboardItem({
+    [mimeType]: inputBlob,
+  });
+
+  await activatePage();
+  await navigator.clipboard.write([clipboardItem]);
+
+  await activatePage();
+  const [readItem] = await navigator.clipboard.read();
+  return readItem;
+}
+
+async function readTypeIfPresent(readItem, mimeType) {
+  if (!readItem.types.includes(mimeType)) {
+    return null;
+  }
+  return await readItem.getType(mimeType);
+}
+
+async function createValidPngBlob() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1;
+  canvas.height = 1;
+  const context = canvas.getContext('2d');
+  context.fillStyle = '#00ff00';
+  context.fillRect(0, 0, 1, 1);
+  return await new Promise(resolve =>
+      canvas.toBlob(resolve, 'image/png'));
+}
+
+promise_test(async () => {
+  const readItem = await writeThenReadSingleType(
+      new Blob([''], {type: 'text/plain'}), 'text/plain');
+  assert_true(readItem.types.includes('text/plain'));
+  const output = await readItem.getType('text/plain');
+  assert_true(output instanceof Blob);
+  assert_equals(output.type, 'text/plain');
+  assert_equals(output.size, 0);
+  assert_equals(await output.text(), '');
+}, 'clipboard.read/getType returns empty Blob for empty text/plain');
+
+promise_test(async () => {
+  const readItem = await writeThenReadSingleType(
+      new Blob([''], {type: 'text/html'}), 'text/html');
+  const output = await readTypeIfPresent(readItem, 'text/html');
+
+  assert_true(output instanceof Blob);
+  assert_equals(output.type, 'text/html');
+  const html = await output.text();
+  assert_equals(html, '');
+}, 'clipboard.read/getType returns Blob for text/html written as empty input');
+
+promise_test(async () => {
+  const pngInput = await createValidPngBlob();
+  const readItem = await writeThenReadSingleType(pngInput, 'image/png');
+  const output = await readTypeIfPresent(readItem, 'image/png');
+
+  assert_true(output instanceof Blob);
+  assert_equals(output.type, 'image/png');
+  assert_greater_than(output.size, 0);
+}, 'clipboard.read/getType returns Blob for image/png');
+</script>

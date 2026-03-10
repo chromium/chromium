@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -69,12 +70,38 @@ ClipboardItem* ClipboardItem::Create(
   return MakeGarbageCollected<ClipboardItem>(representations);
 }
 
+ClipboardItem::ClipboardItem(const HeapVector<String>& mime_types,
+                             std::optional<absl::uint128> sequence_number,
+                             ExecutionContext* execution_context,
+                             bool sanitize_html_for_lazy_read,
+                             AccessMode access_mode)
+    : ExecutionContextLifecycleObserver(execution_context),
+      sequence_number_(sequence_number),
+      access_mode_(access_mode),
+      sanitize_html_for_lazy_read_(sanitize_html_for_lazy_read),
+      creation_time_(base::TimeTicks::Now()) {
+  CHECK(
+      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
+  for (const auto& mime_type : mime_types) {
+    String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
+    if (web_custom_format.empty()) {
+      mime_types_.emplace_back(mime_type);
+    } else {
+      String web_custom_format_string =
+          StrCat({ui::kWebClipboardFormatPrefix, web_custom_format});
+      mime_types_.emplace_back(web_custom_format_string);
+      custom_format_types_.push_back(web_custom_format_string);
+    }
+  }
+}
+
 ClipboardItem::ClipboardItem(
     const HeapVector<
         std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
         representations,
-    absl::uint128 sequence_number)
-    : sequence_number_(sequence_number),
+    std::optional<absl::uint128> sequence_number)
+    : ExecutionContextLifecycleObserver(nullptr),
+      sequence_number_(sequence_number),
       creation_time_(base::TimeTicks::Now()) {
   for (const auto& representation : representations) {
     String web_custom_format =
@@ -107,31 +134,170 @@ ClipboardItem::ClipboardItem(
 
 Vector<String> ClipboardItem::types() const {
   Vector<String> types;
-  types.ReserveInitialCapacity(representations_.size());
-  for (const auto& item : representations_) {
-    types.push_back(item.first);
+  if (access_mode_ == AccessMode::kLazy) {
+    CHECK(RuntimeEnabledFeatures::
+              ReadClipboardDataOnClipboardItemGetTypeEnabled());
+    types.ReserveInitialCapacity(mime_types_.size());
+    for (const auto& item : mime_types_) {
+      types.push_back(item);
+    }
+
+  } else {
+    types.ReserveInitialCapacity(representations_.size());
+    for (const auto& item : representations_) {
+      types.push_back(item.first);
+    }
   }
   return types;
+}
+
+void ClipboardItem::ResolveFormatData(const String& mime_type, Blob* blob) {
+  CHECK(
+      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
+
+  if (representations_with_resolvers_.find(mime_type) ==
+      representations_with_resolvers_.end()) {
+    return;
+  }
+  if (HasClipboardChangedSinceClipboardRead()) {
+    representations_with_resolvers_.at(mime_type)->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
+                                           "Clipboard data has changed"));
+    return;
+  }
+
+  if (!blob) {
+    representations_with_resolvers_.at(mime_type)->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kDataError,
+                                           "Failed to read clipboard data."));
+    return;
+  }
+
+  representations_with_resolvers_.at(mime_type)->Resolve(blob);
 }
 
 ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
                                            const String& type,
                                            ExceptionState& exception_state) {
-  for (const auto& item : representations_) {
-    if (type == item.first) {
-      if (RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()) {
-        CaptureTelemetry(ExecutionContext::From(script_state), type);
+  if (access_mode_ != AccessMode::kLazy) {
+    for (const auto& item : representations_) {
+      if (type == item.first) {
+        if (RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()) {
+          CaptureTelemetry(ExecutionContext::From(script_state), type);
+        }
+        return item.second.Unwrap().Then(
+            script_state,
+            MakeGarbageCollected<UnionToBlobResolverFunction>(type));
       }
-
-      return item.second.Unwrap().Then(
-          script_state,
-          MakeGarbageCollected<UnionToBlobResolverFunction>(type));
     }
+    // For non-lazy ClipboardItems, if type wasn't found above, reject.
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                      "The type was not found");
+    return ScriptPromise<Blob>();
   }
 
+  CHECK(
+      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
+
+  if (!GetExecutionContext()) {
+    return ScriptPromise<Blob>();
+  }
+
+  if (HasClipboardChangedSinceClipboardRead()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "Clipboard data has changed");
+    return ScriptPromise<Blob>();
+  }
+
+  const bool has_cached_resolver = representations_with_resolvers_.find(type) !=
+                                   representations_with_resolvers_.end();
+  const bool supported_lazy_type = mime_types_.Contains(type);
+  if (RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled() &&
+      (has_cached_resolver || supported_lazy_type)) {
+    CaptureTelemetry(ExecutionContext::From(script_state), type);
+  }
+
+  // Return cached promise if we've already started reading this type. This
+  // ensures multiple getType() calls for the same type share the same promise.
+  if (has_cached_resolver) {
+    return representations_with_resolvers_.at(type)->Promise();
+  }
+
+  if (supported_lazy_type) {
+    // Create the promise resolver first, then store it
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
+        script_state, exception_state.GetContext());
+    representations_with_resolvers_.insert(type, resolver);
+    ReadRepresentationFromClipboardReader(type);
+    return representations_with_resolvers_.at(type)->Promise();
+  }
+
+  // If we get here, the type was not found
   exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
                                     "The type was not found");
   return ScriptPromise<Blob>();
+}
+
+void ClipboardItem::ReadRepresentationFromClipboardReader(
+    const String& format) {
+  CHECK(
+      RuntimeEnabledFeatures::ReadClipboardDataOnClipboardItemGetTypeEnabled());
+  SystemClipboard* system_clipboard = GetSystemClipboard();
+  if (!system_clipboard) {
+    ResolveFormatData(format, nullptr);
+    return;
+  }
+  ClipboardReader* clipboard_reader = ClipboardReader::Create(
+      system_clipboard, format, this, sanitize_html_for_lazy_read_);
+  if (!clipboard_reader) {
+    ResolveFormatData(format, nullptr);
+    return;
+  }
+  clipboard_reader->Read();
+}
+
+bool ClipboardItem::HasClipboardChangedSinceClipboardRead() {
+  // If sequence_number_ was never initialized, we can't verify if clipboard
+  // changed, so conservatively return true.
+  if (!sequence_number_.has_value()) {
+    return true;
+  }
+
+  SystemClipboard* system_clipboard = GetSystemClipboard();
+  if (!system_clipboard) {
+    return true;
+  }
+
+  return system_clipboard->SequenceNumber() != sequence_number_.value();
+}
+
+LocalFrame* ClipboardItem::GetLocalFrame() const {
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    return nullptr;
+  }
+  return window->GetFrame();
+}
+
+SystemClipboard* ClipboardItem::GetSystemClipboard() const {
+  LocalFrame* frame = GetLocalFrame();
+  if (!frame) {
+    return nullptr;
+  }
+  return frame->GetSystemClipboard();
+}
+
+void ClipboardItem::OnRead(Blob* blob, const String& mime_type) {
+  ResolveFormatData(mime_type, blob);
+}
+
+void ClipboardItem::ContextDestroyed() {
+  DOMException* detached_error = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotAllowedError, "Document detached.");
+  for (auto& entry : representations_with_resolvers_) {
+    entry.value->Reject(detached_error);
+  }
+  representations_with_resolvers_.clear();
 }
 
 // static
@@ -151,6 +317,9 @@ bool ClipboardItem::supports(const String& type) {
 
 void ClipboardItem::Trace(Visitor* visitor) const {
   visitor->Trace(representations_);
+  visitor->Trace(representations_with_resolvers_);
+  ClipboardReaderResultHandler::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -163,8 +332,9 @@ void ClipboardItem::CaptureTelemetry(ExecutionContext* context,
   SystemClipboard* system_clipboard =
       window.GetFrame() ? window.GetFrame()->GetSystemClipboard() : nullptr;
   if (system_clipboard) {
-    absl::uint128 seqno = system_clipboard->SequenceNumber();
-    if (seqno != sequence_number_) {
+    absl::uint128 current_sequence_number = system_clipboard->SequenceNumber();
+    if (!sequence_number_.has_value() ||
+        current_sequence_number != sequence_number_.value()) {
       // Case 1: Clipboard changed between read() and getType()
       UseCounter::Count(context,
                         WebFeature::kClipboardChangedBetweenReadAndGetType);

@@ -356,15 +356,14 @@ void ClipboardPromise::HandleReadWithPermission(
 #if BUILDFLAG(IS_MAC)
   // Check macOS platform permission state if the runtime flag is enabled
   if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
-    GetLocalFrame()->GetSystemClipboard()->GetPlatformPermissionState(
+    GetSystemClipboard()->GetPlatformPermissionState(
         BindOnce(&ClipboardPromise::OnPlatformPermissionResultForRead,
                  WrapPersistent(this)));
     return;
   }
 #endif
   // Non-Mac platforms or when flag is disabled proceed directly
-  SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
-  system_clipboard->ReadAvailableCustomAndStandardFormats(BindOnce(
+  GetSystemClipboard()->ReadAvailableCustomAndStandardFormats(BindOnce(
       &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
 }
 
@@ -372,29 +371,41 @@ void ClipboardPromise::ResolveRead() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetExecutionContext());
 
-  base::UmaHistogramCounts100("Blink.Clipboard.Read.NumberOfFormats",
-                              clipboard_item_data_.size());
   ScriptState* script_state = GetScriptState();
   if (!script_state->ContextIsValid()) {
     return;
   }
   ScriptState::Scope scope(script_state);
   HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>> items;
-  items.ReserveInitialCapacity(clipboard_item_data_.size());
+  HeapVector<Member<ClipboardItem>> clipboard_items;
+  if (RuntimeEnabledFeatures::
+          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
+    base::UmaHistogramCounts100("Blink.Clipboard.Read.NumberOfFormats",
+                                item_mime_types_.size());
+    clipboard_items = {MakeGarbageCollected<ClipboardItem>(
+        item_mime_types_, GetSystemClipboard()->SequenceNumber(),
+        GetExecutionContext(),
+        /*sanitize_html_for_lazy_read=*/!will_read_unprocessed_html_,
+        ClipboardItem::AccessMode::kLazy)};
+  } else {
+    base::UmaHistogramCounts100("Blink.Clipboard.Read.NumberOfFormats",
+                                clipboard_item_data_.size());
+    items.ReserveInitialCapacity(clipboard_item_data_.size());
 
-  for (const auto& item : clipboard_item_data_) {
-    if (!item.second) {
-      continue;
+    for (const auto& item : clipboard_item_data_) {
+      if (!item.second) {
+        continue;
+      }
+      auto promise =
+          ToResolvedPromise<V8UnionBlobOrString>(script_state, item.second);
+      items.emplace_back(item.first, promise);
     }
-    auto promise =
-        ToResolvedPromise<V8UnionBlobOrString>(script_state, item.second);
-    items.emplace_back(item.first, promise);
+    clipboard_items = {
+        RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()
+            ? MakeGarbageCollected<ClipboardItem>(
+                  items, GetSystemClipboard()->SequenceNumber())
+            : MakeGarbageCollected<ClipboardItem>(items)};
   }
-  HeapVector<Member<ClipboardItem>> clipboard_items = {
-      RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()
-          ? MakeGarbageCollected<ClipboardItem>(
-                items, GetLocalFrame()->GetSystemClipboard()->SequenceNumber())
-          : MakeGarbageCollected<ClipboardItem>(items)};
   script_promise_resolver_->DowncastTo<IDLSequence<ClipboardItem>>()->Resolve(
       clipboard_items);
 }
@@ -413,20 +424,34 @@ void ClipboardPromise::OnReadAvailableFormatNames(
     ResolveRead();  // No supported types to read.
     return;
   }
-
-  clipboard_item_data_.ReserveInitialCapacity(
-      check_types_to_read
-          ? std::min(format_names.size(), read_clipboard_item_types_->size())
-          : format_names.size());
+  if (RuntimeEnabledFeatures::
+          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
+    item_mime_types_.ReserveInitialCapacity(format_names.size());
+  } else {
+    clipboard_item_data_.ReserveInitialCapacity(
+        check_types_to_read
+            ? std::min(format_names.size(), read_clipboard_item_types_->size())
+            : format_names.size());
+  }
   for (const String& format_name : format_names) {
     if (ClipboardItem::supports(format_name) &&
         (!check_types_to_read ||
          read_clipboard_item_types_->Contains(format_name))) {
-      clipboard_item_data_.emplace_back(format_name,
-                                        /* Placeholder value. */ nullptr);
+      if (RuntimeEnabledFeatures::
+              ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
+        item_mime_types_.emplace_back(format_name);
+      } else {
+        clipboard_item_data_.emplace_back(format_name,
+                                          /* Placeholder value. */ nullptr);
+      }
     }
   }
-  ReadNextRepresentation();
+  if (RuntimeEnabledFeatures::
+          ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
+    ResolveRead();
+  } else {
+    ReadNextRepresentation();
+  }
 }
 
 void ClipboardPromise::ReadNextRepresentation() {
@@ -439,18 +464,21 @@ void ClipboardPromise::ReadNextRepresentation() {
   }
 
   ClipboardReader* clipboard_reader = ClipboardReader::Create(
-      GetLocalFrame()->GetSystemClipboard(),
+      GetSystemClipboard(),
       clipboard_item_data_[clipboard_representation_index_].first, this,
       /*sanitize_html=*/!will_read_unprocessed_html_);
   if (!clipboard_reader) {
-    OnRead(nullptr);
+    OnRead(nullptr,
+           clipboard_item_data_[clipboard_representation_index_].first);
     return;
   }
   clipboard_reader->Read();
 }
 
-void ClipboardPromise::OnRead(Blob* blob) {
+void ClipboardPromise::OnRead(Blob* blob, const String& mime_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // ClipboardPromise tracks representation index internally, so ignore
+  // mime_type.
   if (blob) {
     clipboard_item_data_[clipboard_representation_index_].second =
         MakeGarbageCollected<V8UnionBlobOrString>(blob);
@@ -474,14 +502,14 @@ void ClipboardPromise::HandleReadTextWithPermission(
 #if BUILDFLAG(IS_MAC)
   // Check macOS platform permission state if the runtime flag is enabled
   if (RuntimeEnabledFeatures::MacSystemClipboardPermissionCheckEnabled()) {
-    GetLocalFrame()->GetSystemClipboard()->GetPlatformPermissionState(
+    GetSystemClipboard()->GetPlatformPermissionState(
         BindOnce(&ClipboardPromise::OnPlatformPermissionResultForReadText,
                  WrapPersistent(this)));
     return;
   }
 #endif
   // Non-Mac platforms or when flag is disabled proceed directly
-  String text = GetLocalFrame()->GetSystemClipboard()->ReadPlainText(
+  String text = GetSystemClipboard()->ReadPlainText(
       mojom::blink::ClipboardBuffer::kStandard);
   script_promise_resolver_->DowncastTo<IDLString>()->Resolve(text);
 }
@@ -502,7 +530,7 @@ void ClipboardPromise::OnPlatformPermissionResultForReadText(
     return;
   }
 
-  String text = GetLocalFrame()->GetSystemClipboard()->ReadPlainText(
+  String text = GetSystemClipboard()->ReadPlainText(
       mojom::blink::ClipboardBuffer::kStandard);
   script_promise_resolver_->DowncastTo<IDLString>()->Resolve(text);
 }
@@ -523,7 +551,7 @@ void ClipboardPromise::OnPlatformPermissionResultForRead(
   }
 
   // For read operations, proceed to read available formats
-  SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
+  SystemClipboard* system_clipboard = GetSystemClipboard();
   system_clipboard->ReadAvailableCustomAndStandardFormats(BindOnce(
       &ClipboardPromise::OnReadAvailableFormatNames, WrapPersistent(this)));
 }
@@ -630,7 +658,7 @@ void ClipboardPromise::HandleWriteTextWithPermission(
     return;
   }
 
-  SystemClipboard* system_clipboard = GetLocalFrame()->GetSystemClipboard();
+  SystemClipboard* system_clipboard = GetSystemClipboard();
   system_clipboard->WritePlainText(plain_text_);
   system_clipboard->CommitWrite();
   script_promise_resolver_->DowncastTo<IDLUndefined>()->Resolve();
@@ -748,6 +776,14 @@ LocalFrame* ClipboardPromise::GetLocalFrame() const {
   return local_frame;
 }
 
+SystemClipboard* ClipboardPromise::GetSystemClipboard() const {
+  LocalFrame* local_frame = GetLocalFrame();
+  if (!local_frame) {
+    return nullptr;
+  }
+  return local_frame->GetSystemClipboard();
+}
+
 ScriptState* ClipboardPromise::GetScriptState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return script_promise_resolver_->GetScriptState();
@@ -773,7 +809,9 @@ void ClipboardPromise::Trace(Visitor* visitor) const {
   visitor->Trace(clipboard_writer_);
   visitor->Trace(permission_service_);
   visitor->Trace(clipboard_item_data_);
+  visitor->Trace(item_mime_types_);
   visitor->Trace(clipboard_item_data_with_promises_);
+  ClipboardReaderResultHandler::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

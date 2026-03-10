@@ -39,6 +39,11 @@ void MockClipboardHost::Reset() {
   custom_data_.clear();
   write_smart_paste_ = false;
   needs_reset_ = false;
+
+  // Reset call tracking
+  read_text_call_count_ = 0;
+  read_html_call_count_ = 0;
+  read_available_formats_call_count_ = 0;
 }
 
 void MockClipboardHost::WriteRtf(const String& rtf_text) {
@@ -112,11 +117,13 @@ void MockClipboardHost::IsFormatAvailable(
 
 void MockClipboardHost::ReadText(mojom::ClipboardBuffer clipboard_buffer,
                                  ReadTextCallback callback) {
+  ++read_text_call_count_;
   std::move(callback).Run(plain_text_);
 }
 
 void MockClipboardHost::ReadHtml(mojom::ClipboardBuffer clipboard_buffer,
                                  ReadHtmlCallback callback) {
+  ++read_html_call_count_;
   std::move(callback).Run(html_text_, url_, 0, html_text_.length());
 }
 
@@ -200,6 +207,7 @@ void MockClipboardHost::CommitWrite() {
 
 void MockClipboardHost::ReadAvailableCustomAndStandardFormats(
     ReadAvailableCustomAndStandardFormatsCallback callback) {
+  ++read_available_formats_call_count_;
   Vector<String> format_names = ReadStandardFormatNames();
   for (const auto& item : unsanitized_custom_data_map_)
     format_names.emplace_back(item.key);

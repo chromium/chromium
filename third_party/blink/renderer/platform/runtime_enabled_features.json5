@@ -4476,6 +4476,12 @@
       status: "stable",
     },
     {
+      // getType() on a ClipboardItem triggers the
+      // clipboard read operation, implementing lazy loading for clipboard data.
+      name: "ReadClipboardDataOnClipboardItemGetType",
+      status: "test",
+    },
+    {
       name: "RecordSameDocumentPresentationTimeOnce",
       status: "stable",
     },

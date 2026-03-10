@@ -80,6 +80,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
+#include "content/test/mock_clipboard_host.h"
 #include "content/test/mock_platform_notification_service.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/web_test/browser/devtools_protocol_test_bindings.h"
@@ -1890,6 +1891,28 @@ void WebTestControlHost::EnableAutoResize(const gfx::Size& min_size,
 void WebTestControlHost::DisableAutoResize(const gfx::Size& new_size) {
   web_contents()->GetRenderWidgetHostView()->DisableAutoResize(new_size);
   main_window_->ResizeWebContentForTests(new_size);
+}
+
+void WebTestControlHost::GetClipboardReadState(
+    GetClipboardReadStateCallback callback) {
+  MockClipboardHost* mock =
+      WebTestContentBrowserClient::Get()->GetMockClipboardHost();
+  if (mock) {
+    std::move(callback).Run(
+        mock->read_text_called(), mock->read_html_called(),
+        mock->read_unsanitized_custom_format_called(),
+        mock->read_available_custom_and_standard_formats_called());
+  } else {
+    std::move(callback).Run(false, false, false, false);
+  }
+}
+
+void WebTestControlHost::ResetClipboardReadTracking() {
+  MockClipboardHost* mock =
+      WebTestContentBrowserClient::Get()->GetMockClipboardHost();
+  if (mock) {
+    mock->ResetReadTracking();
+  }
 }
 
 void WebTestControlHost::SetLCPPNavigationHint(

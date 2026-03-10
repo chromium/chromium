@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Async Clipboard API: Lazy read change detection edge cases</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<body>Body needed for user activation</body>
+<script>
+'use strict';
+
+// Rewriting identical data still generates a new sequence number.
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  const sameText = 'Identical content';
+
+  await waitForUserActivation();
+  await navigator.clipboard.writeText(sameText);
+
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
+  const readItem = clipboardItems[0];
+
+  // Write the exact same text again.
+  await waitForUserActivation();
+  await navigator.clipboard.writeText(sameText);
+
+  await waitForUserActivation();
+  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
+    'getType should throw DataError when clipboard was rewritten with ' +
+    'identical data');
+
+}, 'Rewriting same data still invalidates lazy read (new sequence number)');
+
+// Overwriting clipboard removes the format we want to read.
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  const textBlob = new Blob(['Some text'], {type: 'text/plain'});
+  const htmlBlob = new Blob(['<p>Some html</p>'], {type: 'text/html'});
+  const item = new ClipboardItem({
+    'text/plain': textBlob,
+    'text/html': htmlBlob,
+  });
+  await waitForUserActivation();
+  await navigator.clipboard.write([item]);
+
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
+  const readItem = clipboardItems[0];
+  assert_true(readItem.types.includes('text/plain'));
+
+  // Overwrite with only HTML, removing text/plain.
+  const onlyHtml = new Blob(['<p>Only html now</p>'], {type: 'text/html'});
+  const newItem = new ClipboardItem({'text/html': onlyHtml});
+  await waitForUserActivation();
+  await navigator.clipboard.write([newItem]);
+
+  await waitForUserActivation();
+  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
+    'getType should throw DataError when the format has been removed');
+
+}, 'Removing format from clipboard invalidates lazy read of that format');
+
+// Even a previously successful getType() must throw after clipboard changes.
+promise_test(async t => {
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+
+  await waitForUserActivation();
+  await navigator.clipboard.writeText('First value');
+
+  await waitForUserActivation();
+  const clipboardItems = await navigator.clipboard.read();
+  const readItem = clipboardItems[0];
+
+  // First getType() succeeds.
+  await waitForUserActivation();
+  const blob = await readItem.getType('text/plain');
+  const text = await blob.text();
+  assert_equals(text, 'First value');
+
+  await waitForUserActivation();
+  await navigator.clipboard.writeText('Second value');
+
+  // Second getType() must throw despite prior success.
+  await waitForUserActivation();
+  await promise_rejects_dom(t, 'DataError', readItem.getType('text/plain'),
+    'getType should throw DataError even if first call succeeded');
+
+}, 'Previously successful getType() still throws after clipboard change');
+</script>
