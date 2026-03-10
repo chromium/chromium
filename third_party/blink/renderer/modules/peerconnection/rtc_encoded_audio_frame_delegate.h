@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -34,7 +35,7 @@ class RTCEncodedAudioFrameDelegate
  public:
   explicit RTCEncodedAudioFrameDelegate(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
-      webrtc::ArrayView<const unsigned int> contributing_sources,
+      base::span<const unsigned int> contributing_sources,
       std::optional<uint16_t> sequence_number);
 
   uint32_t RtpTimestamp() const;

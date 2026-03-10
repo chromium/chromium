@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -31,7 +32,7 @@ const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
 RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
-    webrtc::ArrayView<const unsigned int> contributing_sources,
+    base::span<const unsigned int> contributing_sources,
     std::optional<uint16_t> sequence_number)
     : webrtc_frame_(std::move(webrtc_frame)),
       contributing_sources_(contributing_sources),
@@ -74,8 +75,7 @@ DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer(
 void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   base::AutoLock lock(lock_);
   if (webrtc_frame_ && data) {
-    webrtc_frame_->SetData(webrtc::ArrayView<const uint8_t>(
-        static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
+    webrtc_frame_->SetData(data->ByteSpan());
   }
 }
 

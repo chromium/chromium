@@ -192,6 +192,9 @@ class RefCountedWritableSharedMemoryMapping
   RefCountedWritableSharedMemoryMapping& operator=(
       const RefCountedWritableSharedMemoryMapping&) = delete;
 
+  const base::span<const uint8_t> AsSpan() const { return mapping_; }
+  const base::span<uint8_t> AsSpan() { return mapping_; }
+
   const unsigned char* front() const {
     return static_cast<const unsigned char*>(mapping_.memory());
   }
@@ -1686,8 +1689,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
 #if BUILDFLAG(RTC_USE_H265)
   if (ps_tracker_.get()) {
     H265ParameterSetsTracker::FixedBitstream fixed =
-        ps_tracker_->MaybeFixBitstream(webrtc::MakeArrayView(
-            output_mapping->front(), metadata.payload_size_bytes));
+        ps_tracker_->MaybeFixBitstream(
+            output_mapping->AsSpan().first(metadata.payload_size_bytes));
     if (fixed.action == H265ParameterSetsTracker::PacketAction::kInsert) {
       image.SetEncodedData(fixed.bitstream);
       BitstreamBufferAvailable(bitstream_buffer_id);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport.h"
 
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
@@ -521,16 +522,16 @@ TEST_F(RtcTransportMultithreadedTest, SendPackets) {
 
   size_t packets_sent = 0;
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_sync_connection_, SendPackets(_))
-      .WillRepeatedly([&](webrtc::ArrayView<
-                          webrtc::DatagramConnection::PacketSendParameters>
-                              packet_payloads) {
-        packets_sent += packet_payloads.size();
-        if (packets_sent == kPacketCount) {
-          run_loop.Quit();
-        }
-        return true;
-      });
+  EXPECT_CALL(*mock_sync_connection_, SendPackets)
+      .WillRepeatedly(
+          [&](base::span<webrtc::DatagramConnection::PacketSendParameters>
+                  packet_payloads) {
+            packets_sent += packet_payloads.size();
+            if (packets_sent == kPacketCount) {
+              run_loop.Quit();
+            }
+            return true;
+          });
 
   HeapVector<Member<RtcSendPacketParameters>> packets;
   for (size_t i = 0; i < kPacketCount; i++) {

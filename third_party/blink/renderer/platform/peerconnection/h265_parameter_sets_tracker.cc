@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "third_party/webrtc/common_video/h265/h265_common.h"
 #include "third_party/webrtc/common_video/h265/h265_pps_parser.h"
@@ -46,7 +47,7 @@ H265ParameterSetsTracker::VpsData::~VpsData() = default;
 
 H265ParameterSetsTracker::FixedBitstream
 H265ParameterSetsTracker::MaybeFixBitstream(
-    webrtc::ArrayView<const uint8_t> bitstream) {
+    base::span<const uint8_t> bitstream) {
   if (!bitstream.size()) {
     return {PacketAction::kRequestKeyframe};
   }
@@ -66,11 +67,10 @@ H265ParameterSetsTracker::MaybeFixBitstream(
   uint32_t sps_id = 0, vps_id = 0;
   uint32_t slice_sps_id = 0, slice_pps_id = 0;
 
-  parser_.ParseBitstream(
-      webrtc::ArrayView<const uint8_t>(bitstream.data(), bitstream.size()));
+  parser_.ParseBitstream(bitstream);
 
   std::vector<webrtc::H265::NaluIndex> nalu_indices =
-      webrtc::H265::FindNaluIndices(bitstream.data(), bitstream.size());
+      webrtc::H265::FindNaluIndices(bitstream);
   for (const auto& nalu_index : nalu_indices) {
     if (nalu_index.payload_size < 2) {
       // H.265 NALU header is at least 2 bytes.

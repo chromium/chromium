@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -2914,14 +2915,14 @@ class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
   explicit FakeH265ParameterSetsTracker(
       H265ParameterSetsTracker::PacketAction action)
       : action_(action) {}
-  explicit FakeH265ParameterSetsTracker(webrtc::ArrayView<const uint8_t> prefix)
+  explicit FakeH265ParameterSetsTracker(base::span<const uint8_t> prefix)
       : action_(H265ParameterSetsTracker::PacketAction::kInsert),
         prefix_(prefix) {
     EXPECT_GT(prefix.size(), 0u);
   }
 
   FixedBitstream MaybeFixBitstream(
-      webrtc::ArrayView<const uint8_t> bitstream) override {
+      base::span<const uint8_t> bitstream) override {
     FixedBitstream fixed;
     fixed.action = action_;
     if (prefix_.size() > 0) {
@@ -2937,13 +2938,13 @@ class FakeH265ParameterSetsTracker : public H265ParameterSetsTracker {
 
  private:
   H265ParameterSetsTracker::PacketAction action_;
-  webrtc::ArrayView<const uint8_t> prefix_;
+  base::raw_span<const uint8_t> prefix_;
 };
 
 TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
   class FixedBitstreamVerifier : public webrtc::EncodedImageCallback {
    public:
-    explicit FixedBitstreamVerifier(webrtc::ArrayView<const uint8_t> prefix,
+    explicit FixedBitstreamVerifier(base::span<const uint8_t> prefix,
                                     size_t encoded_image_size)
         : prefix_(prefix), encoded_image_size_(encoded_image_size) {}
 
@@ -2951,8 +2952,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
         const webrtc::EncodedImage& encoded_image,
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
       EXPECT_EQ(encoded_image.size(), encoded_image_size_ + prefix_.size());
-      EXPECT_THAT(webrtc::ArrayView<const uint8_t>(encoded_image.data(),
-                                                   prefix_.size()),
+      EXPECT_THAT(base::span(encoded_image).first(prefix_.size()),
                   ::testing::ElementsAreArray(prefix_));
       waiter_.Signal();
       return Result(Result::OK);
@@ -2966,7 +2966,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
 
    private:
     base::WaitableEvent waiter_;
-    webrtc::ArrayView<const uint8_t> prefix_;
+    base::raw_span<const uint8_t> prefix_;
     size_t encoded_image_size_;
   };
 
@@ -2985,8 +2985,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 
   uint8_t prefix[] = {0x90, 0x91, 0x92, 0x93};
-  webrtc::ArrayView<uint8_t> prefix_view =
-      webrtc::ArrayView<uint8_t>(prefix, sizeof(prefix));
+  base::span<uint8_t> prefix_view(prefix);
   rtc_encoder_->SetH265ParameterSetsTracker(
       std::make_unique<FakeH265ParameterSetsTracker>(prefix_view));
   FixedBitstreamVerifier bitstream_verifier(prefix_view,

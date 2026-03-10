@@ -113,10 +113,9 @@ auto idr_h264 = std::to_array<uint8_t>({
 
 using ::testing::ElementsAreArray;
 
-webrtc::ArrayView<const uint8_t> Bitstream(
+base::span<const uint8_t> Bitstream(
     const H265ParameterSetsTracker::FixedBitstream& fixed) {
-  return webrtc::ArrayView<const uint8_t>(fixed.bitstream->data(),
-                                          fixed.bitstream->size());
+  return *fixed.bitstream;
 }
 
 }  // namespace

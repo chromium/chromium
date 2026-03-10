@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,8 +89,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     if (expect_data_read) {
       EXPECT_CALL(*mock_frame.get(), GetData)
-          .WillOnce(
-              Return(webrtc::ArrayView<const uint8_t>(buffer, payload_length)));
+          .WillOnce(Return(base::span(buffer).first(payload_length)));
     } else {
       EXPECT_CALL(*mock_frame.get(), GetData).Times(0);
     }
