@@ -1869,13 +1869,12 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected submitQuery_(e: KeyboardEvent|MouseEvent) {
-    // If the submit button is disabled, do nothing.
-    if (!this.canSubmitFilesAndInput_) {
+    // If we're unable to submit (e.g., still uploading files) or the query
+    // synchronously evaluates to invalid (e.g. state hasn't updated in Lit
+    // due to synchronous eventing), do nothing.
+    if (!this.canSubmitFilesAndInput_ || !this.hasValidQuery_()) {
       return;
     }
-
-    // Sanity check the query.
-    assert(this.hasValidQuery_(), 'Cannot submit query without a valid query.');
 
     // If there is a match that is selected, open that match, else follow the
     // non-autocomplete submission flow. The non-autocomplete submission flow
