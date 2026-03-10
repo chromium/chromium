@@ -188,23 +188,6 @@
     "expires": "Sep 1, 2024"
   },
   {
-    "prefix": "canvas-draw-element-in-subtree",
-    "owners": [
-      "pdr@chromium.org",
-      "paint-dev@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [],
-    "args": [
-      "--enable-blink-features=CanvasDrawElementInSubtree"
-    ],
-    "expires": "Jul 15, 2026"
-  },
-  {
     "prefix": "content-extraction",
     "platforms": [
       "Linux",

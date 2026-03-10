@@ -99,21 +99,12 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
     return builder.ToString();
   };
 
-  HTMLCanvasElement* canvas = nullptr;
-  for (Node* ancestor = element->parentNode(); ancestor && !canvas;
-       ancestor = ancestor->parentNode()) {
-    canvas = DynamicTo<HTMLCanvasElement>(ancestor);
-    if (!RuntimeEnabledFeatures::CanvasDrawElementInSubtreeEnabled()) {
-      break;
-    }
-  }
+  HTMLCanvasElement* canvas =
+      DynamicTo<HTMLCanvasElement>(element->parentNode());
   if (!canvas) {
     exception_state.ThrowTypeError(build_error(
-        RuntimeEnabledFeatures::CanvasDrawElementInSubtreeEnabled()
-            ? ("Only descendants of the <canvas> element can be passed "
-               "to %s.")
-            : ("Only immediate children of the <canvas> element can be "
-               "passed to %s.")));
+        "Only immediate children of the <canvas> element can be passed "
+        "to %s."));
 
     return nullptr;
   }
