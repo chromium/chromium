@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/base/devtools_listener.h"
+
 #include <map>
 #include <memory>
 
@@ -13,11 +15,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/devtools_listener.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -42,6 +44,10 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
 
   void DevToolsAgentHostCreated(content::DevToolsAgentHost* host) override {
+    if (host->GetURL().SchemeIs(content::kChromeUIScheme)) {
+      // Skips chrome internal UI pages.
+      return;
+    }
     if (host->GetType() != content::DevToolsAgentHost::kTypePage &&
         host->GetType() != content::DevToolsAgentHost::kTypeFrame) {
       return;
