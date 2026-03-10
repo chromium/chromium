@@ -343,8 +343,6 @@ bool VerticalTabView::OnKeyPressed(const ui::KeyEvent& event) {
     }
   }
 
-  RequestFocus();
-
   return true;
 }
 

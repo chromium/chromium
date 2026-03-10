@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,4 +89,53 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
         views_focus_order[i], nullptr, false, true);
     EXPECT_EQ(next, views_focus_order[i + 1]);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
+                       KeepsFocusWhenMovedOutOfGroup) {
+  constexpr char kTabNodeViewName[] = "TabNodeView";
+
+  RunTestSequence(
+      // Setup the group.
+      Do([this]() {
+        GetFocusManager()->SetKeyboardAccessible(true);
+        browser()->tab_strip_model()->AddToNewGroup({0});
+        RunScheduledLayouts();
+      }),
+
+      NameView(kTabNodeViewName,
+               base::BindLambdaForTesting([this]() -> views::View* {
+                 TabCollectionNode* group_node =
+                     unpinned_collection_node()->GetChildNodeOfType(
+                         TabCollectionNode::Type::GROUP);
+                 return group_node->children()[0]->view();
+               })),
+
+      // Request Focus on Tab.
+      WithView(kTabNodeViewName,
+               [this](views::View* view) {
+                 EXPECT_TRUE(
+                     ui_test_utils::BringBrowserWindowToFront(browser()));
+                 view->RequestFocus();
+               }),
+
+      // Wait for Focus on Tab.
+      CheckViewProperty(kTabNodeViewName, &views::View::HasFocus, true),
+
+      // Remove the tab from the group.
+      Do([this]() {
+        browser()->tab_strip_model()->RemoveFromGroup({0});
+        RunScheduledLayouts();
+      }),
+
+      // Verify focus is maintained after reparenting.
+      CheckResult(base::BindLambdaForTesting([this]() {
+                    // After being removed from the group, the tab is back in
+                    // the unpinned collection.
+                    return unpinned_collection_node()
+                        ->children()[0]
+                        ->view()
+                        ->HasFocus();
+                  }),
+                  true));
 }

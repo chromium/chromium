@@ -7,7 +7,6 @@
 #include "base/test/run_until.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -365,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, AttentionIndicator) {
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ShiftGroupUp_PastSingleTab) {
   TabStripModel* model = browser()->tab_strip_model();
 
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  AppendTab();
+  AppendTab();
   ASSERT_EQ(3, model->count());
 
   // Create a group with the second and third tabs (indices 1 and 2).
@@ -389,9 +388,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ShiftGroupUp_PastSingleTab) {
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ShiftGroupDown_PastTabGroup) {
   TabStripModel* model = browser()->tab_strip_model();
 
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  AppendTab();
+  AppendTab();
+  AppendTab();
   ASSERT_EQ(4, model->count());
 
   // Create Group A (indices 0 and 1) and Group B (indices 2 and 3).
@@ -417,8 +416,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ShiftGroupDown_PastTabGroup) {
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ShiftGroupUp_AlreadyAtTop) {
   TabStripModel* model = browser()->tab_strip_model();
 
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  AppendTab();
+  AppendTab();
   ASSERT_EQ(3, model->count());
 
   // Create a group with the first and second tabs (indices 0 and 1).
@@ -443,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                        ShiftGroupDown_AlreadyAtBottom) {
   TabStripModel* model = browser()->tab_strip_model();
 
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  AppendTab();
+  AppendTab();
   ASSERT_EQ(3, model->count());
 
   // Create a group with the second and third tabs (indices 1 and 2).
