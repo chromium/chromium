@@ -88,6 +88,7 @@ public class NotificationUmaTracker {
         SystemNotificationType.SERIAL,
         SystemNotificationType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS,
         SystemNotificationType.ACTOR,
+        SystemNotificationType.CHROME_FINDS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
@@ -137,8 +138,9 @@ public class NotificationUmaTracker {
         int SERIAL = 42;
         int SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 43;
         int ACTOR = 44;
+        int CHROME_FINDS = 45;
 
-        int NUM_ENTRIES = 45;
+        int NUM_ENTRIES = 46;
     }
 
     /*
@@ -898,6 +900,8 @@ public class NotificationUmaTracker {
                 return "Serial";
             case ChannelId.TIPS:
                 return "Tips";
+            case ChannelId.CHROME_FINDS:
+                return "ChromeFinds";
             default:
                 // Group all non-recognized channel ids into an aggregate bucket.
                 return "Unknown";

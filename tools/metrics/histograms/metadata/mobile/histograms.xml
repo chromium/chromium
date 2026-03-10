@@ -736,6 +736,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Announcement"/>
     <variant name="Bluetooth"/>
     <variant name="Browser"/>
+    <variant name="ChromeFinds"/>
     <variant name="Collaboration"/>
     <variant name="CompletedDownloads"/>
     <variant name="ContentSuggestions"/>

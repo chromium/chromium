@@ -631,6 +631,7 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="Serial"/>
   <int value="43" label="Safety Check Revoked Notification Permissions"/>
   <int value="44" label="Actor"/>
+  <int value="45" label="Chrome Finds"/>
 </enum>
 
 </enums>

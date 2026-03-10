@@ -139,6 +139,7 @@ public class Snackbar {
     public static final int UMA_CROSS_DEVICE_SETTING_IMPORT = 82;
     public static final int UMA_CROSS_DEVICE_SETTING_UNDO = 83;
     public static final int UMA_CROSS_DEVICE_SETTING_REDO = 84;
+    public static final int UMA_CHROME_FINDS_OPT_IN = 85;
 
     private final @Nullable SnackbarController mController;
     private final CharSequence mText;

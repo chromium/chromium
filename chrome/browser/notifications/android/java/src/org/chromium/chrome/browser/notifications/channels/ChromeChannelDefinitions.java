@@ -96,7 +96,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.BLUETOOTH,
         ChannelId.USB,
         ChannelId.SERIAL,
-        ChannelId.TIPS
+        ChannelId.TIPS,
+        ChannelId.CHROME_FINDS,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
@@ -133,6 +134,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String USB = "usb";
         String SERIAL = "serial";
         String TIPS = "tips";
+        String CHROME_FINDS = "chrome_finds";
     }
 
     // clang-format off
@@ -391,6 +393,16 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_NONE,
                             ChannelGroupId.GENERAL));
             startup.add(ChannelId.TIPS);
+
+            // The finds notification channel will be added to the notification settings when a user
+            // explicitly accepts or declines the opt-in promo for the first time.
+            map.put(
+                    ChannelId.CHROME_FINDS,
+                    PredefinedChannel.create(
+                            ChannelId.CHROME_FINDS,
+                            R.string.notification_category_finds,
+                            NotificationManager.IMPORTANCE_LOW,
+                            ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);
             STARTUP = Collections.unmodifiableSet(startup);

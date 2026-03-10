@@ -801,6 +801,11 @@ const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
      "SafetyHubLocalPasswordsModule, SafetyHubUnifiedPasswordsModule"},
 };
 
+const FeatureEntry::FeatureParam kChromeFindsAlwaysShowOptInPromo[] = {
+    {"always_show_opt_in_promo", "true"}};
+const FeatureEntry::FeatureVariation kChromeFindsVariations[] = {
+    {" - Always Show Opt-in", kChromeFindsAlwaysShowOptInPromo, nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
@@ -10160,7 +10165,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"chrome-finds", flag_descriptions::kChromeFindsName,
      flag_descriptions::kChromeFindsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeFinds)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeFinds,
+                                    kChromeFindsVariations,
+                                    "ChromeFinds")},
 
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,

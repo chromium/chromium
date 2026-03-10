@@ -46,6 +46,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Notification Action Click"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeFindsOptInEvent) -->
+
+<enum name="ChromeFindsOptInEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="First time opt-in"/>
+  <int value="2" label="Re-opt-in accepted"/>
+  <int value="3" label="Declined"/>
+  <int value="4" label="Snackbar action clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsMetrics.java:ChromeFindsOptInEvent) -->
+
 <enum name="NotificationActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Notification added"/>

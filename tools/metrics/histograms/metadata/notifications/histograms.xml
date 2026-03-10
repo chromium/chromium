@@ -493,6 +493,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.ChromeFinds.OptInEvent"
+    enum="ChromeFindsOptInEvent" expires_after="2026-08-25">
+  <owner>wylieb@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <summary>
+    Records everything around the opt-in flow journey for the Chrome Finds.
+    Recorded when the bottom sheet is shown, accepted (first-time vs re-opt-in),
+    declined, or when the action in the confirmation snackbar is clicked.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.Cros.Actions.{NotificationAction}"
     enum="NotificationTypeDetailed" expires_after="2026-07-12">
   <owner>newcomer@chromium.org</owner>
