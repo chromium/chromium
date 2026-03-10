@@ -15,6 +15,15 @@
 
 namespace content {
 
+network::mojom::URLLoaderFactoryParamsPtr
+CreatePrefetchURLLoaderFactoryParams() {
+  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = network::OriginatingProcessId::browser();
+  factory_params->is_trusted = true;
+  factory_params->is_orb_enabled = false;
+  return factory_params;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
     network::mojom::NetworkContext* network_context,
     const PrefetchRequest& prefetch_request) {
@@ -38,14 +47,10 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
   }
 
   bool bypass_redirect_checks = false;
-  auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = network::OriginatingProcessId::browser();
-  factory_params->is_trusted = true;
-  factory_params->is_orb_enabled = false;
   return url_loader_factory::Create(
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url_loader_factory::TerminalParams::ForNetworkContext(
-          network_context, std::move(factory_params),
+          network_context, CreatePrefetchURLLoaderFactoryParams(),
           url_loader_factory::HeaderClientOption::kAllow),
       url_loader_factory::ContentClientParams(
           prefetch_request.browser_context(), referring_render_frame_host,
