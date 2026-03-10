@@ -1658,6 +1658,11 @@ base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {
 
 void ShoppingService::Shutdown() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  // The KeyedService API recommends dropping references to other services in
+  // the Shutdown() method. HistoryService enforces this by preventing calling
+  // RemoveObserver(...) after shutdown, so explicitly remove the observation.
+  history_service_observation_.Reset();
 }
 
 ShoppingService::~ShoppingService() = default;
