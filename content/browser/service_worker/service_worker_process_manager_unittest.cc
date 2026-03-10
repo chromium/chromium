@@ -95,10 +95,14 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
   ServiceWorkerProcessManagerTest& operator=(
       const ServiceWorkerProcessManagerTest&) = delete;
 
+  void SetStoragePartition(StoragePartitionImpl* storage_partition) {
+    process_manager_->set_storage_partition(storage_partition);
+  }
+
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
     process_manager_ = std::make_unique<ServiceWorkerProcessManager>();
-    process_manager_->set_storage_partition(static_cast<StoragePartitionImpl*>(
+    SetStoragePartition(static_cast<StoragePartitionImpl*>(
         browser_context_->GetDefaultStoragePartition()));
     script_url_ = GURL("http://www.example.com/sw.js");
     render_process_host_factory_ =
@@ -290,7 +294,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context_->GetStoragePartition(kGuestPartitionConfig));
   storage_partition->set_is_guest();
-  process_manager_->set_storage_partition(storage_partition);
+  SetStoragePartition(storage_partition);
 
   // Allocate a process to a worker. It should be in the guest's
   // StoragePartition.

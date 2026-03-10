@@ -98,14 +98,15 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
 
   base::WeakPtr<ServiceWorkerProcessManager> GetWeakPtr();
 
-  void set_storage_partition(StoragePartitionImpl* storage_partition) {
-    storage_partition_ = storage_partition;
-  }
-
   SiteInstance* GetSiteInstanceForWorker(int embedded_worker_id);
 
  private:
+  friend class ServiceWorkerContextWrapper;
   friend class ServiceWorkerProcessManagerTest;
+
+  void set_storage_partition(StoragePartitionImpl* storage_partition) {
+    storage_partition_ = storage_partition;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // All fields below are only accessed on the UI thread.

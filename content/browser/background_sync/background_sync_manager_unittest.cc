@@ -31,6 +31,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_sync_parameters.h"
@@ -156,7 +157,8 @@ class BackgroundSyncManagerTest
     storage_partition_impl_ = static_cast<StoragePartitionImpl*>(
         helper_->browser_context()->GetStoragePartitionForUrl(
             GURL("https://example.com")));
-    helper_->context_wrapper()->set_storage_partition(storage_partition_impl_);
+    ServiceWorkerContextWrapperTestApi(helper_->context_wrapper())
+        .set_storage_partition(storage_partition_impl_);
     render_process_host_ =
         std::make_unique<MockRenderProcessHost>(helper_->browser_context());
 

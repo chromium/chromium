@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/payments/payment_app_content_unittest_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stdint.h>
 
@@ -12,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/payment_app_context_impl.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -19,6 +19,7 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -176,7 +177,8 @@ PaymentAppContentUnitTestBase::PaymentAppContentUnitTestBase()
     : task_environment_(
           new BrowserTaskEnvironment(BrowserTaskEnvironment::IO_MAINLOOP)),
       worker_helper_(new PaymentAppForWorkerTestHelper()) {
-  worker_helper_->context_wrapper()->set_storage_partition(storage_partition());
+  ServiceWorkerContextWrapperTestApi(worker_helper_->context_wrapper())
+      .set_storage_partition(storage_partition());
   storage_partition()->service_worker_context_->Shutdown();
   base::RunLoop().RunUntilIdle();
 

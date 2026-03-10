@@ -121,8 +121,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Can be null before/during init and during/after shutdown (and in tests).
   StoragePartitionImpl* storage_partition() const;
 
-  void set_storage_partition(StoragePartitionImpl* storage_partition);
-
   BrowserContext* browser_context();
 
   ServiceWorkerProcessManager* process_manager() {
@@ -459,9 +457,13 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   friend class ServiceWorkerMainResourceHandle;
   friend class ServiceWorkerProcessManager;
   friend class ServiceWorkerVersionBrowserTest;
+  friend class ServiceWorkerContextWrapperTestApi;
+  friend class StoragePartitionImpl;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
 
   ~ServiceWorkerContextWrapper() override;
+
+  void set_storage_partition(StoragePartitionImpl* storage_partition);
 
   // Init() with a custom database task runner and BrowserContext. Explicitly
   // called from EmbeddedWorkerTestHelper.

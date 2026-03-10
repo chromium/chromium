@@ -30,6 +30,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -1753,8 +1754,8 @@ class ServiceWorkerUpdateJobTest : public ServiceWorkerJobTest {
         CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
         base::FilePath() /* relative_partition_path */);
     storage_partition_impl_->Initialize();
-    helper_->context_wrapper()->set_storage_partition(
-        storage_partition_impl_.get());
+    ServiceWorkerContextWrapperTestApi(helper_->context_wrapper())
+        .set_storage_partition(storage_partition_impl_.get());
   }
 
   void TearDown() override {

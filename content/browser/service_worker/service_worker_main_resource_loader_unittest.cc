@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -675,8 +676,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
   }
 
   void SetupStoragePartition() {
-    helper_->context_wrapper()->set_storage_partition(
-        static_cast<StoragePartitionImpl*>(
+    ServiceWorkerContextWrapperTestApi(helper_->context_wrapper())
+        .set_storage_partition(static_cast<StoragePartitionImpl*>(
             helper_->browser_context()->GetDefaultStoragePartition()));
   }
 

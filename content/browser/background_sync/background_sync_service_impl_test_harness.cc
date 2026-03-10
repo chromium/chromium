@@ -16,6 +16,7 @@
 #include "content/browser/background_sync/background_sync_network_observer.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/background_sync_test_util.h"
@@ -167,8 +168,8 @@ void BackgroundSyncServiceImplTestHarness::CreateStoragePartition() {
       CreateStoragePartitionConfigForTesting(/*in_memory=*/true),
       base::FilePath() /* relative_partition_path */);
   storage_partition_impl_->Initialize();
-  embedded_worker_helper_->context_wrapper()->set_storage_partition(
-      storage_partition_impl_.get());
+  ServiceWorkerContextWrapperTestApi(embedded_worker_helper_->context_wrapper())
+      .set_storage_partition(storage_partition_impl_.get());
 }
 
 void BackgroundSyncServiceImplTestHarness::CreateBackgroundSyncContext() {

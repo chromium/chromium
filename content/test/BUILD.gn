@@ -177,6 +177,7 @@ static_library("test_support") {
     "../browser/service_worker/fake_embedded_worker_instance_client.h",
     "../browser/service_worker/fake_service_worker.cc",
     "../browser/service_worker/fake_service_worker.h",
+    "../browser/service_worker/service_worker_context_wrapper_test_api.h",
     "../browser/service_worker/service_worker_test_utils.cc",
     "../browser/service_worker/service_worker_test_utils.h",
     "../browser/service_worker/test_service_worker_observer.cc",

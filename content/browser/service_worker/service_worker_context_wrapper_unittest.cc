@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/services/storage/service_worker/service_worker_storage_control_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper_test_api.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -68,7 +69,8 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetStoragePartitionForUrl(
                 GURL("https://example.com")));
-    wrapper_->set_storage_partition(storage_partition);
+    ServiceWorkerContextWrapperTestApi(wrapper_.get())
+        .set_storage_partition(storage_partition);
     wrapper_->Init(user_data_directory_.GetPath(), nullptr, nullptr, nullptr);
     // Init() posts a couple tasks to the IO thread. Let them finish.
     base::RunLoop().RunUntilIdle();
