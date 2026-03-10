@@ -23,6 +23,7 @@
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
+#include "remoting/signaling/jingle_message_proto_converter.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -221,7 +222,11 @@ bool FtlSignalStrategy::Core::Send(T&& message, const char* message_type) {
   std::string message_id = message.message_id;
   SignalingAddress destination_address = message.to;
   ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(message.ToSerializedXml());
+  auto* xmpp = crd_message.mutable_xmpp();
+  // TODO: joedow - Stop populating the `stanza` proto field once all clients
+  // in the field have been updated to handle `iq_stanza`.
+  xmpp->set_stanza(message.ToSerializedXml());
+  *xmpp->mutable_iq_stanza() = message.ToFtlIqStanza();
 
   SendMessageImpl(
       destination_address, std::move(crd_message),
@@ -350,11 +355,48 @@ void FtlSignalStrategy::Core::OnMessageReceived(
     }
   }
 
-  if (!message.has_xmpp() || !message.xmpp().has_stanza()) {
+  if (!message.has_xmpp()) {
     return;
   }
 
-  auto parsed_message = SignalStrategy::ParseStanzaXml(message.xmpp().stanza());
+  std::optional<SignalStrategy::Message> parsed_message;
+  // We prefer the structured iq_stanza if it is present.
+  // TODO: joedow - Remove `stanza` handling code once all clients in the field
+  // have been updated to send the signaling payload via `iq_stanza`.
+  if (message.xmpp().has_iq_stanza()) {
+    const auto& stanza = message.xmpp().iq_stanza();
+    switch (stanza.payload_case()) {
+      case ftl::IqStanza::kJingle: {
+        JingleMessage jingle_message;
+        std::string error;
+        if (JingleMessageFromProto(stanza, &jingle_message, &error)) {
+          parsed_message = std::move(jingle_message);
+        } else {
+          LOG(WARNING) << "Failed to parse JingleMessage from iq_stanza: "
+                       << error;
+        }
+        break;
+      }
+      case ftl::IqStanza::kReply:
+      case ftl::IqStanza::kError: {
+        JingleMessageReply jingle_reply;
+        if (JingleMessageReplyFromProto(stanza, &jingle_reply)) {
+          parsed_message = std::move(jingle_reply);
+        } else {
+          LOG(WARNING) << "Failed to parse JingleMessageReply from iq_stanza";
+        }
+        break;
+      }
+      case ftl::IqStanza::PAYLOAD_NOT_SET:
+        LOG(ERROR) << "IqStanza payload not set";
+        break;
+    }
+  }
+
+  if (!parsed_message && message.xmpp().has_stanza()) {
+    parsed_message = SignalStrategy::ParseStanzaXml(message.xmpp().stanza());
+  }
+
   if (!parsed_message) {
     return;
   }
@@ -416,7 +458,11 @@ void FtlSignalStrategy::Core::SendMessageImpl(
 
   std::string message_payload;
   if (message.has_xmpp()) {
-    message_payload = message.xmpp().stanza();
+    if (message.xmpp().has_iq_stanza()) {
+      message_payload = message.xmpp().iq_stanza().DebugString();
+    } else {
+      message_payload = message.xmpp().stanza();
+    }
   } else if (message.has_echo()) {
     message_payload = message.echo().message();
   } else {
@@ -463,7 +509,9 @@ void FtlSignalStrategy::Core::OnSendMessageResponse(
   error_reply.message_id = stanza_id;
 
   ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(error_reply.ToSerializedXml());
+  auto* xmpp = crd_message.mutable_xmpp();
+  xmpp->set_stanza(error_reply.ToSerializedXml());
+  *xmpp->mutable_iq_stanza() = error_reply.ToFtlIqStanza();
   OnMessageReceived(receiver, crd_message);
 }
 
