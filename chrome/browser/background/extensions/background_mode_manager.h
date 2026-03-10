@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -34,8 +34,10 @@
 #endif
 
 class Browser;
+class BrowserWindowInterface;
 class PrefRegistrySimple;
 class Profile;
+class GlobalBrowserCollection;
 class ScopedProfileKeepAlive;
 class StatusIcon;
 class StatusTray;
@@ -64,7 +66,7 @@ using CommandIdHandlerVector = std::vector<base::RepeatingClosure>;
 // Additionally, when in background mode, Chrome will launch on OS login with
 // no open windows to allow apps with the "background" permission to run in the
 // background.
-class BackgroundModeManager : public BrowserListObserver,
+class BackgroundModeManager : public BrowserCollectionObserver,
                               public BackgroundApplicationListModel::Observer,
                               public ProfileAttributesStorage::Observer,
                               public StatusIconMenuModel::Delegate {
@@ -290,8 +292,8 @@ class BackgroundModeManager : public BrowserListObserver,
   // Overrides from StatusIconMenuModel::Delegate implementation.
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  // BrowserListObserver implementation.
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver implementation.
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // Enables or disables background mode as needed, taking into account the
   // number of background clients. Updates the background status of |profile| in
@@ -435,6 +437,9 @@ class BackgroundModeManager : public BrowserListObserver,
   // current background state so we can take the appropriate action when the
   // user disables/enables background mode via preferences.
   bool in_background_mode_ = false;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // Background mode does not always keep Chrome alive. When it does, it is
   // using this scoped object.

@@ -695,6 +695,14 @@ void BrowserProcessImpl::PostDestroyThreads() {
   // ResourceCoordinatorParts is destroyed before GlobalFeatures is completely
   // shut down.
   resource_coordinator_parts_.reset();
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  // BackgroundModeManager observes GlobalBrowserCollection, a Global Feature.
+  // Thus, we need to make sure BackgroundModeManager is destroyed before
+  // GlobalFeatures is completely shut down.
+  background_mode_manager_.reset();
+#endif
+
   features_->PostDestroyThreads();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

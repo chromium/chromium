@@ -44,7 +44,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
@@ -327,7 +327,8 @@ BackgroundModeManager::BackgroundModeManager(
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &BackgroundModeManager::OnAppTerminating, base::Unretained(this)));
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 BackgroundModeManager::~BackgroundModeManager() {
@@ -336,7 +337,6 @@ BackgroundModeManager::~BackgroundModeManager() {
   for (const auto& it : background_mode_data_) {
     it.second->applications()->RemoveObserver(this);
   }
-  BrowserList::RemoveObserver(this);
 
   // We're going away, so exit background mode (does nothing if we aren't in
   // background mode currently). This is primarily needed for unit tests,
@@ -748,7 +748,7 @@ void BackgroundModeManager::UpdateKeepAliveAndTrayIcon() {
   keep_alive_.reset();
 }
 
-void BackgroundModeManager::OnBrowserAdded(Browser* browser) {
+void BackgroundModeManager::OnBrowserCreated(BrowserWindowInterface*) {
   ResumeBackgroundMode();
 }
 
