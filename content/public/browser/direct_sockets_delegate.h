@@ -43,16 +43,18 @@ class CONTENT_EXPORT DirectSocketsDelegate {
                                                const url::Origin& origin,
                                                const RequestDetails&) = 0;
 
-  // Allows embedders to introduce additional rules for private network access.
-  virtual void RequestPrivateNetworkAccess(
-      RenderFrameHost& rfh,
-      base::OnceCallback<void(/*access_allowed=*/bool)>) = 0;
+  virtual bool IsPrivateNetworkAccessAllowedForRenderFrame(
+      RenderFrameHost& rfh) = 0;
   virtual bool IsPrivateNetworkAccessAllowedForSharedWorker(
       BrowserContext* browser_context,
       const GURL& shared_worker_url) = 0;
   virtual bool IsPrivateNetworkAccessAllowedForServiceWorker(
       BrowserContext* browser_context,
       const url::Origin& origin) = 0;
+
+  // Allows embedders to introduce additional rules for private network access.
+  virtual bool ShouldAllowPrivateNetworkAccessUnconditionally(
+      RenderFrameHost& rfh) = 0;
 };
 
 }  // namespace content

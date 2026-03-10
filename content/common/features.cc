@@ -450,6 +450,12 @@ BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigations,
 BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigationsWarningOnly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables enhanced security checks for direct sockets.
+// This includes checking local/loopback network policies and prompting
+// in unmanaged Isolated Web Apps (IWAs).
+BASE_FEATURE(kLocalNetworkAccessPromptDirectSockets,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, allows the ReusePrerenderingProcessForMainFrames feature
 // and the ProcessPerSiteUpToMainFrameThreshold feature to reuse processes
 // even when DevTools was ever attached.

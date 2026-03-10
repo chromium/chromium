@@ -21,6 +21,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_request_manager.h"
+#include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -918,7 +920,8 @@ using ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest =
         IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
@@ -1020,7 +1023,8 @@ using ChromeDirectSocketsUdpIsolatedWebAppMulticastTest =
         IsolatedWebAppMulticastApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
@@ -1390,7 +1394,8 @@ using ChromeDirectSocketsTcpServerIsolatedWebAppServiceWorkerTest =
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
                        TcpServerExchangePacketWithTcpSocket) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
 }
@@ -1445,4 +1450,263 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
   ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough), IsOk());
 }
 
+class IsolatedWebAppDirectSocketsPermissionPrompt
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  IsolatedWebAppDirectSocketsPermissionPrompt() {
+    features_.InitWithFeatures(
+        {features::kLocalNetworkAccessPromptDirectSockets}, {});
+  }
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder()
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kDirectSockets)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kDirectSocketsPrivate)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kLocalNetwork)
+            .AddPermissionsPolicyWildcard(
+                PermissionsPolicyFeature::kLoopbackNetwork);
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       TCPSocketWithAcceptPrompt) {
+  net::EmbeddedTestServer tcp_server(net::EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(tcp_server.Start());
+
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  std::string script = base::StringPrintf(R"JS(
+    (async () => {
+      try {
+        const socket = new TCPSocket('127.0.0.1', %u);
+        await socket.opened;
+        const loopbackNetworkStatus = await
+navigator.permissions.query({name: 'loopback-network'});
+        if(loopbackNetworkStatus.state != 'granted') {
+          throw new Error("loopback-network permission" +
+"status should be 'granted'.");
+        }
+        const localNetworkStatus = await
+navigator.permissions.query({name: 'local-network'});
+        if(localNetworkStatus.state != 'prompt') {
+          throw new Error("local-network permission " +
+"status should 'prompt'.");
+        }
+        return "success";
+      } catch (err) {
+        return err.name + ": " + err.message;
+      }
+    })()
+  )JS",
+                                          tcp_server.port());
+
+  EXPECT_EQ("success", content::EvalJs(iwa_frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       TCPSocketWithDenyPrompt) {
+  net::EmbeddedTestServer tcp_server(net::EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(tcp_server.Start());
+
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  std::string script = base::StringPrintf(R"JS(
+    (async () => {
+      try {
+        const socket = new TCPSocket('127.0.0.1', %u);
+        await socket.opened;
+        return "success";
+      } catch (err) {
+        return err.name;
+      }
+    })()
+  )JS",
+                                          tcp_server.port());
+
+  EXPECT_EQ("InvalidAccessError", content::EvalJs(iwa_frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       UDPConnectedWithAcceptPrompt) {
+  net::EmbeddedTestServer udp_server(net::EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(udp_server.Start());
+
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  std::string script = base::StringPrintf(R"JS(
+    (async () => {
+      try {
+        const socket = new UDPSocket({
+          remoteAddress: '127.0.0.1',
+          remotePort: %u
+        });
+        const { readable, writable } = await socket.opened;
+        if (readable && writable) {
+          const loopbackNetworkStatus = await
+navigator.permissions.query({name: 'loopback-network'});
+          if(loopbackNetworkStatus.state != 'granted') {
+            throw new Error("loopback-network permission status " +
+"should be 'granted'.");
+          }
+          const localNetworkStatus = await
+navigator.permissions.query({name: 'local-network'});
+          if(localNetworkStatus.state != 'prompt') {
+            throw new Error("local-network permission status " +
+"should 'prompt'.");
+          }
+          return "success";
+        }
+        return "Error: Streams missing";
+      } catch (err) {
+        return err.name + err.message;
+      }
+    })()
+  )JS",
+                                          udp_server.port());
+
+  EXPECT_EQ("success", content::EvalJs(iwa_frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       UDPConnectedSocketWithDenyPrompt) {
+  net::EmbeddedTestServer udp_server(net::EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(udp_server.Start());
+
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  std::string script = base::StringPrintf(R"JS(
+    (async () => {
+      try {
+        const socket = new UDPSocket({
+          remoteAddress: '127.0.0.1',
+          remotePort: %u
+        });
+        await socket.opened;
+        return "success";
+      } catch (err) {
+        return err.name;
+      }
+    })()
+  )JS",
+                                          udp_server.port());
+
+  EXPECT_EQ("InvalidAccessError", content::EvalJs(iwa_frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       UDPBoundSocketWithAcceptPrompt) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  std::string script = R"JS(
+    (async () => {
+      try {
+        const socket = new UDPSocket({
+          localAddress: '127.0.0.1'
+        });
+        const info = await socket.opened;
+        if (info.localPort > 0) {
+          const loopbackNetworkStatus = await
+navigator.permissions.query({name: 'loopback-network'});
+          if(loopbackNetworkStatus.state != 'granted') {
+            throw new Error("loopback-network permission status " +
+"should be 'granted'");
+          }
+          const localNetworkStatus = await
+navigator.permissions.query({name: 'local-network'});
+          if(localNetworkStatus.state != 'granted') {
+            throw new Error("local-network permission status " +
+"should 'granted'.");
+          }
+          return "success";
+        }
+        return "Error: No port assigned";
+      } catch (err) {
+        return err.name + err.message;
+      }
+    })()
+  )JS";
+
+  EXPECT_EQ("success", content::EvalJs(iwa_frame, script));
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppDirectSocketsPermissionPrompt,
+                       UDPBoundSocketWithDenyPrompt) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenIsolatedWebApp();
+  ASSERT_TRUE(iwa_frame);
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(iwa_frame);
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+
+  manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::DENY_ALL);
+
+  std::string script = R"JS(
+    (async () => {
+      try {
+        const socket = new UDPSocket({
+          localAddress: '127.0.0.1'
+        });
+        await socket.opened;
+        return "success";
+      } catch (err) {
+        return err.name;
+      }
+    })()
+  )JS";
+
+  EXPECT_EQ("InvalidAccessError", content::EvalJs(iwa_frame, script));
+}
 }  // namespace
