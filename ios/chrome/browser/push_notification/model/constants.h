@@ -55,7 +55,8 @@ enum class NotificationOptInAccessPoint {
   kSafetyCheck = 4,
   kFeed = 5,
   kSettings = 6,
-  kMaxValue = kSettings,
+  kPriceTrackingMagicStackPromo = 7,
+  kMaxValue = kPriceTrackingMagicStackPromo,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
