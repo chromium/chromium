@@ -8287,11 +8287,7 @@
     ],
     "expiry_milestone": 150
   },
-  {
-    "name": "read-anything-read-aloud-ts-text-segmentation",
-    "owners": [ "lwinston@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 150
-  },
+
   {
     "name": "read-anything-with-readability-enabled",
     "owners": [ "jatapiaro@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
