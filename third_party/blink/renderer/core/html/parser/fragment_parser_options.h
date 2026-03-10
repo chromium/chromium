@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -63,13 +64,17 @@ class CORE_EXPORT FragmentParserOptions {
   FragmentParserOptions& operator=(const FragmentParserOptions&) = default;
   explicit FragmentParserOptions(TrustedParserOptions* options)
       : trust_mode_(TrustMode::kTrusted),
-        run_scripts_(options->runScripts() ? RunScripts::kRunScripts
-                                           : RunScripts::kDontRunScripts),
+        run_scripts_((options->runScripts() &&
+                      RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled())
+                         ? RunScripts::kRunScripts
+                         : RunScripts::kDontRunScripts),
         sanitizer_init_(options->sanitizer()) {}
 
   explicit FragmentParserOptions(SetHTMLUnsafeOptions* options)
-      : run_scripts_(options->runScripts() ? RunScripts::kRunScripts
-                                           : RunScripts::kDontRunScripts),
+      : run_scripts_((options->runScripts() &&
+                      RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled())
+                         ? RunScripts::kRunScripts
+                         : RunScripts::kDontRunScripts),
         sanitizer_init_(options->sanitizer()) {}
 
   explicit FragmentParserOptions(SetHTMLOptions* options)

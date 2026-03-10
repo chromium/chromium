@@ -4335,6 +4335,7 @@
     "bases": [
       "fast/css3-text/css3-text-decoration/stable",
       "fast/dom/Window",
+      "fast/parser/createContextualFragment-querySelector-crash.html",
       "http/tests/navigation",
       "http/tests/sendbeacon",
       "http/tests/serviceworker/webexposed",

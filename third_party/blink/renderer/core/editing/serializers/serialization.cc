@@ -812,8 +812,7 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
   }
 
   const ParserContentPolicy content_policy =
-      (RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled() &&
-       options.run_scripts() == FragmentParserOptions::RunScripts::kRunScripts)
+      options.run_scripts() == FragmentParserOptions::RunScripts::kRunScripts
           ? kAllowScriptingContentAndDoNotMarkAlreadyStarted
           : kAllowScriptingContent;
 
