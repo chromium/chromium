@@ -374,7 +374,8 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest, MAYBE_MiddleClickReload) {
 // Tests that right-clicking the reload button has no effect by default, but
 // opens a context menu when DevTools is open.
 // TODO(behamilton): On Windows this test is flaky for views.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/491254915): Flaky on Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ContextMenu DISABLED_ContextMenu
 #else
 #define MAYBE_ContextMenu ContextMenu
