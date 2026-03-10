@@ -1920,8 +1920,8 @@ H265Parser::Result H265Parser::ParseVuiParameters(const H265SPS& sps,
     IN_RANGE_IF_OR_RETURN(vui->min_spatial_segmentation_idc, 0, 4095,
                           validate_extended_bitstream_);
     READ_UE_OR_RETURN(&vui->max_bytes_per_pic_denom);
-    IN_RANGE_IF_OR_RETURN(vui->max_bytes_per_pic_denom, 0, 16,
-                          validate_extended_bitstream_);
+    // Intentionally not validating max_bytes_per_pic_denom [0,16] because
+    // many valid video streams have this value out of range.
     READ_UE_OR_RETURN(&vui->max_bits_per_min_cu_denom);
     IN_RANGE_IF_OR_RETURN(vui->max_bits_per_min_cu_denom, 0, 16,
                           validate_extended_bitstream_);
