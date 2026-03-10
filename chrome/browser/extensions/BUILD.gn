@@ -754,7 +754,7 @@ source_set("extensions") {
       "api/language_settings_private/language_settings_private_delegate.h",
       "api/language_settings_private/language_settings_private_delegate_factory.cc",
       "api/language_settings_private/language_settings_private_delegate_factory.h",
-      "api/management/chrome_management_api_delegate_nonandroid.cc",
+      "api/management/chrome_management_api_delegate_non_android.cc",
       "api/mime_handlers/dispatch_mime_handler_event.cc",
       "api/mime_handlers/dispatch_mime_handler_event.h",
       "api/passwords_private/password_access_auth_timeout_handler.cc",
