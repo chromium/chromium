@@ -14,6 +14,8 @@ static_library("omnibox") {
     "omnibox_provider.h",
     "omnibox_result.cc",
     "omnibox_result.h",
+    "omnibox_types.cc",
+    "omnibox_types.h",
     "omnibox_util.cc",
     "omnibox_util.h",
     "open_tab_result.cc",

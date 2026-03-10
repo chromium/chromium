@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 class AppListControllerDelegate;
 class BitmapFetcher;
@@ -23,13 +22,15 @@ class FaviconCache;
 
 namespace app_list {
 
+struct OmniboxResultData;
+
 class OmniboxResult : public ChromeSearchResult,
                       public BitmapFetcherDelegate,
                       public ash::ColorModeObserver {
  public:
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
-                crosapi::mojom::SearchResultPtr search_result,
+                std::unique_ptr<OmniboxResultData> search_result,
                 const std::u16string& query,
                 FaviconCache* favicon_cache);
   ~OmniboxResult() override;
@@ -84,7 +85,7 @@ class OmniboxResult : public ChromeSearchResult,
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<AppListControllerDelegate> list_controller_;
-  crosapi::mojom::SearchResultPtr search_result_;
+  std::unique_ptr<OmniboxResultData> search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
   // Whether this omnibox result uses a generic backup icon.

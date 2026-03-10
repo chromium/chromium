@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -66,8 +67,7 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
   EXPECT_TRUE(details.GetTextTags().empty());
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kCalculator);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kCalculator);
 
   std::stringstream out;
   out << result;
@@ -100,8 +100,7 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
   EXPECT_EQ(details.GetText(), u"4");
   EXPECT_TRUE(details.GetTextTags().empty());
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kCalculator);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kCalculator);
 }
 
 TEST_F(OmniboxAnswerResultTest, WeatherResult) {
@@ -159,8 +158,7 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
   EXPECT_EQ(details.GetText(), u"additional two");
   EXPECT_TRUE(details.GetTextTags().empty());
 
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kWeather);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kWeather);
 }
 
 TEST_F(OmniboxAnswerResultTest, AnswerResult) {
@@ -234,8 +232,7 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
               testing::UnorderedElementsAre(
                   TagEquals(Tag(Tag::Style::GREEN, 0, length))));
 
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kFinance);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kFinance);
 }
 
 TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
@@ -264,8 +261,7 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
                          AutocompleteInput()),
       u"query");
   EXPECT_TRUE(result.multiline_details());
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kDictionary);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kDictionary);
 }
 
 TEST_F(OmniboxAnswerResultTest, TranslationResult) {
@@ -281,8 +277,7 @@ TEST_F(OmniboxAnswerResultTest, TranslationResult) {
       CreateAnswerResult(match, /*controller=*/nullptr, u"hello in Spanish",
                          AutocompleteInput()),
       u"hello in Spanish");
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kTranslation);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kTranslation);
 }
 
 TEST_F(OmniboxAnswerResultTest, CurrencyResult) {
@@ -298,8 +293,7 @@ TEST_F(OmniboxAnswerResultTest, CurrencyResult) {
       CreateAnswerResult(match, /*controller=*/nullptr, u"100 usd in aud",
                          AutocompleteInput()),
       u"100 usd in aud");
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kCurrency);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kCurrency);
 }
 
 TEST_F(OmniboxAnswerResultTest, SunriseResult) {
@@ -315,8 +309,7 @@ TEST_F(OmniboxAnswerResultTest, SunriseResult) {
       CreateAnswerResult(match, /*controller=*/nullptr,
                          u"sunrise time in Sydney", AutocompleteInput()),
       u"sunrise time in Sydney");
-  EXPECT_EQ(result.answer_type(),
-            crosapi::mojom::SearchResult::AnswerType::kSunrise);
+  EXPECT_EQ(result.answer_type(), OmniboxResultAnswerType::kSunrise);
 }
 
 }  // namespace app_list::test

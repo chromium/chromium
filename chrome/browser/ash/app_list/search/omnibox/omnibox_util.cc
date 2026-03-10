@@ -7,14 +7,17 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_result.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "url/gurl.h"
@@ -23,30 +26,28 @@ namespace app_list {
 
 namespace {
 
-using crosapi::mojom::SearchResult;
-using crosapi::mojom::SearchResultPtr;
 using RequestSource = SearchTermsData::RequestSource;
 
-SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
+OmniboxResultAnswerType MatchTypeToAnswerType(const int type) {
   switch (static_cast<omnibox::AnswerType>(type)) {
     case omnibox::ANSWER_TYPE_WEATHER:
-      return SearchResult::AnswerType::kWeather;
+      return OmniboxResultAnswerType::kWeather;
     case omnibox::ANSWER_TYPE_CURRENCY:
-      return SearchResult::AnswerType::kCurrency;
+      return OmniboxResultAnswerType::kCurrency;
     case omnibox::ANSWER_TYPE_DICTIONARY:
-      return SearchResult::AnswerType::kDictionary;
+      return OmniboxResultAnswerType::kDictionary;
     case omnibox::ANSWER_TYPE_FINANCE:
-      return SearchResult::AnswerType::kFinance;
+      return OmniboxResultAnswerType::kFinance;
     case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return SearchResult::AnswerType::kSunrise;
+      return OmniboxResultAnswerType::kSunrise;
     case omnibox::ANSWER_TYPE_TRANSLATION:
-      return SearchResult::AnswerType::kTranslation;
+      return OmniboxResultAnswerType::kTranslation;
     default:
-      return SearchResult::AnswerType::kDefaultAnswer;
+      return OmniboxResultAnswerType::kDefaultAnswer;
   }
 }
 
-SearchResult::OmniboxType MatchTypeToOmniboxType(
+OmniboxResultType MatchTypeToOmniboxType(
     const AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
@@ -67,7 +68,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::HISTORY_CLUSTER:
     case AutocompleteMatchType::STARTER_PACK:
     case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
-      return SearchResult::OmniboxType::kDomain;
+      return OmniboxResultType::kDomain;
 
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
     case AutocompleteMatchType::SEARCH_SUGGEST:
@@ -79,14 +80,14 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::VOICE_SUGGEST:
     case AutocompleteMatchType::CLIPBOARD_TEXT:
     case AutocompleteMatchType::CLIPBOARD_IMAGE:
-      return SearchResult::OmniboxType::kSearch;
+      return OmniboxResultType::kSearch;
 
     case AutocompleteMatchType::SEARCH_HISTORY:
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return SearchResult::OmniboxType::kHistory;
+      return OmniboxResultType::kHistory;
 
     case AutocompleteMatchType::OPEN_TAB:
-      return SearchResult::OmniboxType::kOpenTab;
+      return OmniboxResultType::kOpenTab;
 
     // Currently unhandled enum values.
     // If you came here from a compile error, please contact
@@ -103,7 +104,7 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
     case AutocompleteMatchType::TILE_REPEATABLE_QUERY:
       LOG(ERROR) << "Unhandled AutocompleteMatchType value: "
                  << AutocompleteMatchType::ToString(type);
-      return SearchResult::OmniboxType::kDomain;
+      return OmniboxResultType::kDomain;
 
     // NUM_TYPES is not a valid enumerator value, so fall through below.
     case AutocompleteMatchType::NUM_TYPES:
@@ -115,68 +116,67 @@ SearchResult::OmniboxType MatchTypeToOmniboxType(
                << static_cast<int>(type);
 }
 
-SearchResult::MetricsType MatchTypeToMetricsType(
+ash::SearchResultType MatchTypeToSearchResultType(
     AutocompleteMatchType::Type type) {
   switch (type) {
     case AutocompleteMatchType::URL_WHAT_YOU_TYPED:
-      return SearchResult::MetricsType::kWhatYouTyped;
+      return ash::OMNIBOX_URL_WHAT_YOU_TYPED;
     case AutocompleteMatchType::HISTORY_URL:
       // A recently-visited URL that is also a bookmark is handled manually when
       // constructing the result.
-      return SearchResult::MetricsType::kRecentlyVisitedWebsite;
+      return ash::OMNIBOX_RECENTLY_VISITED_WEBSITE;
     case AutocompleteMatchType::HISTORY_TITLE:
-      return SearchResult::MetricsType::kHistoryTitle;
+      return ash::OMNIBOX_RECENT_DOC_IN_DRIVE;
     case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
-      return SearchResult::MetricsType::kSearchWhatYouTyped;
+      return ash::OMNIBOX_WEB_QUERY;
     case AutocompleteMatchType::SEARCH_HISTORY:
-      return SearchResult::MetricsType::kSearchHistory;
+      return ash::OMNIBOX_SEARCH_HISTORY;
     case AutocompleteMatchType::SEARCH_SUGGEST:
-      return SearchResult::MetricsType::kSearchSuggest;
+      return ash::OMNIBOX_SEARCH_SUGGEST;
     case AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED:
-      return SearchResult::MetricsType::kSearchSuggestPersonalized;
+      return ash::OMNIBOX_SUGGEST_PERSONALIZED;
     case AutocompleteMatchType::BOOKMARK_TITLE:
-      return SearchResult::MetricsType::kBookmark;
+      return ash::OMNIBOX_BOOKMARK;
     case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
-      return SearchResult::MetricsType::kSearchSuggestEntity;
+      return ash::OMNIBOX_SEARCH_SUGGEST_ENTITY;
     case AutocompleteMatchType::NAVSUGGEST:
-      return SearchResult::MetricsType::kNavSuggest;
+      return ash::OMNIBOX_NAVSUGGEST;
     case AutocompleteMatchType::CALCULATOR:
-      return SearchResult::MetricsType::kCalculator;
+      return ash::OMNIBOX_CALCULATOR;
     default:
-      return SearchResult::MetricsType::kUnset;
+      return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }
 
-SearchResult::TextType ColorTypeToType(
-    omnibox::FormattedString::ColorType type) {
+OmniboxTextType ColorTypeToType(omnibox::FormattedString::ColorType type) {
   switch (type) {
     case omnibox::FormattedString::COLOR_ON_SURFACE_POSITIVE:
-      return SearchResult::TextType::kPositive;
+      return OmniboxTextType::kPositive;
     case omnibox::FormattedString::COLOR_ON_SURFACE_NEGATIVE:
-      return SearchResult::TextType::kNegative;
+      return OmniboxTextType::kNegative;
     default:
-      return SearchResult::TextType::kUnset;
+      return OmniboxTextType::kUnset;
   }
 }
 
-SearchResult::TextType ClassesToType(
-    const ACMatchClassifications& text_classes) {
+OmniboxTextType ClassesToType(const ACMatchClassifications& text_classes) {
   // Only retain the URL class, other classes are either ignored. Tag indices
   // are also ignored since they will apply to the entire text.
   for (const auto& text_class : text_classes) {
     if (text_class.style & ACMatchClassification::URL) {
-      return SearchResult::TextType::kUrl;
+      return OmniboxTextType::kUrl;
     }
   }
 
-  return SearchResult::TextType::kUnset;
+  return OmniboxTextType::kUnset;
 }
 
-SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
-                                 AutocompleteController* controller,
-                                 const AutocompleteInput& input) {
+std::unique_ptr<OmniboxResultData> CreateBaseResult(
+    const AutocompleteMatch& match,
+    AutocompleteController* controller,
+    const AutocompleteInput& input) {
   AutocompleteMatch match_copy = match;
-  SearchResultPtr result = SearchResult::New();
+  auto result = std::make_unique<OmniboxResultData>();
 
   if (controller && match_copy.search_terms_args) {
     match_copy.search_terms_args->request_source = RequestSource::CROS_APP_LIST;
@@ -196,9 +196,9 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
   if (ui::PageTransitionCoreTypeIs(
           match_copy.transition,
           ui::PageTransition::PAGE_TRANSITION_GENERATED)) {
-    result->page_transition = SearchResult::PageTransition::kGenerated;
+    result->page_transition = ui::PageTransition::PAGE_TRANSITION_GENERATED;
   } else {
-    result->page_transition = SearchResult::PageTransition::kTyped;
+    result->page_transition = ui::PageTransition::PAGE_TRANSITION_TYPED;
   }
 
   result->is_omnibox_search = AutocompleteMatch::IsSearchType(match_copy.type);
@@ -207,20 +207,18 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
 
 }  // namespace
 
-using CrosApiSearchResult = crosapi::mojom::SearchResult;
-
 ash::SearchResultTags TagsForText(const std::u16string& text,
-                                  CrosApiSearchResult::TextType type) {
+                                  OmniboxTextType type) {
   ash::SearchResultTags tags;
   const auto length = text.length();
   switch (type) {
-    case CrosApiSearchResult::TextType::kPositive:
+    case OmniboxTextType::kPositive:
       tags.emplace_back(ash::SearchResultTag::GREEN, 0, length);
       break;
-    case CrosApiSearchResult::TextType::kNegative:
+    case OmniboxTextType::kNegative:
       tags.emplace_back(ash::SearchResultTag::RED, 0, length);
       break;
-    case CrosApiSearchResult::TextType::kUrl:
+    case OmniboxTextType::kUrl:
       tags.emplace_back(ash::SearchResultTag::URL, 0, length);
       break;
     default:
@@ -258,41 +256,25 @@ void RemoveDuplicateResults(
   }
 }
 
-// TODO(crbug.com/371119767): Remove the crosapi usage here, as part of the
-// Lacros and crosapi sunsetting plan.
-//
-// Convert from our Mojo page transition type into the UI equivalent.
-ui::PageTransition PageTransitionToUiPageTransition(
-    SearchResult::PageTransition transition) {
-  switch (transition) {
-    case SearchResult::PageTransition::kTyped:
-      return ui::PAGE_TRANSITION_TYPED;
-    case SearchResult::PageTransition::kGenerated:
-      return ui::PAGE_TRANSITION_GENERATED;
-    default:
-      NOTREACHED();
-  }
+bool IsEligibleForFavicon(OmniboxResultType type) {
+  return type == OmniboxResultType::kBookmark ||
+         type == OmniboxResultType::kDomain ||
+         type == OmniboxResultType::kOpenTab;
 }
 
-bool IsEligibleForFavicon(SearchResult::OmniboxType type) {
-  return type == SearchResult::OmniboxType::kBookmark ||
-         type == SearchResult::OmniboxType::kDomain ||
-         type == SearchResult::OmniboxType::kOpenTab;
-}
-
-SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
-                                   AutocompleteController* controller,
-                                   std::u16string_view query,
-                                   const AutocompleteInput& input) {
-  SearchResultPtr result = CreateBaseResult(match, controller, input);
-
+std::unique_ptr<OmniboxResultData> CreateAnswerResult(
+    const AutocompleteMatch& match,
+    AutocompleteController* controller,
+    std::u16string_view query,
+    const AutocompleteInput& input) {
+  auto result = CreateBaseResult(match, controller, input);
   result->is_answer = true;
 
   // Special case: calculator results (are the only answer results to) have no
   // explicit answer data.
   if (match.answer_type == omnibox::ANSWER_TYPE_UNSPECIFIED) {
     DCHECK_EQ(match.type, AutocompleteMatchType::CALCULATOR);
-    result->answer_type = SearchResult::AnswerType::kCalculator;
+    result->answer_type = OmniboxResultAnswerType::kCalculator;
 
     // Calculator results come in two forms:
     // 1) Answer in |contents|, empty |description|,
@@ -300,7 +282,7 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     // For case 1, we should manually populate the query.
     if (match.description.empty()) {
       result->contents = std::u16string(query);
-      result->contents_type = SearchResult::TextType::kUnset;
+      result->contents_type = OmniboxTextType::kUnset;
       result->description = match.contents;
       result->description_type = ClassesToType(match.contents_class);
     } else {
@@ -336,7 +318,7 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
     result->additional_description_type =
         ColorTypeToType(subhead.fragments(1).color());
   }
-  if (result->answer_type == SearchResult::AnswerType::kWeather) {
+  if (result->answer_type == OmniboxResultAnswerType::kWeather) {
     result->image_url = GURL(match.answer_template->answers(0).image().url());
     result->description_a11y_label = base::UTF8ToUTF16(subhead.a11y_text());
   }
@@ -344,11 +326,12 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
   return result;
 }
 
-SearchResultPtr CreateResult(const AutocompleteMatch& match,
-                             AutocompleteController* controller,
-                             bookmarks::BookmarkModel* bookmark_model,
-                             const AutocompleteInput& input) {
-  SearchResultPtr result = CreateBaseResult(match, controller, input);
+std::unique_ptr<OmniboxResultData> CreateResult(
+    const AutocompleteMatch& match,
+    AutocompleteController* controller,
+    bookmarks::BookmarkModel* bookmark_model,
+    const AutocompleteInput& input) {
+  auto result = CreateBaseResult(match, controller, input);
   result->is_answer = false;
   result->contents = match.contents;
   result->contents_type = ClassesToType(match.contents_class);
@@ -356,11 +339,11 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
   result->description_type = ClassesToType(match.description_class);
 
   if (bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
-    result->omnibox_type = SearchResult::OmniboxType::kBookmark;
-    result->metrics_type = SearchResult::MetricsType::kBookmark;
+    result->omnibox_type = OmniboxResultType::kBookmark;
+    result->metrics_type = ash::OMNIBOX_BOOKMARK;
   } else {
     result->omnibox_type = MatchTypeToOmniboxType(match.type);
-    result->metrics_type = MatchTypeToMetricsType(match.type);
+    result->metrics_type = MatchTypeToSearchResultType(match.type);
   }
 
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&

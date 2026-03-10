@@ -9,6 +9,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -51,8 +52,7 @@ TEST(OmniboxUtilTest, CreateAnswerResult) {
   const auto result =
       CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
   EXPECT_EQ(result->relevance, 1248);
-  ASSERT_TRUE(result->destination_url.has_value());
-  EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
+  EXPECT_EQ(result->destination_url, GURL("http://www.example.com/"));
   EXPECT_TRUE(result->is_omnibox_search);
   EXPECT_TRUE(result->is_answer);
 
@@ -84,12 +84,10 @@ TEST(OmniboxUtilTest, CreateResult) {
   const auto result =
       CreateResult(match, nullptr, nullptr, AutocompleteInput());
   EXPECT_EQ(result->relevance, 300);
-  ASSERT_TRUE(result->destination_url.has_value());
-  EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
+  EXPECT_EQ(result->destination_url, GURL("http://www.example.com/"));
   EXPECT_TRUE(result->is_omnibox_search);
   EXPECT_FALSE(result->is_answer);
-  EXPECT_EQ(result->omnibox_type,
-            crosapi::mojom::SearchResult::OmniboxType::kSearch);
+  EXPECT_EQ(result->omnibox_type, OmniboxResultType::kSearch);
   ASSERT_TRUE(result->image_url.has_value());
   EXPECT_EQ(result->image_url.value(),
             GURL("http://www.example.com/image.jpeg"));
@@ -100,10 +98,8 @@ TEST(OmniboxUtilTest, CreateResult) {
   EXPECT_EQ(result->description.value(), u"description");
 
   // The URL text class should be retained, but MATCH should be ignored.
-  EXPECT_EQ(result->contents_type,
-            crosapi::mojom::SearchResult::TextType::kUrl);
-  EXPECT_EQ(result->description_type,
-            crosapi::mojom::SearchResult::TextType::kUnset);
+  EXPECT_EQ(result->contents_type, OmniboxTextType::kUrl);
+  EXPECT_EQ(result->description_type, OmniboxTextType::kUnset);
 }
 
 // Tests result conversion for a weather Omnibox result.
@@ -142,8 +138,7 @@ TEST(OmniboxUtilTest, CreateWeatherResult) {
       CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
 
   EXPECT_EQ(result->relevance, 1200);
-  ASSERT_TRUE(result->destination_url.has_value());
-  EXPECT_EQ(result->destination_url.value(),
+  EXPECT_EQ(result->destination_url,
             GURL("https://www.example.com.au/weather"));
   EXPECT_TRUE(result->is_omnibox_search);
   EXPECT_TRUE(result->is_answer);
@@ -190,21 +185,17 @@ TEST(OmniboxUtilTest, CreateCalculatorResult) {
     const auto result = CreateAnswerResult(match, /*controller=*/nullptr,
                                            u"1+2", AutocompleteInput());
     EXPECT_EQ(result->relevance, 300);
-    ASSERT_TRUE(result->destination_url.has_value());
-    EXPECT_EQ(result->destination_url.value(),
+    EXPECT_EQ(result->destination_url,
               GURL("https://www.example.com.au/calc?q=1+2"));
     EXPECT_TRUE(result->is_omnibox_search);
     EXPECT_TRUE(result->is_answer);
-    EXPECT_EQ(result->answer_type,
-              crosapi::mojom::SearchResult::AnswerType::kCalculator);
+    EXPECT_EQ(result->answer_type, OmniboxResultAnswerType::kCalculator);
     ASSERT_TRUE(result->contents.has_value());
     EXPECT_EQ(result->contents.value(), u"1+2");
     ASSERT_TRUE(result->description.has_value());
     EXPECT_EQ(result->description.value(), u"3");
-    EXPECT_EQ(result->contents_type,
-              crosapi::mojom::SearchResult::TextType::kUnset);
-    EXPECT_EQ(result->description_type,
-              crosapi::mojom::SearchResult::TextType::kUnset);
+    EXPECT_EQ(result->contents_type, OmniboxTextType::kUnset);
+    EXPECT_EQ(result->description_type, OmniboxTextType::kUnset);
   }
 }
 

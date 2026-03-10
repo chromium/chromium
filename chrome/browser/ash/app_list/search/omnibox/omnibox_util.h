@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/page_transition_types.h"
@@ -27,6 +26,9 @@ class BookmarkModel;
 namespace app_list {
 
 class OmniboxResult;
+enum class OmniboxResultType;
+enum class OmniboxTextType;
+struct OmniboxResultData;
 
 // The magic number 1500 is the highest score of an omnibox result.
 // See comments in autocomplete_provider.h.
@@ -65,7 +67,7 @@ inline constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
 
 // Returns the tag vector for the given text type.
 ash::SearchResultTags TagsForText(const std::u16string& text,
-                                  crosapi::mojom::SearchResult::TextType type);
+                                  OmniboxTextType type);
 
 // Whether this URL points to a Drive location.
 bool IsDriveUrl(const GURL& url);
@@ -76,18 +78,13 @@ bool IsDriveUrl(const GURL& url);
 void RemoveDuplicateResults(
     std::vector<std::unique_ptr<OmniboxResult>>& results);
 
-// Returns the UI page transition that corresponds to the given crosapi page
-// transition.
-ui::PageTransition PageTransitionToUiPageTransition(
-    crosapi::mojom::SearchResult::PageTransition transition);
-
 // Determines whether a result with the given omnibox type is eligible for a
 // favicon.
-bool IsEligibleForFavicon(crosapi::mojom::SearchResult::OmniboxType type);
+bool IsEligibleForFavicon(OmniboxResultType type);
 
 // Creates an Omnibox answer card result from the AutocompleteMatch. Match must
 // either have its answer field populated or be a calculator result.
-crosapi::mojom::SearchResultPtr CreateAnswerResult(
+std::unique_ptr<OmniboxResultData> CreateAnswerResult(
     const AutocompleteMatch& match,
     AutocompleteController* controller,
     std::u16string_view query,
@@ -96,7 +93,7 @@ crosapi::mojom::SearchResultPtr CreateAnswerResult(
 // Creates an Omnibox search result from the AutocompleteMatch. Match must not
 // have its answer field populated or be a calculator result.
 // The `favicon` field will not be populated.
-crosapi::mojom::SearchResultPtr CreateResult(
+std::unique_ptr<OmniboxResultData> CreateResult(
     const AutocompleteMatch& match,
     AutocompleteController* controller,
     bookmarks::BookmarkModel* bookmark_model,

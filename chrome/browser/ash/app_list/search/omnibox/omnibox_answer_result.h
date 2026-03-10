@@ -9,8 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 class AppListControllerDelegate;
 class BitmapFetcher;
@@ -27,7 +27,7 @@ class OmniboxAnswerResult : public ChromeSearchResult,
  public:
   OmniboxAnswerResult(Profile* profile,
                       AppListControllerDelegate* list_controller,
-                      crosapi::mojom::SearchResultPtr search_result,
+                      std::unique_ptr<OmniboxResultData> search_result,
                       const std::u16string& query);
   ~OmniboxAnswerResult() override;
 
@@ -55,7 +55,7 @@ class OmniboxAnswerResult : public ChromeSearchResult,
 
   raw_ptr<Profile> profile_;
   raw_ptr<AppListControllerDelegate> list_controller_;
-  const crosapi::mojom::SearchResultPtr search_result_;
+  const std::unique_ptr<OmniboxResultData> search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 

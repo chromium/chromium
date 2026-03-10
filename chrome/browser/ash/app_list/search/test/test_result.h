@@ -10,6 +10,8 @@
 
 namespace app_list {
 
+enum class OmniboxResultAnswerType;
+
 class TestResult : public ChromeSearchResult {
  public:
   // TestResult is used by many test suites. Each test suite operates on
@@ -40,7 +42,7 @@ class TestResult : public ChromeSearchResult {
 
   TestResult(const std::string& id,
              ResultType result_type,
-             crosapi::mojom::SearchResult::AnswerType answer_type,
+             OmniboxResultAnswerType answer_type,
              DisplayType display_type);
 
   TestResult(const std::string& id,

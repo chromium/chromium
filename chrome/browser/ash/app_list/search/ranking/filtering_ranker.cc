@@ -8,20 +8,18 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/constants.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 namespace app_list {
 namespace {
 
-using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
-
 constexpr auto kRestrictedAnswerTypes =
-    base::MakeFixedFlatSet<CrosApiSearchResult::AnswerType>({
-        CrosApiSearchResult::AnswerType::kDefaultAnswer,
-        CrosApiSearchResult::AnswerType::kDictionary,
-        CrosApiSearchResult::AnswerType::kTranslation,
+    base::MakeFixedFlatSet<OmniboxResultAnswerType>({
+        OmniboxResultAnswerType::kDefaultAnswer,
+        OmniboxResultAnswerType::kDictionary,
+        OmniboxResultAnswerType::kTranslation,
     });
 
 // Given `higher_priority` and `lower_priority` result types, deduplicate

@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/app_list/search/ranking/filtering_ranker.h"
 
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +18,6 @@ namespace {
 
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
-using AnswerType = ::crosapi::mojom::SearchResult::AnswerType;
 
 class TestDriveIdResult : public TestResult {
  public:
@@ -53,9 +52,10 @@ Results MakeDriveIdResults(
   return res;
 }
 
-Results MakeOmniboxResults(const std::vector<std::string>& ids,
-                           const std::vector<ResultType>& types,
-                           const std::vector<AnswerType>& answer_types) {
+Results MakeOmniboxResults(
+    const std::vector<std::string>& ids,
+    const std::vector<ResultType>& types,
+    const std::vector<OmniboxResultAnswerType>& answer_types) {
   CHECK_EQ(ids.size(), types.size());
   CHECK_EQ(ids.size(), answer_types.size());
 
@@ -104,9 +104,10 @@ TEST_F(FilteringRankerTest, FilterOmniboxResults) {
 
   results[web] = MakeOmniboxResults(
       {"a", "b", "c", "d", "e", "f"}, {web, web, tab, web, web, web},
-      {AnswerType::kFinance, AnswerType::kTranslation, AnswerType::kUnset,
-       AnswerType::kDictionary, AnswerType::kCalculator,
-       AnswerType::kDefaultAnswer});
+      {OmniboxResultAnswerType::kFinance, OmniboxResultAnswerType::kTranslation,
+       OmniboxResultAnswerType::kUnset, OmniboxResultAnswerType::kDictionary,
+       OmniboxResultAnswerType::kCalculator,
+       OmniboxResultAnswerType::kDefaultAnswer});
 
   FilteringRanker ranker;
   CategoriesList categories;

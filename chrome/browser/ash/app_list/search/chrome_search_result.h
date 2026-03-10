@@ -16,8 +16,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/scoring.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
@@ -181,10 +181,8 @@ class ChromeSearchResult {
   double relevance() const { return relevance_; }
   void set_relevance(double relevance) { relevance_ = relevance; }
 
-  crosapi::mojom::SearchResult::AnswerType answer_type() const {
-    return answer_type_;
-  }
-  void set_answer_type(crosapi::mojom::SearchResult::AnswerType answer_type) {
+  app_list::OmniboxResultAnswerType answer_type() const { return answer_type_; }
+  void set_answer_type(app_list::OmniboxResultAnswerType answer_type) {
     answer_type_ = answer_type;
   }
 
@@ -241,7 +239,7 @@ class ChromeSearchResult {
   app_list::Scoring scoring_;
 
   // This field specifies the omnibox answer card type.
-  crosapi::mojom::SearchResult::AnswerType answer_type_;
+  app_list::OmniboxResultAnswerType answer_type_;
 
   // Relevance scores keyed by a string describing the ranking method it was
   // obtained from. These can include scores from intermediate ranking steps, as

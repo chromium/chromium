@@ -14,10 +14,10 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -33,7 +33,6 @@ namespace {
 using Tag = ash::SearchResultTag;
 using TextItem = ash::SearchResultTextItem;
 using TextType = ash::SearchResultTextItemType;
-using CrosApiSearchResult = crosapi::mojom::SearchResult;
 
 constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 
@@ -46,19 +45,18 @@ ChromeSearchResult::IconInfo CreateAnswerIconInfo(
                                       kAnswerCardIconDimension);
 }
 
-// Convert from our Mojo answer type to the corresponding Omnibox icon.
-const gfx::VectorIcon& AnswerTypeToVectorIcon(
-    CrosApiSearchResult::AnswerType type) {
+// Convert from answer type to the corresponding Omnibox icon.
+const gfx::VectorIcon& AnswerTypeToVectorIcon(OmniboxResultAnswerType type) {
   switch (type) {
-    case CrosApiSearchResult::AnswerType::kCurrency:
+    case OmniboxResultAnswerType::kCurrency:
       return omnibox::kAnswerCurrencyIcon;
-    case CrosApiSearchResult::AnswerType::kDictionary:
+    case OmniboxResultAnswerType::kDictionary:
       return omnibox::kAnswerDictionaryIcon;
-    case CrosApiSearchResult::AnswerType::kFinance:
+    case OmniboxResultAnswerType::kFinance:
       return omnibox::kAnswerFinanceIcon;
-    case CrosApiSearchResult::AnswerType::kSunrise:
+    case OmniboxResultAnswerType::kSunrise:
       return omnibox::kAnswerSunriseIcon;
-    case CrosApiSearchResult::AnswerType::kTranslation:
+    case OmniboxResultAnswerType::kTranslation:
       return omnibox::kAnswerTranslationIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
@@ -85,7 +83,7 @@ std::optional<std::pair<std::u16string, std::u16string>> GetTemperature(
 // Converts the given text into a TextItem and appends it to the supplied
 // vector.
 void AppendTextItem(const std::u16string& line,
-                    const CrosApiSearchResult::TextType type,
+                    OmniboxTextType type,
                     std::vector<TextItem>& text_vector) {
   if (line.empty()) {
     return;
@@ -117,7 +115,7 @@ std::u16string ComputeAccessibleName(
 OmniboxAnswerResult::OmniboxAnswerResult(
     Profile* profile,
     AppListControllerDelegate* list_controller,
-    crosapi::mojom::SearchResultPtr search_result,
+    std::unique_ptr<OmniboxResultData> search_result,
     const std::u16string& query)
     : profile_(profile),
       list_controller_(list_controller),
@@ -132,10 +130,8 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   SetResultType(ResultType::kOmnibox);
   SetCategory(Category::kSearchAndAssistant);
 
-  // mojo::StructPtr DCHECKs non-null on dereference.
-  DCHECK(search_result_->stripped_destination_url.has_value());
   set_id(kOmniboxAnswerSchema +
-         search_result_->stripped_destination_url->spec());
+         search_result_->stripped_destination_url.spec());
 
   SetMetricsType(IsCalculatorResult() ? ash::OMNIBOX_CALCULATOR
                                       : ash::OMNIBOX_ANSWER);
@@ -158,11 +154,9 @@ OmniboxAnswerResult::~OmniboxAnswerResult() {
 }
 
 void OmniboxAnswerResult::Open(int event_flags) {
-  DCHECK(search_result_->destination_url.has_value());
-  list_controller_->OpenURL(
-      profile_, *search_result_->destination_url,
-      PageTransitionToUiPageTransition(search_result_->page_transition),
-      ui::DispositionFromEventFlags(event_flags));
+  list_controller_->OpenURL(profile_, search_result_->destination_url,
+                            search_result_->page_transition,
+                            ui::DispositionFromEventFlags(event_flags));
 }
 
 void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
@@ -258,18 +252,15 @@ void OmniboxAnswerResult::OnFetchComplete(const GURL& url,
 }
 
 bool OmniboxAnswerResult::IsCalculatorResult() const {
-  return search_result_->answer_type ==
-         CrosApiSearchResult::AnswerType::kCalculator;
+  return search_result_->answer_type == OmniboxResultAnswerType::kCalculator;
 }
 
 bool OmniboxAnswerResult::IsDictionaryResult() const {
-  return search_result_->answer_type ==
-         CrosApiSearchResult::AnswerType::kDictionary;
+  return search_result_->answer_type == OmniboxResultAnswerType::kDictionary;
 }
 
 bool OmniboxAnswerResult::IsWeatherResult() const {
-  return search_result_->answer_type ==
-         CrosApiSearchResult::AnswerType::kWeather;
+  return search_result_->answer_type == OmniboxResultAnswerType::kWeather;
 }
 
 }  // namespace app_list

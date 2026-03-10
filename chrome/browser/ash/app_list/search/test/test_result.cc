@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_types.h"
 
 namespace app_list {
 
@@ -51,7 +52,7 @@ TestResult::TestResult(const std::string& id,
 
 TestResult::TestResult(const std::string& id,
                        ResultType result_type,
-                       crosapi::mojom::SearchResult::AnswerType answer_type,
+                       OmniboxResultAnswerType answer_type,
                        DisplayType display_type) {
   set_id(id);
   SetTitle(base::UTF8ToUTF16(id));
