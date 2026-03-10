@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/data_sharing/public/features.h"
@@ -74,7 +75,6 @@
 #include "chrome/browser/ui/browser_finder.h"                      // nogncheck
 #include "chrome/browser/ui/browser_navigator_params.h"            // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
-#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"                      // nogncheck
 #include "chrome/browser/ui/tabs/tab_group_model.h"                // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"                // nogncheck
@@ -1116,24 +1116,10 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
 // static
 void ExtensionTabUtil::ForEachTab(
     base::RepeatingCallback<void(WebContents*)> callback) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   tabs::ForEachTabInterface([&callback](tabs::TabInterface* tab) {
     callback.Run(tab->GetContents());
     return true;
   });
-#else
-  // Android has its own notion of the tab strip and cannot use the code above.
-  for (TabModel* tab_model : TabModelList::models()) {
-    int tab_count = tab_model->GetTabCount();
-    for (int i = 0; i < tab_count; ++i) {
-      auto* web_contents = tab_model->GetWebContentsAt(i);
-      // On Android, not every tab is guaranteed to have a WebContents.
-      if (web_contents) {
-        callback.Run(web_contents);
-      }
-    }
-  }
-#endif
 }
 
 // static
