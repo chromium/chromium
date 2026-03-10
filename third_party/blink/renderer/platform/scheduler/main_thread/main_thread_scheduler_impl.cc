@@ -279,6 +279,15 @@ perfetto::StaticString RenderingPrioritizationStateToString(
 BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Attempt to treat inputs as one longer window, instead of many shorter ones.
+BASE_FEATURE(kUseCaseLongerInputWindow, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kUseCaseLongerInputWindowExtensionMs,
+                   &kUseCaseLongerInputWindow,
+                   "use_case_longer_input_window_extension_ms",
+                   base::Milliseconds(50));
+
+// Treat "loading" specially in V8.
 BASE_FEATURE(kLoadingModeFromRAILMode, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1734,21 +1743,31 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   // (main_thread_compositing_is_fast) that may have been updated here.
   UpdateCompositorTaskQueuePriority();
 
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase)) {
+    if (isolate()) {
+      const bool was_input_handling = ComputeIsInputHandlingFromUseCase(
+          main_thread_only().current_policy.use_case);
+      const bool is_input_handling =
+          ComputeIsInputHandlingFromUseCase(new_policy.use_case);
+      if (was_input_handling && !is_input_handling) {
+        last_input_use_case_time_ = base::TimeTicks::Now();
+      }
+
+      isolate()->SetIsInputHandling(
+          is_input_handling ||
+          (base::FeatureList::IsEnabled(kUseCaseLongerInputWindow) &&
+           last_input_use_case_time_ +
+                   kUseCaseLongerInputWindowExtensionMs.Get() >=
+               base::TimeTicks::Now()));
+    }
+  }
+
   // TODO(alexclarke): Can we get rid of force update now?
   // talp: Can't get rid of this, as per-agent scheduling happens on top of the
   //  policy, based on agent states.
   if (update_type == UpdateType::kMayEarlyOutIfPolicyUnchanged &&
       new_policy == main_thread_only().current_policy) {
     return;
-  }
-
-  if (new_policy.use_case != main_thread_only().current_policy.use_case) {
-    if (isolate()) {
-      if (base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase)) {
-        isolate()->SetIsInputHandling(
-            ComputeIsInputHandlingFromUseCase(new_policy.use_case));
-      }
-    }
   }
 
   // NOTE: Code below only executes for forced updates or when the policy has
