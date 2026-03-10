@@ -34,6 +34,7 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont&,
                                       hb_glyph_extents_t*);
 
 void SkFontGetBoundsForGlyph(const SkFont&, Glyph, SkRect* bounds);
+void SkFontGetPreciseBoundsForGlyph(const SkFont&, Glyph, SkRect* bounds);
 void SkFontGetBoundsForGlyphs(const SkFont&,
                               const Vector<Glyph, 256>&,
                               base::span<SkRect>);

@@ -126,24 +126,59 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
   extents->height = SkiaScalarToHarfBuzzPosition(-sk_bounds.height());
 }
 
-void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
+// Returns path-based bounds for float precision, falling back to
+// font.getBounds() for bitmap-only glyphs (e.g. color emoji) that have no
+// paths.
 #if BUILDFLAG(IS_APPLE)
-  // TODO(drott): Remove this once we have better metrics bounds
-  // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
+static void GetPathBoundsForGlyph(const SkFont& font,
+                                  Glyph glyph,
+                                  SkRect* bounds) {
   if (const auto path = font.getPath(glyph)) {
     *bounds = path->getBounds();
   } else {
-    // Fonts like Apple Color Emoji have no paths, fall back to bounds here.
     *bounds = font.getBounds(glyph, nullptr);
   }
-#else
-  *bounds = font.getBounds(glyph, nullptr);
-#endif
 
   if (!font.isSubpixel()) {
     SkIRect ir;
     bounds->roundOut(&ir);
     bounds->set(ir);
+  }
+}
+#endif
+
+void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
+#if BUILDFLAG(IS_APPLE)
+  // TODO(drott): Remove this once we have better metrics bounds
+  // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
+  GetPathBoundsForGlyph(font, glyph, bounds);
+#else
+  *bounds = font.getBounds(glyph, nullptr);
+
+  if (!font.isSubpixel()) {
+    SkIRect ir;
+    bounds->roundOut(&ir);
+    bounds->set(ir);
+  }
+#endif
+}
+
+void SkFontGetPreciseBoundsForGlyph(const SkFont& font,
+                                    Glyph glyph,
+                                    SkRect* bounds) {
+  // Use path-based bounds for float precision. SkGlyph stores bounds as
+  // integers (int16_t/uint16_t) which causes large relative errors for small
+  // font sizes (e.g. 1.5px). Path bounds give exact floating-point values
+  // from the glyph outlines.
+  //
+  // Unlike GetPathBoundsForGlyph / SkFontGetBoundsForGlyph, we intentionally
+  // do NOT round to integers for non-subpixel fonts, because the caller
+  // (canvas TextMetrics) needs float-precision results.
+  if (const auto path = font.getPath(glyph)) {
+    *bounds = path->getBounds();
+  } else {
+    // Bitmap-only glyphs (e.g. color emoji) have no outlines.
+    *bounds = font.getBounds(glyph, nullptr);
   }
 }
 

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -358,7 +359,16 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
            gfx::Vector2dF glyph_offset, float total_advance, bool is_horizontal,
            CanvasRotationInVertical rotation, const SimpleFontData* font_data) {
           auto* bounding_box = static_cast<gfx::RectF*>(context);
-          gfx::RectF glyph_bounds = font_data->BoundsForGlyph(glyph);
+          // At small font sizes (<=4px), Skia stores glyph bounds as
+          // integers, causing relative errors (crbug.com/479240778).
+          // Use path-based float-precision bounds for small sizes.
+          constexpr float kSmallFontSizeThreshold = 4.0f;
+          gfx::RectF glyph_bounds =
+              RuntimeEnabledFeatures::CanvasTextMetricsPreciseBoundsEnabled() &&
+                      font_data->PlatformData().size() <=
+                          kSmallFontSizeThreshold
+                  ? font_data->PreciseBoundsForGlyph(glyph)
+                  : font_data->BoundsForGlyph(glyph);
           glyph_bounds.Offset(total_advance, 0.0);
           glyph_bounds.Offset(glyph_offset);
           bounding_box->Union(glyph_bounds);

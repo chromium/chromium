@@ -508,6 +508,32 @@ gfx::RectF SimpleFontData::PlatformBoundsForGlyph(Glyph glyph) const {
   return gfx::SkRectToRectF(bounds);
 }
 
+gfx::RectF SimpleFontData::PreciseBoundsForGlyph(Glyph glyph) const {
+  if (!platform_data_->size()) {
+    return gfx::RectF();
+  }
+
+  if (glyph_to_precise_bounds_map_) {
+    if (std::optional<gfx::RectF> cached =
+            glyph_to_precise_bounds_map_->MetricsForGlyph(glyph)) {
+      return *cached;
+    }
+  }
+
+  static_assert(sizeof(glyph) == 2, "Glyph id should not be truncated.");
+
+  SkRect bounds;
+  SkFontGetPreciseBoundsForGlyph(font_, glyph, &bounds);
+  gfx::RectF result = gfx::SkRectToRectF(bounds);
+
+  if (!glyph_to_precise_bounds_map_) {
+    glyph_to_precise_bounds_map_ =
+        std::make_unique<GlyphMetricsMap<gfx::RectF>>();
+  }
+  glyph_to_precise_bounds_map_->SetMetricsForGlyph(glyph, result);
+  return result;
+}
+
 void SimpleFontData::BoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
                                      Vector<SkRect, 256>* bounds) const {
   DCHECK_EQ(glyphs.size(), bounds->size());

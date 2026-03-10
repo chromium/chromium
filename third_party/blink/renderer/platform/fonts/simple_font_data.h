@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_vertical_position_type.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
+#include "third_party/blink/renderer/platform/fonts/glyph_metrics_map.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/han_kerning.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -49,10 +50,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "ui/gfx/geometry/rect_f.h"
-
-#if BUILDFLAG(IS_APPLE)
-#include "third_party/blink/renderer/platform/fonts/glyph_metrics_map.h"
-#endif
 
 namespace blink {
 
@@ -148,6 +145,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
                                              bool is_horizontal) const;
 
   gfx::RectF BoundsForGlyph(Glyph) const;
+  gfx::RectF PreciseBoundsForGlyph(Glyph) const;
   void BoundsForGlyphs(const Vector<Glyph, 256>&, Vector<SkRect, 256>*) const;
   gfx::RectF PlatformBoundsForGlyph(Glyph) const;
   float WidthForGlyph(Glyph) const;
@@ -237,6 +235,8 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 #if BUILDFLAG(IS_APPLE)
   mutable std::unique_ptr<GlyphMetricsMap<gfx::RectF>> glyph_to_bounds_map_;
 #endif
+  mutable std::unique_ptr<GlyphMetricsMap<gfx::RectF>>
+      glyph_to_precise_bounds_map_;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
