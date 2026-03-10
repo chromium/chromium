@@ -1049,9 +1049,20 @@ bool CheckURLHash(const KURL& document_url,
     return true;
   }
   String relative_url = GetRelativeScriptUrl(document_url, url);
-  return !relative_url.empty() &&
-         URLHashMatchesSourceList(relative_url, hash_algorithms_used,
-                                  source_list);
+  if (relative_url.empty()) {
+    return false;
+  }
+  // For relative URLs, first check for the hash of the url without a leading
+  // '/', then with one, and allow it if either matches.
+  if (URLHashMatchesSourceList(relative_url, hash_algorithms_used,
+                               source_list)) {
+    return true;
+  }
+  StringBuilder sb;
+  sb.Append("/");
+  sb.Append(relative_url);
+  return (URLHashMatchesSourceList(sb.ReleaseString(), hash_algorithms_used,
+                                   source_list));
 }
 
 CSPCheckResult CSPDirectiveListAllowFromSource(
