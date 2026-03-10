@@ -335,6 +335,13 @@ void NavigationManagerImpl::AddPendingItem(
       &transient_url_rewriters_);
   RemoveTransientURLRewriters();
 
+  if (ui::PageTransitionCoreTypeIs(navigation_type,
+                                   ui::PAGE_TRANSITION_RELOAD) &&
+      last_committed_item && last_committed_item->GetURL() == url) {
+    pending_item_->SetInternalScrollToTextFragment(
+        last_committed_item->GetInternalScrollToTextFragment());
+  }
+
   if (!next_pending_url_should_skip_serialization_.is_empty() &&
       url == next_pending_url_should_skip_serialization_) {
     pending_item_->SetShouldSkipSerialization(true);
@@ -942,6 +949,9 @@ void NavigationManagerImpl::LoadURLWithParams(
     added_item->AddHttpRequestHeaders(params.extra_headers);
   }
 
+  added_item->SetInternalScrollToTextFragment(
+      params.internal_scroll_to_text_fragment);
+
   added_item->SetHttpsUpgradeType(params.https_upgrade_type);
 
   if (params.post_data) {
@@ -1115,6 +1125,8 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
   if (item_to_reload->GetVirtualURL() != reload_url) {
     params.virtual_url = item_to_reload->GetVirtualURL();
   }
+  params.internal_scroll_to_text_fragment =
+      item_to_reload->GetInternalScrollToTextFragment();
   params.referrer = item_to_reload->GetReferrer();
   params.transition_type = ui::PAGE_TRANSITION_RELOAD;
 

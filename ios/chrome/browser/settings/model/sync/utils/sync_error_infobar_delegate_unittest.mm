@@ -49,7 +49,9 @@ class MockInfoBarManager : public infobars::InfoBarManager {
   MOCK_METHOD(int, GetActiveEntryID, (), (override));
   MOCK_METHOD(void,
               OpenURL,
-              (const GURL& url, WindowOpenDisposition disposition),
+              (const GURL& url,
+               WindowOpenDisposition disposition,
+               const std::string& text_fragment),
               (override));
 };
 

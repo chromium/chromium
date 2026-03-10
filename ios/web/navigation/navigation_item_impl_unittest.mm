@@ -75,9 +75,12 @@ TEST_F(NavigationItemTest, Clone) {
   NSString* state0 = @"state0";
   NSMutableString* mutableState = [state0 mutableCopy];
   item_->SetSerializedStateObject(mutableState);
+  item_->SetInternalScrollToTextFragment("start,end");
 
   // Clone.
   std::unique_ptr<web::NavigationItemImpl> clone = item_->Clone();
+  EXPECT_EQ(item_->GetInternalScrollToTextFragment(),
+            clone->GetInternalScrollToTextFragment());
 
   // Modify the objects.
   NSString* postData1 = @"postData1";
@@ -158,6 +161,18 @@ TEST_F(NavigationItemTest, VirtualURLTest) {
   EXPECT_EQ(original_url, item_->GetURL());
 }
 
+// Tests the getter and setter for the text fragment.
+TEST_F(NavigationItemTest, InternalScrollToTextFragment) {
+  EXPECT_FALSE(item_->GetInternalScrollToTextFragment().has_value());
+  std::string fragment = "start,end";
+  item_->SetInternalScrollToTextFragment(fragment);
+  ASSERT_TRUE(item_->GetInternalScrollToTextFragment().has_value());
+  EXPECT_EQ(fragment, item_->GetInternalScrollToTextFragment().value());
+
+  item_->SetInternalScrollToTextFragment(std::nullopt);
+  EXPECT_FALSE(item_->GetInternalScrollToTextFragment().has_value());
+}
+
 // Tests setting title longer than kMaxTitleLength.
 TEST_F(NavigationItemTest, ExtraLongTitle) {
   item_->SetTitle(base::UTF8ToUTF16(std::string(kMaxTitleLength + 1, 'i')));
@@ -234,6 +249,7 @@ TEST_F(NavigationItemTest, NavigationItemImplRoundTrip) {
   original.SetUserAgentType(UserAgentType::DESKTOP);
   original.AddHttpRequestHeaders(@{@"HeaderKey" : @"HeaderValue"});
   original.SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+  original.SetInternalScrollToTextFragment("start,end");
 
   proto::NavigationItemStorage storage;
   original.SerializeToProto(storage);
@@ -245,6 +261,8 @@ TEST_F(NavigationItemTest, NavigationItemImplRoundTrip) {
   EXPECT_EQ(original.GetReferrer(), decoded.GetReferrer());
   EXPECT_EQ(original.GetTimestamp(), decoded.GetTimestamp());
   EXPECT_EQ(original.GetUserAgentType(), decoded.GetUserAgentType());
+  EXPECT_EQ(original.GetInternalScrollToTextFragment(),
+            decoded.GetInternalScrollToTextFragment());
   EXPECT_NSEQ(original.GetHttpRequestHeaders(),
               decoded.GetHttpRequestHeaders());
 

@@ -65,7 +65,9 @@ class TestInfoBarManager : public InfoBarManager {
   TestInfoBarManager() { set_animations_enabled(false); }
   ~TestInfoBarManager() override = default;
   int GetActiveEntryID() override { return 0; }
-  void OpenURL(const GURL&, WindowOpenDisposition) override {}
+  void OpenURL(const GURL&,
+               WindowOpenDisposition,
+               const std::string&) override {}
 
   using InfoBarManager::AddInfoBar;
   using InfoBarManager::RemoveInfoBar;

@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/browser_url_rewriter.h"
@@ -46,9 +47,20 @@ class NavigationManager {
     // The transition type for the load. Defaults to PAGE_TRANSITION_LINK.
     ui::PageTransition transition_type = ui::PAGE_TRANSITION_LINK;
 
-    // True for renderer-initiated navigations. This is
+    // Whether the load is renderer-initiated or not. This is
     // important for tracking whether to display pending URLs.
     bool is_renderer_initiated = false;
+
+    // A text fragment selector (that uses the syntax defined in
+    // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
+    // matched text into the viewport without applying the standard highlight
+    // styling. This is used for cross-device scroll restoration.
+    // This is named "internal" to match
+    // content::NavigationController::LoadURLParams, as it is passed through the
+    // navigation stack rather than being extracted from the URL's hash
+    // fragment. The string should contain only the selector value (the part
+    // after "text=" in a URL directive), not the "text=" prefix itself.
+    std::optional<std::string> internal_scroll_to_text_fragment;
 
     // Any extra HTTP headers to add to the load.
     NSDictionary<NSString*, NSString*>* extra_headers = nil;

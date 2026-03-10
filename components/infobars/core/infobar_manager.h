@@ -103,7 +103,15 @@ class InfoBarManager {
   virtual int GetActiveEntryID() = 0;
 
   // Opens a URL according to the specified |disposition|.
-  virtual void OpenURL(const GURL& url, WindowOpenDisposition disposition) = 0;
+  // `text_fragment` is an optional text fragment to scroll to.
+  virtual void OpenURL(const GURL& url,
+                       WindowOpenDisposition disposition,
+                       const std::string& text_fragment) = 0;
+
+  // Opens a URL according to the specified `disposition`.
+  void OpenURL(const GURL& url, WindowOpenDisposition disposition) {
+    OpenURL(url, disposition, std::string());
+  }
 
   bool ShouldHideInFullscreen() const;
 

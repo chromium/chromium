@@ -142,6 +142,17 @@ class WebState : public base::SupportsUserData {
 
     // Whether this navigation is initiated by the renderer process.
     bool is_renderer_initiated;
+
+    // A text fragment selector (that uses the syntax defined in
+    // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
+    // matched text into the viewport without applying the standard highlight
+    // styling. This is used for cross-device scroll restoration.
+    // This is named "internal" to match
+    // content::NavigationController::LoadURLParams, as it is passed through the
+    // navigation stack rather than being extracted from the URL's hash
+    // fragment. The string should contain only the selector value (the part
+    // after "text=" in a URL directive), not the "text=" prefix itself.
+    std::optional<std::string> internal_scroll_to_text_fragment;
   };
 
   // InterfaceBinder can be instantiated by subclasses of WebState and returned

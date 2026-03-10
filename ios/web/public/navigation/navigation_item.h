@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/supports_user_data.h"
@@ -80,6 +81,20 @@ class NavigationItem : public base::SupportsUserData {
   // the user.
   virtual void SetTitle(const std::u16string& title) = 0;
   virtual const std::u16string& GetTitle() const = 0;
+
+  // A text fragment selector (that uses the syntax defined in
+  // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
+  // matched text into the viewport without applying the standard highlight
+  // styling. This is used for cross-device scroll restoration.
+  // This is named "internal" to match
+  // content::NavigationController::LoadURLParams, as it is passed through the
+  // navigation stack rather than being extracted from the URL's hash fragment.
+  // The string should contain only the selector value (the part after "text="
+  // in a URL directive), not the "text=" prefix itself.
+  virtual void SetInternalScrollToTextFragment(
+      const std::optional<std::string>& internal_scroll_to_text_fragment) = 0;
+  virtual const std::optional<std::string>& GetInternalScrollToTextFragment()
+      const = 0;
 
   // Page-related helpers ------------------------------------------------------
 

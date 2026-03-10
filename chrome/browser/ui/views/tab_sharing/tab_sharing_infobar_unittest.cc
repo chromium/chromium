@@ -31,7 +31,9 @@ class TestInfoBarManager : public infobars::InfoBarManager {
   ~TestInfoBarManager() override = default;
 
   int GetActiveEntryID() override { return 0; }
-  void OpenURL(const GURL& url, WindowOpenDisposition disposition) override {}
+  void OpenURL(const GURL& url,
+               WindowOpenDisposition disposition,
+               const std::string& text_fragment) override {}
 };
 
 struct ViewInfo {

@@ -42,7 +42,9 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
   void WebStateDestroyed(web::WebState* web_state) override;
 
   // Opens a URL according to the specified `disposition`.
-  void OpenURL(const GURL& url, WindowOpenDisposition disposition) override;
+  void OpenURL(const GURL& url,
+               WindowOpenDisposition disposition,
+               const std::string& text_fragment) override;
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.

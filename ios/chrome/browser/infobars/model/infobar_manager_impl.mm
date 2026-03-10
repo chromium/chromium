@@ -78,9 +78,13 @@ void InfoBarManagerImpl::WebStateDestroyed(web::WebState* web_state) {
 }
 
 void InfoBarManagerImpl::OpenURL(const GURL& url,
-                                 WindowOpenDisposition disposition) {
+                                 WindowOpenDisposition disposition,
+                                 const std::string& text_fragment) {
   web::WebState::OpenURLParams params(url, web::Referrer(), disposition,
                                       ui::PAGE_TRANSITION_LINK,
                                       /*is_renderer_initiated=*/false);
+  if (!text_fragment.empty()) {
+    params.internal_scroll_to_text_fragment = text_fragment;
+  }
   web_state_->OpenURL(params);
 }

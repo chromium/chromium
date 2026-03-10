@@ -51,7 +51,9 @@ class TestInfoBarManager : public infobars::InfoBarManager {
   int GetActiveEntryID() override { return 0; }
 
   // infobars::InfoBarManager:
-  void OpenURL(const GURL& url, WindowOpenDisposition disposition) override {
+  void OpenURL(const GURL& url,
+               WindowOpenDisposition disposition,
+               const std::string& text_fragment) override {
     NOTREACHED();
   }
 };

@@ -226,6 +226,8 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
   load_params.transition_type = params.transition;
   load_params.is_renderer_initiated = params.is_renderer_initiated;
   load_params.virtual_url = params.virtual_url;
+  load_params.internal_scroll_to_text_fragment =
+      params.internal_scroll_to_text_fragment;
 
   TabInsertion::Params insertion_params;
   insertion_params.parent = source;

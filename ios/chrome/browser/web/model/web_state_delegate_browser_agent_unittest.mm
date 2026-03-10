@@ -136,6 +136,26 @@ TEST_F(WebStateDelegateBrowserAgentTest, OpenURLNewTabs) {
   EXPECT_EQ(browser_->GetWebStateList()->GetActiveWebState(), web_state2);
 }
 
+// Tests that OpenURLFromWebState() correctly copies the text fragment.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       OpenURLWithInternalScrollToTextFragment) {
+  web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+  web::WebState::OpenURLParams open_params(
+      GURL(kURL2), web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, false);
+  open_params.internal_scroll_to_text_fragment = "start,end";
+  web::WebState* web_state2 =
+      delegate()->OpenURLFromWebState(web_state, open_params);
+
+  ASSERT_TRUE(web_state2);
+  web::NavigationItem* pending_item =
+      web_state2->GetNavigationManager()->GetPendingItem();
+  ASSERT_TRUE(pending_item);
+  ASSERT_TRUE(pending_item->GetInternalScrollToTextFragment().has_value());
+  EXPECT_EQ("start,end",
+            pending_item->GetInternalScrollToTextFragment().value());
+}
+
 // Tests that OpenURLFromWebState() doesn't create a new tab with the
 // CURRENT_TAB option.
 TEST_F(WebStateDelegateBrowserAgentTest, OpenURLCurrentTab) {

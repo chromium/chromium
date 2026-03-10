@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -53,6 +54,11 @@ class NavigationItemImpl : public web::NavigationItem {
   const GURL& GetVirtualURL() const override;
   void SetTitle(const std::u16string& title) override;
   const std::u16string& GetTitle() const override;
+  void SetInternalScrollToTextFragment(
+      const std::optional<std::string>& internal_scroll_to_text_fragment)
+      override;
+  const std::optional<std::string>& GetInternalScrollToTextFragment()
+      const override;
   const std::u16string& GetTitleForDisplay() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
@@ -145,6 +151,7 @@ class NavigationItemImpl : public web::NavigationItem {
   GURL url_;
   Referrer referrer_;
   GURL virtual_url_;
+  std::optional<std::string> internal_scroll_to_text_fragment_;
   std::u16string title_;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   FaviconStatus favicon_status_;

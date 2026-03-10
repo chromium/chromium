@@ -11,8 +11,10 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
 #import "components/send_tab_to_self/metrics_util.h"
+#import "components/send_tab_to_self/page_context.h"
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/shared_highlighting/core/common/text_fragment.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -106,8 +108,25 @@ std::u16string IOSSendTabToSelfInfoBarDelegate::GetMessageText() const {
 bool IOSSendTabToSelfInfoBarDelegate::Accept() {
   send_tab_to_self::RecordNotificationOpened();
   model_->MarkEntryOpened(entry_->GetGUID());
+
+  std::string text_fragment;
+  const send_tab_to_self::ScrollPosition& scroll_position =
+      entry_->GetPageContext().scroll_position;
+  if (!scroll_position.IsEmpty()) {
+    shared_highlighting::TextFragment fragment(
+        scroll_position.text_fragment.text_start,
+        scroll_position.text_fragment.text_end,
+        scroll_position.text_fragment.prefix,
+        scroll_position.text_fragment.suffix);
+    text_fragment = fragment.ToEscapedString(
+        shared_highlighting::TextFragment::EscapedStringFormat::
+            kWithoutTextDirective);
+  }
+
   infobar()->owner()->OpenURL(entry_->GetURL(),
-                              WindowOpenDisposition::NEW_FOREGROUND_TAB);
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              text_fragment);
+
   SendConclusionNotification();
   return true;
 }

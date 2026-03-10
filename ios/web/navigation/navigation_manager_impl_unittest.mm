@@ -1727,12 +1727,10 @@ TEST_P(NavigationManagerTest, LoadURLWithParamsWithExtraHeadersAndPostData) {
   params.extra_headers = @{@"Content-Type" : @"text/plain"};
   params.post_data = [NSData data];
 
-  EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem())
-      .Times(1);
-  EXPECT_CALL(navigation_manager_delegate(), ClearDialogs()).Times(1);
+  EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
   EXPECT_CALL(navigation_manager_delegate(),
-              LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED))
-      .Times(1);
+              LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED));
 
   navigation_manager()->LoadURLWithParams(params);
 
@@ -1744,6 +1742,65 @@ TEST_P(NavigationManagerTest, LoadURLWithParamsWithExtraHeadersAndPostData) {
   EXPECT_NSEQ(pending_item->GetHttpRequestHeaders(),
               @{@"Content-Type" : @"text/plain"});
   EXPECT_TRUE(pending_item->HasPostData());
+}
+
+// Tests that `internal_scroll_to_text_fragment` from WebLoadParams is added to
+// the new navigation item if it is present.
+TEST_P(NavigationManagerTest,
+       LoadURLWithParamsWithInternalScrollToTextFragment) {
+  NavigationManager::WebLoadParams params(GURL("http://www.url.com/0"));
+  params.internal_scroll_to_text_fragment = "start,end";
+
+  EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
+  EXPECT_CALL(navigation_manager_delegate(),
+              LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED));
+
+  navigation_manager()->LoadURLWithParams(params);
+
+  NavigationItem* pending_item = navigation_manager()->GetPendingItem();
+  ASSERT_TRUE(pending_item);
+  EXPECT_EQ("http://www.url.com/0", pending_item->GetURL().spec());
+  ASSERT_TRUE(pending_item->GetInternalScrollToTextFragment().has_value());
+  EXPECT_EQ("start,end",
+            pending_item->GetInternalScrollToTextFragment().value());
+}
+
+// Tests that `internal_scroll_to_text_fragment` is preserved during reload.
+TEST_P(NavigationManagerTest, ReloadWithInternalScrollToTextFragment) {
+  GURL url = GURL("http://www.url.com/0");
+  navigation_manager()->AddPendingItem(
+      url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+  navigation_manager()->GetPendingItem()->SetInternalScrollToTextFragment(
+      "start,end");
+
+  [mock_wk_list_ setCurrentURL:base::SysUTF8ToNSString(url.spec())];
+  navigation_manager()->CommitPendingItem();
+
+  EXPECT_CALL(navigation_manager_delegate(), Reload());
+  navigation_manager()->Reload(web::ReloadType::NORMAL,
+                               false /* check_for_repost */);
+
+  // Reload on the mock delegate doesn't trigger the actual navigation flow,
+  // so manually call `AddPendingItem` to test its behavior during a reload.
+  navigation_manager()->AddPendingItem(
+      url, Referrer(), ui::PAGE_TRANSITION_RELOAD,
+      web::NavigationInitiationType::BROWSER_INITIATED,
+      /*is_post_navigation=*/false, /*is_error_navigation=*/false,
+      web::HttpsUpgradeType::kNone);
+
+  ASSERT_TRUE(navigation_manager()->GetPendingItem());
+  ASSERT_TRUE(navigation_manager()
+                  ->GetPendingItem()
+                  ->GetInternalScrollToTextFragment()
+                  .has_value());
+  EXPECT_EQ("start,end", navigation_manager()
+                             ->GetPendingItem()
+                             ->GetInternalScrollToTextFragment()
+                             .value());
 }
 
 // Tests that LoadURLWithParams() calls RecordPageStateInNavigationItem() on the
@@ -1761,12 +1818,10 @@ TEST_P(NavigationManagerTest, LoadURLWithParamsSavesStateOnCurrentItem) {
   NavigationManager::WebLoadParams params(GURL("http://www.url.com/1"));
   params.transition_type = ui::PAGE_TRANSITION_TYPED;
 
-  EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem())
-      .Times(1);
-  EXPECT_CALL(navigation_manager_delegate(), ClearDialogs()).Times(1);
+  EXPECT_CALL(navigation_manager_delegate(), RecordPageStateInNavigationItem());
+  EXPECT_CALL(navigation_manager_delegate(), ClearDialogs());
   EXPECT_CALL(navigation_manager_delegate(),
-              LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED))
-      .Times(1);
+              LoadCurrentItem(NavigationInitiationType::BROWSER_INITIATED));
 
   navigation_manager()->LoadURLWithParams(params);
 

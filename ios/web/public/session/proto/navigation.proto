@@ -59,6 +59,7 @@ message NavigationItemStorage {
   HttpHeaderListStorage http_request_headers = 7;
   bytes security_scoped_file_resource = 8;
   bool was_created_automatically = 9;
+  string internal_scroll_to_text_fragment = 10;
 }
 
 // Represents the navigation history for a WebState, including the index of the
