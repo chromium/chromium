@@ -10,10 +10,10 @@ android.webkit.WebView focusable focused
 ++++++android.widget.Button clickable focusable interesting name='Button'
 ++++++android.widget.TextView interesting name='.'
 ++++android.widget.GridView collection row_count=1 column_count=1
-++++++android.view.View
-++++++++android.view.View collection_item interesting name='Always expose editable tables as tables.' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
+++++++android.view.View row_index=0
+++++++++android.view.View collection_item interesting name='Always expose editable tables as tables.' row_index=0 row_span=1 column_index=0 column_span=1
 ++++android.widget.ListView collection item_count=1 row_count=1 column_count=1
-++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
 ++++++++android.view.View interesting name='1. '
 ++++++++android.widget.TextView interesting name='Editable list item.'
 ++android.widget.TextView interesting name='Non-editable paragraph.'

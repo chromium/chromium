@@ -5,7 +5,6 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_android.h"
 
 #include <string>
-#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -157,6 +156,24 @@ void AccessibilityTreeFormatterAndroid::RecursiveBuildTree(
   dict->Set(kChildrenDictAttr, std::move(children));
 }
 
+void AccessibilityTreeFormatterAndroid::SetIfHasValue(
+    base::DictValue* dict,
+    std::string key,
+    std::optional<int> value) const {
+  if (value.has_value()) {
+    dict->Set(key, value.value());
+  }
+}
+
+void AccessibilityTreeFormatterAndroid::SetIfNonZero(
+    base::DictValue* dict,
+    std::string key,
+    int value) const {
+  if (value != 0) {
+    dict->Set(key, value);
+  }
+}
+
 void AccessibilityTreeFormatterAndroid::AddProperties(
     const ui::AXPlatformNodeDelegate& node,
     base::DictValue* dict) const {
@@ -209,26 +226,32 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
             android_node->GetAndroidSupplementalDescription());
 
   // Int attributes.
-  dict->Set("item_index", android_node->GetItemIndex());
-  dict->Set("item_count", android_node->GetItemCount());
-  dict->Set("row_count", android_node->RowCount());
-  dict->Set("column_count", android_node->ColumnCount());
-  dict->Set("row_index", android_node->RowIndex());
-  dict->Set("row_span", android_node->RowSpan());
-  dict->Set("column_index", android_node->ColumnIndex());
-  dict->Set("column_span", android_node->ColumnSpan());
-  dict->Set("input_type", android_node->AndroidInputType());
-  dict->Set("live_region_type", android_node->AndroidLiveRegionType());
-  dict->Set("range_min", static_cast<int>(android_node->RangeMin()));
-  dict->Set("range_max", static_cast<int>(android_node->RangeMax()));
-  dict->Set("range_current_value",
-            static_cast<int>(android_node->RangeCurrentValue()));
-  dict->Set("text_change_added_count", android_node->GetTextChangeAddedCount());
-  dict->Set("text_change_removed_count",
-            android_node->GetTextChangeRemovedCount());
-  dict->Set("selection_mode", android_node->GetSelectionMode());
-  dict->Set("expanded_state", android_node->ExpandedState());
-  dict->Set("checked", android_node->GetChecked());
+  SetIfHasValue(dict, "item_index", android_node->GetItemIndex());
+  SetIfHasValue(dict, "item_count", android_node->GetItemCount());
+  SetIfHasValue(dict, "row_count", android_node->RowCount());
+  SetIfHasValue(dict, "column_count", android_node->ColumnCount());
+  SetIfHasValue(dict, "row_index", android_node->RowIndex());
+  SetIfHasValue(dict, "row_span", android_node->RowSpan());
+  SetIfHasValue(dict, "column_index", android_node->ColumnIndex());
+  SetIfHasValue(dict, "column_span", android_node->ColumnSpan());
+
+  // TODO(crbug.com/491078290): Audit the remaining numeric attributes below to
+  // check if they should return std::optional natively. For these, 0 is often
+  // a valid value (e.g., a slider with range_min=0), but we explicitly filter
+  // them out here for now to prevent dump test noise.
+  SetIfNonZero(dict, "input_type", android_node->AndroidInputType());
+  SetIfNonZero(dict, "live_region_type", android_node->AndroidLiveRegionType());
+  SetIfNonZero(dict, "selection_mode", android_node->GetSelectionMode());
+  SetIfNonZero(dict, "expanded_state", android_node->ExpandedState());
+  SetIfNonZero(dict, "checked", android_node->GetChecked());
+  SetIfNonZero(dict, "range_min", static_cast<int>(android_node->RangeMin()));
+  SetIfNonZero(dict, "range_max", static_cast<int>(android_node->RangeMax()));
+  SetIfNonZero(dict, "range_current_value",
+               static_cast<int>(android_node->RangeCurrentValue()));
+  SetIfNonZero(dict, "text_change_added_count",
+               android_node->GetTextChangeAddedCount());
+  SetIfNonZero(dict, "text_change_removed_count",
+               android_node->GetTextChangeRemovedCount());
 
   // Actions.
   dict->Set("action_expand", android_node->IsCollapsed());
@@ -276,25 +299,13 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
         true, StringPrintf("%s='%s'", attribute_name, value->c_str()), &line);
   }
 
-  // TODO(crbug.com/489414511): Move empty value filtering upstream into
-  // AccessibilityTreeFormatterAndroid::AddProperties. Instead of globally
-  // dropping 0s here to reduce dump test noise, properties should be added
-  // conditionally (e.g., using std::optional for indices). Until then,
-  // hardcoded exceptions are required below to preserve valid 0-based
-  // coordinates.
-  bool is_collection_item = dict.FindBool("collection_item").value_or(false);
   for (const char* attribute_name : INT_ATTRIBUTES) {
-    int value = dict.FindInt(attribute_name).value_or(0);
-    if (value == 0) {
-      std::string_view attr_view(attribute_name);
-      bool is_zero_based_index = attr_view == "item_index" ||
-                                 attr_view == "row_index" ||
-                                 attr_view == "column_index";
-      if (!is_zero_based_index || !is_collection_item) {
-        continue;
-      }
+    std::optional<int> value = dict.FindInt(attribute_name);
+    if (!value.has_value()) {
+      continue;
     }
-    WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value), &line);
+    WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value.value()),
+                   &line);
   }
 
   for (const char* attribute_name : ACTION_ATTRIBUTES) {

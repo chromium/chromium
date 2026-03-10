@@ -1,6 +1,6 @@
 android.webkit.WebView focusable focused
-++android.widget.ListView collection column_count=1
-++++android.view.View role_description='term' collection_item interesting name='Term1' item_index=0 row_index=0 column_index=0
+++android.widget.ListView collection item_count=0 row_count=0 column_count=1
+++++android.view.View role_description='term' collection_item interesting name='Term1'
 ++++android.view.View role_description='definition' interesting name='Definition1'
-++++android.view.View role_description='term' collection_item interesting name='Term2' item_index=0 row_index=0 column_index=0
+++++android.view.View role_description='term' collection_item interesting name='Term2'
 ++++android.view.View role_description='definition' interesting name='Definition2'

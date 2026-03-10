@@ -1,11 +1,11 @@
 android.webkit.WebView focusable focused
 ++android.widget.GridView collection row_count=3 column_count=2
-++++android.view.View name='Browser Rendering Engine'
-++++++android.view.View collection_item interesting table_header content_description='Browser' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
-++++++android.view.View collection_item interesting table_header content_description='Rendering Engine' item_index=0 row_index=0 row_span=1 column_index=1 column_span=1
+++++android.view.View name='Browser Rendering Engine' row_index=0
+++++++android.view.View collection_item interesting table_header content_description='Browser' row_index=0 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item interesting table_header content_description='Rendering Engine' row_index=0 row_span=1 column_index=1 column_span=1
 ++++android.view.View name='ChromeBlink' row_index=1
-++++++android.view.View collection_item interesting name='Chrome' item_index=0 row_index=1 row_span=1 column_index=0 column_span=1
-++++++android.view.View collection_item interesting name='Blink' item_index=0 row_index=1 row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item interesting name='Chrome' row_index=1 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item interesting name='Blink' row_index=1 row_span=1 column_index=1 column_span=1
 ++++android.view.View name='SafariWebKit' row_index=2
-++++++android.view.View collection_item interesting name='Safari' item_index=0 row_index=2 row_span=1 column_index=0 column_span=1
-++++++android.view.View collection_item interesting name='WebKit' item_index=0 row_index=2 row_span=1 column_index=1 column_span=1
+++++++android.view.View collection_item interesting name='Safari' row_index=2 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item interesting name='WebKit' row_index=2 row_span=1 column_index=1 column_span=1

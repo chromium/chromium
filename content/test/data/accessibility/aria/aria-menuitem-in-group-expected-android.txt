@@ -1,3 +1,3 @@
 android.webkit.WebView focusable focused
 ++android.view.View
-++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Menu item' item_index=0 row_index=0 column_index=0
+++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Menu item' item_index=0 row_index=0

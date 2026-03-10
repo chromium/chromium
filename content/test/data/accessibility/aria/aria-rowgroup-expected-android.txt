@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
-++android.widget.GridView collection
+++android.widget.GridView collection row_count=0 column_count=0
 ++++android.view.View
 ++++android.view.View

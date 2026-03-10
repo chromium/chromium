@@ -2,15 +2,15 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++android.view.View
 ++android.view.View
-++android.widget.ListView clickable collection interesting column_count=1
-++android.widget.ListView clickable collection interesting column_count=1
-++android.widget.ListView clickable collection interesting column_count=1
-++android.view.View role_description='menu' collection column_count=1
-++android.view.View role_description='menu' collection column_count=1
-++android.view.View role_description='menu' collection column_count=1
-++android.view.View role_description='menu bar' collection column_count=1
-++android.view.View role_description='menu bar' collection column_count=1
-++android.view.View role_description='menu bar' collection column_count=1
+++android.widget.ListView clickable collection interesting item_count=0 row_count=0 column_count=1
+++android.widget.ListView clickable collection interesting item_count=0 row_count=0 column_count=1
+++android.widget.ListView clickable collection interesting item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu' collection item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu' collection item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu' collection item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu bar' collection item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu bar' collection item_count=0 row_count=0 column_count=1
+++android.view.View role_description='menu bar' collection item_count=0 row_count=0 column_count=1
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'
@@ -23,15 +23,15 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
-++android.view.ViewGroup role_description='tab list' collection column_count=1
-++android.view.ViewGroup role_description='tab list' collection column_count=1
-++android.view.ViewGroup role_description='tab list' collection column_count=1
+++android.view.ViewGroup role_description='tab list' collection item_count=0 row_count=0 column_count=1
+++android.view.ViewGroup role_description='tab list' collection item_count=0 row_count=0 column_count=1
+++android.view.ViewGroup role_description='tab list' collection item_count=0 row_count=0 column_count=1
 ++android.view.View role_description='toolbar'
 ++android.view.View role_description='toolbar'
 ++android.view.View role_description='toolbar'
-++android.view.View role_description='tree' collection hierarchical interesting
-++android.view.View role_description='tree' collection hierarchical interesting
-++android.view.View role_description='tree' collection hierarchical interesting
-++android.widget.GridView clickable collection interesting
-++android.widget.GridView clickable collection interesting
-++android.widget.GridView clickable collection interesting
+++android.view.View role_description='tree' collection hierarchical interesting item_count=0 row_count=0
+++android.view.View role_description='tree' collection hierarchical interesting item_count=0 row_count=0
+++android.view.View role_description='tree' collection hierarchical interesting item_count=0 row_count=0
+++android.widget.GridView clickable collection interesting item_count=0 row_count=0 column_count=0
+++android.widget.GridView clickable collection interesting item_count=0 row_count=0 column_count=0
+++android.widget.GridView clickable collection interesting item_count=0 row_count=0 column_count=0

@@ -1,14 +1,14 @@
 android.webkit.WebView focusable focused
 ++android.view.ViewGroup role_description='tab list' collection item_count=2 row_count=2 column_count=1
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 2, level 1' item_index=0 row_index=0 column_index=0
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 2 of 2, level 1' item_index=1 row_index=1 column_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 2, level 1' item_index=0 row_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 2 of 2, level 1' item_index=1 row_index=1
 ++android.view.ViewGroup role_description='tab list' collection item_count=3 row_count=3 column_count=1
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 3, level 2' item_index=0 row_index=0 column_index=0
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 2 of 3, level 2' item_index=1 row_index=1 column_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 3, level 2' item_index=0 row_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 2 of 3, level 2' item_index=1 row_index=1
 ++++android.view.ViewGroup role_description='tab list' collection item_count=1 row_count=1 column_count=1
-++++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 3' item_index=0 row_index=0 column_index=0
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 3 of 3, level 2' item_index=2 row_index=2 column_index=0
+++++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 3' item_index=0 row_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 3 of 3, level 2' item_index=2 row_index=2
 ++android.view.ViewGroup role_description='tab list' collection item_count=1 row_count=1 column_count=1
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 2' item_index=0 row_index=0 column_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 2' item_index=0 row_index=0
 ++android.view.ViewGroup role_description='tab list' collection item_count=1 row_count=1 column_count=1
-++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 1' item_index=0 row_index=0 column_index=0
+++++android.view.View role_description='tab' clickable collection_item interesting name='Tab 1 of 1, level 1' item_index=0 row_index=0

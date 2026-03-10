@@ -30,6 +30,12 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
   void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
                           base::DictValue* dict) const;
 
+  void SetIfHasValue(base::DictValue* dict,
+                     std::string key,
+                     std::optional<int> value) const;
+
+  void SetIfNonZero(base::DictValue* dict, std::string key, int value) const;
+
   void AddProperties(const ui::AXPlatformNodeDelegate& node,
                      base::DictValue* dict) const;
 

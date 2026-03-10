@@ -1,11 +1,11 @@
 android.webkit.WebView focusable focused
 ++com.google.android.material.navigation.NavigationView role_description='navigation' container_title='Breadcrumb'
 ++++android.widget.ListView collection item_count=2 row_count=2 column_count=1
-++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
 ++++++++android.view.View interesting name='1. '
 ++++++++android.view.View role_description='link' clickable focusable link interesting name='Breadcrumb Pattern'
 ++++++++++android.widget.TextView name='Breadcrumb Pattern'
-++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_index=0 column_span=1
+++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
 ++++++++android.view.View interesting name='2. '
 ++++++++android.view.View role_description='link visited' clickable focusable link interesting name='Breadcrumb Example' state_description='current page'
 ++++++++++android.widget.TextView name='Breadcrumb Example'
