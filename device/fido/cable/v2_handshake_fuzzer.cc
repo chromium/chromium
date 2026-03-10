@@ -9,8 +9,8 @@
 
 #include <array>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
@@ -40,8 +40,7 @@ constexpr std::array<uint8_t, 32> kTestLocalSeed = {
 
 }  // namespace
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto input = UNSAFE_TODO(base::span(raw_data, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> input) {
   if (input.empty()) {
     return 0;
   }

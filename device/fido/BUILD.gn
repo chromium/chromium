@@ -386,6 +386,7 @@ if (use_blink) {
       deps = [
         ":fido",
         "//base",
+        "//testing/libfuzzer:libfuzzer_base_wrappers",
       ]
       libfuzzer_options = [ "max_len=2048" ]
     }
@@ -413,6 +414,7 @@ if (use_blink) {
       "//device/bluetooth:mocks",
       "//testing/gmock",
       "//testing/gtest",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
     libfuzzer_options = [ "max_len=2048" ]
   }

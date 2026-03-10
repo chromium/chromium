@@ -10,14 +10,13 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace device {
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> span) {
   constexpr size_t kHidPacketSize = 64;
-  auto span = UNSAFE_TODO(base::span(data, size));
 
   auto packet = span.first(std::min(kHidPacketSize, span.size()));
   auto msg = FidoHidMessage::CreateFromSerializedData(
