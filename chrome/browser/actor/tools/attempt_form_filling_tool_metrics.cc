@@ -6,49 +6,32 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace actor::form_fill_metrics {
-
-void RecordOnInvokeMetrics() {
-  base::UmaHistogramEnumeration("Autofill.Actor.AttemptFormFillingToolEvent",
-                                AttemptFormFillingToolEvent::kInvoked);
-}
-
-void RecordOnSuggestionsRetrievedMetrics(bool has_results) {
-  base::UmaHistogramEnumeration("Autofill.Actor.AttemptFormFillingToolEvent",
-                                AttemptFormFillingToolEvent::kServiceResponded);
-  if (has_results) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Actor.AttemptFormFillingToolEvent",
-        AttemptFormFillingToolEvent::kSuggestionsRetrieved);
-  }
-}
+namespace actor::actor_metrics {
 
 void RecordOnSuggestionPresentedMetrics(
-    bool is_first,
+    int form_index,
     AttemptFormFillingToolRequest::RequestedData requested_data) {
   base::UmaHistogramEnumeration(
       "Autofill.Actor.AutofillSuggestionPresented.RecordType", requested_data);
-  // Only record `kAttentionDialogPresented` for the first form of
+  // Only record `AutofillAttentionCardEvent` for the first form of
   // a card, as it's a card granularity metric.
-  if (is_first) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Actor.AttemptFormFillingToolEvent",
-        AttemptFormFillingToolEvent::kAttentionDialogPresented);
+  if (form_index == 0) {
+    base::UmaHistogramEnumeration("Autofill.Actor.AutofillAttentionCardEvent",
+                                  AutofillAttentionCardEvent::kPresented);
   }
 }
 
 void RecordOnSuggestionConfirmedMetrics(
-    bool is_last,
+    int form_index,
     AttemptFormFillingToolRequest::RequestedData requested_data) {
   base::UmaHistogramEnumeration(
       "Autofill.Actor.AutofillSuggestionAccepted.RecordType", requested_data);
-  // Only record `kAttentionDialogAccepted` for the last form of
+  // Only record `AutofillAttentionCardEvent` for the first form of
   // a card, as it's a card granularity metric.
-  if (is_last) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Actor.AttemptFormFillingToolEvent",
-        AttemptFormFillingToolEvent::kAttentionDialogAccepted);
+  if (form_index == 0) {
+    base::UmaHistogramEnumeration("Autofill.Actor.AutofillAttentionCardEvent",
+                                  AutofillAttentionCardEvent::kAccepted);
   }
 }
 
-}  // namespace actor::form_fill_metrics
+}  // namespace actor::actor_metrics
