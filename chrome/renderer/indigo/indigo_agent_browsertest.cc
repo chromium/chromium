@@ -4,6 +4,9 @@
 
 #include "chrome/renderer/indigo/indigo_agent.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -47,6 +50,27 @@ class IndigoAgentBrowserTest : public ChromeRenderViewTest {
     new IndigoAgent(GetMainRenderFrame(), &interface_registry_);
   }
 
+  template <typename T>
+  std::optional<T> EvaluateAs(std::string_view script) {
+    blink::WebLocalFrame* frame = GetMainRenderFrame()->GetWebFrame();
+    v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+    v8::HandleScope handle_scope(isolate);
+    v8::Local<v8::Value> result =
+        frame->ExecuteScriptInIsolatedWorldAndReturnValue(
+            ISOLATED_WORLD_ID_INDIGO,
+            blink::WebScriptSource(
+                blink::WebString::FromUTF8(std::string(script))),
+            blink::BackForwardCacheAware::kAllow);
+    if (result.IsEmpty()) {
+      return std::nullopt;
+    }
+    T converted_result;
+    if (gin::Converter<T>::FromV8(isolate, result, &converted_result)) {
+      return converted_result;
+    }
+    return std::nullopt;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{features::kIndigo};
   blink::AssociatedInterfaceRegistry interface_registry_;
@@ -64,27 +88,86 @@ TEST_F(IndigoAgentBrowserTest, InjectScriptInIsolatedWorld) {
   ASSERT_TRUE(done.Wait());
 
   // Verify that the script was executed in the isolated world.
+  EXPECT_EQ("success", EvaluateAs<std::string>("window.indigo_test_var"));
+
+  // Verify that it was NOT executed in the main world.
   blink::WebLocalFrame* frame = GetMainRenderFrame()->GetWebFrame();
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Value> check_result =
-      frame->ExecuteScriptInIsolatedWorldAndReturnValue(
-          ISOLATED_WORLD_ID_INDIGO,
-          blink::WebScriptSource(
-              blink::WebString::FromUTF8("window.indigo_test_var")),
-          blink::BackForwardCacheAware::kAllow);
-  ASSERT_FALSE(check_result.IsEmpty());
-
-  std::string result_str;
-  ASSERT_TRUE(
-      gin::Converter<std::string>::FromV8(isolate, check_result, &result_str));
-  EXPECT_EQ("success", result_str);
-
-  // Verify that it was NOT executed in the main world.
   v8::Local<v8::Value> main_result =
       frame->ExecuteScriptAndReturnValue(blink::WebScriptSource(
           blink::WebString::FromUTF8("window.indigo_test_var")));
   EXPECT_TRUE(main_result->IsUndefined());
+}
+
+TEST_F(IndigoAgentBrowserTest, IndigoContextIsAvailable) {
+  EXPECT_EQ("object", EvaluateAs<std::string>("typeof window.indigo"));
+}
+
+TEST_F(IndigoAgentBrowserTest, SetupAndInvoke) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  // Inject a script that sets up the indigo agent.
+  const std::string kScript = R"(
+    window.invoked_count = 0;
+    window.indigo.setup({
+      invoke: function() {
+        window.invoked_count++;
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  // Now trigger invoke from the native side.
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  // Verify invoked_count in isolated world.
+  EXPECT_EQ(1, EvaluateAs<int32_t>("window.invoked_count"));
+
+  // Trigger again.
+  invoke_done.Clear();
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  EXPECT_EQ(2, EvaluateAs<int32_t>("window.invoked_count"));
+}
+
+TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithNullThrows) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        try {
+          window.indigo.startImageReplacement(null);
+        } catch (e) {
+          window.exception_name = e.name;
+          window.exception_message = e.message;
+        }
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  EXPECT_EQ("TypeError", EvaluateAs<std::string>("window.exception_name"));
+  EXPECT_EQ("Invalid element wrapper.",
+            EvaluateAs<std::string>("window.exception_message"));
 }
 
 }  // namespace

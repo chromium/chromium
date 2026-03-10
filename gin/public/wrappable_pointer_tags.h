@@ -76,7 +76,8 @@ enum WrappablePointerTag : uint16_t {
   kTextInputControllerBindings,  // content::TextInputControllerBindings
   kWebAXObjectProxy,             // content::WebAXObjectProxy
   kWrappedExceptionHandler,      // extensions::WrappedExceptionHandler
-  kLastPointerTag = kWrappedExceptionHandler,
+  kIndigoContext,                // indigo::IndigoContext
+  kLastPointerTag = kIndigoContext,
 };
 
 static_assert(kLastPointerTag <

@@ -23,6 +23,7 @@ class GIN_EXPORT TryCatch {
 
   bool HasCaught();
   std::string GetStackTrace();
+  void SetVerbose(bool verbose) { try_catch_.SetVerbose(verbose); }
 
  private:
   raw_ptr<v8::Isolate> isolate_;
