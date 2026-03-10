@@ -25,30 +25,21 @@ message IqStanza {
   // Corresponds to the 'to' field in the IqStanza XML representation.
   optional JabberId receiver = 3;
 
-  // Defines the role of this stanza in the IQ request/response pattern.
-  enum Type {
-    TYPE_UNSPECIFIED = 0;
+  oneof payload {
+    // A 'SET' request to perform an action or change state. A RESULT or ERROR
+    // should be sent from the peer in response.
+    JingleMessage jingle = 4;
 
-    // A request to perform an action or change state, expecting a RESULT or
-    // ERROR in response. Contains a JingleMessage payload.
-    SET = 1;
+    // A successful response to a SET stanza.
+    JingleReply reply = 5;
 
-    // A successful response to a SET stanza. Does not contain a JingleMessage
-    // or Error payload.
-    RESULT = 2;
-
-    // An error response to a SET stanza. Contains an Error payload.
-    ERROR = 3;
+    // An error response to a SET stanza.
+    ErrorStanza error = 6;
   }
-
-  optional Type type = 4;
-
-  // The Jingle message payload, present if type = SET.
-  optional JingleMessage jingle = 5;
-
-  // Error details, present if type = ERROR.
-  optional ErrorStanza error = 6;
 }
+
+// A successful response to a SET stanza.
+message JingleReply {}
 
 // Defines the set of fields needed to form a JabberId.
 // See https://datatracker.ietf.org/doc/html/rfc7622
