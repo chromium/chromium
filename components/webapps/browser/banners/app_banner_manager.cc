@@ -439,8 +439,11 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
 
   // Fetch and verify the other required information.
   UpdateState(State::PENDING_INSTALLABLE_CHECK);
+
+  InstallableParams params = installable_params_for_testing_.value_or(
+      delegate_->ParamsToPerformInstallableWebAppCheck());
   manager_->GetData(
-      delegate_->ParamsToPerformInstallableWebAppCheck(),
+      params,
       base::BindOnce(&AppBannerManager::OnDidPerformInstallableWebAppCheck,
                      weak_factory_for_this_navigation_.GetWeakPtr()));
 }
@@ -542,6 +545,16 @@ void AppBannerManager::ResetCurrentPageData() {
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
   delegate_->ResetCurrentPageData();
+}
+
+void AppBannerManager::ResetCurrentPageDataForTesting() {
+  Stop(InstallableStatusCode::PIPELINE_RESTARTED);
+  ResetCurrentPageData();
+}
+
+void AppBannerManager::OverrideInstallableParamsForTesting(
+    const InstallableParams& params) {
+  installable_params_for_testing_ = params;
 }
 
 void AppBannerManager::Terminate(InstallableStatusCode code) {
@@ -1001,7 +1014,7 @@ void AppBannerManager::ShowBannerForCurrentPageState() {
   UpdateState(State::COMPLETE);
 
   for (Observer& observer : observer_list_) {
-    observer.OnComplete();
+    observer.OnBannerShown();
   }
 }
 

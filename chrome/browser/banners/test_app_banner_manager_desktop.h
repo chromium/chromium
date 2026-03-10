@@ -88,6 +88,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
       const std::optional<WebAppBannerData>&) override {}
   void WillFetchManifest() override;
   void OnInstall() override;
+  void OnBannerShown() override;
   void OnBannerPromptReply() override;
   void OnComplete() override;
 
