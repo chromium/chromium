@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
+#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
@@ -30,7 +31,8 @@ EntityDataManager::EntityDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
     strike_database::StrikeDatabaseBase* strike_database,
-    AccessibilityAnnotatorDataAdapter* accessibility_annotator_data_adapter,
+    accessibility_annotator::AccessibilityAnnotationService*
+        accessibility_annotator_service,
     GeoIpCountryCode variation_country_code)
     : webdata_service_(std::move(webdata_service)),
       entity_instance_cleaner_(this, sync_service, pref_service),
@@ -88,9 +90,9 @@ EntityDataManager::EntityDataManager(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillUseAccessibilityAnnotator) &&
-      accessibility_annotator_data_adapter) {
-    accessibility_annotator_data_adapter_observation_.Observe(
-        accessibility_annotator_data_adapter);
+      accessibility_annotator_service) {
+    accessibility_annotator_observation_.Observe(
+        accessibility_annotator_service);
   }
 }
 
@@ -212,8 +214,9 @@ void EntityDataManager::OnHistoryDeletions(
   }
 }
 
-void EntityDataManager::OnAccessibilityAnnotatorDataChanged(
-    AccessibilityAnnotatorDataAdapter& adapter) {
+void EntityDataManager::OnEntityDataChanged(
+    accessibility_annotator::EntityDataProvider& provider,
+    accessibility_annotator::EntityTypeEnumSet entity_types) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillUseAccessibilityAnnotator));
   // TODO(crbug.com/483403739): Implement.

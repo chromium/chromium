@@ -22,7 +22,8 @@ class EntityDataProvider {
     // Called when one or more entity types have been updated, added, or
     // removed. Observers should then call `GetEntities` to retrieve the
     // updated data for the relevant types.
-    virtual void OnEntityDataChanged(EntityTypeEnumSet types) = 0;
+    virtual void OnEntityDataChanged(EntityDataProvider& provider,
+                                     EntityTypeEnumSet types) = 0;
   };
 
   virtual ~EntityDataProvider() = default;

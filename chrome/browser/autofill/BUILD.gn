@@ -17,8 +17,6 @@ static_library("autofill") {
     "address_normalizer_factory.h",
     "autocomplete_history_manager_factory.cc",
     "autocomplete_history_manager_factory.h",
-    "autofill_accessibility_annotator_data_adapter_factory.cc",
-    "autofill_accessibility_annotator_data_adapter_factory.h",
     "autofill_ai_model_cache_factory.cc",
     "autofill_ai_model_cache_factory.h",
     "autofill_ai_model_executor_factory.cc",
@@ -71,6 +69,7 @@ static_library("autofill") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
