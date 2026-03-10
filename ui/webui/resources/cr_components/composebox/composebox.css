@@ -257,13 +257,11 @@ search-animated-glow {
 
 #mirror {
   color: transparent;
-  font-variant-ligatures: none;
   height: 100%;
   left: 0;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
-  text-rendering: geometricPrecision;
   top: 0;
   user-select: none;
   white-space: pre-wrap;

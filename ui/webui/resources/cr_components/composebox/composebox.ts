@@ -2164,6 +2164,10 @@ export class ComposeboxElement extends I18nMixinLit
     this.input_ = '';
     this.lastQueriedInput_ = '';
     this.$.matches.unselect();
+    if (!this.disableCaretColorAnimation) {
+      this.updateMirror_();
+      this.updateCaret_();
+    }
   }
 
   getInputText(): string {
