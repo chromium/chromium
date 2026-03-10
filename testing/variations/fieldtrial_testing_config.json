@@ -9242,6 +9242,23 @@
             ]
         }
     ],
+    "DseIntegrity": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DseIntegrity"
+                    ]
+                }
+            ]
+        }
+    ],
     "DumpOnOOBFontDataServiceCache": [
         {
             "platforms": [
