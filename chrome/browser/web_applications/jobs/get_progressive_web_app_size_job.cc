@@ -11,8 +11,10 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "url/gurl.h"
@@ -61,8 +63,7 @@ void GetProgressiveWebAppSizeJob::GetDataSize() {
 }
 
 void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
-    const SiteDataSizeCollector::QuotaStorageUsageInfoList&
-        quota_storage_info_list) {
+    BrowsingDataQuotaHelper::QuotaInfoArray quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!lock_with_app_resources_->registrar().AppMatches(

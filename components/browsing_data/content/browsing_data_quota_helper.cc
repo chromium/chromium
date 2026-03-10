@@ -30,13 +30,3 @@ void BrowsingDataQuotaHelperDeleter::Destruct(
 BrowsingDataQuotaHelper::BrowsingDataQuotaHelper() = default;
 
 BrowsingDataQuotaHelper::~BrowsingDataQuotaHelper() = default;
-
-bool BrowsingDataQuotaHelper::QuotaInfo::operator<(
-    const BrowsingDataQuotaHelper::QuotaInfo& rhs) const {
-  return std::tie(storage_key, usage) < std::tie(rhs.storage_key, rhs.usage);
-}
-
-bool BrowsingDataQuotaHelper::QuotaInfo::operator==(
-    const BrowsingDataQuotaHelper::QuotaInfo& rhs) const {
-  return std::tie(storage_key, usage) == std::tie(rhs.storage_key, rhs.usage);
-}

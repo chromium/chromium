@@ -513,7 +513,7 @@ void OnPrivateAggregationLoaded(
 void OnQuotaStorageLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
-    const std::list<BrowsingDataQuotaHelper::QuotaInfo>& quota_info) {
+    std::vector<BrowsingDataQuotaHelper::QuotaInfo> quota_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (const auto& entry : quota_info) {
     model->AddBrowsingData(entry.storage_key,

@@ -42,35 +42,13 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
       delete;
 
  private:
-  using QuotaInfoMap = std::map<blink::StorageKey, QuotaInfo>;
-
   ~BrowsingDataQuotaHelperImpl() override;
-
-  // Calls QuotaManager::GetStorageKeysModifiedBetween for each storage type.
-  void FetchQuotaInfoOnIOThread(FetchResultCallback callback);
 
   // Callback function for QuotaManager::GetStorageKeysForType.
   void GotStorageKeys(FetchResultCallback callback,
                       const std::set<blink::StorageKey>& storage_keys);
 
-  // Callback function for QuotaManager::GetStorageKeyUsage.
-  void GotStorageKeyUsage(QuotaInfoMap* quota_info,
-                          const blink::StorageKey& storage_key,
-                          int64_t usage,
-                          blink::mojom::UsageBreakdownPtr usage_breakdown);
-
-  // Called when all QuotaManager::GetHostUsage requests are complete.
-  void OnGetHostsUsageComplete(FetchResultCallback callback,
-                               QuotaInfoMap* quota_info);
-
-  void DeleteStorageKeyDataOnIOThread(const blink::StorageKey& storage_key,
-                                      base::OnceClosure completed);
-
-  void OnStorageKeyDeletionCompleted(base::OnceClosure completed,
-                                     blink::mojom::QuotaStatusCode status);
-
   scoped_refptr<storage::QuotaManager> quota_manager_;
-
   base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
 };
 

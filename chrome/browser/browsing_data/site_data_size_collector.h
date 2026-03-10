@@ -20,8 +20,7 @@ class SiteDataSizeCollector {
  public:
   using CookieList = std::list<net::CanonicalCookie>;
   using LocalStorageInfoList = std::list<content::StorageUsageInfo>;
-  using QuotaStorageUsageInfoList =
-      std::list<BrowsingDataQuotaHelper::QuotaInfo>;
+  using QuotaStorageUsageInfoList = BrowsingDataQuotaHelper::QuotaInfoArray;
 
   SiteDataSizeCollector(
       const base::FilePath& default_storage_partition_path,
@@ -45,7 +44,7 @@ class SiteDataSizeCollector {
   void OnLocalStorageModelInfoLoaded(
       const LocalStorageInfoList& local_storage_info_list);
   void OnQuotaModelInfoLoaded(
-      const QuotaStorageUsageInfoList& quota_storage_info_list);
+      QuotaStorageUsageInfoList quota_storage_info_list);
 
   // Callback for when the size is fetched from each storage backend.
   void OnStorageSizeFetched(int64_t size);

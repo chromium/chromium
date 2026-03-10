@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -46,18 +46,22 @@ class BrowsingDataQuotaHelper
     QuotaInfo(const blink::StorageKey& storage_key, int64_t usage);
     ~QuotaInfo();
 
+    QuotaInfo(const QuotaInfo&) = default;
+    QuotaInfo& operator=(const QuotaInfo&) = default;
+    QuotaInfo(QuotaInfo&&) = default;
+    QuotaInfo& operator=(QuotaInfo&&) = default;
+
     // Certain versions of MSVC 2008 have bad implementations of ADL for nested
     // classes so they require these operators to be declared here instead of in
     // the global namespace.
-    bool operator<(const QuotaInfo& rhs) const;
-    bool operator==(const QuotaInfo& rhs) const;
+    auto operator<=>(const QuotaInfo& rhs) const = default;
 
     blink::StorageKey storage_key;
     int64_t usage = 0;
   };
 
-  using QuotaInfoArray = std::list<QuotaInfo>;
-  using FetchResultCallback = base::OnceCallback<void(const QuotaInfoArray&)>;
+  using QuotaInfoArray = std::vector<QuotaInfo>;
+  using FetchResultCallback = base::OnceCallback<void(QuotaInfoArray)>;
 
   static scoped_refptr<BrowsingDataQuotaHelper> Create(
       content::StoragePartition* storage_partition);

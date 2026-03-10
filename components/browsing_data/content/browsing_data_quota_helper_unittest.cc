@@ -112,7 +112,7 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
   int64_t quota() { return quota_; }
 
  private:
-  void FetchCompleted(const QuotaInfoArray& quota_info) {
+  void FetchCompleted(QuotaInfoArray quota_info) {
     quota_info_ = quota_info;
     fetching_completed_ = true;
   }

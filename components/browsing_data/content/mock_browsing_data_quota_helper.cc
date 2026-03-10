@@ -36,6 +36,6 @@ void MockBrowsingDataQuotaHelper::AddQuotaSamples() {
 }
 
 void MockBrowsingDataQuotaHelper::Notify() {
-  std::move(callback_).Run(response_);
+  std::move(callback_).Run(std::move(response_));
   response_.clear();
 }
