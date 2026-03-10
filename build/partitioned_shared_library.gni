@@ -88,6 +88,15 @@ template("partitioned_shared_library") {
       data = [ invoker.unstripped_output ]
       metadata = {
         shared_libraries = [ invoker.stripped_output ]
+
+        # For partition libraries (not the base library), stop the
+        # shared_libraries walk here. Without this barrier, the walk continues
+        # through the __combined library's dependencies and collects ALL shared
+        # libraries in the entire dependency tree, causing them to be bundled
+        # into feature modules that don't actually need them.
+        if (defined(invoker.partition) && invoker.partition != "") {
+          shared_libraries_barrier = []
+        }
       }
       args = [
         "--objcopy",
