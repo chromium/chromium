@@ -231,32 +231,30 @@ function runTests() {
 
     // Append contents to an existing file. It should succeed.
     function appendFileSuccess() {
-      var onTestSuccess = chrome.test.callbackPass();
       testUtil.fileSystem.root.getFile(
-          TESTING_TIRAMISU_FILE_NAME,
-          {create: false, exclusive: false},
-          function(fileEntry) {
-            fileEntry.createWriter(function(fileWriter) {
-              fileWriter.seek(TESTING_TEXT_TO_WRITE.length);
-              fileWriter.onwriteend = function(e) {
-                if (fileWriter.error)
-                  return;
-                chrome.test.assertEq(
-                    TESTING_TEXT_TO_WRITE + TESTING_TEXT_TO_WRITE,
-                    fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
-                onTestSuccess();
-              };
-              fileWriter.onerror = function(e) {
-                chrome.test.fail(fileWriter.error.name);
-              };
-              var blob = new Blob(
-                  [TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
-              fileWriter.write(blob);
-            },
-            function(error) {
-              chrome.test.fail(error.name);
-            });
-          },
+          TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false},
+          chrome.test.callbackPass(function(fileEntry) {
+            fileEntry.createWriter(
+                chrome.test.callbackPass(function(fileWriter) {
+                  fileWriter.seek(TESTING_TEXT_TO_WRITE.length);
+                  fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
+                    if (fileWriter.error)
+                      return;
+                    chrome.test.assertEq(
+                        TESTING_TEXT_TO_WRITE + TESTING_TEXT_TO_WRITE,
+                        fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
+                  });
+                  fileWriter.onerror = function(e) {
+                    chrome.test.fail(fileWriter.error.name);
+                  };
+                  var blob =
+                      new Blob([TESTING_TEXT_TO_WRITE], {type: 'text/plain'});
+                  fileWriter.write(blob);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
+          }),
           function(error) {
             chrome.test.fail(error.name);
           });
@@ -264,33 +262,32 @@ function runTests() {
 
     // Replace contents in an existing file. It should succeed.
     function replaceFileSuccess() {
-      var onTestSuccess = chrome.test.callbackPass();
       testUtil.fileSystem.root.getFile(
-          TESTING_TIRAMISU_FILE_NAME,
-          {create: false, exclusive: false},
-          function(fileEntry) {
-            fileEntry.createWriter(function(fileWriter) {
-              fileWriter.seek(TESTING_TEXT_TO_WRITE.indexOf('creams'));
-              fileWriter.onwriteend = function(e) {
-                if (fileWriter.error)
-                  return;
-                var expectedContents = TESTING_TEXT_TO_WRITE.replace(
-                    'creams', 'skates') + TESTING_TEXT_TO_WRITE;
-                chrome.test.assertEq(
-                    expectedContents,
-                    fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
-                onTestSuccess();
-              };
-              fileWriter.onerror = function(e) {
-                chrome.test.fail(fileWriter.error.name);
-              };
-              var blob = new Blob(['skates'], {type: 'text/plain'});
-              fileWriter.write(blob);
-            },
-            function(error) {
-              chrome.test.fail(error.name);
-            });
-          },
+          TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false},
+          chrome.test.callbackPass(function(fileEntry) {
+            fileEntry.createWriter(
+                chrome.test.callbackPass(function(fileWriter) {
+                  fileWriter.seek(TESTING_TEXT_TO_WRITE.indexOf('creams'));
+                  fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
+                    if (fileWriter.error)
+                      return;
+                    var expectedContents =
+                        TESTING_TEXT_TO_WRITE.replace('creams', 'skates') +
+                        TESTING_TEXT_TO_WRITE;
+                    chrome.test.assertEq(
+                        expectedContents,
+                        fileContents['/' + TESTING_TIRAMISU_FILE_NAME]);
+                  });
+                  fileWriter.onerror = function(e) {
+                    chrome.test.fail(fileWriter.error.name);
+                  };
+                  var blob = new Blob(['skates'], {type: 'text/plain'});
+                  fileWriter.write(blob);
+                }),
+                function(error) {
+                  chrome.test.fail(error.name);
+                });
+          }),
           function(error) {
             chrome.test.fail(error.name);
           });
@@ -298,30 +295,29 @@ function runTests() {
 
     // Write bytes to a broken file. This should result in an error.
     function writeBrokenFileError() {
-      var onTestSuccess = chrome.test.callbackPass();
       testUtil.fileSystem.root.getFile(
-          TESTING_BROKEN_TIRAMISU_FILE_NAME,
-          {create: false, exclusive: false},
-          function(fileEntry) {
-            fileEntry.createWriter(function(fileWriter) {
-              fileWriter.onwriteend = function(e) {
-                if (fileWriter.error)
-                  return;
-                chrome.test.fail(
-                    'Unexpectedly succeeded to write to a broken file.');
-              };
-              fileWriter.onerror = function(e) {
-                chrome.test.assertEq(
-                    'InvalidStateError', fileWriter.error.name);
-                onTestSuccess();
-              };
-              var blob = new Blob(['A lot of flowers.'], {type: 'text/plain'});
-              fileWriter.write(blob);
-            },
-            function(error) {
-              chrome.test.fail();
-            });
-          },
+          TESTING_BROKEN_TIRAMISU_FILE_NAME, {create: false, exclusive: false},
+          chrome.test.callbackPass(function(fileEntry) {
+            fileEntry.createWriter(
+                chrome.test.callbackPass(function(fileWriter) {
+                  fileWriter.onwriteend = function(e) {
+                    if (fileWriter.error)
+                      return;
+                    chrome.test.fail(
+                        'Unexpectedly succeeded to write to a broken file.');
+                  };
+                  fileWriter.onerror = chrome.test.callbackPass(function(e) {
+                    chrome.test.assertEq(
+                        'InvalidStateError', fileWriter.error.name);
+                  });
+                  var blob =
+                      new Blob(['A lot of flowers.'], {type: 'text/plain'});
+                  fileWriter.write(blob);
+                }),
+                function(error) {
+                  chrome.test.fail();
+                });
+          }),
           function(error) {
             chrome.test.fail(error.name);
           });
@@ -330,45 +326,42 @@ function runTests() {
     // Abort writing to a valid file with a registered abort handler. Should
     // result in a gracefully terminated writing operation.
     function abortWritingSuccess() {
-      var onTestSuccess = chrome.test.callbackPass();
-
-      var onAbortRequested = function(options, onSuccess, onError) {
+      var onAbortRequested = chrome.test.callbackPass(function(
+          options, onSuccess, onError) {
         chrome.fileSystemProvider.onAbortRequested.removeListener(
             onAbortRequested);
         onSuccess();
-        onTestSuccess();
-      };
+      });
 
       chrome.fileSystemProvider.onAbortRequested.addListener(
           onAbortRequested);
 
       testUtil.fileSystem.root.getFile(
-          TESTING_CHOCOLATE_FILE_NAME,
-          {create: false, exclusive: false},
-          function(fileEntry) {
-            fileEntry.createWriter(function(fileWriter) {
-              fileWriter.onwriteend = function(e) {
-                if (fileWriter.error) {
-                  chrome.test.assertEq(
-                      'AbortError', fileWriter.error.name);
-                } else {
-                  chrome.test.fail(
-                      'Unexpectedly succeeded writing, despite aborting.');
-                }
-              };
-              writeFileRequestedCallbacks.push(
-                  function(filePath) {
+          TESTING_CHOCOLATE_FILE_NAME, {create: false, exclusive: false},
+          chrome.test.callbackPass(function(fileEntry) {
+            fileEntry.createWriter(
+                chrome.test.callbackPass(function(fileWriter) {
+                  fileWriter.onwriteend = chrome.test.callbackPass(function(e) {
+                    if (fileWriter.error) {
+                      chrome.test.assertEq('AbortError', fileWriter.error.name);
+                    } else {
+                      chrome.test.fail(
+                          'Unexpectedly succeeded writing, despite aborting.');
+                    }
+                  });
+                  writeFileRequestedCallbacks.push(function(filePath) {
                     // Abort the operation after it's started.
                     if (filePath === '/' + TESTING_CHOCOLATE_FILE_NAME)
                       fileWriter.abort();
                   });
-              var blob = new Blob(['A lot of cherries.'], {type: 'text/plain'});
-              fileWriter.write(blob);
-            },
-            function(error) {
-              chrome.test.fail();
-            });
-          },
+                  var blob =
+                      new Blob(['A lot of cherries.'], {type: 'text/plain'});
+                  fileWriter.write(blob);
+                }),
+                function(error) {
+                  chrome.test.fail();
+                });
+          }),
           function(error) {
             chrome.test.fail(error.name);
           });
