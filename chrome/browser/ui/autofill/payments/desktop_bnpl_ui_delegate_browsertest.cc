@@ -75,9 +75,13 @@ class DesktopBnplUiDelegateBrowserTest
                                BnplIssuerEligibilityForPage::kIsEligible)},
             /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing(),
             /*has_seen_ai_terms=*/true);
-        GetDesktopBnplUiDelegate()->UpdateBnplIssuerDialogUi(
+        GetDesktopBnplUiDelegate()->UpdateBnplIssuerUi(
             {BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
-                               BnplIssuerEligibilityForPage::kIsEligible)});
+                               BnplIssuerEligibilityForPage::kIsEligible)},
+            /*extracted_amount=*/100,
+            /*is_amount_supported_by_any_issuer=*/true, /*app_locale=*/"en-US",
+            /*selected_issuer_callback=*/base::DoNothing(),
+            /*cancel_callback=*/base::DoNothing());
         break;
       }
     }

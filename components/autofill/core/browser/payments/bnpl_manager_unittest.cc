@@ -188,10 +188,16 @@ class MockBnplUiDelegate : public BnplUiDelegate {
        base::OnceClosure cancel_callback,
        bool has_seen_ai_terms),
       (override));
-  MOCK_METHOD(void,
-              UpdateBnplIssuerDialogUi,
-              (std::vector<BnplIssuerContext> bnpl_issuer_context),
-              (override));
+  MOCK_METHOD(
+      void,
+      UpdateBnplIssuerUi,
+      (std::vector<BnplIssuerContext> bnpl_issuer_context,
+       std::optional<int64_t> extracted_amount,
+       bool is_amount_supported_by_any_issuer,
+       const std::optional<std::string>& app_locale,
+       base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
+       base::OnceClosure cancel_callback),
+      (override));
   MOCK_METHOD(void, RemoveSelectBnplIssuerOrProgressUi, (), (override));
   MOCK_METHOD(void,
               ShowBnplTosUi,
@@ -1285,21 +1291,6 @@ TEST_F(BnplManagerTest,
                                             /*timeout_reached=*/false);
 }
 
-TEST_F(BnplManagerTest, ValidAmountReturnedInTimeUpdateUi) {
-  bnpl_manager_->OnDidAcceptBnplSuggestion(
-      /*final_checkout_amount=*/std::nullopt,
-      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
-  int64_t test_amount = 50'000'000;
-  SetUpUnlinkedBnplIssuer(
-      /*price_lower_bound_in_micros=*/10'000'000,
-      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
-
-  EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerDialogUi);
-
-  bnpl_manager_->OnAmountExtractionReturnedFromAi(
-      std::make_pair(test_amount, "USD"));
-}
-
 // Tests that update suggestions callback is called when suggestions are shown
 // after amount extraction completion.
 TEST_F(BnplManagerTest,
@@ -2367,7 +2358,7 @@ TEST_F(BnplManagerTest, OnIssuerSelected_TriggersExtractionAfterTermsNotSeen) {
   InSequence s;
   EXPECT_CALL(*mock_amount_extraction_manager_,
               TriggerCheckoutAmountExtractionWithAi());
-  EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerDialogUi);
+  EXPECT_CALL(GetBnplUiDelegate(), UpdateBnplIssuerUi);
 
   test_api(*bnpl_manager_).OnIssuerSelected(test::GetTestUnlinkedBnplIssuer());
 
@@ -2470,6 +2461,37 @@ TEST_F(
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState()->issuer,
             unlinked_issuer);
+}
+
+TEST_F(
+    BnplManagerTest,
+    OnAmountExtractionReturnedFromAi_AmountReturnedInTime_UpdatesSelectionUi) {
+  bnpl_manager_->OnDidAcceptBnplSuggestion(
+      /*final_checkout_amount=*/std::nullopt,
+      /*on_bnpl_vcn_fetched_callback=*/base::DoNothing());
+  int64_t test_amount = 50'000;
+  SetUpUnlinkedBnplIssuer(
+      /*price_lower_bound_in_micros=*/10'000'000,
+      /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAffirm);
+  std::vector<BnplIssuerContext> issuer_contexts;
+  EXPECT_CALL(GetBnplUiDelegate(),
+              UpdateBnplIssuerUi(_, Eq(test_amount),
+                                 /*is_amount_supported_by_any_issuer=*/false,
+                                 Optional(Eq(kAppLocale)), _, _))
+      .WillOnce([&](base::span<const payments::BnplIssuerContext> contexts,
+                    auto, auto, auto, auto, auto) {
+        issuer_contexts.assign(contexts.begin(), contexts.end());
+        return true;
+      });
+
+  bnpl_manager_->OnAmountExtractionReturnedFromAi(
+      std::make_pair(test_amount, "USD"));
+
+  EXPECT_THAT(
+      issuer_contexts,
+      ElementsAre(EqualsBnplIssuerContext(
+          IssuerId::kBnplAffirm,
+          BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

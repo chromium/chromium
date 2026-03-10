@@ -172,14 +172,19 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
             ContentAutofillClient::FromWebContents(web_contents())
                 ->GetPaymentsAutofillClient()
                 ->GetBnplUiDelegate()
-                ->UpdateBnplIssuerDialogUi(
+                ->UpdateBnplIssuerUi(
                     {GetTestBnplIssuerContext(
                          IssuerId::kBnplAffirm,
                          BnplIssuerEligibilityForPage::kIsEligible),
                      GetTestBnplIssuerContext(
                          IssuerId::kBnplZip,
                          BnplIssuerEligibilityForPage::
-                             kNotEligibleIssuerDoesNotSupportMerchant)});
+                             kNotEligibleIssuerDoesNotSupportMerchant)},
+                    /*extracted_amount=*/100,
+                    /*is_amount_supported_by_any_issuer=*/true,
+                    /*app_locale=*/"en-US",
+                    /*selected_issuer_callback=*/base::DoNothing(),
+                    /*cancel_callback=*/base::DoNothing());
           }),
           // Verify the throbber is now hidden.
           WaitForHide(SelectBnplIssuerDialog::kThrobberId),

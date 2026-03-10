@@ -366,11 +366,23 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     // issuer.
     OnIssuerSelectedAndCheckoutAmountAvailable();
   } else {
+    bool is_amount_supported_by_any_issuer =
+        IsExtractedAmountSupportedByAnyBnplIssuer(
+            payments_autofill_client()
+                .GetPaymentsDataManager()
+                .GetBnplIssuers(),
+            ongoing_flow_state_->final_checkout_amount);
     // If the selected issuer is not eligible, update UI.
     CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
-        .UpdateBnplIssuerDialogUi(GetSortedBnplIssuerContext(
-            browser_autofill_manager_->client(),
-            ongoing_flow_state_->final_checkout_amount));
+        .UpdateBnplIssuerUi(
+            GetSortedBnplIssuerContext(
+                browser_autofill_manager_->client(),
+                ongoing_flow_state_->final_checkout_amount),
+            ongoing_flow_state_->final_checkout_amount,
+            is_amount_supported_by_any_issuer, ongoing_flow_state_->app_locale,
+            base::BindOnce(&BnplManager::OnIssuerSelected,
+                           weak_factory_.GetWeakPtr()),
+            base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
   }
 }
 

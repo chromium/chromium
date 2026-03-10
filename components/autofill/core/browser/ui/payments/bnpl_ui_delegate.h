@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_BNPL_UI_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_BNPL_UI_DELEGATE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,11 +36,22 @@ class BnplUiDelegate {
       base::OnceClosure cancel_callback,
       bool has_seen_ai_terms) = 0;
 
-  // Update the issuer selection dialog based on `issuer_contexts`.
+  // Updates the issuer selection UI based on `issuer_contexts`.
   // `issuer_contexts` indicates the issuers' status based on the received
-  // amount and the issuers' eligibility.
-  virtual void UpdateBnplIssuerDialogUi(
-      std::vector<BnplIssuerContext> issuer_contexts) = 0;
+  // amount and the issuers' eligibility. `extracted_amount` indicates the total
+  // purchase price found on the checkout page. The boolean flag
+  // `is_amount_supported_by_any_issuer` indicates whether at least one
+  // available issuer supports the `extracted_amount`. `app_locale` is the
+  // current locale of the application. `selected_issuer_callback` is
+  // triggered when the user selects a BNPL provider. `cancel_callback` is
+  // triggered when the user dismisses the selection UI.
+  virtual void UpdateBnplIssuerUi(
+      std::vector<BnplIssuerContext> issuer_contexts,
+      std::optional<int64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer,
+      const std::optional<std::string>& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
 
   // Dismisses the BNPL issuer selection UI or hides the progress UI depending
   // on the platform.
