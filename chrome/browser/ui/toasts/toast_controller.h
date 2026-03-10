@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TOASTS_TOAST_CONTROLLER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -57,6 +59,7 @@ struct ToastParams {
   std::optional<std::u16string> body_string_override;
   std::optional<ui::ImageModel> image_override;
   std::unique_ptr<ui::MenuModel> menu_model;
+  base::ScopedClosureRunner toast_close_callback;
 };
 
 // Manages the toast that is displayed for a particular browser. Only one toast
@@ -137,6 +140,7 @@ class ToastController : public views::WidgetObserver,
   // Used to transition between the current toast and the queued one.
   std::optional<ToastParams> next_toast_params_;
   std::optional<ToastId> currently_showing_toast_id_;
+  base::ScopedClosureRunner currently_showing_toast_close_callback_;
   base::OneShotTimer toast_close_timer_;
   bool is_omnibox_popup_showing_ = false;
 
