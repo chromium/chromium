@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_FACTORY_H_
 #define COMPONENTS_WEBAUTHN_IOS_IOS_WEBAUTHN_CREDENTIALS_DELEGATE_FACTORY_H_
 
+#import "base/containers/flat_map.h"
 #import "base/memory/raw_ptr.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

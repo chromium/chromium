@@ -8,7 +8,6 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#include "ios/web/common/features.h"
 #include "ios/web/public/web_state.h"
 
 namespace web {
