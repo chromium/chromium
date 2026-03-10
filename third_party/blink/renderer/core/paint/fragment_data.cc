@@ -68,21 +68,14 @@ const TransformPaintPropertyNodeOrAlias& FragmentData::PreTransform() const {
 const TransformPaintPropertyNodeOrAlias& FragmentData::ContentsTransform()
     const {
   if (const auto* properties = PaintProperties()) {
-    if (properties->TransformIsolationNode()) {
+    if (properties->TransformIsolationNode())
       return *properties->TransformIsolationNode();
-    }
-    if (properties->ScrollTranslation()) {
+    if (properties->ScrollTranslation())
       return *properties->ScrollTranslation();
-    }
-    if (properties->ReplacedContentTransform()) {
+    if (properties->ReplacedContentTransform())
       return *properties->ReplacedContentTransform();
-    }
-    if (properties->Perspective()) {
+    if (properties->Perspective())
       return *properties->Perspective();
-    }
-    if (properties->ContentTranslation()) {
-      return *properties->ContentTranslation();
-    }
   }
   return LocalBorderBoxProperties().Transform();
 }

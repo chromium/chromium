@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] overlay overscrollcontainer multiple overscrolls in same direction
-  assert_array_equals: expected property 0 to be "refresh" but got "menu" (expected array ["refresh", "menu", "content", "container"] got ["menu", "refresh", "content", "container"])
-Harness: the test ran to completion.
-

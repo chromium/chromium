@@ -39,85 +39,15 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
    public:
     // Sets the given node to be the new overscroll parent node for this node.
-    // The ::-internal-overscroll-area-parent is always a direct child of the
-    // containing scrollable area. We apply three changes:
-    // 1. Attach its scroll node as a parent of the container's scroll node.
-    // 2. Attach its paint transform node outside the container's scrolling
-    //    content.
-    // 3. If non-overlay, attach its scroll translation node as a parent of the
-    //    content's scroll translation. This ensures that scrolling the
-    //    ::-internal-overscroll-area scrolls the content.
-    //
-    // E.g. transforms the following by moving the indicated nodes up the tree.
-    //
-    //  PaintOffsetTranslation <div>
-    //    ContentTranslation <div>
-    //      ScrollTranslation <div>
-    //        PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //          ContentTranslation ::-internal-overscroll-area-parent)   *
-    //            ScrollTranslation ::-internal-overscroll-area-parent)  *
-    //
-    // Turns into:
-    //  PaintOffsetTranslation <div>
-    //    PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //      ContentTranslation ::-internal-overscroll-area-parent)   *
-    //        ScrollTranslation ::-internal-overscroll-area-parent)  *
-    //          ContentTranslation <div>
-    //            ScrollTranslation <div>
-    //
-    // For overlay scrolls, no ContentTranslation nodes are needed
-    // (to offset the scroll origin) and the ::-internal-overscroll-area content
-    // is effectively a sibling to the scrolling content, e.g.:
-    //
-    //  PaintOffsetTranslation <div>
-    //    ScrollTranslation <div>
-    //    PaintOffsetTranslation ::-internal-overscroll-area-parent) *
-    //      ScrollTranslation ::-internal-overscroll-area-parent)    *
     void SetOverscrollParent(
-        const ScrollPaintPropertyNode& overscroll_parent,
-        const TransformPaintPropertyNode& paint_offset_translation,
-        const TransformPaintPropertyNodeOrAlias& overscroll_transform,
-        bool is_overlay) const {
+        const ScrollPaintPropertyNode& overscroll_parent) const {
       // We should only be creating overscroll nodes for non-root
       // scroll container elements.
       CHECK(!scroll->IsRoot());
-      const TransformPaintPropertyNode* scroll_translation =
-          overscroll_transform.Unalias().ParentScrollTranslationNode();
-      // The content transform for a non-overlay parent scroller is the
-      // transform space of the scroll clip node.
-      const TransformPaintPropertyNode* content_translation =
-          is_overlay ? scroll_translation
-                     : &scroll_translation->ScrollNode()
-                            ->OverflowClipNode()
-                            ->LocalTransformSpace()
-                            .Unalias();
-
-      CHECK(!content_translation->IsRoot());
       const_cast<ScrollPaintPropertyNode&>(overscroll_parent)
           .SetParent(*scroll->Parent());
       const_cast<ScrollPaintPropertyNode*>(scroll)->SetParent(
           overscroll_parent);
-      const_cast<TransformPaintPropertyNode&>(paint_offset_translation)
-          .SetParent(*content_translation->Parent());
-
-      if (!is_overlay) {
-        const_cast<TransformPaintPropertyNode*>(content_translation)
-            ->SetParent(overscroll_transform);
-      }
-    }
-
-    // Sets the given node to be the new overscroll parent node for this node.
-    void SetOverscrollClipParent(const ClipPaintPropertyNode& overscroll_clip,
-                                 bool is_overlay) const {
-      // We should only be creating overscroll nodes for non-root
-      // scroll container elements.
-      CHECK(!clip->IsRoot());
-      if (!is_overlay) {
-        const_cast<ClipPaintPropertyNode&>(overscroll_clip)
-            .SetParent(*clip->UnaliasedParent());
-        const_cast<ClipPaintPropertyNode&>(clip->Unalias())
-            .SetParent(overscroll_clip);
-      }
     }
 
     // The combination of a transform and paint offset describes a linear space.

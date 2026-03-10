@@ -1718,8 +1718,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kNoEllipsis;
     case CSSPropertyID::kInternalOverscrollArea:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOverlay;
     case CSSPropertyID::kInternalOverscrollPosition:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     default:

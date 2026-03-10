@@ -44,10 +44,6 @@ test(() => {
 
   // The container has not scrolled.
   assert_equals(container.offsetLeft, 0);
-
-  // The content is pushed over.
-  assert_equals(menu.getBoundingClientRect().right,
-                content.getBoundingClientRect().left);
 }, "overscrollcontainer's overscroll areas can scroll to negative offsets");
 </script>
 </html>

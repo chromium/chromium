@@ -881,7 +881,8 @@ bool PaintLayer::RequiresScrollableArea() const {
   if (!box) {
     return false;
   }
-  if (box->IsScrollContainer() || box->Style()->IsInternalOverscrollArea()) {
+  if (box->Style()->IsInternalOverscrollAreaAuto() ||
+      box->IsScrollContainer()) {
     return true;
   }
   // Iframes with the resize property can be resized. This requires

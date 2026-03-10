@@ -2341,15 +2341,12 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   }
 
   if (!skip_children) {
-    if (!box_fragment_.IsScrollContainer() &&
-        !box_fragment_.IsNonOverlayOverscrollScrollContainer()) {
+    if (!box_fragment_.IsScrollContainer()) {
       if (HitTestChildren(hit_test, physical_offset))
         return true;
     } else {
       const PhysicalOffset scrolled_offset =
           physical_offset -
-          PhysicalOffset(
-              GetPhysicalFragment().PixelSnappedOverscrollContentOffset()) -
           PhysicalOffset(
               GetPhysicalFragment().PixelSnappedScrolledContentOffset());
       HitTestContext adjusted_hit_test{hit_test.phase, hit_test.location,

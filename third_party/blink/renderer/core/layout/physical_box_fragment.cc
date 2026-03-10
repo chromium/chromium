@@ -30,15 +30,12 @@
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
-#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
-#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 
@@ -757,30 +754,9 @@ bool PhysicalBoxFragment::MayIntersect(
   return true;
 }
 
-gfx::Vector2d PhysicalBoxFragment::PixelSnappedOverscrollContentOffset() const {
-  DCHECK(GetLayoutObject());
-  if (!IsNonOverlayOverscrollScrollContainer()) {
-    // This intentionally skips the ::-internal-overscroll-area-parents as they
-    // are self painting layers so we rely on the layer position to account
-    // for their overscroll offset.
-    return gfx::Vector2d();
-  }
-  gfx::Vector2d offset;
-  for (const Element* element : To<Element>(GetLayoutObject()->GetNode())
-                                    ->GetOverscrollAreaTracker()
-                                    ->DOMSortedElements()) {
-    offset += element->GetPseudoElement(kPseudoIdOverscrollAreaParent)
-                  ->GetLayoutBox()
-                  ->PixelSnappedScrolledContentOffset();
-  }
-  return offset;
-}
-
 gfx::Vector2d PhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
   DCHECK(GetLayoutObject());
-  return IsScrollContainer() ? To<LayoutBox>(*GetLayoutObject())
-                                   .PixelSnappedScrolledContentOffset()
-                             : gfx::Vector2d();
+  return To<LayoutBox>(*GetLayoutObject()).PixelSnappedScrolledContentOffset();
 }
 
 PhysicalSize PhysicalBoxFragment::ScrollSize() const {
