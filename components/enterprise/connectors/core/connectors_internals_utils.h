@@ -23,6 +23,10 @@ namespace client_certificates {
 class CertificateProvisioningService;
 }  // namespace client_certificates
 
+namespace enterprise_reporting {
+class ReportRequest;
+}
+
 namespace enterprise_connectors::utils {
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
@@ -54,6 +58,10 @@ std::string HashAndEncodeString(const std::string& spki_bytes);
 // Wraps an optional integer into a Mojo Int32Value.
 connectors_internals::mojom::Int32ValuePtr ToMojomValue(
     std::optional<int> integer_value);
+
+// Returns a JSON string representation of the given `request`.
+std::string GetJsonForReportRequest(
+    const enterprise_reporting::ReportRequest& request);
 
 }  // namespace enterprise_connectors::utils
 

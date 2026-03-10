@@ -45,6 +45,10 @@ export class SignalsReportingElement extends CustomElement {
     this.setValueToElement('#can-collect-all', canCollectAllFields);
   }
 
+  set signalsJsonString(jsonString: string) {
+    this.setValueToElement('#signals-json', jsonString);
+  }
+
   private get pageHandler(): PageHandlerInterface {
     return BrowserProxy.getInstance().handler;
   }
@@ -75,6 +79,7 @@ export class SignalsReportingElement extends CustomElement {
     this.lastUploadSuccessTimestamp = state.lastUploadSuccessTimestamp;
     this.lastSignalsUploadConfigString = state.lastSignalsUploadConfig;
     this.canCollectAllFieldsString = `${state.canCollectAllFields}`;
+    this.signalsJsonString = state.signalsJson || '{}';
   }
 
   private fetchSignalsReportingState() {

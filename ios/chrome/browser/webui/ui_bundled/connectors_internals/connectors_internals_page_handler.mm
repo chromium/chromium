@@ -101,5 +101,6 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
           /*last_upload_attempt_timestamp=*/std::string(),
           /*last_upload_success_timestamp=*/std::string(),
           /*last_signals_upload_config=*/std::string(),
-          /*can_collect_all_fields=*/false));
+          /*can_collect_all_fields=*/false,
+          /*signals_json=*/std::nullopt));
 }

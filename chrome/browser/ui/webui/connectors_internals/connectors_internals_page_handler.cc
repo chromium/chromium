@@ -19,11 +19,15 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
+#include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
@@ -32,6 +36,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/x509_certificate.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
+#else
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
@@ -212,7 +222,8 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
             /*error_info=*/"Profile reporting service unavailable",
             /*status_report_enabled=*/false, /*signals_report_enabled=*/false,
             last_upload_attempt_time_string, last_upload_success_time_string,
-            last_signals_upload_config, can_collect_all_signals));
+            last_signals_upload_config, can_collect_all_signals,
+            /*signals_json=*/std::nullopt));
     return;
   }
 
@@ -225,20 +236,49 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
             /*error_info=*/"Profile report scheduler unavailable",
             /*status_report_enabled=*/false, /*signals_report_enabled=*/false,
             last_upload_attempt_time_string, last_upload_success_time_string,
-            last_signals_upload_config, can_collect_all_signals));
+            last_signals_upload_config, can_collect_all_signals,
+            /*signals_json=*/std::nullopt));
     return;
   }
 
   bool status_report_enabled = profile_report_scheduler->IsReportingEnabled();
   bool signals_report_enabled =
       profile_report_scheduler->AreSecurityReportsEnabled();
+  auto state = connectors_internals::mojom::SignalsReportingState::New(
+      /*error_info=*/std::nullopt, status_report_enabled,
+      signals_report_enabled, last_upload_attempt_time_string,
+      last_upload_success_time_string, last_signals_upload_config,
+      can_collect_all_signals, /*signals_json=*/std::nullopt);
 
-  std::move(callback).Run(
-      connectors_internals::mojom::SignalsReportingState::New(
-          /*error_info=*/std::nullopt, status_report_enabled,
-          signals_report_enabled, last_upload_attempt_time_string,
-          last_upload_success_time_string, last_signals_upload_config,
-          can_collect_all_signals));
+  auto* signals_aggregator =
+      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile_);
+
+  if (!signals_report_enabled || !signals_aggregator) {
+    std::move(callback).Run(std::move(state));
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  auto delegate_factory =
+      std::make_unique<enterprise_reporting::ReportingDelegateFactoryAndroid>();
+#else
+  auto delegate_factory =
+      std::make_unique<enterprise_reporting::ReportingDelegateFactoryDesktop>();
+#endif
+
+  request_generator_ =
+      std::make_unique<enterprise_reporting::ChromeProfileRequestGenerator>(
+          profile_->GetPath(), delegate_factory.get(), signals_aggregator);
+
+  enterprise_reporting::ReportGenerationConfig config;
+  config.report_type = enterprise_reporting::ReportType::kProfileReport;
+  config.security_signals_mode = SecuritySignalsMode::kSignalsAttached;
+
+  request_generator_->Generate(
+      std::move(config),
+      base::BindOnce(&ConnectorsInternalsPageHandler::OnReportGenerated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(state)));
 #else
   std::move(callback).Run(
       connectors_internals::mojom::SignalsReportingState::New(
@@ -248,7 +288,7 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
           /*last_upload_attempt_timestamp=*/std::string(),
           /*last_upload_success_timestamp=*/std::string(),
           /*last_signals_upload_config=*/std::string(),
-          /*can_collect_all_fields=*/false));
+          /*can_collect_all_fields=*/false, /*signals_json=*/std::nullopt));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID)
 }
@@ -288,5 +328,28 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
   std::move(callback).Run(std::move(state));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
+void ConnectorsInternalsPageHandler::OnReportGenerated(
+    GetSignalsReportingStateCallback callback,
+    connectors_internals::mojom::SignalsReportingStatePtr state,
+    enterprise_reporting::ReportRequestQueue requests) {
+  if (requests.empty()) {
+    state->error_info = "Report generator returned an empty queue.";
+    std::move(callback).Run(std::move(state));
+    request_generator_.reset();
+    return;
+  }
+
+  std::unique_ptr<enterprise_reporting::ReportRequest> request =
+      std::move(requests.front());
+
+  state->signals_json =
+      enterprise_connectors::utils::GetJsonForReportRequest(*request);
+  std::move(callback).Run(std::move(state));
+  request_generator_.reset();
+}
+#endif
 
 }  // namespace enterprise_connectors

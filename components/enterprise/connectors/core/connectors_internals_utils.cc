@@ -6,7 +6,12 @@
 
 #include "base/base64url.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "crypto/sha2.h"
 
@@ -145,6 +150,46 @@ connectors_internals::mojom::Int32ValuePtr ToMojomValue(
   return integer_value ? connectors_internals::mojom::Int32Value::New(
                              integer_value.value())
                        : nullptr;
+}
+
+std::string GetJsonForReportRequest(
+    const enterprise_reporting::ReportRequest& request) {
+  auto proto_request = request.GetChromeProfileReportRequest();
+
+  int policy_count = 0;
+  if (proto_request.has_browser_report()) {
+    for (const auto& profile_info :
+         proto_request.browser_report().chrome_user_profile_infos()) {
+      policy_count += profile_info.chrome_policies_size();
+    }
+  }
+
+  if (proto_request.has_attestation_payload() &&
+      !proto_request.attestation_payload().attestation_blob().empty()) {
+    proto_request.mutable_attestation_payload()->set_attestation_blob(
+        "[attestation blob collected but omitted for readability]");
+  }
+
+  std::string signals_json =
+      enterprise_reporting::GetSecuritySignalsInReport(proto_request);
+
+  if (policy_count > 0) {
+    std::optional<base::Value> parsed_value =
+        base::JSONReader::Read(signals_json, base::JSON_PARSE_RFC);
+
+    if (parsed_value && parsed_value->is_dict()) {
+      parsed_value->GetDict().Set(
+          "chrome_policies",
+          base::StringPrintf(
+              "[%d policies collected but omitted for readability]",
+              policy_count));
+
+      base::JSONWriter::WriteWithOptions(
+          *parsed_value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
+    }
+  }
+
+  return signals_json;
 }
 
 }  // namespace enterprise_connectors::utils

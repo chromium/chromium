@@ -175,6 +175,9 @@ struct SignalsReportingState {
   // Whether the reporting process can collect PII signals under current
   // context.
   bool can_collect_all_fields;
+
+  // JSON string containing the actual collected signals.
+  string? signals_json;
 };
 
 // Browser interface for the page. Consists of calls for data and hooks for
