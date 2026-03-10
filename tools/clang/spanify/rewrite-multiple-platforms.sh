@@ -15,10 +15,15 @@ REWRITE=true
 EXTRACT_EDITS=true
 KEEP_BUILD=false
 INCREMENTAL_CLANG_BUILD=false
+TOOL_ARG=""
 # The command line string to parse them.
 LONG_FLAGS="platforms::,skip-building-clang,skip-rewrite,skip-extract-edits,\
-           keep-build,incremental-clang-build,help"
-options=$(getopt -l "$LONG_FLAGS" -o "p::brekih" -- "$@")
+           keep-build,incremental-clang-build,project:,help"
+options=$(getopt -l "$LONG_FLAGS" -o "p:brekih" -- "$@")
+
+COMPILE_DIRS=.
+EDIT_DIRS=.
+BUILD_TARGETS=all
 
 # Important not to access $1 if there is no passed values (due to set -u above
 # will trigger an error).
@@ -47,6 +52,21 @@ while true; do
       INCREMENTAL_CLANG_BUILD=true
       KEEP_BUILD=true
       ;;
+    --project | --project=*)
+      val=$1
+      if [[ "$val" == *'='* ]]; then
+        val="${val#*=}"
+      else
+        shift
+        val=$1
+      fi
+      if [ "$val" = "partition_alloc" ]
+      then
+        COMPILE_DIRS="base/allocator/partition_allocator/src"
+        TOOL_ARG="--project=partition_alloc"
+        BUILD_TARGETS="base/allocator/partition_allocator:partition_alloc"
+      fi
+      ;;
     -h|--help)
       echo "Usage: rewrite-multiple-platforms.sh [OPTIONS]..."
       echo "Runs the clang plugin spanify over selected chromium platforms and"\
@@ -70,6 +90,8 @@ while true; do
            "incrementally. This only works if you previously completed a run"\
            "with --keep-build and you haven't rebased, or gclient sync'd."\
            "This also sets --keep-build for convenience."
+      echo "  [--project], when set to 'partition_alloc' it will only run on"\
+           "that directory."
       echo ""
       echo "Check the README for more info."
       exit 0
@@ -92,9 +114,6 @@ then
   mkdir ~/scratch
 fi
 
-COMPILE_DIRS=.
-EDIT_DIRS=.
-
 # Build and test the rewriter.
 if [ $BUILD_CLANG = true ]
 then
@@ -113,7 +132,7 @@ then
   if [ $INCREMENTAL_CLANG_BUILD = true ]
   then
     echo "*** Building the rewriter incrementally ***"
-    time ninja -C third_party/llvm-build/Release+Asserts/
+    time ninja -C third_party/llvm-build/Release+Asserts/ || exit 1
   else
     echo "*** Building the rewriter completely ***"
     time tools/clang/scripts/build.py \
@@ -256,7 +275,7 @@ pre_process() {
     # Build generated files that a successful compilation depends on.
     echo "*** Preparing targets for $PLATFORM ***"
     gn gen $OUT_DIR
-    time ninja -C $OUT_DIR -t targets all \
+    time ninja -C $OUT_DIR -t targets $BUILD_TARGETS \
         | grep '^gen/.*\(\.h\|inc\|css_tokenizer_codepoints.cc\)' \
         | cut -d : -f 1 \
         | xargs -s $(expr $(getconf ARG_MAX) - 256) ninja -C $OUT_DIR \
@@ -291,7 +310,10 @@ main_rewrite() {
         --tool spanify \
         --generate-compdb \
         -p $OUT_DIR \
-        $COMPILE_DIRS    2>~/scratch/rewriter-${PLATFORM}.main.err \
+        $COMPILE_DIRS \
+        path-filter="${COMPILE_DIRS}" \
+        --tool-arg="$TOOL_ARG" \
+        2> ~/scratch/rewriter-${PLATFORM}.main.err \
         | awk '!x[$0]++' 1>~/scratch/rewriter-${PLATFORM}.main.out
     )
 }
