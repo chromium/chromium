@@ -783,6 +783,18 @@ void AimEligibilityService::OnErrorStateOfRefreshTokenUpdatedForAccount(
 void AimEligibilityService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
+  // `AreAccountsFresh()` is only false when a background `/ListAccounts`
+  // network request has failed (e.g., due to being offline or blocked by a test
+  // proxy). It does NOT mean the cookies have transitioned to an
+  // invalid/logged-out state. If the user actually logs out (valid -> invalid),
+  // the `/ListAccounts` request succeeds, `AreAccountsFresh()` will be true,
+  // and we will properly fetch the updated eligibility info. Dropping stale
+  // events here prevents a potential infinite loop of network failures (see
+  // http://crbug.com/490087089).
+  if (!accounts_in_cookie_jar_info.AreAccountsFresh()) {
+    return;
+  }
+
   bool refresh_on_cookie_changes_enabled =
       base::FeatureList::IsEnabled(
           omnibox::kAimEligibilityServiceIdentityImprovements) &&
