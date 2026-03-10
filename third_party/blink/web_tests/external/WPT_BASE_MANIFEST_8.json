@@ -6755,7 +6755,7 @@
         ]
        ],
        "display-none-animation-on-group.html": [
-        "51992545f6864650baac8e96dd11fdb6f8c63564",
+        "6a81cc989fe690bacd9aff028fa2294489e56b9d",
         [
          null,
          {}
@@ -81490,6 +81490,19 @@
         {}
        ]
       ],
+      "background-color-animation-offset-position-not-stuck.html": [
+       "7fee73f1784e95b1593e39f4c517653c21e8da35",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-animation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "background-color-animation-pseudo-element.html": [
        "e5066281d9b9ca82cea0bc3edfa01d8e3bc18ccd",
        [
@@ -112107,13 +112120,26 @@
          {}
         ]
        ],
-       "color-scheme-iframe-background-mismatch-opaque-cross-origin.sub.html": [
-        "0485044ca4f2fc2083f965c6b31c1cb666294162",
+       "color-scheme-iframe-background-mismatch-opaque-cross-origin-001.sub.html": [
+        "1a9123e0d4f5a9ecb0f8c81db2788fa76d4f1457",
         [
          null,
          [
           [
            "/css/css-color-adjust/rendering/dark-color-scheme/support/dark-frame-opaque.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "color-scheme-iframe-background-mismatch-opaque-cross-origin-002.sub.html": [
+        "6674752f8f705b6b68ff0fb885a50a9c58b957d4",
+        [
+         null,
+         [
+          [
+           "/css/css-color-adjust/rendering/dark-color-scheme/support/light-frame.html",
            "=="
           ]
          ],
@@ -142346,6 +142372,19 @@
        {}
       ]
      ],
+     "input-checkbox-base-appearance-rendering.html": [
+      "89078310a6e97fe8b210387fc4cc396c2714ec43",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/input-checkbox-base-appearance-rendering-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "input-color-base-appearance-rendering.tentative.html": [
       "c124b6e2b69f6a9b12a380955d50ebbc11f90f36",
       [
@@ -142353,6 +142392,32 @@
        [
         [
          "/css/css-forms/input-color-base-appearance-rendering-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "input-number-base-appearance-rendering.tentative.html": [
+      "d9f698717bc494debf8cbf2b7c63bd3573d10506",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/input-number-base-appearance-rendering-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "input-search-base-appearance-rendering.tentative.html": [
+      "7f051c9f725156b42a64feef6b71e520d5082608",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/input-search-base-appearance-rendering-ref.tentative.html",
          "=="
         ]
        ],
@@ -177512,6 +177577,35 @@
           ]
          ],
          {}
+        ]
+       ],
+       "clip-path-animation-offset-position-not-stuck.html": [
+        "2a3e770bc37e4a5d7bb0d2ce379e463fff2e417d",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-ref.html",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              80
+             ],
+             [
+              0,
+              350
+             ]
+            ]
+           ]
+          ]
+         }
         ]
        ],
        "clip-path-animation-overflow.html": [
@@ -281132,7 +281226,7 @@
        ]
       ],
       "auto-nesting.html": [
-       "7135efb1dd905567ab68c49241a2df239407969a",
+       "2e934225ec4e85e08d0f603dc5f7a0a4f675556e",
        [
         null,
         [
@@ -281141,7 +281235,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             150
+            ],
+            [
+             0,
+             2400
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "box-decoration-painting.html": [
@@ -281171,7 +281281,7 @@
        ]
       ],
       "clip-on-target-in-callback-2.html": [
-       "8937f299d8420fc0d419b6d8249697c5c84c6d21",
+       "a5378a2bc7f8f966f1ea5b6b4bcc5a3267fa50de",
        [
         null,
         [
@@ -281200,7 +281310,7 @@
        ]
       ],
       "clip-on-target-in-callback.html": [
-       "ae29a087c2b8c6faef08c605216979c0eaf34b79",
+       "834e1a54f0ac7caca6709ba4623f7ae338d1b910",
        [
         null,
         [
@@ -281530,7 +281640,7 @@
        ]
       ],
       "scroller-with-child.html": [
-       "601cb135b8d13f53982f13aac4d9f9771924d515",
+       "43646c08df7a2275320e1118d9f5c793376aa969",
        [
         null,
         [
@@ -326089,7 +326199,7 @@
      "forms": {
       "customizable-combobox": {
        "customizable-combobox-appearance.html": [
-        "e2181b582dd3b50ea055b5a1197b2188601640a5",
+        "621deebba529757c7fe278648373e6383bdcdf29",
         [
          null,
          [
@@ -326098,7 +326208,9 @@
            "=="
           ]
          ],
-         {}
+         {
+          "testdriver": true
+         }
         ]
        ]
       },
@@ -328007,6 +328119,23 @@
              ]
             ]
            ],
+           "testdriver": true
+          }
+         ]
+        ]
+       },
+       "filterable-select": {
+        "filterable-select-appearance.html": [
+         "1b8ef5bceba774bac732c3b8093861e886250d63",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/filterable-select/filterable-select-appearance-ref.html",
+            "=="
+           ]
+          ],
+          {
            "testdriver": true
           }
          ]
@@ -371593,6 +371722,10 @@
          "11f88db4a0b3e94d620b5a92314c88040210cfae",
          []
         ],
+        "light-frame.html": [
+         "c8c587f787c671dc1262bd089d6c00a9d9ef9149",
+         []
+        ],
         "prefers-color-scheme-blue-purple.html": [
          "99d687b47f4685e8ca0960fbcfd7aaa7bdafc19a",
          []
@@ -384474,8 +384607,20 @@
       "95bee383d2117d1c054e4706abfd130149d31fc8",
       []
      ],
+     "input-checkbox-base-appearance-rendering-ref.html": [
+      "c0041456c63e88ab969616a81db25051369b8d5d",
+      []
+     ],
      "input-color-base-appearance-rendering-ref.tentative.html": [
       "41b2062071ea5ece9b5f4f1abb3194c1f8d4bcb0",
+      []
+     ],
+     "input-number-base-appearance-rendering-ref.tentative.html": [
+      "4b3ab78a9bf274d0da266709811cd26c95ac1c2d",
+      []
+     ],
+     "input-search-base-appearance-rendering-ref.tentative.html": [
+      "6b97fe22ac3e9926fb5cc8bfabafb80aa4feae65",
       []
      ],
      "input-text-base-appearance-rendering-ref.html": [
@@ -396983,16 +397128,8 @@
        "7233bf29b5af8a650e1e76c76c28ec6e239af6b7",
        []
       ],
-      "custom-property-animation-transform-function-expected.txt": [
-       "6c9c61a22f640f4b300ece759715811a93ffb4d3",
-       []
-      ],
       "custom-property-animation-transform-list-multiple-values-expected.txt": [
-       "3cd6b8f42e03b21a4e1e83db8eb9723a0be0898d",
-       []
-      ],
-      "custom-property-animation-transform-list-single-values-expected.txt": [
-       "95fc1833b9f69d5135fadd8913de9c21d4b82056",
+       "993ec90742c1ef66284c3ef1ce7b5f8a784fdc42",
        []
       ],
       "custom-property-transition-property-all-expected.txt": [
@@ -443399,7 +443536,7 @@
       },
       "customizable-combobox": {
        "customizable-combobox-appearance-ref.html": [
-        "15cadf6a0e8a8fdad8eee60cb18b133fee2c8521",
+        "ef94afb533f7bc48abb7698954d860e1eacb66a4",
         []
        ],
        "resources": {
@@ -444155,6 +444292,12 @@
         ],
         "select-multiple-popup-appearance-ref.html": [
          "6d773f5ec148313c7978f50b43a49fdedc6e9e99",
+         []
+        ]
+       },
+       "filterable-select": {
+        "filterable-select-appearance-ref.html": [
+         "9f18ce4ad2a757436b2e498880e7f90e270c54cd",
          []
         ]
        },
@@ -456110,6 +456253,10 @@
      }
     },
     "navigate-event": {
+     "abort-in-nested-navigations.html": [
+      "2a088b4df405d20643a57217366c9ff842b54f03",
+      []
+     ],
      "cross-window": {
       "resources": {
        "cross-origin-iframe-helper.html": [
@@ -475962,7 +476109,7 @@
          []
         ],
         "headers_name_standard_tentative-expected.txt": [
-         "442440e4cc64b85ea2778d95808509b21f764075",
+         "40a885b6f9ef3d5af192cbcb2010a71de6e10e75",
          []
         ]
        },
@@ -565139,6 +565286,15 @@
        {}
       ]
      ],
+     "scroll-anchoring-editing-content-change.html": [
+      "f090ec3445a48b4fafb4088c5ea393126ee377ba",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "scroll-padding-affects-anchoring.html": [
       "e2c8741d88914d7346148bf11831889c5d3dcdd7",
       [
@@ -588805,7 +588961,7 @@
       ]
      ],
      "Element-innerHTML.html": [
-      "f6c7765f7264c7595294d4d006685151d3448d9b",
+      "25ff9e547a88e25ea9cefb767c2e57dc41c9dfc4",
       [
        null,
        {}
@@ -692116,7 +692272,7 @@
       "focusgroup": {
        "tentative": {
         "ax-role-inference-children.html": [
-         "a26b108d1b2dd380b3f7afa24b759206e0d4c95a",
+         "cbacf1488fd20d307d5b8b2bb8a5b9851a254847",
          [
           null,
           {
@@ -701726,6 +701882,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "change-set-value.html": [
+        "d82f9a82d8ecf66ee550d0fcd7b2079b1df98115",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "change-to-empty-value.html": [
@@ -715428,45 +715593,57 @@
         ]
        ],
        "event-handler-attributes-body-alt.html": [
-        "44453b5a064fe126f4c60936c5cb4e050427b6d9",
+        "2cd0aac2d4bb55abcaff4cb03171481c00dd25dc",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-body-window.html": [
-        "c7d10afd1d255bcdae5541a30c94db7c28365f88",
+        "498bfb05c81255384d50cb5bdb8272dae9ba9b3a",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-frameset-alt.html": [
-        "05b09ff74790afd174820e79db7b3d5a25f3549f",
+        "d26cc3851238c2c3ae913c24697cb1c993ee82bf",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-frameset-window.html": [
-        "1b2e0b03d1cf0421f54dfa339c32d3d5664531b5",
+        "64074c481c14d4656b3b763f3c075aba8c0f8e98",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-window-frameset.html": [
-        "e399a7a6d42f98421c1379db69e3cfe885d07468",
+        "8459d994edb5e1012f48851dc2e7e3d547ef620f",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-window.html": [
-        "559cd0ecffbb9584d1e7c388ef29bc1855b3559b",
+        "4031c87462503098114491cb01857af671bf942e",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "event-handler-attributes-windowless-body.html": [
@@ -738452,7 +738629,7 @@
      ]
     ],
     "pointerevent_attributes.html": [
-     "f789c8e06212bc4644af57fd43841a54aa1ed053",
+     "4d4b7b4ee8d97e8ec8346155029a613615239247",
      [
       "pointerevents/pointerevent_attributes.html?mouse",
       {
@@ -738485,7 +738662,7 @@
      ]
     ],
     "pointerevent_attributes.optional.html": [
-     "587e3788f40cc78c6602d16f6d1515ad66bd5bb7",
+     "7d39fffaf291d201d786f63b3fb9673d921eee4c",
      [
       "pointerevents/pointerevent_attributes.optional.html?mouse",
       {
@@ -900279,7 +900456,7 @@
        },
        "download_end": {
         "download_end.py": [
-         "e5bff87889179f467888779b15395d0f57471056",
+         "3ca333a69e168681969b7c21c4147b75249ece49",
          [
           null,
           {}
@@ -900295,7 +900472,7 @@
        },
        "download_will_begin": {
         "download_will_begin.py": [
-         "354458b6e50a0a5c89a338ea4ea61c9ac153ab4a",
+         "a796cab67290bc3510bebf940bf6d299ebe36a15",
          [
           null,
           {}
