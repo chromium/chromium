@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/native_library.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"

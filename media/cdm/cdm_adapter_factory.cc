@@ -5,7 +5,6 @@
 #include "media/cdm/cdm_adapter_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/cdm_factory.h"
 #include "media/cdm/cdm_adapter.h"

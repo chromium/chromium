@@ -14,7 +14,6 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/not_fatal_until.h"
 #include "crypto/aes_ctr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"

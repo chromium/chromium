@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/not_fatal_until.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"

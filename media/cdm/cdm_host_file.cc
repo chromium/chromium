@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
 
 namespace media {

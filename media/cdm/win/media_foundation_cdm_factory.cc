@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -72,8 +71,7 @@ MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 void MediaFoundationCdmFactory::SetCreateCdmFactoryCallbackForTesting(
     const std::string& key_system,
     CreateCdmFactoryCB create_cdm_factory_cb) {
-  CHECK(!create_cdm_factory_cbs_for_testing_.count(key_system),
-        base::NotFatalUntil::M140);
+  CHECK(!create_cdm_factory_cbs_for_testing_.count(key_system));
   create_cdm_factory_cbs_for_testing_[key_system] =
       std::move(create_cdm_factory_cb);
 }

@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hstring.h"
 #include "media/base/win/hresults.h"

@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"

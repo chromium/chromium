@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"

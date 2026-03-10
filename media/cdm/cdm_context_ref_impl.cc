@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/not_fatal_until.h"
 #include "media/base/content_decryption_module.h"
 
 namespace media {

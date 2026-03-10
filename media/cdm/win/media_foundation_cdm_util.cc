@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/propvarutil.h"
 #include "base/win/scoped_bstr.h"

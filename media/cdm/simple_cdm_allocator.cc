@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/cdm/cdm_type_conversion.h"

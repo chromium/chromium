@@ -6,7 +6,6 @@
 #include "media/cdm/cdm_helpers.h"
 
 #include "base/check.h"
-#include "base/not_fatal_until.h"
 #include "ui/gfx/color_space.h"
 
 namespace media {

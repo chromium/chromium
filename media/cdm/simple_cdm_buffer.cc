@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {

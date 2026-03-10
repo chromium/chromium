@@ -11,7 +11,6 @@
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "media/base/callback_registry.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/cdm_promise.h"

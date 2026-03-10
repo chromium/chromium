@@ -5,7 +5,6 @@
 #include "media/cdm/fuchsia/fuchsia_cdm_factory.h"
 
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_systems.h"
