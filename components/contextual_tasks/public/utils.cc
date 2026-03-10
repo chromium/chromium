@@ -8,13 +8,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/url_deduplication/deduplication_strategy.h"
 #include "components/url_deduplication/docs_url_strip_handler.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/url_deduplication/url_strip_handler.h"
 #include "components/visited_url_ranking/public/features.h"
+#include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
 
@@ -53,6 +58,41 @@ CreateURLDeduplicationHelperForContextualTask() {
 
   return std::make_unique<url_deduplication::URLDeduplicationHelper>(
       std::move(handlers), strategy);
+}
+
+GURL GetDefaultAimUrl(const std::string& locale,
+                      omnibox::ChromeAimEntryPoint entry_point) {
+  GURL url = lens::AppendCommonSearchParametersToURL(
+      GURL(GetContextualTasksAiPageUrl()), locale, false);
+  return AppendAimEntryPointParams(url, entry_point);
+}
+
+GURL AppendAimEntryPointParams(GURL url,
+                               omnibox::ChromeAimEntryPoint entry_point) {
+  if (entry_point == omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT) {
+    return url;
+  }
+
+  GURL new_url = url;
+  auto invocation_source = GetLensInvocationSourceForAimZeroState(entry_point);
+  if (invocation_source.has_value()) {
+    new_url = lens::AppendInvocationSourceParamToURL(
+        new_url, invocation_source.value(), /*is_contextual_tasks=*/true);
+  }
+  new_url = net::AppendOrReplaceQueryParameter(
+      new_url, "aep", base::NumberToString(static_cast<int>(entry_point)));
+  return new_url;
+}
+
+std::optional<lens::LensOverlayInvocationSource>
+GetLensInvocationSourceForAimZeroState(
+    omnibox::ChromeAimEntryPoint entry_point) {
+  switch (entry_point) {
+    case omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON:
+      return lens::LensOverlayInvocationSource::kCobrowseToolbarButton;
+    default:
+      return std::nullopt;
+  }
 }
 
 }  // namespace contextual_tasks

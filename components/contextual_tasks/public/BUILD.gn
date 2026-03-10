@@ -33,6 +33,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/lens:lens_url_utils",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/url_deduplication",
@@ -43,7 +44,10 @@ source_set("public") {
     "//url",
   ]
 
-  public_deps = [ ":feature_list" ]
+  public_deps = [
+    ":feature_list",
+    "//third_party/omnibox_proto",
+  ]
 }
 
 source_set("test_support") {

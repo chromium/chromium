@@ -17,6 +17,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 namespace syncer {
@@ -144,6 +145,14 @@ class ContextualTasksService : public KeyedService {
       std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) = 0;
+
+  // Get a thread URL based on the task ID. If no task is found or the task does
+  // not have a thread ID, the default AI URL is returned.
+  virtual void GetThreadUrlFromTaskId(
+      const base::Uuid& task_id,
+      const std::string& locale,
+      omnibox::ChromeAimEntryPoint entry_point,
+      base::OnceCallback<void(GURL)> callback) = 0;
 
   // Methods related to associating tabs to tasks using their tab ID.
   virtual void AssociateTabWithTask(const base::Uuid& task_id,

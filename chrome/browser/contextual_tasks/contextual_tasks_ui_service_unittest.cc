@@ -848,43 +848,6 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
-TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
-  base::Uuid task_id =
-      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
-  ContextualTask task(task_id);
-
-  const std::string server_id = "1234";
-  const std::string title = "title";
-  const std::string turn_id = "5678";
-  int64_t last_turn_time = 1;
-  Thread thread(ThreadType::kAiMode, server_id, title, last_turn_time, turn_id);
-
-  task.SetTitle(title);
-  task.AddThread(thread);
-
-  ON_CALL(*contextual_tasks_service_, GetTaskById)
-      .WillByDefault([&](const base::Uuid& task_id,
-                         base::OnceCallback<void(std::optional<ContextualTask>)>
-                             callback) { std::move(callback).Run(task); });
-
-  base::RunLoop run_loop;
-  service_for_nav_->GetThreadUrlFromTaskId(
-      task_id, base::BindOnce(
-                   [](const std::string& server_id, const std::string& turn_id,
-                      GURL url) {
-                     std::string mstk;
-                     net::GetValueForKeyInQuery(url, "mstk", &mstk);
-                     ASSERT_EQ(mstk, turn_id);
-
-                     std::string mtid;
-                     net::GetValueForKeyInQuery(url, "mtid", &mtid);
-                     ASSERT_EQ(mtid, server_id);
-                   },
-                   server_id, turn_id)
-                   .Then(run_loop.QuitClosure()));
-  run_loop.Run();
-}
-
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
                                    nullptr, aim_eligibility_service_.get());
