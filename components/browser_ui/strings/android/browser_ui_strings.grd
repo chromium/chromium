@@ -1420,6 +1420,10 @@
         Go to settings
       </message>
 
+      <message name="IDS_EDUCATIONAL_TIP_ACCESSIBILITY_ITEM_COMPLETED" desc="The accessibility state description for a completed task in the Setup List. [CHAR_LIMIT=32]">
+        Task completed
+      </message>
+
       <!-- Setup List "See More" bottom sheet strings -->
       <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_TITLE" desc="Title for the setup list bottom sheet when set up tasks are still remaining.">
         Get the most out of Chrome

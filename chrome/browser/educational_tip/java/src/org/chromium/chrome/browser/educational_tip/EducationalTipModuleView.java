@@ -144,5 +144,7 @@ public class EducationalTipModuleView extends LinearLayout {
         // Button
         mModuleButtonView.setEnabled(false);
         mModuleButtonView.setTextColor(disabledColor);
+
+        SetupListModuleUtils.setCompletedAccessibilityStateDescription(this);
     }
 }

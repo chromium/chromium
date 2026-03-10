@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.setup_list;
 
+import android.os.Build;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +14,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -243,5 +246,18 @@ public class SetupListModuleUtils {
     public static void recordSetupListItemCompletion(@ModuleType int moduleType) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_SETUP_LIST_PREFIX + "ItemCompletion", moduleType, ModuleType.NUM_ENTRIES);
+    }
+
+    /**
+     * Sets the accessibility state description for a completed Setup List task view.
+     *
+     * @param view The view to set the state description on.
+     */
+    public static void setCompletedAccessibilityStateDescription(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            view.setStateDescription(
+                    view.getContext()
+                            .getString(R.string.educational_tip_accessibility_item_completed));
+        }
     }
 }
