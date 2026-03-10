@@ -7,6 +7,7 @@
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -332,13 +333,13 @@ class FuchsiaVideoDecoderTest : public testing::Test {
 };
 
 scoped_refptr<DecoderBuffer> GetH264Frame(size_t frame_num) {
-  static scoped_refptr<DecoderBuffer> frames[] = {
+  static const std::array frames = {
       ReadTestDataFile("h264-320x180-frame-0"),
       ReadTestDataFile("h264-320x180-frame-1"),
       ReadTestDataFile("h264-320x180-frame-2"),
-      ReadTestDataFile("h264-320x180-frame-3")};
-  CHECK_LT(frame_num, std::size(frames));
-  return UNSAFE_TODO(frames[frame_num]);
+      ReadTestDataFile("h264-320x180-frame-3"),
+  };
+  return frames[frame_num];
 }
 
 TEST_F(FuchsiaVideoDecoderTest, CreateAndDestroy) {}
