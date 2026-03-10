@@ -366,7 +366,13 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           }
 
           state_ = kTryPreprocessCurrentSlice;
-          if (curr_slice_hdr_->irap_pic) {
+        }
+
+        if (state_ == kTryPreprocessCurrentSlice) {
+          CHECK_ACCELERATOR_RESULT(PreprocessCurrentSlice());
+          state_ = kEnsurePicture;
+
+          if (curr_slice_hdr_->first_slice_segment_in_pic_flag) {
             bool need_new_buffers = false;
             if (!ProcessPPS(curr_slice_hdr_->slice_pic_parameter_set_id,
                             &need_new_buffers)) {
@@ -378,11 +384,6 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               return kConfigChange;
             }
           }
-        }
-
-        if (state_ == kTryPreprocessCurrentSlice) {
-          CHECK_ACCELERATOR_RESULT(PreprocessCurrentSlice());
-          state_ = kEnsurePicture;
         }
 
         if (state_ == kEnsurePicture) {
@@ -631,11 +632,24 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
                             new_color_space != picture_color_space_;
   }
 
-  if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
+  const bool is_config_change =
+      pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
       profile_ != new_profile || bit_depth_ != new_bit_depth ||
-      chroma_sampling_ != new_chroma_sampling || is_color_space_change) {
-    if (!Flush())
+      chroma_sampling_ != new_chroma_sampling;
+
+  if (is_config_change) {
+    // Only color space changes are allowed on non-IRAP pictures.
+    if (curr_slice_hdr_ && !curr_slice_hdr_->irap_pic && !first_picture_) {
+      DVLOG(1)
+          << "A configuration change on a non-IRAP picture is not allowed.";
       return false;
+    }
+  }
+
+  if (is_config_change || is_color_space_change) {
+    if (!Flush()) {
+      return false;
+    }
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level(x30): " << sps->profile_tier_level.general_level_idc
              << ", DPB size: " << sps->max_dpb_size

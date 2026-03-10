@@ -549,4 +549,53 @@ TEST_F(H265DecoderTest, DecodeMultiFrameInput) {
   EXPECT_TRUE(decoder_->Flush());
 }
 
+TEST_F(H265DecoderTest, ConfigChangeOnNonIRAP) {
+  // 1. Initialize with 8-bit stream.
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+
+  // Decode the first frame to establish state.
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(*accelerator_, SubmitDecode(_)).Times(1);
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).Times(1);
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+
+  // 2. Inject 10-bit SPS/PPS followed by an 8-bit P-frame (non-IRAP).
+  std::vector<uint8_t> ten_bit_sps_pps;
+  auto ten_bit_file = GetTestDataFilePath(k10BitFrame0);
+  std::vector<uint8_t> ten_bit_data;
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(ten_bit_file),
+                               ten_bit_data));
+  // NALU at 0, type 32 (VPS)
+  // NALU at 28, type 33 (SPS)
+  // NALU at 73, type 34 (PPS)
+  // NALU at 84, type 39 (SEI)
+  // We want VPS + SPS + PPS.
+  base::Extend(ten_bit_sps_pps, base::span(ten_bit_data).first(84u));
+
+  std::vector<uint8_t> p_frame_data;
+  auto p_frame_file = GetTestDataFilePath(kFrame1);
+  CHECK(base::OptionalUnwrapTo(base::ReadFileToBytes(p_frame_file),
+                               p_frame_data));
+
+  std::vector<uint8_t> malicious_bitstream = ten_bit_sps_pps;
+  base::Extend(malicious_bitstream, p_frame_data);
+
+  auto buffer = DecoderBuffer::CopyFrom(malicious_bitstream);
+  EXPECT_CALL(*accelerator_, SetStream(_, _));
+  decoder_->SetStream(1, buffer);
+
+  // 3. Verify that ConfigChange is NOT allowed on the P-frame.
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 }  // namespace media
