@@ -2429,8 +2429,8 @@ TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
     InSequence s;
     EXPECT_CALL(
         controller(),
-        SetFilter(std::optional(
-            AutofillPopupController::SuggestionFilter(u"search input"))));
+        SetFilter(std::optional(AutofillPopupController::SuggestionFilter(
+            AutofillPopupController::StringFilter(u"search input")))));
     EXPECT_CALL(check, Call);
     EXPECT_CALL(
         controller(),
@@ -2606,9 +2606,9 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
       .Times(testing::AnyNumber());
 
   // RETURN triggers filter update when no suggestion is selected.
-  EXPECT_CALL(
-      controller(),
-      SetFilter(Eq(AutofillPopupController::SuggestionFilter(u"query"))));
+  EXPECT_CALL(controller(),
+              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                  AutofillPopupController::StringFilter(u"query")))));
   test_api(view()).SetSearchQuery(u"query");
   event.windows_key_code = ui::VKEY_RETURN;
   EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));

@@ -593,7 +593,7 @@ bool PopupViewViews::HandleKeyPressEventForAtMemory(
       }
       if (search_bar_) {
         controller_->SetFilter(
-            AutofillPopupController::SuggestionFilter(search_bar_->GetText()));
+            AutofillPopupController::StringFilter(search_bar_->GetText()));
         return true;
       }
       return false;
@@ -806,7 +806,7 @@ void PopupViewViews::SearchBarOnInputChanged(std::u16string_view query) {
   if (controller_) {
     controller_->SetFilter(
         query.empty() ? std::nullopt
-                      : std::optional(AutofillPopupController::SuggestionFilter(
+                      : std::optional(AutofillPopupController::StringFilter(
                             std::u16string(query))));
   }
 }

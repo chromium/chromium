@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -87,7 +88,11 @@ SuggestionFiltrationResult FilterSuggestions(
     const AutofillPopupController::SuggestionFilter& filter) {
   SuggestionFiltrationResult result;
 
-  std::u16string filter_lowercased = base::i18n::ToLower(*filter);
+  std::optional<std::u16string> lower_string_filter =
+      std::holds_alternative<AutofillPopupController::StringFilter>(filter)
+          ? std::optional(base::i18n::ToLower(
+                *std::get<AutofillPopupController::StringFilter>(filter)))
+          : std::nullopt;
   for (const Suggestion& suggestion : suggestions) {
     if (suggestion.filtration_policy ==
         Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
@@ -96,12 +101,15 @@ SuggestionFiltrationResult FilterSuggestions(
                Suggestion::FiltrationPolicy::kStatic) {
       result.first.push_back(suggestion);
       result.second.emplace_back();
-    } else if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
-                                .find(filter_lowercased);
-               pos != std::u16string::npos) {
-      result.first.push_back(suggestion);
-      result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
-          .main_text_match = {pos, pos + filter->size()}});
+    } else if (lower_string_filter) {
+      if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
+                           .find(lower_string_filter.value());
+          pos != std::u16string::npos) {
+        result.first.push_back(suggestion);
+        result.second.push_back(AutofillPopupController::SuggestionFilterMatch{
+            .main_text_match = {pos,
+                                pos + lower_string_filter.value().size()}});
+      }
     }
   }
 
@@ -882,14 +890,16 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 
 void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
-  if (suggestions_filling_product_ == FillingProduct::kAtMemory && filter) {
+  if (suggestions_filling_product_ == FillingProduct::kAtMemory && filter &&
+      std::holds_alternative<AutofillPopupController::StringFilter>(*filter)) {
     if (ContentAutofillClient* client =
             ContentAutofillClient::FromWebContents(web_contents_.get())) {
       if (accessibility_annotator::AccessibilityQueryService* query_service =
               client->GetAccessibilityQueryService()) {
         std::vector<Suggestion> suggestions;
         for (const accessibility_annotator::MemorySearchResult& result :
-             query_service->Query(**filter)) {
+             query_service->Query(
+                 *std::get<AutofillPopupController::StringFilter>(*filter))) {
           Suggestion& s = suggestions.emplace_back(
               result.value, SuggestionType::kAtMemorySearchResult);
           s.labels = {{Suggestion::Text(result.description)}};

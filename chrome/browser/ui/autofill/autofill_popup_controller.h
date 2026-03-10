@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 
 namespace input {
@@ -21,11 +22,12 @@ namespace autofill {
 // specific to Desktop.
 class AutofillPopupController : public AutofillSuggestionController {
  public:
+  using StringFilter =
+      base::StrongAlias<struct StringFilterTag, std::u16string>;
+
   // The suggestion filter is implemented as a string directly reflecting user
-  // input. It could be refactored into a more complex data structure to enable
-  // advanced search functionality.
-  using SuggestionFilter =
-      base::StrongAlias<struct SuggestionFilterTag, std::u16string>;
+  // input or the index of the tab that the suggestion will be shown.
+  using SuggestionFilter = std::variant<StringFilter, SuggestionTabIndex>;
 
   // Suggestions consist of multiple parts (e.g., main text, labels). The filter
   // match structure reveals how a suggestion was found, enabling
