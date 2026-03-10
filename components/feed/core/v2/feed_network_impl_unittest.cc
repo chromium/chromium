@@ -35,6 +35,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/http/http_response_headers.h"
@@ -137,7 +138,10 @@ class FeedNetworkTest : public testing::Test {
     feed_network_ = std::make_unique<FeedNetworkImpl>(
         &delegate_, identity_test_env_.identity_manager(), "dummy_api_key",
         shared_url_loader_factory_, &profile_prefs_);
-    SignIn(signin::ConsentLevel::kSync);
+    SignIn(
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync);
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
