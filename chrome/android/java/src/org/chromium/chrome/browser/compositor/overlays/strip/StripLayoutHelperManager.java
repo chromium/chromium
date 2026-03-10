@@ -715,6 +715,7 @@ public class StripLayoutHelperManager
                 (LayerTitleCache layerTitleCache) -> {
                     mNormalHelper.setLayerTitleCache(layerTitleCache);
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
+                    setGlicButtonText(mContext.getString(R.string.glic_button_entrypoint_label));
                 });
 
         if (mDesktopWindowStateManager != null) {
