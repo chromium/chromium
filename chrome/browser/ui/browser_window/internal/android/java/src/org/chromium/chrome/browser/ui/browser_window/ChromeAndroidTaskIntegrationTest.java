@@ -115,7 +115,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
-    public void startCustomTabActivityAsNonPopup_doesNotCreateChromeAndroidTask() {
+    public void startCustomTabActivity_createsChromeAndroidTask() {
         // Arrange.
         var customTabIntent = createCustomTabIntent(CustomTabsUiType.DEFAULT);
 
@@ -125,7 +125,7 @@ public class ChromeAndroidTaskIntegrationTest {
         // Assert.
         int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
         var chromeAndroidTask = getChromeAndroidTask(taskId);
-        assertNull(chromeAndroidTask);
+        assertNotNull(chromeAndroidTask);
     }
 
     @Test
@@ -179,6 +179,30 @@ public class ChromeAndroidTaskIntegrationTest {
     public void startCustomTabActivityAsPopup_chromeAndroidTaskAndTabModelHaveSameSessionId() {
         // Arrange.
         var customTabIntent = createCustomTabIntent(CustomTabsUiType.POPUP);
+
+        // Act.
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
+
+        // Assert.
+        int taskId = mCustomTabActivityTestRule.getActivity().getTaskId();
+        var chromeAndroidTask = getChromeAndroidTask(taskId);
+        assertNotNull(chromeAndroidTask);
+
+        var tabModel = mCustomTabActivityTestRule.getActivity().getCurrentTabModel();
+        var profile = assumeNonNull(tabModel.getProfile());
+
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
+        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertEquals(
+                chromeAndroidTask.getSessionIdForTesting(profile),
+                tabModel.getNativeSessionIdForTesting());
+    }
+
+    @Test
+    @MediumTest
+    public void startCustomTabActivity_chromeAndroidTaskAndTabModelHaveSameSessionId() {
+        // Arrange.
+        var customTabIntent = createCustomTabIntent(CustomTabsUiType.DEFAULT);
 
         // Act.
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(customTabIntent);
