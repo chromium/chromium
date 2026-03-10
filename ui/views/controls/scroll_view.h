@@ -215,6 +215,11 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool GetHasFocusIndicator() const { return draw_focus_indicator_; }
   void SetHasFocusIndicator(bool has_focus_indicator);
 
+  // Returns whether the content view is currently overflowing the viewport
+  // along the horizontal and vertical axes respectively.
+  bool IsHorizontalContentOverflowing() const;
+  bool IsVerticalContentOverflowing() const;
+
   // Called when |contents_| scrolled. This can be triggered by each single
   // event that is able to scroll the contents. KeyEvents like ui::VKEY_LEFT,
   // ui::VKEY_RIGHT, or only ui::EventType::kMousewheel will only trigger this
