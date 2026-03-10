@@ -250,8 +250,13 @@ source_set("unit_tests") {
   ]
 
   if (use_cups) {
-    sources += [ "cups_print_job_manager_utils_unittest.cc" ]
+    sources += [
+      "cups_print_job_manager_utils_unittest.cc",
+      "local_printer_impl_unittest.cc",
+    ]
     deps += [
+      "//components/account_id:test_support",
+      "//components/session_manager/test:test_support",
       "//printing:printing_base",
       "//printing/backend",
     ]

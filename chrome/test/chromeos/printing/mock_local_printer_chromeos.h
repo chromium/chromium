@@ -15,11 +15,6 @@ class MockLocalPrinter : public FakeLocalPrinter {
   MockLocalPrinter();
   ~MockLocalPrinter() override;
 
-  MOCK_METHOD(void, GetPrinters, (GetPrintersCallback callback), (override));
-  MOCK_METHOD(void,
-              GetCapability,
-              (const std::string& printer_id, GetCapabilityCallback callback),
-              (override));
   MOCK_METHOD(void,
               AddPrintJobObserver,
               (mojo::PendingRemote<crosapi::mojom::PrintJobObserver> remote,

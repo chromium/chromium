@@ -87,13 +87,8 @@ class LocalPrinterAsh : public mojom::LocalPrinter,
   void OnLocalPrintersUpdated() override;
 
   // crosapi::mojom::LocalPrinter:
-  void GetPrinters(GetPrintersCallback callback) override;
-  void GetCapability(const std::string& printer_id,
-                     GetCapabilityCallback callback) override;
   void GetEulaUrl(const std::string& printer_id,
                   GetEulaUrlCallback callback) override;
-  void GetStatus(const std::string& printer_id,
-                 GetStatusCallback callback) override;
   void ShowSystemPrintSettings(
       ShowSystemPrintSettingsCallback callback) override;
   void CreatePrintJob(mojom::PrintJobPtr job,

@@ -6,22 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-void FakeLocalPrinter::GetPrinters(GetPrintersCallback callback) {
-  FAIL();
-}
-
-void FakeLocalPrinter::GetCapability(const std::string& printer_id,
-                                     GetCapabilityCallback callback) {
-  FAIL();
-}
-
 void FakeLocalPrinter::GetEulaUrl(const std::string& printer_id,
                                   GetEulaUrlCallback callback) {
-  FAIL();
-}
-
-void FakeLocalPrinter::GetStatus(const std::string& printer_id,
-                                 GetStatusCallback callback) {
   FAIL();
 }
 
