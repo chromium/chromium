@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,17 +10,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/switches.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/test_screen.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"

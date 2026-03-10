@@ -2847,6 +2847,7 @@ if (!is_android) {
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webid",
       "//chrome/browser/webid:browser_tests",
+      "//chrome/browser/window_management:browser_tests",
       "//chrome/common:version_header",
       "//chrome/common/record_replay",
       "//chrome/common/record_replay:mojom",
@@ -4008,9 +4009,6 @@ if (!is_android) {
       "../browser/webapps/web_contents/web_app_url_loader_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
       "../browser/webauthn/passkey_unlock_manager_browsertest.cc",
-      "../browser/window_management/screen_details_browsertest.cc",
-      "../browser/window_management/window_management_browsertest.cc",
-      "../browser/window_management/window_management_permission_context_browsertest.cc",
       "../common/chrome_paths_browsertest.cc",
       "../common/time_format_browsertest.cc",
       "../renderer/accessibility/ax_tree_distiller_browsertest.cc",
@@ -12537,7 +12535,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (enable_print_preview) {
-      sources += [ "../browser/window_management/window_management_printing_interactive_uitest.cc" ]
+      deps += [ "//chrome/browser/window_management:interactive_ui_tests" ]
     }
 
     sources += [ "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc" ]

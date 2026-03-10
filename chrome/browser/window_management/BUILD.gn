@@ -1,0 +1,70 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//printing/buildflags/buildflags.gni")
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "screen_details_browsertest.cc",
+      "window_management_browsertest.cc",
+      "window_management_permission_context_browsertest.cc",
+    ]
+
+    deps = [
+      "//base/test:test_support",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/permissions",
+      "//content/public/browser",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//ui/display:test_support",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash",
+        "//ui/display:display_manager_test_api",
+      ]
+    }
+  }
+
+  if (enable_print_preview) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      sources = [ "window_management_printing_interactive_uitest.cc" ]
+
+      deps = [
+        "//chrome/browser",
+        "//chrome/browser/ui",
+        "//chrome/test:test_support_ui",
+        "//components/permissions",
+        "//content/public/browser",
+        "//content/test:browsertest_support",
+        "//content/test:test_support",
+        "//net:test_support",
+        "//testing/gtest",
+        "//ui/display:test_support",
+      ]
+
+      if (is_chromeos) {
+        deps += [
+          "//ash",
+          "//ui/display:display_manager_test_api",
+        ]
+      }
+    }
+  }
+}
