@@ -181,6 +181,15 @@ void AccountChooserController::ShowAccountChooserDialog(
   account_chooser_widget_->MakeCloseSynchronous(
       base::BindOnce(&AccountChooserController::OnWidgetCancelledFlow,
                      base::Unretained(this)));
+
+  // By default, the dialog may not have its initially focused view
+  // actually focused on some platforms (see crbug.com/490413832).
+  // Explicitly call RequestFocus() to ensure this happens.
+  views::View* focused_view =
+      account_chooser_dialog_delegate_.get()->GetInitiallyFocusedView();
+  if (focused_view) {
+    focused_view->RequestFocus();
+  }
 }
 
 void AccountChooserController::ShowAddAccountDialog() {
@@ -284,6 +293,8 @@ AccountChooserController::CreateDialogDelegate(
   dialog_delegate->SetShowTitle(false);
   dialog_delegate->SetShowCloseButton(false);
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  dialog_delegate->SetInitiallyFocusedView(
+      account_chooser_view->GetInitiallyFocusedView());
   dialog_delegate->SetContentsView(std::move(account_chooser_view));
   return dialog_delegate;
 }

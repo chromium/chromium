@@ -34,6 +34,8 @@ class AccountChooserView : public views::FlexLayoutView {
   void UpdateView(const std::vector<AccountInfo>& accounts,
                   std::optional<CoreAccountId> primary_account_id);
 
+  views::View* GetInitiallyFocusedView();
+
  private:
   // Creates the view containing the account rows based on the number of
   // accounts.
