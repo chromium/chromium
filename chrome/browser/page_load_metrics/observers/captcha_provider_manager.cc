@@ -11,6 +11,33 @@
 
 namespace page_load_metrics {
 
+namespace {
+
+constexpr char kReCaptchaUrlSubstring[] = "google.com/recaptcha/";
+constexpr char kReCaptchaNetUrlSubstring[] = "recaptcha.net/recaptcha/";
+constexpr char kHCaptchaUrlSubstring[] = "hcaptcha.com/";
+constexpr char kCloudflareTurnstileUrlSubstring[] =
+    "challenges.cloudflare.com/";
+
+CaptchaProvider GetCaptchaProviderForUrlPattern(
+    const std::string& url_pattern) {
+  if (url_pattern.find(kReCaptchaUrlSubstring) != std::string::npos) {
+    return CaptchaProvider::kReCaptcha;
+  }
+  if (url_pattern.find(kReCaptchaNetUrlSubstring) != std::string::npos) {
+    return CaptchaProvider::kReCaptcha;
+  }
+  if (url_pattern.find(kHCaptchaUrlSubstring) != std::string::npos) {
+    return CaptchaProvider::kHCaptcha;
+  }
+  if (url_pattern.find(kCloudflareTurnstileUrlSubstring) != std::string::npos) {
+    return CaptchaProvider::kCloudflareTurnstile;
+  }
+  return CaptchaProvider::kUnknown;
+}
+
+}  // namespace
+
 // static
 CaptchaProviderManager* CaptchaProviderManager::GetInstance() {
   static base::NoDestructor<CaptchaProviderManager> instance;
@@ -47,6 +74,7 @@ void CaptchaProviderManager::SetCaptchaProviders(
 
   for (std::string captcha_provider : captcha_providers) {
     UrlPattern pattern;
+    pattern.provider = GetCaptchaProviderForUrlPattern(captcha_provider);
 
     // Split the captcha provider url pattern into host and path.
     auto slash_pos = captcha_provider.find_first_of('/');
@@ -82,9 +110,12 @@ void CaptchaProviderManager::SetCaptchaProviders(
 bool CaptchaProviderManager::IsCaptchaUrl(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!loaded() || empty()) {
-    return false;
-  }
+  return GetCaptchaProviderForUrl(url).has_value();
+}
+
+std::optional<CaptchaProvider> CaptchaProviderManager::GetCaptchaProviderForUrl(
+    const GURL& url) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const UrlPattern& pattern : captcha_provider_patterns_) {
     // First, check if the host matches the pattern.
@@ -111,11 +142,11 @@ bool CaptchaProviderManager::IsCaptchaUrl(const GURL& url) const {
     const bool path_wildcard_match =
         pattern.has_path_wildcard && url.path().starts_with(pattern.path);
     if (pattern.path.empty() || path_exact_match || path_wildcard_match) {
-      return true;
+      return pattern.provider;
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
 }  // namespace page_load_metrics

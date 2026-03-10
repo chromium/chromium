@@ -38,6 +38,24 @@ bool IsActorActingOnWebContents(content::WebContents* web_contents) {
 #endif
 }
 
+// Keep the histogram names in sync with the "CaptchaProvider" variant defined
+// in tools/metrics/histograms/metadata/page/histograms.xml.
+// LINT.IfChange(CaptchaProviderHistogramName)
+std::string GetCaptchaProviderHistogramName(
+    page_load_metrics::CaptchaProvider captcha_provider) {
+  switch (captcha_provider) {
+    case page_load_metrics::CaptchaProvider::kUnknown:
+      return ".UnknownCaptchaProvider";
+    case page_load_metrics::CaptchaProvider::kReCaptcha:
+      return ".ReCaptcha";
+    case page_load_metrics::CaptchaProvider::kHCaptcha:
+      return ".HCaptcha";
+    case page_load_metrics::CaptchaProvider::kCloudflareTurnstile:
+      return ".CloudflareTurnstile";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:CaptchaProvider)
+
 }  // namespace
 
 CaptchaMetricsObserver::CaptchaMetricsObserver() = default;
@@ -74,16 +92,25 @@ void CaptchaMetricsObserver::OnDidFinishSubFrameNavigation(
     return;
   }
 
-  if (CaptchaProviderManager::GetInstance()->IsCaptchaUrl(
-          navigation_handle->GetURL())) {
+  std::optional<page_load_metrics::CaptchaProvider> captcha_provider =
+      CaptchaProviderManager::GetInstance()->GetCaptchaProviderForUrl(
+          navigation_handle->GetURL());
+  if (captcha_provider.has_value()) {
     const CaptchaFrameAgentContext agent_context =
         IsActorActingOnWebContents(GetDelegate().GetWebContents())
             ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
             : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
-    base::UmaHistogramEnumeration("PageLoad.Clients.CaptchaFrameLoad",
+    std::string base_histogram_name = "PageLoad.Clients.CaptchaFrameLoad";
+    base::UmaHistogramEnumeration(base_histogram_name, agent_context);
+    std::string provider_specific_histogram_name =
+        base_histogram_name +
+        GetCaptchaProviderHistogramName(captcha_provider.value());
+    base::UmaHistogramEnumeration(provider_specific_histogram_name,
                                   agent_context);
+
     ukm::builders::PageLoad_CaptchaFrameLoad(GetDelegate().GetPageUkmSourceId())
         .SetAgentContext(static_cast<int64_t>(agent_context))
+        .SetCaptchaProvider(static_cast<int64_t>(captcha_provider.value()))
         .Record(ukm::UkmRecorder::Get());
   }
 }
@@ -94,17 +121,26 @@ void CaptchaMetricsObserver::FrameReceivedUserActivation(
     return;
   }
 
-  if (CaptchaProviderManager::GetInstance()->IsCaptchaUrl(
-          render_frame_host->GetLastCommittedURL())) {
+  std::optional<page_load_metrics::CaptchaProvider> captcha_provider =
+      CaptchaProviderManager::GetInstance()->GetCaptchaProviderForUrl(
+          render_frame_host->GetLastCommittedURL());
+  if (captcha_provider.has_value()) {
     const CaptchaFrameAgentContext agent_context =
         IsActorActingOnWebContents(GetDelegate().GetWebContents())
             ? CaptchaFrameAgentContext::kGlicAgentActiveOnTab
             : CaptchaFrameAgentContext::kNoAgentActiveOnTab;
-    base::UmaHistogramEnumeration("PageLoad.Clients.CaptchaFrameActivation",
+    std::string base_histogram_name = "PageLoad.Clients.CaptchaFrameActivation";
+    base::UmaHistogramEnumeration(base_histogram_name, agent_context);
+    std::string provider_specific_histogram_name =
+        base_histogram_name +
+        GetCaptchaProviderHistogramName(captcha_provider.value());
+    base::UmaHistogramEnumeration(provider_specific_histogram_name,
                                   agent_context);
+
     ukm::builders::PageLoad_CaptchaFrameActivation(
         GetDelegate().GetPageUkmSourceId())
         .SetAgentContext(static_cast<int64_t>(agent_context))
+        .SetCaptchaProvider(static_cast<int64_t>(captcha_provider.value()))
         .Record(ukm::UkmRecorder::Get());
   }
 }

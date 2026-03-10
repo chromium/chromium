@@ -17,17 +17,23 @@
 using content::NavigationSimulator;
 using content::RenderFrameHost;
 using content::RenderFrameHostTester;
+using page_load_metrics::CaptchaProvider;
 using page_load_metrics::CaptchaProviderManager;
 using CaptchaFrameAgentContext =
     CaptchaMetricsObserver::CaptchaFrameAgentContext;
+using HumanReadableUkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 
 class CaptchaMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(std::make_unique<CaptchaMetricsObserver>());
-    CaptchaProviderManager::GetInstance()->SetCaptchaProviders(
-        {"*captcha.com/*"});
+    CaptchaProviderManager::GetInstance()->SetCaptchaProviders({
+        "*captcha.com/*",
+        "*google.com/recaptcha/api2/anchor",
+        "*hcaptcha.com/captcha/*",
+        "*challenges.cloudflare.com/*",
+    });
   }
 
   RenderFrameHost* AppendChildFrameAndNavigateAndCommit(RenderFrameHost* parent,
@@ -39,6 +45,17 @@ class CaptchaMetricsObserverTest
         NavigationSimulator::CreateRendererInitiated(url, subframe);
     simulator->Commit();
     return simulator->GetFinalRenderFrameHost();
+  }
+
+  bool HasUkmEntryForCaptchaProvider(std::vector<HumanReadableUkmEntry> entries,
+                                     CaptchaProvider captcha_provider) {
+    for (const auto& entry : entries) {
+      if (entry.metrics.at("CaptchaProvider") ==
+          static_cast<int64_t>(captcha_provider)) {
+        return true;
+      }
+    }
+    return false;
   }
 };
 
@@ -108,4 +125,81 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaLoadAndClick) {
                 .GetEntries("PageLoad.CaptchaFrameActivation", {"AgentContext"})
                 .size(),
             1u);
+}
+
+TEST_F(CaptchaMetricsObserverTest, CaptchaProviderSpecificMetrics) {
+  // Load the Captcha frames.
+  NavigateAndCommit(GURL("https://www.top-level-site.com/"));
+  RenderFrameHost* captcha_frame = AppendChildFrameAndNavigateAndCommit(
+      web_contents()->GetPrimaryMainFrame(), "captcha-frame",
+      GURL("https://www.captcha.com/subframe.html"));
+  RenderFrameHost* recaptcha_frame = AppendChildFrameAndNavigateAndCommit(
+      web_contents()->GetPrimaryMainFrame(), "recaptcha-frame",
+      GURL("https://www.google.com/recaptcha/api2/anchor"));
+  RenderFrameHost* hcaptcha_frame = AppendChildFrameAndNavigateAndCommit(
+      web_contents()->GetPrimaryMainFrame(), "hcaptcha-frame",
+      GURL("https://www.hcaptcha.com/captcha/index.html"));
+  RenderFrameHost* cloudflare_frame = AppendChildFrameAndNavigateAndCommit(
+      web_contents()->GetPrimaryMainFrame(), "cloudflare-frame",
+      GURL("https://challenges.cloudflare.com/turnstile/index.html"));
+
+  // Check UMA histograms.
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameLoad", 4);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameLoad.UnknownCaptchaProvider", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameLoad.ReCaptcha", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameLoad.HCaptcha", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameLoad.CloudflareTurnstile", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation", 0);
+
+  // Check UKM entries.
+  auto captcha_frame_load_entries = tester()->test_ukm_recorder().GetEntries(
+      "PageLoad.CaptchaFrameLoad", {"AgentContext", "CaptchaProvider"});
+  EXPECT_EQ(captcha_frame_load_entries.size(), 4u);
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_load_entries,
+                                            CaptchaProvider::kUnknown));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_load_entries,
+                                            CaptchaProvider::kReCaptcha));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_load_entries,
+                                            CaptchaProvider::kHCaptcha));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(
+      captcha_frame_load_entries, CaptchaProvider::kCloudflareTurnstile));
+
+  // Simulate user activation on the Captcha frames.
+  RenderFrameHostTester::For(captcha_frame)->SimulateUserActivation();
+  RenderFrameHostTester::For(recaptcha_frame)->SimulateUserActivation();
+  RenderFrameHostTester::For(hcaptcha_frame)->SimulateUserActivation();
+  RenderFrameHostTester::For(cloudflare_frame)->SimulateUserActivation();
+
+  // Check UMA histograms.
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation", 4);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation.UnknownCaptchaProvider", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation.ReCaptcha", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation.HCaptcha", 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.Clients.CaptchaFrameActivation.CloudflareTurnstile", 1);
+
+  // Check UKM entries.
+  auto captcha_frame_activation_entries =
+      tester()->test_ukm_recorder().GetEntries(
+          "PageLoad.CaptchaFrameActivation",
+          {"AgentContext", "CaptchaProvider"});
+  EXPECT_EQ(captcha_frame_activation_entries.size(), 4u);
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_activation_entries,
+                                            CaptchaProvider::kUnknown));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_activation_entries,
+                                            CaptchaProvider::kReCaptcha));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(captcha_frame_activation_entries,
+                                            CaptchaProvider::kHCaptcha));
+  EXPECT_TRUE(HasUkmEntryForCaptchaProvider(
+      captcha_frame_activation_entries, CaptchaProvider::kCloudflareTurnstile));
 }

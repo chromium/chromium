@@ -109,4 +109,45 @@ TEST_F(CaptchaProviderManagerTest, IsCaptchaUrl) {
   EXPECT_FALSE(manager_.IsCaptchaUrl(GURL("https://other.provider5.com/page")));
 }
 
+TEST_F(CaptchaProviderManagerTest, GetCaptchaProviderForUrl) {
+  // The manager is initially not loaded and empty.
+  EXPECT_FALSE(manager_.loaded());
+  EXPECT_TRUE(manager_.empty());
+
+  // Set the list of captcha providers.
+  std::vector<std::string> providers = {
+      "*google.com/recaptcha/api2/anchor",
+      "*recaptcha.net/recaptcha/api2/anchor",
+      "*hcaptcha.com/captcha/*",
+      "*challenges.cloudflare.com/*",
+      "*other.com/captcha/*",
+  };
+  manager_.SetCaptchaProviders(providers);
+  EXPECT_TRUE(manager_.loaded());
+  EXPECT_FALSE(manager_.empty());
+
+  // Verify that the captcha provider is correctly identified for each URL.
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://www.google.com/recaptcha/api2/anchor?query=1")),
+            CaptchaProvider::kReCaptcha);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://www.recaptcha.net/recaptcha/api2/anchor")),
+            CaptchaProvider::kReCaptcha);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://www.hcaptcha.com/captcha/index.html")),
+            CaptchaProvider::kHCaptcha);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://challenges.cloudflare.com/turnstile/index.html")),
+            CaptchaProvider::kCloudflareTurnstile);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://other.com/captcha/index.html")),
+            CaptchaProvider::kUnknown);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://not.captcha.com/index.html")),
+            std::nullopt);
+  EXPECT_EQ(manager_.GetCaptchaProviderForUrl(
+                GURL("https://example.com/google.com/recaptcha/api2/anchor")),
+            std::nullopt);
+}
+
 }  // namespace page_load_metrics

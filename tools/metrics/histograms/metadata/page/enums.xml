@@ -51,6 +51,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h:CaptchaFrameAgentContext) -->
 
+<!-- LINT.IfChange(CaptchaProvider) -->
+
+<enum name="CaptchaProvider">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="reCaptcha"/>
+  <int value="2" label="hCaptcha"/>
+  <int value="3" label="Cloudflare Turnstile"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/captcha_provider_manager.h:CaptchaProvider) -->
+
 <!-- LINT.IfChange(ConnectionReuseStatus) -->
 
 <enum name="ConnectionReuseStatus">

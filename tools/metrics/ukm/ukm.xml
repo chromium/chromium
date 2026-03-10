@@ -18850,6 +18850,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CaptchaProvider" enum="CaptchaProvider">
+    <summary>
+      Records the CAPTCHA provider for the frame.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
 </event>
 
 <event name="PageLoad.CaptchaFrameLoad">
@@ -18867,6 +18879,18 @@ be describing additional metrics about the same event.
       This metric is split by whether an AI agent was active on the tab at the
       time of the frame load. AI agent activity is determined by
       ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="CaptchaProvider" enum="CaptchaProvider">
+    <summary>
+      Records the CAPTCHA provider for the frame.
     </summary>
     <aggregation>
       <history>
