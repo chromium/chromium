@@ -174,7 +174,6 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // CoreAccountId and the corresponding fetch start time. These two member
   // variables are only used to record account information fetch duration.
   base::flat_map<CoreAccountId, base::TimeTicks> user_info_fetch_start_times_;
-  base::flat_map<CoreAccountId, base::TimeTicks> user_avatar_fetch_start_times_;
 
   // Used for fetching the account images.
   std::unique_ptr<image_fetcher::ImageFetcherImpl> image_fetcher_;

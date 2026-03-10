@@ -337,7 +337,6 @@ void AccountFetcherService::FetchAccountImage(const CoreAccountId& account_id) {
                                  image_url_with_size.spec());
   image_fetcher::ImageFetcherParams params(traffic_annotation,
                                            kImageFetcherUmaClient);
-  user_avatar_fetch_start_times_[account_id] = base::TimeTicks::Now();
   GetOrCreateImageFetcher()->FetchImage(image_url_with_size,
                                         std::move(callback), std::move(params));
 }
@@ -407,11 +406,4 @@ void AccountFetcherService::OnImageFetched(
   }
   account_tracker_service_->SetAccountImage(account_id, image_url_with_size,
                                             image);
-  auto it = user_avatar_fetch_start_times_.find(account_id);
-  if (it != user_avatar_fetch_start_times_.end()) {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccountFetcher.AccountAvatarFetchTime",
-        base::TimeTicks::Now() - it->second);
-    user_avatar_fetch_start_times_.erase(it);
-  }
 }

@@ -412,20 +412,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
-    expires_after="2024-07-28">
-  <owner>triploblastic@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    The time it takes to fetch the account avatar for one account in
-    AccountFetcherService. This is recorded every time a User Avatar fetch
-    request from AccountFetcherService succeeds.
-
-    This histogram, along with Signin.AccountFetcher.AccountUserInfoFetchTime,
-    will be used to decide whether to use OneGoogle library.
-  </summary>
-</histogram>
-
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
     expires_after="2027-02-19">
   <owner>triploblastic@chromium.org</owner>
