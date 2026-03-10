@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -479,8 +480,10 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
     PopulateArcPolicyStatus(response.get());
   }
   response->emplace(kAccountTypeKey, GetPrimaryAccountTypeString());
-  response->emplace(kDemoModeConfigKey, ash::DemoSession::DemoConfigToString(
-                                            ash::DemoSession::GetDemoConfig()));
+  response->emplace(
+      kDemoModeConfigKey,
+      ash::DemoSession::DemoConfigToString(ash::DemoSession::GetDemoConfig(
+          CHECK_DEREF(g_browser_process->local_state()))));
   response->emplace(
       kFailedKnowledgeFactorAttempts,
       base::NumberToString(ash::AuthEventsRecorder::Get()

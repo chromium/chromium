@@ -259,7 +259,8 @@ std::string DemoSession::DemoConfigToString(
 }
 
 // static
-DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
+DemoSession::DemoModeConfig DemoSession::GetDemoConfig(
+    const PrefService& local_state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (g_force_demo_config.has_value())
@@ -273,16 +274,10 @@ DemoSession::DemoModeConfig DemoSession::GetDemoConfig() {
     return DemoModeConfig::kOnline;
   }
 
-  const PrefService* prefs = g_browser_process->local_state();
-
-  // The testing browser process might not have local state.
-  if (!prefs)
-    return DemoModeConfig::kNone;
-
   // Demo mode config preference is set at the end of the demo setup after
   // device is enrolled.
   auto demo_config = DemoModeConfig::kNone;
-  int demo_config_pref = prefs->GetInteger(prefs::kDemoModeConfig);
+  int demo_config_pref = local_state.GetInteger(prefs::kDemoModeConfig);
   if (demo_config_pref >= static_cast<int>(DemoModeConfig::kNone) &&
       demo_config_pref <= static_cast<int>(DemoModeConfig::kLast)) {
     demo_config = static_cast<DemoModeConfig>(demo_config_pref);
@@ -454,7 +449,8 @@ base::ListValue DemoSession::GetCountryList() {
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!components_)
-    components_ = std::make_unique<DemoComponents>(GetDemoConfig());
+    components_ =
+        std::make_unique<DemoComponents>(GetDemoConfig(local_state_.get()));
   components_->LoadResourcesComponent(std::move(load_callback));
 }
 
@@ -608,7 +604,8 @@ void DemoSession::OnSessionStateChanged() {
 
       // Download/update the Demo app component during session startup
       if (!components_) {
-        components_ = std::make_unique<DemoComponents>(GetDemoConfig());
+        components_ =
+            std::make_unique<DemoComponents>(GetDemoConfig(local_state_.get()));
       }
 
       // Create the window closer.

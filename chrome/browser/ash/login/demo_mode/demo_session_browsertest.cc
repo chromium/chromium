@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
@@ -72,16 +73,22 @@ void SetDemoConfigPref(DemoSession::DemoModeConfig demo_config) {
 
 void CheckDemoMode() {
   EXPECT_TRUE(ash::demo_mode::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kOnline, DemoSession::GetDemoConfig());
+  EXPECT_EQ(DemoSession::DemoModeConfig::kOnline,
+            DemoSession::GetDemoConfig(
+                CHECK_DEREF(g_browser_process->local_state())));
 }
 
 void CheckNoDemoMode() {
   EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
+  EXPECT_EQ(DemoSession::DemoModeConfig::kNone,
+            DemoSession::GetDemoConfig(
+                CHECK_DEREF(g_browser_process->local_state())));
 
   SetDemoConfigPref(DemoSession::DemoModeConfig::kOnline);
   EXPECT_FALSE(ash::demo_mode::IsDeviceInDemoMode());
-  EXPECT_EQ(DemoSession::DemoModeConfig::kNone, DemoSession::GetDemoConfig());
+  EXPECT_EQ(DemoSession::DemoModeConfig::kNone,
+            DemoSession::GetDemoConfig(
+                CHECK_DEREF(g_browser_process->local_state())));
 }
 
 }  // namespace

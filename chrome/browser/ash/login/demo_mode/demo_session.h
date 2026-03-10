@@ -104,7 +104,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // //chromeos/ash/components/demo_mode.
 
   // Returns current demo mode configuration.
-  static DemoModeConfig GetDemoConfig();
+  static DemoModeConfig GetDemoConfig(const PrefService& local_state);
 
   // Sets demo mode configuration for tests. Should be cleared by calling
   // ResetDemoConfigForTesting().

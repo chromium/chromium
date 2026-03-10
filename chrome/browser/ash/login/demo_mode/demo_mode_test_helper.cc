@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -105,7 +106,9 @@ void DemoModeTestHelper::FinishLoadingComponent() {
   DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
-  if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
+  if (DemoSession::GetDemoConfig(
+          CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) ==
+      DemoSession::DemoModeConfig::kOnline) {
     CHECK(fake_component_manager_ash_->FinishLoadRequest(
         DemoComponents::kDemoModeResourcesComponentName,
         component_updater::FakeComponentManagerAsh::ComponentInfo(
@@ -124,7 +127,9 @@ void DemoModeTestHelper::FailLoadingComponent() {
   DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
-  if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
+  if (DemoSession::GetDemoConfig(
+          CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) ==
+      DemoSession::DemoModeConfig::kOnline) {
     CHECK(fake_component_manager_ash_->FinishLoadRequest(
         DemoComponents::kDemoModeResourcesComponentName,
         component_updater::FakeComponentManagerAsh::ComponentInfo(
