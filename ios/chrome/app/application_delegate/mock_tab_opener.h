@@ -24,6 +24,10 @@ struct UrlLoadParams;
 @property(nonatomic, readonly) UrlLoadParams urlLoadParams;
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
 @property(nonatomic, strong, readonly) void (^completionBlock)(void);
+@property(nonatomic, readonly) BOOL dismissOmnibox;
+@property(nonatomic, readonly) BOOL dismissModalsCalled;
+// Argument for -completionBlockForTriggeringAction:action:.
+@property(nonatomic, readonly) TabOpeningPostOpeningAction action;
 // Argument for
 // -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
 @property(nonatomic, readonly) const std::vector<GURL>& URLs;

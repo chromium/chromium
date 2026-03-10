@@ -29,6 +29,8 @@
   _urlLoadParams = urlLoadParams;
   _applicationMode = targetMode;
   _completionBlock = [completion copy];
+  _dismissOmnibox = dismissOmnibox;
+  _dismissModalsCalled = YES;
   _URLs.push_back(urlLoadParams.web_params.url);
 }
 
@@ -55,7 +57,7 @@
 
 - (ProceduralBlock)completionBlockForTriggeringAction:
     (TabOpeningPostOpeningAction)action {
-  // Stub
+  _action = action;
   return nil;
 }
 

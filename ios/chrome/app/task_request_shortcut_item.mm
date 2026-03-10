@@ -102,6 +102,7 @@ bool ValidateShortcutItemAndRecordMetrics(NSString* shortcut_item) {
     if (_shortcutHandler) {
       _shortcutHandler(NO);
     }
+    return;
   }
 
   SceneState* sceneState = [self sceneStateFromSessionID];
