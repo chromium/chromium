@@ -60,7 +60,7 @@ TransformOperation::OperationType GetTypeForTranslate(const Length& x,
                                                       const Length& y,
                                                       double z) {
   bool x_zero = x.IsZero();
-  bool y_zero = x.IsZero();
+  bool y_zero = y.IsZero();
   bool z_zero = !z;
   if (y_zero && z_zero)
     return TransformOperation::kTranslateX;
