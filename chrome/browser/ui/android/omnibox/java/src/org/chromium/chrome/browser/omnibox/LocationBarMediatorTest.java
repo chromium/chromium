@@ -792,7 +792,8 @@ public class LocationBarMediatorTest {
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
 
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_DEL, mKeyEvent));
-        assertNull(input.getSiteSearchData());
+        FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
+        assertNull(state.getAutocompleteInput().getSiteSearchData());
     }
 
     @Test

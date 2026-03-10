@@ -65,6 +65,7 @@ public class AutocompleteInput implements UserData {
         }
     }
 
+    // LINT.IfChange(Members)
     private long mUrlFocusTime;
     private GURL mPageUrl;
     private int mPageClassification;
@@ -85,6 +86,8 @@ public class AutocompleteInput implements UserData {
     private final SettableNullableObservableSupplier<SiteSearchData> mSiteSearchData =
             ObservableSuppliers.createNullable();
 
+    // LINT.ThenChange(:CopyFrom)
+
     public AutocompleteInput() {
         reset();
     }
@@ -99,6 +102,34 @@ public class AutocompleteInput implements UserData {
         mPageClassification = pageClassification;
         return this;
     }
+
+    /**
+     * Mutates this object to have the same values as {@code other}. Observers of the suppliers will
+     * not be copied, only the current values.
+     *
+     * @param other The {@link AutocompleteInput} to copy values from.
+     */
+    // LINT.IfChange(CopyFrom)
+    public void copyFrom(AutocompleteInput other) {
+        mUrlFocusTime = other.mUrlFocusTime;
+        mPageUrl = other.mPageUrl;
+        mPageClassification = other.mPageClassification;
+        mPageTitle = other.mPageTitle;
+        mUserText = other.mUserText;
+        mAllowExactKeywordMatch = other.mAllowExactKeywordMatch;
+        mHasAttachments = other.mHasAttachments;
+        mSuppressAutomaticSuggestionsUntilUserStartsTyping =
+                other.mSuppressAutomaticSuggestionsUntilUserStartsTyping;
+        mSelection = other.mSelection;
+        mRefineActionUsage = other.mRefineActionUsage;
+        mSuggestionsListScrolled = other.mSuggestionsListScrolled;
+        mFocusReason = other.mFocusReason;
+        mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
+        mToolModeSupplier.set(other.mToolModeSupplier.get());
+        mSiteSearchData.set(other.mSiteSearchData.get());
+    }
+
+    // LINT.ThenChange(:Members)
 
     private int getComposeboxEquivalentOfPageClassification() {
         return switch (mPageClassification) {
