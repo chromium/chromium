@@ -36,7 +36,6 @@ class PlayReadyKeySystemInfo : public media::KeySystemInfo {
       const std::string& requested_robustness,
       const bool* hw_secure_requirement) const override;
   media::EmeConfig::Rule GetPersistentLicenseSessionSupport() const override;
-  media::EmeConfig GetPersistentUsageRecordSessionSupport() const;
   media::EmeFeatureSupport GetPersistentStateSupport() const override;
   media::EmeFeatureSupport GetDistinctiveIdentifierSupport() const override;
 
