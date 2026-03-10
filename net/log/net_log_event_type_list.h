@@ -3808,6 +3808,16 @@ EVENT_TYPE(DNS_TRANSACTION_TCP_ATTEMPT)
 //   }
 EVENT_TYPE(DNS_TRANSACTION_HTTPS_ATTEMPT)
 
+// This event is created when DnsTransaction creates a new platform attempt.
+//
+// It has a single parameter:
+//
+//   {
+//     "source_dependency": <Source id of the platform API attempt created for
+//                           the attempt>,
+//   }
+EVENT_TYPE(DNS_TRANSACTION_PLATFORM_ATTEMPT)
+
 // This event is created when DnsTransaction receives a matching response.
 //
 // It has the following parameters:

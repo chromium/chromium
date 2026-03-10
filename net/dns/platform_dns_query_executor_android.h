@@ -23,6 +23,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/dns/dns_attempt.h"
 
 namespace net {
 
@@ -38,10 +39,9 @@ namespace net {
 // under active development. Once development is complete, this TODO will be
 // removed.
 class NET_EXPORT PlatformDnsQueryExecutorAndroid final
-    : private base::MessagePumpForIO::FdWatcher {
+    : public DnsAttempt,
+      private base::MessagePumpForIO::FdWatcher {
  public:
-  using ResultsCallback = base::OnceCallback<void(
-      base::expected<scoped_refptr<net::IOBuffer>, int> result)>;
 
   class Delegate {
    public:
@@ -50,7 +50,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
     // An abstraction over the `android_res_nquery` DNS resolution API to allow
     // for mocking in tests.
     virtual int Query(net_handle_t network,
-                      base::cstring_view dname,
+                      base::cstring_view hostname,
                       uint16_t dns_query_type) = 0;
 
     // An abstraction over the `android_res_nresult` DNS resolution API to
@@ -64,7 +64,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
     ~DelegateImpl() override;
 
     int Query(net_handle_t network,
-              base::cstring_view dname,
+              base::cstring_view hostname,
               uint16_t dns_query_type) __INTRODUCED_IN(29) override;
 
     int Result(int fd, int* rcode, base::span<uint8_t> answer)
@@ -73,10 +73,13 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
   // `hostname` must be a valid domain name, and it's the caller's
   // responsibility to check it before calling this constructor.
-  PlatformDnsQueryExecutorAndroid(std::string hostname,
+  PlatformDnsQueryExecutorAndroid(size_t server_index,
+                                  base::span<const uint8_t> hostname,
                                   uint16_t dns_query_type,
                                   handles::NetworkHandle target_network,
-                                  Delegate* delegate) __INTRODUCED_IN(29);
+                                  Delegate* delegate,
+                                  const NetLogWithSource& net_log)
+      __INTRODUCED_IN(29);
 
   PlatformDnsQueryExecutorAndroid(const PlatformDnsQueryExecutorAndroid&) =
       delete;
@@ -87,14 +90,22 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   // attempts cannot be cancelled.
   ~PlatformDnsQueryExecutorAndroid() override;
 
+  // DnsAttempt methods.
+  int Start(CompletionOnceCallback callback) __INTRODUCED_IN(29) override;
+  const DnsQuery* GetQuery() const override;
+  const DnsResponse* GetResponse() const override;
+  base::Value GetRawResponseBufferForLog() const override;
+  const NetLogWithSource& GetSocketNetLog() const override;
+  bool IsPending() const override;
+
+ private:
   // Starts the `hostname` resolution. `Start()` can be called only once per
   // each instance of `PlatformDnsQueryExecutorAndroid`. Calling it multiple
   // times will result in crash. `results_callback` will be invoked
   // asynchronously on the thread that called `Start()` with the results of the
   // resolution. `results_callback` can destroy `this`.
-  void Start(ResultsCallback results_callback) __INTRODUCED_IN(29);
+  void StartInternal() __INTRODUCED_IN(29);
 
- private:
   // `base::MessagePumpForIO::FdWatcher` methods.
   void OnFileCanReadWithoutBlocking(int fd) __INTRODUCED_IN(29) override;
   void OnFileCanWriteWithoutBlocking(int fd) __INTRODUCED_IN(29) override;
@@ -107,7 +118,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
   bool IsActive() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return !results_callback_.is_null();
+    return !callback_.is_null();
   }
 
   const std::string hostname_;
@@ -120,10 +131,12 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
   base::MessagePumpForIO::FdWatchController read_fd_watcher_;
 
-  // The listener to the results of this executor.
-  ResultsCallback results_callback_;
+  std::unique_ptr<DnsResponse> response_;
+  CompletionOnceCallback callback_;
+  NetLogWithSource net_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<PlatformDnsQueryExecutorAndroid> weak_factory_{this};
 };
 
 }  // namespace net

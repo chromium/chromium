@@ -43,6 +43,8 @@ class DnsAttempt {
   virtual int Start(CompletionOnceCallback callback) = 0;
 
   // Returns the query of this attempt.
+  // TODO(crbug.com/491089842): This is used only to create new DnsAttempt. We
+  // should consider refactoring this to a Clone-like method.
   virtual const DnsQuery* GetQuery() const = 0;
 
   // Returns the response or NULL if has not received a matching response from

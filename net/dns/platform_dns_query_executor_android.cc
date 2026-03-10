@@ -20,11 +20,13 @@
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/log/net_log_values.h"
 
 namespace net {
 
@@ -52,9 +54,9 @@ PlatformDnsQueryExecutorAndroid::DelegateImpl::~DelegateImpl() = default;
 
 int PlatformDnsQueryExecutorAndroid::DelegateImpl::Query(
     net_handle_t network,
-    base::cstring_view dname,
+    base::cstring_view hostname,
     uint16_t dns_query_type) {
-  return android_res_nquery(network, dname.c_str(), dns_query_type,
+  return android_res_nquery(network, hostname.c_str(), dns_query_type,
                             dns_protocol::kClassIN,
                             /*flags=*/0);
 }
@@ -67,19 +69,23 @@ int PlatformDnsQueryExecutorAndroid::DelegateImpl::Result(
 }
 
 PlatformDnsQueryExecutorAndroid::PlatformDnsQueryExecutorAndroid(
-    std::string hostname,
+    size_t server_index,
+    base::span<const uint8_t> hostname,
     uint16_t dns_query_type,
     handles::NetworkHandle target_network,
-    Delegate* delegate)
-    : hostname_(std::move(hostname)),
+    Delegate* delegate,
+    const NetLogWithSource& parent_net_log)
+    : DnsAttempt(server_index),
+      hostname_(dns_names_util::NetworkToDottedName(hostname).value()),
       dns_query_type_(dns_query_type),
       target_network_(target_network),
       delegate_(delegate),
-      read_fd_watcher_(FROM_HERE) {
-  // `hostname` must be a valid domain name, and it's the caller's
-  // responsibility to check it before calling this constructor.
-  DCHECK(dns_names_util::IsValidDnsName(hostname_))
-      << "Invalid hostname: " << hostname_;
+      read_fd_watcher_(FROM_HERE),
+      net_log_(NetLogWithSource::Make(
+          NetLog::Get(),
+          NetLogSourceType::DNS_TRANSACTION_PLATFORM_ATTEMPT)) {
+  parent_net_log.AddEventReferencingSource(
+      NetLogEventType::DNS_TRANSACTION_PLATFORM_ATTEMPT, net_log_.source());
   CHECK(delegate_);
 }
 
@@ -87,11 +93,21 @@ PlatformDnsQueryExecutorAndroid::~PlatformDnsQueryExecutorAndroid() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PlatformDnsQueryExecutorAndroid::Start(ResultsCallback results_callback) {
+int PlatformDnsQueryExecutorAndroid::Start(CompletionOnceCallback callback) {
+  DCHECK(callback_.is_null());
+  callback_ = std::move(callback);
+  // StartInternal can currently call the onLookupComplete callback
+  // synchronously. This does not play well with the expectation of the caller.
+  // TODO(crbug.com/491090786): Until this is fixed, work around this by posting
+  // onto ourselves and always returning ERR_IO_PENDING.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PlatformDnsQueryExecutorAndroid::StartInternal,
+                                weak_factory_.GetWeakPtr()));
+  return ERR_IO_PENDING;
+}
+
+void PlatformDnsQueryExecutorAndroid::StartInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(results_callback);
-  CHECK(!results_callback_);
-  results_callback_ = std::move(results_callback);
 
   int fd = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
                             dns_query_type_);
@@ -153,12 +169,60 @@ void PlatformDnsQueryExecutorAndroid::OnLookupComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActive());
 
-  std::move(results_callback_).Run(result);
-  // Running `results_callback_` can delete `this`.
+  if (!result.has_value()) {
+    std::move(callback_).Run(result.error());
+    return;
+  }
+
+  scoped_refptr<IOBuffer> buffer = result.value();
+  response_ = std::make_unique<DnsResponse>(buffer, buffer->size());
+  if (!response_->InitParseWithoutQuery(buffer->size())) {
+    std::move(callback_).Run(ERR_DNS_MALFORMED_RESPONSE);
+    return;
+  }
+
+  if (response_->flags() & dns_protocol::kFlagTC) {
+    std::move(callback_).Run(ERR_DNS_SERVER_REQUIRES_TCP);
+    return;
+  }
+  if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+    std::move(callback_).Run(FailureRcodeToNetError(response_->rcode()));
+    return;
+  }
+
+  std::move(callback_).Run(OK);
 }
 
 void PlatformDnsQueryExecutorAndroid::OnFileCanWriteWithoutBlocking(int fd) {
   NOTREACHED() << "Unexpected write on file descriptor.";
+}
+
+const DnsQuery* PlatformDnsQueryExecutorAndroid::GetQuery() const {
+  NOTREACHED() << "The internal Android API being called takes care of "
+                  "constructing the query and does not provide access to it.";
+}
+
+const DnsResponse* PlatformDnsQueryExecutorAndroid::GetResponse() const {
+  const DnsResponse* resp = response_.get();
+  return (resp != nullptr && resp->IsValid()) ? resp : nullptr;
+}
+
+base::Value PlatformDnsQueryExecutorAndroid::GetRawResponseBufferForLog()
+    const {
+  if (!response_) {
+    return base::Value();
+  }
+  return NetLogBinaryValue(response_->io_buffer()->data(),
+                           response_->io_buffer_size());
+}
+
+const NetLogWithSource& PlatformDnsQueryExecutorAndroid::GetSocketNetLog()
+    const {
+  return net_log_;
+}
+
+bool PlatformDnsQueryExecutorAndroid::IsPending() const {
+  return !callback_.is_null();
 }
 
 }  // namespace net
