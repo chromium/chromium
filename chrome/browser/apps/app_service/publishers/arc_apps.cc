@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"

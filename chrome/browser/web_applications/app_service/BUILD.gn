@@ -43,6 +43,7 @@ source_set("app_service") {
   if (is_chromeos) {
     deps += [
       "//ash/public/cpp",
+      "//ash/strings:strings_grit",
       "//ash/webui/projector_app/public/cpp",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser/apps/almanac_api_client",

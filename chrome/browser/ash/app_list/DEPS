@@ -78,7 +78,6 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
@@ -118,6 +117,10 @@ specific_include_rules = {
   "app_list_syncable_service_unittest\\.cc": [
     "+cc/base/math_util.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  ],
+
+  "app_list_client_impl\\.cc": [
+    "+chrome/grit",
   ],
 
   "app_list_client_impl_browsertest\\.cc": [

@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "ui/base/l10n/l10n_util.h"

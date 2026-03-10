@@ -17,6 +17,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/files/safe_base_name.h"

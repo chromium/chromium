@@ -47,6 +47,11 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/extensions",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "app_service_app_model_builder_unittest\\.cc": [
+    "+chrome/grit",
+  ],
+}

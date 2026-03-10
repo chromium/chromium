@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -134,9 +134,9 @@ std::u16string ArcAppShortcutSearchResult::ComputeAccessibleName() const {
   if (!app_info.get())
     return std::u16string();
 
-  return l10n_util::GetStringFUTF16(IDS_APP_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
-                                    base::UTF8ToUTF16(data_->short_label),
-                                    base::UTF8ToUTF16(app_info->name));
+  return l10n_util::GetStringFUTF16(
+      IDS_APP_LIST_ACTION_SHORTCUT_ACCESSIBILITY_NAME,
+      base::UTF8ToUTF16(data_->short_label), base::UTF8ToUTF16(app_info->name));
 }
 
 void ArcAppShortcutSearchResult::OnIconDecoded(const gfx::ImageSkia& icon) {

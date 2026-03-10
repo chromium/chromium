@@ -34,6 +34,7 @@ static_library("app_service") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings:strings_grit",
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",

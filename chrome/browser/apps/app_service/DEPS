@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/strings",
   "+components/services/app_service/public",
   "+components/app_constants",
   "+components/app_restore",
@@ -9,12 +10,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "notifications_browsertest\.cc": [
+  "notifications_browsertest\\.cc": [
     "+ash/system/message_center/arc/arc_notification_manager.h",
     "+ash/system/message_center/arc/arc_notification_manager_delegate.h",
     "+ui/message_center/message_center.h",
   ],
-  ".*unittest\.cc": [
+  ".*unittest\\.cc": [
     "+cc/test",
   ],
 }
