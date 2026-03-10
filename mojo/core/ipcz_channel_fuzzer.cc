@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
@@ -15,12 +16,13 @@
 #include "mojo/core/connection_params.h"
 #include "mojo/core/fuzzing_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> payload) {
   static base::NoDestructor<mojo::core::Environment> environment;
   mojo::PlatformChannel channel;
   mojo::core::FakeChannelDelegate receiver_delegate{/*is_ipcz_transport=*/true};
@@ -39,9 +41,6 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       Channel::HandlePolicy::kRejectHandles,
       environment->main_thread_task_executor.task_runner());
   sender->Start();
-
-  // SAFETY: required from fuzzer.
-  auto payload = UNSAFE_BUFFERS(base::span(data, size));
 
   // Fuzz ipcz message parsing from raw data.
   sender->Write(Channel::Message::CreateRawForFuzzing(payload));

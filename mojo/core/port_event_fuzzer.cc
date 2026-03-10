@@ -4,10 +4,10 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/core/node_controller.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Message deserialization may register handles in the global handle table. We
 // need to initialize Core for that to be OK.
@@ -15,11 +15,7 @@ struct Environment {
   Environment() { mojo::core::InitializeCore(); }
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data_ptr,
-                                      size_t size) {
-  // SAFETY: libfuzzer provides a valid pointer and size pair.
-  auto data = UNSAFE_BUFFERS(base::span<const uint8_t>(data_ptr, size));
-
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static Environment environment;
 
   // Try using the fuzz as the full contents of a port event.

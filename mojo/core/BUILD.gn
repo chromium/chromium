@@ -325,6 +325,7 @@ if (mojo_support_legacy_core) {
       ":core_impl_for_fuzzers",
       "//base",
       "//mojo/public/cpp/platform",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 
@@ -343,6 +344,7 @@ if (mojo_support_legacy_core) {
     deps = [
       ":core_impl_for_fuzzers",
       "//base",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 
@@ -360,6 +362,7 @@ if (mojo_support_legacy_core) {
       ":core_impl_for_fuzzers",
       "//base",
       "//mojo/public/cpp/platform",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 
