@@ -3,10 +3,17 @@
 # found in the LICENSE file.
 
 group("web") {
-  deps = [ ":navigation" ]
+  deps = [
+    ":cobalt",
+    ":navigation",
+  ]
 }
 
 source_set("navigation") {
   sources = [ "navigation_api.h" ]
   frameworks = [ "WebKit.framework" ]
+}
+
+source_set("cobalt") {
+  sources = [ "cobalt_api.h" ]
 }
