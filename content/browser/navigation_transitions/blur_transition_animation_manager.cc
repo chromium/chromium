@@ -151,7 +151,6 @@ BlurTransitionAnimationManager::BlurTransitionAnimationManager(
 BlurTransitionAnimationManager::~BlurTransitionAnimationManager() {
   SignalExit(TransitionExitReason::kRenderProcessGone,
              /*should_animate_out=*/false);
-  UnregisterWindowObserver();
 }
 
 BlurTransitionAnimationManager::WebContentsViewAndroidDelegate*
@@ -361,13 +360,19 @@ void BlurTransitionAnimationManager::OnBlurHoldTimerExpired() {
   RequestAnimate();
 }
 
+void BlurTransitionAnimationManager::OnDetachCompositor() {
+  window_observation_.Reset();
+}
+
 void BlurTransitionAnimationManager::OnAnimate(
     base::TimeTicks frame_begin_time) {
+  // If we are in a static state, or if there are no layers to animate,
+  // we can stop observing the window until the next state change.
   if (animation_state_ == AnimationState::kNone ||
       animation_state_ == AnimationState::kBlurShown ||
       animation_state_ == AnimationState::kFallbackShown ||
       (!blur_layer_ && !fallback_color_layer_)) {
-    UnregisterWindowObserver();
+    window_observation_.Reset();
     return;
   }
 
@@ -426,7 +431,7 @@ void BlurTransitionAnimationManager::OnAnimate(
       DestroyLayer();
     } else if (animation_state_ == AnimationState::kFadeToFallbackColor) {
       SetAnimationState(AnimationState::kFallbackShown);
-      UnregisterWindowObserver();
+      window_observation_.Reset();
       // Drop the old page's surface now that it's completely covered.
       if (blur_layer_) {
         blur_layer_->RemoveFromParent();
@@ -439,31 +444,16 @@ void BlurTransitionAnimationManager::OnAnimate(
 }
 
 void BlurTransitionAnimationManager::RegisterWindowObserver() {
-  if (is_window_observer_registered_) {
+  if (window_observation_.IsObserving()) {
     return;
   }
   if (auto* delegate = GetWebContentsViewAndroidDelegate()) {
     if (auto* native_view = delegate->GetNativeView()) {
       if (auto* window = native_view->GetWindowAndroid()) {
-        window->AddObserver(this);
-        is_window_observer_registered_ = true;
+        window_observation_.Observe(window);
       }
     }
   }
-}
-
-void BlurTransitionAnimationManager::UnregisterWindowObserver() {
-  if (!is_window_observer_registered_) {
-    return;
-  }
-  if (auto* delegate = GetWebContentsViewAndroidDelegate()) {
-    if (auto* native_view = delegate->GetNativeView()) {
-      if (auto* window = native_view->GetWindowAndroid()) {
-        window->RemoveObserver(this);
-      }
-    }
-  }
-  is_window_observer_registered_ = false;
 }
 
 void BlurTransitionAnimationManager::RequestAnimate() {
@@ -538,7 +528,7 @@ void BlurTransitionAnimationManager::DestroyLayer() {
   fallback_color_layer_.reset();
   if (animation_state_ != AnimationState::kNone) {
     animation_state_ = AnimationState::kNone;
-    UnregisterWindowObserver();
+    window_observation_.Reset();
   }
 }
 

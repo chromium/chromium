@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -113,7 +115,7 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
   // ui::WindowAndroidObserver:
   void OnRootWindowVisibilityChanged(bool visible) override {}
   void OnAttachCompositor() override {}
-  void OnDetachCompositor() override {}
+  void OnDetachCompositor() override;
   void OnAnimate(base::TimeTicks frame_begin_time) override;
   void OnActivityStopped() override {}
   void OnActivityStarted() override {}
@@ -173,7 +175,6 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
   void DestroyLayer();
 
   void RegisterWindowObserver();
-  void UnregisterWindowObserver();
 
   // The ID of the navigation handle that triggered the blur transition.
   int64_t navigation_id_ = 0;
@@ -202,7 +203,8 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
   float initial_blur_opacity_ = 0.0f;
   float initial_fallback_opacity_ = 0.0f;
 
-  bool is_window_observer_registered_ = false;
+  base::ScopedObservation<ui::WindowAndroid, ui::WindowAndroidObserver>
+      window_observation_{this};
   TransitionExitReason last_exit_reason_ =
       TransitionExitReason::kAnimationTimerExpired;
   std::unique_ptr<WebContentsViewAndroidDelegate>
