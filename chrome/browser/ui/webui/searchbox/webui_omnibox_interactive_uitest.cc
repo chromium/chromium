@@ -39,6 +39,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+const DeepQuery kClassicContextMenu = {"omnibox-popup-app", "#context",
+                                       "#entrypoint"};
 const DeepQuery kDropdownContent = {"omnibox-popup-app",
                                     "cr-searchbox-dropdown", "#content"};
 const DeepQuery kMatch = {"omnibox-popup-app", "cr-searchbox-dropdown",
@@ -87,6 +89,29 @@ class OmniboxWebUiInteractiveTestBase
     return features;
   }
 
+  // Returns the currently visible `OmniboxPopupWebUIContent`. An
+  // `OmniboxPopupView` may host multiple content views, but only one is
+  // visible at any given time.
+  auto GetActiveClassicPopupWebView() {
+    return base::BindLambdaForTesting([&]() -> views::View* {
+      auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->toolbar()
+              ->location_bar_view()
+              ->GetOmniboxPopupViewForTesting());
+      return popup_view->presenter()->GetWebUIContent();
+    });
+  }
+
+  auto WaitForClassicPopupReady() {
+    return Steps(InAnyContext(WaitForShow(
+                     OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+                 InAnyContext(InstrumentNonTabWebView(
+                     kPopupWebView, GetActiveClassicPopupWebView())),
+                 InSameContext(WaitForWebContentsReady(
+                     kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))));
+  }
+
   auto WaitForGoogleSearch(const ui::ElementIdentifier& tab_id,
                            const std::string& query) {
     return Steps(
@@ -111,35 +136,12 @@ class OmniboxWebUiInteractiveTest : public OmniboxWebUiInteractiveTestBase {
   }
 
  protected:
-  // Returns the currently visible `OmniboxPopupWebUIContent`. An
-  // `OmniboxPopupView` may host multiple content views, but only one is
-  // visible at any given time.
-  auto GetActivePopupWebView() {
-    return base::BindLambdaForTesting([&]() -> views::View* {
-      auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->toolbar()
-              ->location_bar_view()
-              ->GetOmniboxPopupViewForTesting());
-      return popup_view->presenter_->GetWebUIContent();
-    });
-  }
-
-  auto WaitForPopupReady() {
-    return Steps(InAnyContext(WaitForShow(
-                     OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-                 InAnyContext(InstrumentNonTabWebView(kPopupWebView,
-                                                      GetActivePopupWebView())),
-                 InSameContext(WaitForWebContentsReady(
-                     kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))));
-  }
-
   // Enters Gemini mode in the omnibox and waits for the popup to be ready.
   auto EnterGeminiMode() {
     return Steps(FocusElement(kOmniboxElementId),
                  EnterText(kOmniboxElementId, u"@gemini"),
                  SendKeyPress(kOmniboxElementId, ui::VKEY_TAB),
-                 WaitForPopupReady());
+                 WaitForClassicPopupReady());
   }
 
   auto WaitForElementToHide(const ui::ElementIdentifier& contents_id,
@@ -210,6 +212,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
       // Clicking the top match should navigate to a Google search results page.
       InSameContext(ClickElement(kPopupWebView, kMatch)),
       WaitForGoogleSearch(kNewTab, "%40gemini&oq=%40gemini"));
+}
+
+// Ensures that the entrypoint is not shown in the popup whenever the AIM popup
+// feature is disabled.
+IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, AimEntryPointHidden) {
+  RunTestSequence(
+      // Open the Omnibox.
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
+      WaitForClassicPopupReady(),
+      // Ensure that there's no context menu button in the popup.
+      InAnyContext(EnsureNotPresent(kPopupWebView, kClassicContextMenu)));
 }
 
 class OmniboxAimWebUiInteractiveTestBase
@@ -357,6 +371,15 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       // Verify tab has focus and not the location bar.
       CheckJsResult(kNewTab, "() => document.hasFocus()", true),
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
+                       AimEntryPointShownInClassicPopup) {
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
+      WaitForClassicPopupReady(),
+      InAnyContext(EnsurePresent(kPopupWebView, kClassicContextMenu)));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
