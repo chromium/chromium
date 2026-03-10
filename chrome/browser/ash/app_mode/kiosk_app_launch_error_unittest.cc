@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "components/prefs/pref_service.h"

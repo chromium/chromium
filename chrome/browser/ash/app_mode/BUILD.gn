@@ -100,7 +100,7 @@ static_library("app_mode") {
 
   deps = [
     "//ash",
-    "//chrome/app:generated_resources_grit",
+    "//ash/strings:strings_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/app_mode",
     "//chrome/browser/apps/app_service/app_icon",
