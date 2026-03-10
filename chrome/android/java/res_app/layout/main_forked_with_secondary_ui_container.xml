@@ -67,22 +67,7 @@ TODO(http://crbug.com/485940935): Delete this.
                 app:layout_constraintStart_toEndOf="@+id/side_ui_start_anchor_container"
                 app:layout_constraintEnd_toStartOf="@+id/side_ui_end_anchor_container"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ViewStub
-                    android:id="@+id/tab_modal_dialog_container_stub"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inflatedId="@+id/tab_modal_dialog_container" />
-
-                <!-- Please do not add anything in between tab_modal_dialog_container_stub and
-                     tab_modal_dialog_container_sibling_view. -->
-                <ViewStub
-                    android:id="@+id/tab_modal_dialog_container_sibling_view"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" />
-
-            </FrameLayout>
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <!-- Please do not add anything in between
                 side_ui_start_anchor_container_stub and
@@ -148,6 +133,19 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout_gravity="start|bottom"
             android:inflatedId="@+id/bottombar"
             android:layout="@layout/custom_tabs_bottombar" />
+
+        <ViewStub
+            android:id="@+id/tab_modal_dialog_container_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/tab_modal_dialog_container" />
+
+        <!-- Please do not add anything in between tab_modal_dialog_container_stub and
+             tab_modal_dialog_container_sibling_view. -->
+        <ViewStub
+            android:id="@+id/tab_modal_dialog_container_sibling_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
 
         <org.chromium.ui.AsyncViewStub
             android:id="@+id/omnibox_results_container_stub"
