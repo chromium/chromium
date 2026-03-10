@@ -18,6 +18,7 @@
 
 namespace base {
 
+class AsyncMemoryConsumerRegistration;
 class MemoryConsumerRegistry;
 
 // The MemoryConsumer is used to coordinate memory usage across all processes.
@@ -156,15 +157,26 @@ class BASE_EXPORT MemoryConsumerRegistration
   // MemoryConsumerRegistryDestructionObserver:
   void OnBeforeMemoryConsumerRegistryDestroyed() override;
 
+  // Associates an optional flag that indicates if the async handle of this
+  // registration was already destroyed.
+  void SetAsyncHandleDestroyedFlag(
+      const std::atomic<bool>* async_handle_destroyed_flag,
+      base::PassKey<AsyncMemoryConsumerRegistration> pass_key);
+
  private:
-  using PassKey = PassKey<MemoryConsumerRegistration>;
+  using PassKey = base::PassKey<MemoryConsumerRegistration>;
 
   std::string consumer_name_;
   raw_ptr<MemoryConsumer> consumer_;
 
-  // Indicates if failure to unregister in time should cause a CHECK failure, or
+  // Whether we should check if the consumer was correctly unregistered or
   // if it should simply be ignored.
   CheckUnregister check_unregister_;
+
+  // An optional flag that indicates if the async handle of this registration
+  // was already destroyed. This is used to distinguish between a leak and a
+  // race condition in async registrations.
+  raw_ptr<const std::atomic<bool>> async_handle_destroyed_flag_;
 
   raw_ptr<MemoryConsumerRegistry> registry_;
 };

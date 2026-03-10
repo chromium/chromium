@@ -10,9 +10,9 @@
 
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -44,7 +44,7 @@ class TestAsyncMemoryConsumer : public MemoryConsumer {
 };
 
 class AsyncMemoryConsumerRegistrationTest : public testing::Test {
- private:
+ protected:
   test::TaskEnvironment task_environment_;
 };
 
@@ -61,21 +61,45 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, RegisterOnAnotherSequence) {
   ASSERT_TRUE(test::RunUntil([&]() { return registry.size() == 1u; }));
 
   {
-    RunLoop run_loop;
     consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnUpdateMemoryLimitCall);
-    registry.NotifyUpdateMemoryLimitAsync(22, run_loop.QuitClosure());
-    run_loop.Run();
+    registry.NotifyUpdateMemoryLimitAsync(22, task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
   }
 
   {
-    RunLoop run_loop;
     consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnReleaseMemoryCall);
-    registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
-    run_loop.Run();
+    registry.NotifyReleaseMemoryAsync(task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
   }
 
   consumer.Reset();
   ASSERT_TRUE(test::RunUntil([&]() { return registry.size() == 0u; }));
+}
+
+TEST_F(AsyncMemoryConsumerRegistrationTest, DestroyRegistryBeforeAsyncCleanup) {
+  std::optional<TestMemoryConsumerRegistry> registry(std::in_place);
+
+  auto async_task_runner = ThreadPool::CreateSequencedTaskRunner({});
+
+  SequenceBound<TestAsyncMemoryConsumer> consumer(async_task_runner, "consumer",
+                                                  std::nullopt);
+
+  // Wait for registration.
+  ASSERT_TRUE(test::RunUntil([&]() { return registry->size() == 1u; }));
+
+  // Destroy the consumer. This sets the shared atomic flag synchronously from
+  // the background thread's perspective, then posts a DeleteSoon task to the
+  // main thread.
+  consumer.Reset();
+
+  // Use ThreadPoolInstance::FlushForTesting() to avoid running any tests that
+  // are posted on the main thread.
+  ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Immediately destroy the registry. Since the unregistration task has not
+  // run yet, the destruction observer will be triggered. It should see that
+  // the parent has been destroyed and skip the CHECK.
+  registry.reset();
 }
 
 }  // namespace base
