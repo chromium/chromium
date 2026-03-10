@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">ChromeVox টিউটোরিয়ালে আপনাকে স্বাগত। এই টিউটোরিয়াল থেকে যেকোনও সময় বেরিয়ে আসতে দুই আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করুন। যেকোনও সময় ChromeVox চালু বা বন্ধ করতে পাঁচ সেকেন্ড ধরে 'ভলিউম' বোতাম প্রেস করে ধরে থাকুন। আপনি রেডি হওয়ার পর টিউটোরিয়ালের পরবর্তী ধাপ দেখতে এক আঙুল দিয়ে স্ক্রিনে ডবল ট্যাপ করুন।</translation>
 <translation id="700202842116345659">বিবলিওগ্রাফি এন্ট্রি</translation>
 <translation id="7005146664810010831">কোনো URL খুঁজে পাওয়া যায় নি</translation>
-<translation id="7026338066939101231">হ্রাস</translation>
+<translation id="7026338066939101231">হ্রাস পেয়েছে</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">পূর্ববর্তী তালিকা</translation>
@@ -1064,7 +1064,7 @@
 <translation id="7972507042926081808">চকলেট</translation>
 <translation id="7974390230414479278">মেনু আইটেম</translation>
 <translation id="8004507136466386272">শব্দ</translation>
-<translation id="8004512796067398576">বৃদ্ধি</translation>
+<translation id="8004512796067398576">বৃদ্ধি হয়েছে</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">ভাষ্য বন্ধ করুন</translation>
 <translation id="801990297710781303">ফুটনোট</translation>

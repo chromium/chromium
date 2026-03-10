@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">ChromeVox ട്യൂട്ടോറിയലിലേക്ക് സ്വാഗതം. ഈ ട്യൂട്ടോറിയലിൽ നിന്ന് ഏതുസമയത്തും പുറത്തുകടക്കാൻ, രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് വലത്ത് നിന്ന് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക. ChromeVox ഏതുസമയത്തും ഓണാക്കാനോ ഓഫാക്കാനോ രണ്ട് വോളിയം ബട്ടണുകളും അഞ്ച് സെക്കൻഡ് നേരത്തേക്ക് അമർത്തിപ്പിടിക്കുക. തയ്യാറാകുമ്പോൾ, അടുത്ത പാഠത്തിലേക്ക് പോകാൻ ഒരു വിരൽ ഉപയോഗിച്ച് സ്ക്രീനിൽ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="700202842116345659">ഗ്രന്ഥസൂചി എൻട്രി</translation>
 <translation id="7005146664810010831">URL ഒന്നും കണ്ടെത്തിയില്ല</translation>
-<translation id="7026338066939101231">കുറവ്</translation>
+<translation id="7026338066939101231">കുറയ്‌ക്കുക</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">മുൻ ലിസ്റ്റ്</translation>
@@ -1063,7 +1063,7 @@
 <translation id="7972507042926081808">ചോക്ലേറ്റ്</translation>
 <translation id="7974390230414479278">മെനു ഇനം</translation>
 <translation id="8004507136466386272">പദങ്ങൾ</translation>
-<translation id="8004512796067398576">വർദ്ധന</translation>
+<translation id="8004512796067398576">വർദ്ധിപ്പിക്കുക</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">സംഭാഷണം ഓഫാക്കുക</translation>
 <translation id="801990297710781303">അടിക്കുറിപ്പ്</translation>
