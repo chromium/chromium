@@ -3767,6 +3767,10 @@
       status: "stable",
     },
     {
+      name: "NavigateEventClearOnRestore",
+      status: "test",
+    },
+    {
       name: "NavigateEventDeferCrossDocumentCommit",
       status: "experimental",
     },
