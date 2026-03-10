@@ -282,6 +282,162 @@ TEST_P(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstPaint) {
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
 }
 
+TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInIframe) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div"></div>
+    <canvas id="canvas">
+      <iframe id="iframe"></iframe>
+    </canvas>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="inner_div"></div>
+    <canvas id="inner_canvas"></canvas>
+  )HTML");
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  auto* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  auto* inner_div = ChildDocument().getElementById(AtomicString("inner_div"));
+  auto* inner_canvas =
+      ChildDocument().getElementById(AtomicString("inner_canvas"));
+
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsInCanvasSubtree());
+  EXPECT_TRUE(inner_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_canvas->IsInCanvasSubtree());
+
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  div->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(inner_div->IsInCanvasSubtree());
+  EXPECT_TRUE(inner_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(inner_canvas->IsInCanvasSubtree());
+
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  canvas->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsInCanvasSubtree());
+  EXPECT_TRUE(inner_canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_canvas->IsInCanvasSubtree());
+
+  auto* detached_div = ChildDocument().CreateRawElement(html_names::kDivTag);
+  EXPECT_FALSE(detached_div->IsInCanvasSubtree());
+
+  auto* fragment = ChildDocument().createDocumentFragment();
+  auto* fragment_div = ChildDocument().CreateRawElement(html_names::kDivTag);
+  fragment->AppendChild(fragment_div);
+  EXPECT_FALSE(fragment_div->IsCanvasOrInCanvasSubtree());
+}
+
+TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInShadowInIframe) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div"></div>
+    <canvas id="canvas">
+      <iframe id="iframe"></iframe>
+    </canvas>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="host"></div>
+  )HTML");
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  auto* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  auto* host = ChildDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="inner_div"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* inner_div = shadow_root.getElementById(AtomicString("inner_div"));
+
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host->IsInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsInCanvasSubtree());
+
+  // Move iframe out of canvas.
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  div->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(host->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(host->IsInCanvasSubtree());
+  EXPECT_FALSE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(inner_div->IsInCanvasSubtree());
+
+  // Move iframe back into canvas.
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  canvas->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host->IsInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsInCanvasSubtree());
+}
+
+TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtreeInNestedShadowInIframe) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="div"></div>
+    <canvas id="canvas">
+      <iframe id="iframe"></iframe>
+    </canvas>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="host1"></div>
+  )HTML");
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  auto* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  auto* host1 = ChildDocument().getElementById(AtomicString("host1"));
+
+  ShadowRoot& shadow_root1 =
+      host1->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  auto* host2 = ChildDocument().CreateRawElement(html_names::kDivTag);
+  shadow_root1.AppendChild(host2);
+
+  ShadowRoot& shadow_root2 =
+      host2->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  auto* inner_div = ChildDocument().CreateRawElement(html_names::kDivTag);
+  shadow_root2.AppendChild(inner_div);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host1->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host2->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+
+  // Move iframe out of canvas.
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  div->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(host1->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(host2->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(inner_div->IsCanvasOrInCanvasSubtree());
+
+  // Move iframe back into canvas.
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
+  canvas->AppendChild(iframe);
+  GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(iframe->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host1->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(host2->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(inner_div->IsCanvasOrInCanvasSubtree());
+}
+
 TEST_P(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
   SetBodyInnerHTML(R"HTML(
     <iframe id='iframe'></iframe>

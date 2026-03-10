@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/lazy_load_frame_observer.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
@@ -231,6 +233,36 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   }
 
   return result;
+}
+
+static void SetIsCanvasOrInCanvasSubtreeRecursively(Element& element,
+                                                    bool is_in_canvas) {
+  if (IsA<HTMLCanvasElement>(element)) {
+    is_in_canvas = true;
+  }
+  if (element.IsCanvasOrInCanvasSubtree() == is_in_canvas) {
+    return;
+  }
+  element.SetIsCanvasOrInCanvasSubtree(is_in_canvas);
+
+  if (ShadowRoot* shadow_root = element.GetShadowRoot()) {
+    for (Element& child : ElementTraversal::ChildrenOf(*shadow_root)) {
+      SetIsCanvasOrInCanvasSubtreeRecursively(child, is_in_canvas);
+    }
+  }
+  for (Element& child : ElementTraversal::ChildrenOf(element)) {
+    SetIsCanvasOrInCanvasSubtreeRecursively(child, is_in_canvas);
+  }
+}
+
+void HTMLFrameOwnerElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  HTMLElement::DidChangeIsCanvasOrInCanvasSubtree();
+  if (Document* inner_document = contentDocument()) {
+    if (Element* root = inner_document->documentElement()) {
+      SetIsCanvasOrInCanvasSubtreeRecursively(*root,
+                                              IsCanvasOrInCanvasSubtree());
+    }
+  }
 }
 
 void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {

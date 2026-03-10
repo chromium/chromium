@@ -107,6 +107,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Node overrides:
   Node::InsertionNotificationRequest InsertedInto(
       ContainerNode& insertion_point) override;
+  void DidChangeIsCanvasOrInCanvasSubtree() override;
   void RemovedFrom(ContainerNode& insertion_point) override;
   // Element overrides:
   void DidRecalcStyle(const StyleRecalcChange) override;
