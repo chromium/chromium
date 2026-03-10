@@ -12,8 +12,8 @@ import os
 import posixpath
 import shutil
 import sys
+import threading
 import time
-
 from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
@@ -228,6 +228,7 @@ class _ApkDelegate:
     self._env = env
     self._coverage_dir = test_instance.coverage_dir
     self._coverage_index = 0
+    self._coverage_lock = threading.Lock()
     self._use_existing_test_data = test_instance.use_existing_test_data
 
   def GetTestDataRoot(self, device):
@@ -259,13 +260,16 @@ class _ApkDelegate:
     extras = dict(self._extras)
     device_api = device.build_version_sdk
 
+    coverage_index = None
     if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
       # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
       device_coverage_dir = (
           code_coverage_utils.GetDeviceClangCoverageDir(device))
+      with self._coverage_lock:
+        coverage_index = self._coverage_index
+        self._coverage_index += 1
       extras[_EXTRA_COVERAGE_DEVICE_FILE] = _GetLLVMProfilePath(
-          device_coverage_dir, self._suite, self._coverage_index)
-      self._coverage_index += 1
+          device_coverage_dir, self._suite, coverage_index)
 
     if ('timeout' in kwargs
         and gtest_test_instance.EXTRA_SHARD_NANO_TIMEOUT not in extras):
@@ -336,12 +340,12 @@ class _ApkDelegate:
         device.ForceStop(self._package)
         raise
       finally:
-        if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+        if coverage_index is not None:
           if not os.path.isdir(self._coverage_dir):
             os.makedirs(self._coverage_dir)
           code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
               device, device_coverage_dir, self._coverage_dir,
-              str(self._coverage_index))
+              str(coverage_index))
 
       stdout_file_path = stdout_file.name
       if self._env.force_main_user:
@@ -385,6 +389,7 @@ class _ExeDelegate:
     self._suite = test_instance.suite
     self._coverage_dir = test_instance.coverage_dir
     self._coverage_index = 0
+    self._coverage_lock = threading.Lock()
 
   def GetTestDataRoot(self, device):
     # pylint: disable=no-self-use
@@ -418,12 +423,16 @@ class _ExeDelegate:
         'UBSAN_OPTIONS': constants.UBSAN_OPTIONS,
     }
 
+    coverage_index = None
     if self._coverage_dir:
       device_coverage_dir = (
           code_coverage_utils.GetDeviceClangCoverageDir(device))
-      env['LLVM_PROFILE_FILE'] = _GetLLVMProfilePath(
-          device_coverage_dir, self._suite, self._coverage_index)
-      self._coverage_index += 1
+      with self._coverage_lock:
+        coverage_index = self._coverage_index
+        self._coverage_index += 1
+      env['LLVM_PROFILE_FILE'] = _GetLLVMProfilePath(device_coverage_dir,
+                                                     self._suite,
+                                                     coverage_index)
 
 
     try:
@@ -439,11 +448,10 @@ class _ExeDelegate:
     output = device.RunShellCommand(
         cmd, cwd=cwd, env=env, check_return=False, large_output=True, **kwargs)
 
-    if self._coverage_dir:
+    if coverage_index is not None:
       # TODO(b/293175593): Use device.ResolveSpecialPath for multi-user
       code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
-          device, device_coverage_dir, self._coverage_dir,
-          str(self._coverage_index))
+          device, device_coverage_dir, self._coverage_dir, str(coverage_index))
 
     return output
 
