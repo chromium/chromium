@@ -164,9 +164,6 @@ void ProjectorClientImpl::StartSpeechRecognition() {
       availability.use_on_device
           ? app_locale
           : GetLocaleOrLanguageForServerSideRecognition(app_locale);
-  const std::string experiment_recognizer_routing_key =
-      ash::features::IsProjectorUseUSMForS3Enabled() ? kUSMExperimentRoutingId
-                                                     : "";
 
   speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
@@ -176,8 +173,7 @@ void ProjectorClientImpl::StartSpeechRecognition() {
           /*enable_formatting=*/true, locale,
           /*is_server_based=*/!availability.use_on_device,
           media::mojom::RecognizerClientType::kProjector,
-          /*skip_continuously_empty_audio=*/false,
-          experiment_recognizer_routing_key));
+          /*skip_continuously_empty_audio=*/false, kUSMExperimentRoutingId));
   if (!availability.use_on_device) {
     RecordOnDeviceToServerSpeechRecognitionFallbackReason(
         GetFallbackReason(availability.on_device_availability));

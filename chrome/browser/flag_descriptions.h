@@ -7547,12 +7547,6 @@ inline constexpr char kProjectorAppDebugName[] = "Enable Projector app debug";
 inline constexpr char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";
 
-inline constexpr char kProjectorServerSideUsmName[] =
-    "Enable USM for Projector server side speech recognition";
-inline constexpr char kProjectorServerSideUsmDescription[] =
-    "Allows Screencast to use the latest model for server side speech "
-    "recognition.";
-
 inline constexpr char kReleaseNotesNotificationAllChannelsName[] =
     "Release Notes Notification All Channels";
 inline constexpr char kReleaseNotesNotificationAllChannelsDescription[] =

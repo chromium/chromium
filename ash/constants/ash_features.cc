@@ -1618,9 +1618,6 @@ BASE_FEATURE(kProjectorRedirectToPwa, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether projector V2 is enabled.
 BASE_FEATURE(kProjectorV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to use USM for serverside speech recognition for projector.
-BASE_FEATURE(kProjectorUseUSMForS3, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether the projector app uses the latest endpoint for retrieving
 // playback urls.
 BASE_FEATURE(kProjectorUseDVSPlaybackEndpoint,
@@ -3025,10 +3022,6 @@ bool IsProjectorRedirectToPwaEnabled() {
 
 bool IsProjectorV2Enabled() {
   return base::FeatureList::IsEnabled(kProjectorV2);
-}
-
-bool IsProjectorUseUSMForS3Enabled() {
-  return base::FeatureList::IsEnabled(kProjectorUseUSMForS3);
 }
 
 bool IsProjectorUseDVSPlaybackEndpointEnabled() {

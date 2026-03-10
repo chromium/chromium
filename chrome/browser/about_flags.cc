@@ -9415,11 +9415,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorAppDebugDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorAppDebug)},
 
-    {"enable-projector-server-side-usm",
-     flag_descriptions::kProjectorServerSideUsmName,
-     flag_descriptions::kProjectorServerSideUsmDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kProjectorUseUSMForS3)},
-
     {"enable-annotator-mode", flag_descriptions::kAnnotatorModeName,
      flag_descriptions::kAnnotatorModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAnnotatorMode)},
