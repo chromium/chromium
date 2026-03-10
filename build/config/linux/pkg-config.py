@@ -105,13 +105,6 @@ def RewritePath(path, strip_prefix, sysroot):
 
 
 def main():
-  # If this is run on non-Linux platforms, just return nothing and indicate
-  # success. This allows us to "kind of emulate" a Linux build from other
-  # platforms.
-  if "linux" not in sys.platform:
-    print("[[],[],[],[],[]]")
-    return 0
-
   parser = OptionParser()
   parser.add_option('-d', '--debug', action='store_true')
   parser.add_option('-p', action='store', dest='pkg_config', type='string',
@@ -128,6 +121,16 @@ def main():
   parser.add_option('--version-as-components', action='store_true',
                     dest='version_as_components')
   (options, args) = parser.parse_args()
+
+  # If this is run on non-Linux platforms, just return nothing and indicate
+  # success. This allows us to "kind of emulate" a Linux build from other
+  # platforms.
+  if "linux" not in sys.platform:
+    if options.libdir:
+      sys.stdout.write("")
+      return 0
+    print("[[],[],[],[],[]]")
+    return 0
 
   # Make a list of regular expressions to strip out.
   strip_out = []

@@ -120,7 +120,7 @@ if (mac_use_xcode_symlinks && current_toolchain == default_toolchain) {
   }
 } else {
   group("sdk_inputs") {
-    if (current_toolchain != default_toolchain) {
+    if (current_toolchain != default_toolchain && target_os == "ios") {
       public_deps = [ ":sdk_inputs($default_toolchain)" ]
     }
   }

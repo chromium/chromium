@@ -7,7 +7,7 @@ import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
 
-assert(is_linux || is_chromeos)
+assert(is_linux || is_chromeos || target_os == "linux")
 
 if (!use_system_libwayland) {
   wayland_protocol("wayland_protocol_c") {

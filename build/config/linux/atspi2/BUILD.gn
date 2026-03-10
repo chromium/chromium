@@ -34,8 +34,8 @@ if (use_atk) {
     # ATSPI 2.49.90 now defines these for us and it's an error for us to
     # redefine them on the compiler command line.
     # See ATSPI 927344a34cd5bf81fc64da4968241735ecb4f03b
-    if (major < 2 || (major == 2 && minor < 49) ||
-        (major == 2 && minor == 49 && micro < 90)) {
+    if (host_os == "linux" && (major < 2 || (major == 2 && minor < 49) ||
+                               (major == 2 && minor == 49 && micro < 90))) {
       defines = [
         "ATSPI_MAJOR_VERSION=$major",
         "ATSPI_MINOR_VERSION=$minor",
