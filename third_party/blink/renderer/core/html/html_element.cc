@@ -242,7 +242,7 @@ String HTMLElement::nodeName() const {
   if (IsA<HTMLDocument>(GetDocument())) {
     if (!TagQName().HasPrefix())
       return TagQName().LocalNameUpper();
-    return Element::nodeName().UpperASCII();
+    return Element::nodeName().ToAsciiUpper();
   }
   return Element::nodeName();
 }

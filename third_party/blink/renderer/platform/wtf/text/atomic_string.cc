@@ -108,12 +108,12 @@ AtomicString AtomicString::LowerASCII() const {
   return AtomicString::LowerASCII(*this);
 }
 
-AtomicString AtomicString::UpperASCII() const {
+AtomicString AtomicString::ToAsciiUpper() const {
   StringImpl* impl = Impl();
   if (!impl) [[unlikely]] {
     return *this;
   }
-  return AtomicString(impl->UpperASCII());
+  return AtomicString(impl->ToAsciiUpper());
 }
 
 AtomicString AtomicString::Number(double number, unsigned precision) {

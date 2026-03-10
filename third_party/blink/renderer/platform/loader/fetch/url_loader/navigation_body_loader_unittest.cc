@@ -42,7 +42,7 @@ using ::testing::ElementsAre;
 class UppercaseDecoder : public BodyTextDecoder {
   String Decode(base::span<const char> data,
                 String* auto_detected_charset) override {
-    return String(data).UpperASCII();
+    return String(data).ToAsciiUpper();
   }
 
   String Flush() override { return String(); }

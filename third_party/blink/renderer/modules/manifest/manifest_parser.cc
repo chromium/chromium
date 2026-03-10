@@ -1516,7 +1516,7 @@ ManifestParser::ParseShareTargetMethod(const JSONObject* share_target_object) {
     return std::nullopt;
   }
 
-  String method = value.UpperASCII();
+  String method = value.ToAsciiUpper();
   if (method == "GET") {
     return mojom::blink::ManifestShareTarget::Method::kGet;
   }

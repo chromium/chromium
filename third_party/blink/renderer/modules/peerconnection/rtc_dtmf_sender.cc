@@ -129,7 +129,7 @@ void RTCDTMFSender::insertDTMF(const String& tones,
   inter_tone_gap_ = std::min(inter_tone_gap_, kMaxInterToneGapMs);
 
   // Spec: a-d should be represented in the tone buffer as A-D
-  tone_buffer_ = tones.UpperASCII();
+  tone_buffer_ = tones.ToAsciiUpper();
 
   if (tone_buffer_.empty()) {
     return;

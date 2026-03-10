@@ -1502,7 +1502,7 @@ String XMLHttpRequest::getAllResponseHeaders() const {
       continue;
     }
 
-    headers.push_back(std::make_pair(it->key.UpperASCII(), it->value));
+    headers.push_back(std::make_pair(it->key.ToAsciiUpper(), it->value));
   }
   std::sort(headers.begin(), headers.end(),
             [](const std::pair<String, String>& x,

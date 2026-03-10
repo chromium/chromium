@@ -213,7 +213,7 @@ static StringBuilder& operator<<(StringBuilder& ts, LineJoin style) {
 static StringBuilder& operator<<(StringBuilder& ts,
                                  const SVGSpreadMethodType& type) {
   auto* name = GetEnumerationMap<SVGSpreadMethodType>().NameFromValue(type);
-  ts << String(name).UpperASCII();
+  ts << String(name).ToAsciiUpper();
   return ts;
 }
 

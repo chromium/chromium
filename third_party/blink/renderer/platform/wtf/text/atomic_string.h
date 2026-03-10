@@ -249,7 +249,7 @@ class WTF_EXPORT AtomicString {
   // These functions convert ASCII characters only.
   static AtomicString LowerASCII(AtomicString source);
   AtomicString LowerASCII() const;
-  AtomicString UpperASCII() const;
+  AtomicString ToAsciiUpper() const;
 
 #ifdef __OBJC__
   operator NSString*() const { return string_; }

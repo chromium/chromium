@@ -164,10 +164,10 @@ String String::LowerASCII() const {
   return impl_->LowerASCII();
 }
 
-String String::UpperASCII() const {
+String String::ToAsciiUpper() const {
   if (!impl_)
     return String();
-  return impl_->UpperASCII();
+  return impl_->ToAsciiUpper();
 }
 
 String::size_type String::LengthWithStrippedWhiteSpace() const {

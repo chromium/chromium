@@ -128,7 +128,7 @@ void QualifiedName::InitAndReserveCapacityForSize(wtf_size_t size) {
 }
 
 const AtomicString& QualifiedName::LocalNameUpperSlow() const {
-  impl_->local_name_upper_ = impl_->local_name_.UpperASCII();
+  impl_->local_name_upper_ = impl_->local_name_.ToAsciiUpper();
   return impl_->local_name_upper_;
 }
 

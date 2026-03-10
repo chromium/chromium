@@ -505,7 +505,7 @@ class WTF_EXPORT String {
   [[nodiscard]] String LowerASCII() const;
   // Returns a uppercase version of the string.
   // This function converts ASCII characters only.
-  [[nodiscard]] String UpperASCII() const;
+  [[nodiscard]] String ToAsciiUpper() const;
 
   // Returns the length of the string after stripping white spaces.
   // This is equivalent (minus the allocation overhead) of doing:

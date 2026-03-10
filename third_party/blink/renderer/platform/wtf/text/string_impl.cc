@@ -436,7 +436,7 @@ scoped_refptr<StringImpl> StringImpl::LowerASCII() {
   return ConvertAsciiCase(*this, LowerConverter(), StringImplAllocator());
 }
 
-scoped_refptr<StringImpl> StringImpl::UpperASCII() {
+scoped_refptr<StringImpl> StringImpl::ToAsciiUpper() {
   return ConvertAsciiCase(*this, UpperConverter(), StringImplAllocator());
 }
 
