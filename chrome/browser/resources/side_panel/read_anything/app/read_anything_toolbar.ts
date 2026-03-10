@@ -811,7 +811,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     const showAtConfig = {
       minY: 0,
-      anchorAlignmentX: AnchorAlignment.BEFORE_START,
       anchorAlignmentY: AnchorAlignment.AFTER_START,
     };
     const currentMenu = this.settingsMenu_[id];
