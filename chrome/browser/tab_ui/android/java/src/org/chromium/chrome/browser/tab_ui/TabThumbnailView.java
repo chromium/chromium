@@ -259,9 +259,11 @@ public class TabThumbnailView extends ImageView {
     public void updateThumbnailPlaceholder(
             boolean isIncognito, boolean isSelected, @Nullable @TabGroupColorId Integer colorId) {
         // Step 1: Background color.
+        // Note: When circular progress indicator is present, we show the non-selected background
+        // color irrespective of selection state.
         mBackgroundDrawable.setColor(
                 TabCardThemeUtil.getMiniThumbnailPlaceholderColor(
-                        getContext(), isIncognito, isSelected, colorId));
+                        getContext(), isIncognito, isSelected && !isThumbnailLoading(), colorId));
         final int newColor =
                 TabCardThemeUtil.getCardViewBackgroundColor(
                         getContext(), isIncognito, isSelected, colorId);

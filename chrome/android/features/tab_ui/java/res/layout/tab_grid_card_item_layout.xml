@@ -119,12 +119,14 @@ found in the LICENSE file.
           app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
           app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.CircularProgressIndicator
           android:id="@+id/fetch_thumbnail_spinner"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:indeterminate="true"
           android:visibility="gone"
+          app:indicatorSize="@dimen/tab_grid_thumbnail_fetch_spinner_size"
+          app:trackThickness="@dimen/tab_grid_thumbnail_fetch_spinner_thickness"
           app:layout_constraintTop_toTopOf="@id/tab_thumbnail"
           app:layout_constraintBottom_toBottomOf="@id/tab_thumbnail"
           app:layout_constraintStart_toStartOf="@id/tab_thumbnail"
