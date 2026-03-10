@@ -7,9 +7,11 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/dbus/utils/read_value.h"
@@ -84,6 +86,18 @@ class MockObserver final : public GlobalAcceleratorListener::Observer {
   MOCK_METHOD2(ExecuteCommand,
                void(const std::string& extension_id,
                     const std::string& command_name));
+};
+
+class WeakCommandCallback {
+ public:
+  base::WeakPtr<WeakCommandCallback> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void Run(const std::string&, const std::string&) {}
+
+ private:
+  base::WeakPtrFactory<WeakCommandCallback> weak_ptr_factory_{this};
 };
 
 TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
@@ -401,6 +415,75 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
           _, _));
   global_shortcut_listener.reset();
   dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+}
+
+// Tests that PruneStaleCommands() removes entries whose callbacks are
+// cancelled.
+TEST(GlobalAcceleratorListenerLinuxTest, PruneStaleCommands) {
+  dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kSuccess);
+  base::ScopedClosureRunner restore_portal_state(base::BindOnce([] {
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
+  }));
+
+  content::BrowserTaskEnvironment task_environment;
+
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+  auto mock_dbus_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  auto mock_global_shortcuts_proxy =
+      base::MakeRefCounted<dbus::MockObjectProxy>(
+          mock_bus.get(), GlobalAcceleratorListenerLinux::kPortalServiceName,
+          dbus::ObjectPath(GlobalAcceleratorListenerLinux::kPortalObjectPath));
+
+  EXPECT_CALL(*mock_bus, AssertOnOriginThread()).WillRepeatedly([] {});
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+  EXPECT_CALL(
+      *mock_bus,
+      GetObjectProxy(
+          GlobalAcceleratorListenerLinux::kPortalServiceName,
+          dbus::ObjectPath(GlobalAcceleratorListenerLinux::kPortalObjectPath)))
+      .WillRepeatedly(Return(mock_global_shortcuts_proxy.get()));
+  EXPECT_CALL(*mock_bus, GetConnectionName()).WillRepeatedly(Return(kBusName));
+
+  EXPECT_CALL(
+      *mock_global_shortcuts_proxy,
+      ConnectToSignal(GlobalAcceleratorListenerLinux::kGlobalShortcutsInterface,
+                      GlobalAcceleratorListenerLinux::kSignalActivated, _, _))
+      .WillOnce(
+          [](const std::string& interface_name, const std::string& signal_name,
+             dbus::ObjectProxy::SignalCallback,
+             dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
+            std::move(on_connected_callback)
+                .Run(interface_name, signal_name, true);
+          });
+
+  auto listener =
+      std::make_unique<GlobalAcceleratorListenerLinux>(mock_bus, kSessionToken);
+
+  auto callback_target = std::make_unique<WeakCommandCallback>();
+  ui::CommandMap commands;
+  commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,
+                                       /*global=*/false);
+
+  const auto expected_command_id =
+      base::StrCat({kSessionId, "-", kCommandName});
+
+  listener->OnCommandsChanged(
+      kExtensionId, kProfileId, commands, gfx::kNullAcceleratedWidget,
+      base::BindRepeating(&WeakCommandCallback::Run,
+                          callback_target->AsWeakPtr()));
+
+  EXPECT_TRUE(listener->bound_commands_.contains(expected_command_id));
+
+  listener->PruneStaleCommands();
+  EXPECT_TRUE(listener->bound_commands_.contains(expected_command_id));
+
+  callback_target.reset();
+  listener->PruneStaleCommands();
+
+  EXPECT_FALSE(listener->bound_commands_.contains(expected_command_id));
 }
 
 }  // namespace ui

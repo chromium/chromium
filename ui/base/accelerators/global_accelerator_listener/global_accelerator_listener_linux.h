@@ -48,6 +48,8 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  private:
   FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
                            OnCommandsChanged);
+  FRIEND_TEST_ALL_PREFIXES(GlobalAcceleratorListenerLinuxTest,
+                           PruneStaleCommands);
 
   using DbusShortcut = std::tuple<std::string, dbus_xdg::Dictionary>;
   using DbusShortcuts = std::vector<DbusShortcut>;
