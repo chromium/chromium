@@ -12,6 +12,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/lens/lens_overlay_invocation_source.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -72,6 +73,7 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "third_party/omnibox_proto/searchbox_config.pb.h"
 
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
@@ -116,6 +118,11 @@ const CGFloat kSnackbarBottomMargin = 10;
   ComposeboxMetricsRecorder* _metricsRecorder;
   ComposeboxModeHolder* _modeHolder;
   ComposeboxSnackbarPresenter* _snackbarPresenter;
+
+  // Service to check for AI mode eligibility.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // Subscription for AIM eligibility changes.
+  base::CallbackListSubscription _aimEligibilitySubscription;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -170,6 +177,8 @@ const CGFloat kSnackbarBottomMargin = 10;
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+  _aimEligibilityService =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(self.profile);
   _mediator = [[ComposeboxInputPlateMediator alloc]
       initWithContextualSearchSession:std::move(contextualSearchSession)
                          webStateList:self.browser->GetWebStateList()
@@ -179,14 +188,15 @@ const CGFloat kSnackbarBottomMargin = 10;
                           isIncognito:self.isOffTheRecord
                            modeHolder:_modeHolder
                    templateURLService:templateURLService
-                aimEligibilityService:IOSChromeAimEligibilityServiceFactory::
-                                          GetForProfile(self.profile)
+                aimEligibilityService:_aimEligibilityService
                           prefService:self.profile->GetPrefs()];
   _mediator.debugLogger = self.debugLogger;
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _mediator.metricsRecorder = _metricsRecorder;
+
+  [self monitorSearchboxConfig];
 
   _viewController.mutator = _mediator;
   // Mediator is the voice search delegate to load queries in composebox.
@@ -227,6 +237,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 }
 
 - (void)stop {
+  _aimEligibilitySubscription = {};
+  _aimEligibilityService = nullptr;
   [_snackbarPresenter dismissAllSnackbars];
   if (_tabPickerCoordinator.started) {
     [_tabPickerCoordinator stop];
@@ -693,6 +705,31 @@ const CGFloat kSnackbarBottomMargin = 10;
   }
   _snackbarPresenter =
       [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+}
+
+// Observes the changes in eligibility and sends the searchbox config.
+- (void)monitorSearchboxConfig {
+  if (!_aimEligibilityService) {
+    return;
+  }
+
+  [self updateSearchboxConfig];
+  __weak __typeof(self) weakSelf = self;
+  _aimEligibilitySubscription =
+      _aimEligibilityService->RegisterEligibilityChangedCallback(
+          base::BindRepeating(^{
+            [weakSelf updateSearchboxConfig];
+          }));
+}
+
+// Propagates the searchbox config.
+- (void)updateSearchboxConfig {
+  if (!_aimEligibilityService) {
+    return;
+  }
+  const omnibox::SearchboxConfig* config =
+      _aimEligibilityService->GetSearchboxConfig();
+  [_mediator setSearchboxConfig:config];
 }
 
 @end

@@ -8,6 +8,10 @@
 @class ComposeboxInputItem;
 enum class ComposeboxModelOption;
 class GURL;
+
+namespace omnibox {
+class SearchboxConfig;
+}
 @class TabInfo;
 
 namespace web {
@@ -48,6 +52,9 @@ class WebStateID;
 /// caused by an explicitly user action (e.g.; picked from the menu).
 - (void)setModelOption:(ComposeboxModelOption)modelOption
     explicitUserAction:(BOOL)explicitUserAction;
+
+/// Sets the searchbox configuration to use.
+- (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig;
 
 @end
 
