@@ -57,6 +57,9 @@ include_rules = [
   "+chrome/test/base",
 ]
 specific_include_rules = {
+  "welcome_screen_handler\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
   "core_oobe_handler\.cc": [
     "+ash/shell.h",
   ],

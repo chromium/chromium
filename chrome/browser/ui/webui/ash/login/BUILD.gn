@@ -249,6 +249,7 @@ static_library("login") {
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser:resources",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/arc/optin",

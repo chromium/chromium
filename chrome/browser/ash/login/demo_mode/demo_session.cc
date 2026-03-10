@@ -45,8 +45,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -240,6 +238,29 @@ void TriggerLaunchDemoModeApp() {
   }
 }
 
+// Get country code and full name in current language pair sorted by their
+// full name in currently selected language.
+std::vector<CountryCodeAndFullNamePair> GetSortedCountryCodeAndNamePairList(
+    const std::string& application_locale) {
+  std::vector<CountryCodeAndFullNamePair> result;
+  for (const std::string country : demo_mode::kSupportedCountries) {
+    result.push_back({country, l10n_util::GetDisplayNameForCountry(
+                                   country, application_locale)});
+  }
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));
+  DCHECK(U_SUCCESS(error_code));
+
+  std::sort(result.begin(), result.end(),
+            [&collator](const CountryCodeAndFullNamePair& pair1,
+                        const CountryCodeAndFullNamePair& pair2) {
+              return base::i18n::CompareString16WithCollator(
+                         *collator, pair1.country_name, pair2.country_name) < 0;
+            });
+  return result;
+}
+
 }  // namespace
 
 constexpr char DemoSession::kCountryNotSelectedId[];
@@ -412,21 +433,22 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
 }
 
 // static
-base::ListValue DemoSession::GetCountryList() {
+base::ListValue DemoSession::GetCountryList(
+    PrefService& local_state,
+    const std::string& application_locale) {
   base::ListValue country_list;
   std::string region(GetDefaultRegion());
   bool country_selected = false;
 
   for (CountryCodeAndFullNamePair pair :
-       GetSortedCountryCodeAndNamePairList()) {
+       GetSortedCountryCodeAndNamePairList(application_locale)) {
     std::string country = pair.country_id;
     base::DictValue dict;
     dict.Set("value", country);
     dict.Set("title", pair.country_name);
     if (country == region) {
       dict.Set("selected", true);
-      g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
-                                                  country);
+      local_state.SetString(prefs::kDemoModeCountry, country);
       country_selected = true;
     } else {
       dict.Set("selected", false);
@@ -509,27 +531,6 @@ DemoSession::~DemoSession() {
 }
 
 // static
-std::vector<CountryCodeAndFullNamePair>
-DemoSession::GetSortedCountryCodeAndNamePairList() {
-  const std::string current_locale = g_browser_process->GetApplicationLocale();
-  std::vector<CountryCodeAndFullNamePair> result;
-  for (const std::string country : demo_mode::kSupportedCountries) {
-    result.push_back({country, l10n_util::GetDisplayNameForCountry(
-                                   country, current_locale)});
-  }
-  UErrorCode error_code = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(error_code));
-  DCHECK(U_SUCCESS(error_code));
-
-  std::sort(result.begin(), result.end(),
-            [&collator](const CountryCodeAndFullNamePair& pair1,
-                        const CountryCodeAndFullNamePair& pair2) {
-              return base::i18n::CompareString16WithCollator(
-                         *collator, pair1.country_name, pair2.country_name) < 0;
-            });
-  return result;
-}
 
 void DemoSession::InstallDemoResources() {
   DCHECK(components_->resources_component_loaded());

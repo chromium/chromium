@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
@@ -40,6 +42,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -252,8 +255,11 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
     return;
   }
 
-  const std::string application_locale =
-      g_browser_process->GetApplicationLocale();
+  // TODO(crbug.com/489929275): Avoid using g_bowser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+  const ApplicationLocaleStorage& application_locale_storage = CHECK_DEREF(
+      g_browser_process->GetFeatures()->application_locale_storage());
+
   input_method::InputMethodManager* input_method_manager =
       input_method::InputMethodManager::Get();
   const std::string selected_input_method =
@@ -266,11 +272,14 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   }
 
   dict->Set("languageList", std::move(language_list));
-  dict->Set("inputMethodsList", GetAndActivateOobeInputMethods(
-                                    application_locale, selected_input_method,
-                                    input_method_manager));
+  dict->Set("inputMethodsList",
+            GetAndActivateOobeInputMethods(application_locale_storage.Get(),
+                                           selected_input_method,
+                                           input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());
-  dict->Set("demoModeCountryList", DemoSession::GetCountryList());
+  dict->Set("demoModeCountryList",
+            DemoSession::GetCountryList(local_state,
+                                        application_locale_storage.Get()));
 
   // If this switch is set allow to open advanced options and configure device
   // requisition.

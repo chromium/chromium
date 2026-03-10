@@ -149,7 +149,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `value`: The ISO country code.
   // `title`: The display name of the country in the current locale.
   // `selected`: Whether the country is currently selected.
-  static base::ListValue GetCountryList();
+  static base::ListValue GetCountryList(PrefService& local_state,
+                                        const std::string& application_locale);
 
   // Records the launch of an app in Demo mode from the specified source.
   static void RecordAppLaunchSource(AppLaunchSource source);
@@ -205,11 +206,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   void OnLocalFilesCleanupCompleted() override;
 
   void OnDemoAppComponentLoaded();
-
-  // Get country code and full name in current language pair sorted by their
-  // full name in currently selected language.
-  static std::vector<CountryCodeAndFullNamePair>
-  GetSortedCountryCodeAndNamePairList();
 
   // Installs resources for Demo Mode from the offline demo mode resources, such
   // as photos and other media.
