@@ -140,6 +140,11 @@ StyleElement::ProcessingResult StyleElement::ChildrenChanged(Element& element) {
   if (!has_finished_parsing_children_) {
     return kProcessingSuccessful;
   }
+  // CSS module content is static at parse time. Content changes should not
+  // re-process on the new content.
+  if (IsModule()) {
+    return kProcessingSuccessful;
+  }
   probe::WillChangeStyleElement(&element);
   return Process(element);
 }
