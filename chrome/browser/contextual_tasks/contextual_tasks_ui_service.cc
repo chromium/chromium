@@ -250,6 +250,10 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
           // value of this call, or move this call to a different location.
           session_handle->CheckSearchContentSharingSettings(
               profile_->GetPrefs());
+          // Now that fulfillment has been passed to contextual tasks, the
+          // original session handle should clear its submitted context. Not
+          // clearing leaves it in a faulty state for future queries.
+          helper->session_handle()->ClearSubmittedContextTokens();
         }
       }
     }
