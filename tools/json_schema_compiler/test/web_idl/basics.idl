@@ -148,9 +148,11 @@ dictionary UnionTypes {
   required (ExampleType or long) dictTypeOrLong;
 };
 
-callback DictionaryCallback = undefined(DOMString stringArgument);
-dictionary DictionaryWithCallbackMember {
-  required DictionaryCallback callbackMember;
+callback CallbackWithArgument = undefined(DOMString stringArgument);
+callback CallbackWithReturn = boolean();
+dictionary DictionaryWithCallbackMembers {
+  required CallbackWithArgument argumentCallback;
+  required CallbackWithReturn returnCallback;
 };
 
 // Enum description.

@@ -543,8 +543,8 @@ class WebIdlSchemaTest(unittest.TestCase):
     self.assertEqual(expected_single_line_enum, getType(schema,
                                                         'SingleLineEnum'))
 
-    expected_type_with_function = {
-        'name': 'callbackMember',
+    expected_argument_callback_type_member = {
+        'name': 'argumentCallback',
         'type': 'function',
         'parameters': [{
             'name': 'stringArgument',
@@ -552,9 +552,25 @@ class WebIdlSchemaTest(unittest.TestCase):
         }]
     }
     self.assertEqual(
-        expected_type_with_function,
-        getType(schema,
-                'DictionaryWithCallbackMember')['properties']['callbackMember'])
+        expected_argument_callback_type_member,
+        getType(
+            schema,
+            'DictionaryWithCallbackMembers')['properties']['argumentCallback'])
+
+    expected_return_callback_type_member = {
+        'name': 'returnCallback',
+        'type': 'function',
+        'parameters': [],
+        'returns': {
+            'name': 'returnCallback',
+            'type': 'boolean'
+        }
+    }
+    self.assertEqual(
+        expected_return_callback_type_member,
+        getType(
+            schema,
+            'DictionaryWithCallbackMembers')['properties']['returnCallback'])
 
   # Tests that a schema that references a custom type that has not been defined
   # causes an error to be thrown.
