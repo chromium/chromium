@@ -269,12 +269,19 @@ void TabCollectionNode::RemoveChild(base::PassKey<TabCollectionNode> pass_key,
       child_node->Deinitialize();
     }
 
-    views::View* node_to_remove = child_node->node_view_;
+    views::View* node_view_to_remove = child_node->node_view_;
+
+    // We must remove the TabCollectionNode from `children_` before destroying
+    // the node itself to prevent potential UAF issues resulting from listeners
+    // fired in its destructor. See crbug.com/491286738 for details.
+    std::unique_ptr<TabCollectionNode> node_to_remove = std::move(*it);
     children_.erase(it);
+    node_to_remove.reset();
+
     if (remove_child_from_node_) {
-      remove_child_from_node_.Run(node_to_remove);
+      remove_child_from_node_.Run(node_view_to_remove);
     } else {
-      node_view_->RemoveChildViewT(node_to_remove);
+      node_view_->RemoveChildViewT(node_view_to_remove);
     }
     return;
   }

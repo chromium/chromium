@@ -57,7 +57,9 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
   int total_width = 0;
   int total_height = 0;
 
-  const auto children = collection_node_->GetDirectChildren();
+  const std::vector<views::View*> children =
+      collection_node_ ? collection_node_->GetDirectChildren()
+                       : std::vector<views::View*>();
 
   int x = 0;
   int y = 0;
@@ -148,6 +150,10 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
 }
 
 gfx::Size VerticalPinnedTabContainerView::GetMinimumSize() const {
+  if (!collection_node_) {
+    return gfx::Size();
+  }
+
   // The minimum size should be enough to show a row and a half, if needed.
   const int num_children = collection_node_->GetDirectChildren().size();
   const float min_rows = std::min((IsTabStripCollapsed() ? 1.5f : 1.0f),
