@@ -77,12 +77,12 @@ struct CreateRandomWebAppParams {
   int seed = 0;
   bool non_zero = false;
   bool allow_system_source = true;
-  // External management types are often managed by systems that synchronize
-  // their installed apps, so if a test is writing apps and then starting the
-  // system, the external app managers will touch & modify apps that apply to
-  // them. Setting this to 'true' will prevent a generated app from having one
-  // of these management sources.
-  bool only_non_external_management_types = false;
+  // External management types and migration fields are often managed by
+  // systems that synchronize or process installed apps at startup. If a test is
+  // writing apps and then starting the system, these managers will touch &
+  // modify apps. Setting this to 'true' will prevent generated apps from
+  // including these fields, thus avoiding side effects during test startup.
+  bool exclude_fields_with_side_effects = false;
   // When randomly generating an app, if it is randomly a sub-app, then this
   // manifest id is used for the parent id. Set this to an empty url to not
   // generate sub-apps.

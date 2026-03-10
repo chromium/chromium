@@ -825,7 +825,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   }
   // System web apps cannot also have other sources.
   if (!is_system_app) {
-    if (!params.only_non_external_management_types && random.next_bool()) {
+    if (!params.exclude_fields_with_side_effects && random.next_bool()) {
       app->AddSource(WebAppManagement::kPolicy);
       management_types.push_back(WebAppManagement::kPolicy);
     }
@@ -842,7 +842,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
       app->AddSource(WebAppManagement::kUserInstalled);
       management_types.push_back(WebAppManagement::kUserInstalled);
     }
-    if (!params.only_non_external_management_types && random.next_bool()) {
+    if (!params.exclude_fields_with_side_effects && random.next_bool()) {
       app->AddSource(WebAppManagement::kDefault);
       management_types.push_back(WebAppManagement::kDefault);
     }
@@ -858,7 +858,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
       app->AddSource(WebAppManagement::kIwaShimlessRma);
       management_types.push_back(WebAppManagement::kIwaShimlessRma);
     }
-    if (!params.only_non_external_management_types && random.next_bool()) {
+    if (!params.exclude_fields_with_side_effects && random.next_bool()) {
       app->AddSource(WebAppManagement::kIwaPolicy);
       management_types.push_back(WebAppManagement::kIwaPolicy);
     }
@@ -874,7 +874,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
       app->AddSource(WebAppManagement::kOneDriveIntegration);
       management_types.push_back(WebAppManagement::kOneDriveIntegration);
     }
-    if (!params.only_non_external_management_types && random.next_bool()) {
+    if (!params.exclude_fields_with_side_effects && random.next_bool()) {
       app->AddSource(WebAppManagement::kApsDefault);
       management_types.push_back(WebAppManagement::kApsDefault);
     }
@@ -1333,14 +1333,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
         params.base_url.Resolve("installed_by2_" + seed_str + "/")));
   }
 
-  app->SetUnvalidatedMigrationSources(CreateRandomMigrationSources(random));
-  std::vector<MigrationSource> validated_sources;
-  std::ranges::copy_if(
-      app->unvalidated_migration_sources(),
-      std::back_inserter(validated_sources),
-      [&random](const MigrationSource&) { return random.next_bool(); });
-  app->SetValidatedMigrationSources(std::move(validated_sources));
-  app->SetPendingMigrationInfo(CreateRandomPendingMigrationInfos(random));
+  if (!params.exclude_fields_with_side_effects) {
+    app->SetUnvalidatedMigrationSources(CreateRandomMigrationSources(random));
+    std::vector<MigrationSource> validated_sources;
+    std::ranges::copy_if(
+        app->unvalidated_migration_sources(),
+        std::back_inserter(validated_sources),
+        [&random](const MigrationSource&) { return random.next_bool(); });
+    app->SetValidatedMigrationSources(std::move(validated_sources));
+    app->SetPendingMigrationInfo(CreateRandomPendingMigrationInfos(random));
+  }
 
   return app;
 }
