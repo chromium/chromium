@@ -71,7 +71,7 @@ void SidePanelEntry::ClearCachedView() {
 #if !BUILDFLAG(IS_ANDROID)
   content_view_.reset(nullptr);
 #else
-  content_view_.Reset();
+  content_view_->Reset();
 #endif
 }
 

@@ -43,6 +43,13 @@ source_set("side_panel") {
   if (enable_extensions) {
     deps += [ "//extensions/common:common_constants" ]
   }
+
+  if (is_android) {
+    sources += [
+      "android/side_panel_native_view_android.cc",
+      "android/side_panel_native_view_android.h",
+    ]
+  }
 }
 
 source_set("side_panel_views_dependent") {

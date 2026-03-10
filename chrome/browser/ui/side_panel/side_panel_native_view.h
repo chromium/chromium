@@ -11,26 +11,12 @@
 #include "ui/base/class_property.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
-#include "third_party/jni_zero/jni_zero.h"
+#include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #else
 #include "ui/views/view.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-class SidePanelNativeViewAndroid : public ui::PropertyHandler {
- public:
-  explicit SidePanelNativeViewAndroid(
-      base::android::ScopedJavaGlobalRef<jobject> view)
-      : view_(std::move(view)) {}
-  ~SidePanelNativeViewAndroid() override = default;
-
-  base::android::ScopedJavaGlobalRef<jobject> view() const { return view_; }
-
- private:
-  base::android::ScopedJavaGlobalRef<jobject> view_;
-};
-
 using SidePanelNativeView = std::unique_ptr<SidePanelNativeViewAndroid>;
 #else
 using SidePanelNativeView = std::unique_ptr<views::View>;
