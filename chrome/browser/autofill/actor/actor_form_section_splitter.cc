@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -311,7 +312,8 @@ const AutofillField* RetargetTriggerFieldForSplittingIfNeeded(
 base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
     const FormStructure& form_structure,
     const FieldGlobalId& trigger_field_id,
-    SectionSplitPart split_part) {
+    SectionSplitPart split_part,
+    mojom::ActionPersistence action_persistence) {
   if (split_part == SectionSplitPart::kNoSplit) {
     return {};
   }
@@ -325,13 +327,32 @@ base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
   SplitFormSectionFieldsResult split_fields =
       SplitFormSectionFields(form_structure, *trigger_field);
 
+  auto record_outcome_metric = [&](std::string_view suffix,
+                                   size_t field_count) {
+    // Metrics are only recorded when we are filling, to avoid over-reporting
+    // due to previews.
+    //
+    // TODO(crbug.com/491031514): Consider moving metric record to
+    // ActorFormFillingServiceImpl, to avoid this function having to know about
+    // the fill mode.
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      base::UmaHistogramCounts100(
+          base::StrCat({"Autofill.Actor.ContactInfoSplitting.", suffix}),
+          field_count);
+    }
+  };
+
   // Because this function returns a blocklist of fields, we return the
   // inverse set of fields for the given split part.
   switch (split_part) {
     case SectionSplitPart::kContactInfo:
+      record_outcome_metric("ContactInfoPartFieldCount",
+                            split_fields.contact_info_fields.size());
       // When filling contact info, block address fields.
       return std::move(split_fields.address_fields);
     case SectionSplitPart::kAddress:
+      record_outcome_metric("AddressPartFieldCount",
+                            split_fields.address_fields.size());
       // When filling address info, block contact info fields.
       return std::move(split_fields.contact_info_fields);
     case SectionSplitPart::kNoSplit:

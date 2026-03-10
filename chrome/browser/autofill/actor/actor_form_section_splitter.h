@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -126,7 +127,8 @@ const AutofillField* RetargetTriggerFieldForSplittingIfNeeded(
 base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
     const FormStructure& form_structure,
     const FieldGlobalId& trigger_field_id,
-    SectionSplitPart split_part);
+    SectionSplitPart split_part,
+    mojom::ActionPersistence action_persistence);
 
 }  // namespace actor
 
