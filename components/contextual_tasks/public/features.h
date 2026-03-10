@@ -173,6 +173,9 @@ extern bool ShouldForceBasicModeIfOpeningThreadHistory();
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
 
+// Returns the base URL for a Gemini thread.
+extern std::string GetContextualTasksGeminiBaseUrl();
+
 // Returns scheme component of the "display url" associated with the contextual
 // tasks page.
 extern std::string GetContextualTasksDisplayUrlScheme();
