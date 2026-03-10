@@ -418,6 +418,8 @@ class CONTENT_EXPORT ServiceWorkerClient final
     return factory_interceptor_count_;
   }
 
+  bool bypass_redirect_checks() const { return bypass_redirect_checks_; }
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -646,6 +648,15 @@ class CONTENT_EXPORT ServiceWorkerClient final
       network_url_loader_factory_for_prefetch_;
 
   size_t factory_interceptor_count_ = 0;
+
+  // For NavigationPreload usage, we ignore the value of
+  // |bypass_redirect_checks_| since a redirect is just relayed to the service
+  // worker where preloadResponse is resolved as redirect.
+  //
+  // TODO(crbug.com/490346103): We record this value for debugging. If this
+  // information is critical to decide whether the synthetic response is used or
+  // not, we'll keep it. If not, we'll remove it.
+  bool bypass_redirect_checks_ = false;
 
   // For all instances --------------------------------------------------------
 

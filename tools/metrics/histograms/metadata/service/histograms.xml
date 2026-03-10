@@ -1996,6 +1996,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.BypassRedirectChecks"
+    enum="Boolean" expires_after="2026-07-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether navigation request embedders (e.g. WebRequest API for
+    extensions) handle redirect security checks.
+
+    This is recorded when the network request is initiated in the browser
+    process for the synthetic response.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.Eligibility"
     enum="SyntheticResponseEligibility" expires_after="2026-07-05">
   <owner>sisidovski@chromium.org</owner>

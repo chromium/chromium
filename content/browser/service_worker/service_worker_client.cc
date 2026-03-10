@@ -1327,11 +1327,6 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
         std::move(network_factory));
   }
 
-  // We ignore the value of |bypass_redirect_checks_unused| since a redirect is
-  // just relayed to the service worker where preloadResponse is resolved as
-  // redirect.
-  bool bypass_redirect_checks_unused;
-
   // Consult the embedder.
   mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
       header_client;
@@ -1347,7 +1342,7 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       frame_tree_node->navigation_request()->GetNavigationId(),
       ukm::SourceIdObj::FromInt64(
           frame_tree_node->navigation_request()->GetNextPageUkmSourceId()),
-      factory_builder, &header_client, &bypass_redirect_checks_unused,
+      factory_builder, &header_client, &bypass_redirect_checks_,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 

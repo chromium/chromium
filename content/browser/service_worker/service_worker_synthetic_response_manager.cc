@@ -38,6 +38,8 @@
 
 namespace {
 
+constexpr char kHistogramSyntheticResponseBypassRedirectChecks[] =
+    "ServiceWorker.SyntheticResponse.BypassRedirectChecks";
 constexpr char kHistogramIsHeaderStored[] =
     "ServiceWorker.SyntheticResponse.IsHeaderStored";
 constexpr char kHistogramStartRequestToReceiveResponse[] =
@@ -247,6 +249,9 @@ void ServiceWorkerSyntheticResponseManager::InitiateRequest(
   factory_interceptor_count_ =
       service_worker_client->factory_interceptor_count();
   is_guest_ = storage_partition->is_guest();
+  bypass_redirect_checks_ = service_worker_client->bypass_redirect_checks();
+  base::UmaHistogramBoolean(kHistogramSyntheticResponseBypassRedirectChecks,
+                            bypass_redirect_checks_);
 
   StartRequest(
       GlobalRequestID::MakeBrowserInitiated().request_id,
@@ -546,6 +551,8 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
       SCOPED_CRASH_KEY_BOOL("SWSR", "is_shared_producer_pipe_valid",
                             shared_producer_->pipe.is_valid());
       SCOPED_CRASH_KEY_BOOL("SWSR", "is_guest", is_guest_);
+      SCOPED_CRASH_KEY_BOOL("SWSR", "bypass_redirect_checks",
+                            bypass_redirect_checks_);
       SCOPED_CRASH_KEY_NUMBER("SWSR", "interceptor_count",
                               factory_interceptor_count_);
       // In the NetworkService mode, the redirect response is managed in the

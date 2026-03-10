@@ -163,6 +163,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   bool is_initiated_by_prefetch_ = false;
   bool is_guest_ = false;
   size_t factory_interceptor_count_ = 0;
+  bool bypass_redirect_checks_ = false;
 
   base::TimeTicks request_start_time_;
   base::TimeTicks response_received_time_;
