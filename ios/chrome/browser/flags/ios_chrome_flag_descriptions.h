@@ -366,6 +366,9 @@ extern const char kEnableReadingListAccountStorageDescription[];
 extern const char kEnableReadingListSignInPromoName[];
 extern const char kEnableReadingListSignInPromoDescription[];
 
+extern const char kEnableScreenshotProtectionIOSName[];
+extern const char kEnableScreenshotProtectionIOSDescription[];
+
 extern const char kEnableTraitCollectionRegistrationName[];
 extern const char kEnableTraitCollectionRegistrationDescription[];
 

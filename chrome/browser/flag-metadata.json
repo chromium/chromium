@@ -3982,6 +3982,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-screenshot-protection-ios",
+    "owners": [ "dmytriievd@google.com", "bling-enterprise@google.com" ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "enable-seamless-refresh-rate-switching",
     "owners": [ "ddavenport@chromium.org", "chromeos-gfx-display@google.com" ],
     "expiry_milestone": 120

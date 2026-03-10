@@ -602,6 +602,12 @@ const char kEnableReadingListSignInPromoName[] =
 const char kEnableReadingListSignInPromoDescription[] =
     "Enable the sign-in promo view in the reading list screen.";
 
+const char kEnableScreenshotProtectionIOSName[] =
+    "Enable Screenshot Protection on iOS";
+const char kEnableScreenshotProtectionIOSDescription[] =
+    "Prevents the content of the app from appearing in screenshots and screen "
+    "recordings.";
+
 const char kEnableTraitCollectionRegistrationName[] =
     "Enable Customizable Trait Registration";
 const char kEnableTraitCollectionRegistrationDescription[] =
