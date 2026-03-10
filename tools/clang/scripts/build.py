@@ -352,7 +352,7 @@ def GetLibXml2Dirs():
   return LibXmlDirs()
 
 
-def BuildLibXml2(cc, cxx, cmake_sysroot):
+def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   """Download and build libxml2"""
   # The .tar.gz on GCS was uploaded as follows.
   # The gitlab page has more up-to-date packages than http://xmlsoft.org/,
@@ -420,6 +420,8 @@ def BuildLibXml2(cc, cxx, cmake_sysroot):
       ]
   if cmake_sysroot:
     cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
+  if sys.platform == 'darwin':
+    cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
 
   RunCommand(['cmake', '-GNinja'] + cmake_args + ['..'], setenv=True)
   RunCommand(['ninja', 'install'], setenv=True)
@@ -467,7 +469,7 @@ class ZStdDirs:
     self.lib_dir = os.path.join(self.install_dir, 'lib')
 
 
-def BuildZStd(cc, cxx, cmake_sysroot):
+def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
   """Download and build zstd lib"""
   # The zstd-1.5.5.tar.gz was downloaded from
   #   https://github.com/facebook/zstd/releases/
@@ -494,6 +496,8 @@ def BuildZStd(cc, cxx, cmake_sysroot):
       ]
   if cmake_sysroot:
     cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
+  if sys.platform == 'darwin':
+    cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
   RunCommand(['cmake', '-GNinja'] + cmake_args + ['../build/cmake'], setenv=True)
   RunCommand(['ninja', 'install'], setenv=True)
 
@@ -1009,11 +1013,14 @@ def main():
     base_cmake_args.append('-DLLVM_WINSYSROOT="%s"' %
                            os.path.dirname(os.path.dirname(GetWinSDKDir())))
 
+  deployment_target = '10.12'
+
   # Statically link libxml2 to make lld-link not require mt.exe on Windows,
   # and to make sure lld-link output on other platforms is identical to
   # lld-link on Windows (for cross-builds).
   with timer.time('libxml2 build'):
-    libxml_cmake_args, libxml_cflags = BuildLibXml2(cc, cxx, cmake_sysroot)
+    libxml_cmake_args, libxml_cflags = BuildLibXml2(cc, cxx, cmake_sysroot,
+                                                    deployment_target)
   base_cmake_args += libxml_cmake_args
   cflags += libxml_cflags
   cxxflags += libxml_cflags
@@ -1021,7 +1028,8 @@ def main():
   if args.with_zstd:
     # Statically link zstd to make lld support zstd compression for debug info.
     with timer.time('zstd build'):
-      zstd_cmake_args, zstd_cflags = BuildZStd(cc, cxx, cmake_sysroot)
+      zstd_cmake_args, zstd_cflags = BuildZStd(cc, cxx, cmake_sysroot,
+                                               deployment_target)
     base_cmake_args += zstd_cmake_args
     cflags += zstd_cflags
     cxxflags += zstd_cflags
@@ -1224,8 +1232,6 @@ def main():
           glob.glob(os.path.join(LLVM_INSTRUMENTED_DIR, 'profiles', '*.profraw')),
           setenv=True)
       print('Profile generated.')
-
-  deployment_target = '10.12'
 
   # If building at head, define a macro that plugins can use for #ifdefing
   # out code that builds at head, but not at CLANG_REVISION or vice versa.
