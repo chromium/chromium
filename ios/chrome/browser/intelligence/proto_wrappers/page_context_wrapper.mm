@@ -80,6 +80,9 @@ constexpr const char kChildrenFramesDictKey[] = "children";
 // The key for the PageInteractionInfo of the main frame.
 constexpr const char kPageInteractionInfoDictKey[] = "pageInteractionInfo";
 
+// The key for the ViewportGeometry of the main frame.
+constexpr const char kViewportGeometryDictKey[] = "viewportGeometry";
+
 // The key for the links of the frame in the JavaScript object. The value is
 // an array of objects.
 constexpr const char kFrameLinksDictKey[] = "links";
@@ -950,6 +953,12 @@ result.links = linksArray;
       PopulatePageInteractionInfoNode(
           *pageInteractionInfoValue,
           _rootAPCNode->mutable_page_interaction_info());
+    }
+
+    if (const base::DictValue* viewportGeometryValue =
+            value.FindDict(kViewportGeometryDictKey)) {
+      PopulateViewportGeometryNode(*viewportGeometryValue,
+                                   _rootAPCNode->mutable_viewport_geometry());
     }
   }
 }

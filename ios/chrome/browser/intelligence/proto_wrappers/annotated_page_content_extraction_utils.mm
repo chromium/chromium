@@ -721,3 +721,26 @@ void PopulatePageInteractionInfoNode(
         *focused_node_id);
   }
 }
+
+void PopulateViewportGeometryNode(
+    const base::DictValue& viewport_geometry_content,
+    optimization_guide::proto::BoundingRect*
+        destination_viewport_geometry_node) {
+  // Check that the destination node is only populated once.
+  CHECK_EQ(destination_viewport_geometry_node->ByteSizeLong(), 0u);
+
+  if (std::optional<int> x = ReadJsNumber(viewport_geometry_content, kXKey)) {
+    destination_viewport_geometry_node->set_x(*x);
+  }
+  if (std::optional<int> y = ReadJsNumber(viewport_geometry_content, kYKey)) {
+    destination_viewport_geometry_node->set_y(*y);
+  }
+  if (std::optional<int> width =
+          ReadJsNumber(viewport_geometry_content, kWidthKey)) {
+    destination_viewport_geometry_node->set_width(*width);
+  }
+  if (std::optional<int> height =
+          ReadJsNumber(viewport_geometry_content, kHeightKey)) {
+    destination_viewport_geometry_node->set_height(*height);
+  }
+}

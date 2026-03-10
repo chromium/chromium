@@ -3462,6 +3462,42 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
   }
 }
 
+// Tests that the wrapper correctly extracts Viewport Geometry.
+TEST_P(PageContextWrapperTest, PopulatePageContext_ViewportGeometry) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Set a page that will have a viewport with a surface bigger than 0.
+  auto page_structure = HtmlPage("Viewport", Paragraph("Testing Viewport"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  EXPECT_TRUE(annotated_page_content.has_viewport_geometry());
+  const auto& viewport = annotated_page_content.viewport_geometry();
+  EXPECT_EQ(viewport.x(), 0);
+  EXPECT_EQ(viewport.y(), 0);
+  // Verify that there is a window with a surface bigger than 0.
+  EXPECT_GT(viewport.width(), 0);
+  EXPECT_GT(viewport.height(), 0);
+}
+
 // Tests that top layer elements (popovers, dialog modals, fullscreen) are
 // included in the APC tree as generic containers.
 TEST_P(PageContextWrapperTest, PopulatePageContext_GenericContainer_TopLayer) {

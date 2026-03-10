@@ -1703,6 +1703,13 @@ export function extractAnnotatedPageContent(
     return null;
   }
 
+  const documentWindow = document.defaultView;
+  if (!documentWindow) {
+    // A document without a window doesn't have any value.
+    return null;
+  }
+
+
   const root = document.body;
   if (!root) {
     return null;
@@ -1812,10 +1819,23 @@ export function extractAnnotatedPageContent(
 
   const pageInteractionInfo = extractPageInteractionInfo(document);
 
+  // Start the viewport at (0, 0) as it represents the entire page surface which
+  // is the root surface. This deliberately extracts the layout viewport bounds,
+  // rather than accounting for visual viewport offsets (e.g., pinch-to-zoom),
+  // to maintain parity with Blink's ConvertViewportGeometry in
+  // components/optimization_guide/content/browser/page_content_proto_provider.cc.
+  const viewportGeometry = {
+    x: 0,
+    y: 0,
+    width: documentWindow.innerWidth,
+    height: documentWindow.innerHeight,
+  };
+
   return {
-    rootNode: rootNode,
-    pageInteractionInfo: pageInteractionInfo,
+    rootNode,
+    pageInteractionInfo,
     frameData: extractFrameData(document),
+    viewportGeometry,
     visibleBoundingBoxesForPasswordRedaction: [],
   };
 }

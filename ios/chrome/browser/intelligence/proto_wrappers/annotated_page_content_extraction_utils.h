@@ -47,4 +47,11 @@ void PopulatePageInteractionInfoNode(
     optimization_guide::proto::PageInteractionInfo*
         destination_page_interaction_info_node);
 
+// Populate the BoundingRect node for the viewport geometry from the
+// `viewport_geometry_content` object from the renderer.
+void PopulateViewportGeometryNode(
+    const base::DictValue& viewport_geometry_content,
+    optimization_guide::proto::BoundingRect*
+        destination_viewport_geometry_node);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_ANNOTATED_PAGE_CONTENT_EXTRACTION_UTILS_H_

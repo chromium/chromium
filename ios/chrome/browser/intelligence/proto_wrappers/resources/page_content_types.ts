@@ -409,6 +409,7 @@ export interface PageContent {
   rootNode: PageContentNode;
   pageInteractionInfo?: PageContentPageInteractionInfo;
   frameData: PageContentFrameData;
+  viewportGeometry: Rect;
   visibleBoundingBoxesForPasswordRedaction: Rect[];
 }
 
