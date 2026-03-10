@@ -154,6 +154,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser:primitives",
+    "//chrome/browser:resources",
     "//chrome/browser/actor/ui/task_list_bubble:controller",
     "//chrome/browser/bookmarks",
     "//chrome/browser/extensions",
@@ -241,6 +242,7 @@ source_set("impl") {
     "//ui/display",
     "//ui/events",
     "//ui/gfx/range",
+    "//ui/lottie",
     "//ui/native_theme",
     "//ui/views/controls/webview",
   ]

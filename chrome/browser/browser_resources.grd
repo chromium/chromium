@@ -59,10 +59,13 @@
         <!-- Wallet Pass Save Bubble resources -->
         <structure type="lottie" name="IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE" file="resources/wallet/wallet_save_loyalty_card.json" compress="brotli"/>
         <structure type="lottie" name="IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE" file="resources/wallet/wallet_save_event_ticket.json" compress="brotli"/>
-        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_BOARDING_PASS_LOTTIE" file="resources/wallet/wallet_save_boarding_pass.json" compress="brotli"/>
-        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE" file="resources/wallet/wallet_save_transport_ticket.json" compress="brotli"/>
-      </if>
-    </structures>
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_BOARDING_PASS_LOTTIE" file="resources/wallet/wallet_save_boarding_pass.json" compress="brotli" />
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE" file="resources/wallet/wallet_save_transport_ticket.json" compress="brotli" />
+
+        <!-- Toolbar Lottie resources -->
+        <structure type="lottie" name="IDR_APP_MENU_BUTTON_HOVER_LOTTIE" file="resources/toolbar/app_menu_button_hover.json" compress="brotli" />
+        </if>
+        </structures>
     <includes>
       <if expr="is_win">
         <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" type="BINDATA" />

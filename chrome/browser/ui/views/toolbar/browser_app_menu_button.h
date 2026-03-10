@@ -15,6 +15,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/view.h"
 
 class ToolbarView;
@@ -54,6 +55,9 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;
 
+  // views::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
   // Need to override to implement the Expand and Collapse actions.
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
@@ -92,6 +96,8 @@ class BrowserAppMenuButton : public AppMenuButton {
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&BrowserAppMenuButton::OnTouchUiChanged,
                               base::Unretained(this)));
+
+  std::unique_ptr<lottie::Animation> lottie_animation_;
 
   // Used to spawn weak pointers for delayed tasks to open the overflow menu.
   base::WeakPtrFactory<BrowserAppMenuButton> weak_factory_{this};

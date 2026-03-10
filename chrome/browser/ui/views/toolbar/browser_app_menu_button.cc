@@ -32,6 +32,7 @@
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -46,6 +47,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/animation/ink_drop.h"
@@ -64,7 +66,39 @@
 
 namespace {
 constexpr int kChromeRefreshImageLabelPadding = 2;
-}
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+
+class LottieIconSource : public gfx::CanvasImageSource {
+ public:
+  LottieIconSource(lottie::Animation* animation,
+                   float progress,
+                   int size,
+                   SkColor color)
+      : gfx::CanvasImageSource(gfx::Size(size, size)),
+        animation_(animation),
+        progress_(progress),
+        color_(color) {}
+  LottieIconSource(const LottieIconSource&) = delete;
+  LottieIconSource& operator=(const LottieIconSource&) = delete;
+  ~LottieIconSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setColorFilter(cc::ColorFilter::MakeBlend(
+        SkColor4f::FromColor(color_), SkBlendMode::kSrcIn));
+    canvas->SaveLayerWithFlags(flags);
+    animation_->PaintFrame(canvas, progress_, size());
+    canvas->Restore();
+  }
+
+ private:
+  const raw_ptr<lottie::Animation> animation_;
+  const float progress_;
+  const SkColor color_;
+};
+
+}  // namespace
 
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
@@ -79,6 +113,10 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
+  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+    SetAnimateOnStateChange(true);
+    SetAnimationDuration(kAnimationDuration);
+  }
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() = default;
@@ -155,10 +193,42 @@ void BrowserAppMenuButton::UpdateIcon() {
   const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
                                     ? kBrowserToolsTouchIcon
                                     : kBrowserToolsChromeRefreshIcon;
+
+  const double animation_value = hover_animation().GetCurrentValue();
+  const int icon_size = GetIconSize();
+
   for (auto state : kButtonStates) {
     SkColor icon_color = GetForegroundColor(state);
-    SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
+    ui::ImageModel model =
+        ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
+
+    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
+        animation_value > 0 && GetColorProvider()) {
+      if (!lottie_animation_) {
+        std::optional<std::vector<uint8_t>> lottie_bytes =
+            ui::ResourceBundle::GetSharedInstance().GetLottieData(
+                IDR_APP_MENU_BUTTON_HOVER_LOTTIE);
+        CHECK(lottie_bytes);
+        scoped_refptr<cc::SkottieWrapper> skottie =
+            cc::SkottieWrapper::UnsafeCreateSerializable(
+                std::move(*lottie_bytes));
+        lottie_animation_ = std::make_unique<lottie::Animation>(skottie);
+      }
+
+      model = ui::ImageModel::FromImageSkia(
+          gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
+              lottie_animation_.get(), animation_value, icon_size, icon_color));
+    }
+    SetImageModel(state, model);
   }
+}
+
+void BrowserAppMenuButton::AnimationProgressed(
+    const gfx::Animation* animation) {
+  if (animation == &hover_animation()) {
+    UpdateIcon();
+  }
+  AppMenuButton::AnimationProgressed(animation);
 }
 
 void BrowserAppMenuButton::UpdateInkdrop() {
