@@ -850,10 +850,11 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 // temporary workaround in ContextualTasksComposeboxHandler is removed.
 TEST_F(ContextualTasksComposeboxHandlerTest, AegcParameterDisablesTools) {
   omnibox::SearchboxConfig config;
-  auto* rule_set = config.mutable_rule_set();
-  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
-  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
-  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  config.add_input_type_configs()->set_input_type(
+      omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  config.add_tool_configs()->set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
 
   auto session_handle =
       std::make_unique<contextual_search::MockContextualSearchSessionHandle>();

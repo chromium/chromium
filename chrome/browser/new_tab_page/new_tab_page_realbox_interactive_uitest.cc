@@ -133,34 +133,41 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
           AimEligibilityService::Configuration{});
 
-  auto* rule_set = mock_aim_eligibility_service->config().mutable_rule_set();
-  for (const auto input_type : {omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
-                                omnibox::InputType::INPUT_TYPE_LENS_FILE,
-                                omnibox::InputType::INPUT_TYPE_BROWSER_TAB}) {
-    rule_set->add_allowed_input_types(input_type);
-  }
-  for (const auto tool : {omnibox::ToolMode::TOOL_MODE_CANVAS,
-                          omnibox::ToolMode::TOOL_MODE_IMAGE_GEN}) {
-    rule_set->add_allowed_tools(tool);
-    auto* tool_rule = rule_set->add_tool_rules();
-    tool_rule->set_tool(tool);
-    tool_rule->set_allow_all_input_types(true);
-    tool_rule->set_allow_all_models(true);
-  }
-  for (const auto model : {omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
-                           omnibox::ModelMode::MODEL_MODE_GEMINI_PRO}) {
-    rule_set->add_allowed_models(model);
-  }
+  auto* config = &mock_aim_eligibility_service->config();
 
-  auto* regular_config =
-      mock_aim_eligibility_service->config().add_model_configs();
+  auto* image_input_config = config->add_input_type_configs();
+  image_input_config->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+  image_input_config->set_menu_label(std::string(kInputTypeAddImage));
+
+  auto* file_input_config = config->add_input_type_configs();
+  file_input_config->set_input_type(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+  file_input_config->set_menu_label(std::string(kInputTypeAddFile));
+
+  auto* tab_input_config = config->add_input_type_configs();
+  tab_input_config->set_input_type(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+
+  auto* canvas_config = config->add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config->set_menu_label(std::string(kToolCanvas));
+  auto* canvas_tool_rule = canvas_config->mutable_rule();
+  canvas_tool_rule->set_allow_all_input_types(true);
+  canvas_tool_rule->set_allow_all_models(true);
+
+  auto* image_gen_config = config->add_tool_configs();
+  image_gen_config->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  image_gen_config->set_menu_label(std::string(kToolCreateImages));
+  auto* image_gen_tool_rule = image_gen_config->mutable_rule();
+  image_gen_tool_rule->set_allow_all_input_types(true);
+  image_gen_tool_rule->set_allow_all_models(true);
+
+  auto* regular_config = config->add_model_configs();
   regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   regular_config->set_menu_label(std::string(kModelFastLabel));
 
-  auto* pro_config = mock_aim_eligibility_service->config().add_model_configs();
+  auto* pro_config = config->add_model_configs();
   pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   pro_config->set_menu_label(std::string(kModelProLabel));
-  mock_aim_eligibility_service->config().set_hint_text(std::string(kHintText));
+  config->set_hint_text(std::string(kHintText));
 
   ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
