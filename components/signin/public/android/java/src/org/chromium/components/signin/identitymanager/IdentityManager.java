@@ -29,6 +29,9 @@ public interface IdentityManager {
         /** Called when the given account is updated. */
         default void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {}
 
+        /** Called when the given account is removed. */
+        default void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {}
+
         /**
          * Called for all types of changes to the primary account such as - primary account
          * set/cleared or sync consent granted/revoked in C++.

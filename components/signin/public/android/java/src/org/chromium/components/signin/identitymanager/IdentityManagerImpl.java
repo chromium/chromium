@@ -143,6 +143,14 @@ public class IdentityManagerImpl implements IdentityManager {
         }
     }
 
+    /** Called when all refresh tokens are loaded. */
+    @CalledByNative
+    private void onRefreshTokensLoaded() {
+        for (Observer observer : mObservers) {
+            observer.onRefreshTokensLoaded();
+        }
+    }
+
     /** Called when the refresh token of the give account gets updated. */
     @CalledByNative
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
@@ -151,11 +159,10 @@ public class IdentityManagerImpl implements IdentityManager {
         }
     }
 
-    /** Called when all refresh tokens are loaded. */
     @CalledByNative
-    private void onRefreshTokensLoaded() {
+    private void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
         for (Observer observer : mObservers) {
-            observer.onRefreshTokensLoaded();
+            observer.onRefreshTokenRemovedForAccount(accountId);
         }
     }
 
