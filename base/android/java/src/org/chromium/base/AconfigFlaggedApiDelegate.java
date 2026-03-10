@@ -18,7 +18,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.ViewConfiguration;
-import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.TextAttribute;
@@ -131,18 +130,6 @@ public interface AconfigFlaggedApiDelegate {
             DisplayManager displayManager,
             Executor executor,
             DisplayTopologyListener displayTopologyListener) {}
-
-    /**
-     * Calls the {@link android.view.WindowManager.LayoutParams#setKeyboardCaptureEnabled(boolean
-     * hasCapture)} method if supported.
-     *
-     * @param window {@link android.view.Window} on which the method should be called.
-     * @param hasCapture whether keyboard capture should be enabled or disabled.
-     * @return boolean indicating whether the android API was invoked.
-     */
-    default boolean setKeyboardCaptureEnabled(Window window, boolean hasCapture) {
-        return false;
-    }
 
     /** Returns whether rebindService() is available or not. */
     default boolean isUpdateServiceBindingApiAvailable() {
