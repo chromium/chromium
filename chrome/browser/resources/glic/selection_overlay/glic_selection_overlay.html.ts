@@ -30,12 +30,18 @@ export function getHtml(this: SelectionOverlayElementElement) {
         ` : ''}
         <post-selection-renderer id="postSelectionRenderer"
             .selectionOverlayRect="${this.selectionOverlayRect}"
-            .regionSelectedGlowEnabled="${this.enableRegionSelectedGlow}">
+            .regionSelectedGlowEnabled="${this.enableRegionSelectedGlow}"
+            background-gradient-hidden>
         </post-selection-renderer>
         <region-selection id="regionSelectionLayer" .theme="${this.theme}"
             .screenshotDataUri="${this.screenshotDataUri}"
             .selectionOverlayRect="${this.selectionOverlayRect}"
-            .borderGlowEnabled="${this.enableBorderGlow}">
+            .borderGlowEnabled="${this.enableBorderGlow}"
+            region-stroke-color1="#FFFFFF"
+            region-stroke-color2="#FFFFFF"
+            region-stroke-color3="#FFFFFF"
+            region-stroke-color4="#FFFFFF"
+            region-stroke-color5="#FFFFFF">
         </region-selection>
       </div>
       <div id="initialFlashScrim"></div>
