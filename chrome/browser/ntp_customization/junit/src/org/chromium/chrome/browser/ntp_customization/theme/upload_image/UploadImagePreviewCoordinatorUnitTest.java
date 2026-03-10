@@ -441,10 +441,9 @@ public class UploadImagePreviewCoordinatorUnitTest {
     }
 
     @Test
-    public void testSearchBoxHeight_ComposeplateV2() {
-        // Forces the ComposeplateV2 state
+    public void testSearchBoxHeight_ComposeplateEnabled() {
+        // Forces the Composeplate enabled state
         when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(true);
-        ChromeFeatureList.sAndroidComposeplateV2Enabled.setForTesting(true);
 
         mUploadImagePreviewCoordinator =
                 new UploadImagePreviewCoordinator(mActivity, mProfile, mBitmap, mOnClickedCallback);

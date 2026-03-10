@@ -35,7 +35,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -84,23 +83,6 @@ public class ComposeplateCoordinatorUnitTest {
     }
 
     @Test
-    public void testSetVisibilityV1() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_IMPRESSION, true);
-        mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.VISIBLE);
-        histogramWatcher.assertExpected();
-
-        histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_IMPRESSION, false);
-        mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.GONE);
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     public void testSetVisibility() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -115,48 +97,6 @@ public class ComposeplateCoordinatorUnitTest {
         mCoordinator.setVisibility(/* visible= */ false, /* isCurrentPage= */ true);
         verify(mComposeplateView).setVisibility(View.GONE);
         histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testSetIncognitoButtonVisibilityV1() {
-        assertFalse(ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue());
-        mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.VISIBLE);
-        verify(mIncognitoButton).setVisibility(View.VISIBLE);
-
-        mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.GONE);
-        verify(mIncognitoButton).setVisibility(View.GONE);
-    }
-
-    @Test
-    public void testSetIncognitoButtonVisibilityV1_HideIncognitoButton() {
-        ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.setForTesting(true);
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
-
-        mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.VISIBLE);
-        verify(mIncognitoButton).setVisibility(View.GONE);
-
-        mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.GONE);
-        verify(mIncognitoButton).setVisibility(View.GONE);
-    }
-
-    @Test
-    public void testSetIncognitoButtonVisibilityV1_IncognitoDisabled() {
-        IncognitoUtils.setEnabledForTesting(false);
-        assertFalse(IncognitoUtils.isIncognitoModeEnabled(mProfile));
-        assertFalse(ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue());
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
-
-        mCoordinator.setVisibilityV1(/* visible= */ true, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.VISIBLE);
-        verify(mIncognitoButton).setVisibility(View.GONE);
-
-        mCoordinator.setVisibilityV1(/* visible= */ false, /* isCurrentPage= */ true);
-        verify(mComposeplateView).setVisibility(View.GONE);
-        verify(mIncognitoButton).setVisibility(View.GONE);
     }
 
     @Test

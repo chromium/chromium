@@ -64,13 +64,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.lens.LensController;
@@ -97,7 +94,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilityFeatureMap;
@@ -211,7 +207,6 @@ public class LocationBarMediatorTest {
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-    @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
 
     private Context mContext;
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -284,10 +279,6 @@ public class LocationBarMediatorTest {
         mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         mUiOverrides = new LocationBarEmbedderUiOverrides();
-        ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
-        lenient()
-                .when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile)))
-                .thenReturn(true);
 
         doAnswer(i -> mNavigateButtonIsVisible = i.getArgument(0))
                 .when(mLocationBarLayout)
@@ -1636,106 +1627,9 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE + ":v2_enabled/false")
-    public void testButtonVisibility_showComposeplateUnfocused() {
-        mProfileSupplier.set(mProfile);
-        enableBothVoiceAndLensButtons();
-        assertTrue(
-                mMediator.shouldShowComposeplateButton(
-                        /* shouldShowMicButton= */ true, /* shouldShowLensButton= */ true));
-
-        // Verifies that the composeplate button is shown when the url bar is unfocused, and both
-        // mic and lens buttons are hidden.
-        mMediator.updateButtonVisibility();
-        verify(mLocationBarLayout).setMicButtonVisibility(eq(false));
-        verify(mLocationBarLayout).setLensButtonVisibility(eq(false));
-        verify(mLocationBarLayout).setComposeplateButtonVisibility(eq(true));
-        verify(mLocationBarEmbedder, atLeastOnce()).onWidthConsumerVisibilityChanged();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
-    public void testButtonVisibility_dontShowComposeplateUnfocused_disabledByPolicy() {
-        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
-        mProfileSupplier.set(mProfile);
-
-        enableBothVoiceAndLensButtons();
-        assertFalse(
-                mMediator.shouldShowComposeplateButton(
-                        /* shouldShowMicButton= */ true, /* shouldShowLensButton= */ true));
-
-        // Verifies that the composeplate button isn't visible if disabled by policy.
-        mMediator.updateButtonVisibility();
-
-        verify(mLocationBarLayout).setMicButtonVisibility(eq(true));
-        verify(mLocationBarLayout).setLensButtonVisibility(eq(true));
-        verify(mLocationBarLayout, never()).setComposeplateButtonVisibility(anyBoolean());
-        verify(mLocationBarEmbedder, atLeastOnce()).onWidthConsumerVisibilityChanged();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE + ":v2_enabled/false")
-    public void testButtonVisibility_dontShowComposeplateFocused() {
-        mProfileSupplier.set(mProfile);
-        enableBothVoiceAndLensButtons();
-        assertTrue(
-                mMediator.shouldShowComposeplateButton(
-                        /* shouldShowMicButton= */ true, /* shouldShowLensButton= */ true));
-
-        // Verifies that the composeplate button is hidden when url bar is focused.
-        mMediator.onUrlFocusChange(/* hasFocus= */ true);
-        verify(mLocationBarLayout).setMicButtonVisibility(eq(true));
-        verify(mLocationBarLayout).setLensButtonVisibility(eq(true));
-        verify(mLocationBarLayout).setComposeplateButtonVisibility(eq(false));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_COMPOSEPLATE)
-    public void testComposeplateButtonClicked() {
-        mMediator.onFinishNativeInitialization();
-
-        GURL url = new GURL("https://foo.com");
-        when(mTemplateUrlService.getComposeplateUrl()).thenReturn(url);
-        when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
-        when(mTab.isIncognito()).thenReturn(false);
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "NewTabPage.Module.Click",
-                                BrowserUiUtils.ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON)
-                        .build();
-        mMediator.composeplateButtonClicked(null);
-
-        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
-        assertEquals(url.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
     public void testInstallButtonClicked() {
         mMediator.installButtonClicked(null);
         verify(mAddToHomescreenCoordinator).showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
-    }
-
-    private void enableBothVoiceAndLensButtons() {
-        VoiceRecognitionHandler voiceRecognitionHandler = mock(VoiceRecognitionHandler.class);
-        mMediator.setVoiceRecognitionHandlerForTesting(voiceRecognitionHandler);
-        mMediator.onFinishNativeInitialization();
-        mMediator.setShouldShowMicButtonWhenUnfocusedForPhone(true);
-        doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
-        assertTrue(mMediator.shouldShowMicButton());
-
-        mMediator.resetLastCachedIsLensOnOmniboxEnabledForTesting();
-        doReturn(true).when(mLensController).isLensEnabled(any());
-        mUiOverrides.setLensEntrypointAllowed(true);
-        mMediator.setShouldShowLensButtonWhenUnfocusedForPhone(true);
-        mMediator.setLensControllerForTesting(mLensController);
-        assertTrue(mMediator.shouldShowLensButton());
-
-        mMediator.setUrlFocusChangeFraction(
-                /* ntpSearchBoxScrollFraction= */ 1.0f, /* urlFocusChangeFraction= */ 0f);
-
-        Mockito.reset(mLocationBarLayout);
     }
 
     @Test

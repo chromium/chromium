@@ -2745,17 +2745,10 @@ const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
      kNewTabPageCustomizationV2_ShowLogoAndSearchBox, nullptr},
     {"Enable logs", kNewTabPageCustomizationV2_EnableLogs, nullptr}};
 
-const FeatureEntry::FeatureParam kAndroidComposeplate_V2Enabled[] = {
-    {"v2_enabled", "true"}};
-const FeatureEntry::FeatureParam kAndroidComposeplate_HideIncognitoButton[] = {
-    {"hide_incognito_button", "true"}};
 const FeatureEntry::FeatureParam kAndroidComposeplate_SkipLocaleCheck[] = {
     {"skip_locale_check", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidComposeplateVariations[] = {
-    {"V2 enabled", kAndroidComposeplate_V2Enabled, nullptr},
-    {"Hide incognito button", kAndroidComposeplate_HideIncognitoButton,
-     nullptr},
     {"Skip locale check", kAndroidComposeplate_SkipLocaleCheck, nullptr}};
 
 const FeatureEntry::FeatureParam

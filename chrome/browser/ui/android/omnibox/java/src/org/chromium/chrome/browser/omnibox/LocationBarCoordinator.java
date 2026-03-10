@@ -142,7 +142,6 @@ public class LocationBarCoordinator
     private @Nullable View mNavigateButton;
     private @Nullable View mMicButton;
     private @Nullable View mLensButton;
-    private @Nullable View mComposeplateButton;
     private @Nullable View mBookmarksButton;
     private @Nullable View mInstallButton;
     private @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
@@ -407,12 +406,6 @@ public class LocationBarCoordinator
         mLensButton = mLocationBarLayout.findViewById(R.id.lens_camera_button);
         mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
 
-        if (ChromeFeatureList.sAndroidComposeplate.isEnabled()
-                && !ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue()) {
-            mComposeplateButton = mLocationBarLayout.findViewById(R.id.composeplate_button);
-            mComposeplateButton.setOnClickListener(mLocationBarMediator::composeplateButtonClicked);
-        }
-
         mZoomButton = mLocationBarLayout.findViewById(R.id.zoom_button);
         mZoomButton.setOnClickListener(mLocationBarMediator::zoomButtonClicked);
 
@@ -502,11 +495,6 @@ public class LocationBarCoordinator
 
         mLensButton.setOnClickListener(null);
         mLensButton = null;
-
-        if (mComposeplateButton != null) {
-            mComposeplateButton.setOnClickListener(null);
-            mComposeplateButton = null;
-        }
 
         if (mNavigateButton != null) {
             mNavigateButton.setOnClickListener(null);

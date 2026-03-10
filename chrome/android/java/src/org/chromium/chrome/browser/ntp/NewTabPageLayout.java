@@ -20,7 +20,6 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.RawRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
@@ -82,7 +81,6 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.EmptyTextWatcher;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
@@ -162,13 +160,9 @@ public class NewTabPageLayout extends LinearLayout {
     // mIsComposeplateEnabled is null before checking whether to initialize composeplate view in
     // NewTabPageLayout#initialize().
     private @Nullable Boolean mIsComposeplateEnabled;
-    private boolean mIsComposeplateV2Enabled;
     private boolean mIsComposeplatePolicyEnabled;
     private boolean mIsComposeplateViewInitialized;
     private Supplier<GURL> mComposeplateUrlSupplier;
-    private OnClickListener mVoiceSearchButtonClickListener;
-    private OnClickListener mLensButtonClickListener;
-    private View.@Nullable OnClickListener mComposeplateButtonClickListener;
     private @Nullable ComposeplateCoordinator mComposeplateCoordinator;
     // Previous visibility states for metrics.
     private @Nullable Boolean mPreviousVoiceSearchButtonVisible;
@@ -346,7 +340,7 @@ public class NewTabPageLayout extends LinearLayout {
         int searchBoxHeight =
                 NtpCustomizationUtils.getSearchBoxHeightWithShadows(
                         getResources(),
-                        mIsComposeplateV2Enabled,
+                        assumeNonNull(mIsComposeplateEnabled),
                         Boolean.TRUE.equals(mIsWhiteBackgroundOnSearchBoxApplied));
         mSearchBoxCoordinator.setHeight(searchBoxHeight);
 
@@ -478,30 +472,27 @@ public class NewTabPageLayout extends LinearLayout {
 
     private void initializeVoiceSearchButton() {
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
-        mVoiceSearchButtonClickListener =
+        OnClickListener voiceSearchButtonClickListener =
                 v -> mManager.focusSearchBox(true, AutocompleteRequestType.SEARCH, null);
-        mSearchBoxCoordinator.addVoiceSearchButtonClickListener(mVoiceSearchButtonClickListener);
+        mSearchBoxCoordinator.addVoiceSearchButtonClickListener(voiceSearchButtonClickListener);
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
     }
 
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
-        mLensButtonClickListener =
+        OnClickListener lensButtonClickListener =
                 v -> {
                     LensMetrics.recordClicked(LensEntryPoint.NEW_TAB_PAGE);
                     mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
                 };
-        mSearchBoxCoordinator.addLensButtonClickListener(mLensButtonClickListener);
+        mSearchBoxCoordinator.addLensButtonClickListener(lensButtonClickListener);
         TraceEvent.end(TAG + ".initializeLensButton()");
     }
 
     private void initializeComposeplateFlags(Profile profile) {
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
-        mIsComposeplateV2Enabled =
-                mIsComposeplateEnabled
-                        && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
         mIsComposeplatePolicyEnabled =
-                mIsComposeplateV2Enabled && ComposeplateUtils.isEnabledByPolicy(profile);
+                mIsComposeplateEnabled && ComposeplateUtils.isEnabledByPolicy(profile);
     }
 
     private void initializeComposeplate() {
@@ -511,33 +502,6 @@ public class NewTabPageLayout extends LinearLayout {
 
         boolean shouldApplyWhiteBackgroundOnSearchBox =
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
-
-        // TODO(https://crbug.com/421944848) Remove this if block after composeplate experiment code
-        //  is cleaned up.
-        if (!mIsComposeplateV2Enabled) {
-            mComposeplateButtonClickListener =
-                    view -> {
-                        onComposeplateButtonClicked(view);
-                        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
-                    };
-            mSearchBoxCoordinator.setComposeplateButtonClickListener(
-                    mComposeplateButtonClickListener);
-            @RawRes
-            int iconRawResId =
-                    !shouldApplyWhiteBackgroundOnSearchBox && ColorUtils.inNightMode(mContext)
-                            ? R.raw.composeplate_loop_dark
-                            : R.raw.composeplate_loop_light;
-            mSearchBoxCoordinator.setComposeplateButtonIconRawResId(iconRawResId);
-
-            ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_stub);
-            ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-            mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
-            assert mVoiceSearchButtonClickListener != null && mLensButtonClickListener != null;
-            mComposeplateCoordinator.setVoiceSearchClickListener(mVoiceSearchButtonClickListener);
-            mComposeplateCoordinator.setLensClickListener(mLensButtonClickListener);
-            mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
-            return;
-        }
 
         ViewStub composeplateViewStub = findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
@@ -551,9 +515,8 @@ public class NewTabPageLayout extends LinearLayout {
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.
-        mComposeplateButtonClickListener = this::onComposeplateButtonClicked;
         mComposeplateCoordinator.setComposeplateButtonClickListener(
-                mComposeplateButtonClickListener);
+                this::onComposeplateButtonClicked);
 
         if (shouldApplyWhiteBackgroundOnSearchBox) {
             // It is safe to call mComposeplateCoordinator.applyWhiteBackgroundWithShadow() again
@@ -1037,43 +1000,23 @@ public class NewTabPageLayout extends LinearLayout {
         boolean shouldShowVoiceSearchButton = mManager.isVoiceSearchEnabled();
         boolean shouldShowLensButton =
                 mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
-        if (mIsComposeplateEnabled != null
-                && (!mIsComposeplateEnabled || mIsComposeplateV2Enabled)) {
-            mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
-            mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
-            boolean shouldShowComposeplateButton = false;
-            // As long as mComposeplateCoordinator has been initialized, we should update its
-            // visibility.
-            if (mComposeplateCoordinator != null) {
-                shouldShowComposeplateButton =
-                        mIsComposeplateV2Enabled
-                                && mSearchProviderIsGoogle
-                                && IncognitoUtils.isIncognitoModeEnabled(mProfile);
-                mComposeplateCoordinator.setVisibility(
-                        shouldShowComposeplateButton, mManager.isCurrentPage());
-            }
-            updatePreviousButtonVisibilityAndRecordMetrics(
-                    shouldShowVoiceSearchButton,
-                    shouldShowLensButton,
-                    shouldShowComposeplateButton);
-            return;
-        }
+        if (mIsComposeplateEnabled == null) return;
 
-        boolean shouldShowComposeplateButton =
-                mSearchProviderIsGoogle && shouldShowVoiceSearchButton && shouldShowLensButton;
-        boolean isVoiceSearchButtonVisible =
-                !shouldShowComposeplateButton && shouldShowVoiceSearchButton;
-        boolean isLensButtonVisible = !shouldShowComposeplateButton && shouldShowLensButton;
-        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(isVoiceSearchButtonVisible);
-        mSearchBoxCoordinator.setLensButtonVisibility(isLensButtonVisible);
-        mSearchBoxCoordinator.setComposeplateButtonVisibility(shouldShowComposeplateButton);
+        mSearchBoxCoordinator.setVoiceSearchButtonVisibility(shouldShowVoiceSearchButton);
+        mSearchBoxCoordinator.setLensButtonVisibility(shouldShowLensButton);
+        boolean shouldShowComposeplateButton = false;
+        // As long as mComposeplateCoordinator has been initialized, we should update its
+        // visibility.
         if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.setVisibilityV1(
+            shouldShowComposeplateButton =
+                    mIsComposeplateEnabled
+                            && mSearchProviderIsGoogle
+                            && IncognitoUtils.isIncognitoModeEnabled(mProfile);
+            mComposeplateCoordinator.setVisibility(
                     shouldShowComposeplateButton, mManager.isCurrentPage());
         }
-
         updatePreviousButtonVisibilityAndRecordMetrics(
-                isVoiceSearchButtonVisible, isLensButtonVisible, shouldShowComposeplateButton);
+                shouldShowVoiceSearchButton, shouldShowLensButton, shouldShowComposeplateButton);
     }
 
     /**
@@ -1193,9 +1136,6 @@ public class NewTabPageLayout extends LinearLayout {
             mSigninPromoCoordinator = null;
         }
 
-        mComposeplateButtonClickListener = null;
-        mLensButtonClickListener = null;
-        mVoiceSearchButtonClickListener = null;
         mSearchBoxScrollListener = null;
         mComposeplateUrlSupplier = null;
     }

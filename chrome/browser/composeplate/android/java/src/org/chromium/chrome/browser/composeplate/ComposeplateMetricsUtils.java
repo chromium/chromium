@@ -35,13 +35,6 @@ public class ComposeplateMetricsUtils {
     }
 
     /**
-     * Records a click on the composeplate button within the fake search box on the New Tab Page.
-     */
-    public static void recordFakeSearchBoxComposeplateButtonClick() {
-        BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON);
-    }
-
-    /**
      * Records an impression of the fake search box on the New Tab Page. This logs a baseline
      * impression count for the button in the fake search box. The event is triggered each time the
      * New Tab Page is shown or the button's visibility is updated.

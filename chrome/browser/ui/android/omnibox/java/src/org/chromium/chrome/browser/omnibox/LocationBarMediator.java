@@ -53,8 +53,6 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
-import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -221,8 +219,6 @@ class LocationBarMediator
     private boolean mUrlFocusedWithoutAnimations;
     private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
-    private boolean mIsComposeplateEnabled;
-    private boolean mIsComposeplateV2Enabled;
     private boolean mShouldShowLensButtonWhenUnfocused;
     private boolean mShouldShowMicButtonWhenUnfocused;
     // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
@@ -483,8 +479,6 @@ class LocationBarMediator
 
         mLocationBarLayout.setMicButtonDrawable(
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_mic_white_24dp));
-        mLocationBarLayout.setComposeplateButtonDrawable(
-                AppCompatResources.getDrawable(mContext, R.drawable.search_spark_black_24dp));
 
         onPrimaryColorChanged();
 
@@ -845,18 +839,8 @@ class LocationBarMediator
         updateDeleteButtonVisibility();
         updateNavigateButtonVisibility();
         updateInstallButtonVisibility(/* notifyEmbedder= */ false);
-        if (!mIsComposeplateEnabled || mIsComposeplateV2Enabled) {
-            updateMicButtonVisibility(/* notifyEmbedder= */ false);
-            updateLensButtonVisibility(/* notifyEmbedder= */ false);
-        } else {
-            boolean shouldShowMicButton = shouldShowMicButton();
-            boolean shouldShowLensButton = shouldShowLensButton();
-            boolean shouldShowComposeButton =
-                    shouldShowComposeplateButton(shouldShowMicButton, shouldShowLensButton);
-            setMicButtonVisibility(!shouldShowComposeButton && shouldShowMicButton);
-            setLensButtonVisibility(!shouldShowComposeButton && shouldShowLensButton);
-            updateComposeplateButtonVisibility(shouldShowComposeButton);
-        }
+        updateMicButtonVisibility(/* notifyEmbedder= */ false);
+        updateLensButtonVisibility(/* notifyEmbedder= */ false);
         if (mIsTablet) {
             updateBookmarkButtonVisibility(/* notifyEmbedder= */ false);
             updateZoomButtonVisibility(/* notifyEmbedder= */ false);
@@ -924,25 +908,6 @@ class LocationBarMediator
             LensMetrics.recordClicked(entryPoint);
         }
         startLens(entryPoint);
-    }
-
-    /** package */
-    void composeplateButtonClicked(View view) {
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        if (!mNativeInitialized || mLocationBarDataProvider == null || tabModelSelector == null) {
-            return;
-        }
-
-        Tab tab = tabModelSelector.getCurrentTab();
-        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
-
-        if (tab == null || tab.isIncognito() || templateUrlService == null) return;
-
-        GURL url = templateUrlService.getComposeplateUrl();
-        if (url == null) return;
-
-        tab.loadUrl(new LoadUrlParams(url));
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
     }
 
     /* package */ void zoomButtonClicked(View view) {
@@ -1388,10 +1353,6 @@ class LocationBarMediator
     void setProfile(Profile profile) {
         if (!mNativeInitialized) return;
 
-        mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
-        mIsComposeplateV2Enabled =
-                mIsComposeplateEnabled
-                        && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
         assumeNonNull(mOmniboxPrerender);
         mOmniboxPrerender.initializeForProfile(profile);
 
@@ -1523,11 +1484,6 @@ class LocationBarMediator
         }
         mPreviousLensButtonVisible = actualLensButtonVisible;
         mLocationBarLayout.setLensButtonVisibility(actualLensButtonVisible);
-    }
-
-    /** Updates the display of the composeplate button. */
-    private void updateComposeplateButtonVisibility(boolean shouldShowComposeplateButton) {
-        mLocationBarLayout.setComposeplateButtonVisibility(shouldShowComposeplateButton);
     }
 
     // Note - the delete button is never restricted by the toolbar width availability, so the
@@ -1781,24 +1737,6 @@ class LocationBarMediator
                         || mIsLocationBarFocusedFromNtpScroll
                         || mShouldShowLensButtonWhenUnfocused)
                 && isLensOnOmniboxEnabled();
-    }
-
-    @VisibleForTesting
-    boolean shouldShowComposeplateButton(
-            boolean shouldShowMicButton, boolean shouldShowLensButton) {
-        if (!mIsComposeplateEnabled
-                || !shouldShowMicButton
-                || !shouldShowLensButton
-                || isUrlBarFocusedWithUserInput()) {
-            return false;
-        }
-
-        // When this method is called on UI inflation, return false as the native is not ready.
-        if (!mNativeInitialized) {
-            return false;
-        }
-
-        return !mUrlHasFocus && mIsLocationBarFocusedFromNtpScroll;
     }
 
     @RequiresNonNull("mOmniboxChipManager")
@@ -2213,9 +2151,6 @@ class LocationBarMediator
         mLocationBarLayout.setLensButtonTint(tint);
         mLocationBarLayout.setInstallButtonTint(tint);
         mLocationBarLayout.setZoomButtonTint(tint);
-        if (mIsComposeplateEnabled && !mIsComposeplateV2Enabled) {
-            mLocationBarLayout.setComposeplateButtonTint(tint);
-        }
     }
 
     /**

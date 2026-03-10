@@ -102,18 +102,6 @@ public class SearchBoxCoordinator {
         mMediator.addLensButtonClickListener(listener);
     }
 
-    public void setComposeplateButtonVisibility(boolean visible) {
-        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_VISIBILITY, visible);
-    }
-
-    public void setComposeplateButtonClickListener(OnClickListener listener) {
-        mMediator.setComposeplateButtonClickListener(listener);
-    }
-
-    public void setComposeplateButtonIconRawResId(int iconRawResId) {
-        mMediator.setComposeplateButtonIconRawResId(iconRawResId);
-    }
-
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
         return mMediator.isLensEnabled(
                 lensEntryPoint, mIsIncognito, DeviceFormFactor.isWindowOnTablet(mWindowAndroid));

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import androidx.annotation.StyleRes;
 
 import org.chromium.base.MathUtils;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
@@ -44,7 +43,6 @@ class SearchBoxMediator implements DestroyObserver {
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
     private final float mTransitionEndOffset;
-    private @MonotonicNonNull OnClickListener mComposeplateButtonClickListener;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     /** Constructor. */
@@ -84,7 +82,6 @@ class SearchBoxMediator implements DestroyObserver {
 
         mModel.set(SearchBoxProperties.LENS_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK, null);
-        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_CLICK_CALLBACK, null);
         mModel.set(SearchBoxProperties.SEARCH_BOX_DRAG_CALLBACK, null);
@@ -130,22 +127,6 @@ class SearchBoxMediator implements DestroyObserver {
                         clickListener.onClick(v);
                     }
                 });
-    }
-
-    /** Called to set a click listener for the composeplate button. */
-    void setComposeplateButtonClickListener(OnClickListener listener) {
-        assert mComposeplateButtonClickListener == null;
-
-        mComposeplateButtonClickListener = listener;
-        mModel.set(
-                SearchBoxProperties.COMPOSEPLATE_BUTTON_CLICK_CALLBACK,
-                v -> {
-                    mComposeplateButtonClickListener.onClick(v);
-                });
-    }
-
-    void setComposeplateButtonIconRawResId(int iconRawResId) {
-        mModel.set(SearchBoxProperties.COMPOSEPLATE_BUTTON_ICON_RAW_RES_ID, iconRawResId);
     }
 
     /**

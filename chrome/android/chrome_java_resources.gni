@@ -608,8 +608,6 @@ chrome_java_resources = [
   "java/res/menu/bookmark_folder_picker_menu.xml",
   "java/res/menu/bookmark_toolbar_menu_improved.xml",
   "java/res/menu/history_manager_menu.xml",
-  "java/res/raw/composeplate_loop_dark.json",
-  "java/res/raw/composeplate_loop_light.json",
   "java/res/raw/tips_notifications_quick_delete_logo_anim.json",
   "java/res/transition/fade.xml",
   "java/res/transition/move_image.xml",
