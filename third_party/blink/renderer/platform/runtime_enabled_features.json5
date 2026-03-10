@@ -4972,8 +4972,8 @@
       status: "stable",
     },
     {
-      // Killswitch for crbug.com/451833352.
-      name: "SelectionEdgeVisibilityUsesFullEdge",
+      // Killswitch M141.
+      name: "SelectionHandleWithBottomClipped",
       status: "stable",
     },
     {
