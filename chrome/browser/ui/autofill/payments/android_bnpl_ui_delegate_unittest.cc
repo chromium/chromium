@@ -28,6 +28,10 @@
 
 namespace autofill::payments {
 
+using ::testing::_;
+using ::testing::ElementsAreArray;
+using ::testing::Eq;
+
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
  public:
   explicit MockPaymentsAutofillClient(AutofillClient* client)
@@ -55,6 +59,16 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
                base::OnceCallback<void(autofill::BnplIssuer)>,
                base::OnceClosure),
               (override));
+  MOCK_METHOD(
+      bool,
+      OnPurchaseAmountExtracted,
+      (base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+       std::optional<int64_t> extracted_amount,
+       bool is_amount_supported_by_any_issuer,
+       const std::optional<std::string>& app_locale,
+       base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
+       base::OnceClosure cancel_callback),
+      (override));
 };
 
 class AndroidBnplUiDelegateTest : public ChromeRenderViewHostTestHarness {
@@ -167,14 +181,35 @@ TEST_F(AndroidBnplUiDelegateTest, ShowSelectBnplIssuerUi) {
           payments::BnplIssuerEligibilityForPage::kIsEligible)};
 
   EXPECT_CALL(payments_autofill_client(),
-              ShowTouchToFillBnplIssuers(
-                  testing::ElementsAreArray(issuer_context),
-                  /*app_locale=*/"en-US", testing::_, testing::_));
+              ShowTouchToFillBnplIssuers(ElementsAreArray(issuer_context),
+                                         /*app_locale=*/"en-US", _, _));
 
   delegate_->ShowSelectBnplIssuerUi(
       issuer_context, /*app_locale=*/"en-US",
       /*selected_issuer_callback=*/base::DoNothing(),
       /*cancel_callback=*/base::DoNothing(), /*has_seen_ai_terms=*/false);
+}
+
+// Tests that UpdateBnplIssuerUi calls the client's
+// OnPurchaseAmountExtracted.
+TEST_F(AndroidBnplUiDelegateTest, UpdateBnplIssuerUi) {
+  std::vector<payments::BnplIssuerContext> issuer_context = {
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(),
+          payments::BnplIssuerEligibilityForPage::kIsEligible)};
+
+  EXPECT_CALL(
+      payments_autofill_client(),
+      OnPurchaseAmountExtracted(ElementsAreArray(issuer_context),
+                                /*extracted_amount=*/Eq(30'000'000),
+                                /*is_amount_supported_by_any_issuer=*/true,
+                                /*app_locale=*/Eq("en-US"), _, _));
+
+  delegate_->UpdateBnplIssuerUi(issuer_context, /*extracted_amount=*/30'000'000,
+                                /*is_amount_supported_by_any_issuer=*/true,
+                                /*app_locale=*/"en-US",
+                                /*selected_issuer_callback=*/base::DoNothing(),
+                                /*cancel_callback=*/base::DoNothing());
 }
 
 }  // namespace autofill::payments

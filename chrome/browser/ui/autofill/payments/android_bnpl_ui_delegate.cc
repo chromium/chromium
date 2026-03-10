@@ -70,9 +70,10 @@ void AndroidBnplUiDelegate::UpdateBnplIssuerUi(
     const std::optional<std::string>& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
-  // TODO(crbug.com/482157819): Add a call to OnPurchaseAmountExtracted in
-  // PaymentAutofillManager to update the TouchToFill bottom sheet once the new
-  // list of BNPL issuers is returned.
+  client_->OnPurchaseAmountExtracted(
+      issuer_contexts, extracted_amount, is_amount_supported_by_any_issuer,
+      app_locale, std::move(selected_issuer_callback),
+      std::move(cancel_callback));
 }
 
 void AndroidBnplUiDelegate::RemoveSelectBnplIssuerOrProgressUi() {
