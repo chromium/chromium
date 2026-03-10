@@ -148,7 +148,7 @@ bool IsBrowsingHistoryActorIntegrationM3Enabled() {
 // If enabled, the BrowsingHistoryService will start querying only local data,
 // and switch to querying remote data only once all local data has been
 // exhausted.
-BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the WebHistoryService will use a new API for querying browsing
 // history (https://footprints-pa.googleapis.com/...) instead of the old and
