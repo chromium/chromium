@@ -923,7 +923,6 @@ def main():
       f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
       f'-DLLVM_TARGETS_TO_BUILD={targets}',
       f'-DLLVM_ENABLE_PIC={pic_mode}',
-      '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',
       '-DCLANG_PLUGIN_SUPPORT=OFF',
       '-DCLANG_ENABLE_STATIC_ANALYZER=OFF',
