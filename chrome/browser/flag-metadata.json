@@ -4581,7 +4581,7 @@
   {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz@chromium.org" ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "extensions-on-chrome-urls",
@@ -6164,14 +6164,14 @@
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "iph-extensions-request-access-button-feature",
     "owners": [
       "emiliapaz@chromium.org"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
       "name": "ipp-first-setup-for-usb-printers",
