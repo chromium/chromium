@@ -34,17 +34,35 @@ namespace {
 
 using LayerByIdMap = absl::flat_hash_map<uint32_t, raw_ptr<const Layer>>;
 
-void LogSeedRejectionReason(SeedRejectionReason reason) {
+void LogSeedRejectionReason(SeedRejectionReason reason,
+                            const Study* study = nullptr,
+                            const Layer* active_limited_layer = nullptr,
+                            const Layer* active_low_layer = nullptr,
+                            const Layer* current_layer = nullptr) {
   base::UmaHistogramEnumeration(kSeedRejectionReasonHistogram, reason);
-  SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "reason", static_cast<int>(reason));
 
   // TODO: crbug.com/442498684 - Temporarily sampled due to noisiness during
   // debugging. Remove sampling once hitting this codepath is expected to be
   // rare.
   constexpr double kSampleRate = 0.001;
   if (base::RandDouble() < kSampleRate) {
+    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "reason", static_cast<int>(reason));
+    SCOPED_CRASH_KEY_STRING256(SR_CRASH_KEY, "study_name",
+                               study ? study->name() : "");
+    SCOPED_CRASH_KEY_NUMBER(
+        SR_CRASH_KEY, "active_limited_layer",
+        active_limited_layer ? active_limited_layer->id() : 0);
+    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_low_layer",
+                            active_low_layer ? active_low_layer->id() : 0);
+    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "current_layer",
+                            current_layer ? current_layer->id() : 0);
     base::debug::DumpWithoutCrashing();
   }
+}
+
+void LogSeedRejectionReasonForLayer(SeedRejectionReason reason,
+                                    const Layer& current_layer) {
+  LogSeedRejectionReason(reason, nullptr, nullptr, nullptr, &current_layer);
 }
 
 // Builds a map of layers by id from the given seed, logging the seed rejection
@@ -53,21 +71,24 @@ std::optional<LayerByIdMap> BuildLayerByIdMap(const VariationsSeed& seed) {
   LayerByIdMap layer_by_id_map;
   layer_by_id_map.reserve(seed.layers_size());
   for (const Layer& layer : seed.layers()) {
-    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "layer_id", layer.id());
     if (layer.id() == 0) {
-      LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerId);
+      LogSeedRejectionReasonForLayer(SeedRejectionReason::kInvalidLayerId,
+                                     layer);
       return std::nullopt;
     }
     if (layer.num_slots() == 0) {
-      LogSeedRejectionReason(SeedRejectionReason::kLayerDoesNotContainSlots);
+      LogSeedRejectionReasonForLayer(
+          SeedRejectionReason::kLayerDoesNotContainSlots, layer);
       return std::nullopt;
     }
     if (!VariationsLayers::AreSlotBoundsValid(layer)) {
-      LogSeedRejectionReason(SeedRejectionReason::kLayerHasInvalidSlotBounds);
+      LogSeedRejectionReasonForLayer(
+          SeedRejectionReason::kLayerHasInvalidSlotBounds, layer);
       return std::nullopt;
     }
     if (!layer_by_id_map.emplace(layer.id(), &layer).second) {
-      LogSeedRejectionReason(SeedRejectionReason::kDuplicatedLayerId);
+      LogSeedRejectionReasonForLayer(SeedRejectionReason::kDuplicatedLayerId,
+                                     layer);
       return std::nullopt;
     }
   }
@@ -93,7 +114,7 @@ const Layer* FindLayerForStudy(const LayerByIdMap& layer_by_id_map,
   const auto ref_layer_id = ref.layer_id();
   SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "ref_layer_id", ref_layer_id);
   if (ref_layer_id == 0) {
-    LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerReference);
+    LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerReference, &study);
     return nullptr;
   }
   const auto& layer_member_ids =
@@ -101,12 +122,13 @@ const Layer* FindLayerForStudy(const LayerByIdMap& layer_by_id_map,
           ? VariationsLayers::FallbackLayerMemberIds(ref)
           : ref.layer_member_ids();
   if (layer_member_ids.empty()) {
-    LogSeedRejectionReason(SeedRejectionReason::kEmptyLayerReference);
+    LogSeedRejectionReason(SeedRejectionReason::kEmptyLayerReference, &study);
     return nullptr;
   }
   const auto iter = layer_by_id_map.find(ref_layer_id);
   if (iter == layer_by_id_map.end()) {
-    LogSeedRejectionReason(SeedRejectionReason::kDanglingLayerReference);
+    LogSeedRejectionReason(SeedRejectionReason::kDanglingLayerReference,
+                           &study);
     return nullptr;
   }
   const Layer* layer = iter->second;
@@ -114,8 +136,8 @@ const Layer* FindLayerForStudy(const LayerByIdMap& layer_by_id_map,
     if (!std::ranges::contains(layer->members(), member_id,
                                &Layer::LayerMember::id)) {
       SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "ref_member_id", member_id);
-      LogSeedRejectionReason(
-          SeedRejectionReason::kDanglingLayerMemberReference);
+      LogSeedRejectionReason(SeedRejectionReason::kDanglingLayerMemberReference,
+                             &study);
       return nullptr;
     }
   }
@@ -214,13 +236,6 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
   size_t num_legacy_studies = 0;
   std::optional<LimitedLayerEntropyCostTracker> entropy_tracker;
   for (const Study& study : seed.study()) {
-    SCOPED_CRASH_KEY_STRING256(SR_CRASH_KEY, "study_name", study.name());
-    SCOPED_CRASH_KEY_NUMBER(
-        SR_CRASH_KEY, "active_limited_layer",
-        active_limited_layer ? active_limited_layer->id() : 0);
-    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_low_layer",
-                            active_low_layer ? active_low_layer->id() : 0);
-
     if (!AppliesToClientPlatform(study, client_state) ||
         !AppliesToClientChannel(study, client_state) ||
         !AppliesToClientVersion(study, client_state) ||
@@ -253,8 +268,6 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
       continue;
     }
 
-    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "current_layer", current_layer->id());
-
     // Update the active limited layer and the entropy tracker or ensure that
     // the active limited layer matches the current layer.
     if (active_limited_layer == nullptr) {
@@ -263,31 +276,38 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
                               current_time);
       if (!entropy_tracker->IsValid()) {
         // The entropy tracker may have been invalidated by the layer config.
-        LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerConfiguration);
+        LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerConfiguration,
+                               &study, active_limited_layer, active_low_layer,
+                               current_layer);
         return MisconfiguredEntropyResult{.is_misconfigured = true};
       }
     } else if (active_limited_layer != current_layer) {
-      LogSeedRejectionReason(SeedRejectionReason::kMoreThenOneLimitedLayer);
+      LogSeedRejectionReason(SeedRejectionReason::kMoreThenOneLimitedLayer,
+                             &study, active_limited_layer, active_low_layer,
+                             current_layer);
       return MisconfiguredEntropyResult{.is_misconfigured = true};
     }
     if (!entropy_tracker->AddEntropyUsedByStudy(study)) {
       // The entropy tracker may have been invalidated by the study config, or
       // the entropy limit may have been exceeded.
-      LogSeedRejectionReason(
+      auto rejection_reason =
           entropy_tracker->IsValid()
               ? SeedRejectionReason::kHighEntropyUsage
-              : SeedRejectionReason::kInvalidLayerConfiguration);
+              : SeedRejectionReason::kInvalidLayerConfiguration;
+      LogSeedRejectionReason(rejection_reason, &study, active_limited_layer,
+                             active_low_layer, current_layer);
       return MisconfiguredEntropyResult{.is_misconfigured = true};
     }
+
+#undef LOOP_SCOPED_CRASH_KEYS
   }
+
   // Limited and low entropy systems should not be active at the same time.
   if (active_limited_layer && (active_low_layer || num_legacy_studies > 0)) {
-    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_limited_layer",
-                            active_limited_layer->id());
-    SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "active_low_layer",
-                            active_low_layer ? active_low_layer->id() : 0);
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "legacy_studies", num_legacy_studies);
-    LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedEntropy);
+    LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedEntropy,
+                           /*study=*/nullptr, active_limited_layer,
+                           active_low_layer);
     return MisconfiguredEntropyResult{.is_misconfigured = true};
   }
 
