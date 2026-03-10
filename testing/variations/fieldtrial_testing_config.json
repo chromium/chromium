@@ -15471,6 +15471,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "AskGeminiChipAllowNonconsentedUsers": "true",
                         "PopupBlocker": "false"
                     },
                     "enable_features": [
