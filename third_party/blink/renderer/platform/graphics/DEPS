@@ -23,6 +23,7 @@ include_rules = [
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/client/shared_image_pool.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+gpu/command_buffer/client/test_shared_image_interface.h",
     "+gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h",

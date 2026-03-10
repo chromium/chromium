@@ -79,6 +79,7 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ImageInfo {
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientImage
     : public base::RefCountedThreadSafe<ClientImage> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
   explicit ClientImage(scoped_refptr<ClientSharedImage> shared_image);
 
   // Returns the reference on the underlying shared image. Note that clients
