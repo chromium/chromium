@@ -168,8 +168,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     result.emplace_back(
         BeginFrameArgsForScrollJank::From(frame_bounds->some_args, result_id),
         NonDamagingFrame{},
-        ScrollJankV4FrameStage::CalculateStages(
-            events_metrics, result_id, /* skip_non_damaging_events= */ false));
+        ScrollJankV4FrameStage::CalculateStages(events_metrics, result_id));
     return result;
   }
 
@@ -181,8 +180,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     result.emplace_back(
         BeginFrameArgsForScrollJank::From(presented_args, result_id),
         DamagingFrame{.presentation_ts = presentation_ts},
-        ScrollJankV4FrameStage::CalculateStages(
-            events_metrics, result_id, /* skip_non_damaging_events= */ false));
+        ScrollJankV4FrameStage::CalculateStages(events_metrics, result_id));
     return result;
   }
 
@@ -240,8 +238,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     result.emplace_back(
         args_and_events.args, damage,
         ScrollJankV4FrameStage::CalculateStages(
-            args_and_events.events, args_and_events.args.result_id,
-            /* skip_non_damaging_events= */ false));
+            args_and_events.events, args_and_events.args.result_id));
   }
   return result;
 }

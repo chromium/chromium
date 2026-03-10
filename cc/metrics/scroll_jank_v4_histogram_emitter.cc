@@ -9,11 +9,9 @@
 #include <variant>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/base/features.h"
 #include "cc/metrics/histogram_macros.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -89,9 +87,6 @@ bool ScrollJankV4HistogramEmitter::SingleFrameData::HasJankReasons() const {
   return !jank_reasons.empty();
 }
 
-ScrollJankV4HistogramEmitter::ScrollJankV4HistogramEmitter()
-    : inner_emitter_(CreateInnerEmitter()) {}
-
 ScrollJankV4HistogramEmitter::~ScrollJankV4HistogramEmitter() {
   // In case ScrollJankV4HistogramEmitter wasn't informed about the end of the
   // last scroll, emit histograms for the last scroll now.
@@ -102,11 +97,7 @@ void ScrollJankV4HistogramEmitter::OnFrameWithScrollUpdates(
     const JankReasonArray<int>& missed_vsyncs_per_reason,
     bool is_damaging) {
   SingleFrameData frame_data = SingleFrameData::From(missed_vsyncs_per_reason);
-  std::visit(
-      [&](auto& inner_emitter) {
-        inner_emitter.AddFrame(frame_data, is_damaging);
-      },
-      inner_emitter_);
+  inner_emitter_.AddFrame(frame_data, is_damaging);
 }
 
 void ScrollJankV4HistogramEmitter::OnScrollStarted() {
@@ -355,32 +346,8 @@ void ScrollJankV4HistogramEmitter::EmitForDamagingScrolls::
   state_ = DamagingFrameAlreadyEncountered();
 }
 
-// static
-ScrollJankV4HistogramEmitter::InnerEmitter
-ScrollJankV4HistogramEmitter::CreateInnerEmitter() {
-  // If the scroll jank v4 metric doesn't handle non-damaging scroll updates at
-  // all, then all frames are considered damaging, so emit for all frames.
-  if (!base::FeatureList::IsEnabled(
-          features::kHandleNonDamagingInputsInScrollJankV4Metric)) {
-    return EmitForAllScrolls();
-  }
-
-  const std::string histogram_emission_policy =
-      features::kHistogramEmissionPolicy.Get();
-  if (histogram_emission_policy == features::kEmitForAllScrolls) {
-    return EmitForAllScrolls();
-  } else if (histogram_emission_policy == features::kEmitForDamagingScrolls) {
-    return EmitForDamagingScrolls();
-  }
-
-  // If `features::kHistogramEmissionPolicy` is invalid, default to emitting for
-  // damaging scrolls.
-  return EmitForDamagingScrolls();
-}
-
 void ScrollJankV4HistogramEmitter::FinishScroll() {
-  std::visit([](auto& inner_emitter) { inner_emitter.FinishScroll(); },
-             inner_emitter_);
+  inner_emitter_.FinishScroll();
 }
 
 }  // namespace cc

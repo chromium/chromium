@@ -63,19 +63,6 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kHandleNonDamagingInputsInScrollJankV4Metric)) {
-    // Ignore non-damaging events (legacy behavior).
-    uint64_t result_id = base::trace_event::GetNextGlobalTraceId();
-    ScrollJankV4FrameStage::List stages =
-        ScrollJankV4FrameStage::CalculateStages(
-            events_metrics, result_id, /* skip_non_damaging_events= */ true);
-    HandleFrame(
-        stages, ScrollJankV4Frame::DamagingFrame(presentation_ts),
-        ScrollJankV4Frame::BeginFrameArgsForScrollJank::From(args, result_id));
-    return;
-  }
-
   ScrollJankV4Frame::Timeline timeline = ScrollJankV4Frame::CalculateTimeline(
       events_metrics, args, presentation_ts);
   for (auto& frame : timeline) {

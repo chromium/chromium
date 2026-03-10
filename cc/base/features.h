@@ -249,35 +249,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     double,
     kScrollJankV4MetricFlingContinuityThreshold);
 
-// Whether the scroll jank V4 metric should handle non-damaging inputs. See
-// `ScrollJankV4Frame::ScrollDamage` for the definition of non-damaging inputs
-// and frames.
-//
-// When disabled, `ScrollJankV4Processor` will ignore non-damaging inputs
-// (legacy behavior similar to the scroll jank v1 metric). See
-// `ScrollJankV4FrameStage::CalculateStages()` for more details.
-//
-// When enabled, `ScrollJankV4Processor` will reconstruct a timeline of
-// non-damaging and damaging frames for the purposes of evaluating scroll jank.
-// See `ScrollJankV4Frame::CalculateTimeline()` for more details.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kHandleNonDamagingInputsInScrollJankV4Metric);
-
-// `ScrollJankV4HistogramEmitter`'s histogram emission policy with regards to
-// non-damaging frames and scrolls.
-//
-// `kEmitForAllScrolls`: all frames in ALL scrolls (regardless of damage, even
-// if the scroll is completely non-damaging) count towards the UMA histograms.
-//
-// `kEmitForDamagingScrolls`: all frames in DAMAGING scrolls (containing at
-// least one damaging frame) count towards the UMA histograms. Jank identified
-// in frames in a non-damaging scroll (containing only non-damaging frames)
-// won't be reported in the UMA histograms.
-CC_BASE_EXPORT extern const base::FeatureParam<std::string>
-    kHistogramEmissionPolicy;
-CC_BASE_EXPORT extern const char kEmitForAllScrolls[];
-CC_BASE_EXPORT extern const char kEmitForDamagingScrolls[];
-
 // When disabled, the scroll jank V4 metric orders scroll starts, updates and
 // ends within a single frame based on their
 // `EventMetrics::DispatchStage::kGenerated` timestamps. When enabled, it orders

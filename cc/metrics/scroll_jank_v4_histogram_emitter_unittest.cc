@@ -5,23 +5,15 @@
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 #include <memory>
-#include <string>
 #include <utility>
-#include <variant>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "cc/base/features.h"
 #include "cc/metrics/scroll_jank_v4_result.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
 
 namespace {
-
-using ::testing::_;
-using ::testing::VariantWith;
 
 constexpr JankReasonArray<int> MakeMissedVsyncCounts(
     std::initializer_list<std::pair<JankReason, int>> values) {
@@ -76,32 +68,12 @@ void ExpectNoHistograms(const base::HistogramTester& histogram_tester) {
 }  // namespace
 
 class ScrollJankV4HistogramEmitterTest : public testing::Test {
- public:
-  explicit ScrollJankV4HistogramEmitterTest(
-      std::string histogram_emission_policy) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kHandleNonDamagingInputsInScrollJankV4Metric,
-        {{features::kHistogramEmissionPolicy.name, histogram_emission_policy}});
-    histogram_emitter_ = std::make_unique<ScrollJankV4HistogramEmitter>();
-  }
-
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ScrollJankV4HistogramEmitter> histogram_emitter_;
+  std::unique_ptr<ScrollJankV4HistogramEmitter> histogram_emitter_ =
+      std::make_unique<ScrollJankV4HistogramEmitter>();
 };
 
-// Test cases which only involve damaging frames and are therefore common to
-// both histogram emission policies, i.e. the expected behavior is independent
-// of `features::kHistogramEmissionPolicy`.
-class ScrollJankV4HistogramEmitterCommonTest
-    : public ScrollJankV4HistogramEmitterTest,
-      public testing::WithParamInterface<std::string> {
- public:
-  ScrollJankV4HistogramEmitterCommonTest()
-      : ScrollJankV4HistogramEmitterTest(GetParam()) {}
-};
-
-TEST_P(ScrollJankV4HistogramEmitterCommonTest,
+TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsFixedWindowHistogramsEvery64Frames) {
   // First window: Histograms should be emitted after the 64th frame.
   {
@@ -255,7 +227,8 @@ TEST_P(ScrollJankV4HistogramEmitterCommonTest,
     ExpectNoPerScrollHistograms(histogram_tester);
   }
 }
-TEST_P(ScrollJankV4HistogramEmitterCommonTest,
+
+TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsPerScrollHistogramsAtEndOfScroll) {
   // Scroll 1: Histograms SHOULD be emitted after it ends.
   {
@@ -395,7 +368,7 @@ Fixed windows:   |<-------window 1------>|<-------window 2------>|
 Scrolls:         |<scroll 1->|<------scroll 2------->|<scroll 3->|
 Delayed frames:  :     1     :     2     :     4     :     8     :
 */
-TEST_P(ScrollJankV4HistogramEmitterCommonTest,
+TEST_F(ScrollJankV4HistogramEmitterTest,
        EmitsBothFixedWindowAndPerScrollHistogramsIndependently) {
   // Scroll 1, frames 1-32: Histograms SHOULD be emitted after the scroll ends.
   {
@@ -598,7 +571,7 @@ TEST_P(ScrollJankV4HistogramEmitterCommonTest,
   }
 }
 
-TEST_P(ScrollJankV4HistogramEmitterCommonTest, IgnoresEmptyScrolls) {
+TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresEmptyScrolls) {
   // 10 empty scrolls: NO histograms should be emitted.
   {
     base::HistogramTester histogram_tester;
@@ -668,7 +641,7 @@ TEST_P(ScrollJankV4HistogramEmitterCommonTest, IgnoresEmptyScrolls) {
   }
 }
 
-TEST_P(ScrollJankV4HistogramEmitterCommonTest, CountsSingletonScrolls) {
+TEST_F(ScrollJankV4HistogramEmitterTest, CountsSingletonScrolls) {
   // 10 singleton scrolls: Per-scroll histograms SHOULD be emitted for each
   // scroll.
   for (int s = 1; s <= 10; s++) {
@@ -742,8 +715,7 @@ TEST_P(ScrollJankV4HistogramEmitterCommonTest, CountsSingletonScrolls) {
 }
 
 // Regression test for https://crbug.com/475797611.
-TEST_P(ScrollJankV4HistogramEmitterCommonTest,
-       ShouldNotCrashWhenAllFramesAreJanky) {
+TEST_F(ScrollJankV4HistogramEmitterTest, ShouldNotCrashWhenAllFramesAreJanky) {
   base::HistogramTester histogram_tester;
 
   for (int i = 0; i < 64; i++) {
@@ -757,241 +729,7 @@ TEST_P(ScrollJankV4HistogramEmitterCommonTest,
       "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 100, 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ScrollJankV4HistogramEmitterCommonTest,
-    ScrollJankV4HistogramEmitterCommonTest,
-    testing::ValuesIn<std::string>({
-        features::kEmitForAllScrolls,
-        features::kEmitForDamagingScrolls,
-    }),
-    [](const testing::TestParamInfo<
-        ScrollJankV4HistogramEmitterCommonTest::ParamType>& info) {
-      return info.param;
-    });
-
-class ScrollJankV4HistogramEmitterEmitForAllScrollsTest
-    : public ScrollJankV4HistogramEmitterTest {
- public:
-  ScrollJankV4HistogramEmitterEmitForAllScrollsTest()
-      : ScrollJankV4HistogramEmitterTest(features::kEmitForAllScrolls) {}
-};
-
-TEST_F(ScrollJankV4HistogramEmitterEmitForAllScrollsTest,
-       CountsNonDamagingFrames) {
-  // Start of scroll, frames 1-64: Fixed window histograms SHOULD be emitted
-  // after frame 64.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();
-
-    for (int i = 1; i <= 20; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
-    }
-
-    for (int i = 21; i <= 40; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame,
-                                                   kNonDamaging);
-    }
-
-    // Frame 41: Janky damaging frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        MakeMissedVsyncCounts(
-            {{JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 3}}),
-        kDamaging);
-
-    for (int i = 42; i <= 50; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
-    }
-
-    // Frame 51: Janky damaging frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFastScroll, 5}}),
-        kNonDamaging);
-
-    for (int i = 52; i <= 63; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame,
-                                                   kNonDamaging);
-    }
-
-    ExpectNoHistograms(histogram_tester);
-
-    // Frame 64: Non-janky non-damaging frame.
-    histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kNonDamaging);
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        2 * 100 / 64 /* Frames 41 & 51 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        1 * 100 / 64 /* Frame 41 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFastScroll",
-        1 * 100 / 64 /* Frame 51 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncAtStartOfFling",
-        0, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFling",
-        0, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
-        3 + 5 /* Frames 41 & 51 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 5 /* Frame 51 */, 1);
-    ExpectNoPerScrollHistograms(histogram_tester);
-  }
-
-  // End of scroll: Per-scroll histograms SHOULD be emitted.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollEnded();
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        2 * 100 / 54 /* Frames 41 & 51 */, 1);
-    ExpectNoFixedWindowHistograms(histogram_tester);
-  }
-}
-
-TEST_F(ScrollJankV4HistogramEmitterEmitForAllScrollsTest,
-       CountsCompletelyNonDamagingScrolls) {
-  // Scroll 1 with both damaging and non-damaging frames: Per-scroll histotgrams
-  // SHOULD be emitted after the scroll ends.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();
-
-    for (int i = 1; i <= 10; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame,
-                                                   kNonDamaging);
-    }
-
-    for (int i = 11; i <= 19; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
-    }
-
-    // Frame 20: Janky.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        MakeMissedVsyncCounts(
-            {{JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 4}}),
-        kNonDamaging);
-
-    ExpectNoHistograms(histogram_tester);
-
-    histogram_emitter_->OnScrollEnded();
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 20 /* Frame 20 */, 1);
-    ExpectNoFixedWindowHistograms(histogram_tester);
-  }
-
-  // COMPLETELY NON-DAMAGING scroll 2: Per-scroll histograms SHOULD be emitted
-  // after the scroll ends.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();
-
-    for (int i = 21; i <= 29; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame,
-                                                   kNonDamaging);
-    }
-
-    // Frame 30: Janky.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        MakeMissedVsyncCounts({{JankReason::kMissedVsyncDuringFastScroll, 8}}),
-        kNonDamaging);
-
-    ExpectNoHistograms(histogram_tester);
-
-    histogram_emitter_->OnScrollEnded();
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 10 /* Frame 30 */, 1);
-    ExpectNoFixedWindowHistograms(histogram_tester);
-  }
-
-  // Start of scroll 3 with both damaging and non-damaging frames: Fixed window
-  // histograms SHOULD be emitted after frame 64.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollStarted();
-
-    for (int i = 31; i <= 50; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame, kDamaging);
-    }
-
-    for (int i = 51; i <= 63; i++) {
-      histogram_emitter_->OnFrameWithScrollUpdates(kNonJankyFrame,
-                                                   kNonDamaging);
-    }
-
-    ExpectNoHistograms(histogram_tester);
-
-    // Frame 64.
-    histogram_emitter_->OnFrameWithScrollUpdates(
-        MakeMissedVsyncCounts({{JankReason::kMissedVsyncAtStartOfFling, 6}}),
-        kDamaging);
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow",
-        3 * 100 / 64 /* Frames 20, 30 & 64 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDueToDeceleratingInputFrameDelivery",
-        1 * 100 / 64 /* Frame 20 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFastScroll",
-        1 * 100 / 64 /* Frame 30 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncAtStartOfFling",
-        1 * 100 / 64 /* Frame 64 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow."
-        "MissedVsyncDuringFling",
-        0, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.MissedVsyncsSum4.FixedWindow",
-        4 + 8 + 6 /* Frames 20, 30 & 64 */, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.MissedVsyncsMax4.FixedWindow", 8 /* Frame 30 */, 1);
-    ExpectNoPerScrollHistograms(histogram_tester);
-  }
-
-  // End of scroll 3: Per-scroll histograms SHOULD be emitted.
-  {
-    base::HistogramTester histogram_tester;
-
-    histogram_emitter_->OnScrollEnded();
-
-    histogram_tester.ExpectUniqueSample(
-        "Event.ScrollJank.DelayedFramesPercentage4.PerScroll",
-        1 * 100 / 34 /* Frame 64 */, 1);
-    ExpectNoFixedWindowHistograms(histogram_tester);
-  }
-}
-
-class ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest
-    : public ScrollJankV4HistogramEmitterTest {
- public:
-  ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest()
-      : ScrollJankV4HistogramEmitterTest(features::kEmitForDamagingScrolls) {}
-};
-
-TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
-       CountsNonDamagingFrames) {
+TEST_F(ScrollJankV4HistogramEmitterTest, CountsNonDamagingFrames) {
   // Scroll 1 with frames 1-27 (all damaging): Per-scroll histograms SHOULD be
   // emitted after the scroll ends.
   {
@@ -1262,8 +1000,7 @@ TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
   }
 }
 
-TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
-       IgnoresCompletelyNonDamagingScrolls) {
+TEST_F(ScrollJankV4HistogramEmitterTest, IgnoresCompletelyNonDamagingScrolls) {
   // Scroll 1 with 32 damaging frames: Per-scroll histograms SHOULD be emitted
   // after the scroll ends.
   {
@@ -1385,8 +1122,7 @@ TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
   }
 }
 
-TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
-       LimitsNumberOfPendingFixedWindows) {
+TEST_F(ScrollJankV4HistogramEmitterTest, LimitsNumberOfPendingFixedWindows) {
   base::HistogramTester histogram_tester;
 
   histogram_emitter_->OnScrollStarted();
@@ -1405,74 +1141,6 @@ TEST_F(ScrollJankV4HistogramEmitterEmitForDamagingScrollsTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow"),
               base::BucketsAre(base::Bucket(0, 20)));
-}
-
-// Test cases which verify that `ScrollJankV4HistogramEmitter` selects the
-// correct histogram emission policy depending on
-// `features::kHistogramEmissionPolicy`.
-class ScrollJankV4HistogramEmitterPolicySelectionTest : public testing::Test {
- protected:
-  // Individual test cases cannot access private declarations within
-  // `ScrollJankV4HistogramEmitter`, only this test fixture can (because it's a
-  // friend of `ScrollJankV4HistogramEmitter`), so we need to re-export the
-  // relevant nested classes.
-  using EmitForAllScrolls = ScrollJankV4HistogramEmitter::EmitForAllScrolls;
-  using EmitForDamagingScrolls =
-      ScrollJankV4HistogramEmitter::EmitForDamagingScrolls;
-
-  template <typename ExpectedInnerEmitterType>
-  void ExpectThatCreateInnerEmitterReturnsType() {
-    // This call cannot be inlined for the same visibility reasons.
-    EXPECT_THAT(ScrollJankV4HistogramEmitter::CreateInnerEmitter(),
-                VariantWith<ExpectedInnerEmitterType>(_));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ScrollJankV4HistogramEmitterPolicySelectionTest, FeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kHandleNonDamagingInputsInScrollJankV4Metric);
-
-  ExpectThatCreateInnerEmitterReturnsType<EmitForAllScrolls>();
-}
-
-TEST_F(ScrollJankV4HistogramEmitterPolicySelectionTest,
-       PolicyParamIsEmitForAllScrolls) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kHandleNonDamagingInputsInScrollJankV4Metric,
-      {{features::kHistogramEmissionPolicy.name,
-        features::kEmitForAllScrolls}});
-
-  ExpectThatCreateInnerEmitterReturnsType<EmitForAllScrolls>();
-}
-
-TEST_F(ScrollJankV4HistogramEmitterPolicySelectionTest,
-       PolicyParamIsEmitForDamagingScrolls) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kHandleNonDamagingInputsInScrollJankV4Metric,
-      {{features::kHistogramEmissionPolicy.name,
-        features::kEmitForDamagingScrolls}});
-
-  ExpectThatCreateInnerEmitterReturnsType<EmitForDamagingScrolls>();
-}
-
-TEST_F(ScrollJankV4HistogramEmitterPolicySelectionTest, PolicyParamIsInvalid) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kHandleNonDamagingInputsInScrollJankV4Metric,
-      {
-          {features::kHistogramEmissionPolicy.name, "invalid"},
-      });
-
-  ExpectThatCreateInnerEmitterReturnsType<EmitForDamagingScrolls>();
-}
-
-TEST_F(ScrollJankV4HistogramEmitterPolicySelectionTest,
-       PolicyParamIsNotProvided) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kHandleNonDamagingInputsInScrollJankV4Metric);
-
-  ExpectThatCreateInnerEmitterReturnsType<EmitForDamagingScrolls>();
 }
 
 }  // namespace cc

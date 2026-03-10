@@ -34,11 +34,11 @@ namespace cc {
 //
 //   * Event.ScrollJank.DelayedFramesPercentage4.PerScroll
 //
-// The histogram emitter's behavior with respect to non-damaging frames and
-// scrolls is controlled via `features::kHistogramEmissionPolicy`.
+// The histogram emitter ignores completely non-damaging scrolls (i.e. scrolls
+// which don't contain any damaging frames). Other than that, it counts
+// non-damaging frames towards UMA histograms.
 class CC_EXPORT ScrollJankV4HistogramEmitter {
  public:
-  ScrollJankV4HistogramEmitter();
   ~ScrollJankV4HistogramEmitter();
 
   void OnFrameWithScrollUpdates(
@@ -248,14 +248,9 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
     EmitForAllScrolls wrapped_emitter_;
   };
 
-  using InnerEmitter = std::variant<EmitForAllScrolls, EmitForDamagingScrolls>;
-
-  static InnerEmitter CreateInnerEmitter();
   void FinishScroll();
 
-  InnerEmitter inner_emitter_;
-
-  friend class ScrollJankV4HistogramEmitterPolicySelectionTest;
+  EmitForDamagingScrolls inner_emitter_;
 };
 
 }  // namespace cc
