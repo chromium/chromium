@@ -202,11 +202,69 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
           }
         }
 
+        weak_this->SortThreads();
+
         for (auto& observer : weak_this->observers_) {
           observer.OnThreadsInitialized(weak_this->threads_);
         }
       },
       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProjectsPanelController::OnTaskAdded(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  if (!task.GetThread().has_value()) {
+    return;
+  }
+
+  const contextual_tasks::Thread thread = task.GetThread().value();
+  threads_.insert(threads_.begin(), thread);
+  thread_server_id_to_task_id_.emplace(thread.server_id, task.GetTaskId());
+
+  SortThreads();
+}
+
+void ProjectsPanelController::OnTaskUpdated(
+    const contextual_tasks::ContextualTask& task,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  std::optional<contextual_tasks::Thread> thread = task.GetThread();
+  if (!thread.has_value()) {
+    return;
+  }
+
+  auto existing_thread = std::ranges::find(
+      threads_, thread->server_id, &contextual_tasks::Thread::server_id);
+  if (existing_thread == threads_.end()) {
+    OnTaskAdded(task, source);
+    return;
+  }
+  *existing_thread = thread.value();
+
+  SortThreads();
+}
+
+void ProjectsPanelController::OnTaskRemoved(
+    const base::Uuid& task_id,
+    contextual_tasks::ContextualTasksService::TriggerSource source) {
+  auto it = std::ranges::find_if(
+      thread_server_id_to_task_id_,
+      [&](const auto& pair) { return pair.second == task_id; });
+  if (it == thread_server_id_to_task_id_.end()) {
+    return;
+  }
+
+  const std::string server_id = it->first;
+  thread_server_id_to_task_id_.erase(it);
+
+  std::erase_if(threads_, [&](const contextual_tasks::Thread& thread) {
+    return thread.server_id == server_id;
+  });
+}
+
+void ProjectsPanelController::SortThreads() {
+  std::ranges::sort(threads_, std::ranges::greater(),
+                    &contextual_tasks::Thread::last_turn_time);
 }
 
 void ProjectsPanelController::OnGotThreadUrlForResumption(GURL thread_url) {

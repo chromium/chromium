@@ -90,8 +90,20 @@ class ProjectsPanelController
 
   // ContextualTasksService::Observer
   void OnContextualTasksServiceInitialized() override;
+  void OnTaskAdded(
+      const contextual_tasks::ContextualTask& task,
+      contextual_tasks::ContextualTasksService::TriggerSource source) override;
+  void OnTaskUpdated(
+      const contextual_tasks::ContextualTask& task,
+      contextual_tasks::ContextualTasksService::TriggerSource source) override;
+  void OnTaskRemoved(
+      const base::Uuid& task_id,
+      contextual_tasks::ContextualTasksService::TriggerSource source) override;
 
  private:
+  // Sorts threads from most to least recent last turn time.
+  void SortThreads();
+
   void OnGotThreadUrlForResumption(GURL thread_url);
 
   const raw_ptr<BrowserWindowInterface> browser_;
