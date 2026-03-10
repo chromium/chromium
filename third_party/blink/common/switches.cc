@@ -85,8 +85,12 @@ const char kEnableRGBA4444Textures[] = "enable-rgba-4444-textures";
 const char kEnableRasterSideDarkModeForImages[] =
     "enable-raster-side-dark-mode-for-images";
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables WebGL rendering into a scanout buffer for overlay support.
+// Restricted to ChromeOS, where this functionality is enabled on a per-board
+// basis.
 const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
+#endif
 
 // Enable rasterizer that writes directly to GPU memory associated with tiles.
 const char kEnableZeroCopy[] = "enable-zero-copy";

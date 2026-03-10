@@ -448,10 +448,12 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources);
-#else
+#elif BUILDFLAG(IS_CHROMEOS)
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
+#else
+  static const bool enable_web_gl_image_chromium = false;
 #endif
   return enable_web_gl_image_chromium;
 }

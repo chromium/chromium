@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SWITCHES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SWITCHES_H_
 
+#include "build/build_config.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -33,7 +34,9 @@ BLINK_COMMON_EXPORT extern const char kEnableLeakDetectionHeapSnapshot[];
 BLINK_COMMON_EXPORT extern const char kEnablePreferCompositingToLCDText[];
 BLINK_COMMON_EXPORT extern const char kEnableRasterSideDarkModeForImages[];
 BLINK_COMMON_EXPORT extern const char kEnableRGBA4444Textures[];
+#if BUILDFLAG(IS_CHROMEOS)
 BLINK_COMMON_EXPORT extern const char kEnableWebGLImageChromium[];
+#endif
 BLINK_COMMON_EXPORT extern const char kEnableZeroCopy[];
 BLINK_COMMON_EXPORT extern const char
     kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging[];
