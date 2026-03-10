@@ -360,12 +360,16 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       // TODO(crbug.com/475222200): When in immersive, swapping between tab
       // strip types create duplicate tab strips. Until that is resolved,
       // disable the ability to swap between tab strips while in immersive.
-      result->set_hidden_state = true;
-      result->new_hidden_state =
-          ImmersiveModeController::From(browser)->IsEnabled();
-      result->new_toggle_state =
-          tabs::VerticalTabStripStateController::From(browser)
-              ->ShouldDisplayVerticalTabs();
+      if (auto* immersive_mode_controller =
+              ImmersiveModeController::From(browser)) {
+        result->set_hidden_state = true;
+        result->new_hidden_state = immersive_mode_controller->IsEnabled();
+      }
+      if (auto* vertical_tab_strip_state_controller =
+              tabs::VerticalTabStripStateController::From(browser)) {
+        result->new_toggle_state =
+            vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
+      }
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {
