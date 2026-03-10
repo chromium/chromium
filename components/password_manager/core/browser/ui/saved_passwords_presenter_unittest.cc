@@ -100,7 +100,7 @@ CredentialUIEntry AsCredentialUIEntry(
 }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kDefaultFallbackIconUrl[] = "https://t1.gstatic.com/faviconV2";
 constexpr char kFallbackIconQueryParams[] =
     "client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,URL,"
@@ -123,6 +123,7 @@ class SavedPasswordsPresenterTest : public testing::Test {
   void SetUp() override {
     store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
+    GetSyncService()->SetSignedIn(signin::ConsentLevel::kSync);
     task_env_.RunUntilIdle();
   }
 
@@ -1929,7 +1930,6 @@ TEST_F(SavedPasswordsPresenterTest, GetAffiliatedGroups) {
       "PasswordManager.PasswordsGrouping.Time", base::Milliseconds(kDelay), 1);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   PasswordForm form_1 =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore, 1);
@@ -1941,6 +1941,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test1.com",
@@ -1948,6 +1949,13 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_SingleSite) {
                                   .signon_realm = form_1.signon_realm},
                   .username = form_1.username_value,
                   .favicon_url = CreateFaviconUrl(form_1.url)}));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              IsEmpty());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
@@ -1959,6 +1967,7 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(ActorLoginPermission{
                   .domain_info = {.name = "test0.com",
@@ -1966,6 +1975,13 @@ TEST_F(SavedPasswordsPresenterTest, GetAllowedActorLoginSites_Deduplicates) {
                                   .signon_realm = form_1.signon_realm},
                   .username = form_1.username_value,
                   .favicon_url = CreateFaviconUrl(form_1.url)}));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              IsEmpty());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -1983,6 +1999,7 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(
       presenter().GetActorLoginPermissions(GetSyncService()),
       UnorderedElementsAre(
@@ -1999,6 +2016,13 @@ TEST_F(SavedPasswordsPresenterTest,
                               .signon_realm = form_2.signon_realm},
               .username = form_2.username_value,
               .favicon_url = GURL(kDefaultAndroidIcon)}));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              IsEmpty());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -2015,6 +2039,7 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogins({form_1, form_2});
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
               UnorderedElementsAre(
                   ActorLoginPermission{
@@ -2029,6 +2054,13 @@ TEST_F(SavedPasswordsPresenterTest,
                                       .signon_realm = form_2.signon_realm},
                       .username = form_2.username_value,
                       .favicon_url = CreateFaviconUrl(form_2.url)}));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(presenter().GetActorLoginPermissions(GetSyncService()),
+              IsEmpty());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
@@ -2038,13 +2070,20 @@ TEST_F(SavedPasswordsPresenterTest, RevokeActorLoginPermission) {
   store().AddLogin(form);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form.username_value,
-                                         form.signon_realm);
+  presenter().RevokeActorLoginPermission(form.signon_realm);
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   form.actor_login_approved = false;
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form.signon_realm, ElementsAre(form))));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SavedPasswordsPresenterTest,
@@ -2059,15 +2098,23 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_2);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form_1.username_value,
-                                         form_1.signon_realm);
+  presenter().RevokeActorLoginPermission(form_1.signon_realm);
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   form_1.actor_login_approved = false;
   form_2.actor_login_approved = false;
   EXPECT_THAT(
       store().stored_passwords(),
       ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(
+      store().stored_passwords(),
+      ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1, form_2))));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 TEST_F(SavedPasswordsPresenterTest,
        RevokeActorLoginPermissionHandlesAndroidApps) {
@@ -2079,15 +2126,21 @@ TEST_F(SavedPasswordsPresenterTest,
   store().AddLogin(form_1);
   RunUntilIdle();
 
-  presenter().RevokeActorLoginPermission(form_1.username_value,
-                                         form_1.signon_realm);
+  presenter().RevokeActorLoginPermission(form_1.signon_realm);
   RunUntilIdle();
 
+#if !BUILDFLAG(IS_ANDROID)
   form_1.actor_login_approved = false;
   EXPECT_THAT(store().stored_passwords(),
               ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
-}
+#else
+  // Permissions rely on passwords grouper to get credentials and the grouper is
+  // not available on Android. We still want to be able to build on Android but
+  // the actual support needs to be implemented.
+  EXPECT_THAT(store().stored_passwords(),
+              ElementsAre(Pair(form_1.signon_realm, ElementsAre(form_1))));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+}
 
 // Prefixes like [m, mobile, www] are considered as "same-site".
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest,

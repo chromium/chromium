@@ -29,12 +29,10 @@ class PasswordsProvider {
   // password. For Android credentials package name is also taken into account
   // and for Federated credentials federation origin.
   virtual std::vector<CredentialUIEntry> GetSavedCredentials() const = 0;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the set of sites where Actor Login is allowed, deduped by a url +
   // username pair.
   virtual base::flat_set<ActorLoginPermission> GetActorLoginPermissions(
-      syncer::SyncService* sync_service) const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      const syncer::SyncService* sync_service) const = 0;
 };
 
 }  // namespace password_manager

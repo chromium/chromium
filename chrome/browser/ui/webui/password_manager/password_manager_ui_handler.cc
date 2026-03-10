@@ -76,7 +76,7 @@ void PasswordManagerUIHandler::GetActorLoginPermissions(
 void PasswordManagerUIHandler::RevokeActorLoginPermission(
     password_manager::mojom::ActorLoginPermissionPtr site) {
   GetSavedPasswordsPresenter()->RevokeActorLoginPermission(
-      base::UTF8ToUTF16(site->username), site->domain_info->signon_realm);
+      site->domain_info->signon_realm);
 }
 
 void PasswordManagerUIHandler::ChangePasswordManagerPin(
