@@ -670,7 +670,8 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
     return true;
   }
 
-  LOG(ERROR) << "Initialization of all EGL display types failed.";
+  LOG(ERROR) << "Initialization of all (" << init_displays.size()
+             << ") EGL display types failed.";
 
   return false;
 }

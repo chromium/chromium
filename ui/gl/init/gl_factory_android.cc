@@ -78,7 +78,7 @@ std::vector<GLImplementationParts> GetAllowedGLImplementations() {
       gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess());
   std::vector<GLImplementationParts> impls;
   if (use_passthrough) {
-    impls.emplace_back(kGLImplementationEGLANGLE);
+    impls.emplace_back(ANGLEImplementation::kOpenGLES);
   } else {
     impls.emplace_back(kGLImplementationEGLGLES2);
   }

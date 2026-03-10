@@ -83,6 +83,10 @@ GL_EXPORT bool IsSoftwareGLFallbackDueToCrashesAllowed(
 // Default is 0 if kAddDelayToGLCompileShader is off.
 GL_EXPORT base::TimeDelta GetGLCompileShaderDelay();
 
+// Check if ANGLE's D3D9 backend is a valid fallback if D3D11 does not
+// initialize or is disabled.
+GL_EXPORT bool IsANGLED3D9FallbackAllowed();
+
 #if BUILDFLAG(IS_ANDROID)
 GL_EXPORT BASE_DECLARE_FEATURE(kAndroidLimitRgb565DisplayToApi32);
 
