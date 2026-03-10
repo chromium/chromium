@@ -21,6 +21,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -32,6 +33,21 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
+
+namespace lens {
+class LensQueryFlowRouterTestApi {
+ public:
+  explicit LensQueryFlowRouterTestApi(LensQueryFlowRouter* router)
+      : router_(router) {}
+
+  auto* GetContextualSearchSessionHandle() {
+    return router_->GetContextualSearchSessionHandle();
+  }
+
+ private:
+  raw_ptr<LensQueryFlowRouter> router_;
+};
+}  // namespace lens
 
 namespace {
 
@@ -160,6 +176,31 @@ class ContextualTasksLensInteractionBrowserTestBase
         .ExtractBool();
   }
 
+  void SignalFileUploadSuccess(LensSearchController* controller) {
+    auto* router = controller->query_router();
+    auto file_token = router->overlay_tab_context_file_token();
+    ASSERT_TRUE(file_token.has_value());
+
+    // Cast router to our TestApi to access the protected
+    // GetContextualSearchSessionHandle
+    auto* session_handle = lens::LensQueryFlowRouterTestApi(router)
+                               .GetContextualSearchSessionHandle();
+    ASSERT_TRUE(session_handle);
+
+    // Cast the base controller to the concrete ComposeboxQueryController to
+    // access UpdateFileUploadStatus
+    auto* context_controller = static_cast<ComposeboxQueryController*>(
+        session_handle->GetController());
+    ASSERT_TRUE(context_controller);
+
+    // Manually trigger the successful status on the controller.
+    // This will satisfy MarkFileUploadAsInTerminalState and trigger URL
+    // creation.
+    context_controller->update_file_upload_status_for_testing(
+        *file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+        std::nullopt);
+  }
+
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
   // the tab must not be about:blank and must be painted. By default opens in
   // the current tab.
@@ -270,6 +311,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
       lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
+  SignalFileUploadSuccess(controller);
 
   // This should trigger the logic to capture the region, but the overlay should
   // remain open. It should also open the side panel.
@@ -315,6 +357,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
 
+  SignalFileUploadSuccess(controller);
+
   // This should trigger the logic to capture the region, but the overlay should
   // remain open. It should also open the side panel.
   ASSERT_TRUE(
@@ -353,6 +397,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
       lens::mojom::CenterRotatedBox_CoordinateType::kNormalized;
   controller->lens_overlay_controller()->IssueLensRegionRequestForTesting(
       std::move(region), /*is_click=*/false);
+
+  SignalFileUploadSuccess(controller);
 
   // This should trigger the logic to capture the region, but the overlay should
   // remain open. It should also open the side panel.

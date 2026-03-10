@@ -155,6 +155,8 @@ class LensQueryFlowRouter
       const;
 
  private:
+  friend class LensQueryFlowRouterTestApi;
+
   // contextual_search::ContextualSearchContextController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,

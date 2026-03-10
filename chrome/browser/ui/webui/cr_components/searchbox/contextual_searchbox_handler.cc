@@ -892,6 +892,10 @@ void ContextualSearchboxHandler::UploadTabContext(
 void ContextualSearchboxHandler::OpenUrl(
     GURL url,
     const WindowOpenDisposition disposition) {
+  if (!url.is_valid()) {
+    return;
+  }
+
   auto* contextual_session_handle = GetContextualSessionHandle();
 
   auto* contextual_session_service =

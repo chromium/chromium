@@ -641,6 +641,519 @@ TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_WaitsForMultipleFileUpload) {
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_3 = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_4 = base::UnguessableToken::Create();
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  std::vector<uint8_t> image_bytes = std::vector<uint8_t>();
+
+  StartImageFileUploadFlow(file_token, GetSimpleJPGBytes(), image_options);
+  StartImageFileUploadFlow(file_token_2, GetSimpleJPGBytes(), image_options);
+  StartImageFileUploadFlow(file_token_3, image_bytes, image_options);
+  StartImageFileUploadFlow(file_token_4, GetSimpleJPGBytes(), image_options);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 4);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 4);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Simulate 2 files as processing suggest signal ready since `processing` is
+  // default:
+  controller().update_file_upload_status_for_testing(
+      file_token_2,
+      contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+      std::nullopt);
+  controller().update_file_upload_status_for_testing(
+      file_token_4,
+      contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+      std::nullopt);
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 4);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  // Expect search URL is not generated yet.
+  EXPECT_FALSE(url_future.IsReady());
+
+  // Simulate each terminal state except `replaced` throughout the 4 files:
+  controller().update_file_upload_status_for_testing(
+      file_token_2, contextual_search::FileUploadStatus::kUploadFailed,
+      std::nullopt);
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 3);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().update_file_upload_status_for_testing(
+      file_token_3, contextual_search::FileUploadStatus::kValidationFailed,
+      std::nullopt);
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 2);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().update_file_upload_status_for_testing(
+      file_token_4, contextual_search::FileUploadStatus::kUploadExpired,
+      std::nullopt);
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  // Now that all uploads have reached a terminal state,
+  // the search URL request should have been processed and
+  // the URL should be created.
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(
+    ComposeboxQueryControllerTest,
+    CreateSearchUrl_ReplaceStateContinuesButDoesNotContinueForPendingStatuses) {
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  StartImageFileUploadFlow(file_token, GetSimpleJPGBytes(), image_options);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kUploadStarted,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  // Expect search URL is not generated yet.
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().update_file_upload_status_for_testing(
+      file_token,
+      contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  // Expect search URL is not generated yet.
+  EXPECT_FALSE(url_future.IsReady());
+
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kUploadReplaced,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  // Now that all uploads have reached a terminal state,
+  // the search URL request should have been processed and
+  // the URL should be created.
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_SecondNotUploadedRemovesUploading) {
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  StartImageFileUploadFlow(file_token, GetSimpleJPGBytes(), image_options);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_FALSE(url_future.IsReady());
+
+  // At this lower level, files start off as `kNotUploaded` in the
+  // `StartFileUploadFlow` method. A second `kNotUploaded` status update
+  // given by `update_file_upload_status...` should remove the file
+  // from uploading consideration since it is not a valid multi-modal state.
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kNotUploaded,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  EXPECT_TRUE(url_future.IsReady());
+  ASSERT_TRUE(url_future.Wait());
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_MultimodalRequestThenUploadCreatesUrl) {
+  // Once multimodal cluster is done, uploading still holds back
+  // `createSearchUrl`. Once both are done, the stashed `createSearchUrl` should
+  // proceed and generate a URL. Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Verify the controller is in the awaiting state.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller().query_controller_state());
+
+  // Act: Start the file upload flow to ensure we attempt a multimodal request.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  // Assert: The callback has not been run yet because the cluster info is
+  // pending.
+  EXPECT_FALSE(url_future.IsReady());
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Wait for the cluster info response.
+  WaitForClusterInfo();
+  // Still waiting on file upload to finish.
+  EXPECT_FALSE(url_future.IsReady());
+
+  // Finish uploading file.
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kUploadFailed,
+      std::nullopt);
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  EXPECT_TRUE(url_future.IsReady());
+  ASSERT_TRUE(url_future.Wait());
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_ClearFilesResetsFiles) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Verify the controller is in the awaiting state.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller().query_controller_state());
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 2);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  controller().ClearFiles();
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  // Try creating URL and clearing (will allow creation of URL).
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_FALSE(url_future.IsReady());
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 2);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  controller().ClearFiles();
+
+  EXPECT_TRUE(url_future.IsReady());
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  ASSERT_TRUE(url_future.Wait());
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_ReplaceStashedQueryUrlRequestByStartFileUpload) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Verify the controller is in the awaiting state.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller().query_controller_state());
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_FALSE(url_future.IsReady());
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  // Assert it is file token 1 that is stored in uploading files.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token));
+
+  // Start new upload that will clear old query url request and old
+  // files, and add the new files.
+  StartPdfFileUploadFlow(file_token_2,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  EXPECT_TRUE(url_future.IsReady());
+  GURL aim_url = url_future.Take();
+  EXPECT_TRUE(aim_url.is_empty());
+
+  // Assert it is file token 2 that is stored in uploading files.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token_2));
+  // Assert that file token 1 is no longer in uploading files.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Not(testing::Contains(file_token)));
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info_2 =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info_2->query_text = "test2";
+  search_url_request_info_2->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future_2;
+
+  controller().CreateSearchUrl(std::move(search_url_request_info_2),
+                               url_future_2.GetCallback());
+
+  EXPECT_FALSE(url_future_2.IsReady());
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  controller().update_file_upload_status_for_testing(
+      file_token_2, contextual_search::FileUploadStatus::kUploadFailed,
+      std::nullopt);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  EXPECT_TRUE(url_future_2.IsReady());
+  GURL aim_url_2 = url_future_2.Take();
+  EXPECT_FALSE(aim_url_2.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest, DeleteContext_TriggersCreateSearchUrl) {
+  // Add 2 files, then finish processing one, then delete last, and check
+  // that it triggers `CreateSearchUrl`
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+  std::vector<uint8_t> image_bytes = std::vector<uint8_t>();
+
+  StartImageFileUploadFlow(file_token, image_bytes, image_options);
+  StartImageFileUploadFlow(file_token_2, image_bytes, image_options);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 2);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Act: Generate the destination URL for the query.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 2);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+
+  // Verify tokens are in uploading set.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token));
+  // Assert that file token 2 is no longer in uploading files.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token_2));
+
+  // Simulate 2 files as processing suggest signal ready since `processing` is
+  // default:
+  controller().update_file_upload_status_for_testing(
+      file_token_2, contextual_search::FileUploadStatus::kUploadExpired,
+      std::nullopt);
+
+  EXPECT_TRUE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 1);
+  EXPECT_TRUE(controller().is_any_context_uploading());
+  // Expect search URL is not generated yet.
+  EXPECT_FALSE(url_future.IsReady());
+
+  // Verify token 1 is in uploading set only.
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Contains(file_token));
+  EXPECT_THAT(controller().get_pending_context_uploads_for_testing(),
+              testing::Not(testing::Contains(file_token_2)));
+
+  controller().DeleteFile(file_token);
+
+  EXPECT_FALSE(controller().has_stashed_search_url_request());
+  EXPECT_EQ(controller().get_num_context_uploading(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  // Now that all uploads have reached a terminal state,
+  // the search URL request should have been processed and
+  // the URL should be created.
+  GURL aim_url = url_future.Take();
+  EXPECT_FALSE(aim_url.is_empty());
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        UploadFileWithoutClusterInfoNeverHasSuggestReady) {
   // Arrange: Simulate an error in the cluster info request.
   controller().set_next_cluster_info_request_should_return_error(true);
@@ -2298,8 +2811,13 @@ TEST_F(ComposeboxQueryControllerTest,
   controller().CreateSearchUrl(std::move(search_url_request_info),
                                url_future.GetCallback());
 
+  // Files finished uploading. Ensure that still held back by cluster.
+  controller().update_file_upload_status_for_testing(
+      file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+      std::nullopt);
+
   // Assert: The callback has not been run yet because the cluster info is
-  // pending.
+  // pending, even though all files are done uploading.
   EXPECT_FALSE(url_future.IsReady());
 
   // Act: Wait for the cluster info response (which will fail).

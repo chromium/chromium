@@ -46,6 +46,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -69,6 +70,21 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/point.h"
+
+namespace lens {
+class LensQueryFlowRouterTestApi {
+ public:
+  explicit LensQueryFlowRouterTestApi(LensQueryFlowRouter* router)
+      : router_(router) {}
+
+  auto* GetContextualSearchSessionHandle() {
+    return router_->GetContextualSearchSessionHandle();
+  }
+
+ private:
+  raw_ptr<LensQueryFlowRouter> router_;
+};
+}  // namespace lens
 
 namespace {
 
@@ -302,11 +318,32 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                  WaitForStateChange(overlayId, screenshot_is_rendered));
   }
 
+  InteractiveTestApi::MultiStep FinishScreenshotUpload(int tab_id = 0) {
+    // Get composebox query controller from session handle and router to
+    // update file upload status to success for testing.
+    return Steps(Do([this, tab_id]() {
+      content::WebContents* web_contents =
+          browser()->tab_strip_model()->GetWebContentsAt(tab_id);
+      auto* controller = LensSearchController::FromTabWebContents(web_contents);
+      auto* router = controller->query_router();
+      auto file_token = router->overlay_tab_context_file_token();
+
+      auto* session_handle = lens::LensQueryFlowRouterTestApi(router)
+                                 .GetContextualSearchSessionHandle();
+      auto* context_controller = static_cast<ComposeboxQueryController*>(
+          session_handle->GetController());
+      context_controller->update_file_upload_status_for_testing(
+          *file_token, contextual_search::FileUploadStatus::kUploadSuccessful,
+          std::nullopt);
+    }));
+  }
+
   template <typename T>
   InteractiveTestApi::MultiStep OpenLensOverlayWithRegionSearch(
       ui::ElementIdentifier tab_id,
       ui::ElementIdentifier overlay_id,
-      T&& target_point) {
+      T&& target_point,
+      int tab_id_int = 0) {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
     const GURL url = embedded_test_server()->GetURL(kDocumentWithImage);
 
@@ -340,7 +377,8 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                       WaitForScreenshotRendered(overlay_id),
                       EnsurePresent(overlay_id, kPathToRegionSelection),
                       MoveMouseTo(LensOverlayController::kOverlayId),
-                      DragMouseTo(std::forward<T>(target_point))));
+                      DragMouseTo(std::forward<T>(target_point)),
+                      FinishScreenshotUpload(tab_id_int)));
   }
 
   bool TriggerLenOverlayHomeworkPageAction() {
@@ -1762,12 +1800,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   });
 
   RunTestSequence(
-      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point),
+      OpenLensOverlayWithRegionSearch(kFirstTab, kOverlayId, off_center_point,
+                                      0),
       WaitForShow(kContextualTasksSidePanelWebViewElementId),
       OpenArbitraryNewTab(),
       EnsureNotPresent(kContextualTasksSidePanelWebViewElementId),
       OpenLensOverlayWithRegionSearch(kSecondTab, kSecondOverlayId,
-                                      off_center_point),
+                                      off_center_point, 1),
       WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         // Close the panel after it is opened.
         controller->Close();
@@ -1825,7 +1864,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
               "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
               "key:'Enter', bubbles: true })); }",
               ExecuteJsMode::kFireAndForget)),
-      WaitForHide(kOverlayId),
+      // Screenshot is implicitly uploaded with CSB query.
+      FinishScreenshotUpload(), WaitForHide(kOverlayId),
       WaitForShow(kContextualTasksSidePanelWebViewElementId));
 }
 
