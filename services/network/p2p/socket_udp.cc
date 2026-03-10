@@ -457,9 +457,9 @@ bool P2PSocketUdp::DoSend(P2PPendingPacket packet) {
       static_cast<net::DiffServCodePoint>(packet.packet_options.dscp),
       packet.packet_options.ect_1 ? net::ECN_ECT1 : net::ECN_NOT_ECT);
 
-  webrtc::ApplyPacketOptions(
-      webrtc::ArrayView<uint8_t>(packet.data->bytes(), packet.size),
-      packet.packet_options.packet_time_params, send_time_us);
+  webrtc::ApplyPacketOptions(packet.data->first(packet.size),
+                             packet.packet_options.packet_time_params,
+                             send_time_us);
   bool success = DoSendToSocket(packet, send_time_ms);
   if (success) {
     delegate_->DumpPacket(packet.data->first(packet.size), /*incoming=*/false);

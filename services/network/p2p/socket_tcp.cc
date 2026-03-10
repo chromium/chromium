@@ -547,9 +547,8 @@ bool P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
           base::MakeRefCounted<net::VectorIOBuffer>(std::move(buffer)),
           buffer_size));
 
-  webrtc::ApplyPacketOptions(
-      webrtc::ArrayView<uint8_t>(send_buffer.buffer->bytes(), data.size()),
-      options.packet_time_params, webrtc::TimeMicros());
+  webrtc::ApplyPacketOptions(send_buffer.buffer->first(data.size()),
+                             options.packet_time_params, webrtc::TimeMicros());
 
   // WriteOrQueue may free the memory, so dump it first.
   delegate_->DumpPacket(send_buffer.buffer->span(), false);
