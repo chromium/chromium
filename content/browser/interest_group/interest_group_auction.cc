@@ -5129,8 +5129,10 @@ void InterestGroupAuction::OnInterestGroupRead(
   }
 
   ++num_owners_with_interest_groups_;
-  auction_metrics_recorder_->ReportBuyer(
-      interest_groups[0]->interest_group.owner);
+
+  const url::Origin owner = interest_groups[0]->interest_group.owner;
+  auction_metrics_recorder_->ReportBuyer(owner);
+
   auto buyer_helper =
       std::make_unique<BuyerHelper>(this, std::move(interest_groups));
   buyer_helper->SetStorageMetrics(positive_groups, negative_groups,
@@ -5138,8 +5140,7 @@ void InterestGroupAuction::OnInterestGroupRead(
   // BuyerHelper may filter out additional interest groups on construction.
   if (buyer_helper->has_potential_bidder()) {
     buyer_helpers_.emplace_back(std::move(buyer_helper));
-    interest_group_manager_->UpdateCachedOriginsIfEnabled(
-        interest_groups[0]->interest_group.owner);
+    interest_group_manager_->UpdateCachedOriginsIfEnabled(owner);
   } else {
     // `buyer_helper` has a raw pointer to `this`, so if it's not added to
     // buyer_helpers_, delete it now to avoid a dangling pointer, since
