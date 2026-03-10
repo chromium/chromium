@@ -13,13 +13,13 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getCss} from './tools.css.js';
 import {getHtml} from './tools.html.js';
 
-export interface ToolChipsElement {
+export interface CustomizeChromeToolsElement {
   $: {
     showChipsToggle: CrToggleElement,
   };
 }
 
-export class ToolChipsElement extends CrLitElement {
+export class CustomizeChromeToolsElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-tools';
   }
@@ -92,8 +92,9 @@ export class ToolChipsElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'customize-chrome-tools': ToolChipsElement;
+    'customize-chrome-tools': CustomizeChromeToolsElement;
   }
 }
 
-customElements.define(ToolChipsElement.is, ToolChipsElement);
+customElements.define(
+    CustomizeChromeToolsElement.is, CustomizeChromeToolsElement);

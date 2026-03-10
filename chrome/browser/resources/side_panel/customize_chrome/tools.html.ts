@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {ToolChipsElement} from './tools.js';
+import type {CustomizeChromeToolsElement} from './tools.js';
 
-export function getHtml(this: ToolChipsElement) {
+export function getHtml(this: CustomizeChromeToolsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="showToggleContainer" class="sp-card-content"

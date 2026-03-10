@@ -356,13 +356,13 @@ export async function triggerInputEvent(
 const TestListenerElementBase = WebUiListenerMixinLit(CrLitElement);
 class TestListenerElement extends TestListenerElementBase {
   static get is() {
-    return 'test-listener-element';
+    return 'test-listener';
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'test-listener-element': TestListenerElement;
+    'test-listener': TestListenerElement;
   }
 }
 
@@ -371,7 +371,7 @@ export function setupTestListenerElement(): void {
 }
 
 export function createDestinationStore(): DestinationStore {
-  const testListenerElement = document.createElement('test-listener-element');
+  const testListenerElement = document.createElement('test-listener');
   document.body.appendChild(testListenerElement);
   return new DestinationStore(
       testListenerElement.addWebUiListener.bind(testListenerElement));

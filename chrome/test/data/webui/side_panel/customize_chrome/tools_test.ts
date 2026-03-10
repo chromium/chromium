@@ -8,7 +8,7 @@ import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-ch
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import type {ToolChipsElement} from 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
+import type {CustomizeChromeToolsElement} from 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -22,7 +22,7 @@ import {installMock} from './test_support.js';
 // responsible for testing the backend logic for synchronizing the pref in the
 // WebUI, as that's done through the backend unit tests.
 suite('ToolChipsTest', () => {
-  let toolChips: ToolChipsElement;
+  let toolChips: CustomizeChromeToolsElement;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
   let metrics: MetricsTracker;

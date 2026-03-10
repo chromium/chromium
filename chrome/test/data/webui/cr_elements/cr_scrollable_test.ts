@@ -7,9 +7,9 @@ import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-class TestElement extends CrLitElement {
+class TestDummyElement extends CrLitElement {
   static get is() {
-    return 'test-element';
+    return 'test-dummy';
   }
 
   static override get styles() {
@@ -27,17 +27,17 @@ class TestElement extends CrLitElement {
     `;
   }
 }
-customElements.define(TestElement.is, TestElement);
+customElements.define(TestDummyElement.is, TestDummyElement);
 
 suite('cr-scrollable', () => {
-  let testElement: TestElement;
+  let testElement: TestDummyElement;
 
   let scrollableElement: HTMLElement;
   let childBlockElement: HTMLElement;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('test-element') as TestElement;
+    testElement = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(testElement);
 
     scrollableElement = testElement.shadowRoot.querySelector('.cr-scrollable')!;

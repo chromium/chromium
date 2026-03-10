@@ -49,7 +49,7 @@ let nestedChildBubble: HelpBubbleController;
 // HelpBubbleMixinTestElement
 class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
   static get is() {
-    return 'help-bubble-mixin-test-element';
+    return 'help-bubble-mixin-test';
   }
 
   override render() {
@@ -62,7 +62,8 @@ class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
         <li>List item 2</li>
       </ul>
       <span style="display: block;">Span text</span>
-      <container-element id="container-element"></container-element>
+      <help-bubble-mixin-container id="container-element">
+      </help-bubble-mixin-container>
     </div>`;
   }
 
@@ -89,7 +90,7 @@ customElements.define(
 // HelpBubbleMixinTestContainerElement
 export class HelpBubbleMixinTestContainerElement extends CrLitElement {
   static get is() {
-    return 'container-element';
+    return 'help-bubble-mixin-container';
   }
 
   override render() {
@@ -278,7 +279,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     HelpBubbleProxyImpl.setInstance(testProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    container = document.createElement('help-bubble-mixin-test-element') as
+    container = document.createElement('help-bubble-mixin-test') as
         HelpBubbleMixinTestElement;
     document.body.appendChild(container);
     return waitForVisibilityEvents();

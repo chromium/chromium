@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AccessCodeCastElement} from './access_code_cast.js';
+import type {AccessCodeCastAppElement} from './access_code_cast.js';
 
-export function getHtml(this: AccessCodeCastElement) {
+export function getHtml(this: AccessCodeCastAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog">

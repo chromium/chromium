@@ -15,13 +15,13 @@ suite('cr-iconset', function() {
   let iconset: CrIconsetElement;
 
   // Super simple test element to render icons into.
-  class TestElement extends CrLitElement {
+  class TestDummyElement extends CrLitElement {
     static get is() {
-      return 'test-element';
+      return 'test-dummy';
     }
   }
 
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyElement.is, TestDummyElement);
 
   suiteSetup(function() {
     const div = document.createElement('div');
@@ -87,7 +87,7 @@ suite('cr-iconset', function() {
   });
 
   test('icon add/remove', () => {
-    const icon = document.createElement('test-element') as TestElement;
+    const icon = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(icon);
 
     iconset.applyIcon(icon, 'arrow-drop-up');

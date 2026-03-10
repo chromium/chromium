@@ -364,6 +364,20 @@ export function getHtml(this: MyCrLitElement) {
 
 ## Naming Conventions
 
+### CrLitElement DOM, file, class names.
+
+* The DOM name **should not end** with the `-element` suffix.
+* The file name **should not end** with the `_element` suffix.
+* The class name **should end** with the `Element` suffix.
+* The class and file name **should be derived** from the DOM name.
+
+Where the pattern to derive the class and file names from the DOM name is
+
+* DOM name: `foo-bar-baz`
+* Class name candidates: `FooBarBazElement`, or `BarBazElement`, or `BazElement`
+* File name candidates: `foo_bar_baz.{css,html,ts}`, `bar_baz.{css,html,ts}` or
+  `baz.{css,html,ts}`,
+
 ### Events
 
 Event names should be in lower kebab case.

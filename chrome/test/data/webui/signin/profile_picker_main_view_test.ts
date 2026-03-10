@@ -13,9 +13,11 @@ import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
-class NavigationElement extends NavigationMixin(CrLitElement) {
+const NavigationTestElementBase = NavigationMixin(CrLitElement);
+
+class NavigationTestElement extends NavigationTestElementBase {
   static get is() {
-    return 'navigation-element';
+    return 'navigation-test';
   }
 
   changeCalled: boolean = false;
@@ -38,11 +40,11 @@ class NavigationElement extends NavigationMixin(CrLitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'navigation-element': NavigationElement;
+    'navigation-test': NavigationTestElement;
   }
 }
 
-customElements.define(NavigationElement.is, NavigationElement);
+customElements.define(NavigationTestElement.is, NavigationTestElement);
 
 /**
  * @param n Indicates the desired number of profiles.
@@ -68,11 +70,11 @@ function generateProfilesList(n: number): ProfileState[] {
 suite('ProfilePickerMainViewTest', function() {
   let mainViewElement: ProfilePickerMainViewElement;
   let browserProxy: TestManageProfilesBrowserProxy;
-  let navigationElement: NavigationElement;
+  let navigationElement: NavigationTestElement;
 
   function resetTest() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    navigationElement = document.createElement('navigation-element');
+    navigationElement = document.createElement('navigation-test');
     document.body.appendChild(navigationElement);
     mainViewElement = document.createElement('profile-picker-main-view');
     document.body.appendChild(mainViewElement);

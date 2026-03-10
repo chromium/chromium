@@ -7,20 +7,20 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-const TestElementBase = I18nMixinLit(CrLitElement);
-class TestElement extends TestElementBase {
+const TestDummyElementBase = I18nMixinLit(CrLitElement);
+class TestDummyElement extends TestDummyElementBase {
   static get is() {
-    return 'test-element';
+    return 'test-dummy';
   }
 }
-customElements.define(TestElement.is, TestElement);
+customElements.define(TestDummyElement.is, TestDummyElement);
 
 suite('I18nMixinTestLit', function() {
   const allowedByDefault = '<a href="https://google.com">Google!</a>';
   const text = 'I\'m just text, nobody should have a problem with me!';
   const nonBreakingSpace = 'A\u00a0B\u00a0C';  // \u00a0 is a unicode nbsp.
 
-  let testElement: TestElement;
+  let testElement: TestDummyElement;
 
   suiteSetup(function() {
     loadTimeData.data = {
@@ -37,7 +37,7 @@ suite('I18nMixinTestLit', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement = document.createElement('test-element') as TestElement;
+    testElement = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(testElement);
   });
 

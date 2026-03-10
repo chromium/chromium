@@ -11,11 +11,11 @@ import {assertDeepEquals, setupTestMockPluginForInk} from './test_util.js';
 setupTestMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 
-const TestElementBase = InkAnnotationTextMixin(CrLitElement);
+const TestDummyElementBase = InkAnnotationTextMixin(CrLitElement);
 
-class TestElement extends TestElementBase {
+class TestDummyElement extends TestDummyElementBase {
   static get is() {
-    return 'test-element';
+    return 'test-dummy';
   }
 
   override render() {
@@ -32,8 +32,8 @@ class TestElement extends TestElementBase {
   }
 }
 
-customElements.define(TestElement.is, TestElement);
-const testElement = document.createElement('test-element') as TestElement;
+customElements.define(TestDummyElement.is, TestDummyElement);
+const testElement = document.createElement('test-dummy') as TestDummyElement;
 document.body.appendChild(testElement);
 
 chrome.test.runTests([

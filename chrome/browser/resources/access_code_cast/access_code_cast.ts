@@ -33,7 +33,7 @@ enum PageState {
   QR_INPUT,
 }
 
-export interface AccessCodeCastElement {
+export interface AccessCodeCastAppElement {
   $: {
     backButton: CrButtonElement,
     castButton: CrButtonElement,
@@ -45,7 +45,7 @@ export interface AccessCodeCastElement {
   };
 }
 
-const AccessCodeCastElementBase = I18nMixinLit(CrLitElement);
+const AccessCodeCastAppElementBase = I18nMixinLit(CrLitElement);
 
 const ECMASCRIPT_EPOCH_START_YEAR = 1970;
 const SECONDS_PER_DAY = 86400;
@@ -53,7 +53,7 @@ const SECONDS_PER_HOUR = 3600;
 const SECONDS_PER_MONTH = 2592000;
 const SECONDS_PER_YEAR = 31536000;
 
-export class AccessCodeCastElement extends AccessCodeCastElementBase {
+export class AccessCodeCastAppElement extends AccessCodeCastAppElementBase {
   static get is() {
     return 'access-code-cast-app';
   }
@@ -139,13 +139,14 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (changedPrivateProperties.has('canCast') ||
         changedPrivateProperties.has('accessCode')) {
       this.submitDisabled = !this.canCast ||
-          this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
+          this.accessCode.length !==
+              AccessCodeCastAppElement.ACCESS_CODE_LENGTH;
       if (this.$.errorMessage.getMessageCode() !== 0 &&
           this.accessCode.length <=
-              AccessCodeCastElement.ACCESS_CODE_LENGTH - 1) {
+              AccessCodeCastAppElement.ACCESS_CODE_LENGTH - 1) {
         // Hide error message once user starts editing the access code entered
         // previously. Checking for access code's length
-        // <= (AccessCodeCastElement.ACCESS_CODE_LENGTH - 1 ) because it's
+        // <= (AccessCodeCastAppElement.ACCESS_CODE_LENGTH - 1 ) because it's
         // possible to for the user to deletes more than one characters at a
         // time.
         this.$.errorMessage.setNoError();
@@ -189,7 +190,8 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     if (!BrowserProxy.getInstance().isDialog()) {
       return;
     }
-    if (this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH) {
+    if (this.accessCode.length !==
+        AccessCodeCastAppElement.ACCESS_CODE_LENGTH) {
       return;
     }
     if (!this.canCast) {
@@ -344,8 +346,8 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'access-code-cast-app': AccessCodeCastElement;
+    'access-code-cast-app': AccessCodeCastAppElement;
   }
 }
 
-customElements.define(AccessCodeCastElement.is, AccessCodeCastElement);
+customElements.define(AccessCodeCastAppElement.is, AccessCodeCastAppElement);

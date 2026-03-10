@@ -15,9 +15,9 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('cr-lazy-render', function() {
   // Test parent element.
-  class TestElement extends CrLitElement {
+  class TestDummyElement extends CrLitElement {
     static get is() {
-      return 'test-element';
+      return 'test-dummy';
     }
 
     override render() {
@@ -46,14 +46,14 @@ suite('cr-lazy-render', function() {
     }
   }
 
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyElement.is, TestDummyElement);
 
   let lazy: CrLazyRenderLitElement<HTMLElement>;
-  let parent: TestElement;
+  let parent: TestDummyElement;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    parent = document.createElement('test-element') as TestElement;
+    parent = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(parent);
     lazy = parent.shadowRoot.querySelector('cr-lazy-render-lit')!;
   });

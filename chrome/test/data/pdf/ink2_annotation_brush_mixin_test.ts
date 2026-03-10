@@ -11,11 +11,11 @@ import {setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util
 const mockPlugin = setupTestMockPluginForInk();
 const manager = Ink2Manager.getInstance();
 
-const TestElementBase = InkAnnotationBrushMixin(CrLitElement);
+const TestDummyElementBase = InkAnnotationBrushMixin(CrLitElement);
 
-class TestElement extends TestElementBase {
+class TestDummyElement extends TestDummyElementBase {
   static get is() {
-    return 'test-element';
+    return 'test-dummy';
   }
 
   override render() {
@@ -23,8 +23,8 @@ class TestElement extends TestElementBase {
   }
 }
 
-customElements.define(TestElement.is, TestElement);
-const testElement = document.createElement('test-element') as TestElement;
+customElements.define(TestDummyElement.is, TestDummyElement);
+const testElement = document.createElement('test-dummy') as TestDummyElement;
 document.body.appendChild(testElement);
 
 chrome.test.runTests([

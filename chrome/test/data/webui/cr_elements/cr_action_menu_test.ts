@@ -553,9 +553,9 @@ suite('CrActionMenu', function() {
     const containerTop = 10000;
     const containerWidth = 500;
 
-    class TestElement extends CrLitElement {
+    class TestDummyElement extends CrLitElement {
       static get is() {
-        return 'test-element';
+        return 'test-dummy';
       }
 
       static override get styles() {
@@ -594,22 +594,22 @@ suite('CrActionMenu', function() {
       }
     }
 
-    customElements.define(TestElement.is, TestElement);
+    customElements.define(TestDummyElement.is, TestDummyElement);
 
     setup(function() {
       document.body.scrollTop = 0;
       document.body.scrollLeft = 0;
       document.body.innerHTML = getTrustedHtml(`
         <style>
-          test-element {
+          test-dummy {
             height: ${bodyHeight}px;
             width: ${bodyWidth}px;
           }
         </style>
-        <test-element></test-element>`);
+        <test-dummy></test-dummy>`);
 
       const testElement =
-          document.body.querySelector<TestElement>('test-element')!;
+          document.body.querySelector<TestDummyElement>('test-dummy')!;
       menu = testElement.shadowRoot.querySelector('cr-action-menu')!;
       dialog = menu.getDialog();
       dots = testElement.shadowRoot.querySelector('#dots')!;

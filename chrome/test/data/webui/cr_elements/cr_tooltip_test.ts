@@ -19,9 +19,9 @@ suite('cr-tooltip', function() {
   let parent: CrLitElement;
 
   // Test parent element.
-  class TestElement extends CrLitElement {
+  class TestDummyElement extends CrLitElement {
     static get is() {
-      return 'test-element';
+      return 'test-dummy';
     }
 
     override render() {
@@ -34,11 +34,11 @@ suite('cr-tooltip', function() {
     }
   }
 
-  customElements.define(TestElement.is, TestElement);
+  customElements.define(TestDummyElement.is, TestDummyElement);
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    parent = document.createElement('test-element') as TestElement;
+    parent = document.createElement('test-dummy') as TestDummyElement;
     document.body.appendChild(parent);
     tooltip = parent.shadowRoot.querySelector('cr-tooltip')!;
   });
@@ -201,7 +201,7 @@ suite('cr-tooltip in dialog', function() {
   // Test parent element.
   class TestDialogElement extends CrLitElement {
     static get is() {
-      return 'test-dialog-element';
+      return 'test-dialog';
     }
 
     override render() {
@@ -222,7 +222,7 @@ suite('cr-tooltip in dialog', function() {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    parent = document.createElement('test-dialog-element') as TestDialogElement;
+    parent = document.createElement('test-dialog') as TestDialogElement;
     document.body.appendChild(parent);
     tooltip = parent.shadowRoot.querySelector('cr-tooltip')!;
     await microtasksFinished();
