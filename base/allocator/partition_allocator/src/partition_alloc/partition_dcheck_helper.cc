@@ -15,6 +15,8 @@ namespace partition_alloc::internal {
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
+#include "partition_alloc/partition_lock.h"
+
 void DCheckIsValidShiftFromSlotStart(const SlotSpanMetadata* slot_span,
                                      uintptr_t shift_from_slot_start) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
