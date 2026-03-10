@@ -249,7 +249,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
       EntityImportPromptResultCallback prompt_result_callback) final;
   void CloseEntityImportBubble() final;
   void ShowAutofillAiLocalSaveNotification() final;
-  void ShowAutofillAiFailureNotification(std::u16string message) final;
+  void ShowAutofillAiSaveToWalletFailureNotification() final;
+  void ShowAutofillAiFetchFromWalletFailureNotification() final;
   void ShowEmailVerifiedToast() final;
 
   // TODO(crbug.com/407666146): Create a test API.

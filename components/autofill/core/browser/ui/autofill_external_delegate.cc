@@ -1404,9 +1404,8 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
               manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                          field_id, &*entity, trigger_source);
             } else {
-              manager->client().ShowAutofillAiFailureNotification(
-                  l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION));
+              manager->client()
+                  .ShowAutofillAiFetchFromWalletFailureNotification();
             }
           },
           manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,

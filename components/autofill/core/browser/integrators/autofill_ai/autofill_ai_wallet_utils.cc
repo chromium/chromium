@@ -34,8 +34,7 @@ void UpdateUi(base::WeakPtr<AutofillClient> client, UiAction action) {
       client->ShowAutofillAiLocalSaveNotification();
       break;
     case UiAction::kUpdateOrMigrateFailureNotification:
-      client->ShowAutofillAiFailureNotification(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION));
+      client->ShowAutofillAiSaveToWalletFailureNotification();
       break;
     case UiAction::kNoNotification:
       break;

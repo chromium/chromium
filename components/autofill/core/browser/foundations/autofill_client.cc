@@ -328,7 +328,11 @@ void AutofillClient::ShowAutofillAiLocalSaveNotification() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowAutofillAiFailureNotification(std::u16string message) {
+void AutofillClient::ShowAutofillAiSaveToWalletFailureNotification() {
+  NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowAutofillAiFetchFromWalletFailureNotification() {
   NOTIMPLEMENTED();
 }
 

@@ -368,8 +368,21 @@ void ToastService::RegisterToasts(
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(
-        ToastId::kAutofillAiWalletErrorMessage,
-        ToastSpecification::Builder(vector_icons::kPersonTextIcon)
+        ToastId::kAutofillAiFetchFromWalletErrorMessage,
+        ToastSpecification::Builder(
+            vector_icons::kPersonTextIcon,
+            IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION)
+            .AddGlobalScoped()
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kAutofillAiSaveToWalletErrorMessage,
+        ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kGoogleWalletIcon,
+#else
+            vector_icons::kPersonTextIcon,
+#endif
+            IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION)
             .AddGlobalScoped()
             .Build());
   }

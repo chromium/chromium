@@ -33,8 +33,8 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void, CloseEntityImportBubble, (), (override));
   MOCK_METHOD(void, ShowAutofillAiLocalSaveNotification, (), (override));
   MOCK_METHOD(void,
-              ShowAutofillAiFailureNotification,
-              (std::u16string message),
+              ShowAutofillAiSaveToWalletFailureNotification,
+              (),
               (override));
 };
 
@@ -158,7 +158,9 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletSaveResponseFailure) {
     InSequence s;
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble);
     EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification);
-    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification).Times(0);
+    EXPECT_CALL(autofill_client(),
+                ShowAutofillAiSaveToWalletFailureNotification)
+        .Times(0);
   }
 
   EntityInstance passport =
@@ -181,7 +183,8 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletUpdateResponseFailure) {
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble);
     EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification)
         .Times(0);
-    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification);
+    EXPECT_CALL(autofill_client(),
+                ShowAutofillAiSaveToWalletFailureNotification);
   }
 
   EntityInstance passport =
@@ -200,7 +203,8 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletMigrateResponseFailure) {
     EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
     EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification())
         .Times(0);
-    EXPECT_CALL(autofill_client(), ShowAutofillAiFailureNotification);
+    EXPECT_CALL(autofill_client(),
+                ShowAutofillAiSaveToWalletFailureNotification);
   }
 
   EntityInstance passport =

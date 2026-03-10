@@ -719,8 +719,11 @@ class AutofillClient {
   // an upload request to the Wallet server was unsuccessful.
   virtual void ShowAutofillAiLocalSaveNotification();
 
-  // Notifies the user that an Autofill AI operation failed.
-  virtual void ShowAutofillAiFailureNotification(std::u16string message);
+  // Notifies the user that an Autofill AI operation save to Wallet failed.
+  virtual void ShowAutofillAiSaveToWalletFailureNotification();
+
+  // Notifies the user that operation to fetch data from Wallet failed.
+  virtual void ShowAutofillAiFetchFromWalletFailureNotification();
 
   virtual void ShowEmailVerifiedToast();
 
