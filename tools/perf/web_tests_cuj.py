@@ -22,7 +22,7 @@ def main():
   env['PYTHONPATH'] = CROSSBENCH_DIR
 
   # TODO(b:435031130): For initial testing, only run a single benchmark.
-  command_line = [CUJ_RUNNER, '--platform=cros', '--tests=speeometer3.1']
+  command_line = [CUJ_RUNNER, '--platform=cros', '--tests=speedometer3.1']
   proc = subprocess.run(command_line, check=False, env=env)
   status = proc.returncode
 
