@@ -847,7 +847,8 @@ float TabStyleViewsImpl::GetHoverOpacity() const {
 
 int TabStyleViewsImpl::GetStrokeThickness(bool should_paint_as_active) const {
   std::optional<tab_groups::TabGroupId> group = tab_->group();
-  if (group.has_value() && tab_->IsActive()) {
+  if (group.has_value() && tab_->IsActive() &&
+      !base::FeatureList::IsEnabled(features::kDetachedTabs)) {
     return TabGroupUnderline::kStrokeThickness;
   }
 

@@ -54,6 +54,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -81,6 +82,8 @@ namespace {
 
 // The amount of padding between the label and the sync icon.
 constexpr int kSyncIconPaddingFromLabel = 2;
+
+constexpr base::TimeDelta kChipAnimationDuration = base::Milliseconds(125);
 
 bool SupportsDataSharing() {
   return data_sharing::features::IsDataSharingFunctionalityEnabled();
@@ -145,6 +148,9 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
     attention_indicator_observation_.Observe(
         tab_group->GetTabGroupFeatures()->attention_indicator());
   }
+
+  chip_transition_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+  chip_transition_animation_->SetSlideDuration(kChipAnimationDuration);
 }
 
 TabGroupHeader::~TabGroupHeader() = default;
@@ -191,10 +197,20 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
           &TabGroupHeader::UpdateTooltipText, base::Unretained(this)));
 
   UpdateTooltipText();
+
+  if (!tab_slot_controller_->GetGroupTitle(group).empty()) {
+    chip_transition_animation_->Reset(1.0);
+  }
 }
 
 void TabGroupHeader::OnAttentionStateChanged() {
   VisualsChanged();
+}
+
+void TabGroupHeader::AnimationProgressed(const gfx::Animation* animation) {
+  if (animation == chip_transition_animation_.get()) {
+    VisualsChanged();
+  }
 }
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
@@ -416,7 +432,17 @@ void TabGroupHeader::VisualsChanged() {
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
+  const std::u16string old_title = group_title_;
   group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
+
+  if (old_title.empty() != group_title_.empty()) {
+    if (group_title_.empty()) {
+      chip_transition_animation_->Hide();
+    } else {
+      chip_transition_animation_->Show();
+    }
+  }
+
   color_ = tab_slot_controller_->GetPaintedGroupColor(
       tab_slot_controller_->GetGroupColorId(tab_group_id));
   should_show_header_icon_ = ShouldShowHeaderIcon();
@@ -465,6 +491,34 @@ std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {
 int TabGroupHeader::GetDesiredWidth() const {
   const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
   return overlap_margin + title_chip_->width();
+}
+
+int TabGroupHeader::GetNamedChipHeight() const {
+  return base::FeatureList::IsEnabled(features::kDetachedTabs)
+             ? group_style_->GetDetachedChipHeight()
+             : title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
+                   .height();
+}
+
+int TabGroupHeader::GetChipHeight() const {
+  const float animation_value = chip_transition_animation_->GetCurrentValue();
+  const int empty_height = group_style_->GetEmptyChipSize();
+  const int named_height = GetNamedChipHeight();
+
+  return gfx::Tween::IntValueBetween(animation_value, empty_height,
+                                     named_height);
+}
+
+int TabGroupHeader::GetChipY() const {
+  const float animation_value = chip_transition_animation_->GetCurrentValue();
+  const int named_height = GetNamedChipHeight();
+
+  const gfx::Point empty_origin =
+      group_style_->GetTitleChipOffset(std::nullopt);
+  const gfx::Point named_origin =
+      group_style_->GetTitleChipOffset(named_height);
+  return gfx::Tween::IntValueBetween(animation_value, empty_origin.y(),
+                                     named_origin.y());
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -557,7 +611,13 @@ void TabGroupHeader::UpdateIsCollapsed() {
 }
 
 void TabGroupHeader::CreateHeaderWithoutTitle() {
-  title_chip_->SetBoundsRect(group_style_->GetEmptyTitleChipBounds(this));
+  const int chip_height = GetChipHeight();
+  const int chip_y = GetChipY();
+  const int empty_width = group_style_->GetEmptyChipSize();
+  const gfx::Point empty_origin =
+      group_style_->GetTitleChipOffset(std::nullopt);
+
+  title_chip_->SetBounds(empty_origin.x(), chip_y, empty_width, chip_height);
   title_chip_->SetBackground(group_style_->GetEmptyTitleChipBackground(color_));
 
   const int sync_icon_width = group_style_->GetSyncIconWidth();
@@ -568,7 +628,7 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
       const gfx::Insets title_chip_insets =
           group_style_->GetInsetsForHeaderChip();
       const int title_chip_vertical_inset = 0;
-      gfx::Rect title_chip_bounds = group_style_->GetEmptyTitleChipBounds(this);
+      gfx::Rect title_chip_bounds = title_chip_->GetLocalBounds();
       const int attention_indicator_width =
           group_style_->GetAttentionIndicatorWidth();
 
@@ -580,12 +640,11 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
       title_chip_->SetBoundsRect(title_chip_bounds);
 
       sync_icon_->SetBounds(title_chip_insets.left(), title_chip_vertical_inset,
-                            sync_icon_width, title_chip_bounds.height());
+                            sync_icon_width, chip_height);
 
       attention_indicator_->SetBounds(
           sync_icon_->bounds().right() + kSyncIconPaddingFromLabel,
-          title_chip_vertical_inset, attention_indicator_width,
-          title_chip_bounds.height());
+          title_chip_vertical_inset, attention_indicator_width, chip_height);
     } else {
       // The `sync_icon` by itself should be centered in the title chip.
       gfx::Rect sync_icon_bounds = title_chip_->GetLocalBounds();
@@ -631,25 +690,24 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const int text_width = std::min(
       title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width(),
       text_max_width);
-  const int text_height =
-      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
 
   // Width of title chip should at least be the width of an empty title chip.
   const int total_content_width =
       sync_icon_width + padding_between_label_sync_icon + text_width +
       attention_indicator_width + attention_indicator_padding;
   const gfx::Insets title_chip_insets = group_style_->GetInsetsForHeaderChip();
-  const int title_chip_width =
-      std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
-               total_content_width + title_chip_insets.width());
+  const int title_chip_width = std::max(
+      group_style_->GetEmptyChipSize(),
+      static_cast<float>(total_content_width + title_chip_insets.width()));
 
-  // The title chip's radius should nestle snuggly against the tab corner
-  // radius, taking into account the group underline stroke.
-  const gfx::Point title_chip_origin =
-      group_style_->GetTitleChipOffset(text_height);
+  const int chip_height = GetChipHeight();
+  const int chip_y = GetChipY();
+  const gfx::Point named_origin =
+      group_style_->GetTitleChipOffset(GetNamedChipHeight());
+
   const int corner_radius = group_style_->GetChipCornerRadius();
-  title_chip_->SetBounds(title_chip_origin.x(), title_chip_origin.y(),
-                         title_chip_width, text_height);
+  title_chip_->SetBounds(named_origin.x(), chip_y, title_chip_width,
+                         chip_height);
   title_chip_->SetBackground(
       views::CreateRoundedRectBackground(color_, corner_radius));
 
@@ -664,18 +722,18 @@ void TabGroupHeader::CreateHeaderWithTitle() {
     const int text_offset = std::max(
         0, (title_chip_width - text_width - title_chip_insets.width()) / 2);
     title_->SetBounds(title_chip_insets.left() + text_offset,
-                      title_chip_vertical_inset, text_width, text_height);
+                      title_chip_vertical_inset, text_width, chip_height);
     attention_indicator_->SetBounds(0, 0, 0, 0);
   } else {
     sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
-                          sync_icon_width, text_height);
+                          sync_icon_width, chip_height);
     title_->SetBounds(
         sync_icon_->bounds().right() + padding_between_label_sync_icon,
-        title_chip_vertical_inset, text_width, text_height);
+        title_chip_vertical_inset, text_width, chip_height);
     if (should_show_attention_indicator) {
       attention_indicator_->SetBounds(
           title_->bounds().right() + kSyncIconPaddingFromLabel,
-          title_chip_vertical_inset, attention_indicator_width, text_height);
+          title_chip_vertical_inset, attention_indicator_width, chip_height);
     } else {
       attention_indicator_->SetBounds(0, 0, 0, 0);
     }

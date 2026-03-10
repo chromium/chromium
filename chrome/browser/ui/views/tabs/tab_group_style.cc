@@ -34,6 +34,7 @@ constexpr int kAttentionIndicatorWidth = 8;
 // The size of the empty chip.
 constexpr int kEmptyChipSize = 20;
 constexpr int kCornerRadius = 6;
+constexpr int kDetachedTabsCornerRadius = 100;
 constexpr int kTabGroupOverlapAdjustment = 2;
 
 }  // namespace
@@ -92,6 +93,11 @@ gfx::Point TabGroupStyle::GetTitleChipOffset(
   const int total_space =
       GetLayoutConstant(LayoutConstant::kTabStripHeight) - GetEmptyChipSize() -
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs) &&
+      text_height.has_value()) {
+    return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2,
+                      GetLayoutConstant(LayoutConstant::kTabStripPadding));
+  }
   return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
 }
 
@@ -106,8 +112,11 @@ int TabGroupStyle::GetHighlightPathGeneratorCornerRadius(
 }
 
 gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
-  return gfx::Insets::TLBR(kHeaderChipVerticalInset, GetChipCornerRadius(),
-                           kHeaderChipVerticalInset, GetChipCornerRadius());
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    return gfx::Insets::TLBR(0, kCornerRadius, 0, kCornerRadius);
+  }
+  return gfx::Insets::TLBR(kHeaderChipVerticalInset, kCornerRadius,
+                           kHeaderChipVerticalInset, kCornerRadius);
 }
 
 int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
@@ -129,7 +138,15 @@ float TabGroupStyle::GetAttentionIndicatorWidth() const {
   return kAttentionIndicatorWidth;
 }
 
+float TabGroupStyle::GetDetachedChipHeight() const {
+  return GetLayoutConstant(LayoutConstant::kTabHeight) -
+         GetLayoutConstant(LayoutConstant::kTabStripPadding);
+}
+
 int TabGroupStyle::GetChipCornerRadius() const {
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    return kDetachedTabsCornerRadius;
+  }
   return kCornerRadius;
 }
 

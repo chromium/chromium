@@ -64,6 +64,9 @@ class TabGroupStyle {
   // Returns the attention indicator icon width.
   virtual float GetAttentionIndicatorWidth() const;
 
+  // Returns the height of the chip when detached tabs are enabled.
+  virtual float GetDetachedChipHeight() const;
+
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;
 
