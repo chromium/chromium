@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -48,37 +49,35 @@ DirectConvolver::DirectConvolver(
       convolution_kernel_(std::move(convolution_kernel)) {
   size_t kernel_size = ConvolutionKernelSize();
   PrepareFilterForConv(
-      UNSAFE_TODO(convolution_kernel_->Data() + kernel_size - 1), -1,
+      convolution_kernel_->as_span().subspan(kernel_size - 1).data(), -1,
       kernel_size, &prepared_convolution_kernel_);
 }
 
-void DirectConvolver::Process(const float* source_p,
-                              float* dest_p,
-                              uint32_t frames_to_process) {
+void DirectConvolver::Process(base::span<const float> source,
+                              base::span<float> destination) {
+  const uint32_t frames_to_process = destination.size();
   DCHECK_EQ(frames_to_process, input_block_size_);
 
-  size_t kernel_size = ConvolutionKernelSize();
+  const size_t kernel_size = ConvolutionKernelSize();
   DCHECK_LE(kernel_size, input_block_size_);
 
-  float* kernel_p = convolution_kernel_->Data();
-
-  DCHECK(kernel_p);
-  DCHECK(source_p);
-  DCHECK(dest_p);
   DCHECK(buffer_.Data());
 
-  float* input_p = UNSAFE_TODO(buffer_.Data() + input_block_size_);
-
   // Copy samples to 2nd half of input buffer.
-  UNSAFE_TODO(memcpy(input_p, source_p, sizeof(float) * frames_to_process));
+  buffer_.as_span()
+      .subspan(input_block_size_, frames_to_process)
+      .copy_from(source.first(frames_to_process));
 
-  Conv(UNSAFE_TODO(input_p - kernel_size + 1), 1,
-       UNSAFE_TODO(kernel_p + kernel_size - 1), -1, dest_p, 1,
-       frames_to_process, kernel_size, &prepared_convolution_kernel_);
+  Conv(buffer_.as_span().subspan(input_block_size_ - kernel_size + 1).data(), 1,
+       convolution_kernel_->as_span().subspan(kernel_size - 1).data(), -1,
+       destination.data(), 1, frames_to_process, kernel_size,
+       &prepared_convolution_kernel_);
 
   // Copy 2nd half of input buffer to 1st half.
-  UNSAFE_TODO(
-      memcpy(buffer_.Data(), input_p, sizeof(float) * frames_to_process));
+  buffer_.as_span()
+      .first(frames_to_process)
+      .copy_from(
+          buffer_.as_span().subspan(input_block_size_, frames_to_process));
 }
 
 void DirectConvolver::Reset() {

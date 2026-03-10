@@ -52,19 +52,20 @@ void ReverbInputBuffer::Write(const float* source_p, size_t number_of_frames) {
   SetWriteIndex(new_index);
 }
 
-float* ReverbInputBuffer::DirectReadFrom(size_t* read_index,
-                                         size_t number_of_frames) {
+base::span<const float> ReverbInputBuffer::DirectReadFrom(
+    size_t* read_index,
+    size_t number_of_frames) {
   uint32_t buffer_length = buffer_.size();
   DCHECK(read_index);
   DCHECK_LE(*read_index + number_of_frames, buffer_length);
 
-  float* source_p = buffer_.Data();
-  float* p = UNSAFE_TODO(source_p + *read_index);
+  base::span<const float> result =
+      buffer_.as_span().subspan(*read_index, number_of_frames);
 
   // Update readIndex
   *read_index = (*read_index + number_of_frames) % buffer_length;
 
-  return p;
+  return result;
 }
 
 void ReverbInputBuffer::Reset() {
