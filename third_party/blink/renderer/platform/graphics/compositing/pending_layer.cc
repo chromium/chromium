@@ -261,6 +261,7 @@ bool PendingLayer::CanMerge(
   merged_bounds =
       gfx::UnionRects(new_home_bounds.Rect(), new_guest_bounds.Rect());
 
+  bool force_merge = false;
   // If guest.has_decomposited_blend_mode_ is true, this function must merge
   // unconditionally and return because the decomposited blend mode requires
   // the merge. See PaintArtifactCompositor::DecompositeEffect().
@@ -269,7 +270,21 @@ bool PendingLayer::CanMerge(
   // - the src and dest layers are unlikely to be far away (sparse),
   // - the blend mode may make the merged layer not opaque,
   // - LCD text will be disabled with exotic blend mode.
-  if (!guest.has_decomposited_blend_mode_) {
+  if (guest.has_decomposited_blend_mode_) {
+    force_merge = true;
+  }
+
+  // Force merge descendants of the same canvas layout subtree. This ensures
+  // that all PendingLayers within a canvas child are grouped together
+  if (!force_merge) {
+    const auto& home_effect = GetPropertyTreeState().Effect();
+    if (home_effect.RequiresCompositingForCanvasChild()) {
+      force_merge =
+          home_effect.IsAncestorOf(guest.GetPropertyTreeState().Effect());
+    }
+  }
+
+  if (!force_merge) {
     float sum_area = new_home_bounds.Rect().size().GetArea() +
                      new_guest_bounds.Rect().size().GetArea();
     float tolerance =
