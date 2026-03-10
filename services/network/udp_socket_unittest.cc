@@ -72,8 +72,14 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
   int SetBroadcast(bool broadcast) override { NOTREACHED(); }
   int SetSendBufferSize(int send_buffer_size) override { NOTREACHED(); }
   int SetReceiveBufferSize(int receive_buffer_size) override { NOTREACHED(); }
-  int JoinGroup(const net::IPAddress& group_address) override { NOTREACHED(); }
-  int LeaveGroup(const net::IPAddress& group_address) override { NOTREACHED(); }
+  int JoinGroup(const net::IPAddress& group_address,
+                const std::optional<net::IPAddress>& source_address) override {
+    NOTREACHED();
+  }
+  int LeaveGroup(const net::IPAddress& group_address,
+                 const std::optional<net::IPAddress>& source_address) override {
+    NOTREACHED();
+  }
   int Write(
       net::IOBuffer* buf,
       int buf_len,

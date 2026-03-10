@@ -44,11 +44,15 @@ class FakeRestrictedUDPSocket final
  public:
   explicit FakeRestrictedUDPSocket(ContextLifecycleNotifier* notifier)
       : remote_(notifier) {}
-  void JoinGroup(const net::IPAddress& address, JoinGroupCallback) override {
+  void JoinGroup(const net::IPAddress& address,
+                 const std::optional<net::IPAddress>& source_address,
+                 JoinGroupCallback) override {
     NOTREACHED();
   }
 
-  void LeaveGroup(const net::IPAddress& address, LeaveGroupCallback) override {
+  void LeaveGroup(const net::IPAddress& address,
+                  const std::optional<net::IPAddress>& source_address,
+                  LeaveGroupCallback) override {
     NOTREACHED();
   }
 

@@ -346,6 +346,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
       mojo::PendingRemote<mojom::UDPSocketListener> listener,
       bool allow_multicast,
+      bool allow_source_specific_multicast,
       mojom::NetworkContext::CreateRestrictedUDPSocketCallback callback)
       override;
   void CreateTCPServerSocket(

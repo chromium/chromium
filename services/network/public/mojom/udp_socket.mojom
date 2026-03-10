@@ -123,16 +123,18 @@ interface UDPSocket {
   // See |UDPSocketOptions::receive_buffer_size| for more information.
   SetReceiveBufferSize(int32 receive_buffer_size) => (int32 result);
 
-  // Joins a multicast group. |group_address| is the group address to join,
-  // could be either an IPv4 or IPv6 address. Returns a net error code.
-  // See RFC 1112 for details on multicast.
-  JoinGroup(IPAddress group_address) => (int32 result);
+  // Joins a multicast group. If |source_address| is provided, only traffic
+  // from that source is received (source-specific multicast). Calling
+  // JoinGroup multiple times with different source addresses for the same
+  // group address forms a set of allowed sources for that group.
+  // Returns a net error code.
+  JoinGroup(IPAddress group_address, IPAddress? source_address)
+      => (int32 result);
 
-  // Leaves the multicast group. |group_address| is the group address to leave,
-  // could be either an IPv4 or IPv6 address. If the socket hasn't joined the
-  // group, this call will be ignored. It's optional to leave the multicast
-  // group before destroying the socket. Returns a net error code.
-  LeaveGroup(IPAddress group_address) => (int32 result);
+  // Leaves a multicast group. Arguments must match a previous JoinGroup call.
+  // Returns a net error code.
+  LeaveGroup(IPAddress group_address, IPAddress? source_address)
+      => (int32 result);
 
   // Notifies that the listener is ready to accept |number| of datagrams.
   // Correspondingly, OnReceived() of the UDPSocketListener interface will be

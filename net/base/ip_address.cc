@@ -230,6 +230,19 @@ bool IPAddress::IsPubliclyRoutable() const {
   return true;
 }
 
+bool IPAddress::IsMulticast() const {
+  if (IsIPv4()) {
+    uint8_t first_byte = ip_address_[0];
+    return first_byte >= 224 && first_byte <= 239;
+  }
+
+  if (IsIPv6()) {
+    return ip_address_[0] == 0xff;
+  }
+
+  return false;
+}
+
 bool IPAddress::IsZero() const {
   for (auto x : ip_address_) {
     if (x != 0)

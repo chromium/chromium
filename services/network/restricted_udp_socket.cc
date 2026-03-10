@@ -20,34 +20,68 @@ RestrictedUDPSocket::RestrictedUDPSocket(
     std::unique_ptr<UDPSocket> udp_socket,
     net::MutableNetworkTrafficAnnotationTag traffic_annotation,
     std::unique_ptr<SimpleHostResolver> resolver,
-    bool allow_multicast)
+    bool allow_multicast,
+    bool allow_source_specific_multicast)
     : udp_socket_(std::move(udp_socket)),
       traffic_annotation_(std::move(traffic_annotation)),
       resolver_(std::move(resolver)),
-      allow_multicast_(allow_multicast) {}
+      allow_multicast_(allow_multicast),
+      allow_source_specific_multicast_(allow_source_specific_multicast) {}
 
 RestrictedUDPSocket::~RestrictedUDPSocket() = default;
 
-void RestrictedUDPSocket::JoinGroup(const net::IPAddress& group_address,
-                                    JoinGroupCallback callback) {
+void RestrictedUDPSocket::JoinGroup(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address,
+    JoinGroupCallback callback) {
   if (!allow_multicast_) {
-    // Calling this method without the permission means that the renderer is
-    // sending faulty IPCs.
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
     mojo::ReportBadMessage("no permission to use multicast");
     return;
   }
-  udp_socket_->JoinGroup(group_address, std::move(callback));
+  // Calling this method with source_address without the SSM feature enabled
+  // means that the renderer is sending faulty IPCs.
+  if (source_address.has_value() && !allow_source_specific_multicast_) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("Source-specific multicast disabled");
+    return;
+  }
+  // A compromised renderer could send a multicast or zero address as the
+  // source filter. Validate here at the security boundary.
+  if (source_address.has_value() &&
+      (source_address->IsMulticast() || source_address->IsZero())) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("source_address must be a non-zero unicast address");
+    return;
+  }
+  udp_socket_->JoinGroup(group_address, source_address, std::move(callback));
 }
 
-void RestrictedUDPSocket::LeaveGroup(const net::IPAddress& group_address,
-                                     LeaveGroupCallback callback) {
+void RestrictedUDPSocket::LeaveGroup(
+    const net::IPAddress& group_address,
+    const std::optional<net::IPAddress>& source_address,
+    LeaveGroupCallback callback) {
   if (!allow_multicast_) {
-    // Calling this method without the permission means that the renderer is
-    // sending faulty IPCs.
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
     mojo::ReportBadMessage("no permission to use multicast");
     return;
   }
-  udp_socket_->LeaveGroup(group_address, std::move(callback));
+  // Calling this method with source_address without the SSM feature enabled
+  // means that the renderer is sending faulty IPCs.
+  if (source_address.has_value() && !allow_source_specific_multicast_) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("Source-specific multicast disabled");
+    return;
+  }
+  // A compromised renderer could send a multicast or zero address as the
+  // source filter. Validate here at the security boundary.
+  if (source_address.has_value() &&
+      (source_address->IsMulticast() || source_address->IsZero())) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("source_address must be a non-zero unicast address");
+    return;
+  }
+  udp_socket_->LeaveGroup(group_address, source_address, std::move(callback));
 }
 
 void RestrictedUDPSocket::ReceiveMore(uint32_t num_additional_datagrams) {

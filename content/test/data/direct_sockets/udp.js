@@ -424,3 +424,140 @@ async function testUdpMessageConfiguration(socketOptions, message) {
     return "testUdpMessageConfiguration failed: " + error;
   }
 }
+
+// SSM (Source-Specific Multicast) test functions
+
+const ssmMulticastGroup = '232.1.1.1';  // SSM range for IPv4
+// Note: Source addresses are discovered and passed by C++ browser tests
+
+async function joinGroupSSM(options, groupAddress, sourceAddress) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    await multicastController.joinGroup(
+        groupAddress, {sourceAddress: sourceAddress});
+    return 'joinGroupSSM succeeded.';
+  } catch (error) {
+    return ('joinGroupSSM failed: ' + error);
+  } finally {
+    await udpSocket.close();
+  }
+}
+
+async function joinGroupSSMSameGroupDifferentSources(
+    options, source1, source2) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    // Join same group with different sources - should succeed.
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: source1});
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: source2});
+
+    assertEq(multicastController.joinedGroups.length, 2);
+    // joinedGroups iterates a hash set, so order is non-deterministic.
+    const sources = multicastController.joinedGroups
+        .map(m => m.sourceAddress).sort();
+    const expectedSources = [source1, source2].sort();
+    assertEq(sources[0], expectedSources[0]);
+    assertEq(sources[1], expectedSources[1]);
+    // Both entries should reference the same multicast group.
+    assertEq(
+        multicastController.joinedGroups[0].groupAddress, ssmMulticastGroup);
+    assertEq(
+        multicastController.joinedGroups[1].groupAddress, ssmMulticastGroup);
+
+    return 'joinGroupSSMSameGroupDifferentSources succeeded.';
+  } catch (error) {
+    return 'joinGroupSSMSameGroupDifferentSources failed: ' + error;
+  } finally {
+    await udpSocket.close();
+  }
+}
+
+async function leaveGroupSSMMustMatchSource(options, source1, source2) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    // Join with source1.
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: source1});
+
+    // Try to leave with different source - should throw.
+    await multicastController.leaveGroup(
+        ssmMulticastGroup, {sourceAddress: source2});
+    // If we reach here, test failed - should have thrown
+    return 'UNEXPECTED: leaveGroup with mismatched source should have failed';
+  } catch (e) {
+    if (e.name !== 'InvalidStateError') {
+      return 'leaveGroupSSMMustMatchSource failed: unexpected error: ' + e;
+    }
+    return 'leaveGroupSSMMustMatchSource succeeded.';
+  } finally {
+    await udpSocket.close();
+  }
+}
+
+async function cannotMixASMAndSSM(options, sourceIP) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    // Join with ASM (no source).
+    await multicastController.joinGroup(ssmMulticastGroup);
+
+    // Try to join same group with SSM - should throw.
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: sourceIP});
+    // If we reach here, test failed
+    return 'UNEXPECTED: mixing ASM and SSM should have failed';
+  } catch (e) {
+    if (e.name !== 'InvalidStateError') {
+      return 'cannotMixASMAndSSM failed: unexpected error: ' + e;
+    }
+    return 'cannotMixASMAndSSM succeeded.';
+  } finally {
+    await udpSocket.close();
+  }
+}
+
+async function joinGroupSSMTwiceWithSameSource(options, sourceIP) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: sourceIP});
+
+    // Try to join again with same group and source - should throw.
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: sourceIP});
+    // If we reach here, test failed
+    return 'UNEXPECTED: duplicate SSM join should have failed';
+  } catch (e) {
+    return 'joinGroupSSMTwiceWithSameSource succeeded.';
+  } finally {
+    await udpSocket.close();
+  }
+}
+
+async function joinGroupSSMInvalidSource(options) {
+  let udpSocket = new UDPSocket(options);
+  try {
+    const {multicastController} = await udpSocket.opened;
+
+    // Try to join with invalid source address - should throw.
+    await multicastController.joinGroup(
+        ssmMulticastGroup, {sourceAddress: 'invalid-source-address'});
+    // If we reach here, test failed
+    return 'UNEXPECTED: invalid source address should have failed';
+  } catch (e) {
+    return 'joinGroupSSMInvalidSource succeeded.';
+  } finally {
+    await udpSocket.close();
+  }
+}

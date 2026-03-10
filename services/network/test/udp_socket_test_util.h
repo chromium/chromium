@@ -38,8 +38,12 @@ class UDPSocketTestHelper {
   int SetBroadcastSync(bool broadcast);
   int SetSendBufferSizeSync(int send_buffer_size);
   int SetReceiveBufferSizeSync(int receive_buffer_size);
-  int JoinGroupSync(const net::IPAddress& group_address);
-  int LeaveGroupSync(const net::IPAddress& group_address);
+  int JoinGroupSync(
+      const net::IPAddress& group_address,
+      const std::optional<net::IPAddress>& source_address = std::nullopt);
+  int LeaveGroupSync(
+      const net::IPAddress& group_address,
+      const std::optional<net::IPAddress>& source_address = std::nullopt);
 
  private:
   const raw_ref<mojom::UDPSocket> socket_;

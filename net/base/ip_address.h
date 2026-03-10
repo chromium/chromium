@@ -235,6 +235,9 @@ class NET_EXPORT IPAddress {
   // IPv4-mapped-to-IPv6 addresses are considered publicly routable.
   bool IsPubliclyRoutable() const;
 
+  // Returns true if |ip_address_| represents a multicast address.
+  bool IsMulticast() const;
+
   // Returns true if the IP is "zero" (e.g. the 0.0.0.0 IPv4 address).
   bool IsZero() const;
 

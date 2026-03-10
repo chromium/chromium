@@ -63,8 +63,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
     virtual int SetBroadcast(bool broadcast) = 0;
     virtual int SetSendBufferSize(int send_buffer_size) = 0;
     virtual int SetReceiveBufferSize(int receive_buffer_size) = 0;
-    virtual int JoinGroup(const net::IPAddress& group_address) = 0;
-    virtual int LeaveGroup(const net::IPAddress& group_address) = 0;
+    virtual int JoinGroup(
+        const net::IPAddress& group_address,
+        const std::optional<net::IPAddress>& source_address) = 0;
+    virtual int LeaveGroup(
+        const net::IPAddress& group_address,
+        const std::optional<net::IPAddress>& source_address) = 0;
     virtual int RecvFrom(net::IOBuffer* buf,
                          int buf_len,
                          net::IPEndPoint* address,
@@ -92,8 +96,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
   void SetReceiveBufferSize(int32_t receive_buffer_size,
                             SetSendBufferSizeCallback callback) override;
   void JoinGroup(const net::IPAddress& group_address,
+                 const std::optional<net::IPAddress>& source_address,
                  JoinGroupCallback callback) override;
   void LeaveGroup(const net::IPAddress& group_address,
+                  const std::optional<net::IPAddress>& source_address,
                   LeaveGroupCallback callback) override;
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
