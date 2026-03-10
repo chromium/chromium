@@ -18,6 +18,16 @@ compile_ts("dom_node_ids_ts") {
   sources = [ "resources/dom_node_ids.ts" ]
 }
 
+optimize_ts("dom_node_ids_test_ts") {
+  testonly = true
+  sources = [ "resources/dom_node_ids_test.ts" ]
+  output_name = "dom_node_ids_test"
+  deps = [
+    ":dom_node_ids_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 compile_ts("annotated_page_content_extraction_ts") {
   sources = [ "resources/annotated_page_content_extraction.ts" ]
 
@@ -180,6 +190,7 @@ source_set("page_context_wrapper_test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "dom_node_ids_js_unittest.mm",
     "frame_grafter_unittest.mm",
     "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
@@ -188,6 +199,7 @@ source_set("unit_tests") {
     "page_context_wrapper_unittest.mm",
   ]
   deps = [
+    ":dom_node_ids_test_ts",
     ":metrics_constants",
     ":page_context_extractor_feature",
     ":page_context_metrics",
@@ -215,6 +227,7 @@ source_set("unit_tests") {
     "//ios/web/js_messaging:java_script_feature_manager_header",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//ios/web/public/test/fakes",
     "//net:test_support",
     "//testing/gtest",
