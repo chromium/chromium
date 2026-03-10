@@ -71,6 +71,10 @@ struct WebAppIdentityUpdate {
   // this update. If this is true, `new_start_url` NEEDS to be set and be
   // different from `old_start_url`.
   bool is_forced_migration = false;
+
+  // Set to true if the old and new icon have an insignificant difference.
+  // If this is true, the icon change flag is ignored.
+  bool icon_diff_is_insignificant = false;
 };
 
 // The result of the predictable app updating dialog closing, either from an

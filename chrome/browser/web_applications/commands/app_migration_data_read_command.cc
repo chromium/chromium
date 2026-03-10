@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/image_visual_diff.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -145,8 +146,13 @@ void AppMigrationDataReadCommand::OnIconsProcessedCreateIdentity() {
   update_.old_start_url = old_web_app->start_url();
   update_.new_start_url = new_web_app->start_url();
 
-  // TODO(japhet): Figure out how to handle the case where the icon hasn't
-  // changed.
+  if (update_.new_icon.has_value()) {
+    SkBitmap old_bitmap = update_.old_icon.AsBitmap();
+    SkBitmap new_bitmap = update_.new_icon->AsBitmap();
+    update_.icon_diff_is_insignificant =
+        !HasMoreThanTenPercentImageDiff(&old_bitmap, &new_bitmap);
+  }
+
   CompleteAndSelfDestruct(CommandResult::kSuccess, std::make_optional(update_));
 }
 

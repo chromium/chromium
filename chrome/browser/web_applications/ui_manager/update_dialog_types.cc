@@ -39,9 +39,10 @@ WebAppIdentity WebAppIdentityUpdate::MakeNewIdentity() const {
 }
 
 int WebAppIdentityUpdate::GetCombinationChangeIndex() const {
-  int combination_index = (new_title.has_value() ? kNameChange : 0) |
-                          (new_icon.has_value() ? kIconChange : 0) |
-                          (new_start_url.has_value() ? kUrlChange : 0);
+  int combination_index =
+      (new_title.has_value() ? kNameChange : 0) |
+      (new_icon.has_value() && !icon_diff_is_insignificant ? kIconChange : 0) |
+      (new_start_url.has_value() ? kUrlChange : 0);
   return combination_index;
 }
 

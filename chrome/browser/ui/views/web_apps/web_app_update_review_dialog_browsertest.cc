@@ -128,7 +128,10 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
           u"Definitely a longer title that is really really really really "
           u"long.";
     }
-    if (name.contains("IconChange")) {
+    if (name.contains("InsignificantIconChange")) {
+      update_.new_icon = gfx::Image::CreateFrom1xBitmap(new_icon_);
+      update_.icon_diff_is_insignificant = true;
+    } else if (name.contains("IconChange")) {
       update_.new_icon = gfx::Image::CreateFrom1xBitmap(new_icon_);
     }
     if (name.contains("UrlChange")) {
@@ -180,6 +183,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
+                       InvokeUi_NameChange_InsignificantIconChange) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
                        InvokeUi_NameChange_UrlChange) {
   ShowAndVerifyUi();
 }
@@ -199,6 +207,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, InvokeUi_UrlChange) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
+                       InvokeUi_UrlChange_InsignificantIconChange) {
   ShowAndVerifyUi();
 }
 
