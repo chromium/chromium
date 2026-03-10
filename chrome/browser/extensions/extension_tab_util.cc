@@ -949,30 +949,22 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
       include_incognito
           ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
           : nullptr;
-#if BUILDFLAG(IS_ANDROID)
-  for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model->GetProfile() == profile ||
-        tab_model->GetProfile() == incognito_profile) {
-      // On Android, not every tab has a WebContents, so check for null.
-      auto* web_contents = tab_model->GetActiveWebContents();
-      if (web_contents) {
-        active_contents.push_back(web_contents);
-      }
-    }
-  }
-#else
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [profile, incognito_profile,
-       &active_contents](BrowserWindowInterface* browser_window_interface) {
-        const Profile* browser_profile = browser_window_interface->GetProfile();
+       &active_contents](BrowserWindowInterface* browser) {
+        const Profile* browser_profile = browser->GetProfile();
         if (browser_profile == profile ||
             browser_profile == incognito_profile) {
-          active_contents.push_back(browser_window_interface->GetTabStripModel()
-                                        ->GetActiveWebContents());
+          TabListInterface* tab_list = TabListInterface::From(browser);
+          if (tab_list) {
+            content::WebContents* tab_contents =
+                tab_list->GetActiveTab()->GetContents();
+            CHECK(tab_contents);
+            active_contents.push_back(tab_contents);
+          }
         }
         return true;
       });
-#endif  // BUILDFLAG(IS_ANDROID)
 
   return active_contents;
 }
