@@ -491,6 +491,7 @@ tabs::TabCollection* TabModelJniBridge::GetTabStripCollection() const {
 
 void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {
   int index = GetIndexOfTab(tab);
+  HighlightTabs(tab, {tab});
   CHECK_NE(-1, index);
   SetActiveIndex(index);
 }

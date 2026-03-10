@@ -302,12 +302,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, UpdateHighlighted) {
                         {url: ['about:blank', 'about:blank', 'about:blank']});
         const tabs = await chrome.tabs.query({windowId: win.id});
         chrome.test.assertEq(3, tabs.length);
-        // Set the initial state. Only highlight the first tab.
-        // This is necessary because on desktop android, multiple tabs are
-        // highlighted in the newly-created window.
-        await chrome.tabs.update(tabs[0].id, {highlighted: true});
-        await chrome.tabs.update(tabs[1].id, {highlighted: false});
-        await chrome.tabs.update(tabs[2].id, {highlighted: false});
 
         let highlightedTabs =
             await chrome.tabs.query({windowId: win.id, highlighted: true});
