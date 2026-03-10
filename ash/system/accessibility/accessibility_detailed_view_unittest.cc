@@ -187,6 +187,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
 
   void CreateDetailedMenu() {
     // Create a widget for the detailed view so that tests can exercise focus.
+    detailed_menu_ = nullptr;
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     // Use a fake delegate to fake out CloseBubble() calls, since these tests
@@ -197,8 +198,8 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   }
 
   void CloseDetailMenu() {
-    widget_.reset();
     detailed_menu_ = nullptr;
+    widget_.reset();
     delegate_.reset();
   }
 
@@ -639,8 +640,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   raw_ptr<AccessibilityController> controller_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  raw_ptr<AccessibilityDetailedView, DanglingUntriaged> detailed_menu_ =
-      nullptr;
+  raw_ptr<AccessibilityDetailedView> detailed_menu_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
