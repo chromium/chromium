@@ -144,7 +144,7 @@ suite('NewTabPageActionChipsTest', () => {
     });
 
     const recentTabChip =
-        chips.shadowRoot.querySelector<HTMLButtonElement>('#tab-context');
+        chips.shadowRoot.querySelector<HTMLDivElement>('.icon-type-favicon');
     assertTrue(!!recentTabChip);
     const whenActionChipClicked =
         eventToPromise('action-chip-click', document.body);
@@ -224,7 +224,7 @@ suite('NewTabPageActionChipsTest', () => {
     test('nano banana chip triggers chip click event', async () => {
       // Setup.
       const nanoBananaChip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('#nano-banana');
+          chips.shadowRoot.querySelector<HTMLDivElement>('.icon-type-banana');
       assertTrue(!!nanoBananaChip);
       const whenActionChipClicked =
           eventToPromise('action-chip-click', document.body);
@@ -241,8 +241,8 @@ suite('NewTabPageActionChipsTest', () => {
 
     test('deep search chip triggers chip click event', async () => {
       // Setup.
-      const deepSearchChip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('#deep-search');
+      const deepSearchChip = chips.shadowRoot.querySelector<HTMLDivElement>(
+          '.icon-type-globe-with-search-loop');
       assertTrue(!!deepSearchChip);
       const whenActionChipClicked =
           eventToPromise('action-chip-click', document.body);
@@ -262,7 +262,7 @@ suite('NewTabPageActionChipsTest', () => {
     test('tab context chip triggers chip click event', async () => {
       // Setup.
       const recentTabChip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('#tab-context');
+          chips.shadowRoot.querySelector<HTMLDivElement>('.icon-type-favicon');
       assertTrue(!!recentTabChip);
       const whenActionChipClicked =
           eventToPromise('action-chip-click', document.body);
@@ -295,8 +295,8 @@ suite('NewTabPageActionChipsTest', () => {
           },
         }],
       });
-      const deepDiveChip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('#deep-dive-0');
+      const deepDiveChip = chips.shadowRoot.querySelector<HTMLDivElement>(
+          '.icon-type-sub-arrow-right');
       assertTrue(!!deepDiveChip);
 
       const whenActionChipClicked =
@@ -329,8 +329,8 @@ suite('NewTabPageActionChipsTest', () => {
           tab: null,
         }],
       });
-      const canvasChip =
-          chips.shadowRoot.querySelector<HTMLButtonElement>('#canvas-chip');
+      const canvasChip = chips.shadowRoot.querySelector<HTMLDivElement>(
+          '.icon-type-draft-spark');
       assertTrue(!!canvasChip);
 
       const whenActionChipClicked =

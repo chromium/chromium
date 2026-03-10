@@ -2423,7 +2423,8 @@ suite('NewTabPageAppTest', () => {
               app.shadowRoot.querySelector('ntp-action-chips');
           assertTrue(!!actionChipsElement);
           const nanoBananaChip =
-              actionChipsElement.shadowRoot.getElementById('nano-banana');
+              actionChipsElement.shadowRoot.querySelector<HTMLDivElement>(
+                  '.icon-type-banana');
           assertTrue(!!nanoBananaChip);
 
           // Act.
@@ -2447,7 +2448,8 @@ suite('NewTabPageAppTest', () => {
 
           // Setup.
           const deepSearchChip =
-              actionChipsElement.shadowRoot.getElementById('deep-search');
+              actionChipsElement.shadowRoot.querySelector<HTMLDivElement>(
+                  '.icon-type-globe-with-search-loop');
           assertTrue(!!deepSearchChip);
           deepSearchChip.click();
           await microtasksFinished();
@@ -2467,7 +2469,8 @@ suite('NewTabPageAppTest', () => {
 
       // Setup.
       const tabChip =
-          actionChipsElement.shadowRoot.getElementById('tab-context');
+          actionChipsElement.shadowRoot.querySelector<HTMLDivElement>(
+              '.icon-type-favicon');
       assertTrue(!!tabChip);
       tabChip.click();
       await microtasksFinished();
@@ -2506,7 +2509,8 @@ suite('NewTabPageAppTest', () => {
 
           // Setup.
           const deepDiveChip =
-              actionChipsElement.shadowRoot.getElementById('deep-dive-0');
+              actionChipsElement.shadowRoot.querySelector<HTMLButtonElement>(
+                  'button:has(.icon-type-sub-arrow-right)');
           assertTrue(!!deepDiveChip);
 
           const chipBody = deepDiveChip.querySelector('.chip-body');

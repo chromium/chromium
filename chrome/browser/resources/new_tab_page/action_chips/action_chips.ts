@@ -111,23 +111,6 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected getId_(chip: ActionChip, index: number): string|null {
-    switch (chip.suggestTemplateInfo.typeIcon) {
-      case IconType.kBanana:
-        return 'nano-banana';
-      case IconType.kGlobeWithSearchLoop:
-        return 'deep-search';
-      case IconType.kFavicon:
-        return 'tab-context';
-      case IconType.kSubArrowRight:
-        return `deep-dive-${index}`;
-      case IconType.kDraftSpark:
-        return 'canvas-chip';
-      default:
-        return null;
-    }
-  }
-
   constructor() {
     super();
     const proxy = ActionChipsApiProxyImpl.getInstance();
