@@ -70,6 +70,8 @@ class TabModelObserverJniBridge {
 
   void OnTabCloseUndone(JNIEnv* env, const std::vector<TabAndroid*>& tabs);
 
+  void OnTabsSelectionChanged(JNIEnv* env);
+
   void TabClosureCommitted(JNIEnv* env, TabAndroid* tab);
 
   void AllTabsClosureCommitted(JNIEnv* env);

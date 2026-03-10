@@ -141,6 +141,12 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public void onTabsSelectionChanged() {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get().onTabsSelectionChanged(mNativeTabModelObserverJniBridge);
+    }
+
+    @Override
     public final void allTabsClosureCommitted(boolean isIncognito) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
@@ -266,6 +272,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
         void onTabCloseUndone(
                 long nativeTabModelObserverJniBridge,
                 @JniType("std::vector<TabAndroid*>") Tab[] tab);
+
+        void onTabsSelectionChanged(long nativeTabModelObserverJniBridge);
 
         void tabClosureCommitted(
                 long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
