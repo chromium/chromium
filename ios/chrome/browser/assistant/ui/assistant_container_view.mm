@@ -11,9 +11,9 @@
 namespace {
 
 // Shadow styling.
-constexpr float kShadowOpacity = 0.1f;
-constexpr CGFloat kShadowRadius = 10.0;
-constexpr CGSize kShadowOffset = {0, 5};
+constexpr float kShadowOpacity = 0.29f;
+constexpr CGFloat kShadowRadius = 21.0;
+constexpr CGSize kShadowOffset = {0, 11};
 
 // Grabber styling.
 constexpr CGFloat kGrabberWidth = 33.0;
@@ -73,17 +73,25 @@ constexpr CGFloat kGrabberAlpha = 0.24;
 
 #pragma mark - Private
 
+// Updates the shadow opacity based on the currently masked corners.
+- (void)updateShadowOpacity {
+  CACornerMask allCorners = kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+                            kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+  self.layer.shadowOpacity =
+      (_maskedCorners == allCorners) ? kShadowOpacity : 0.0;
+}
+
 // Configures the visual styling of the container.
 - (void)configureContainerStyling {
   self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  self.clipsToBounds = YES;
+  self.clipsToBounds = NO;
 
   self.layer.shadowColor = [UIColor blackColor].CGColor;
-  self.layer.shadowOpacity = kShadowOpacity;
   self.layer.shadowOffset = kShadowOffset;
   self.layer.shadowRadius = kShadowRadius;
   self.layer.cornerRadius = _cornerRadius;
   self.layer.maskedCorners = _maskedCorners;
+  [self updateShadowOpacity];
 }
 
 // Allows the controller to dynamically morph the container radius.
@@ -96,6 +104,9 @@ constexpr CGFloat kGrabberAlpha = 0.24;
   _maskedCorners = maskedCorners;
   self.layer.cornerRadius = _cornerRadius;
   self.layer.maskedCorners = _maskedCorners;
+  _contentView.layer.cornerRadius = _cornerRadius;
+  _contentView.layer.maskedCorners = _maskedCorners;
+  [self updateShadowOpacity];
   [self setNeedsLayout];
 }
 
@@ -103,6 +114,7 @@ constexpr CGFloat kGrabberAlpha = 0.24;
 - (void)setUpSubviews {
   _contentView = [[UIView alloc] init];
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  _contentView.clipsToBounds = YES;
   [self addSubview:_contentView];
 
   _grabberView = [self createGrabberView];
