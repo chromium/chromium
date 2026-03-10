@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,25 +22,6 @@
 #include "media/base/audio_sample_types.h"
 
 namespace media {
-
-namespace {
-
-base::span<float> GetStreamBeginWriteSpan(pa_stream* stream,
-                                          void** pa_buffer,
-                                          size_t* pa_buffer_size) {
-  CHECK_GE(pa_stream_begin_write(stream, pa_buffer, pa_buffer_size), 0);
-  CHECK_EQ(*pa_buffer_size % sizeof(float), 0u);
-
-  // SAFETY:
-  // https://freedesktop.org/software/pulseaudio/doxygen/stream_8h.html#a6cf50cfc4ea8897391941184d74d7dfa
-  // The documentation of `pa_stream_begin_write` says that `pa_buffer`
-  // points to the write address. `pa_buffer_size` indicates the number of
-  // valid bytes.
-  return UNSAFE_BUFFERS(base::span(reinterpret_cast<float*>(pa_buffer),
-                                   *pa_buffer_size / sizeof(float)));
-}
-
-}  // namespace
 
 using pulse::AutoPulseLock;
 using pulse::WaitForOperationCompletion;
@@ -189,16 +169,21 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
                 data->set_stream_request_bytes(requested_bytes);
                 data->set_sample_rate(params_.sample_rate());
               });
-  size_t bytes_remaining = requested_bytes;
+  int bytes_remaining = requested_bytes;
   while (bytes_remaining > 0) {
     void* pa_buffer = nullptr;
     size_t pa_buffer_size = buffer_size_;
-
-    base::span<float> pa_span =
-        GetStreamBeginWriteSpan(pa_stream_, &pa_buffer, &pa_buffer_size);
+    CHECK_GE(pa_stream_begin_write(pa_stream_, &pa_buffer, &pa_buffer_size), 0);
 
     if (!source_callback_) {
-      std::ranges::fill(pa_span, 0);
+      // SAFETY:
+      // https://freedesktop.org/software/pulseaudio/doxygen/stream_8h.html#a6cf50cfc4ea8897391941184d74d7dfa
+      // The documentation of `pa_stream_begin_write` says that `pa_buffer`
+      // points to the write address. `pa_buffer_size` indicates the number of
+      // valid bytes.
+      UNSAFE_BUFFERS(base::span pa_buffers(
+          reinterpret_cast<uint8_t*>(pa_buffer), pa_buffer_size));
+      std::ranges::fill(pa_buffers, 0);
       pa_stream_write(pa_stream_, pa_buffer, pa_buffer_size, nullptr, 0LL,
                       PA_SEEK_RELATIVE);
       bytes_remaining -= pa_buffer_size;
@@ -206,7 +191,7 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
     }
 
     size_t unwritten_frames_in_bus = audio_bus_->frames();
-    const size_t frame_size = buffer_size_ / unwritten_frames_in_bus;
+    size_t frame_size = buffer_size_ / unwritten_frames_in_bus;
     const base::TimeDelta delay = pulse::GetHardwareLatency(pa_stream_);
     UMA_HISTOGRAM_COUNTS_1000("Media.Audio.Render.SystemDelay",
                               delay.InMilliseconds());
@@ -233,27 +218,27 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
 
     audio_bus_->Scale(volume_);
 
+    size_t frames_to_copy = pa_buffer_size / frame_size;
     size_t frame_offset_in_bus = 0;
-    while (unwritten_frames_in_bus > 0) {
-      const size_t frames_to_copy = std::min(
-          unwritten_frames_in_bus, pa_span.size() / audio_bus_->channels());
+    do {
+      // Grab frames and get the count.
+      frames_to_copy =
+          std::min(audio_bus_->frames() - frame_offset_in_bus, frames_to_copy);
 
       // We skip clipping since that occurs at the shared memory boundary.
       audio_bus_->ToInterleavedPartial<Float32SampleTypeTraitsNoClip>(
-          frame_offset_in_bus,
-          pa_span.first(frames_to_copy * audio_bus_->channels()));
+          frame_offset_in_bus, frames_to_copy,
+          reinterpret_cast<float*>(pa_buffer));
+      frame_offset_in_bus += frames_to_copy;
+      unwritten_frames_in_bus -= frames_to_copy;
 
       if (pa_stream_write(pa_stream_, pa_buffer, pa_buffer_size, nullptr, 0LL,
                           PA_SEEK_RELATIVE) < 0) {
         source_callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
         return;
       }
-
       bytes_remaining -= pa_buffer_size;
-      frame_offset_in_bus += frames_to_copy;
-      unwritten_frames_in_bus -= frames_to_copy;
-
-      if (unwritten_frames_in_bus > 0) {
+      if (unwritten_frames_in_bus) {
         // Reset the buffer and the size:
         //   - If pa_buffer isn't nulled out, then it will get re-used, and
         //     there will be a race between PA reading and us writing.
@@ -263,10 +248,11 @@ void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
         //     dont need to memset.
         pa_buffer = nullptr;
         pa_buffer_size = unwritten_frames_in_bus * frame_size;
-        pa_span =
-            GetStreamBeginWriteSpan(pa_stream_, &pa_buffer, &pa_buffer_size);
+        CHECK_GE(pa_stream_begin_write(pa_stream_, &pa_buffer, &pa_buffer_size),
+                 0);
+        frames_to_copy = pa_buffer_size / frame_size;
       }
-    }
+    } while (unwritten_frames_in_bus);
   }
 }
 
