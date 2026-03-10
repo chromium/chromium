@@ -2680,7 +2680,6 @@ crbug.com/435620308 external/wpt/pointerevents/pointerevent_lostpointercapture_r
 #   [1749319:7:0828/082256.523414:FATAL:cc/trees/tree_synchronizer.cc:230] Check failed: target_layer.
 # ... or:
 #   [4031854:7:0828/082339.467097:FATAL:cc/trees/property_tree.h:87] Check failed: i < static_cast<int>(nodes_.size()) (2 vs. 2)
-crbug.com/441715182 virtual/threaded/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 crbug.com/441715182 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 crbug.com/441715182 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 
@@ -3310,7 +3309,6 @@ crbug.com/431036874 [ Mac13-arm64 ] virtual/threaded/external/wpt/css/css-view-t
 crbug.com/431036874 [ Mac13 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 [ Mac12-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 [ Win ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
-crbug.com/431036874 [ Linux ] virtual/threaded/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/431036874 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/430091083 [ Win11-arm64 ] external/wpt/bluetooth/bidi/adapter/adapter-powered-on-getAvailability.https.window.html [ Pass Timeout ]
@@ -4371,7 +4369,6 @@ crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/opaque-ad-sizes-exact-size.https.html [ Skip Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/opaque-ad-sizes-special-cases.https.html [ Skip Timeout ]
-crbug.com/626703 [ Debug Linux ] virtual/threaded/external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context-list-item.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-rhythm/block-step-size-establishes-independent-formatting-context.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-vs-joiners-002.html [ Failure ]
