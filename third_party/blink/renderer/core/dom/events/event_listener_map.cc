@@ -156,13 +156,12 @@ static bool RemoveListenerFromVector(
     const EventListener* listener,
     const RegisteredEventListener::OptionsForMatching& options,
     RegisteredEventListener** registered_listener) {
-  EventListenerVector::iterator end = listener_vector->end();
-  for (EventListenerVector::iterator iter = listener_vector->begin();
-       iter != end; UNSAFE_TODO(++iter)) {
-    if ((*iter)->Matches(listener, options)) {
-      (*iter)->SetRemoved();
-      *registered_listener = *iter;
-      listener_vector->erase(iter);
+  for (wtf_size_t i = 0; i < listener_vector->size(); ++i) {
+    RegisteredEventListener* current_listener = listener_vector->at(i);
+    if (current_listener->Matches(listener, options)) {
+      current_listener->SetRemoved();
+      *registered_listener = current_listener;
+      listener_vector->EraseAt(i);
       return true;
     }
   }
