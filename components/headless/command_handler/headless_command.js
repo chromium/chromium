@@ -255,6 +255,12 @@ async function screenshot(dp, params) {
       height: params.height,
       scale: 1.0,
     };
+
+    // Ensure the contents window has exactly the size requested, see
+    // http://crbug.com/405165895.
+    const {windowId} = (await dp.Browser.getWindowForTarget()).result;
+    await dp.Browser.setContentsSize(
+        {windowId, width: params.width, height: params.height});
   }
 
   const response = await dp.Page.captureScreenshot(screenshotParams);
