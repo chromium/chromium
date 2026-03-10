@@ -338,6 +338,21 @@ void ResponsivenessMetrics::HandleCompositionInteraction(
     return;
   }
 
+  // TODO(crbug.com/491152223): Handling these two events before the
+  // |kCompositionEndOnKeyup| case below matters, because these two events will
+  // not have a |key_code| and should not go to |HandleKeyboardInteraction|.
+  // Ideally, we replace the need to handle these and just use the |isComposing|
+  // property of events directly.
+  if (event_type == event_type_names::kCompositionupdate) {
+    SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
+    return;
+  }
+  if (event_type == event_type_names::kCompositionend) {
+    composition_state_ = kCompositionEndOnKeyup;
+    SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
+    return;
+  }
+
   // Immediately after compositionend we treat the next input & keyup as the
   // last composition related events-- otherwise we reset to non-composition
   // mode, and move to the keyboard handler.
@@ -350,18 +365,6 @@ void ResponsivenessMetrics::HandleCompositionInteraction(
     return;
   }
 
-  if (event_type == event_type_names::kCompositionupdate) {
-    CHECK_EQ(composition_state_, kCompositionActive);
-    SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
-    return;
-  }
-
-  if (event_type == event_type_names::kCompositionend) {
-    CHECK_EQ(composition_state_, kCompositionActive);
-    composition_state_ = kCompositionEndOnKeyup;
-    SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
-    return;
-  }
 
   if (event_type == event_type_names::kKeydown) {
     CHECK_EQ(composition_state_, kCompositionActive);
