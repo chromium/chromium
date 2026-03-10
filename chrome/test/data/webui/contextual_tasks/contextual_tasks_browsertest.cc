@@ -41,7 +41,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_MiscInputs) {
+// TODO(crbug.com/480689282): Flaky on ChromeOS debug.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_Composebox_MiscInputs DISABLED_Composebox_MiscInputs
+#else
+#define MAYBE_Composebox_MiscInputs Composebox_MiscInputs
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       MAYBE_Composebox_MiscInputs) {
   RunTest("contextual_tasks/composebox_misc_inputs_test.js", "mocha.run();");
 }
 
