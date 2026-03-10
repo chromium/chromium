@@ -9680,6 +9680,8 @@ crbug.com/485066960 [ Linux ] external/wpt/html/dom/partial-updates/tentative/te
 # Gardener 2026-02-18
 crbug.com/469578374 [ Win ] external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
 
+crbug.com/491031516 [ Linux ] external/wpt/html/semantics/permission-element/geolocation-element/display-values.tentative.html [ Failure Pass ]
+
 # Temporary entry before fixing headless_shell failure introduced by crrev.com/c/7596170
 crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
