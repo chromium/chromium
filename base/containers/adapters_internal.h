@@ -52,6 +52,17 @@ class RangeOfRvaluesAdapter {
   auto begin() { return std::move_iterator(std::ranges::begin(range_)); }
   auto end() { return std::move_iterator(std::ranges::end(range_)); }
 
+  auto rbegin()
+    requires requires(Range& range) { std::ranges::rbegin(range); }
+  {
+    return std::move_iterator(std::ranges::rbegin(range_));
+  }
+  auto rend()
+    requires requires(Range& range) { std::ranges::rend(range); }
+  {
+    return std::move_iterator(std::ranges::rend(range_));
+  }
+
  private:
   // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class. It is only used
   // inside for loops. Ideally, the container being iterated over should be the
@@ -61,8 +72,7 @@ class RangeOfRvaluesAdapter {
 
 // Internal adapter class for implementing base::Reversed.
 // TODO(crbug.com/378623811): Parts of this (e.g. the `size()` helper) should be
-// extracted to a base template that can be shared/reused. In addition, this
-// should be constrained to Ts that satisfy the std::ranges::range concept.
+// extracted to a base template that can be shared/reused.
 template <typename Range>
 class ReversedAdapter {
  public:
