@@ -563,6 +563,14 @@ CreditCardFormEventLogger::GetFilledCreditCardForTesting() {
   return filled_credit_card_;
 }
 
+CreditCardSuggestionSummary
+CreditCardFormEventLogger::GetCreditCardSuggestionSummaryForTesting() const {
+  return CreditCardSuggestionSummary{
+      suggestion_contains_card_with_cvc_,
+      suggestion_contains_card_info_retrieval_enrolled_card_,
+      metadata_logging_context_};
+}
+
 void CreditCardFormEventLogger::RecordParseForm() {
   base::RecordAction(base::UserMetricsAction("Autofill_ParsedCreditCardForm"));
 }

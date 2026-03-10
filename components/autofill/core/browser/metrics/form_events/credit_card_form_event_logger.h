@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -147,6 +148,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnDidAcceptSaveAndFillSuggestion();
 
   std::optional<CreditCard> GetFilledCreditCardForTesting();
+
+  CreditCardSuggestionSummary GetCreditCardSuggestionSummaryForTesting() const;
 
  protected:
   // FormEventLoggerBase pure-virtual overrides.

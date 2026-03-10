@@ -37,6 +37,9 @@ namespace autofill {
 
 namespace {
 
+using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
+using SuggestionData = SuggestionGenerator::SuggestionData;
+
 Suggestion CreateBnplSuggestion(
     const payments::BnplIssuerContext& issuer_context,
     const std::string& app_locale,
@@ -65,11 +68,9 @@ Suggestion CreateBnplSuggestion(
   return bnpl_suggestion;
 }
 
-}  // namespace
-
-using SuggestionDataSource = SuggestionGenerator::SuggestionDataSource;
-using SuggestionData = SuggestionGenerator::SuggestionData;
-
+// Fetches SuggestionData, used for credit card or cvc field suggestion
+// generation. Fetched data will be used in
+// GenerateCreditCardOrCvcFieldSuggestionsSync.
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
 FetchCreditCardOrCvcFieldSuggestionDataSync(
     const AutofillClient& client,
@@ -133,6 +134,17 @@ FetchCreditCardOrCvcFieldSuggestionDataSync(
   return {SuggestionDataSource::kCreditCard, std::move(suggestion_data)};
 }
 
+// Generates suggestions for all available credit cards based on the
+// `trigger_field_type` and `trigger_field`. `summary` contains metadata about
+// the returned suggestions. `last_four_set_for_cvc_suggestion_filtering` is a
+// set of card number last four that will be used for suggestion filtering. this
+// is used to avoid showing suggestions that is unrelated to the cards that have
+// already been autofilled in the form.
+// `is_card_number_field_empty` indicates whether the card number field is empty
+// after the value inside of it is sanitized. this is used to decide whether the
+// bnpl suggestion should be appended together with the credit card suggestions.
+// todo(crbug.com/40916587): implement last four extraction from the dom.
+// todo(crbug.com/448688721): Consolidate the input parameters.
 std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -226,6 +238,9 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   return suggestions;
 }
 
+// Fetches SuggestionData, used for standalone CVC fields suggestion generation.
+// Fetched data wil be used in
+// GenerateVirtualCardStandaloneCvcFieldSuggestionsSync.
 std::pair<SuggestionDataSource, std::vector<SuggestionData>>
 FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
     const AutofillClient& client,
@@ -246,6 +261,9 @@ FetchVirtualCardStandaloneCvcFieldSuggestionDataSync(
           std::move(suggestion_data)};
 }
 
+// Generates suggestions for standalone CVC fields. These only apply to
+// virtual cards that are saved on file to a merchant. In these cases,
+// we only display the virtual card option and do not show FPAN option.
 std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
@@ -321,6 +339,8 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
   return suggestions;
 }
 
+}  // namespace
+
 std::vector<Suggestion> GetSuggestionsForCreditCards(
     const FormData& form,
     const FormStructure& form_structure,
@@ -359,6 +379,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
   credit_card_suggestion_generator.FetchSuggestionData(
       form, trigger_field, &form_structure, &autofill_trigger_field, client,
       std::move(on_suggestion_data_returned));
+
   return suggestions;
 }
 
