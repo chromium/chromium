@@ -62,7 +62,7 @@ bool CanMfDecodeCodec(TCodec codec,
     imf_activates[i]->Release();
   }
   if (count == 0) {
-    DLOG(INFO) << "No MFT for " << media::GetCodecName(codec);
+    DLOG(INFO) << "No MFT for " << GetCodecName(codec);
     return false;
   }
   return true;
@@ -113,7 +113,7 @@ class MediaFoundationPackageLocatorTest : public testing::Test {
 TEST_F(MediaFoundationPackageLocatorTest, VP9) {
   AddPackageFamilyName(L"Microsoft.VP9VideoExtensions_8wekyb3d8bbwe");
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"msvp9dec_store.dll", media::MediaFoundationCodecPackage::kVP9);
+      L"msvp9dec_store.dll", MediaFoundationCodecPackage::kVP9);
 
   if (CanMfDecodeCodec(VideoCodec::kVP9, MFMediaType_Video,
                        MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
@@ -127,7 +127,7 @@ TEST_F(MediaFoundationPackageLocatorTest, VP9) {
 TEST_F(MediaFoundationPackageLocatorTest, AV1) {
   AddPackageFamilyName(L"Microsoft.AV1VideoExtension_8wekyb3d8bbwe");
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"av1decodermft_store.dll", media::MediaFoundationCodecPackage::kAV1);
+      L"av1decodermft_store.dll", MediaFoundationCodecPackage::kAV1);
 
   if (CanMfDecodeCodec(VideoCodec::kAV1, MFMediaType_Video,
                        MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
@@ -142,7 +142,7 @@ TEST_F(MediaFoundationPackageLocatorTest, HEVC) {
   AddPackageFamilyName(L"Microsoft.HEVCVideoExtension_8wekyb3d8bbwe");
   AddPackageFamilyName(L"Microsoft.HEVCVideoExtensions_8wekyb3d8bbwe");  // OEM.
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"hevcdecoder_store.dll", media::MediaFoundationCodecPackage::kHEVC);
+      L"hevcdecoder_store.dll", MediaFoundationCodecPackage::kHEVC);
 
   if (CanMfDecodeCodec(VideoCodec::kHEVC, MFMediaType_Video,
                        MFT_CATEGORY_VIDEO_DECODER, GetVideoCodecsMap)) {
@@ -163,7 +163,7 @@ TEST_F(MediaFoundationPackageLocatorTest, EAC3) {
   AddPackageFamilyName(
       L"DolbyLaboratories.DolbyDigitalPlusDecoderOEM_rz1tebttyb220");
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"DolbyDDPDecMft.dll", media::MediaFoundationCodecPackage::kEAC3);
+      L"DolbyDDPDecMft.dll", MediaFoundationCodecPackage::kEAC3);
 
   // MS preloaded Dolby's AC3,EAC3 decoder into Windows image, but from
   // Windows 11 build 25992, all of them will be removed and provided by Dolby
@@ -191,7 +191,7 @@ TEST_F(MediaFoundationPackageLocatorTest, EAC3) {
 TEST_F(MediaFoundationPackageLocatorTest, AC4) {
   AddPackageFamilyName(L"DolbyLaboratories.DolbyAC4DecoderOEM_rz1tebttyb220");
   std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
-      L"DolbyAc4DecMft.dll", media::MediaFoundationCodecPackage::kAC4);
+      L"DolbyAc4DecMft.dll", MediaFoundationCodecPackage::kAC4);
 
   if (CanMfDecodeCodec(AudioCodec::kAC4, MFMediaType_Audio,
                        MFT_CATEGORY_AUDIO_DECODER, GetAudioCodecsMap)) {
@@ -199,6 +199,21 @@ TEST_F(MediaFoundationPackageLocatorTest, AC4) {
     VerifyMfCodecPaths(paths);
   } else {
     ASSERT_TRUE(paths.empty());
+  }
+}
+
+TEST_F(MediaFoundationPackageLocatorTest, DolbyVision) {
+  AddPackageFamilyName(L"DolbyLaboratories.DolbyVisionAccess_rz1tebttyb220");
+  AddPackageFamilyName(L"DolbyLaboratories.DolbyVisionHDR_rz1tebttyb220");
+  std::vector<base::FilePath> paths = GetMediaFoundationPackageInstallPaths(
+      L"DolbyVisionPlugin.dll", MediaFoundationCodecPackage::kDolbyVision);
+
+  // Dolby Vision has no dedicated MFVideoFormat GUID for capability probing.
+  // MFTEnumEx probing can only use P010 as a proxy, which may be unstable
+  // across devices and produce false positives/negatives.
+  // Therefore this test only verifies file existence when package paths exist.
+  if (!paths.empty()) {
+    VerifyMfCodecPaths(paths);
   }
 }
 

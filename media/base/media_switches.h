@@ -438,7 +438,8 @@ MEDIA_EXPORT extern const base::FeatureParam<int> kBatchReadCount;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformEncryptedDolbyVision);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled);
-#endif
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowClearDolbyVisionViaMFT);
+#endif  // ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION
 
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kBackgroundListening);

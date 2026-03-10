@@ -14,6 +14,9 @@ namespace media {
 
 // Preloads DLLs required for MediaFoundation; returns false if DLLs fail to
 // load. InitializeMediaFoundation() will also return false if load fails.
+// This is a specialized pre-sandbox initialization path currently intended for
+// GPU-process use only, and should not be used as a general replacement for
+// InitializeMediaFoundation() in other processes.
 MEDIA_EXPORT bool PreSandboxMediaFoundationInitialization();
 
 }  // namespace media

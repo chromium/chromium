@@ -7,11 +7,14 @@
 
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
+#include "media/base/video_codecs.h"
 
 namespace media {
 
 MEDIA_EXPORT bool LoadMediaFoundationPackageDecoder(AudioCodec codec);
 MEDIA_EXPORT bool FindMediaFoundationPackageDecoder(AudioCodec codec);
+MEDIA_EXPORT bool LoadMediaFoundationPackageDecoder(VideoCodec codec);
+MEDIA_EXPORT bool FindMediaFoundationPackageDecoder(VideoCodec codec);
 
 // Reports the status of Media Foundation package decoders for UMA. This is used
 // to understand the availability of Media Foundation package decoders on user

@@ -8,9 +8,23 @@
 
 #include <appmodel.h>
 
+#include <array>
+
 #include "base/logging.h"
 
 namespace media {
+
+namespace {
+#if defined(_M_AMD64)
+constexpr std::array<std::wstring_view, 1> kArchSubDirs = {L"x64"};
+#elif defined(_M_IX86)
+constexpr std::array<std::wstring_view, 2> kArchSubDirs = {L"x86", L"win32"};
+#elif defined(_M_ARM64)
+constexpr std::array<std::wstring_view, 1> kArchSubDirs = {L"arm64"};
+#else
+#error Unsupported processor type.
+#endif
+}  // namespace
 
 std::vector<base::FilePath> MediaFoundationPackageInstallPaths(
     const std::vector<std::wstring_view>& package_family_names,
@@ -84,22 +98,16 @@ std::vector<base::FilePath> MediaFoundationPackageInstallPaths(
   }
 
   // Append the path to the library based on binary architecture.
+  std::vector<base::FilePath> package_paths_with_arch;
+  package_paths_with_arch.reserve(package_paths.size() * kArchSubDirs.size());
   for (auto& package_path : package_paths) {
-    constexpr wchar_t kArch[] =
-#ifdef _M_AMD64
-        L"x64";
-#elif _M_IX86
-        L"x86";
-#elif _M_ARM64
-        L"arm64";
-#else
-#error Unsupported processor type.
-#endif
-    package_path = package_path.Append(kArch);
-    package_path = package_path.Append(decoder_lib_name);
-    DVLOG(2) << __func__ << ": package_path=" << package_path.value();
+    for (const auto& arch : kArchSubDirs) {
+      auto full_path = package_path.Append(arch).Append(decoder_lib_name);
+      package_paths_with_arch.emplace_back(full_path);
+      DVLOG(2) << __func__ << ": package_path=" << full_path.value();
+    }
   }
-  return package_paths;
+  return package_paths_with_arch;
 }
 
 }  // namespace media

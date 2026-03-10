@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/win/delayload_helpers.h"
 #include "base/win/scoped_handle.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/media_foundation_package_runtime_locator.h"
 
 class ScopedAllowBlockingForMediaFoundation : public base::ScopedAllowBlocking {
@@ -61,6 +62,16 @@ bool LoadMediaFoundationLibraries() {
                << ": AC4 decoder loaded from MediaFoundation codec package";
     }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    if (base::FeatureList::IsEnabled(media::kAllowClearDolbyVisionViaMFT) &&
+        media::LoadMediaFoundationPackageDecoder(
+            media::VideoCodec::kDolbyVision)) {
+      DVLOG(2)
+          << __func__
+          << ": DolbyVision decoder loaded from MediaFoundation codec package";
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
     return true;
   }();

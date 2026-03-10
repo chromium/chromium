@@ -1258,7 +1258,11 @@ BASE_FEATURE(kPlatformEncryptedDolbyVision,
 // Vision is allowed.
 BASE_FEATURE(kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+
+// Enables clear Dolby Vision playback through a pure MFT processor in the GPU
+// process, working together with the D3D11 video decoder.
+BASE_FEATURE(kAllowClearDolbyVisionViaMFT, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables the new media player features.
