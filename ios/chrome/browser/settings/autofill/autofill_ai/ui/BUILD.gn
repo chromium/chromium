@@ -4,13 +4,29 @@
 
 source_set("ui") {
   sources = [
+    "autofill_ai_add_entities_menu_builder.h",
+    "autofill_ai_add_entities_menu_builder.mm",
     "autofill_ai_entity_item.h",
     "autofill_ai_entity_item.mm",
   ]
   deps = [
     "//components/autofill/core/browser",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_ai_add_entities_menu_builder_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//components/autofill/core/browser:test_support",
+    "//components/sync:test_support",
+    "//ios/chrome/app/strings",
   ]
 }

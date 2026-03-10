@@ -526,6 +526,9 @@
            =1 {{count} option for address available above your keyboard.}
            other {{count} options for address available above your keyboard.}}
       </message>
+      <message name="IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT" desc="Button text for adding an address from Addresses and more screen of Settings [iOS only]">
+        Address
+      </message>
       <message name="IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL" desc="The text shown on a button to open the camera scanner to scan a credit card and extract the card number and expiry date, when adding a new credit card to Chrome Autofill [iOS only]">
         Use Camera
       </message>
