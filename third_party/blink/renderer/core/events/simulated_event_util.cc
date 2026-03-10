@@ -156,12 +156,19 @@ MouseEvent* CreateMouseOrPointerEvent(
 
   MouseEvent* created_event;
   if (event_class_type == EventClassType::kPointer) {
+    initializer->setPointerId(PointerEventFactory::kReservedNonPointerId);
     if (creation_scope == SimulatedClickCreationScope::kFromAccessibility) {
       initializer->setPointerId(PointerEventFactory::kMouseId);
       initializer->setPointerType(pointer_type_names::kMouse);
       initializer->setIsPrimary(true);
-    } else {
-      initializer->setPointerId(PointerEventFactory::kReservedNonPointerId);
+    } else if (creation_scope == SimulatedClickCreationScope::kFromUserAgent) {
+      if (auto* pointer_underlying_event =
+              DynamicTo<PointerEvent>(underlying_event)) {
+        initializer->setPointerId(pointer_underlying_event->pointerId());
+        initializer->setPointerType(pointer_underlying_event->pointerType());
+        initializer->setIsPrimary(pointer_underlying_event->isPrimary());
+        initializer->setDetail(pointer_underlying_event->detail());
+      }
     }
     created_event = MakeGarbageCollected<PointerEvent>(
         event_type, initializer, timestamp, synthetic_type);
@@ -171,8 +178,9 @@ MouseEvent* CreateMouseOrPointerEvent(
   }
 
   created_event->SetTrusted(
-      creation_scope == SimulatedClickCreationScope::kFromUserAgent ||
-      creation_scope == SimulatedClickCreationScope::kFromAccessibility);
+      creation_scope == SimulatedClickCreationScope::kFromAccessibility ||
+      (creation_scope == SimulatedClickCreationScope::kFromUserAgent &&
+       (!underlying_event || underlying_event->isTrusted())));
   created_event->SetUnderlyingEvent(underlying_event);
   if (synthetic_type == MouseEvent::kRealOrIndistinguishable) {
     auto* mouse_event = To<MouseEvent>(created_event->UnderlyingEvent());
