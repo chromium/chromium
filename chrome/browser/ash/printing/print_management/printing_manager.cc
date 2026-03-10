@@ -211,6 +211,7 @@ bool PrintingManager::IsHistoryDeletionAllowedByPolicy() {
 
 void PrintingManager::Shutdown() {
   receiver_.reset();
+  history_service_observation_.Reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
