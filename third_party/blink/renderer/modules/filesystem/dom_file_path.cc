@@ -56,7 +56,7 @@ String DOMFilePath::EnsureDirectoryPath(const String& path) {
 String DOMFilePath::GetName(const String& path) {
   auto index = path.rfind(DOMFilePath::kSeparator);
   if (index != String::npos) {
-    return path.Substring(index + 1);
+    return path.substr(index + 1);
   }
   return path;
 }
@@ -66,7 +66,7 @@ String DOMFilePath::GetDirectory(const String& path) {
   if (!index)
     return DOMFilePath::kRoot;
   if (index != String::npos) {
-    return path.Substring(0, index);
+    return path.substr(0, index);
   }
   return ".";
 }

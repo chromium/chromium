@@ -178,7 +178,7 @@ bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
   if (!mime_type.StartsWithIgnoringAsciiCase("font/")) {
     return false;
   }
-  String sub_type = mime_type.Substring(kFontLen).LowerASCII();
+  String sub_type = mime_type.substr(kFontLen).LowerASCII();
   return sub_type == "woff" || sub_type == "woff2" || sub_type == "otf" ||
          sub_type == "ttf" || sub_type == "sfnt";
 }

@@ -578,7 +578,7 @@ void LocaleWin::InitializeLocaleData() {
   } else {
     DCHECK_GE(digits.length(), 10u);
     for (wtf_size_t i = 0; i < 10; ++i) {
-      symbols.push_back(digits.Substring(i, 1));
+      symbols.push_back(digits.substr(i, 1));
     }
   }
   DCHECK_EQ(symbols.size(), kDecimalSeparatorIndex);

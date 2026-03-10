@@ -156,7 +156,7 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
     // RFC822 continuation: A line that starts with LWSP is a continuation of
     // the prior line.
     if ((line[0] == '\t') || (line[0] == ' ')) {
-      value.Append(line.Substring(1));
+      value.Append(line.subview(1));
       continue;
     }
     // New key/value, store the previous one if any.
@@ -174,9 +174,8 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
       // This is not a key value pair, ignore.
       continue;
     }
-    key =
-        line.Substring(0, semi_colon_index).DeprecatedLower().StripWhiteSpace();
-    value.Append(line.Substring(semi_colon_index + 1));
+    key = line.substr(0, semi_colon_index).DeprecatedLower().StripWhiteSpace();
+    value.Append(line.subview(semi_colon_index + 1));
   }
   // Store the last property if there is one.
   if (!key.empty())

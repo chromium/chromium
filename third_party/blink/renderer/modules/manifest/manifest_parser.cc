@@ -2030,7 +2030,7 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
     scope_extension->has_origin_wildcard = true;
     // Trim the wildcard prefix to get the effective host. Minus one to exclude
     // the length of the null terminator.
-    host = host.Substring(sizeof(kOriginWildcardPrefix) - 1);
+    host = host.substr(sizeof(kOriginWildcardPrefix) - 1);
   } else {
     scope_extension->has_origin_wildcard = false;
   }

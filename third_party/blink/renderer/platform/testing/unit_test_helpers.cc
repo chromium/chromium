@@ -158,12 +158,12 @@ bool LineReader::GetNextLine(String* line) {
 
   wtf_size_t end_of_line_index = text_.find("\r\n", index_);
   if (end_of_line_index == kNotFound) {
-    *line = text_.Substring(index_);
+    *line = text_.substr(index_);
     index_ = text_.length();
     return true;
   }
 
-  *line = text_.Substring(index_, end_of_line_index - index_);
+  *line = text_.substr(index_, end_of_line_index - index_);
   index_ = end_of_line_index + 2;
   return true;
 }

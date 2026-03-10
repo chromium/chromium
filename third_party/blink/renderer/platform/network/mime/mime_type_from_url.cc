@@ -39,7 +39,7 @@ String MimeTypeFromDataURL(const String& url) {
     index = url.find(',');
   if (index != kNotFound) {
     if (index > 5)
-      return url.Substring(5, index - 5).DeprecatedLower();
+      return url.substr(5, index - 5).DeprecatedLower();
     // Data URLs with no MIME type are considered text/plain.
     return "text/plain";
   }

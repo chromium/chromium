@@ -66,7 +66,7 @@ String StringBuilder::Substring(unsigned start, unsigned length) const {
   if (start >= length_)
     return g_empty_string;
   if (!string_.IsNull())
-    return string_.Substring(start, length);
+    return string_.substr(start, length);
   length = std::min(length, length_ - start);
   if (is_8bit_)
     return String(Span8().subspan(start, length));

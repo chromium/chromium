@@ -105,7 +105,7 @@ bool AddExtension(const String& extension,
   if (!VerifyIsValidExtension(extension, exception_state))
     return false;
 
-  extensions.push_back(extension.Substring(1));
+  extensions.push_back(extension.substr(1));
   return true;
 }
 

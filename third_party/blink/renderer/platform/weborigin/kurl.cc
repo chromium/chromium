@@ -479,7 +479,7 @@ bool KURL::SetProtocol(const String& protocol) {
 
   // Firefox and IE remove everything after the first ':'.
   wtf_size_t separator_position = protocol.find(':');
-  String new_protocol = protocol.Substring(0, separator_position);
+  String new_protocol = protocol.substr(0, separator_position);
   StringUtf8Adaptor new_protocol_utf8(new_protocol);
 
   // If KURL is given an invalid scheme, it returns failure without modifying

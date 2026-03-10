@@ -104,7 +104,7 @@ std::optional<String> LookupMatchingLocaleByBestFit(
     if (pos == -1) {
       pos = 0;
     }
-    prefix = prefix.Substring(0, pos);
+    prefix = prefix.substr(0, pos);
   }
   return std::nullopt;
 }

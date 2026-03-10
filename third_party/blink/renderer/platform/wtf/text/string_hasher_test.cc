@@ -138,7 +138,7 @@ TEST(StringHasherTest, ContractionAndExpansion) {
   String str =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_!?'$";
   for (unsigned i = 0; i < str.length(); ++i) {
-    String s8 = str.Substring(0, i);
+    String s8 = str.substr(0, i);
     String s16 = s8;
     s16.Ensure16Bit();
     EXPECT_EQ(CaseFoldingHash::GetHash(s8), CaseFoldingHash::GetHash(s16));

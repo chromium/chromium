@@ -97,13 +97,9 @@ std::optional<VideoTrackRecorder::CodecProfile> VideoStringTagToCodecProfile(
   for (auto& codecs_tag : codecs_tags) {
     wtf_size_t codecs_start = codecs.find(codecs_tag);
     if (codecs_start != kNotFound) {
-      wtf_size_t codecs_end = codecs.find(",");
+      wtf_size_t codecs_end = codecs.find(',');
       auto codec_id =
-          codecs
-              .Substring(codecs_start,
-                         codecs_end == kNotFound ? UINT_MAX : codecs_end)
-              .StripWhiteSpace()
-              .Ascii();
+          codecs.substr(codecs_start, codecs_end).StripWhiteSpace().Ascii();
       // Do not use lowercase `codecId` here, as `codecId` is case sensitive
       // when parsing.
       if (auto result = media::ParseCodec(codec_id)) {

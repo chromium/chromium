@@ -22,7 +22,7 @@ String ApplyCorrections(Vector<Correction> corrections, const String& input) {
     index = end_index;
   }
   if (index < input.length()) {
-    result = result + input.Substring(index);
+    result = result + input.substr(index);
   }
 
   return result;

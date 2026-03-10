@@ -104,7 +104,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
   // The domain of host-only cookies is the host name, without a dot (.) prefix.
   String cookie_domain = String::FromUTF8(canonical_cookie.Domain());
   if (cookie_domain.starts_with('.')) {
-    list_item->setDomain(cookie_domain.Substring(1));
+    list_item->setDomain(cookie_domain.substr(1));
   } else {
     list_item->setDomain(String());
   }

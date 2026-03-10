@@ -295,7 +295,7 @@ void PlainTextNode::SegmentText(const TextRun& run,
       DCHECK(original_text[original_text.length() - 1] ==
              uchar::kPopDirectionalFormatting)
           << original_text;
-      text_content_ = text_content_.Substring(1, text_content_.length() - 2);
+      text_content_ = text_content_.substr(1, text_content_.length() - 2);
     }
     if (bidi.SetParagraph(original_text, run.Direction())) {
       base_direction_ = bidi.BaseDirection();

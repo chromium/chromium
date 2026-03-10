@@ -275,7 +275,7 @@ void RTCRtpTransceiver::setCodecPreferences(
           DOMExceptionCode::kInvalidModificationError, "Invalid codec");
       return;
     }
-    webrtc_codec.name = codec->mimeType().Substring(slash_position + 1).Ascii();
+    webrtc_codec.name = codec->mimeType().substr(slash_position + 1).Ascii();
     webrtc_codec.clock_rate = codec->clockRate();
     if (codec->hasChannels()) {
       webrtc_codec.num_channels = codec->channels();
@@ -295,7 +295,7 @@ void RTCRtpTransceiver::setCodecPreferences(
             return;
           }
           auto parameter_name = parameter.Left(equal_position);
-          auto parameter_value = parameter.Substring(equal_position + 1);
+          auto parameter_value = parameter.substr(equal_position + 1);
           webrtc_codec.parameters.emplace(parameter_name.Ascii(),
                                           parameter_value.Ascii());
         }

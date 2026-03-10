@@ -58,7 +58,7 @@ class HTTPHeaderNameListParser {
         return;
       }
 
-      output.insert(value_.Substring(token_start, token_size).Ascii());
+      output.insert(value_.substr(token_start, token_size).Ascii());
       ConsumeSpaces();
 
       if (pos_ == value_.length()) {

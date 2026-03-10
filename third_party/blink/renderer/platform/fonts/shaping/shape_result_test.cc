@@ -178,10 +178,10 @@ TEST_F(ShapeResultTest, CopyRangeLatin) {
 TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
   TextDirection direction = TextDirection::kLtr;
   String string = "Testing ShapeResultIterator::CopyRange";
-  HarfBuzzShaper shaper_a(string.Substring(0, 5));
-  HarfBuzzShaper shaper_b(string.Substring(5, 7));
-  HarfBuzzShaper shaper_c(string.Substring(7, 32));
-  HarfBuzzShaper shaper_d(string.Substring(32, 38));
+  HarfBuzzShaper shaper_a(string.substr(0, 5));
+  HarfBuzzShaper shaper_b(string.substr(5, 7));
+  HarfBuzzShaper shaper_c(string.substr(7, 32));
+  HarfBuzzShaper shaper_d(string.substr(32, 38));
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
@@ -196,10 +196,10 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   TextDirection direction = TextDirection::kLtr;
   String string = "Testing copying a range with holes";
-  HarfBuzzShaper shaper_a(string.Substring(0, 5));
-  HarfBuzzShaper shaper_b(string.Substring(5, 7));
-  HarfBuzzShaper shaper_c(string.Substring(7, 32));
-  HarfBuzzShaper shaper_d(string.Substring(32, 34));
+  HarfBuzzShaper shaper_a(string.substr(0, 5));
+  HarfBuzzShaper shaper_b(string.substr(5, 7));
+  HarfBuzzShaper shaper_c(string.substr(7, 32));
+  HarfBuzzShaper shaper_d(string.substr(32, 34));
 
   ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
@@ -260,9 +260,9 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
       u"\u0631\u0628\u064A\u0629");
   TextDirection direction = TextDirection::kRtl;
 
-  HarfBuzzShaper shaper_a(string.Substring(0, 2));
-  HarfBuzzShaper shaper_b(string.Substring(2, 9));
-  HarfBuzzShaper shaper_c(string.Substring(9, 15));
+  HarfBuzzShaper shaper_a(string.substr(0, 2));
+  HarfBuzzShaper shaper_b(string.substr(2, 9));
+  HarfBuzzShaper shaper_c(string.substr(9, 15));
 
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.

@@ -475,13 +475,13 @@ TEST_F(HarfBuzzShaperTest, ShapeLatinSegment) {
   EXPECT_EQ(11u, start_index_);
   EXPECT_EQ(1u, num_characters_);
 
-  HarfBuzzShaper shaper2(string.Substring(0, 6));
+  HarfBuzzShaper shaper2(string.substr(0, 6));
   const ShapeResult* first_reference = shaper2.Shape(font, direction);
 
-  HarfBuzzShaper shaper3(string.Substring(6, 5));
+  HarfBuzzShaper shaper3(string.substr(6, 5));
   const ShapeResult* second_reference = shaper3.Shape(font, direction);
 
-  HarfBuzzShaper shaper4(string.Substring(11, 1));
+  HarfBuzzShaper shaper4(string.substr(11, 1));
   const ShapeResult* third_reference = shaper4.Shape(font, direction);
 
   // Width of each segment should be the same when shaped using start and end
