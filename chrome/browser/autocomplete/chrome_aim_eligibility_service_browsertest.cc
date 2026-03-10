@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -156,6 +157,7 @@ class AimEligibilityServiceFriend {
   using EligibilityResponseSource =
       AimEligibilityService::EligibilityResponseSource;
   using RequestSource = AimEligibilityService::RequestSource;
+  using AuthenticationMethod = AimEligibilityService::AuthenticationMethod;
 
   void ProcessServerEligibilityResponse(
       AimEligibilityService* service,
@@ -164,10 +166,11 @@ class AimEligibilityServiceFriend {
       int response_code,
       EligibilityRequestStatus request_status,
       int num_retries,
+      AuthenticationMethod auth_method,
       std::optional<std::string> response_string) {
     service->ProcessServerEligibilityResponse(
         request_source, pending_request_account, response_code, request_status,
-        num_retries, std::move(response_string));
+        num_retries, auth_method, std::move(response_string));
   }
 };
 
@@ -1217,7 +1220,9 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
       200,
       AimEligibilityServiceFriend::EligibilityRequestStatus::
           kSuccessBrowserCache,
-      /*num_retries=*/0, std::move(response_string));
+      /*num_retries=*/0,
+      AimEligibilityServiceFriend::AuthenticationMethod::kCookie,
+      std::move(response_string));
   service->IsAimEligible();
 
   histogram_tester.ExpectUniqueSample(

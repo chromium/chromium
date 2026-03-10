@@ -53,6 +53,7 @@ export class AimEligibilityAppElement extends CrLitElement {
     lastUpdated: new Date(0),
     eligibilityResponseBase64Encoded: '',
     eligibilityResponseSource: '',
+    eligibilityResponseAuthType: null,
     searchboxConfigBase64UrlEncoded: '',
   };
   protected accessor inputState_: InputState = InputState.NONE;
