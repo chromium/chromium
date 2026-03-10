@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_crx_component.h"
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page.mojom.h"
+#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -43,6 +44,10 @@ class PageHandler : public mojom::PageHandler,
   using PlatformService = on_device_model::mojom::OnDeviceModelPlatformService;
   PlatformService& GetPlatformService();
 #endif
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  optimization_guide::ModelBrokerState& GetModelBrokerState();
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
   void OnModelAssetsLoaded(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,

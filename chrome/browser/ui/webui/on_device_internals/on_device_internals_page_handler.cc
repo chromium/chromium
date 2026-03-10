@@ -137,7 +137,8 @@ uint64_t GetMinimumVramRequired() {
 }
 
 mojom::BaseModelInfoPtr GetBaseModelInfo(
-    const optimization_guide::OnDeviceModelComponentState& state) {
+    const optimization_guide::OnDeviceModelComponentState& state,
+    optimization_guide::proto::OnDeviceModelPerformanceHint performance_hint) {
   auto info = mojom::BaseModelInfo::New();
   info->file_path = state.GetInstallDirectory().AsUTF8Unsafe();
   info->file_size = static_cast<uint64_t>(
@@ -146,13 +147,6 @@ mojom::BaseModelInfoPtr GetBaseModelInfo(
   info->version = state.GetBaseModelSpec().model_version;
   info->name = state.GetBaseModelSpec().model_name;
 
-  optimization_guide::proto::OnDeviceModelPerformanceHint performance_hint =
-      g_browser_process->GetFeatures()
-          ->optimization_guide_global_feature()
-          ->Get()
-          .model_broker_state()
-          .service_controller()
-          .GetPerformanceHint();
   switch (performance_hint) {
     case optimization_guide::proto::OnDeviceModelPerformanceHint::
         ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY:
@@ -256,6 +250,13 @@ PageHandler::PlatformService& PageHandler::GetPlatformService() {
 }
 #endif
 
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+optimization_guide::ModelBrokerState& PageHandler::GetModelBrokerState() {
+  return optimization_guide_keyed_service_->GetGlobalState()
+      .model_broker_state();
+}
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
 void PageHandler::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
@@ -306,10 +307,9 @@ void PageHandler::GetDeviceAndPerformanceInfo(
 
 void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  auto debug_state = optimization_guide_keyed_service_->GetGlobalState()
-                         .model_broker_state()
-                         .component_state_manager()
-                         .GetDebugState(base::PassKey<PageHandler>());
+  auto debug_state =
+      GetModelBrokerState().component_state_manager().GetDebugState(
+          base::PassKey<PageHandler>());
 
   if (!debug_state.state_) {
     std::move(callback).Run(std::nullopt);
@@ -324,10 +324,7 @@ void PageHandler::GetDefaultModelPath(GetDefaultModelPathCallback callback) {
 
 void PageHandler::UninstallDefaultModel() {
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  optimization_guide_keyed_service_->GetGlobalState()
-      .model_broker_state()
-      .component_state_manager()
-      .ForceUninstall();
+  GetModelBrokerState().component_state_manager().ForceUninstall();
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
 
@@ -348,8 +345,7 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   data->base_model = mojom::BaseModelState::New();
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-  auto& model_broker_state =
-      optimization_guide_keyed_service_->GetGlobalState().model_broker_state();
+  auto& model_broker_state = GetModelBrokerState();
   auto debug_state = model_broker_state.component_state_manager().GetDebugState(
       base::PassKey<PageHandler>());
 
@@ -394,9 +390,12 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   data->min_vram_mb = GetMinimumVramRequired();
 
   if (debug_state.state_) {
+    auto performance_hint =
+        model_broker_state.service_controller().GetPerformanceHint();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&GetBaseModelInfo, *debug_state.state_),
+        base::BindOnce(&GetBaseModelInfo, *debug_state.state_,
+                       performance_hint),
         base::BindOnce(&PageHandler::OnReceivedModelInfoForPageData,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(data)));
