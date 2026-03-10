@@ -65,6 +65,13 @@ class InvokerData final : public GarbageCollected<InvokerData>,
     interest_lost_task_ = std::move(task);
   }
 
+  bool SuppressNextFocusInterest() const {
+    return suppress_next_focus_interest_;
+  }
+  void SetSuppressNextFocusInterest(bool suppress) {
+    suppress_next_focus_interest_ = suppress;
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(invoked_popover_);
     visitor->Trace(active_interest_target_);
@@ -77,6 +84,7 @@ class InvokerData final : public GarbageCollected<InvokerData>,
   Element::InterestState interest_state_{Element::InterestState::kNoInterest};
   Member<HTMLElement> invoked_popover_;
   Member<Element> active_interest_target_;
+  bool suppress_next_focus_interest_{false};
 };
 
 }  // namespace blink

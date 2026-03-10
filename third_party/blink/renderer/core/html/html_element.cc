@@ -2112,6 +2112,13 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
         contains(document.AdjustedFocusedElement())) {
       FocusOptions* focus_options = FocusOptions::Create();
       focus_options->setPreventScroll(true);
+      if (InvokerData* data = previously_focused_element->GetInvokerData();
+          data && previously_focused_element->InterestForElement() == this) {
+        // If the previously focused element is an interest invoker for this
+        // popover, suppress the next focus, so we don't immediately (or after
+        // a delay) re-trigger the same popover.
+        data->SetSuppressNextFocusInterest(true);
+      }
       previously_focused_element->Focus(FocusParams(
           SelectionBehaviorOnFocus::kRestore, mojom::blink::FocusType::kScript,
           /*capabilities=*/nullptr, focus_options));

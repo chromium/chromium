@@ -12488,16 +12488,20 @@ void Element::ScheduleInterestChangesIfNeeded(InterestSource source) {
           upstream_invoker->GetInvokerData()->GetInterestState() !=
               InterestState::kNoInterest));
   if (source == InterestSource::kHover || source == InterestSource::kFocus) {
+    bool suppress_focus_interest = false;
     if (invoker_data) [[unlikely]] {
       invoker_data->CancelInterestLostTask();
+      suppress_focus_interest = source == InterestSource::kFocus &&
+                                invoker_data->SuppressNextFocusInterest();
+      invoker_data->SetSuppressNextFocusInterest(false);
     }
     for (Member<Element> upstream : AllSourceInterestInvokers(*this)) {
       upstream->GetInvokerData()->CancelInterestLostTask();
     }
     if (auto* target = InterestForElement();
-        target && (!invoker_data || invoker_data->GetInterestState() ==
-                                        InterestState::kNoInterest))
-        [[unlikely]] {
+        target && !suppress_focus_interest &&
+        (!invoker_data || invoker_data->GetInterestState() ==
+                              InterestState::kNoInterest)) [[unlikely]] {
       // This is an interest invoker that doesn't already have interest, and was
       // just hovered or focused. Schedule an InterestGained task.
       ScheduleInterestGainedTask();
