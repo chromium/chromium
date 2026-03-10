@@ -89,6 +89,9 @@ class AutofillPopupController : public AutofillSuggestionController {
   // `GetSuggestions()` will return more suggestions.
   virtual bool HasFilteredOutSuggestions() const = 0;
 
+  // Returns `true` if the popup should show a "no suggestions found" message.
+  virtual bool ShouldShowNoSuggestionsMessage() const = 0;
+
   // Handles a key press event and returns whether the event should be swallowed
   // (meaning that no other handler, in particular not the default handler, can
   // process it).

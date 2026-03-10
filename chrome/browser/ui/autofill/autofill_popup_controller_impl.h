@@ -112,6 +112,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
   bool HasFilteredOutSuggestions() const override;
+  bool ShouldShowNoSuggestionsMessage() const override;
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
   void OnPopupPainted() override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;

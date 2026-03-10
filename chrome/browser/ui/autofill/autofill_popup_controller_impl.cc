@@ -486,8 +486,8 @@ AutofillPopupControllerImpl::GetSearchBarConfig(
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
-          // TODO(crbug.com/484900654): Add a localized "no results" label.
-          .no_results_message = u""};
+          .no_results_message = l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_AT_MEMORY_POPUP_NO_RESULTS)};
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
@@ -883,11 +883,11 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
   if (suggestions_filling_product_ == FillingProduct::kAtMemory && filter) {
-    std::vector<Suggestion> suggestions;
     if (ContentAutofillClient* client =
             ContentAutofillClient::FromWebContents(web_contents_.get())) {
       if (accessibility_annotator::AccessibilityQueryService* query_service =
               client->GetAccessibilityQueryService()) {
+        std::vector<Suggestion> suggestions;
         for (const accessibility_annotator::MemorySearchResult& result :
              query_service->Query(**filter)) {
           Suggestion& s = suggestions.emplace_back(
@@ -896,9 +896,9 @@ void AutofillPopupControllerImpl::SetFilter(
           s.payload = Suggestion::AtMemoryPayload(result.value);
           s.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
         }
+        SetSuggestions(std::move(suggestions));
       }
     }
-    SetSuggestions(std::move(suggestions));
   }
 
   filter_ = std::move(filter);
@@ -926,6 +926,35 @@ void AutofillPopupControllerImpl::OnPopupPainted() {
 bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
   return filter_.has_value() &&
          filtered_suggestions_.size() != non_filtered_suggestions_.size();
+}
+
+bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage() const {
+  // The popup is considered effectively empty if it contains no suggestions or
+  // only "static" ones (e.g. footer items like "Manage addresses...") which
+  // are never filtered out.
+  const bool has_no_filterable_suggestions = std::ranges::all_of(
+      GetSuggestions(),
+      [](Suggestion::FiltrationPolicy policy) {
+        return policy == Suggestion::FiltrationPolicy::kStatic;
+      },
+      &Suggestion::filtration_policy);
+
+  // If there is no filter or if there are still some filterable (non-static)
+  // suggestions, then we shouldn't show the "no results" message.
+  if (!filter_.has_value() || !has_no_filterable_suggestions) {
+    return false;
+  }
+
+  // AtMemory always replaces the suggestion list with the search results.
+  // If the list is effectively empty and a filter is set, it means the
+  // search returned no matches.
+  if (suggestions_filling_product_ == FillingProduct::kAtMemory) {
+    return true;
+  }
+
+  // For other products, we check if the current filter actually hid anything
+  // from the initial list.
+  return HasFilteredOutSuggestions();
 }
 
 }  // namespace autofill

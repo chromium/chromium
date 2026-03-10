@@ -34,6 +34,10 @@ class AutofillPopupControllerImplTestApi {
     controller_->disable_threshold_for_testing_ = disable_threshold;
   }
 
+  void SetSuggestions(std::vector<Suggestion> suggestions) {
+    controller_->SetSuggestions(std::move(suggestions));
+  }
+
  private:
   const raw_ref<AutofillPopupControllerImpl> controller_;
 };

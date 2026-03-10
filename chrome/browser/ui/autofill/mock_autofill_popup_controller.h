@@ -121,6 +121,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               (const input::NativeWebKeyboardEvent& event),
               (override));
   MOCK_METHOD(bool, HasFilteredOutSuggestions, (), (const override));
+  MOCK_METHOD(bool, ShouldShowNoSuggestionsMessage, (), (const override));
   MOCK_METHOD(bool,
               IsViewVisibilityAcceptingThresholdEnabled,
               (),

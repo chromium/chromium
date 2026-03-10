@@ -1018,16 +1018,8 @@ void PopupViewViews::CreateSuggestionViews() {
   rows_.reserve(suggestions.size());
   size_t current_line_number = 0u;
 
-  // No suggestions (or only footer ones, which are not filterable) with
-  // a non-empty filter query means that there are no results matching
-  // the query. Show a corresponding message.
-  if ((suggestions.empty() ||
-       std::ranges::all_of(suggestions,
-                           [](const Suggestion& suggestion) {
-                             return suggestion.filtration_policy ==
-                                    Suggestion::FiltrationPolicy::kStatic;
-                           })) &&
-      search_bar_ && controller_->HasFilteredOutSuggestions()) {
+  // Show the "no results" message if the controller identifies this state.
+  if (search_bar_ && controller_->ShouldShowNoSuggestionsMessage()) {
     suggestions_container_->AddChildView(
         std::make_unique<PopupNoSuggestionsView>(
             search_bar_config_->no_results_message));

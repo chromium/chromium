@@ -712,6 +712,36 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_TRUE(controller.HasFilteredOutSuggestions());
 }
 
+TEST_F(AutofillPopupControllerImplTest, AtMemory_NoFilter_NoMessage) {
+  ShowSuggestions(manager(), {SuggestionType::kAtMemorySearchResult},
+                  AutofillSuggestionTriggerSource::kAtMemory);
+  EXPECT_FALSE(client().suggestion_controller(manager())
+                   .ShouldShowNoSuggestionsMessage());
+}
+
+TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
+  ShowSuggestions(manager(),
+                  {Suggestion(u"result", SuggestionType::kAtMemorySearchResult)},
+                  AutofillSuggestionTriggerSource::kAtMemory);
+  client().suggestion_controller(manager()).SetFilter(
+      AutofillPopupController::SuggestionFilter(u"res"));
+  EXPECT_FALSE(client().suggestion_controller(manager())
+                   .ShouldShowNoSuggestionsMessage());
+}
+
+TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithNoResults_ShowMessage) {
+  ShowSuggestions(manager(), std::vector<SuggestionType>{},
+                  AutofillSuggestionTriggerSource::kAtMemory);
+  client().suggestion_controller(manager()).SetFilter(
+      AutofillPopupController::SuggestionFilter(u"abc"));
+  // In the mock/test environment, we ensure GetSuggestions() is empty.
+  test_api(static_cast<AutofillPopupControllerImpl&>(
+               client().suggestion_controller(manager())))
+      .SetSuggestions({});
+  EXPECT_TRUE(client().suggestion_controller(manager())
+                  .ShouldShowNoSuggestionsMessage());
+}
+
 TEST_F(
     AutofillPopupControllerImplTest,
     SuggestionFiltering_PresentOnlyWithoutFilterSuggestionsAlwaysFilteredOut) {
