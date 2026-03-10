@@ -26,6 +26,7 @@ SendTabToSelfClientService::SendTabToSelfClientService(
 SendTabToSelfClientService::~SendTabToSelfClientService() = default;
 
 void SendTabToSelfClientService::Shutdown() {
+  model_observation_.Reset();
   receiving_ui_handler_.reset();
 }
 

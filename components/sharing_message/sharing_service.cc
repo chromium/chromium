@@ -194,6 +194,7 @@ void SharingService::Shutdown() {
   // and objects that maintain `raw_ptr`s to things owned by other services.
   ResetConnectionToSyncService();
   sharing_device_registration_.reset();
+  send_tab_to_self_scoped_observation_.Reset();
 }
 
 void SharingService::OnSyncShutdown(syncer::SyncService* sync) {

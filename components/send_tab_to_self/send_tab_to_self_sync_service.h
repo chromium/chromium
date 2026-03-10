@@ -55,6 +55,9 @@ class SendTabToSelfSyncService : public KeyedService,
 
   ~SendTabToSelfSyncService() override;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // Hooks the cyclic dependency.
   void OnSyncServiceInitialized(syncer::SyncService* sync_service);
 
@@ -76,7 +79,7 @@ class SendTabToSelfSyncService : public KeyedService,
   // SyncServiceObserver implementation.
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
-  std::unique_ptr<SendTabToSelfBridge> const bridge_;
+  std::unique_ptr<SendTabToSelfBridge> bridge_;
   raw_ptr<PrefService> const pref_service_;
 
   // Cyclic dependency, initialized in OnSyncServiceInitialized(), reset in

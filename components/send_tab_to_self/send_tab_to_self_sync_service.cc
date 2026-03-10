@@ -42,6 +42,10 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
 
 SendTabToSelfSyncService::~SendTabToSelfSyncService() = default;
 
+void SendTabToSelfSyncService::Shutdown() {
+  bridge_.reset();
+}
+
 void SendTabToSelfSyncService::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
   sync_service_ = sync_service;
