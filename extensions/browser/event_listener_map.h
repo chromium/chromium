@@ -260,7 +260,9 @@ class EventListenerMap {
       base::RepeatingCallback<bool(const ExtensionId&, EventListener*)>
           removal_predicate);
 
-  void CleanupListener(EventListener* listener);
+  void CleanupListener(
+      EventListener* listener,
+      std::vector<EventFilter::MatcherID>& matcher_ids_to_remove);
   bool IsFilteredEvent(const Event& event) const;
   std::unique_ptr<EventMatcher> ParseEventMatcher(
       const base::DictValue& filter_dict);

@@ -76,7 +76,7 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
     was_last_of_kind = true;
   }
 
-  event_filter_.RemoveEventMatcher(filter_id);
+  event_filter_.RemoveEventMatcher(filter_id, nullptr);
   return std::make_pair(
       was_last_of_kind,
       std::make_unique<base::DictValue>(std::move(filter_copy).TakeDict()));

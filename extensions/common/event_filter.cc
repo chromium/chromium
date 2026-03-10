@@ -122,18 +122,56 @@ bool EventFilter::AddDictionaryAsConditionSet(
   return true;
 }
 
-std::string EventFilter::RemoveEventMatcher(MatcherID id) {
+std::string EventFilter::RemoveEventMatcher(
+    MatcherID id,
+    std::vector<base::MatcherStringPattern::ID>*
+        condition_sets_for_bulk_removal) {
   auto it = id_to_event_name_.find(id);
   if (it == id_to_event_name_.end()) {
     return "";
   }
 
   std::string event_name = it->second;
+  EventMatcherMap& matcher_map = event_matchers_[event_name];
+  auto matcher_it = matcher_map.find(id);
+  if (matcher_it == matcher_map.end()) {
+    return "";
+  }
+
+  const std::vector<base::MatcherStringPattern::ID>& condition_set_ids =
+      matcher_it->second->condition_set_ids();
+  for (base::MatcherStringPattern::ID condition_set_id : condition_set_ids) {
+    condition_set_id_to_event_matcher_id_.erase(condition_set_id);
+  }
+
   // EventMatcherEntry's destructor causes the condition set ids to be removed
-  // from url_matcher_.
-  event_matchers_[event_name].erase(id);
+  // from `url_matcher_`. This triggers
+  // `URLMatcher::UpdateInternalDatastructures();` which causes performance
+  // problems if `RemoveEventMatcher` is called for many `MatcherID`s in a row.
+  // If `condition_sets_for_bulk_removal` is provided, these removals can be
+  // executed in batch with a single call to
+  // `URLMatcher::UpdateInternalDatastructures();` instead of N calls.
+  if (condition_sets_for_bulk_removal) {
+    condition_sets_for_bulk_removal->append_range(condition_set_ids);
+    matcher_it->second->DontRemoveConditionSetsInDestructor();
+  }
+  matcher_map.erase(matcher_it);
+  if (matcher_map.empty()) {
+    event_matchers_.erase(event_name);
+  }
+
   id_to_event_name_.erase(it);
   return event_name;
+}
+
+void EventFilter::RemoveEventMatchers(const std::vector<MatcherID>& ids) {
+  std::vector<base::MatcherStringPattern::ID> condition_sets_for_bulk_removal;
+  for (MatcherID id : ids) {
+    RemoveEventMatcher(id, &condition_sets_for_bulk_removal);
+  }
+  if (!condition_sets_for_bulk_removal.empty()) {
+    url_matcher_.RemoveConditionSets(condition_sets_for_bulk_removal);
+  }
 }
 
 std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
