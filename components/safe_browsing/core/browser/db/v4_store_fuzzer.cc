@@ -9,12 +9,14 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace safe_browsing {
 
@@ -115,7 +117,7 @@ class V4StoreFuzzer {
   }
 
   static bool GetDatum(base::span<const uint8_t>* data, uint8_t* datum) {
-    if (data->size() == 0) {
+    if (data->empty()) {
       return false;
     }
     *datum = (*data)[0];
@@ -136,8 +138,6 @@ class V4StoreFuzzer {
 
 }  // namespace safe_browsing
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // SAFETY: libfuzzer guarantees a valid pointer and size pair.
-  return safe_browsing::V4StoreFuzzer::FuzzMergeUpdate(
-      UNSAFE_BUFFERS(base::span(data, size)));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  return safe_browsing::V4StoreFuzzer::FuzzMergeUpdate(data);
 }

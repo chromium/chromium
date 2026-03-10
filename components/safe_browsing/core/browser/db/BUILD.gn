@@ -403,5 +403,6 @@ fuzzer_test("v4_store_fuzzer") {
     ":v4_store",
     ":v4_test_util",
     "//base/test:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
