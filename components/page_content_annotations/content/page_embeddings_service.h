@@ -185,7 +185,7 @@ class PageEmbeddingsService : public KeyedService,
 
   UsageMode current_usage_mode_ = kOnDemand;
 
-  std::map<content::WebContents*, WebContentsState> web_contents_state_;
+  std::map<content::WebContents*, WebContentsState> web_contents_states_;
 
   base::WeakPtrFactory<PageEmbeddingsService> weak_ptr_factory_{this};
 };
