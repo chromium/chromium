@@ -463,6 +463,7 @@ void HistoryEmbeddingsService::SendQualityLog(
 void HistoryEmbeddingsService::Shutdown() {
   query_id_weak_ptr_factory_.InvalidateWeakPtrs();
   weak_ptr_factory_.InvalidateWeakPtrs();
+  history_service_observation_.Reset();
   storage_.Reset();
 }
 
