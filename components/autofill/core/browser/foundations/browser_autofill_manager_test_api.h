@@ -62,6 +62,19 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->OnFormProcessed(form, form_structure);
   }
 
+  void OnIndividualSuggestionsGenerated(
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext context,
+      base::TimeTicks suggestion_generation_start_time,
+      std::vector<SuggestionGenerator::ReturnedSuggestions>
+          returned_suggestions) {
+    manager_->OnIndividualSuggestionsGenerated(
+        form_id, field_id, trigger_source, std::move(context),
+        suggestion_generation_start_time, std::move(returned_suggestions));
+  }
+
   void SetFourDigitCombinationsInDOM(
       const std::vector<std::string>& combinations) {
     manager_->four_digit_combinations_in_dom_ = combinations;

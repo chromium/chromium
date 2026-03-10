@@ -9795,5 +9795,108 @@ TEST_F(BrowserAutofillManagerTest,
       &card, AutofillTriggerSource::kPopup, blocked_fields);
 }
 
+struct SuggestionMergingTestParams {
+  std::string test_name;
+  std::vector<std::pair<FillingProduct, std::vector<SuggestionType>>> input;
+  std::vector<SuggestionType> expected_output;
+};
+
+class BrowserAutofillManagerSuggestionMergingTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<SuggestionMergingTestParams> {
+ public:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    autofill_client().set_plus_address_delegate(
+        std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
+    ON_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion)
+        .WillByDefault(Return(Suggestion(SuggestionType::kManagePlusAddress)));
+  }
+
+  MockAutofillPlusAddressDelegate& plus_address_delegate() {
+    return static_cast<MockAutofillPlusAddressDelegate&>(
+        *autofill_client().GetPlusAddressDelegate());
+  }
+};
+
+TEST_P(BrowserAutofillManagerSuggestionMergingTest, MergingLogic) {
+  const SuggestionMergingTestParams& params = GetParam();
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"Field",
+                   .form_control_type = FormControlType::kInputText}}});
+  const FormGlobalId form_id = form.global_id();
+  const FieldGlobalId field_id = form.fields()[0].global_id();
+
+  std::vector<SuggestionGenerator::ReturnedSuggestions> returned_suggestions =
+      base::ToVector(params.input, [&](const auto& pair) {
+        const auto& [product, types] = pair;
+        std::vector<Suggestion> suggestions = base::ToVector(
+            types, [](SuggestionType type) { return Suggestion(type); });
+        return SuggestionGenerator::ReturnedSuggestions({product, suggestions});
+      });
+
+  test_api(autofill_manager())
+      .OnIndividualSuggestionsGenerated(
+          form_id, field_id,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
+          base::TimeTicks::Now(), std::move(returned_suggestions));
+
+  std::vector<SuggestionType> actual_types =
+      base::ToVector(external_delegate()->suggestions(), &Suggestion::type);
+  EXPECT_EQ(actual_types, params.expected_output)
+      << "Failed for case: " << params.test_name;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    BrowserAutofillManagerSuggestionMergingTest,
+    BrowserAutofillManagerSuggestionMergingTest,
+    testing::ValuesIn(std::vector<SuggestionMergingTestParams>{
+        {.test_name = "AddressOnly",
+         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}}},
+         .expected_output = {SuggestionType::kAddressEntry}},
+        {.test_name = "AddressAndPlusAddress",
+         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}},
+                   {FillingProduct::kPlusAddresses,
+                    {SuggestionType::kFillExistingPlusAddress}}},
+         .expected_output = {SuggestionType::kAddressEntry}},
+        {.test_name = "AddressAndIdentity",
+         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}},
+                   {FillingProduct::kIdentityCredential,
+                    {SuggestionType::kWebauthnCredential}}},
+         .expected_output = {SuggestionType::kWebauthnCredential,
+                             SuggestionType::kAddressEntry}},
+        {.test_name = "PlusAddressAndAutocomplete",
+         .input = {{FillingProduct::kPlusAddresses,
+                    {SuggestionType::kFillExistingPlusAddress}},
+                   {FillingProduct::kAutocomplete,
+                    {SuggestionType::kAutocompleteEntry}}},
+         .expected_output = {SuggestionType::kFillExistingPlusAddress,
+                             SuggestionType::kAutocompleteEntry,
+                             SuggestionType::kSeparator,
+                             SuggestionType::kManagePlusAddress}},
+        {.test_name = "AddressAndPasskey",
+         .input = {{FillingProduct::kAddress, {SuggestionType::kAddressEntry}},
+                   {FillingProduct::kPasskey,
+                    {SuggestionType::kWebauthnCredential}}},
+         .expected_output = {SuggestionType::kAddressEntry,
+                             SuggestionType::kWebauthnCredential}},
+        {.test_name = "PlusAddressAndIdentity",
+         .input = {{FillingProduct::kPlusAddresses,
+                    {SuggestionType::kFillExistingPlusAddress}},
+                   {FillingProduct::kIdentityCredential,
+                    {SuggestionType::kWebauthnCredential}}},
+         .expected_output = {SuggestionType::kWebauthnCredential,
+                             SuggestionType::kFillExistingPlusAddress}},
+        {.test_name = "PlusAddressIdentityAndAutocomplete",
+         .input = {{FillingProduct::kPlusAddresses,
+                    {SuggestionType::kFillExistingPlusAddress}},
+                   {FillingProduct::kIdentityCredential,
+                    {SuggestionType::kWebauthnCredential}},
+                   {FillingProduct::kAutocomplete,
+                    {SuggestionType::kAutocompleteEntry}}},
+         .expected_output = {SuggestionType::kWebauthnCredential,
+                             SuggestionType::kFillExistingPlusAddress}},
+    }));
+
 }  // namespace
 }  // namespace autofill

@@ -31,7 +31,6 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/extend.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -1388,19 +1387,139 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     base::TimeTicks suggestion_generation_start_time,
     std::vector<SuggestionGenerator::ReturnedSuggestions>
         returned_suggestions) {
-  // TODO(crbug.com/409962888): Add logic to discard/merge
-  // `returned_suggestions` into a single list.
-  std::vector<Suggestion> suggestions;
-  for (auto& [filling_product, filling_suggestions] : returned_suggestions) {
-    base::Extend(suggestions, std::move(filling_suggestions));
-  }
-
-  OnGenerateSuggestionsComplete(form_id, field_id, trigger_source, context,
-                                suggestion_generation_start_time,
-                                /*show_suggestions=*/true, suggestions);
   // Suggestion generators lifespan should be limited to only when they are
   // needed.
   suggestion_generators_.clear();
+
+  std::map<FillingProduct, std::vector<Suggestion>> suggestions_map;
+  for (auto& [filling_product, suggestions] : returned_suggestions) {
+    if (suggestions.empty()) {
+      continue;
+    }
+    suggestions_map[filling_product] = std::move(suggestions);
+  }
+
+  auto passkey_suggestions = suggestions_map.extract(FillingProduct::kPasskey);
+
+  auto on_generate_suggestions_complete =
+      [&](std::vector<Suggestion> suggestions) {
+        // Handle passkeys separately, since they can merge with every
+        // suggestion.
+        if (!passkey_suggestions.empty()) {
+          CHECK(passkey_suggestions.mapped().size() == 1);
+          MergePasskeysAndExistingSuggestions(
+              suggestions, std::move(passkey_suggestions.mapped()[0]));
+        }
+        OnGenerateSuggestionsComplete(form_id, field_id, trigger_source,
+                                      context, suggestion_generation_start_time,
+                                      /*show_suggestions=*/true, suggestions);
+      };
+
+  if (suggestions_map.empty()) {
+    on_generate_suggestions_complete({});
+    return;
+  }
+
+  if (suggestions_map.contains(FillingProduct::kAddress)) {
+    on_generate_suggestions_complete(MergeWithAddressSuggestions(
+        suggestions_map, form_id, field_id, trigger_source));
+    return;
+  }
+
+  if (suggestions_map.contains(FillingProduct::kPlusAddresses)) {
+    on_generate_suggestions_complete(
+        MergeWithPlusAddressSuggestions(suggestions_map));
+    return;
+  }
+
+  // This ensures we cover all merge cases above, and avoid any other wrong
+  // combination during prioritization.
+  CHECK_EQ(suggestions_map.size(), 1u);
+  on_generate_suggestions_complete(suggestions_map.begin()->second);
+}
+
+std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
+    std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map,
+    const FormGlobalId& form_id,
+    const FieldGlobalId& field_id,
+    AutofillSuggestionTriggerSource trigger_source) {
+  auto extract_vector = [&suggestions_map](FillingProduct product) {
+    auto node = suggestions_map.extract(product);
+    return node.empty() ? std::vector<Suggestion>() : std::move(node.mapped());
+  };
+
+  std::vector<Suggestion> address_suggestions =
+      extract_vector(FillingProduct::kAddress);
+  std::vector<Suggestion> plus_address_suggestions =
+      extract_vector(FillingProduct::kPlusAddresses);
+  std::vector<Suggestion> identity_credentials_suggestions =
+      extract_vector(FillingProduct::kIdentityCredential);
+  std::vector<Suggestion> loyalty_card_suggestions =
+      extract_vector(FillingProduct::kLoyaltyCard);
+
+  CHECK(suggestions_map.empty())
+      << "Some suggestions not currently supported with addresses were "
+         "generated. "
+      << FillingProductToString(suggestions_map.begin()->first);
+
+  if (!loyalty_card_suggestions.empty()) {
+    MergeLoyaltyCardsAndAddressSuggestions(address_suggestions,
+                                           std::move(loyalty_card_suggestions));
+  }
+
+  if (!identity_credentials_suggestions.empty()) {
+    MergeIdentityCredentialsAndAddressSuggestions(
+        address_suggestions, std::move(identity_credentials_suggestions));
+  }
+
+  // TODO(crbug.com/409962888): Move the call to
+  // WasEmailOverrideAppliedOnSuggestions into
+  // MergeAddressAndPlusAddressSuggestions after the old suggestion generation
+  // flow is removed.
+  // TODO(crbug.com/409962888): Make MergeAddressAndPlusAddressSuggestions merge
+  // into address suggestions, not plus address suggestions, after the old flow
+  // is removed.
+  if (plus_address_suggestions.empty() &&
+      !WasEmailOverrideAppliedOnSuggestions(address_suggestions)) {
+    MergeAddressAndPlusAddressSuggestions(plus_address_suggestions,
+                                          std::move(address_suggestions),
+                                          trigger_source, form_id, field_id);
+    return plus_address_suggestions;
+  }
+  return address_suggestions;
+}
+
+std::vector<Suggestion> BrowserAutofillManager::MergeWithPlusAddressSuggestions(
+    std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map) {
+  auto extract_vector = [&suggestions_map](FillingProduct product) {
+    auto node = suggestions_map.extract(product);
+    return node.empty() ? std::vector<Suggestion>() : std::move(node.mapped());
+  };
+
+  std::vector<Suggestion> plus_address_suggestions =
+      extract_vector(FillingProduct::kPlusAddresses);
+  std::vector<Suggestion> identity_credential_suggestions =
+      extract_vector(FillingProduct::kIdentityCredential);
+  std::vector<Suggestion> autocomplete_suggestions =
+      extract_vector(FillingProduct::kAutocomplete);
+
+  CHECK(suggestions_map.empty())
+      << "Some suggestions not currently supported with plus addresses were "
+         "generated. "
+      << FillingProductToString(suggestions_map.begin()->first);
+
+  // 'else' is intentional: autocomplete doesn't merge with identity
+  // credentials.
+  if (!identity_credential_suggestions.empty()) {
+    MergeIdentityCredentialsAndAddressSuggestions(
+        plus_address_suggestions, identity_credential_suggestions);
+  } else if (!autocomplete_suggestions.empty()) {
+    MergeAutocompleteAndPlusAddressSuggestions(
+        plus_address_suggestions, std::move(autocomplete_suggestions),
+        AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete);
+  }
+
+  return plus_address_suggestions;
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(

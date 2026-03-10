@@ -513,6 +513,21 @@ class BrowserAutofillManager : public AutofillManager {
       std::vector<SuggestionGenerator::ReturnedSuggestions>
           returned_suggestions);
 
+  // Merges suggestions with `FillingProduct::kAddress` with the other
+  // suggestions whose products supports merging with address suggestions (see
+  // `kSupportedMerges` in `suggestion_generator.h` for more details).
+  std::vector<Suggestion> MergeWithAddressSuggestions(
+      std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map,
+      const FormGlobalId& form_id,
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source);
+
+  // Merges suggestions with `FillingProduct::kPlusAddress` with the other
+  // suggestions whose products supports merging with plus address suggestions
+  // (see `kSupportedMerges` in `suggestion_generator.h` for more details).
+  std::vector<Suggestion> MergeWithPlusAddressSuggestions(
+      std::map<FillingProduct, std::vector<Suggestion>>& suggestions_map);
+
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (Autofill AI, SingleFieldFiller(s), address
   // and credit card popups, OTP suggestions).
