@@ -1527,7 +1527,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.HardwareLatency.{Direction}.{Component}"
-    units="misses" expires_after="2026-03-22">
+    units="misses" expires_after="2027-03-22">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
