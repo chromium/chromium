@@ -4577,9 +4577,6 @@ bool WebContentsImpl::PreHandleGestureEvent(
     }
   }
 
-  // TODO(crbug.com/475836809)
-  // Remove this delegate method. It exposes Blink types to the embedder. Since
-  // zoom blocking is now handled natively, we should audit remaining consumers.
   return delegate_ && delegate_->PreHandleGestureEvent(this, event);
 }
 
