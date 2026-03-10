@@ -4936,8 +4936,9 @@
       // The selectedcontentelement attribute is for connecting select elements
       // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063
+      // https://github.com/whatwg/html/issues/12227
       name: "SelectedcontentelementAttribute",
-      status: "test",
+      status: "experimental",
       depends_on: ["SelectedcontentSpec"],
     },
     {
