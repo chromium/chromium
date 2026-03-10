@@ -357,18 +357,18 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
   const SafetyListManager& safety_list_manager =
       *SafetyListManager::GetInstance();
 
+  auto manager_decision = safety_list_manager.Find(source_url, destination_url);
   if (url::IsSameOriginWith(source_url, destination_url)) {
-    // The static blocklist should never need to block same-origin navigations.
-    // This is because SafetyChecksForNextAction prevents action on an origin if
-    // it is already on the blocklist, and navigation gating prevents the actor
-    // from navigating to a blocked origin after. We apply a CHECK to enforce
-    // this invariant.
-    CHECK(safety_list_manager.Find(source_url, destination_url) !=
-          SafetyListManager::Decision::kBlock);
-    return GatingDecision::kAllowSameOrigin;
+    // Same-origin navigations are generally allowed unless the origin is on the
+    // static blocklist. Normally, the actor cannot interact with pages on this
+    // list, but we need to account for page-initiated navigations on blocked
+    // pages while the actor is deliberating the task.
+    return manager_decision == SafetyListManager::Decision::kBlock
+               ? GatingDecision::kBlockByStaticList
+               : GatingDecision::kAllowSameOrigin;
   }
 
-  switch (safety_list_manager.Find(source_url, destination_url)) {
+  switch (manager_decision) {
     case SafetyListManager::Decision::kNone:
       return GatingDecision::kNeedsAsyncCheck;
     case SafetyListManager::Decision::kAllow:
