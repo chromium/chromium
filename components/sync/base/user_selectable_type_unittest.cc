@@ -54,18 +54,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     data_types.Put(SHARED_TAB_GROUP_ACCOUNT_DATA);
     data_types.Put(SHARED_COMMENT);
 
-    // TODO(crbug.com/445841720): In CL #3, map AI_THREAD to an existing
-    // selectable type or to a new one and remove it from here (unless it's
-    // ambiguous).
-    data_types.Put(AI_THREAD);
     // TODO(crbug.com/445840788): In CL #3, map CONTEXTUAL_TASK to an existing
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(CONTEXTUAL_TASK);
-    // TODO(crbug.com/476335087): In CL #3, map GEMINI_THREAD to an existing
-    // selectable type or to a new one and remove it from here (unless it's
-    // ambiguous).
-    data_types.Put(GEMINI_THREAD);
     // TODO(crbug.com/486879778): In CL #3, map ACCESSIBILITY_ANNOTATION to an
     // existing selectable type or to a new one and remove it from here (unless
     // it's ambiguous).

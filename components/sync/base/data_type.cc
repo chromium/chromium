@@ -503,7 +503,9 @@ DataTypeSet AlwaysPreferredUserTypes() {
                        SEND_TAB_TO_SELF,
                        SUPERVISED_USER_SETTINGS,
                        SHARING_MESSAGE,
-                       SKILL};
+                       SKILL,
+                       AI_THREAD,
+                       GEMINI_THREAD};
   // TODO(crbug.com/412602018): Mark AlwaysPreferredUserTypes() method as
   // constexpr when removing the feature flag.
   if (!base::FeatureList::IsEnabled(
@@ -514,12 +516,6 @@ DataTypeSet AlwaysPreferredUserTypes() {
   // UserSelectableType or another toggle once feature is finalized.
   if (base::FeatureList::IsEnabled(kSyncAccessibilityAnnotation)) {
     types.Put(ACCESSIBILITY_ANNOTATION);
-  }
-  if (base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
-    types.Put(AI_THREAD);
-  }
-  if (base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
-    types.Put(GEMINI_THREAD);
   }
   return types;
 }
