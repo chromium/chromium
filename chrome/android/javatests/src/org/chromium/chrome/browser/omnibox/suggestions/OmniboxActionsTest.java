@@ -51,21 +51,20 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class OmniboxActionsTest {
-    @Rule
-    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+    public @Rule ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private @Mock AutocompleteController mAutocompleteController;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
 
     @Before
     public void setUp() throws InterruptedException {
+        AutocompleteController.setInstanceForTesting(mAutocompleteController);
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
-        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
     }
 
     @After
@@ -77,7 +76,6 @@ public class OmniboxActionsTest {
                 () -> {
                     IncognitoTabHostUtils.closeAllIncognitoTabs();
                 });
-        AutocompleteControllerJni.setInstanceForTesting(null);
     }
 
     /**

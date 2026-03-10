@@ -447,7 +447,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
      *     built with the user's default search engine, or a NAVIGATION match.
      */
     public static @Nullable AutocompleteMatch classify(Profile profile, String query) {
-        return AutocompleteController.getForProfile(profile).classify(query);
+        var controller = AutocompleteController.getForProfile(profile);
+        return (controller != null) ? controller.classify(query) : null;
     }
 
     /**

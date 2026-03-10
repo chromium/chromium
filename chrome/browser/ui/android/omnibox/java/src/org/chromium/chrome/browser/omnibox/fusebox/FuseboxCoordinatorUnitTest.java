@@ -149,7 +149,11 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     private FuseboxSessionState createSession() {
-        return new FuseboxSessionState(mAutocompleteInput, mComposebox, null);
+        var session = mock(FuseboxSessionState.class);
+        lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
+        lenient().doReturn(mAutocompleteInput).when(session).getAutocompleteInput();
+        lenient().doReturn(mComposebox).when(session).getComposeboxQueryControllerBridge();
+        return session;
     }
 
     @After

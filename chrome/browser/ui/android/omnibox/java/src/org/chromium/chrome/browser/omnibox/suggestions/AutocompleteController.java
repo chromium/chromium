@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -30,6 +31,7 @@ import org.chromium.url.GURL;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -49,6 +51,10 @@ import java.util.Set;
  */
 @NullMarked
 public class AutocompleteController {
+    /** Instance to be used for testing - null value permitted to signify no controller. */
+    @SuppressWarnings("NullableOptional")
+    private static @Nullable Optional<AutocompleteController> sInstanceForTesting;
+
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
@@ -415,8 +421,18 @@ public class AutocompleteController {
      * @return An existing (if one is available) or new (otherwise) instance of the
      *     AutocompleteController associated with the supplied profile.
      */
-    public static AutocompleteController getForProfile(Profile profile) {
+    public static @Nullable AutocompleteController getForProfile(Profile profile) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.orElse(null);
         return AutocompleteControllerJni.get().getForProfile(profile);
+    }
+
+    public static void setInstanceForTesting(@Nullable AutocompleteController instance) {
+        sInstanceForTesting = Optional.ofNullable(instance);
+        ResettersForTesting.register(AutocompleteController::resetInstanceForTesting);
+    }
+
+    public static void resetInstanceForTesting() {
+        sInstanceForTesting = null;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
