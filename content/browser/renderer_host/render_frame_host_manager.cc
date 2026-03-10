@@ -3554,7 +3554,9 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
         UrlInfoInit(GURL(kUnreachableWebDataURL))
             .WithWebExposedIsolationInfo(
                 dest_url_info.web_exposed_isolation_info));
-    if (!browsing_context_group_swap.ShouldSwap()) {
+    if (!browsing_context_group_swap.ShouldSwap() &&
+        IsSiteInstanceCompatibleWithWebExposedIsolation(
+            current_instance, dest_url_info.web_exposed_isolation_info)) {
       return SiteInstanceDescriptor(computed_url_info,
                                     SiteInstanceRelation::RELATED);
     }
