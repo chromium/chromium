@@ -21,24 +21,23 @@ export function getHtml(this: ActionChipsElement) {
               (chip: ActionChip, index: number) => html`
         <div class="chip-button-wrapper">
           <button
-            class="action-chip ${
-                    this.isDeepDiveChip_(chip) ? 'deep-dive-chip' : ''}"
+            class="action-chip"
             data-index="${index}"
             title="${this.getChipTitle_(chip)}"
             @click="${this.onClick_}">
             <div class="action-chip-icon-container ${
                     this.getAdditionalIconClasses_(chip)}">
               ${
-                    chip.suggestTemplateInfo?.typeIcon === IconType.kFavicon ?
+                    chip.suggestTemplateInfo.typeIcon === IconType.kFavicon ?
                         html`<img class='action-chip-recent-tab-favicon'
                     src="${this.getMostRecentTabFaviconUrl_(chip)}">` :
                         ''}
             </div>
             <div class="action-chip-text-container">
-              ${!this.isDeepDiveChip_(chip) ?
+              ${chip.suggestTemplateInfo.primaryText ?
                   html`
                   <span class="chip-title">
-                    ${chip.suggestTemplateInfo?.primaryText?.text ?? ''}
+                    ${chip.suggestTemplateInfo.primaryText.text}
                   </span>` :
                   ''}
               <span

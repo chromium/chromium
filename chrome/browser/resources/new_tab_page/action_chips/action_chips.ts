@@ -231,13 +231,6 @@ export class ActionChipsElement extends CrLitElement {
     return `${chip.suggestTemplateInfo.secondaryText?.text ?? ''} - ${domain}`;
   }
 
-  protected isDeepDiveChip_(chip: ActionChip) {
-    return chip.suggestTemplateInfo.typeIcon === IconType.kSubArrowRight;
-  }
-
-  protected isRecentTabChip_(chip: ActionChip) {
-    return chip.suggestTemplateInfo.typeIcon === IconType.kFavicon;
-  }
 
   protected showDashSimplifiedUI_(chip: ActionChip) {
     return chip.suggestTemplateInfo.typeIcon !== IconType.kSubArrowRight &&
@@ -263,11 +256,11 @@ export class ActionChipsElement extends CrLitElement {
     const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
 
-    if (this.isRecentTabChip_(chip)) {
+    if (chip.suggestTemplateInfo.typeIcon === IconType.kFavicon) {
       return `${tabTitle}\n${domain}`;
     }
 
-    if (this.isDeepDiveChip_(chip)) {
+    if (chip.suggestTemplateInfo.typeIcon === IconType.kSubArrowRight) {
       return `${suggestion}\n${domain}`;
     }
 
