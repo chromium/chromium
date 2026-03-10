@@ -6,6 +6,7 @@
 #define COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_METRICS_H_
 
 #include "base/time/time.h"
+#include "components/bookmarks/common/storage_file_encryption_type.h"
 
 namespace bookmarks {
 
@@ -74,17 +75,6 @@ enum class StorageFileForUma {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:StorageFileForUma)
 
-// LINT.IfChange(EncryptionType)
-
-// An enum class representing the encryption type of the bookmarks file.
-enum class EncryptionTypeForUma {
-  // Clear text, no encryption.
-  kClearText,
-  // Encryption is used.
-  kEncrypted,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:EncryptionType)
-
 // Records when a bookmark is added by the user.
 // `ancestor_user_folder_depth` is the count of user-generated folders which
 // are ancestors of this bookmark.
@@ -122,7 +112,7 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta);
 void RecordTimeToLoadAtStartup(base::TimeDelta delta);
 
 // Records size of the bookmark file at startup.
-void RecordFileSizeAtStartup(EncryptionTypeForUma encryption_type,
+void RecordFileSizeAtStartup(StorageFileEncryptionType encryption_type,
                              int64_t total_bytes);
 
 // Records a bookmark URL edit.
@@ -174,14 +164,14 @@ enum class BookmarksFileLoadResult {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarksFileLoadResult)
 
 void RecordBookmarksFileLoadResult(StorageFileForUma storage_file,
-                                   EncryptionTypeForUma encryption_type,
+                                   StorageFileEncryptionType encryption_type,
                                    BookmarksFileLoadResult result);
 
 void RecordEncryptedBookmarksFileMatchesResult(StorageFileForUma storage_file,
                                                bool file_matches);
 
 void RecordTimeToReadFile(StorageFileForUma storage_file,
-                          EncryptionTypeForUma encryption_type,
+                          StorageFileEncryptionType encryption_type,
                           base::TimeDelta delta);
 
 }  // namespace metrics

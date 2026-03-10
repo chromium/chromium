@@ -26,6 +26,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/bookmarks/common/storage_file_encryption_type.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace bookmarks {
@@ -37,6 +38,12 @@ const base::FilePath::CharType kBackupExtension[] = FILE_PATH_LITERAL("bak");
 constexpr char kBookmarkStorageHistogramSuffix[] = "BookmarkStorage";
 constexpr char kBookmarkStorageEncryptedHistogramSuffix[] =
     "BookmarkStorageEncrypted";
+
+std::string GetHistogramSuffix(StorageFileEncryptionType encryption_type) {
+  return encryption_type == StorageFileEncryptionType::kEncrypted
+             ? kBookmarkStorageEncryptedHistogramSuffix
+             : kBookmarkStorageHistogramSuffix;
+}
 
 void BackupCallback(const base::FilePath& path,
                     const base::FilePath& encrypted_file_path) {
@@ -91,10 +98,11 @@ bool ShouldSaveBackupFile(
   NOTREACHED();
 }
 
-void SaveDictionaryToSecondaryFile(
+void SaveDictionaryToFile(
     base::DictValue value,
     scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
+    StorageFileEncryptionType encryption_type,
     const base::FilePath file_path) {
   // TODO(crbug.com/435317726): Add metrics to measure the success/failure and
   // impact on write duration of encrypting the bookmarks file.
@@ -104,14 +112,17 @@ void SaveDictionaryToSecondaryFile(
           value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content)) {
     return;
   }
-  std::string encrypted_json_content;
-  if (!encryptor->data.EncryptString(json_content, &encrypted_json_content)) {
-    return;
+  if (encryption_type == StorageFileEncryptionType::kEncrypted) {
+    std::string encrypted_json_content;
+    if (!encryptor->data.EncryptString(json_content, &encrypted_json_content)) {
+      return;
+    }
+    json_content = std::move(encrypted_json_content);
   }
 
   if (!base::ImportantFileWriter::WriteFileAtomically(
-          file_path, std::move(encrypted_json_content),
-          kBookmarkStorageEncryptedHistogramSuffix)) {
+          file_path, std::move(json_content),
+          GetHistogramSuffix(encryption_type))) {
     return;
   }
 }
@@ -218,14 +229,23 @@ void BookmarkStorage::SaveNowIfScheduled() {
   }
 }
 
-void BookmarkStorage::SaveBookmarksToSecondaryFile() {
+void BookmarkStorage::SaveToSingleFileNow(
+    StorageFileEncryptionType encryption_type) {
   CHECK(ShouldWriteEncryptedBookmarksToDisk());
   CHECK(encryptor_);
+  if (writer_.HasPendingWrite()) {
+    // There is a pending write, just wait for it to complete.
+    return;
+  }
+
   base::DictValue value = EncodeModelToDict(model_, permanent_node_selection_);
   backend_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SaveDictionaryToSecondaryFile, std::move(value),
-                     encryptor_, encrypted_file_path_));
+      base::BindOnce(&SaveDictionaryToFile, std::move(value), encryptor_,
+                     encryption_type,
+                     encryption_type == StorageFileEncryptionType::kEncrypted
+                         ? encrypted_file_path_
+                         : writer_.path()));
 }
 
 }  // namespace bookmarks

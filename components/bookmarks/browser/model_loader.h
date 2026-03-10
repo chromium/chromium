@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+#include "components/bookmarks/common/storage_file_encryption_type.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace base {
@@ -32,6 +33,12 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // Invoked when ModelLoader completes loading.
   using LoadCallback =
       base::OnceCallback<void(std::unique_ptr<BookmarkLoadDetails>)>;
+
+  // Invoked when bookmarks needs to be saved to disk. Only save the bookmarks
+  // to the file with the given encryption type. The other file will not be
+  // touched.
+  using SaveSingleFileCallback =
+      base::OnceCallback<void(StorageFileEncryptionType encryption_type)>;
 
   // Creates the ModelLoader, and schedules loading on a backend task runner.
   // `callback` is run once loading completes (on the main thread).
@@ -60,8 +67,8 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       const base::FilePath& account_file_path,
       const base::FilePath& encrypted_account_file_path,
       LoadManagedNodeCallback load_managed_node_callback,
-      base::OnceClosure save_local_or_syncable_secondary_file_callback,
-      base::OnceClosure save_account_secondary_file_callback,
+      SaveSingleFileCallback save_local_or_syncable_single_file_callback,
+      SaveSingleFileCallback save_account_single_file_callback,
       LoadCallback callback);
 
   ModelLoader(const ModelLoader&) = delete;
@@ -96,8 +103,8 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,
       const base::FilePath& encrypted_account_file_path,
-      base::OnceClosure save_local_or_syncable_secondary_file_callback,
-      base::OnceClosure save_account_secondary_file_callback,
+      SaveSingleFileCallback save_local_or_syncable_single_file_callback,
+      SaveSingleFileCallback save_account_single_file_callback,
       LoadManagedNodeCallback load_managed_node_callback);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

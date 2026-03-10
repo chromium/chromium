@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
       summary="JSON file containing local-or-syncable bookmarks."/>
 </variants>
 
-<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksFileType) -->
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:BookmarksFileType) -->
 
 <!-- LINT.IfChange(EncryptionType) -->
 
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Encrypted" summary="Encryption is used."/>
 </variants>
 
-<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:EncryptionType) -->
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.cc:EncryptionType) -->
 
 <histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
     expires_after="never">
