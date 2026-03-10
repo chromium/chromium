@@ -1481,8 +1481,7 @@ export class Runner implements ImageSpriteProvider, GameStateProvider,
   private isArcadeMode(): boolean {
     // In RTL languages the title is wrapped with the left to right mark
     // control characters &#x202A; and &#x202C but are invisible.
-    return IS_RTL ? document.title.indexOf(ARCADE_MODE_URL) === 1 :
-                    document.title === ARCADE_MODE_URL;
+    return document.title.startsWith(ARCADE_MODE_URL, IS_RTL ? 1 : 0);
   }
 
   /**
