@@ -783,12 +783,11 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 // Checks whether it's possible to do a copy of a SharedImage to a GL texture
 // via CopyTexture().
 bool CanCopySharedImageToGLTextureViaTextureCopy(
-    scoped_refptr<gpu::ClientSharedImage> shared_image) {
-  const auto si_format = shared_image->format();
+    const viz::SharedImageFormat& si_format,
+    uint32_t texture_target) {
   const bool si_format_has_single_texture =
       si_format.is_single_plane() || si_format.PrefersExternalSampler();
-  const bool si_usable_by_gles2_interface =
-      shared_image->GetTextureTarget() != 0;
+  const bool si_usable_by_gles2_interface = texture_target != 0;
 
   // Copying the shared image to the destination texture via a direct
   // texture-to-texture copy requires being able to obtain a client-side GL
@@ -842,7 +841,8 @@ bool CanCopyVideoFrameDirectlyToGLTexture(scoped_refptr<VideoFrame> video_frame,
   CHECK(video_frame->HasSharedImage());
   const auto shared_image = video_frame->shared_image();
 
-  return CanCopySharedImageToGLTextureViaTextureCopy(shared_image) ||
+  return CanCopySharedImageToGLTextureViaTextureCopy(
+             shared_image->format(), shared_image->GetTextureTarget()) ||
          CanCopySharedImageToGLTextureViaSkia(
              video_frame->format(), shared_image->GetTextureTarget(), target,
              internal_format, type, level, dst_alpha_type);
@@ -867,7 +867,8 @@ void CopyVideoFrameDirectlyToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
   std::unique_ptr<gpu::RasterScopedAccess> destination_access;
-  if (CanCopySharedImageToGLTextureViaTextureCopy(shared_image)) {
+  if (CanCopySharedImageToGLTextureViaTextureCopy(
+          shared_image->format(), shared_image->GetTextureTarget())) {
     CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
@@ -902,7 +903,6 @@ void CopyVideoFrameDirectlyToGLTexture(
         video_frame->visible_rect().y(), video_frame->visible_rect().width(),
         video_frame->visible_rect().height(), is_dst_origin_top_left,
         shared_image->mailbox().name);
-
   }
   SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                             raster_context_provider->ContextSupport(),
