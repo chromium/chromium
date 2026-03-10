@@ -601,6 +601,38 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
   observer.reset();
 }
 
+TEST_F(ContextualTasksUiTest, AreUrlsEqual) {
+  EXPECT_TRUE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?q=test&udm=50"),
+      GURL("https://google.com/search?udm=50&q=test")));
+
+  EXPECT_TRUE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?a=1&b=2&c=3"),
+      GURL("https://google.com/search?c=3&a=1&b=2")));
+
+  EXPECT_TRUE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search"), GURL("https://google.com/search")));
+
+  // Different query keys/values
+  EXPECT_FALSE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?q=test&udm=50"),
+      GURL("https://google.com/search?udm=50&q=test2")));
+
+  EXPECT_FALSE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?q=test&udm=50"),
+      GURL("https://google.com/search?udm=50&q2=test")));
+
+  // Different paths
+  EXPECT_FALSE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?q=test&udm=50"),
+      GURL("https://google.com/search2?udm=50&q=test")));
+
+  // Different query param sizes
+  EXPECT_FALSE(ContextualTasksUI::AreUrlsEqual(
+      GURL("https://google.com/search?q=test&udm=50"),
+      GURL("https://google.com/search?udm=50&q=test&extra=1")));
+}
+
 TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
   struct TestCase {
     GURL url;
@@ -757,8 +789,6 @@ TEST_F(ContextualTasksUiTest, Transition_QueryToZeroToQuery) {
   handle_query2->set_has_committed(true);
   observer->DidFinishNavigation(handle_query2.get());
 }
-
-
 
 TEST_F(ContextualTasksUiTest,
        OnZeroStateChange_SameDocument_ZeroStateChanged_FeatureEnabled) {
