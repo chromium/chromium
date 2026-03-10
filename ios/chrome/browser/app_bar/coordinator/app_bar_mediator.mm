@@ -8,8 +8,10 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/search/search.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
@@ -49,6 +51,7 @@
   raw_ptr<WebStateList> _incognitoWebStateList;
   raw_ptr<PrefService> _prefService;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
+  raw_ptr<TemplateURLService> _templateURLService;
   TabGridPage _currentPage;
   TabGridState* _tabGridState;
   IncognitoState* _incognitoState;
@@ -57,6 +60,8 @@
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
                       incognitoWebStateList:(WebStateList*)incognitoWebStateList
                                 prefService:(PrefService*)prefService
+                         templateURLService:
+                             (TemplateURLService*)templateURLService
                                   URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                                tabGridState:(TabGridState*)tabGridState
                              incognitoState:(IncognitoState*)incognitoState {
@@ -68,6 +73,7 @@
 
     _URLLoader = URLLoader;
     _prefService = prefService;
+    _templateURLService = templateURLService;
 
     _tabGridState = tabGridState;
     [_tabGridState addObserver:self];
@@ -115,6 +121,7 @@
   _regularWebStateList = nullptr;
   _incognitoWebStateList = nullptr;
   _prefService = nullptr;
+  _templateURLService = nullptr;
   _URLLoader = nullptr;
   _incognitoState = nil;
   _tabGridState = nil;
@@ -431,6 +438,9 @@
 
 // Returns the context menu for the New Tab button.
 - (UIMenu*)createContextMenuForNewTabButton {
+  CHECK(self.regularActionFactory);
+  CHECK(self.incognitoActionFactory);
+
   BOOL isTabGroupsPageVisible = _currentPage == TabGridPageTabGroups;
   BOOL isTabGroupVisible = _tabGridState.visibleTabGroup;
 
@@ -470,13 +480,45 @@
     return [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
   }
 
-  // TODO(crbug.com/484000878): Add a context menu that appears while browsing
-  // (outside of the tab grid).
-  return nil;
+  // The New Tab button should not have a context menu while viewing the regular
+  // or incognito tab pages (unless looking inside a tab group).
+  if (_tabGridState.tabGridVisible) {
+    return nil;
+  }
+
+  // Context menu for while browsing.
+  CHECK(_templateURLService);
+  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
+                                            ? self.incognitoActionFactory
+                                            : self.regularActionFactory;
+
+  const bool useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::PlusButton,
+          search::DefaultSearchProviderIsGoogle(_templateURLService));
+
+  UIAction* newSearchAction = [actionFactory actionToStartNewSearch];
+  UIAction* newIncognitoSearchAction =
+      [actionFactory actionToStartNewIncognitoSearch];
+  UIAction* voiceSearchAction = [actionFactory actionToStartVoiceSearch];
+  UIAction* cameraSearchAction =
+      useLens
+          ? [actionFactory
+                actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton]
+          : [actionFactory actionToShowQRScanner];
+
+  // TODO(crbug.com/484000878): Add experimental menu buttons.
+  return [UIMenu menuWithChildren:@[
+    newSearchAction, newIncognitoSearchAction, voiceSearchAction,
+    cameraSearchAction
+  ]];
 }
 
 // Returns the context menu for the Tab Grid button.
 - (UIMenu*)createContextMenuForTabGridButton {
+  CHECK(self.regularActionFactory);
+  CHECK(self.incognitoActionFactory);
+
   // If the tab grid is showing, the context menu should be disabled.
   if (_tabGridState.tabGridVisible) {
     return nil;

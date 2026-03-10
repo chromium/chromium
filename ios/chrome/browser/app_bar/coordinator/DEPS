@@ -1,6 +1,7 @@
 include_rules = [
-  # go/keep-sorted start
+  # keep-sorted start
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/lens/ui_bundled/lens_availability.h",
   "+ios/chrome/browser/menu/ui_bundled/browser_action_factory.h",
-  # go/keep-sorted end
+  # keep-sorted end
 ]

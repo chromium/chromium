@@ -7,11 +7,14 @@
 #import <memory>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -22,7 +25,11 @@
 class AppBarCoordinatorTest : public PlatformTest {
  protected:
   AppBarCoordinatorTest() {
-    regular_profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
     regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
     incognito_browser_ =
@@ -58,6 +65,22 @@ class AppBarCoordinatorTest : public PlatformTest {
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:browser_coordinator_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+    qr_scanner_handler_ = OCMProtocolMock(@protocol(QRScannerCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:qr_scanner_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:qr_scanner_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+
+    lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:lens_handler_
+                     forProtocol:@protocol(LensCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:lens_handler_
+                     forProtocol:@protocol(LensCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -72,6 +95,8 @@ class AppBarCoordinatorTest : public PlatformTest {
   id tab_grid_handler_;
   id tab_group_handler_;
   id browser_coordinator_handler_;
+  id qr_scanner_handler_;
+  id lens_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.

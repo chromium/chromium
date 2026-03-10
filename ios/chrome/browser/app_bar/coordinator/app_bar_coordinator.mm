@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
@@ -63,6 +64,8 @@
       initWithRegularWebStateList:_regularBrowser->GetWebStateList()
             incognitoWebStateList:_incognitoBrowser->GetWebStateList()
                       prefService:_regularBrowser->GetProfile()->GetPrefs()
+               templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
+                                      _regularBrowser->GetProfile())
                         URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                       _regularBrowser)
                      tabGridState:sceneState.tabGridState

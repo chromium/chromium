@@ -17,6 +17,7 @@ class PrefService;
 @protocol TabGridCommands;
 @class TabGridState;
 @protocol TabGroupsCommands;
+class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class WebStateList;
 
@@ -45,6 +46,8 @@ class WebStateList;
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
                       incognitoWebStateList:(WebStateList*)incognitoWebStateList
                                 prefService:(PrefService*)prefService
+                         templateURLService:
+                             (TemplateURLService*)templateURLService
                                   URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                                tabGridState:(TabGridState*)tabGridState
                              incognitoState:(IncognitoState*)incognitoState

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "components/policy/core/common/policy_pref_names.h"
+#import "components/search_engines/search_engines_test_environment.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -20,6 +21,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
+#import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
@@ -64,6 +67,22 @@ class AppBarMediatorTest : public PlatformTest {
         startDispatchingToTarget:mock_browser_coordinator_handler_
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
+    mock_qr_scanner_handler_ = OCMProtocolMock(@protocol(QRScannerCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_qr_scanner_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_qr_scanner_handler_
+                     forProtocol:@protocol(QRScannerCommands)];
+
+    mock_lens_handler_ = OCMProtocolMock(@protocol(LensCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_lens_handler_
+                     forProtocol:@protocol(LensCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_lens_handler_
+                     forProtocol:@protocol(LensCommands)];
+
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(regular_browser_.get());
 
@@ -81,6 +100,8 @@ class AppBarMediatorTest : public PlatformTest {
         initWithRegularWebStateList:regular_web_state_list_.get()
               incognitoWebStateList:incognito_web_state_list_.get()
                         prefService:regular_profile_->GetTestingPrefService()
+                 templateURLService:search_engines_test_environment_
+                                        .template_url_service()
                           URLLoader:url_loader_
                        tabGridState:tab_grid_state_
                      incognitoState:incognito_state_];
@@ -104,6 +125,7 @@ class AppBarMediatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<WebStateList> regular_web_state_list_;
   std::unique_ptr<WebStateList> incognito_web_state_list_;
   FakeWebStateListDelegate regular_web_state_list_delegate_;
@@ -112,6 +134,8 @@ class AppBarMediatorTest : public PlatformTest {
   IncognitoState* incognito_state_;
   id mock_scene_handler_;
   id mock_browser_coordinator_handler_;
+  id mock_lens_handler_;
+  id mock_qr_scanner_handler_;
   id consumer_;
 };
 
