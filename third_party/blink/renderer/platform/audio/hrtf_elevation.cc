@@ -219,9 +219,10 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
         AudioBus::Create(response->NumberOfChannels(), fft_size / 2));
     for (unsigned channel = 0; channel < response->NumberOfChannels();
          ++channel) {
-      UNSAFE_TODO(memcpy(padded_response->Channel(channel)->MutableData(),
-                         response->Channel(channel)->Data(),
-                         response->length() * sizeof(float)));
+      padded_response->Channel(channel)
+          ->MutableSpan()
+          .first(response->length())
+          .copy_from(response->Channel(channel)->Span());
     }
     response = padded_response;
   }
