@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "action_chips_handler_unittest.cc",
     "action_chips_mojo_test_utils.cc",
     "action_chips_mojo_test_utils.h",
+    "action_chips_mojo_test_utils_unittest.cc",
     "fake_tab_id_generator.cc",
     "fake_tab_id_generator.h",
     "remote_suggestions_service_simple_unittest.cc",

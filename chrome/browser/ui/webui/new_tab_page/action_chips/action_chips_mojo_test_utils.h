@@ -8,6 +8,7 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
