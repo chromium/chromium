@@ -875,41 +875,40 @@ void CopyVideoFrameDirectlyToGLTexture(
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
-    return;
+  } else {
+    CHECK(CanCopySharedImageToGLTextureViaSkia(
+        video_frame->format(), shared_image->GetTextureTarget(), target,
+        internal_format, type, level, dst_alpha_type));
+    // Do a service-side copy from the SharedImage to the destination texture
+    // via Skia wrapping the destination texture in an SkSurface. Note that
+    // this relies on the service-side GL implementation using a Ganesh/GL
+    // context. Currently this assumption is satisfied as the passthrough
+    // decoder always uses a Ganesh/GL context.
+    // TODO(crbug.com/40064510): Eliminate this reliance to enable one-copy
+    // upload to work for Graphite *without* depending on being able to create a
+    // Ganesh/GL context.
+
+    // Trigger resource allocation for dst texture to back SkSurface.
+    // Dst texture size should equal to video frame visible rect.
+    BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
+                      type, /*level=*/0, video_frame->visible_rect().size());
+
+    auto destination_access = shared_image->BeginGLAccessForCopySharedImage(
+        destination_gl, video_frame->acquire_sync_token(), /*readonly=*/true);
+
+    // Copy shared image to gl texture for hardware video decode with
+    // multiplanar shared image formats.
+    const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
+    destination_gl->CopySharedImageToTextureINTERNAL(
+        texture, target, internal_format, type, video_frame->visible_rect().x(),
+        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
+        video_frame->visible_rect().height(), is_dst_origin_top_left,
+        shared_image->mailbox().name);
+
+    SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
+                              raster_context_provider->ContextSupport(),
+                              std::move(destination_access));
   }
-
-  CHECK(CanCopySharedImageToGLTextureViaSkia(
-      video_frame->format(), shared_image->GetTextureTarget(), target,
-      internal_format, type, level, dst_alpha_type));
-  // Do a service-side copy from the SharedImage to the destination texture
-  // via Skia wrapping the destination texture in an SkSurface. Note that
-  // this relies on the service-side GL implementation using a Ganesh/GL
-  // context. Currently this assumption is satisfied as the passthrough
-  // decoder always uses a Ganesh/GL context.
-  // TODO(crbug.com/40064510): Eliminate this reliance to enable one-copy
-  // upload to work for Graphite *without* depending on being able to create a
-  // Ganesh/GL context.
-
-  // Trigger resource allocation for dst texture to back SkSurface.
-  // Dst texture size should equal to video frame visible rect.
-  BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
-                    type, /*level=*/0, video_frame->visible_rect().size());
-
-  auto destination_access = shared_image->BeginGLAccessForCopySharedImage(
-      destination_gl, video_frame->acquire_sync_token(), /*readonly=*/true);
-
-  // Copy shared image to gl texture for hardware video decode with
-  // multiplanar shared image formats.
-  const bool is_dst_origin_top_left = dst_origin == kTopLeft_GrSurfaceOrigin;
-  destination_gl->CopySharedImageToTextureINTERNAL(
-      texture, target, internal_format, type, video_frame->visible_rect().x(),
-      video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-      video_frame->visible_rect().height(), is_dst_origin_top_left,
-      shared_image->mailbox().name);
-
-  SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
-                            raster_context_provider->ContextSupport(),
-                            std::move(destination_access));
 }
 
 SkImageInfo GetVideoImageGeneratorSkImageInfo(
