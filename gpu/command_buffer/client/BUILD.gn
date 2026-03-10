@@ -190,6 +190,7 @@ source_set("gles2_interface") {
   deps = [
     ":interface_base",
     "//base",
+    "//components/viz/common/resources:shared_image_format",
   ]
 }
 

@@ -7,6 +7,8 @@
 
 #include <GLES2/gl2.h>
 
+#include <cstdint>
+
 #include "base/compiler_specific.h"
 #include "gpu/command_buffer/client/interface_base.h"
 
@@ -30,6 +32,10 @@ extern "C" typedef struct _ClientBuffer* ClientBuffer;
 extern "C" typedef struct _ClientGpuFence* ClientGpuFence;
 extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
+namespace viz {
+class SharedImageFormat;
+}
+
 namespace gpu {
 namespace gles2 {
 
@@ -38,6 +44,12 @@ class GLES2Interface : public InterfaceBase {
  public:
   GLES2Interface() = default;
   virtual ~GLES2Interface() = default;
+
+  // Returns true if it's possible to do a copy of a SharedImage to a GL texture
+  // via CopyTexture().
+  static bool CanCopySharedImageToGLTextureViaTextureCopy(
+      const viz::SharedImageFormat& si_format,
+      uint32_t texture_target);
 
   virtual void FreeSharedMemory(void*) {}
 
