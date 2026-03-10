@@ -15,19 +15,27 @@ android_aidl("accessibility_test_service_aidl") {
   ]
 }
 
-android_apk("accessibility_test_support_apk") {
+android_library("accessibility_test_service_java") {
   testonly = true
-  apk_name = "AccessibilityTestService"
-  android_manifest = "AndroidManifest.xml"
   sources = [
     "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestHelperService.java",
     "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestService.java",
   ]
-  manifest_package = "org.chromium.ui.accessibility.testservice"
   srcjar_deps = [ ":accessibility_test_service_aidl" ]
   deps = [
-    ":accessibility_test_support_resources",
     "//base:base_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+  ]
+}
+
+android_apk("accessibility_test_support_apk") {
+  testonly = true
+  apk_name = "AccessibilityTestService"
+  android_manifest = "AndroidManifest.xml"
+  manifest_package = "org.chromium.ui.accessibility.testservice"
+  deps = [
+    ":accessibility_test_service_java",
+    ":accessibility_test_support_resources",
   ]
 }
