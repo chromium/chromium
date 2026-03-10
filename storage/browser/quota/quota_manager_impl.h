@@ -615,24 +615,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
           callback);
 
   // Removes the BucketSetDataDeleter that completed its work.
-  //
-  // This method is static because it must call `callback` even if the
-  // QuotaManagerImpl was destroyed.
-  static void DidDeleteBuckets(base::WeakPtr<QuotaManagerImpl> quota_manager,
-                               StatusCallback callback,
-                               BucketSetDataDeleter* deleter,
-                               blink::mojom::QuotaStatusCode status_code);
+  void DidDeleteBuckets(BucketSetDataDeleter* deleter);
 
   // Removes the BucketDataDeleter that completed its work.
-  //
-  // This method is static because it must call `delete_bucket_data_callback`
-  // even if the QuotaManagerImpl was destroyed.
-  static void DidDeleteBucketData(
-      base::WeakPtr<QuotaManagerImpl> quota_manager,
-      base::OnceCallback<void(QuotaErrorOr<mojom::BucketTableEntryPtr>)>
-          callback,
-      BucketDataDeleter* deleter,
-      QuotaErrorOr<mojom::BucketTableEntryPtr> result);
+  void DidDeleteBucketData(BucketDataDeleter* deleter);
 
   // Called after bucket data has been deleted from clients as well as the
   // database due to bucket expiration. This will recreate the bucket in the
@@ -762,6 +748,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::OnceCallback<void(QuotaError)> reply,
       const base::Location& from_here = base::Location::Current(),
       bool is_bootstrap_task = false);
+
+  base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)>
+  CreateDeleteBucketSetCallback(StatusCallback done);
 
   static QuotaAvailability CallGetVolumeInfo(GetVolumeInfoFn get_volume_info_fn,
                                              const base::FilePath& path);
