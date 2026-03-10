@@ -12837,7 +12837,6 @@ from previous Chrome versions.
   <int value="-558471324" label="PreviewsCoinFlipHoldback_UKMOnly:disabled"/>
   <int value="-557742250" label="ContentSuggestionsCategories:disabled"/>
   <int value="-556662059" label="AuraWindowSubtreeCapture:enabled"/>
-  <int value="-556389502" label="AutofillAtMemory:disabled"/>
   <int value="-556218705" label="SlowDCTimerInterruptsWin:enabled"/>
   <int value="-556166412"
       label="OmniboxDocumentProviderNoSyncRequirement:enabled"/>
@@ -17374,7 +17373,6 @@ from previous Chrome versions.
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:enabled"/>
   <int value="991641564" label="TaskManagerClank:disabled"/>
   <int value="992066588" label="SHA1ServerSignature:disabled"/>
-  <int value="992151904" label="AutofillAtMemory:enabled"/>
   <int value="993486662" label="BorealisForceBetaClient:enabled"/>
   <int value="993850099" label="FedCmButtonMode:disabled"/>
   <int value="994317727"
