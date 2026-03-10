@@ -486,6 +486,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # Asserts that each path contains '/values'.
     if self.android_output_zip_path is not None:
       self.ZipAndroidOutputs(zippable_android_xml_outputs)
+      self.android_output_tmp_dir.cleanup()
 
     # Print warnings if there are any duplicate shortcuts.
     warnings = shortcuts.GenerateDuplicateShortcutsWarnings(
@@ -664,8 +665,8 @@ Duplicate actual output files:
 
     depfile_contents = output_file + ': ' + deps_text
     self.MakeDirectoriesTo(depfile)
-    outfile = self.fo_create(depfile, 'w', encoding='utf-8')
-    outfile.write(depfile_contents)
+    with self.fo_create(depfile, 'w', encoding='utf-8') as outfile:
+      outfile.write(depfile_contents)
 
   @staticmethod
   def MakeDirectoriesTo(file):
