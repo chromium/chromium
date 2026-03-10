@@ -232,4 +232,78 @@ TEST_F(DeviceNameUtilTest, CheckManufacturerNameCapitalization) {
   EXPECT_EQ("Foo&Bar Foo Computer", names.short_name);
 }
 
+TEST_F(DeviceNameUtilTest, DetermineDisplayNamesAndDeduplicate) {
+  std::unique_ptr<DeviceInfo> local_device = CreateFakeDeviceInfo(
+      "local_guid", "XPS 13", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "Dell",
+      "XPS 13");
+  ASSERT_EQ("Dell Computer XPS 13",
+            GetDeviceDisplayNames(local_device.get()).full_name);
+
+  std::unique_ptr<DeviceInfo> device1 = CreateFakeDeviceInfo(
+      "guid1", "Pixel 6", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      DeviceInfo::OsType::kAndroid, DeviceInfo::FormFactor::kPhone, "Google",
+      "Pixel 6");
+  DeviceDisplayNames names1 = GetDeviceDisplayNames(device1.get());
+  ASSERT_EQ("Google Phone Pixel 6", names1.full_name);
+  ASSERT_EQ("Google Phone", names1.short_name);
+
+  std::unique_ptr<DeviceInfo> device2 = CreateFakeDeviceInfo(
+      "guid2", "Pixel 7", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      DeviceInfo::OsType::kAndroid, DeviceInfo::FormFactor::kPhone, "Google",
+      "Pixel 7");
+  DeviceDisplayNames names2 = GetDeviceDisplayNames(device2.get());
+  ASSERT_EQ("Google Phone Pixel 7", names2.full_name);
+  ASSERT_EQ("Google Phone", names2.short_name);
+
+  std::unique_ptr<DeviceInfo> device3 = CreateFakeDeviceInfo(
+      "guid3", "XPS 13", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "Dell",
+      "XPS 13");
+  ASSERT_EQ("Dell Computer XPS 13",
+            GetDeviceDisplayNames(device3.get()).full_name);
+
+  std::vector<const DeviceInfo*> devices = {device1.get(), device2.get(),
+                                            device3.get()};
+
+  auto results = DetermineDisplayNamesAndDeduplicate(
+      devices, GetDeviceDisplayNames(local_device.get()).full_name);
+
+  // device1 and device2 have the same short name "Google Phone", so they should
+  // use their full names.
+  // device3 has the same full name as the local device, so it should be
+  // filtered out.
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(device1.get(), results[0].device);
+  EXPECT_EQ("Google Phone Pixel 6", results[0].display_name);
+  EXPECT_EQ(device2.get(), results[1].device);
+  EXPECT_EQ("Google Phone Pixel 7", results[1].display_name);
+}
+
+TEST_F(DeviceNameUtilTest,
+       DetermineDisplayNamesAndDeduplicate_UniqueShortNames) {
+  std::unique_ptr<DeviceInfo> device1 = CreateFakeDeviceInfo(
+      "guid1", "Pixel 6", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      DeviceInfo::OsType::kAndroid, DeviceInfo::FormFactor::kPhone, "Google",
+      "Pixel 6");
+  ASSERT_EQ("Google Phone", GetDeviceDisplayNames(device1.get()).short_name);
+
+  std::unique_ptr<DeviceInfo> device2 = CreateFakeDeviceInfo(
+      "guid2", "XPS 13", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      DeviceInfo::OsType::kWindows, DeviceInfo::FormFactor::kDesktop, "Dell",
+      "XPS 13");
+  ASSERT_EQ("Dell Computer", GetDeviceDisplayNames(device2.get()).short_name);
+
+  std::vector<const DeviceInfo*> devices = {device1.get(), device2.get()};
+
+  auto results = DetermineDisplayNamesAndDeduplicate(devices, std::nullopt);
+
+  // Both have unique short names.
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(device1.get(), results[0].device);
+  EXPECT_EQ("Google Phone", results[0].display_name);
+  EXPECT_EQ(device2.get(), results[1].device);
+  EXPECT_EQ("Dell Computer", results[1].display_name);
+}
+
 }  // namespace syncer

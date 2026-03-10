@@ -760,9 +760,8 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(older_device.get());
 
   TargetDeviceInfo target_device_info(
-      recent_device->client_name(), recent_device->client_name(),
-      recent_device->guid(), recent_device->form_factor(),
-      recent_device->last_updated_timestamp());
+      recent_device->client_name(), recent_device->guid(),
+      recent_device->form_factor(), recent_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -784,9 +783,8 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(disabled_device.get());
 
   TargetDeviceInfo target_device_info(
-      enabled_device->client_name(), enabled_device->client_name(),
-      enabled_device->guid(), enabled_device->form_factor(),
-      enabled_device->last_updated_timestamp());
+      enabled_device->client_name(), enabled_device->guid(),
+      enabled_device->form_factor(), enabled_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -806,9 +804,8 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(valid_device.get());
 
   TargetDeviceInfo target_device_info(
-      valid_device->client_name(), valid_device->client_name(),
-      valid_device->guid(), valid_device->form_factor(),
-      valid_device->last_updated_timestamp());
+      valid_device->client_name(), valid_device->guid(),
+      valid_device->form_factor(), valid_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -831,9 +828,8 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_NoLocalDevice) {
   AddTestDevice(other_device.get());
 
   TargetDeviceInfo target_device_info(
-      other_device->client_name(), other_device->client_name(),
-      other_device->guid(), other_device->form_factor(),
-      other_device->last_updated_timestamp());
+      other_device->client_name(), other_device->guid(),
+      other_device->form_factor(), other_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(target_device_info));
@@ -854,13 +850,11 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(recent_device.get());
 
   TargetDeviceInfo older_device_info(
-      older_device->client_name(), older_device->client_name(),
-      older_device->guid(), older_device->form_factor(),
-      older_device->last_updated_timestamp());
+      older_device->client_name(), older_device->guid(),
+      older_device->form_factor(), older_device->last_updated_timestamp());
   TargetDeviceInfo recent_device_info(
-      recent_device->client_name(), recent_device->client_name(),
-      recent_device->guid(), recent_device->form_factor(),
-      recent_device->last_updated_timestamp());
+      recent_device->client_name(), recent_device->guid(),
+      recent_device->form_factor(), recent_device->last_updated_timestamp());
 
   // Make sure the list has the 2 devices.
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
@@ -885,8 +879,8 @@ TEST_F(SendTabToSelfBridgeTest,
   AddTestDevice(device.get());
 
   // Make sure the list has the device.
-  TargetDeviceInfo device_info(device->client_name(), device->client_name(),
-                               device->guid(), device->form_factor(),
+  TargetDeviceInfo device_info(device->client_name(), device->guid(),
+                               device->form_factor(),
                                device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
@@ -899,8 +893,8 @@ TEST_F(SendTabToSelfBridgeTest,
 
   // Make sure both devices are in the list.
   TargetDeviceInfo new_device_info(
-      new_device->client_name(), new_device->client_name(), new_device->guid(),
-      new_device->form_factor(), new_device->last_updated_timestamp());
+      new_device->client_name(), new_device->guid(), new_device->form_factor(),
+      new_device->last_updated_timestamp());
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(device_info, new_device_info));
@@ -922,11 +916,10 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_THAT(
       bridge()->GetTargetDeviceInfoSortedList(),
       ElementsAre(
-          TargetDeviceInfo(device1->client_name(), device1->client_name(),
-                           device1->guid(), device1->form_factor(),
+          TargetDeviceInfo(device1->client_name(), device1->guid(),
+                           device1->form_factor(),
                            device1->last_updated_timestamp()),
-          TargetDeviceInfo(device2_old->client_name(),
-                           device2_old->client_name(), device2_old->guid(),
+          TargetDeviceInfo(device2_old->client_name(), device2_old->guid(),
                            device2_old->form_factor(),
                            device2_old->last_updated_timestamp())));
 
@@ -939,12 +932,11 @@ TEST_F(SendTabToSelfBridgeTest,
   EXPECT_THAT(
       bridge()->GetTargetDeviceInfoSortedList(),
       ElementsAre(
-          TargetDeviceInfo(device2_new->client_name(),
-                           device2_new->client_name(), device2_new->guid(),
+          TargetDeviceInfo(device2_new->client_name(), device2_new->guid(),
                            device2_new->form_factor(),
                            device2_new->last_updated_timestamp()),
-          TargetDeviceInfo(device1->client_name(), device1->client_name(),
-                           device1->guid(), device1->form_factor(),
+          TargetDeviceInfo(device1->client_name(), device1->guid(),
+                           device1->form_factor(),
                            device1->last_updated_timestamp())));
 }
 
@@ -1078,8 +1070,7 @@ TEST_F(SendTabToSelfBridgeTest,
 
   open_tabs_ui_delegate()->SetForeignSessions({&session});
 
-  TargetDeviceInfo expected_device_info(device->client_name(),
-                                        device->client_name(), device->guid(),
+  TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(), session_time);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
@@ -1107,8 +1098,7 @@ TEST_F(SendTabToSelfBridgeTest,
 
   open_tabs_ui_delegate()->SetForeignSessions({&session});
 
-  TargetDeviceInfo expected_device_info(device->client_name(),
-                                        device->client_name(), device->guid(),
+  TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
                                         device->form_factor(), device_time);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),

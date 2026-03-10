@@ -40,17 +40,17 @@ class TestSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
 
   std::vector<TargetDeviceInfo> GetValidDevices() override {
     const auto now = base::Time::Now();
-    return {{"Device_1", "Device_1", "device_guid_1",
+    return {{"Device_1", "device_guid_1",
              syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(0)},
-            {"Device_2", "Device_2", "device_guid_2",
+            {"Device_2", "device_guid_2",
              syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(0)},
-            {"Device_3", "Device_3", "device_guid_3",
+            {"Device_3", "device_guid_3",
              syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(1)},
-            {"Device_4", "Device_4", "device_guid_4",
+            {"Device_4", "device_guid_4",
              syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(1)},
-            {"Device_5", "Device_5", "device_guid_5",
+            {"Device_5", "device_guid_5",
              syncer::DeviceInfo::FormFactor::kDesktop, now - base::Days(5)},
-            {"Device_6", "Device_6", "device_guid_6",
+            {"Device_6", "device_guid_6",
              syncer::DeviceInfo::FormFactor::kPhone, now - base::Days(5)}};
   }
 

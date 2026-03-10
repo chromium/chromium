@@ -84,7 +84,6 @@ constexpr char16_t kTabTitle1[] = u"Tab Title 1";
 constexpr char16_t kTabTitle2[] = u"Tab Title 2";
 
 constexpr char kTargetDeviceFullName[] = "Device_1";
-constexpr char kTargetDeviceShortName[] = "Device_1";
 constexpr char kTargetDeviceCacheGuid[] = "device_guid_1";
 
 constexpr char kChromeSyncGuid[] = "Entry Guid";
@@ -304,9 +303,8 @@ class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
   }
 
   void AddMockTargetDevice(syncer::DeviceInfo::FormFactor form_factor) {
-    devices_.emplace_back(kTargetDeviceFullName, kTargetDeviceShortName,
-                          kTargetDeviceCacheGuid, form_factor,
-                          base::Time::Now());
+    devices_.emplace_back(kTargetDeviceFullName, kTargetDeviceCacheGuid,
+                          form_factor, base::Time::Now());
   }
 
  private:

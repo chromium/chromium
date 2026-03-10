@@ -4,10 +4,9 @@
 
 #include "components/sharing_message/sharing_device_source_sync.h"
 
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/stl_util.h"
 #include "base/task/thread_pool.h"
@@ -31,22 +30,6 @@ bool IsStale(const syncer::DeviceInfo& device) {
   const base::Time min_updated_time =
       base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
-}
-
-SharingTargetDeviceInfo ConvertDeviceInfo(const syncer::DeviceInfo* device,
-                                          bool use_short_name) {
-  CHECK(device);
-
-  const syncer::DeviceDisplayNames device_names =
-      syncer::GetDeviceDisplayNames(device);
-
-  const std::string& client_name =
-      use_short_name ? device_names.short_name : device_names.full_name;
-
-  return SharingTargetDeviceInfo(
-      device->guid(), client_name, GetDevicePlatform(*device),
-      device->pulse_interval(), device->form_factor(),
-      device->last_updated_timestamp());
 }
 
 }  // namespace
@@ -87,7 +70,10 @@ std::optional<SharingTargetDeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
     return std::nullopt;
   }
 
-  return ConvertDeviceInfo(device_info, /*use_short_name=*/false);
+  return SharingTargetDeviceInfo(
+      device_info->guid(), syncer::GetDeviceDisplayNames(device_info).full_name,
+      GetDevicePlatform(*device_info), device_info->pulse_interval(),
+      device_info->form_factor(), device_info->last_updated_timestamp());
 }
 
 std::vector<SharingTargetDeviceInfo>
@@ -180,46 +166,24 @@ SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
                      device2->last_updated_timestamp();
             });
 
-  std::unordered_map<const syncer::DeviceInfo*, syncer::DeviceDisplayNames>
-      device_names_map;
-  std::unordered_set<std::string> full_names;
-  std::unordered_map<std::string, int> short_names_counter;
-
-  // To prevent adding candidates with same full name as local device.
-  full_names.insert(syncer::GetDeviceDisplayNames(
-                        local_device_info_provider_->GetLocalDeviceInfo())
-                        .full_name);
-
-  for (const syncer::DeviceInfo* device : devices) {
-    syncer::DeviceDisplayNames device_names =
-        syncer::GetDeviceDisplayNames(device);
-
-    // Only insert the first occurrence of each device name.
-    auto inserted = full_names.insert(device_names.full_name);
-    if (!inserted.second) {
-      continue;
-    }
-
-    short_names_counter[device_names.short_name]++;
-    device_names_map.insert({device, std::move(device_names)});
+  const syncer::DeviceInfo* local_device =
+      local_device_info_provider_->GetLocalDeviceInfo();
+  std::optional<std::string> local_full_name;
+  if (local_device) {
+    local_full_name = syncer::GetDeviceDisplayNames(local_device).full_name;
   }
 
-  // Filter duplicates and convert devices.
-  std::vector<SharingTargetDeviceInfo> converted_devices;
+  // Resolve display names for the filtered list. This handles de-duplication
+  // by name and chooses between short/full names based on collisions.
+  std::vector<syncer::DeviceInfoWithName> device_names =
+      syncer::DetermineDisplayNamesAndDeduplicate(devices, local_full_name);
 
-  for (const syncer::DeviceInfo* device : devices) {
-    auto it = device_names_map.find(device);
-    if (it == device_names_map.end()) {
-      continue;
-    }
-
-    const syncer::DeviceDisplayNames& device_names = it->second;
-    bool unique_short_name = short_names_counter[device_names.short_name] == 1;
-
-    converted_devices.push_back(
-        ConvertDeviceInfo(device,
-                          /*use_short_name=*/unique_short_name));
-  }
-
-  return converted_devices;
+  // Convert to SharingTargetDeviceInfo, filtering out any devices that were
+  // de-duplicated by the naming utility.
+  return base::ToVector(device_names, [](const auto& info) {
+    return SharingTargetDeviceInfo(
+        info.device->guid(), info.display_name, GetDevicePlatform(*info.device),
+        info.device->pulse_interval(), info.device->form_factor(),
+        info.device->last_updated_timestamp());
+  });
 }

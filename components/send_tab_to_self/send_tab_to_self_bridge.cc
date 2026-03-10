@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -494,8 +494,6 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     return {};
   }
 
-  const std::string local_full_name = GetLocalFullName();
-
   // Pre-calculate last active timestamps for sorting and filtering.
   std::vector<DeviceWithTimestamp> devices_with_timestamps =
       GetDevicesWithLastActiveTime(device_info_tracker_->GetAllDeviceInfo(),
@@ -508,50 +506,28 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
         return a.last_active > b.last_active;
       });
 
-  std::vector<TargetDeviceInfo> target_device_info_sorted_list;
-  base::flat_set<std::string> seen_full_names;
-  base::flat_map<std::string, int> short_names_counter;
-
+  std::vector<const syncer::DeviceInfo*> devices;
   for (const auto& entry : devices_with_timestamps) {
-    const syncer::DeviceInfo* device = entry.device;
-    base::Time last_active = entry.last_active;
-
-    // If the current device is expired, stop here because subsequent devices
-    // in the sorted list are also expired.
-    if (clock_->Now() - last_active > kDeviceExpiration) {
+    // Filter out devices that are too old or don't support the feature.
+    if (clock_->Now() - entry.last_active > kDeviceExpiration) {
       break;
     }
-
-    if (!ShouldIncludeDevice(*device)) {
-      continue;
-    }
-
-    syncer::DeviceDisplayNames device_names =
-        syncer::GetDeviceDisplayNames(device);
-
-    // Don't include this device if it has the same name as the local device.
-    if (device_names.full_name == local_full_name) {
-      continue;
-    }
-
-    // De-duplicate by full name. Only keep the most recent occurrence.
-    if (seen_full_names.insert(device_names.full_name).second) {
-      target_device_info_sorted_list.emplace_back(
-          device_names.full_name, device_names.short_name, device->guid(),
-          device->form_factor(), last_active);
-      ++short_names_counter[device_names.short_name];
+    if (ShouldIncludeDevice(*entry.device)) {
+      devices.push_back(entry.device);
     }
   }
 
-  // Finalize the display name. Use the short name if it's unique among the
-  // target list, otherwise fall back to the full name.
-  for (auto& device_info : target_device_info_sorted_list) {
-    device_info.device_name = (short_names_counter[device_info.short_name] == 1)
-                                  ? device_info.short_name
-                                  : device_info.full_name;
-  }
+  // Resolve display names for the filtered list. This handles de-duplication
+  // by name and chooses between short/full names based on collisions.
+  std::vector<syncer::DeviceInfoWithName> device_names =
+      syncer::DetermineDisplayNamesAndDeduplicate(devices, GetLocalFullName());
 
-  return target_device_info_sorted_list;
+  return base::ToVector(device_names, [&](const auto& info) {
+    auto it = std::ranges::find(devices_with_timestamps, info.device,
+                                &DeviceWithTimestamp::device);
+    return TargetDeviceInfo(info.display_name, info.device->guid(),
+                            info.device->form_factor(), it->last_active);
+  });
 }
 
 // static
