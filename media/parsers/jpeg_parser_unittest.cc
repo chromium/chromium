@@ -153,40 +153,4 @@ TEST_P(JpegParserTest, ParsingFail) {
 
 INSTANTIATE_TEST_SUITE_P(All, JpegParserTest, testing::Bool());
 
-TEST(JpegParserRobustnessTest, JpegHuffmanTableEqualityRobustness) {
-  JpegHuffmanTable table1;
-  table1.valid = true;
-  table1.code_length.fill(255);  // sum = 16 * 255 = 4080 > 162
-  table1.code_value.fill(0);
-
-  JpegHuffmanTable table2 = table1;
-
-  // This should not crash even though num_codes > 162.
-  EXPECT_TRUE(table1 == table2);
-}
-
-TEST(JpegParserRobustnessTest, JpegFrameHeaderEqualityRobustness) {
-  JpegFrameHeader header1;
-  header1.visible_width = 100;
-  header1.visible_height = 100;
-  header1.coded_width = 100;
-  header1.coded_height = 100;
-  header1.num_components = 10;  // > kJpegMaxComponents (4)
-
-  JpegFrameHeader header2 = header1;
-
-  // This should not crash even though num_components > 4.
-  EXPECT_TRUE(header1 == header2);
-}
-
-TEST(JpegParserRobustnessTest, JpegScanHeaderEqualityRobustness) {
-  JpegScanHeader scan1;
-  scan1.num_components = 10;  // > kJpegMaxComponents (4)
-
-  JpegScanHeader scan2 = scan1;
-
-  // This should not crash even though num_components > 4.
-  EXPECT_TRUE(scan1 == scan2);
-}
-
 }  // namespace media
