@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -361,6 +362,11 @@ class SQLitePersistentCookieStore::Backend
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
+  // Initialize the cookie database on the constructor call. This is only run
+  // if kSQLitePersistentCookieStoreEarlyInit is enabled.
+  // With `check_disk` flag, it may result in not doing it.
+  void MaybeInitializeDatabaseEarly();
+
   // Creates or loads the SQLite database.
   void Load(LoadedCallback loaded_callback);
 
@@ -674,6 +680,19 @@ bool CreateV24Schema(sql::Database* db) {
 }
 
 }  // namespace
+
+void SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly() {
+  DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (features::kSQLitePersistentCookieStoreEarlyInitCheckDisk.Get() &&
+      !base::PathExists(path())) {
+    // Avoid unnecessary disk access. This can affect webview performance,
+    // especially since users often don't access the network at all.
+    base::UmaHistogramBoolean("Cookie.CreateDatabaseEarly", false);
+    return;
+  }
+  InitializeDatabase();
+  base::UmaHistogramBoolean("Cookie.CreateDatabaseEarly", true);
+}
 
 void SQLitePersistentCookieStore::Backend::Load(
     LoadedCallback loaded_callback) {
@@ -1514,7 +1533,14 @@ SQLitePersistentCookieStore::SQLitePersistentCookieStore(
                                              background_task_runner,
                                              restore_old_session_cookies,
                                              std::move(crypto_delegate),
-                                             enable_exclusive_access)) {}
+                                             enable_exclusive_access)) {
+  if (base::FeatureList::IsEnabled(
+          features::kSQLitePersistentCookieStoreEarlyInit)) {
+    background_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Backend::MaybeInitializeDatabaseEarly, backend_));
+  }
+}
 
 void SQLitePersistentCookieStore::DeleteAllInList(
     const std::list<CookieOrigin>& cookies) {
@@ -1605,6 +1631,10 @@ void SQLitePersistentCookieStore::CompleteKeyedLoad(
       NetLogEventType::COOKIE_PERSISTENT_STORE_KEY_LOAD_COMPLETED, "domain",
       key);
   std::move(callback).Run(std::move(cookie_list));
+}
+
+bool SQLitePersistentCookieStore::IsBackendInitializedForTesting() const {
+  return backend_->IsInitializedForTesting();
 }
 
 }  // namespace net

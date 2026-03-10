@@ -1346,6 +1346,10 @@ public final class ProductionSupportedFlagList {
                 "NoSequenceForLevelDBCleanupTasks",
                 "When enabled, LevelDB cleanup tasks are run concurrently instead of in sequence."),
         Flag.baseFeature(
+                "SQLitePersistentCookieStoreEarlyInit",
+                "When enabled, the cookie dababase is initialized immediately upon creation, rather"
+                        + " than waiting for the first load request."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SAVE_STATE_INCLUDE_HEADERS,
                 "When enabled, navigation headers will be saved and restored as part of saved state"
                         + " for WebView"),

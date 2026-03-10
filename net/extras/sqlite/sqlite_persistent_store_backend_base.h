@@ -66,6 +66,8 @@ class SQLitePersistentStoreBackendBase
   // Set the callback that will be run at the beginning of Commit.
   void SetBeforeCommitCallback(base::RepeatingClosure callback);
 
+  bool IsInitializedForTesting() const { return initialized_; }
+
  protected:
   friend class base::RefCountedThreadSafe<SQLitePersistentStoreBackendBase>;
 
@@ -134,6 +136,8 @@ class SQLitePersistentStoreBackendBase
   void PostClientTask(const base::Location& origin, base::OnceClosure task);
 
   sql::Database* db() { return db_.get(); }
+  const base::FilePath& path() const { return path_; }
+
   sql::MetaTable* meta_table() { return &meta_table_; }
 
   base::SequencedTaskRunner* background_task_runner() {

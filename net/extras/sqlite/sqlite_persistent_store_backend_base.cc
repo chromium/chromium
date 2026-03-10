@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "sql/error_delegate_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -76,6 +77,8 @@ void SQLitePersistentStoreBackendBase::SetBeforeCommitCallback(
 }
 
 bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
+  TRACE_EVENT("net",
+              "SQLitePersistentCookieStoreBackendBase::InitializeDatabase");
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
 
   if (initialized_ || corruption_detected_) {

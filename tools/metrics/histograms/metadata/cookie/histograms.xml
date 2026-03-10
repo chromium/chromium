@@ -190,6 +190,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.CreateDatabaseEarly" enum="BooleanCreated"
+    expires_after="2026-07-26">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether MaybeInitializeDatabaseEarly actually attempted to create
+    the database early, regardless of success or failure. Logged on every call
+    to SQLitePersistentCookieStore::Backend::MaybeInitializeDatabaseEarly
+  </summary>
+</histogram>
+
 <histogram
     name="Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}"
     enum="CookieSameSite2" expires_after="2026-04-07">

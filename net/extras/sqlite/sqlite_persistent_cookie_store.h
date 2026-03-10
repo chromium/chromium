@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
   // non-racey. Also requires the client thread to be current.
   size_t GetQueueLengthForTesting();
 
+  bool IsBackendInitializedForTesting() const;
+
  private:
   ~SQLitePersistentCookieStore() override;
   void CompleteLoad(LoadedCallback callback,

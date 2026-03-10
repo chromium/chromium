@@ -21315,6 +21315,29 @@
             ]
         }
     ],
+    "SQLitePersistentCookieStoreEarlyInit": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "check_disk": "true"
+                    },
+                    "enable_features": [
+                        "SQLitePersistentCookieStoreEarlyInit"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingDailyPhishingReportsLimit": [
         {
             "platforms": [

@@ -2720,4 +2720,72 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadAndNotifyInBackgroundMetrics) {
   DestroyStore();
 }
 
+TEST_F(SQLitePersistentCookieStoreTest, EarlyInitDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kSQLitePersistentCookieStoreEarlyInit);
+  base::HistogramTester histogram_tester;
+
+  Create(false, false, false, false);
+  RunUntilIdle();
+  histogram_tester.ExpectTotalCount("Cookie.CreateDatabaseEarly", 0);
+  EXPECT_FALSE(store_->IsBackendInitializedForTesting());
+
+  auto cookies = Load();
+  EXPECT_EQ(0U, cookies.size());
+  EXPECT_TRUE(store_->IsBackendInitializedForTesting());
+  histogram_tester.ExpectTotalCount("Cookie.CreateDatabaseEarly", 0);
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, EarlyInitEnabledCheckDiskTrue) {
+  const base::FilePath cookie_file =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSQLitePersistentCookieStoreEarlyInit,
+      {{"check_disk", "true"}});
+
+  base::HistogramTester histogram_tester;
+
+  Create(false, false, false, false);
+  RunUntilIdle();
+  // File does not exist and initialization should not be called.
+  histogram_tester.ExpectUniqueSample("Cookie.CreateDatabaseEarly", false, 1);
+  EXPECT_FALSE(store_->IsBackendInitializedForTesting());
+  EXPECT_FALSE(base::PathExists(cookie_file));
+
+  // Load and confirm the DB is initialized.
+  auto cookies = Load();
+  EXPECT_EQ(0U, cookies.size());
+  EXPECT_TRUE(store_->IsBackendInitializedForTesting());
+
+  // Close the store to create the file.
+  DestroyStore();
+  EXPECT_TRUE(base::PathExists(cookie_file));
+  // Create again, this time the file exists.
+  Create(false, false, false, false);
+  RunUntilIdle();
+  // File exists then initialization should be called.
+  histogram_tester.ExpectBucketCount("Cookie.CreateDatabaseEarly", true, 1);
+  histogram_tester.ExpectTotalCount("Cookie.CreateDatabaseEarly", 2);
+  EXPECT_TRUE(store_->IsBackendInitializedForTesting());
+}
+
+TEST_F(SQLitePersistentCookieStoreTest, EarlyInitEnabledCheckDiskFalse) {
+  const base::FilePath cookie_file =
+      temp_dir_.GetPath().Append(kCookieFilename);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kSQLitePersistentCookieStoreEarlyInit,
+      {{"check_disk", "false"}});
+
+  base::HistogramTester histogram_tester;
+
+  Create(false, false, false, false);
+  RunUntilIdle();
+  // File does not exist but check_disk is false, so it initializes early.
+  histogram_tester.ExpectUniqueSample("Cookie.CreateDatabaseEarly", true, 1);
+  EXPECT_TRUE(store_->IsBackendInitializedForTesting());
+  EXPECT_TRUE(base::PathExists(cookie_file));
+}
 }  // namespace net
