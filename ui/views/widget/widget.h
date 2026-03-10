@@ -1619,10 +1619,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // A WidgetObserver handles an event that invokes other events, therefore is
   // inherently reentrant.
-  base::ObserverList<WidgetObserver,
-                     /*check_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
-      observers_;
+  base::ReentrantObserverList<WidgetObserver> observers_;
 
   base::ObserverList<WidgetRemovalsObserver>::Unchecked removals_observers_;
 

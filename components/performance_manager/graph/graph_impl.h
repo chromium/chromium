@@ -48,9 +48,7 @@ class GraphImpl : public Graph {
   // FrameNodeImpl::SetPriorityAndReason().)
   template <typename Observer>
   using ObserverList =
-      base::ObserverList<Observer,
-                         /*check_empty=*/true,
-                         base::ObserverListReentrancyPolicy::kAllowReentrancy>;
+      base::ReentrantObserverList<Observer, /*check_empty=*/true>;
 
   GraphImpl();
   ~GraphImpl() override;

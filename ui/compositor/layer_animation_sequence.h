@@ -202,10 +202,8 @@ class COMPOSITOR_EXPORT LayerAnimationSequence {
 
   // It needs to be reentrant as an animation can be aborted from within the
   // flow of insertion itself.
-  base::ObserverList<LayerAnimationObserver,
-                     /*check_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
-      UncheckedAndDanglingUntriaged observers_;
+  base::ReentrantObserverList<
+      LayerAnimationObserver>::UncheckedAndDanglingUntriaged observers_;
 
   // Tracks the last_progressed_fraction() of the most recently progressed
   // element.

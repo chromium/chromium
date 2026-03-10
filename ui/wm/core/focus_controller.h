@@ -144,10 +144,7 @@ class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
   std::unique_ptr<FocusRules> rules_;
 
   // Activation change may change the focused window, so allow reentrancy.
-  base::ObserverList<ActivationChangeObserver,
-                     /*check_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
-      activation_observers_;
+  base::ReentrantObserverList<ActivationChangeObserver> activation_observers_;
   base::ObserverList<aura::client::FocusChangeObserver> focus_observers_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>

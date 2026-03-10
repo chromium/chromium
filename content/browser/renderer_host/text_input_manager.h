@@ -324,10 +324,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // TextInputManager::Observer reentrantly issues further notifications upon
   // `OnUpdateTextInputStateCalled()` (e.g. `SelectionBoundsChange()`).
-  base::ObserverList<Observer,
-                     /*allow_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
-      Unchecked observer_list_;
+  base::ReentrantObserverList<Observer>::Unchecked observer_list_;
 };
 }
 

@@ -159,10 +159,7 @@ class MessageCenterImpl : public MessageCenter,
   // MessageCenterObserver further notifies other observer methods upon
   // `OnNotificationAdded()` (e.g. `OnNotificationUpdated()`), so allow
   // reentrancy.
-  base::ObserverList<MessageCenterObserver,
-                     /*allow_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
-      observer_list_;
+  base::ReentrantObserverList<MessageCenterObserver> observer_list_;
   std::unique_ptr<PopupTimersController> popup_timers_controller_;
   base::OneShotTimer quiet_mode_timer_;
   std::vector<raw_ptr<NotificationBlocker, VectorExperimental>> blockers_;

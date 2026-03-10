@@ -85,10 +85,7 @@ class TargetAutoAttacher {
  private:
   // This needs to be reentrant as `Client::MaybeCreateAndAddNavigationThrottle`
   // can be called while processing `Client::AutoAttach`.
-  base::ObserverList<Client,
-                     false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>
-      clients_;
+  base::ReentrantObserverList<Client> clients_;
   base::flat_set<raw_ptr<Client, CtnExperimental>>
       clients_requesting_wait_for_debugger_;
 };

@@ -2429,10 +2429,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // A ViewObserver handles an event that invokes other events, therefore is
   // inherently reentrant.
-  base::ObserverList<ViewObserver,
-                     /*check_empty=*/false,
-                     base::ObserverListReentrancyPolicy::kAllowReentrancy>::
-      Unchecked observers_;
+  base::ReentrantObserverList<ViewObserver>::Unchecked observers_;
 
   bool notify_observers_on_visible_bounds_change_ = false;
 
