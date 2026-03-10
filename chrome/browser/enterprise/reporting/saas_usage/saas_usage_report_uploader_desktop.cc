@@ -56,22 +56,23 @@ void SaasUsageReportUploaderDesktop::UploadReport(
           policy::kUploadRealtimeReportingEventsUsingProto)) {
     LOG_POLICY(INFO, REPORTING)
         << "Real time reporting proto feature is not enabled. Skipping "
-           "SaaS usage report upload.";
+        << uploader_name_ << " SaaS usage report upload.";
     return;
   }
 
   auto* client = GetRealTimeReportingClient();
   if (!client) {
     LOG_POLICY(ERROR, REPORTING)
-        << "No real time reporting client found for report upload. "
-        << "Skipping SaaS usage report upload.";
+        << "No real time reporting client found for " << uploader_name_
+        << " report upload. Skipping SaaS usage report upload.";
     return;
   }
 
   auto dm_token = GetDMToken();
   if (!dm_token) {
-    LOG_POLICY(WARNING, REPORTING) << "No DM token found for report upload. "
-                                      "Skipping SaaS usage report upload.";
+    LOG_POLICY(WARNING, REPORTING)
+        << "No DM token found for " << uploader_name_ << " report upload. "
+        << "Skipping SaaS usage report upload.";
     return;
   }
 

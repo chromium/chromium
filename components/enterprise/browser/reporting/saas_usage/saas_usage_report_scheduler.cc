@@ -23,10 +23,11 @@ namespace enterprise_reporting {
 
 // static
 std::unique_ptr<SaasUsageReportScheduler> SaasUsageReportScheduler::Create(
+    std::string_view debug_name,
     const SaasUsageReportingDelegateFactory* delegate_factory) {
   PrefService* pref_service = delegate_factory->GetPrefService();
   return std::make_unique<SaasUsageReportScheduler>(
-      pref_service,
+      debug_name, pref_service,
       std::make_unique<SaasUsageReportFactory>(
           pref_service, delegate_factory->GetSaasUsageReportFactoryDelegate()),
       delegate_factory->GetSaasUsageReportUploader(),
@@ -34,11 +35,13 @@ std::unique_ptr<SaasUsageReportScheduler> SaasUsageReportScheduler::Create(
 }
 
 SaasUsageReportScheduler::SaasUsageReportScheduler(
+    std::string_view debug_name,
     PrefService* pref_service,
     std::unique_ptr<SaasUsageReportFactory> report_factory,
     std::unique_ptr<SaasUsageReportUploader> report_uploader,
     std::unique_ptr<Delegate> delegate)
-    : pref_service_(raw_ref<PrefService>::from_ptr(pref_service)),
+    : debug_name_(debug_name),
+      pref_service_(raw_ref<PrefService>::from_ptr(pref_service)),
       report_factory_(std::move(report_factory)),
       report_uploader_(std::move(report_uploader)),
       delegate_(std::move(delegate)) {
@@ -68,8 +71,8 @@ void SaasUsageReportScheduler::TriggerReport() {
 void SaasUsageReportScheduler::GenerateAndUploadReport() {
   auto report = report_factory_->CreateReport();
   if (report.domain_metrics().empty()) {
-    VLOG_POLICY(1, REPORTING)
-        << "No domain metrics aggregated - skipping report upload.";
+    VLOG_POLICY(1, REPORTING) << "No domain metrics aggregated - skipping "
+                              << debug_name_ << " report upload.";
     return;
   }
   report_uploader_->UploadReport(
@@ -83,8 +86,8 @@ void SaasUsageReportScheduler::OnReportUploaded(bool success) {
     ClearSaasUsageReport(pref_service_.get());
   } else {
     LOG_POLICY(WARNING, REPORTING)
-        << "SaaS usage report upload failed, upload will be retried at the "
-           "next trigger.";
+        << "SaaS usage " << debug_name_
+        << " report upload failed, upload will be retried at the next trigger.";
   }
 }
 
@@ -100,8 +103,8 @@ void SaasUsageReportScheduler::ScheduleNextReport() {
 
   // If the next trigger time is in the past, WallClockTimer will trigger the
   // report immediately.
-  VLOG_POLICY(1, REPORTING)
-      << "Scheduling next SaaS usage report at " << next_trigger_time;
+  VLOG_POLICY(1, REPORTING) << "Scheduling next " << debug_name_
+                            << " SaaS usage report at " << next_trigger_time;
   timer_.Start(FROM_HERE, next_trigger_time, this,
                &SaasUsageReportScheduler::TriggerReport);
 }

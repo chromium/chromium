@@ -127,7 +127,7 @@ void CloudProfileReportingService::CreateReportScheduler() {
     auto saas_usage_reporting_delegate_factory =
         SaasUsageReportingDelegateFactoryDesktop::CreateForProfile(profile_);
     saas_usage_report_scheduler_ = SaasUsageReportScheduler::Create(
-        saas_usage_reporting_delegate_factory.get());
+        "profile", saas_usage_reporting_delegate_factory.get());
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 }
