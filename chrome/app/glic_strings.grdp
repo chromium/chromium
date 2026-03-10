@@ -306,6 +306,12 @@
   <message name="IDS_SETTINGS_GLIC_REVOKE_ACTOR_LOGIN_PERMISSION_ARIA_LABEL" desc="Aria label for the button to remove a login permission.">
     Remove permission for <ph name="URL">$1<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_TITLE" desc="Title for the dialog to remove a login permission.">
+    Remove permission
+  </message>
+  <message name="IDS_SETTINGS_GLIC_REMOVE_ACTOR_LOGIN_DIALOG_DESCRIPTION" desc="Description for the dialog to remove a login permission.">
+    Gemini will no longer be able to sign you in to <ph name="URL">$1<ex>google.com</ex></ph>
+  </message>
 
   <!-- Glic button and tab strip context menu -->
   <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">

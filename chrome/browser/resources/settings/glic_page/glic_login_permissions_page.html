@@ -50,6 +50,15 @@
     --cr-icon-button-icon-size: 16px;
   }
 </style>
+<template is="dom-if" if="[[selectedPermissionToRemove_]]" restamp>
+  <settings-simple-confirmation-dialog
+      title-text="$i18n{glicRemoveActorLoginDialogTitle}"
+      body-text="[[getRemoveDialogDescription_(
+          selectedPermissionToRemove_.url)]]"
+      confirm-text="$i18n{remove}"
+      on-close="onRemoveDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>
 <settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}"
     route-path$="[[routePath]]">
   <div class="header-container section">
