@@ -291,8 +291,8 @@ TEST_F(RendererControllerTest, WithHEVCVideoCodec) {
 
 TEST_F(RendererControllerTest, WithAACAudioCodec) {
   const AudioDecoderConfig audio_config = AudioDecoderConfig(
-      AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      AudioCodec::kAAC, kSampleFormatPlanarF32, ChannelLayoutConfig::Stereo(),
+      44100, EmptyExtraData(), EncryptionScheme::kUnencrypted);
   PipelineMetadata pipeline_metadata = DefaultMetadata(VideoCodec::kVP8);
   pipeline_metadata.audio_decoder_config = audio_config;
   InitializeControllerAndBecomeDominant(pipeline_metadata,
@@ -317,8 +317,8 @@ TEST_F(RendererControllerTest, WithAACAudioCodec) {
 
 TEST_F(RendererControllerTest, WithOpusAudioCodec) {
   const AudioDecoderConfig audio_config = AudioDecoderConfig(
-      AudioCodec::kOpus, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      AudioCodec::kOpus, kSampleFormatPlanarF32, ChannelLayoutConfig::Stereo(),
+      44100, EmptyExtraData(), EncryptionScheme::kUnencrypted);
   PipelineMetadata pipeline_metadata = DefaultMetadata(VideoCodec::kVP8);
   pipeline_metadata.audio_decoder_config = audio_config;
   InitializeControllerAndBecomeDominant(pipeline_metadata,

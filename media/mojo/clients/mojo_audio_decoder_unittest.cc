@@ -178,8 +178,8 @@ class MojoAudioDecoderTest : public ::testing::Test {
         .WillOnce(InvokeWithoutArgs(this, &MojoAudioDecoderTest::QuitLoop));
 
     AudioDecoderConfig audio_config(
-        AudioCodec::kVorbis, kSampleFormat, kChannelLayout, kDefaultSampleRate,
-        EmptyExtraData(), EncryptionScheme::kUnencrypted);
+        AudioCodec::kVorbis, kSampleFormat, ChannelLayoutConfig::Stereo(),
+        kDefaultSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
     mojo_audio_decoder_->Initialize(
         audio_config, nullptr,

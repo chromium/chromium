@@ -647,8 +647,9 @@ TEST_F(CourierRendererTest, OnBufferingStateChange) {
 
 TEST_F(CourierRendererTest, OnAudioConfigChange) {
   const AudioDecoderConfig kNewAudioConfig(
-      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      AudioCodec::kVorbis, kSampleFormatPlanarF32,
+      ChannelLayoutConfig::Stereo(), 44100, EmptyExtraData(),
+      EncryptionScheme::kUnencrypted);
   InitializeRenderer();
   // Make sure initial audio config does not match the one we intend to send.
   ASSERT_FALSE(render_client_->audio_decoder_config().Matches(kNewAudioConfig));
