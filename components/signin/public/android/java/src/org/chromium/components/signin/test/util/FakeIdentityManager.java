@@ -17,7 +17,7 @@ import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +25,7 @@ import java.util.Map;
 @NullMarked
 public class FakeIdentityManager implements IdentityManager {
     private final List<Observer> mObservers = new ArrayList<>();
-    private final Map<CoreAccountId, AccountInfo> mExtendedAccountInfos = new HashMap<>();
+    private final Map<CoreAccountId, AccountInfo> mExtendedAccountInfos = new LinkedHashMap<>();
     private @Nullable CoreAccountInfo mPrimaryAccount;
     private boolean mIsOnExtendedAccountInfoUpdatedBlocked;
     private boolean mIsClearPrimaryAccountAllowed;
@@ -97,6 +97,11 @@ public class FakeIdentityManager implements IdentityManager {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mExtendedAccountInfos.put(accountInfo.getId(), accountInfo);
+                    if (mAreRefreshTokensLoaded) {
+                        for (Observer observer : mObservers) {
+                            observer.onRefreshTokenUpdatedForAccount(accountInfo);
+                        }
+                    }
                     if (!mIsOnExtendedAccountInfoUpdatedBlocked) {
                         for (Observer observer : mObservers) {
                             observer.onExtendedAccountInfoUpdated(accountInfo);
@@ -137,11 +142,21 @@ public class FakeIdentityManager implements IdentityManager {
                     if (mPrimaryAccount != null && mPrimaryAccount.getId().equals(accountId)) {
                         mPrimaryAccount = null;
                     }
+                    if (mAreRefreshTokensLoaded) {
+                        for (Observer observer : mObservers) {
+                            observer.onRefreshTokenRemovedForAccount(accountId);
+                        }
+                    }
                 });
     }
 
     public void setAreRefreshTokensLoaded(boolean areRefreshTokensLoaded) {
         mAreRefreshTokensLoaded = areRefreshTokensLoaded;
+        if (mAreRefreshTokensLoaded) {
+            for (Observer observer : mObservers) {
+                observer.onRefreshTokensLoaded();
+            }
+        }
     }
 
     public void setIsClearPrimaryAccountAllowed(boolean isAllowed) {
