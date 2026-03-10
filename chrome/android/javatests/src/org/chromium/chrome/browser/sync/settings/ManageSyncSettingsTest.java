@@ -376,12 +376,12 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ChromeSwitchPreference history_and_tabs_toggle =
+        ChromeSwitchPreference historyAndTabsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-        mSyncTestRule.togglePreference(history_and_tabs_toggle);
-        Assert.assertTrue(history_and_tabs_toggle.isChecked());
+        mSyncTestRule.togglePreference(historyAndTabsToggle);
+        Assert.assertTrue(historyAndTabsToggle.isChecked());
 
         mSyncTestRule.signOut();
 
@@ -391,11 +391,11 @@ public class ManageSyncSettingsTest {
 
         fragment = startManageSyncPreferences();
 
-        history_and_tabs_toggle =
+        historyAndTabsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-        Assert.assertFalse(history_and_tabs_toggle.isChecked());
+        Assert.assertFalse(historyAndTabsToggle.isChecked());
     }
 
     @Test
@@ -407,12 +407,12 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ChromeSwitchPreference passwords_toggle =
+        ChromeSwitchPreference passwordsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
-        mSyncTestRule.togglePreference(passwords_toggle);
-        Assert.assertFalse(passwords_toggle.isChecked());
+        mSyncTestRule.togglePreference(passwordsToggle);
+        Assert.assertFalse(passwordsToggle.isChecked());
 
         mSyncTestRule.signOut();
         signinTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
@@ -423,11 +423,11 @@ public class ManageSyncSettingsTest {
 
         fragment = startManageSyncPreferences();
 
-        passwords_toggle =
+        passwordsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
-        Assert.assertTrue(passwords_toggle.isChecked());
+        Assert.assertTrue(passwordsToggle.isChecked());
     }
 
     @Test
@@ -438,12 +438,12 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ChromeSwitchPreference history_and_tabs_toggle =
+        ChromeSwitchPreference historyAndTabsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-        mSyncTestRule.togglePreference(history_and_tabs_toggle);
-        Assert.assertTrue(history_and_tabs_toggle.isChecked());
+        mSyncTestRule.togglePreference(historyAndTabsToggle);
+        Assert.assertTrue(historyAndTabsToggle.isChecked());
 
         mSyncTestRule.signOut();
 
@@ -453,11 +453,11 @@ public class ManageSyncSettingsTest {
 
         fragment = startManageSyncPreferences();
 
-        history_and_tabs_toggle =
+        historyAndTabsToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-        Assert.assertTrue(history_and_tabs_toggle.isChecked());
+        Assert.assertTrue(historyAndTabsToggle.isChecked());
     }
 
     @Test
@@ -470,11 +470,11 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
-        ChromeSwitchPreference addresses_toggle =
+        ChromeSwitchPreference addressesToggle =
                 (ChromeSwitchPreference)
                         fragment.findPreference(
                                 ManageSyncSettings.PREF_ACCOUNT_SECTION_ADDRESSES_TOGGLE);
-        mSyncTestRule.togglePreference(addresses_toggle);
+        mSyncTestRule.togglePreference(addressesToggle);
         onView(withText(R.string.sync_addresses_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));

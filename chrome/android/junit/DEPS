@@ -45,6 +45,7 @@ include_rules = [
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync_preferences/cross_device_pref_tracker/android/java/src/org/chromium/components/sync_preferences/cross_device_pref_tracker",
+  "+components/trusted_vault/android/java/src/org/chromium/components/trusted_vault",
   "+components/sync/test",
   "+components/saved_tab_groups/public/android",
   "+components/ukm/android",

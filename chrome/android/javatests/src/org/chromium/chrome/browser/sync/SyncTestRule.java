@@ -50,6 +50,7 @@ import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
+import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
@@ -410,13 +411,13 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                         .setExpMonth(11)
                         .setExpYear(2020)
                         .build();
-        AutofillWalletSpecifics wallet_specifics =
+        AutofillWalletSpecifics walletSpecifics =
                 AutofillWalletSpecifics.newBuilder()
                         .setType(AutofillWalletSpecifics.WalletInfoType.MASKED_CREDIT_CARD)
                         .setMaskedCard(card)
                         .build();
         EntitySpecifics specifics =
-                EntitySpecifics.newBuilder().setAutofillWallet(wallet_specifics).build();
+                EntitySpecifics.newBuilder().setAutofillWallet(walletSpecifics).build();
         SyncEntity entity =
                 SyncEntity.newBuilder()
                         .setName(serverId)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
+#include "components/trusted_vault/android/trusted_vault_client_android.h"
 
 #include <utility>
 #include <variant>
@@ -16,7 +16,7 @@
 #include "google_apis/gaia/gaia_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
+#include "components/trusted_vault/android/jni_headers/TrustedVaultClient_jni.h"
 
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
     const CoreAccountInfo& account_info,

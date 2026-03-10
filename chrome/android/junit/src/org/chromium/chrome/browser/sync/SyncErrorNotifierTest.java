@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link SyncErrorNotifier}. */

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_ANDROID_H_
-#define CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_ANDROID_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_ANDROID_TRUSTED_VAULT_CLIENT_ANDROID_H_
+#define COMPONENTS_TRUSTED_VAULT_ANDROID_TRUSTED_VAULT_CLIENT_ANDROID_H_
 
 #include <map>
 #include <memory>
@@ -23,9 +23,6 @@
 // used on Android.
 //
 // This class must be accessed from the UI thread.
-// TODO(crbug.com/40915967): move this class under components/trusted_vault once
-// its java counterpart does not have to stay under chrome/android (e.g. its
-// dependecy on AppHooks is addressed).
 class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
  public:
   // Callback that returns account information identified by |gaia_id| or an
@@ -162,4 +159,4 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   base::ObserverList<Observer> observer_list_;
 };
 
-#endif  // CHROME_BROWSER_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_ANDROID_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_ANDROID_TRUSTED_VAULT_CLIENT_ANDROID_H_

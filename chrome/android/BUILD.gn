@@ -889,8 +889,13 @@ if (_is_default_toolchain) {
       ]
     }
 
-    # TODO(crbug.com/40167648): This is temporary to not break downstream targets.
-    public_deps = [ "//chrome/browser/notifications:java" ]
+    public_deps = [
+      # TODO(crbug.com/40167648): This is temporary to not break downstream targets.
+      "//chrome/browser/notifications:java",
+
+      # TODO(crbug.com/40915967): This is temporary to not break downstream targets.
+      "//components/trusted_vault/android:java",
+    ]
 
     if (password_manager_use_internal_android_resources) {
       deps += [ "//clank/components/password_manager:java_resources" ]
@@ -3109,7 +3114,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
       "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
       "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
-      "java/src/org/chromium/chrome/browser/sync/TrustedVaultClient.java",
       "java/src/org/chromium/chrome/browser/tab/TabAndroidTestHelper.java",
       "java/src/org/chromium/chrome/browser/tab/TabBrowserControlsConstraintsHelper.java",
       "java/src/org/chromium/chrome/browser/tab/TabFavicon.java",
@@ -3236,6 +3240,7 @@ if (_is_default_toolchain) {
       "//components/image_fetcher:jni_headers",
       "//components/media_router/browser/android:jni_headers",
       "//components/supervised_user/android:jni_headers",
+      "//components/trusted_vault/android:jni_headers",
       "//components/ukm/android:jni_headers",
       "//components/webauthn/android:jni_headers",
     ]

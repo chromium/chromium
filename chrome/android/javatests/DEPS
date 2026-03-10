@@ -59,6 +59,7 @@ include_rules = [
   "+components/search_engines",
   "+components/security_state/content/android/java",
   "+components/sync/android/java/src/org/chromium/components/sync",
+  "+components/trusted_vault/android/java/src/org/chromium/components/trusted_vault",
   "+components/sync/test",
   "+components/ukm/android/java",
   "+components/webauthn/android/java",
