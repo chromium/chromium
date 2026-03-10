@@ -1,14 +1,15 @@
 {
   "name": "chrome.cookies.nopermission",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests that the cookies permission is required in order to use the cookies API.",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "permissions": [
-    "tabs",
+    "tabs"
+  ],
+  "host_permissions": [
     "http://*.chrome_extensions.cookies.com/",
     "http://chromium.cookies.com/",
     "https://*.cookies.com/",

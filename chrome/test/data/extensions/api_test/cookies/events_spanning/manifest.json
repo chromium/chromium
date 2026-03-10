@@ -1,12 +1,16 @@
 {
   "name": "events_spanning",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests cookie events.",
-  "permissions": ["cookies", "http://a.com/"],
+  "permissions": [
+    "cookies"
+  ],
+  "host_permissions": [
+    "http://a.com/"
+  ],
   "incognito": "spanning",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": false
+    "service_worker": "test.js"
   }
 }

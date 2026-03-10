@@ -1,14 +1,15 @@
 {
   "name": "chrome.cookies",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.experimental.cookies API",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "permissions": [
-    "cookies",
+    "cookies"
+  ],
+  "host_permissions": [
     "http://*.chrome_extensions.cookies.com/",
     "http://chromium.cookies.com/",
     "https://*.cookies.com/",

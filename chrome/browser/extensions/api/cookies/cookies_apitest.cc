@@ -49,11 +49,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 }
 #endif
 
-class CookiesApiTest : public ExtensionApiTest,
-                       public testing::WithParamInterface<
-                           std::tuple<ContextType, SameSiteCookieSemantics>> {
+class CookiesApiTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<SameSiteCookieSemantics> {
  public:
-  CookiesApiTest() : ExtensionApiTest(std::get<0>(GetParam())) {}
+  CookiesApiTest() = default;
   ~CookiesApiTest() override = default;
   CookiesApiTest(const CookiesApiTest&) = delete;
   CookiesApiTest& operator=(const CookiesApiTest&) = delete;
@@ -94,41 +94,18 @@ class CookiesApiTest : public ExtensionApiTest,
                             {.allow_in_incognito = allow_in_incognito});
   }
 
-  ContextType GetContextType() { return std::get<0>(GetParam()); }
-
   bool AreSameSiteCookieSemanticsModern() {
-    return std::get<1>(GetParam()) == SameSiteCookieSemantics::kModern;
+    return GetParam() == SameSiteCookieSemantics::kModern;
   }
 
  private:
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 };
 
-// Android extension API tests only support service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(
-    EventPage,
-    CookiesApiTest,
-    ::testing::Combine(::testing::Values(ContextType::kEventPage),
-                       ::testing::Values(SameSiteCookieSemantics::kLegacy,
-                                         SameSiteCookieSemantics::kModern)));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    CookiesApiTest,
-    ::testing::Combine(::testing::Values(ContextType::kServiceWorker),
-                       ::testing::Values(SameSiteCookieSemantics::kLegacy,
-                                         SameSiteCookieSemantics::kModern)));
-
-// A test suite that only runs with MV3 extensions.
-using CookiesApiMV3Test = CookiesApiTest;
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    CookiesApiMV3Test,
-    ::testing::Combine(::testing::Values(ContextType::kServiceWorker),
-                       ::testing::Values(SameSiteCookieSemantics::kLegacy,
-                                         SameSiteCookieSemantics::kModern)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         CookiesApiTest,
+                         ::testing::Values(SameSiteCookieSemantics::kLegacy,
+                                           SameSiteCookieSemantics::kModern));
 
 // TODO(crbug.com/40839864): Flaky on Windows.
 // TODO(crbug.com/371423073): Flaky on desktop Android.
@@ -211,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
+IN_PROC_BROWSER_TEST_P(CookiesApiTest, TestGetPartitionKey) {
   // Before running test, set up a top-level site (a.com) that embeds a
   // cross-site (b.com). To test the cookies.getPartitionKey() api.
   content::WebContents* contents = GetActiveWebContents();
