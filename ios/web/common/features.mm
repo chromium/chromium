@@ -110,4 +110,7 @@ bool IsCobaltEnabled() {
   return base::FeatureList::IsEnabled(kIOSCobalt);
 }
 
+BASE_FEATURE(kCertVerificationWorkaroundKillSwitch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace web::features

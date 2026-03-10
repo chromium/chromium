@@ -137,6 +137,11 @@ BASE_DECLARE_FEATURE(kIOSCobalt);
 // Returns whether Cobalt is enabled on iOS.
 bool IsCobaltEnabled();
 
+// Feature flag to enable the workaround for SecTrust evaluation inconsistency.
+// TODO(crbug.com/485184282): Remove this flag once it's confirmed that the
+// workaround is working as intended.
+BASE_DECLARE_FEATURE(kCertVerificationWorkaroundKillSwitch);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_

@@ -583,6 +583,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.CertificateVerification.TrustEvaluationMatch"
+    enum="Boolean" expires_after="2027-03-09">
+  <owner>fedegermi@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Recorded each time we verify results from SecTrustEvaluateWithError and
+    SecTrustGetTrustResult. True indicates a match between the two results,
+    which should theoretically be consistent. This tracks a known iOS 26.4
+    issue.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CommittedNavigationHasContext" enum="Boolean"
     expires_after="2026-09-07">
   <owner>gambard@chromium.org</owner>
