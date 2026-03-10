@@ -154,6 +154,11 @@ GenerateEmbeddingsCandidates(
   candidates.emplace_back(apc.main_frame_data().title(),
                           EmbeddingPassageType::kTitle);
 
+  // Push back title and URL candidate.
+  candidates.emplace_back(base::StrCat({apc.main_frame_data().title(), " - ",
+                                        apc.main_frame_data().url()}),
+                          EmbeddingPassageType::kTitleAndUrl);
+
   return candidates;
 }
 

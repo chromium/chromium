@@ -28,8 +28,9 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
     content::Page& page) {
   std::vector<PassageEmbedding> embeddings =
       page_embeddings_service_->GetEmbeddings(page);
+
   for (const auto& embedding : embeddings) {
-    if (embedding.passage.second == EmbeddingPassageType::kTitle) {
+    if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
       category_classifier_->OnPageEmbeddingAvailable(
           page.GetMainDocument().GetLastCommittedURL(), embedding.embedding);
       return;
