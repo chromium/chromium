@@ -24,11 +24,13 @@ class WindowDeleter : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override {
-    delete target_;
+    aura::Window* window_ = target_.get();
+    target_ = nullptr;
+    delete window_;
   }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged> target_;
+  raw_ptr<aura::Window> target_;
 };
 
 }  // namespace
