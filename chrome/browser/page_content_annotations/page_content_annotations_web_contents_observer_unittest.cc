@@ -227,7 +227,6 @@ class PageContentAnnotationsWebContentsObserverTest
   }
 
   void TearDown() override {
-    history_service()->Shutdown();
     task_environment()->RunUntilIdle();
 
     DeleteContents();
