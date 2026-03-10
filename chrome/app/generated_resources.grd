@@ -6919,8 +6919,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         }
       </message>
 
-      <message name="IDS_SUB_APPS_INSTALL_DIALOG_MANAGE_PERMISSIONS_LINK" desc="">
-        Manage
+      <message name="IDS_SUB_APPS_INSTALL_DIALOG_MANAGE_PERMISSIONS_LINK" desc="Link text to manage permissions for the parent app in the sub-app install dialog.">
+        Manage permissions for parent app
       </message>
 
       <message name="IDS_SUB_APPS_INSTALL_DIALOG_PERMISSIONS_BUTTON" desc="Button label on a dialog that lets the user approve the install of one or more sub apps.">
