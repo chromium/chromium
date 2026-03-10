@@ -4,6 +4,8 @@
 
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
+#include <type_traits>
+
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -20,12 +22,18 @@ namespace {
 static const char kUrlFilteringServiceComponentName[] = "All";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:url_filtering_service)
 
-// Combines two callbacks into one.
-void CombineCallbacks(WebFilteringResult::Callback a,
-                      WebFilteringResult::Callback b,
-                      WebFilteringResult result) {
-  std::move(a).Run(result);
-  std::move(b).Run(result);
+template <typename... Callbacks>
+  requires(std::is_same_v<WebFilteringResult::Callback, Callbacks> && ...)
+void BroadcastCallbackImpl(Callbacks... callbacks, WebFilteringResult result) {
+  (std::move(callbacks).Run(result), ...);
+}
+
+// Broadcasts web filtering result to all callbacks, in order.
+template <typename... Callbacks>
+  requires(std::is_same_v<WebFilteringResult::Callback, Callbacks> && ...)
+WebFilteringResult::Callback BroadcastResult(Callbacks... callbacks) {
+  return base::BindOnce(&BroadcastCallbackImpl<Callbacks...>,
+                        std::move(callbacks)...);
 }
 
 FilteringBehavior GetBehaviorFromSafeSearchClassification(
@@ -215,13 +223,11 @@ void SupervisedUserUrlFilteringService::GetFilteringBehavior(
     bool skip_manual_parent_filter,
     WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) const {
-  callback =
-      base::BindOnce(&CombineCallbacks,
-                     base::BindOnce(&EmitMetrics, GetWebFilterType(),
-                                    kUrlFilteringServiceComponentName, options),
-                     std::move(callback));
-  callback = base::BindOnce(
-      &CombineCallbacks, std::move(callback),
+  // Emit metrics, then call the original callback and finally notify observers.
+  callback = BroadcastResult(
+      base::BindOnce(&EmitMetrics, GetWebFilterType(),
+                     kUrlFilteringServiceComponentName, options),
+      std::move(callback),
       base::BindOnce(&SupervisedUserUrlFilteringService::NotifyUrlChecked,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -244,15 +250,14 @@ void SupervisedUserUrlFilteringService::GetFilteringBehaviorForSubFrame(
     const GURL& main_frame_url,
     WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) const {
-  callback =
-      base::BindOnce(&CombineCallbacks,
-                     base::BindOnce(&EmitMetrics, GetWebFilterType(),
-                                    kUrlFilteringServiceComponentName, options),
-                     std::move(callback));
-  callback = base::BindOnce(
-      &CombineCallbacks, std::move(callback),
+  // Emit metrics, then call the original callback and finally notify observers.
+  callback = BroadcastResult(
+      base::BindOnce(&EmitMetrics, GetWebFilterType(),
+                     kUrlFilteringServiceComponentName, options),
+      std::move(callback),
       base::BindOnce(&SupervisedUserUrlFilteringService::NotifyUrlChecked,
                      weak_ptr_factory_.GetWeakPtr()));
+
   if (base::FeatureList::IsEnabled(kSupervisedUserUseUrlFilteringService)) {
     device_parental_controls_url_filter_->GetFilteringBehaviorForSubFrame(
         url, main_frame_url,
@@ -327,8 +332,7 @@ WebFilteringResult::Callback
 UrlFilteringDelegate::WrapCallbackWithUrlServiceMetrics(
     WebFilteringResult::Callback callback,
     const WebFilterMetricsOptions& options) const {
-  return base::BindOnce(
-      &CombineCallbacks,
+  return BroadcastResult(
       base::BindOnce(&EmitMetrics, GetWebFilterType(), GetName(), options),
       std::move(callback));
 }
