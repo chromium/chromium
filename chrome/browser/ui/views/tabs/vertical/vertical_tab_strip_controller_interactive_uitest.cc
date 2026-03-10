@@ -171,9 +171,8 @@ IN_PROC_BROWSER_TEST_F(
                   2));
 }
 
-// TODO(crbug.com/469912247): Fails on mac-rel-ready and linux-rel-ready bots.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       DISABLED_ShiftMultiTabSelection) {
+                       ShiftMultiTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -183,6 +182,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      // Wait for model to update.
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  3),
       // Name views so we can interact with them.
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kFirstTabName, 0),
@@ -191,10 +193,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
                                                 kThirdTabName, 2),
       // Set Tab 2 to be active.
-      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::LEFT),
+      WaitForShow(kSecondTabName), MoveMouseTo(kSecondTabName),
+      ClickMouse(ui_controls::LEFT),
       CheckResult(
           [this]() { return browser()->tab_strip_model()->active_index(); }, 1),
       // Shift + Click Tab 3.
+      WaitForShow(kThirdTabName),
       WithView(kThirdTabName, ClickWithFlags(kShift)),
       CheckResult(
           [this]() { return browser()->tab_strip_model()->IsTabSelected(0); },
