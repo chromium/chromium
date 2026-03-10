@@ -53,6 +53,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_request.h:ActorFormFillingRequestedData) -->
 
+<!-- LINT.IfChange(RetargetTriggerFieldResult) -->
+
+<enum name="ActorFormFillingRetargetTriggerFieldResult">
+  <int value="0" label="Not attempted: no split"/>
+  <int value="1" label="Retargeted to a new field"/>
+  <int value="2" label="Retargeted to the same field"/>
+  <int value="3" label="Error: contact info address first"/>
+  <int value="4" label="Error: contact info not found"/>
+  <int value="5" label="Error: address not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/actor_form_section_splitter.h:RetargetTriggerFieldResult) -->
+
 <!-- LINT.IfChange(ShouldSplitOutContactInfoResult) -->
 
 <enum name="ActorFormFillingShouldSplitOutContactInfoResult">

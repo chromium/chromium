@@ -96,6 +96,21 @@ bool ShouldSplitOutContactInfo(
     const AutofillManager& autofill_manager,
     LogManager* log_manager);
 
+// Metrics enum for tracking the outcome of
+// RetargetTriggerFieldForSplittingIfNeeded. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(RetargetTriggerFieldResult)
+enum class RetargetTriggerFieldResult {
+  kNotAttemptedNoSplit = 0,
+  kRetargetedToNewField = 1,
+  kRetargetedToSameField = 2,
+  kErrorContactInfoAddressFirst = 3,
+  kErrorContactInfoNotFound = 4,
+  kErrorAddressNotFound = 5,
+  kMaxValue = kErrorAddressNotFound,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:RetargetTriggerFieldResult)
+
 // Given an `original_trigger_field` and `form_structure` identifying a fill
 // into a particular form section and an associated `split_part` indicating
 // whether or not the fill is being split, retarget the trigger field if needed
