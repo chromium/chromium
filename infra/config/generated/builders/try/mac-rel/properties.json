@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -42,7 +42,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -70,7 +70,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -90,7 +90,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               }
             }
           },
@@ -98,7 +98,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac Retina Release (AMD)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -118,7 +118,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               }
             }
           },
@@ -126,7 +126,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac15-x64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -146,7 +146,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               }
             }
           }
@@ -156,29 +156,29 @@
         {
           "bucket": "ci",
           "builder": "GPU Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Mac Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "Mac Retina Release (AMD)",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "mac15-x64-rel-tests",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/mac-rel/targets"

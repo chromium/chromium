@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-desktop-x64-compile-rel",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android.desktop",
@@ -44,7 +44,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-desktop-x64-rel-15-tests",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android.desktop",
@@ -71,7 +71,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "android-desktop-x64-compile-rel",
-                "project": "chromium"
+                "project": "chromium-m147"
               }
             }
           }
@@ -81,14 +81,14 @@
         {
           "bucket": "ci",
           "builder": "android-desktop-x64-compile-rel",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "android-desktop-x64-rel-15-tests",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/android-desktop-x64-rel/targets"

@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x86 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x86 DEPS Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -54,7 +54,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x86 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -63,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x86 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -83,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x86 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -94,19 +94,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x86 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x86 DEPS Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x86 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -137,12 +137,12 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "dawn_ref": "refs/heads/main",
+  "dawn_ref": "refs/heads/chromium/7727",
   "gardener_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }

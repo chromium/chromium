@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac arm64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -34,7 +34,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac arm64 DEPS Release (Apple M2)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -55,7 +55,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Mac arm64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -66,14 +66,14 @@
         {
           "bucket": "ci",
           "builder": "Dawn Mac arm64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Mac arm64 DEPS Release (Apple M2)",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/dawn-mac-arm64-deps-rel/targets"

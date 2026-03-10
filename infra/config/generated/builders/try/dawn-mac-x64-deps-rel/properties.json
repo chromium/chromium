@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -35,7 +35,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac x64 DEPS Release (AMD)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -56,7 +56,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Mac x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -65,7 +65,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Mac x64 DEPS Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -86,7 +86,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Mac x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -97,19 +97,19 @@
         {
           "bucket": "ci",
           "builder": "Dawn Mac x64 DEPS Builder",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Dawn Mac x64 DEPS Release (AMD)",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "Dawn Mac x64 DEPS Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/dawn-mac-x64-deps-rel/targets"

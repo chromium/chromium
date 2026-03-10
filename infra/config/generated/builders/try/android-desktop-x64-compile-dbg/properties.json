@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-desktop-x64-compile-dbg",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android.desktop",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "android-desktop-x64-compile-dbg",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/android-desktop-x64-compile-dbg/targets"

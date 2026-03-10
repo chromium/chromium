@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-chromeos-dbg",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -39,7 +39,7 @@
         {
           "bucket": "ci",
           "builder": "linux-chromeos-dbg",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/linux-chromeos-dbg/targets"

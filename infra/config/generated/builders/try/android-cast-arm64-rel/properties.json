@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-cast-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "android-cast-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/android-cast-arm64-rel/targets"

@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android Release (Pixel 2)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu",
@@ -45,7 +45,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-14-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -78,12 +78,12 @@
         {
           "bucket": "ci",
           "builder": "Android Release (Pixel 2)",
-          "project": "chromium"
+          "project": "chromium-m147"
         },
         {
           "bucket": "ci",
           "builder": "android-14-arm64-rel",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "targets_spec_directory": "infra/config/generated/builders/try/android-arm64-rel/targets"

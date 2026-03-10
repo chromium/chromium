@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-10-x86-nofieldtrial-rel",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -44,14 +44,10 @@
         {
           "bucket": "ci",
           "builder": "android-10-x86-nofieldtrial-rel",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-10-x86-nofieldtrial-rel",
-          "group": "tryserver.chromium.android"
-        },
         {
           "builder": "android-x86-rel",
           "group": "tryserver.chromium.android"
@@ -82,10 +78,10 @@
   },
   "builder_group": "chromium.android",
   "gardener_rotations": [
-    "android"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }

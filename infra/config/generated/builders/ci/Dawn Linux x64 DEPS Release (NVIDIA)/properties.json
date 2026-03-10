@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-              "project": "chromium"
+              "project": "chromium-m147"
             },
             "builder_spec": {
               "builder_group": "chromium.dawn",
@@ -51,7 +51,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Linux x64 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m147"
               },
               "run_tests_serially": true
             }
@@ -62,7 +62,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Linux x64 DEPS Release (NVIDIA)",
-          "project": "chromium"
+          "project": "chromium-m147"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -82,12 +82,12 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "dawn_ref": "refs/heads/main",
+  "dawn_ref": "refs/heads/chromium/7727",
   "gardener_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }
