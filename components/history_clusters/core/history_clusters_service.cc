@@ -148,7 +148,10 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void HistoryClustersService::Shutdown() {}
+void HistoryClustersService::Shutdown() {
+  context_clusterer_observer_.reset();
+  history_service_observation_.Reset();
+}
 
 bool HistoryClustersService::IsJourneysEnabledAndVisible() const {
   const bool journeys_is_managed =
