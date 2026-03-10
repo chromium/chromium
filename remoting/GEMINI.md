@@ -52,29 +52,112 @@ be deleted.
 
 ### Multi-process architecture
 
-Currently only the CRD Windows host has a real multi-process architecture, where
-we run a daemon process as SYSTEM at MIC SYSTEM level
-(//remoting/host/daemon_process.h), which also acts as a mojo IPC broker. A
-network process (//remoting/host/remoting_me2me_host.cc) is run as LOCAL_SERVICE
-at MIC LOW level for actually communicating with the client via network
-requests. A third desktop process (//remoting/host/desktop_process.h) is run as
-SYSTEM at MIC SYSTEM level, which is responsible to capturing screen frame data
-and other operations that need to be done on the user session. There are also
-user processes such as the remote-open-url process and file transfer process,
-which is run by the logged in user with MIC MEDIUM level within the CRD session,
-which talks to other CRD processes using Mojo IPC. All CRD processes use Mojo
-IPC to communicate with each other. Mojo connection is established by connecting
-to the broker process, i.e. the daemon process.
+The CRD Windows host has a multi-process architecture, where we run a daemon
+process as SYSTEM at MIC SYSTEM level (//remoting/host/daemon_process.h), which
+also acts as a mojo IPC broker. A network process
+(//remoting/host/remoting_me2me_host.cc) is run as LOCAL_SERVICE at MIC LOW
+level for actually communicating with the client via network requests. A third
+desktop process (//remoting/host/desktop_process.h) is run as SYSTEM at MIC
+SYSTEM level, which is responsible to capturing screen frame data and other
+operations that need to be done on the user session. There are also user
+processes such as the remote-open-url process and file transfer process, which
+is run by the logged in user with MIC MEDIUM level within the CRD session, which
+talks to other CRD processes using Mojo IPC. All CRD processes use Mojo IPC to
+communicate with each other. Mojo connection is established by connecting to
+the broker process, i.e. the daemon process.
 
-CRD Mac and Linux hosts don't really have a real multi-process architecture. The
-Mac host has an agent process broker process
+The Mac host has an agent process broker process
 (//remoting/host/mac/agent_process_broker_main.cc), which is used to make sure
 only one host process (i.e. network process, but with screen capturing and all
 other logic in it) is run at a time. The agent process broker process also acts
-as the mojo broker for user processes.
+as the mojo broker for user processes. It doesn't have a real multi-process
+architecture. Network request handling and screen capturing are done in the same
+process.
 
-Linux only has one single host process (i.e. network process), and it acts as
-the mojo broker for user processes.
+The official Linux host currently only has one single host process (i.e. network
+process), and it acts as the mojo broker for user processes. However, we are
+currently working on a true multi-process architecture for Linux. The dev
+multi-process host on Linux can be run with
+`remoting/tools/run_multi_process_host.py $OUT_DIRECTORY`
+(e.g. OUT_DIRECTORY=out/debug) after building `remoting_dev_me2me_host`.
+
+When necessary, read the following files:
+
+* remoting/host/host_main.cc: Logic to select which routine should be run, based
+  on the `--type` switch.
+  * This file defines all entry points for processes without a standalone
+    binary. The implementations of the entry points live in other files, so you
+    will need to look them up if necessary.
+  * This file also has the logic to determine whether the current process is a
+    mojo broker.
+* remoting/host/remoting_me2me_host.cc: Entry point of the network process.
+* remoting/host/daemon_process.h: Class that holds the daemon process logic.
+  Note that different platforms have different entry points for the daemon
+  process:
+  * remoting/host/win/host_service.cc: The entry point of the daemon process on
+    Windows.
+  * remoting/host/linux/daemon_process_main.cc: The entry point of the daemon
+    process on Linux.
+* remoting/host/desktop_process_main.cc: Entry point of the desktop process.
+* remoting/host/mojom/desktop_session.mojom: Defines interfaces for
+  communications between the network process and the desktop process.
+* remoting/host/mojom/remoting_host.mojom: Defines interfaces for communications
+  between the network process and the daemon process.
+* remoting/host/mojom/chromoting_host_services.mojom: Defines interfaces to
+  allow user processes to communicate with the network process.
+* Other files in remoting/host/mojom: Interfaces for other purposes. Read when
+  necessary.
+
+## Adding/removing processes
+
+There are two types of processes in CRD, namely, processes with a standalone
+binary and processes without a standalone binary. If the developer asks you to
+add a new process, ask them which type of process they want to add.
+
+### Processes with a standalone binary
+
+These are processes such as remote-open-url and remote-webauthn. To add a new
+process with a standalone binary:
+
+1.  Ask if the developer wants to add everything to a new subdirectory or to an
+    existing directory.
+1.  Create a main function header for the new binary. Make sure the function
+    has `HOST_EXPORT`. See remoting/host/remote_open_url/remote_open_url_main.h
+    as an example.
+1.  Implement the main function. See
+    remoting/host/remote_open_url/remote_open_url_main.cc as an example.
+1.  Create an entry point file with the actual `main` function, which calls the
+    function in the main function header. See
+    remoting/host/remote_open_url/remote_open_url_entry_point.cc as an example.
+1.  Create a `source_set` in a BUILD.gn file for the main header, which depends
+    on //remoting/host:host_main_headers, and update the `host_main_headers`
+    target in remoting/host/BUILD.gn so that it is visible to the new target.
+    See remoting/host/remote_open_url/BUILD.gn as an example.
+1.  The main function implementation may be added to either a new target
+    (usually when it is in a new directory), or an existing target. If it is a
+    new target, make sure it has
+    `configs += [ "//remoting/build/config:host_implementation" ]`. The target
+    should depend on the main header target created in the step above. Otherwise
+    the symbol won't be exposed. See remoting/host/remote_open_url/BUILD.gn as
+    an example.
+1.  Add the executable target, which depends on the main header target and
+    remoting_core. See remoting/host/remote_open_url/BUILD.gn as an example.
+1.  If the process needs to be run on Windows, then pay attention to the
+    `if (is_win) {...}` section of the example in the step above, and also
+    update remoting/host/win/core.rc.jinja2. If it is never run on Windows, then
+    you can ignore this step.
+
+### Processes without a standalone binary
+
+These are processes like the daemon process and the network process. They are
+run with `$MAIN_HOST_BINARY --type=$PROCESS_TYPE`. For example, you can run the
+dev daemon process with `remoting_me2me_host  --type=daemon`. To add a new
+process without a standalone binary:
+
+1.  Add a new entry point to remoting/host/host_main.cc
+1.  Update SelectMainRoutine in remoting/host/host_main.cc
+1.  Implement the the entry point in another file that is built into
+    remoting_core.
 
 ## Sanity Checks
 
