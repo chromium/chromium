@@ -38,13 +38,15 @@ BrowserElementsViews* BrowserElementsViews::From(
   return base ? base->AsA<BrowserElementsViews>() : nullptr;
 }
 
-views::View* BrowserElementsViews::GetView(ui::ElementIdentifier id) {
+views::View* BrowserElementsViews::GetView(ui::ElementIdentifier id,
+                                           bool require_visible) {
   return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-      id, GetContext());
+      id, GetContext(), require_visible);
 }
 
 BrowserElementsViews::ViewList BrowserElementsViews::GetAllViews(
-    ui::ElementIdentifier id) {
+    ui::ElementIdentifier id,
+    bool require_visible) {
   return views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
-      id, GetContext());
+      id, GetContext(), require_visible);
 }

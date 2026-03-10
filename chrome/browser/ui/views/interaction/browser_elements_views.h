@@ -41,12 +41,12 @@ class BrowserElementsViews : public BrowserElements {
   // specify context:
 
   using ViewList = views::ElementTrackerViews::ViewList;
-  views::View* GetView(ui::ElementIdentifier id);
-  ViewList GetAllViews(ui::ElementIdentifier id);
+  views::View* GetView(ui::ElementIdentifier id, bool require_visible = false);
+  ViewList GetAllViews(ui::ElementIdentifier id, bool require_visible = false);
 
   template <typename T>
     requires std::derived_from<T, views::View>
-  T* GetViewAs(ui::ElementIdentifier id);
+  T* GetViewAs(ui::ElementIdentifier id, bool require_visible = false);
 
   // Returns the widget of the primary window. Default implementation uses
   // context and `ElementTrackerViews`.
@@ -99,9 +99,10 @@ class BrowserElementsViews : public BrowserElements {
 
 template <typename T>
   requires std::derived_from<T, views::View>
-T* BrowserElementsViews::GetViewAs(ui::ElementIdentifier id) {
+T* BrowserElementsViews::GetViewAs(ui::ElementIdentifier id,
+                                   bool require_visible) {
   return views::ElementTrackerViews::GetInstance()->GetFirstMatchingViewAs<T>(
-      id, GetContext());
+      id, GetContext(), require_visible);
 }
 
 template <typename T>

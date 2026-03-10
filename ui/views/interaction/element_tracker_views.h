@@ -134,15 +134,16 @@ class VIEWS_EXPORT ElementTrackerViews
                             ui::ElementContext context,
                             bool require_visible = false);
 
-  // Returns a list of all visible Views with identifier `id` in `context`.
-  // The list may be empty. Ignores any non-Views elements which might match.
+  // Returns a list of all Views with identifier `id` in `context`. The list
+  // may be empty. Ignores any non-Views elements which might match.
   ViewList GetAllMatchingViews(ui::ElementIdentifier id,
-                               ui::ElementContext context);
+                               ui::ElementContext context,
+                               bool require_visible = false);
 
-  // Returns a list of all visible Views with identifier `id` in any context.
-  // Order is not guaranteed. Ignores any non-Views elements with the same
-  // identifier.
-  ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
+  // Returns a list of all Views with identifier `id` in any context. Order is
+  // not guaranteed. Ignores any non-Views elements with the same identifier.
+  ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id,
+                                           bool require_visible = false);
 
   // Returns a widget that matches the given context. A valid
   // TrackedElementViews must exist within the widget.

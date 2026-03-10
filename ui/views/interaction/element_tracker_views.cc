@@ -134,20 +134,24 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver {
     return nullptr;
   }
 
-  ViewList FindAllViewsInContext(ui::ElementContext context) {
+  ViewList FindAllViewsInContext(ui::ElementContext context,
+                                 bool require_visible) {
     ViewList result;
     for (const ViewData& data : view_data_) {
-      if (data.context == context) {
+      if (data.context == context && (!require_visible || data.visible())) {
         result.push_back(data.view);
       }
     }
     return result;
   }
 
-  ViewList GetAllViews() {
+  ViewList GetAllViews(bool require_visible) {
     ViewList result;
-    std::ranges::transform(view_data_lookup_, std::back_inserter(result),
-                           &ViewDataMap::value_type::first);
+    for (const ViewData& data : view_data_) {
+      if (!require_visible || data.visible()) {
+        result.push_back(data.view);
+      }
+    }
     return result;
   }
 
@@ -337,21 +341,23 @@ View* ElementTrackerViews::GetFirstMatchingView(ui::ElementIdentifier id,
 
 ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
     ui::ElementIdentifier id,
-    ui::ElementContext context) {
+    ui::ElementContext context,
+    bool require_visible) {
   const auto it = element_data_.find(id);
   if (it == element_data_.end()) {
     return ViewList();
   }
-  return it->second.FindAllViewsInContext(context);
+  return it->second.FindAllViewsInContext(context, require_visible);
 }
 
 ElementTrackerViews::ViewList
-ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
+ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id,
+                                                     bool require_visible) {
   const auto it = element_data_.find(id);
   if (it == element_data_.end()) {
     return ViewList();
   }
-  return it->second.GetAllViews();
+  return it->second.GetAllViews(require_visible);
 }
 
 Widget* ElementTrackerViews::GetWidgetForContext(ui::ElementContext context) {
