@@ -52,8 +52,8 @@ String GetToolErrorMessage(const ScriptToolError& error) {
 
 ModelContextTesting::ModelContextTesting(ModelContext& model_context)
     : model_context_(model_context) {
-  model_context_->SetToolsChangedCallback(blink::BindRepeating(
-      &ModelContextTesting::OnToolsChanged, WrapWeakPersistent(this)));
+  model_context_->SetToolChangeCallback(blink::BindRepeating(
+      &ModelContextTesting::OnToolChange, WrapWeakPersistent(this)));
 }
 
 HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
@@ -104,11 +104,6 @@ ScriptPromise<IDLNullable<IDLString>> ModelContextTesting::executeTool(
   return promise;
 }
 
-void ModelContextTesting::registerToolsChangedCallback(
-    V8ToolsChangedCallback* callback) {
-  tools_changed_callback_ = callback;
-}
-
 ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
     ScriptState* script_state) {
   auto* resolver =
@@ -132,22 +127,9 @@ ScriptPromise<IDLString> ModelContextTesting::getCrossDocumentScriptToolResult(
   return promise;
 }
 
-void ModelContextTesting::OnToolsChanged() {
+void ModelContextTesting::OnToolChange() {
   // This is a non-cancelable and non-bubbling event.
   DispatchEvent(*Event::Create(event_type_names::kToolchange));
-
-  if (!tools_changed_callback_) {
-    return;
-  }
-
-  ScriptState* script_state =
-      tools_changed_callback_->CallbackRelevantScriptState();
-  if (!script_state || !script_state->ContextIsValid()) {
-    return;
-  }
-
-  ScriptState::Scope scope(script_state);
-  static_cast<void>(tools_changed_callback_->Invoke(nullptr));
 }
 
 const AtomicString& ModelContextTesting::InterfaceName() const {
@@ -161,7 +143,6 @@ ExecutionContext* ModelContextTesting::GetExecutionContext() const {
 void ModelContextTesting::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   visitor->Trace(model_context_);
-  visitor->Trace(tools_changed_callback_);
 }
 
 }  // namespace blink

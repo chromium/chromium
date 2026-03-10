@@ -250,7 +250,7 @@ void ModelContext::registerTool(ScriptState* script_state,
 
   tool_map_.insert(tool->name(), tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
-  OnToolsChanged();
+  OnToolChange();
 }
 
 void ModelContext::unregisterTool(const String& tool_name,
@@ -264,7 +264,7 @@ void ModelContext::unregisterTool(const String& tool_name,
 
   probe::WebMCPToolRemoved(document_, *it->value);
   tool_map_.erase(it);
-  OnToolsChanged();
+  OnToolChange();
 }
 
 std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
@@ -494,7 +494,7 @@ void ModelContext::RegisterDeclarativeTool(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
   tool_map_.insert(name, tool_data);
   probe::WebMCPToolAdded(document_, *tool_data);
-  OnToolsChanged();
+  OnToolChange();
 }
 
 void ModelContext::OnToolExecuted(uint32_t execution_id,
@@ -514,9 +514,9 @@ void ModelContext::OnToolExecuted(uint32_t execution_id,
   pending_executions_.erase(it);
 }
 
-void ModelContext::OnToolsChanged() {
-  if (tools_changed_closure_) {
-    task_runner_->PostTask(FROM_HERE, *tools_changed_closure_);
+void ModelContext::OnToolChange() {
+  if (tool_change_closure_) {
+    task_runner_->PostTask(FROM_HERE, *tool_change_closure_);
   }
 }
 

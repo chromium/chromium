@@ -126,8 +126,8 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   void CancelTool(uint32_t execution_id);
 
-  void SetToolsChangedCallback(std::optional<base::RepeatingClosure> cb) {
-    tools_changed_closure_ = std::move(cb);
+  void SetToolChangeCallback(std::optional<base::RepeatingClosure> cb) {
+    tool_change_closure_ = std::move(cb);
   }
 
   void RegisterDeclarativeTool(String name,
@@ -158,7 +158,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
 
   void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
 
-  void OnToolsChanged();
+  void OnToolChange();
 
   HeapHashMap<String, Member<ToolData>> tool_map_;
 
@@ -172,7 +172,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;
 
-  std::optional<base::RepeatingClosure> tools_changed_closure_;
+  std::optional<base::RepeatingClosure> tool_change_closure_;
   Member<Document> document_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::ScriptToolHost> script_tool_host_remote_;
