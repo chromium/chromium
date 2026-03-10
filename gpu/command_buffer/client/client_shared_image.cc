@@ -1071,6 +1071,11 @@ ClientSharedImage::BeginWebGPUBufferAccess(
     const wgpu::dawn::wire::client::BufferDescriptor& desc,
     uint64_t usage,
     webgpu::MailboxFlags mailbox_flags) {
+  SCOPED_CRASH_KEY_STRING64("ClientSharedImage", "DebugLabel", debug_label_);
+  SCOPED_CRASH_KEY_STRING256("ClientSharedImage", "Usage",
+                             metadata_.usage.ToString());
+  DUMP_WILL_BE_CHECK(
+      metadata_.usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
   return base::WrapUnique(new WebGPUBufferScopedAccess(
       webgpu, this, sync_token, device, desc, usage, mailbox_flags));
 }
