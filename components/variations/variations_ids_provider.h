@@ -193,6 +193,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
   // Resets any cached state for tests.
   void ResetForTesting();
 
+  // Returns the current time.
+  base::Time GetCurrentTime() const { return clock_->Now(); }
+
  private:
   using VariationIDEntry = std::pair<VariationID, IDCollectionKey>;
   using VariationIDEntrySet = absl::flat_hash_set<VariationIDEntry>;

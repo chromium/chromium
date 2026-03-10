@@ -335,7 +335,7 @@ void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
   // Check if an update is needed. If not, return early (the currently cached
   // values are still valid), otherwise, update the cached values and notify
   // observers.  See `UpdateIsNeeded()` for more details.
-  const base::Time current_time = clock_->Now();
+  const base::Time current_time = GetCurrentTime();
   if (!UpdateIsNeeded(current_time)) {
     return;
   }
