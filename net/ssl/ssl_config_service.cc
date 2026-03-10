@@ -6,11 +6,14 @@
 
 #include <tuple>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "net/base/features.h"
+#include "net/cert/x509_util.h"
 #include "net/ssl/ssl_config_service_defaults.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/boringssl/src/pki/signature_algorithm.h"
@@ -54,6 +57,59 @@ void AddIntersectingTrustAnchorIdsToEncodedList(
     if (trust_anchor_ids.contains(server_advertised_tai)) {
       AddTrustAnchorIdToEncodedList(server_advertised_tai,
                                     selected_trust_anchor_ids);
+    }
+  }
+}
+
+void AddIntersectingMTCTrustAnchorIdsToEncodedList(
+    const std::vector<std::vector<uint8_t>>& mtc_trust_anchor_ids,
+    const std::vector<std::vector<uint8_t>>& server_advertised_trust_anchor_ids,
+    std::vector<uint8_t>& selected_trust_anchor_ids) {
+  // TODO(crbug.com/452986179): consider plumbing the MTC trust anchor ids into
+  // SSLContextConfig in decomposed form, so that we don't need to parse them
+  // back into separate base id and landmark number here. (And could plumb in
+  // the minimum landmark too, in order to do the full comparison.)
+
+  // Hasher that allows heterogeneous lookup from span<const uint8_t>.
+  struct ByteSpanHash
+      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
+    using is_transparent = void;
+  };
+
+  // Construct mapping of trusted MTC anchor base_id to maximum supported
+  // landmark number for that anchor.
+  absl::flat_hash_map<std::vector<uint8_t>, uint64_t, ByteSpanHash,
+                      std::ranges::equal_to>
+      mtc_base_id_landmarks;
+  for (const auto& tai : mtc_trust_anchor_ids) {
+    auto split = x509_util::SplitLastOidComponent(tai);
+    if (!split) {
+      continue;
+    }
+    mtc_base_id_landmarks[base::ToVector(split->base_id)] =
+        split->last_component;
+  }
+
+  // For each server advertised TAI, check if it matches a trusted MTC anchor
+  // and is within the known landmark range.
+  for (const auto& server_tai : server_advertised_trust_anchor_ids) {
+    auto split_server_tai = x509_util::SplitLastOidComponent(server_tai);
+    if (!split_server_tai) {
+      continue;
+    }
+    auto matching_known_mtc =
+        mtc_base_id_landmarks.find(split_server_tai->base_id);
+    if (matching_known_mtc != mtc_base_id_landmarks.end() &&
+        split_server_tai->last_component <= matching_known_mtc->second) {
+      AddTrustAnchorIdToEncodedList(
+          x509_util::AppendOidComponent(matching_known_mtc->first,
+                                        matching_known_mtc->second),
+          selected_trust_anchor_ids);
+
+      // Remove the entry from the trusted MTC anchors map, so that we don't
+      // include the same TAI again in the result if multiple server TAIs match
+      // the same trusted TAI.
+      mtc_base_id_landmarks.erase(matching_known_mtc);
     }
   }
 }
@@ -131,7 +187,8 @@ SSLContextConfig::SelectTrustAnchorIDsForRetry(
   // failed to verify. There is some complexity in figuring out which TAI
   // matched the certificate the server sent, but that should be possible to
   // figure out by looking for a matching issuer name in the root store and
-  // checking the TAI for that anchor.
+  // checking the TAI for that anchor, except that root store information isn't
+  // available at this layer.
   // If this is done it could replace the special-case MTC fallback here since
   // it should be able to handle that case too.
   if (server_cert->signature_algorithm() ==
@@ -146,12 +203,9 @@ SSLContextConfig::SelectTrustAnchorIDsForRetry(
     return selected_trust_anchor_ids;
   }
 
-  // TODO(crbug.com/452986179): For the normal retry case, we should only send
-  // an MTC trust anchor ID if it intersects with the server advertised IDs.
-  for (const auto& mtc_trust_anchor_id : mtc_trust_anchor_ids) {
-    AddTrustAnchorIdToEncodedList(mtc_trust_anchor_id,
-                                  selected_trust_anchor_ids);
-  }
+  AddIntersectingMTCTrustAnchorIdsToEncodedList(
+      mtc_trust_anchor_ids, server_advertised_trust_anchor_ids,
+      selected_trust_anchor_ids);
 
   if (selected_trust_anchor_ids.empty()) {
     // If there is no intersection between the supported trust anchor IDs and

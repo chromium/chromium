@@ -209,6 +209,21 @@ NET_EXPORT std::optional<uint64_t> LastOidComponentFromBase(
     base::span<const uint8_t> oid,
     base::span<const uint8_t> base);
 
+// Given a DER-encoded relative OID, returns a struct containing the span of
+// the encoded base OID (the input OID with the last component removed), and
+// the integer value of the last component. If the input `oid` only contains
+// one component, the base_id returned will be empty. Returns nullopt on error.
+struct NET_EXPORT BaseOidAndComponent {
+  // The base id of `oid`, referring to memory in the `oid` that was passed into
+  // SplitLastOidComponent. This is not guaranteed to be valid DER.
+  base::raw_span<const uint8_t> base_id;
+
+  // The last component of `oid`, in integer form.
+  uint64_t last_component;
+};
+NET_EXPORT std::optional<BaseOidAndComponent> SplitLastOidComponent(
+    base::span<const uint8_t> oid);
+
 // Returns the textual representation of a DER-encoded Relative-OID.
 NET_EXPORT std::string RelativeOidToString(
     base::span<const uint8_t> relative_oid);

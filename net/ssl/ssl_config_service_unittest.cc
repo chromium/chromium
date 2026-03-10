@@ -263,8 +263,12 @@ TEST(SSLContextConfigTest, TrustAnchorIDsAndMTCs) {
   const std::vector<uint8_t> other_id3 = {0x36, 0x09, 0x08};
 
   const std::vector<uint8_t> known_mtc1 = {0x99, 0x02, 0x03};
+  const std::vector<uint8_t> newer_mtc1 = {0x99, 0x02, 0x04};
+
   const std::vector<uint8_t> known_mtc2 = {0x98, 0x05, 0x04};
+
   const std::vector<uint8_t> known_mtc3 = {0x97, 0x05, 0x03};
+  const std::vector<uint8_t> older_mtc3 = {0x97, 0x05, 0x02};
 
   SSLContextConfig config;
 
@@ -287,37 +291,71 @@ TEST(SSLContextConfigTest, TrustAnchorIDsAndMTCs) {
   scoped_refptr<X509Certificate> leaf =
       net::CertBuilder::CreateSimpleChain(1u)[0]->GetX509Certificate();
 
-  // TODO(crbug.com/452986179): When MTCs are configured, they are currently
-  // included unconditionally in TAI advertisements, even in the retry case.
-  // For the retry case, it should be changed to only send an MTC TAI if it
-  // intersects with the server advertised IDs.
+  // When the server only advertised classic TAIs, no MTC TAI should be
+  // advertised in the retry.
   {
     bool used_mtc_fallback = false;
-    EXPECT_EQ(EncodeTrustAnchorIDs(
-                  {known_id1, known_id3, known_mtc1, known_mtc2, known_mtc3}),
+    EXPECT_EQ(EncodeTrustAnchorIDs({known_id1, known_id3}),
               config.SelectTrustAnchorIDsForRetry(
                   leaf.get(), {known_id1, other_id2, known_id3, other_id3},
                   &used_mtc_fallback));
     EXPECT_FALSE(used_mtc_fallback);
   }
 
+  // When there is no intersection between the server TAIs and either the
+  // configured classic or MTC TAIs, the retry should not be attempted.
   {
     bool used_mtc_fallback = false;
-    EXPECT_EQ(EncodeTrustAnchorIDs({known_mtc1, known_mtc2, known_mtc3}),
-              config.SelectTrustAnchorIDsForRetry(
-                  leaf.get(), {other_id1, other_id3}, &used_mtc_fallback));
+    EXPECT_EQ(std::nullopt, config.SelectTrustAnchorIDsForRetry(
+                                leaf.get(), {other_id1, other_id3, newer_mtc1},
+                                &used_mtc_fallback));
+    EXPECT_FALSE(used_mtc_fallback);
+  }
+
+  // An intersection containing only MTC TAIs.
+  {
+    bool used_mtc_fallback = false;
+    EXPECT_EQ(
+        // MTC1 is not included in the retry advertisement, since the server
+        // advertised an MTC with a landmark higher than the known one.
+        // For MTC2 the server landmark matched the known one, and MTC3 the
+        // server landmark was earlier than the known one, so both of those are
+        // included.
+        EncodeTrustAnchorIDs({known_mtc2, known_mtc3}),
+        config.SelectTrustAnchorIDsForRetry(
+            leaf.get(),
+            {other_id2, newer_mtc1, known_mtc2, older_mtc3, other_id3},
+            &used_mtc_fallback));
+    EXPECT_FALSE(used_mtc_fallback);
+  }
+
+  // An intersection which contains both classic and MTC TAIs.
+  {
+    bool used_mtc_fallback = false;
+    EXPECT_EQ(
+        // MTC1 is not included in the retry advertisement, since the server
+        // advertised an MTC with a landmark higher than the known one.
+        // For MTC2 the server landmark matched the known one, and MTC3 the
+        // server landmark was earlier than the known one, so both of those are
+        // included.
+        EncodeTrustAnchorIDs({known_id1, known_id3, known_mtc2, known_mtc3}),
+        config.SelectTrustAnchorIDsForRetry(
+            leaf.get(),
+            {known_id1, other_id2, known_id3, other_id3, newer_mtc1, known_mtc2,
+             older_mtc3},
+            &used_mtc_fallback));
     EXPECT_FALSE(used_mtc_fallback);
   }
 
   // MTC fallback. If the server sent an MTC leaf and it failed, we retry
-  // without the MTC TAIs.
+  // without the MTC TAIs, even if they would have intersected.
   scoped_refptr<X509Certificate> mtc_leaf = GetTestSignaturelessMTC();
   {
     // If there was an intersection with the classic TAIs, retry with that.
     bool used_mtc_fallback = false;
     EXPECT_EQ(EncodeTrustAnchorIDs({known_id2}),
               config.SelectTrustAnchorIDsForRetry(
-                  mtc_leaf.get(), {known_id2, other_id1, other_id3},
+                  mtc_leaf.get(), {known_id2, other_id1, other_id3, known_mtc2},
                   &used_mtc_fallback));
     EXPECT_TRUE(used_mtc_fallback);
   }
@@ -331,6 +369,36 @@ TEST(SSLContextConfigTest, TrustAnchorIDsAndMTCs) {
                   mtc_leaf.get(), {other_id1, other_id3}, &used_mtc_fallback));
     EXPECT_TRUE(used_mtc_fallback);
   }
+}
+
+TEST(SSLContextConfigTest, TrustAnchorIDsRetryMultipleTAIsMatchOneMTCAnchor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+
+  const std::vector<uint8_t> known_mtc1 = {0x99, 0x02, 0x03};
+  const std::vector<uint8_t> older_mtc1 = {0x99, 0x02, 0x02};
+  const std::vector<uint8_t> newer_mtc1 = {0x99, 0x02, 0x04};
+
+  const std::vector<uint8_t> known_mtc2 = {0x98, 0x05, 0x04};
+  const std::vector<uint8_t> newer_mtc2 = {0x98, 0x05, 0x05};
+
+  const std::vector<uint8_t> known_mtc3 = {0x97, 0x05, 0x03};
+
+  SSLContextConfig config;
+  config.mtc_trust_anchor_ids = {known_mtc1, known_mtc2, known_mtc3};
+
+  scoped_refptr<X509Certificate> leaf =
+      net::CertBuilder::CreateSimpleChain(1u)[0]->GetX509Certificate();
+
+  bool used_mtc_fallback = false;
+  // Multiple TAIs advertised by the server matched mtc1, but it should only
+  // be included once in the retry list.
+  EXPECT_EQ(EncodeTrustAnchorIDs({known_mtc1, known_mtc3}),
+            config.SelectTrustAnchorIDsForRetry(
+                leaf.get(),
+                {older_mtc1, known_mtc1, newer_mtc1, newer_mtc2, known_mtc3},
+                &used_mtc_fallback));
+  EXPECT_FALSE(used_mtc_fallback);
 }
 
 }  // namespace net
