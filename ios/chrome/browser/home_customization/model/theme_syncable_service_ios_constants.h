@@ -46,7 +46,8 @@ enum class IOSThemeSyncRemoteAction {
   kMissingSpecifics = 3,
   kTooManyChangesError = 4,
   kInvalidChangeTypeError = 5,
-  kMaxValue = kInvalidChangeTypeError,
+  kIgnoredUnsyncableLocalTheme = 6,
+  kMaxValue = kIgnoredUnsyncableLocalTheme,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSThemeSyncRemoteAction)
 

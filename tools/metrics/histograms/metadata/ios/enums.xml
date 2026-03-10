@@ -1809,6 +1809,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Error: Missing specifics"/>
   <int value="4" label="Error: Too many changes"/>
   <int value="5" label="Error: Invalid change type"/>
+  <int value="6" label="Ignored (Local Theme Unsyncable)"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h:IOSThemeSyncRemoteAction) -->

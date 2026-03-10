@@ -83,6 +83,18 @@ std::optional<ModelError> ThemeSyncableServiceIOS::MergeDataAndStartSyncing(
 
   base::UmaHistogramEnumeration(kThemeSyncInitialState,
                                 IOSThemeSyncInitialState::kHasRemoteData);
+
+  // If the local theme is unsyncable (e.g., a user-uploaded photo) AND not
+  // managed by policy, ignore the initial remote data. This prevents the
+  // server's stale theme from overwriting the local photo on every app startup.
+  if (!delegate_->IsCurrentThemeManagedByPolicy() &&
+      !delegate_->IsCurrentThemeSyncable()) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncRemoteAction,
+        IOSThemeSyncRemoteAction::kIgnoredUnsyncableLocalTheme);
+    return std::nullopt;
+  }
+
   return ValidateAndApplyRemoteTheme(initial_sync_data[0]);
 }
 

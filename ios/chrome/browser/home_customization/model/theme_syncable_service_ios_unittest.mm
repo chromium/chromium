@@ -206,7 +206,7 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataFailsWithMissingSpecifics) {
 // policy.
 TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfManagedByPolicy) {
   EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(delegate_, ApplyTheme(_)).Times(0);
 
   syncer::FakeSyncChangeProcessor* processor =
@@ -219,28 +219,27 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfManagedByPolicy) {
       1);
 }
 
-// Verifies that a remote theme is applied locally even if the current local
-// theme is unsyncable (e.g., user-uploaded image), as long as it's not managed.
-TEST_F(ThemeSyncableServiceIOSTest,
-       MergeDataAppliesLocallyIfNotSyncableButNotManaged) {
-  ON_CALL(delegate_, GetCurrentTheme())
-      .WillByDefault(Return(CreateTestTheme(111)));
+// Checks that initial remote data is ignored if the local theme is unsyncable
+// (e.g., a user-uploaded photo). This prevents overwriting a local photo
+// during the initial sync startup sequence.
+TEST_F(ThemeSyncableServiceIOSTest, MergeDataIgnoredIfLocalThemeUnsyncable) {
   EXPECT_CALL(delegate_, IsCurrentThemeSyncable())
       .WillRepeatedly(Return(false));
   EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
       .WillRepeatedly(Return(false));
 
-  EXPECT_CALL(delegate_, ApplyTheme(EqualsProto(CreateTestTheme(222))))
-      .Times(1);
+  // The remote theme should NOT be applied.
+  EXPECT_CALL(delegate_, ApplyTheme(_)).Times(0);
 
-  std::optional<syncer::ModelError> error = service_->MergeDataAndStartSyncing(
-      syncer::THEMES_IOS, {CreateSyncData(222)},
-      std::make_unique<syncer::FakeSyncChangeProcessor>());
+  syncer::FakeSyncChangeProcessor* processor =
+      StartSyncing({CreateSyncData(222)});
 
-  EXPECT_FALSE(error.has_value());
+  EXPECT_TRUE(processor->changes().empty());
 
-  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
-                                       IOSThemeSyncRemoteAction::kApplied, 1);
+  // Should log the new kIgnoredUnsyncableLocalTheme action.
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction,
+      IOSThemeSyncRemoteAction::kIgnoredUnsyncableLocalTheme, 1);
 }
 
 // Checks that the theme is not re-applied if the remote theme matches the local
@@ -373,8 +372,9 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesIgnoredIfManagedByPolicy) {
       1);
 }
 
-// Checks that remote updates are applied locally even if the current local
-// theme is unsyncable, as long as it's not managed by policy.
+// Checks that live remote updates are applied locally even if the current local
+// theme is unsyncable, as long as it's not managed by policy. This ensures
+// explicit cross-device changes override local unsyncable photos.
 TEST_F(ThemeSyncableServiceIOSTest,
        ProcessChangesAppliesIfNotSyncableButNotManaged) {
   syncer::FakeSyncChangeProcessor* processor = StartSyncing();
