@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/broker_services.h"
 #include "sandbox/win/src/ipc_tags.h"
@@ -90,9 +85,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::wstring_view param_1_wstring;
   const unsigned char* param_data = nullptr;
   if (params.params[1].real_type_ == sandbox::ArgType::WCHAR_TYPE) {
-    param_1_wstring =
-        std::wstring_view(reinterpret_cast<wchar_t*>(pointed_at_bytes.data()),
-                          pointed_at_bytes.size() / sizeof(wchar_t));
+    param_1_wstring = std::wstring_view(
+        UNSAFE_TODO(reinterpret_cast<wchar_t*>(pointed_at_bytes.data())),
+        pointed_at_bytes.size() / sizeof(wchar_t));
     params.params[1].address_ = &param_1_wstring;
   } else {
     param_data = pointed_at_bytes.data();
@@ -104,7 +99,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   auto string_bytes =
       data_provider.ConsumeBytes<uint8_t>(data_provider.remaining_bytes());
   std::wstring_view wcharview_variable(
-      reinterpret_cast<wchar_t*>(string_bytes.data()),
+      UNSAFE_TODO(reinterpret_cast<wchar_t*>(string_bytes.data())),
       string_bytes.size() / sizeof(wchar_t));
   params.params[0].address_ = &wcharview_variable;
 

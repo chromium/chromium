@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "sandbox/linux/tests/unit_tests.h"
 
 #include <fcntl.h>
@@ -25,6 +20,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
@@ -350,7 +346,7 @@ void UnitTests::DeathBySignal(int status,
 }
 
 void UnitTests::AssertionFailure(const char* expr, const char* file, int line) {
-  fprintf(stderr, "%s:%d:%s", file, line, expr);
+  UNSAFE_TODO(fprintf(stderr, "%s:%d:%s", file, line, expr));
   fflush(stderr);
   _exit(kExitWithAssertionFailure);
 }

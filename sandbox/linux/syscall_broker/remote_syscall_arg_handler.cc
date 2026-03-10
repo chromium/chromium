@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/syscall_broker/remote_syscall_arg_handler.h"
 
 #include <string.h>
@@ -20,6 +15,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
@@ -39,8 +35,8 @@ RemoteProcessIOResult WriteRemoteData(pid_t pid,
                                       base::span<char> data) {
   CHECK_GE(remote_size, data.size());
 
-  base::span<char> remote_span(reinterpret_cast<char*>(remote_addr),
-                               remote_size);
+  base::span<char> remote_span = UNSAFE_TODO(
+      base::span<char>(reinterpret_cast<char*>(remote_addr), remote_size));
   struct iovec local_iov = {};
   struct iovec remote_iov = {};
 
@@ -128,8 +124,8 @@ RemoteProcessIOResult ReadFilePathFromRemoteProcess(pid_t pid,
     buffer_span = buffer_span.subspan(bytes_read_size_t);
 
     // Check for null byte.
-    char* null_byte_ptr =
-        static_cast<char*>(memchr(local_iov.iov_base, '\0', bytes_read_size_t));
+    char* null_byte_ptr = static_cast<char*>(
+        UNSAFE_TODO(memchr(local_iov.iov_base, '\0', bytes_read_size_t)));
     if (null_byte_ptr) {
       *out_str = std::string(buffer, null_byte_ptr);
       return RemoteProcessIOResult::kSuccess;
