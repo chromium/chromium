@@ -12714,6 +12714,14 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           You can now manage your tab groups, Gemini chats, and AI Mode threads in one place. Unpin this at any time.
         </message>
 
+        <message name="IDS_RESUMPTION_RAIL_IPH_BODY_ONLY_GEMINI" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint, excluding language about AI Mode.">
+          You can now manage your tab groups and Gemini chats in one place. Unpin this at any time.
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_IPH_BODY_ONLY_AI_MODE" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint, excluding language about Gemini.">
+          You can now manage your tab groups and AI Mode threads in one place. Unpin this at any time.
+        </message>
+
         <message name="IDS_RESUMPTION_RAIL_IPH_BODY_NO_THREADS" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint, including only language about tab groups.">
           You can now manage your tab groups here. Unpin this at any time.
         </message>
@@ -12722,8 +12730,24 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Pick up where you left off on Gemini and AI Mode
         </message>
 
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_TITLE_ONLY_GEMINI" desc="The title text of an IPH that educates users about accessing Gemini chats via the Resumption Rail entrypoint.">
+          Pick up where you left off on Gemini
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_TITLE_ONLY_AI_MODE" desc="The title text of an IPH that educates users about accessing AI Mode threads via the Resumption Rail entrypoint.">
+          Pick up where you left off on AI Mode
+        </message>
+
         <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_BODY" desc="The body text of an IPH that educates users about accessing Gemini and AI Mode threads via the Resumption Rail entrypoint.">
           You can now directly resume Gemini chats and AI Mode threads here. Unpin this at any time.
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_BODY_ONLY_GEMINI" desc="The body text of an IPH that educates users about accessing Gemini threads via the Resumption Rail entrypoint.">
+          You can now directly resume Gemini chats here. Unpin this at any time.
+        </message>
+
+        <message name="IDS_RESUMPTION_RAIL_THREADS_IPH_BODY_ONLY_AI_MODE" desc="The body text of an IPH that educates users about accessing AI Mode threads via the Resumption Rail entrypoint.">
+          You can now directly resume AI Mode threads here. Unpin this at any time.
         </message>
 
         <if expr="use_titlecase">
