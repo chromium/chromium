@@ -167,7 +167,12 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
   void UpdateObserverStateForWidget(views::Widget* widget,
                                     bool force_update = false);
 
-  base::ObserverList<PictureInPictureOcclusionTrackerObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      PictureInPictureOcclusionTrackerObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
