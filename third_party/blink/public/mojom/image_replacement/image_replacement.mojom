@@ -1,0 +1,36 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// Browser -> Renderer interface to manage a single image replacement (where an
+// image in a HTML document is replaced in-place with remote content (hosted and
+// rendered by a page in an iframe).
+// Note: Features using image replacement will need to send the browser a
+// pending_remote<ImageReplacement> through a separate interface.
+interface ImageReplacement {
+  // Starts the replacement of the image in the renderer (i.e. creates the
+  // shadow tree, and appends a blank iframe).
+  //
+  // Params:
+  //   `host_remote`: Will be used to communicate with the browser process about
+  //     this image's replacement.
+  StartReplacement(pending_remote<ImageReplacementHost> host_remote);
+};
+
+// Renderer -> Browser interface to communicate status for a single image
+// replacement.
+interface ImageReplacementHost {
+  // Called by the renderer after an iframe (represented by
+  // `replacement_frame_token`) has been attached. This subframe will be
+  // used by the browser to render the replacement.
+  //
+  // Params:
+  //   `replacement_frame_token`: Identifier for the subframe in the replacement
+  //     image shadow tree. The host is responsible for navigating this subframe
+  //     to the remote content.
+  ReplacementFrameAttached(LocalFrameToken replacement_frame_token);
+};

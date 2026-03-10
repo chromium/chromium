@@ -1,0 +1,12 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_image_replacement = [
+  "document_image_replacements.cc",
+  "document_image_replacements.h",
+  "image_replacement.cc",
+  "image_replacement.h",
+]
+
+blink_core_tests_image_replacement = [ "image_replacement_test.cc" ]

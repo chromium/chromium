@@ -112,6 +112,7 @@ mojom("mojom_platform") {
     "hyphenation/hyphenation.mojom",
     "idle/idle_manager.mojom",
     "image_downloader/image_downloader.mojom",
+    "image_replacement/image_replacement.mojom",
     "input/focus_type.mojom",
     "input/gesture_event.mojom",
     "input/handwriting_gesture_result.mojom",
