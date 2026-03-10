@@ -2800,6 +2800,7 @@ FlexLayoutAlgorithm::ComputeMinMaxSizeOfMultilineColumnContainer() {
 }
 
 MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainer() {
+  DCHECK(!is_column_);
   MinMaxSizes container_sizes;
   bool depends_on_block_constraints = false;
 
@@ -2918,25 +2919,23 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  if (is_column_ && is_multi_line_) {
-    return ComputeMinMaxSizeOfMultilineColumnContainer();
-  }
-
-  if (RuntimeEnabledFeatures::LayoutFlexNewRowAlgorithmEnabled() &&
-      !is_column_) {
+  if (!is_column_) {
     return ComputeMinMaxSizeOfRowContainer();
   }
 
+  if (is_multi_line_) {
+    return ComputeMinMaxSizeOfMultilineColumnContainer();
+  }
+
+  // Calculate for non-wrappable column items.
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
-  int number_of_items = 0;
   FlexChildIterator iterator(Node());
   for (BlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned())
       continue;
-    number_of_items++;
 
     const ConstraintSpace space = BuildSpaceForIntrinsicInlineSize(
         child, ResolvedAlignSelf(child.Style()));
@@ -2947,24 +2946,8 @@ MinMaxSizesResult FlexLayoutAlgorithm::ComputeMinMaxSizes(
     child_result.sizes += child_margins.InlineSum();
 
     depends_on_block_constraints |= child_result.depends_on_block_constraints;
-    if (is_column_) {
-      sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
-      sizes.max_size = std::max(sizes.max_size, child_result.sizes.max_size);
-    } else {
-      sizes.max_size += child_result.sizes.max_size;
-      if (is_multi_line_) {
-        sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
-      } else {
-        sizes.min_size += child_result.sizes.min_size;
-      }
-    }
-  }
-  if (!is_column_ && number_of_items > 0) {
-    LayoutUnit gap_inline_size = (number_of_items - 1) * gap_between_items_;
-    sizes.max_size += gap_inline_size;
-    if (!is_multi_line_) {
-      sizes.min_size += gap_inline_size;
-    }
+    sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
+    sizes.max_size = std::max(sizes.max_size, child_result.sizes.max_size);
   }
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);
 

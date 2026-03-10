@@ -3375,10 +3375,6 @@
       status: "stable",
     },
     {
-      name: "LayoutFlexNewRowAlgorithm",
-      status: "stable",
-    },
-    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
