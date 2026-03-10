@@ -10,7 +10,7 @@ export function getHtml(this: SetupListElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <ntp-module-header
-    id="moduleHeaderElementV2"
+    id="moduleHeader"
     header-text="${this.i18n('modulesSetupListTitle')}"
     .menuItems="${[
         {

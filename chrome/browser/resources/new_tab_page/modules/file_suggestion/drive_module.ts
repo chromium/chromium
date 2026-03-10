@@ -20,7 +20,7 @@ import type {FileSuggestionElement} from './file_suggestion.js';
 export interface DriveModuleElement {
   $: {
     fileSuggestion: FileSuggestionElement,
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
   };
 }
 

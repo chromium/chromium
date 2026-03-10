@@ -53,8 +53,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     assertTrue(!!module);
 
     // Assert.
-    assertTrue(isVisible(module.$.moduleHeaderElementV2));
-    assertEquals(module.$.moduleHeaderElementV2.headerText, title);
+    assertTrue(isVisible(module.$.moduleHeader));
+    assertEquals(module.$.moduleHeader.headerText, title);
   });
 
   test('does not creates module if no data', async () => {
@@ -94,8 +94,9 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
         // Act.
         const whenFired = eventToPromise('disable-module', module);
-        const disableButton = module.$.moduleHeaderElementV2.shadowRoot
-                                  .querySelector<HTMLElement>('#disable');
+        const disableButton =
+            module.$.moduleHeader.shadowRoot.querySelector<HTMLElement>(
+                '#disable');
         assertTrue(!!disableButton);
         disableButton.click();
 
@@ -131,7 +132,7 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
     assertTrue(!!module);
 
     // Assert.
-    const dismissButton = $$(module.$.moduleHeaderElementV2, '#dismiss');
+    const dismissButton = $$(module.$.moduleHeader, '#dismiss');
     assertTrue(!!dismissButton);
     assertTrue(!!dismissButton.textContent);
     assertEquals(

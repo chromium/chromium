@@ -64,7 +64,7 @@ suite('MicrosoftFilesModule', () => {
     assertFalse(!!$$(microsoftFilesModule, 'ntp-info-dialog'));
 
     // Act.
-    const infoButton = microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
+    const infoButton = microsoftFilesModule.$.moduleHeader.shadowRoot
                            .querySelector<HTMLElement>('#info');
     assertTrue(!!infoButton);
     infoButton.click();
@@ -86,9 +86,8 @@ suite('MicrosoftFilesModule', () => {
 
     // Act.
     const whenFired = eventToPromise('disable-module', microsoftFilesModule);
-    const disableButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
-            .querySelector<HTMLElement>('#disable');
+    const disableButton = microsoftFilesModule.$.moduleHeader.shadowRoot
+                              .querySelector<HTMLElement>('#disable');
     assertTrue(!!disableButton);
     disableButton.click();
 
@@ -110,9 +109,8 @@ suite('MicrosoftFilesModule', () => {
     await microtasksFinished();
 
     // Act.
-    const signoutButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
-            .querySelector<HTMLElement>('#signout');
+    const signoutButton = microsoftFilesModule.$.moduleHeader.shadowRoot
+                              .querySelector<HTMLElement>('#signout');
     assertTrue(!!signoutButton);
     signoutButton.click();
 
@@ -131,9 +129,9 @@ suite('MicrosoftFilesModule', () => {
     await microtasksFinished();
 
     // Assert.
-    assertTrue(isVisible(microsoftFilesModule.$.moduleHeaderElementV2));
+    assertTrue(isVisible(microsoftFilesModule.$.moduleHeader));
     assertEquals(
-        microsoftFilesModule.$.moduleHeaderElementV2.headerText,
+        microsoftFilesModule.$.moduleHeader.headerText,
         modulesMicrosoftFilesName);
   });
 
@@ -159,9 +157,8 @@ suite('MicrosoftFilesModule', () => {
     // Dismiss module.
     const whenFired =
         eventToPromise('dismiss-module-instance', microsoftFilesModule);
-    const dismissButton =
-        microsoftFilesModule.$.moduleHeaderElementV2.shadowRoot
-            .querySelector<HTMLElement>('#dismiss');
+    const dismissButton = microsoftFilesModule.$.moduleHeader.shadowRoot
+                              .querySelector<HTMLElement>('#dismiss');
     assertTrue(!!dismissButton);
     dismissButton.click();
 

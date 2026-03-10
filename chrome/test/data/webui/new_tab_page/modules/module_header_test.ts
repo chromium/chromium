@@ -9,39 +9,39 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ModuleHeaderV2', () => {
-  let moduleHeaderElementV2: ModuleHeaderElementV2;
+  let moduleHeader: ModuleHeaderElementV2;
 
   setup(() => {
     loadTimeData.overrideValues({hideDismissModules: true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    moduleHeaderElementV2 = new ModuleHeaderElementV2();
-    document.body.appendChild(moduleHeaderElementV2);
+    moduleHeader = new ModuleHeaderElementV2();
+    document.body.appendChild(moduleHeader);
   });
 
   test('title only shows if headerText is not null', async () => {
     // Assert.
-    assertFalse(isVisible(moduleHeaderElementV2.$.title));
+    assertFalse(isVisible(moduleHeader.$.title));
 
     // Act.
-    moduleHeaderElementV2.headerText = 'foo';
+    moduleHeader.headerText = 'foo';
     await microtasksFinished();
 
     // Assert
-    assertTrue(isVisible(moduleHeaderElementV2.$.title));
+    assertTrue(isVisible(moduleHeader.$.title));
   });
 
   test('clicking the menu button shows the action menu', async () => {
     // Act.
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
 
     // Assert.
-    assertTrue(moduleHeaderElementV2.$.actionMenu.open);
+    assertTrue(moduleHeader.$.actionMenu.open);
   });
 
   test('menu items are displayed', async () => {
     // Act.
-    moduleHeaderElementV2.menuItems = [
+    moduleHeader.menuItems = [
       {
         action: 'foo',
         icon: 'modules:foo',
@@ -53,12 +53,11 @@ suite('ModuleHeaderV2', () => {
         text: 'Bar',
       },
     ];
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
 
     // Assert.
-    const dropDownItems =
-        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    const dropDownItems = moduleHeader.shadowRoot.querySelectorAll('button');
     assertEquals(3, dropDownItems.length);
     assertEquals('foo', dropDownItems[0]!.id);
     assertEquals('bar', dropDownItems[1]!.id);
@@ -67,7 +66,7 @@ suite('ModuleHeaderV2', () => {
 
   test('customize modules hides if `hideCustomize` is set', async () => {
     // Arrange.
-    moduleHeaderElementV2.menuItems = [
+    moduleHeader.menuItems = [
       {
         action: 'foo',
         icon: 'modules:foo',
@@ -79,21 +78,20 @@ suite('ModuleHeaderV2', () => {
         text: 'Bar',
       },
     ];
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
-    let dropDownItems =
-        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    let dropDownItems = moduleHeader.shadowRoot.querySelectorAll('button');
     assertEquals(3, dropDownItems.length);
     assertEquals('customize-module', dropDownItems[2]!.id);
-    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    const horizontalRule = $$(moduleHeader, 'hr');
     assertTrue(isVisible(horizontalRule));
 
     // Act.
-    moduleHeaderElementV2.hideCustomize = true;
+    moduleHeader.hideCustomize = true;
     await microtasksFinished();
 
     // Assert.
-    dropDownItems = moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    dropDownItems = moduleHeader.shadowRoot.querySelectorAll('button');
     assertEquals(2, dropDownItems.length);
     assertFalse(isVisible(horizontalRule));
   });
@@ -101,36 +99,35 @@ suite('ModuleHeaderV2', () => {
 
   test('horizontal rule shows if `menuItems` is not empty', async () => {
     // Act.
-    moduleHeaderElementV2.menuItems = [
+    moduleHeader.menuItems = [
       {
         action: 'baz',
         icon: 'modules:baz',
         text: 'Baz',
       },
     ];
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
 
     // Assert.
-    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    const horizontalRule = $$(moduleHeader, 'hr');
     assertTrue(isVisible(horizontalRule));
   });
 
   test('horizontal rule hides if `menuItems` is empty', async () => {
     // Act.
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
 
     // Assert.
-    const dropDownItems =
-        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    const dropDownItems = moduleHeader.shadowRoot.querySelectorAll('button');
     assertEquals(1, dropDownItems.length);
-    const horizontalRule = $$(moduleHeaderElementV2, 'hr');
+    const horizontalRule = $$(moduleHeader, 'hr');
     assertFalse(isVisible(horizontalRule));
   });
 
   test('dismiss action is hidden if `hideDismissModules` is true', async () => {
-    moduleHeaderElementV2.menuItems = [
+    moduleHeader.menuItems = [
       {
         action: 'dismiss',
         icon: 'modules:dismiss',
@@ -142,10 +139,9 @@ suite('ModuleHeaderV2', () => {
         text: 'Disable',
       },
     ];
-    moduleHeaderElementV2.$.menuButton.click();
+    moduleHeader.$.menuButton.click();
     await microtasksFinished();
-    const dropDownItems =
-        moduleHeaderElementV2.shadowRoot.querySelectorAll('button');
+    const dropDownItems = moduleHeader.shadowRoot.querySelectorAll('button');
     assertEquals(2, dropDownItems.length);
     assertEquals('disable', dropDownItems[0]!.id);
     assertEquals('customize-module', dropDownItems[1]!.id);
