@@ -15,6 +15,7 @@
 #import "base/timer/timer.h"
 #import "base/types/expected.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
@@ -54,7 +55,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                            public GeminiTabHelperObserver,
                            public FullscreenControllerObserver,
                            public TabsDependencyInstaller,
-                           public BrowserObserver {
+                           public BrowserObserver,
+                           public signin::IdentityManager::Observer {
  public:
   GeminiBrowserAgent(const GeminiBrowserAgent&) = delete;
   GeminiBrowserAgent& operator=(const GeminiBrowserAgent&) = delete;
@@ -70,6 +72,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void OnWebStateDeleted(web::WebState* web_state) override;
   void OnActiveWebStateChanged(web::WebState* old_active,
                                web::WebState* new_active) override;
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // GeminiTabHelperObserver:
   void OnPageContextUpdated(web::WebState* web_state) override;
@@ -212,6 +220,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // the floaty if a user is currently in fullscreen mode.
   void ForceShowFloatyIfInvoked();
 
+  // Forces the floaty to be dismissed and cleaned up, ignoring if it is
+  // temporarily hidden.
+  void ForceDismissFloaty();
+
   // Whether to allow the floaty to be shown given a `source`. If not allowed,
   // the floaty state will be as if a floaty was never shown.
   bool ShouldShowFloatyForSource(gemini::FloatyUpdateSource source);
@@ -284,6 +296,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Reference to fullscreen controller. Used to observe fullscreen progress
   // updates related to the Gemini overlay.
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
+
+  // IdentityManager associated with the Browser's profile.
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;

@@ -16,8 +16,10 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
@@ -56,6 +58,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_gateway_protocol.h"
@@ -222,10 +225,21 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         initWithScrollCallback:base::BindRepeating(
                                    &GeminiBrowserAgent::OnScrollEvent,
                                    weak_factory_.GetWeakPtr())];
+
+    identity_manager_ =
+        IdentityManagerFactory::GetForProfile(browser_->GetProfile());
+    if (identity_manager_) {
+      identity_manager_->AddObserver(this);
+    }
   }
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+    identity_manager_ = nullptr;
+  }
+
   if (browser_) {
     browser_->RemoveObserver(this);
   }
@@ -268,7 +282,36 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
   [bwg_link_opening_handler_ disconnect];
   bwg_link_opening_handler_ = nil;
 
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+    identity_manager_ = nullptr;
+  }
+
   browser->RemoveObserver(this);
+}
+
+void GeminiBrowserAgent::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  CHECK(IsGeminiCopresenceEnabled());
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    browser_->GetProfile()->GetPrefs()->ClearPref(prefs::kGeminiConversationId);
+
+    if (is_floaty_invoked_) {
+      ForceDismissFloaty();
+    }
+  }
+}
+
+void GeminiBrowserAgent::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+    identity_manager_ = nullptr;
+    if (is_floaty_invoked_) {
+      ForceDismissFloaty();
+    }
+  }
 }
 
 void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
@@ -695,6 +738,11 @@ void GeminiBrowserAgent::DismissFloaty() {
   } else {
     ios::provider::ResetGemini();
   }
+}
+
+void GeminiBrowserAgent::ForceDismissFloaty() {
+  is_floaty_temporarily_hidden_ = false;
+  DismissFloaty();
 }
 
 bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
