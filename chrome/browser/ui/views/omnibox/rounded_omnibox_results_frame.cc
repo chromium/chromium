@@ -144,6 +144,12 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
   // Convert location to top level widget coordinate.
   event->set_location(event_location);
 
+#if BUILDFLAG(IS_MAC)
+  // Update root_location to match the converted location, so that downstream
+  // code comparing root_location across events sees consistent coordinates.
+  event->set_root_location(event_location);
+#endif
+
   return {top_level, std::move(event)};
 }
 
