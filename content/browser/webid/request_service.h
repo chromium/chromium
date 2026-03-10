@@ -27,6 +27,7 @@
 #include "content/browser/webid/url_computations.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/webid/autofill_source.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
@@ -115,8 +116,10 @@ class CONTENT_EXPORT RequestService
     force_allow_redirect_to_for_testing_ = allow;
   }
 
-  // An overload of the mojo version of RequestToken. If |navigation_handle|
-  // is provided, that handle is checked to see if user activation is present.
+  // An overload of the mojo version of RequestToken. |navigation_handle|
+  // is passed when this request was triggered by navigation interception, so
+  // that we can use this handle for user activation checking and setting up
+  // parameters for a later redirect.
   // This is virtual so that it can be mocked.MockNavigationThrottleRegistry
   virtual void RequestToken(
       std::vector<blink::mojom::IdentityProviderGetParametersPtr>
@@ -676,6 +679,15 @@ class CONTENT_EXPORT RequestService
   // Whether this RequestService can make top level redirections, available
   // currently only for interception-initiated requests.
   bool can_accept_redirect_to_{false};
+
+  // Stores the URL that we intercepted. This will be used as the referrer when
+  // loading the redirect target so that to the RP this looks like the load was
+  // initiated by the IDP.
+  GURL intercepted_url_;
+
+  // A clone of the NavigationUIData from the intercepted navigation, for use in
+  // the redirect load.
+  std::unique_ptr<NavigationUIData> intercepted_navigation_ui_data_;
 
   // Whether the callback for the current request has been delayed.
   bool complete_request_delayed_{false};

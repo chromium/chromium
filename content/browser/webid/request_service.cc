@@ -353,6 +353,13 @@ void RequestService::RequestToken(
       (navigation_handle &&
        DidNavigationHandleHaveActivation(navigation_handle)) ||
       render_frame_host().HasTransientUserActivation();
+  if (navigation_handle) {
+    intercepted_url_ = navigation_handle->GetURL();
+    if (navigation_handle->GetNavigationUIData()) {
+      intercepted_navigation_ui_data_ =
+          navigation_handle->GetNavigationUIData()->Clone();
+    }
+  }
 
   // Store the previous `idp_order_` value from this class. Note that this is {}
   // unless there is a pending request from the same RFH. In particular, this is
@@ -1860,9 +1867,23 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
 
   content::NavigationController::LoadURLParams params(redirect_to);
   params.transition_type = ui::PAGE_TRANSITION_LINK;
+  params.initiator_frame_token = render_frame_host().GetFrameToken();
+  params.initiator_process_id =
+      render_frame_host().GetProcess()->GetID().value();
+  params.initiator_origin = origin();
+  params.source_site_instance = render_frame_host().GetSiteInstance();
+  params.referrer =
+      Referrer(intercepted_url_, network::mojom::ReferrerPolicy::kDefault);
+  // Pretend this was renderer initiated like the load we intercepted.
+  params.is_renderer_initiated = true;
+  // TODO(crbug.com/475549548): Is it correct to copy the UI data from the
+  // initial navigation?
+  params.navigation_ui_data = std::move(intercepted_navigation_ui_data_);
   if (method == blink::mojom::FedCmRedirectMethod::kPost) {
     params.transition_type = ui::PAGE_TRANSITION_FORM_SUBMIT;
     params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
+    // It is very important that we only allow bytes in the post data, so that
+    // it is not possible to trigger file uploads that bypass security checks.
     params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
         base::as_byte_span(request_body));
     params.extra_headers =
@@ -2267,6 +2288,8 @@ void RequestService::CleanUp() {
   identity_selection_type_ = kExplicit;
   had_transient_user_activation_ = false;
   rp_mode_ = RpMode::kPassive;
+  intercepted_url_ = GURL();
+  intercepted_navigation_ui_data_.reset();
   complete_request_delayed_ = false;
 }
 
