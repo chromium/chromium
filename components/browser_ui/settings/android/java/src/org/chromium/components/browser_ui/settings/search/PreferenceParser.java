@@ -130,7 +130,9 @@ public class PreferenceParser {
             SettingsIndexData indexData,
             String prefFragment,
             Bundle extras,
-            Map<String, SearchIndexProvider> providerMap) {
+            Map<String, SearchIndexProvider> providerMap,
+            boolean isSearchable) {
+        // TODO(crbug.com/467921632): Remove INDEX_OPT_OUT check once the new provider is adopted.
         if (xmlRes == 0 || xmlRes == BaseSearchIndexProvider.INDEX_OPT_OUT) {
             return;
         }
@@ -168,8 +170,27 @@ public class PreferenceParser {
                             .setSummary(bundle.getString(METADATA_SUMMARY))
                             .setFragment(bundle.getString(METADATA_FRAGMENT))
                             .setArguments(finalExtras)
+                            .setIsSearchable(isSearchable)
                             .build());
         }
+    }
+
+    /** Overloaded variant that sets isSearchable to true. */
+    public static void parseAndPopulate(
+            Context context,
+            int xmlRes,
+            SettingsIndexData indexData,
+            String prefFragment,
+            Bundle extras,
+            Map<String, SearchIndexProvider> providerMap) {
+        parseAndPopulate(
+                context,
+                xmlRes,
+                indexData,
+                prefFragment,
+                extras,
+                providerMap,
+                /* isSearchable= */ true);
     }
 
     /**
