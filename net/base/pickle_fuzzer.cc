@@ -12,7 +12,8 @@
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace net {
 
@@ -26,11 +27,8 @@ using FuzzType = std::set<std::tuple<bool,
 
 }  // namespace
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // SAFETY: The fuzzer contract guarantees that `data` points to at least
-  // `size` bytes.
-  auto iter =
-      base::PickleIterator::WithData(UNSAFE_BUFFERS(base::span(data, size)));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  auto iter = base::PickleIterator::WithData(data);
   auto result = ReadValueFromPickle<FuzzType>(iter);
   return 0;
 }

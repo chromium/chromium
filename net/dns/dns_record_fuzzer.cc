@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/record_parsed.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 void InitLogging() {
   // For debugging, it may be helpful to enable verbose logging by setting the
@@ -29,9 +30,7 @@ void InitLogging() {
 }
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
-  // SAFETY: libfuzzer provides a valid pointer and size pair.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   InitLogging();
 
   FuzzedDataProvider data_provider(data.data(), data.size());

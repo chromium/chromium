@@ -634,6 +634,7 @@ fuzzer_test("net_dns_record_fuzzer") {
     "//base",
     "//net",
     "//net:net_fuzzer_test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }

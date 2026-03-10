@@ -3826,6 +3826,7 @@ fuzzer_test("net_pickle_fuzzer") {
     ":net_fuzzer_test_support",
     "//base",
     "//net",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "//net/data/fuzzer_data/pickle/"
 }
@@ -4142,6 +4143,7 @@ fuzzer_test("net_http_chunked_decoder_fuzzer") {
   deps = [
     ":net_fuzzer_test_support",
     "//net",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   dict = "data/fuzzer_dictionaries/http_chunked_decoder_fuzzer.dict"
 }
