@@ -74,6 +74,10 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest, ConvertTab) {
   ASSERT_EQ(tabs::TabAlertController::From(tab)->GetAllActiveAlerts(),
             mojom_tab_alerts);
   ASSERT_EQ(tab->IsBlocked(), mojo->is_blocked);
+  ASSERT_EQ(std::max(tab->GetContents()->GetLastInteractionTimeTicks(),
+                     tab->GetContents()->GetLastActiveTimeTicks()),
+            mojo->last_active_time_ticks);
+  ASSERT_FALSE(mojo->last_active_elapsed_text.empty());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceConvertersBrowserTest,

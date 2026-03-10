@@ -78,6 +78,9 @@ class TabStripServiceMojoHandler
   void ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                           const gfx::Point& location,
                           ShowTabContextMenuCallback callback) override;
+  void ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
+                         const tabs_api::NodeId& tab_to_insert,
+                         ReplaceTabInSplitCallback callback) override;
   void GetAllTabsForProfile(GetAllTabsForProfileCallback callback) override;
 
   // tabs_api::observation::TabStripApiBatchedObserver overrides

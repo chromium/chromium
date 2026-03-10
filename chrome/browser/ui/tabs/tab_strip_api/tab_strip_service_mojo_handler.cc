@@ -138,3 +138,11 @@ void TabStripServiceMojoHandler::AcceptExperimental(
     mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client) {
   experiment_clients_.Add(this, std::move(client));
 }
+
+void TabStripServiceMojoHandler::ReplaceTabInSplit(
+    const tabs_api::NodeId& tab_to_replace,
+    const tabs_api::NodeId& tab_to_insert,
+    ReplaceTabInSplitCallback callback) {
+  std::move(callback).Run(
+      tab_strip_service_->ReplaceTabInSplit(tab_to_replace, tab_to_insert));
+}

@@ -65,6 +65,8 @@ class TabStripModelAdapter {
       tabs::TabCollectionHandle collection_handle) const = 0;
   virtual InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const = 0;
+  virtual void ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
+                                 int tab_to_insert_index) = 0;
   virtual const tabs::TabCollection* GetRoot() const = 0;
   virtual std::string GetWindowId() const = 0;
 };

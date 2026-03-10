@@ -93,6 +93,15 @@ TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual_NotFound) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
+TEST_F(TabStripExperimentServiceImplTest, ReplaceTabInSplit_InvalidTabs) {
+  tabs_api::NodeId split_id(NodeId::Type::kContent, "999");
+  tabs_api::NodeId insert_id(NodeId::Type::kContent, "888");
+
+  auto result = service_->ReplaceTabInSplit(split_id, insert_id);
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
+}
+
 TEST_F(TabStripExperimentServiceImplTest, ShowTabContextMenu) {
   tab_strip_->AddTab({tabs::TabHandle(123), GURL("title")});
   tabs_api::NodeId tab_id(NodeId::Type::kContent, "123");

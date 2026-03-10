@@ -311,6 +311,12 @@ InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
   return params;
 }
 
+void TabStripModelAdapterImpl::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
+                                                 int tab_to_insert_index) {
+  tab_strip_model_->UpdateTabInSplit(tab_to_replace.Get(), tab_to_insert_index,
+                                     TabStripModel::SplitUpdateType::kReplace);
+}
+
 const tabs::TabCollection* TabStripModelAdapterImpl::GetRoot() const {
   return tab_strip_model_->Root();
 }

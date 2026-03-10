@@ -398,4 +398,32 @@ void TabStripServiceImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+mojom::TabStripExperimentService::ReplaceTabInSplitResult
+TabStripServiceImpl::ReplaceTabInSplit(const tabs_api::NodeId& tab_to_replace,
+                                       const tabs_api::NodeId& tab_to_insert) {
+  auto session = session_controller_->CreateSession();
+
+  ASSIGN_OR_RETURN(auto replace_handle_id,
+                   utils::GetContentNativeTabId(tab_to_replace));
+  ASSIGN_OR_RETURN(auto insert_handle_id,
+                   utils::GetContentNativeTabId(tab_to_insert));
+
+  tabs::TabHandle replace_handle(replace_handle_id);
+  tabs::TabHandle insert_handle(insert_handle_id);
+  auto replace_index =
+      tab_strip_model_adapter_->GetIndexForHandle(replace_handle);
+  auto insert_index =
+      tab_strip_model_adapter_->GetIndexForHandle(insert_handle);
+
+  if (!replace_index.has_value() || !insert_index.has_value()) {
+    return base::unexpected(mojo_base::mojom::Error::New(
+        mojo_base::mojom::Code::kInvalidArgument, "invalid tabs"));
+  }
+
+  tab_strip_model_adapter_->ReplaceTabInSplit(replace_handle,
+                                              insert_index.value());
+
+  return std::monostate();
+}
+
 }  // namespace tabs_api

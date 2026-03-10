@@ -153,6 +153,11 @@ InsertionParams ToyTabStripModelAdapter::CalculateInsertionParams(
   return tabs_api::InsertionParams();
 }
 
+void ToyTabStripModelAdapter::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
+                                                int tab_to_insert_index) {
+  NOTIMPLEMENTED();
+}
+
 const tabs::TabCollection* ToyTabStripModelAdapter::GetRoot() const {
   return tab_strip_->GetRoot().Get();
 }

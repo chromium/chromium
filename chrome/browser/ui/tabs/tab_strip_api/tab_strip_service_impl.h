@@ -58,6 +58,10 @@ class TabStripServiceImpl : public TabStripService {
   UpdateTabGroupVisual(
       const tabs_api::NodeId& id,
       const tab_groups::TabGroupVisualData& visual_data) override;
+  mojom::TabStripExperimentService::ReplaceTabInSplitResult ReplaceTabInSplit(
+      const tabs_api::NodeId& tab_to_replace,
+      const tabs_api::NodeId& tab_to_insert) override;
+
   mojom::TabStripExperimentService::ShowTabContextMenuResult ShowTabContextMenu(
       const tabs_api::NodeId& tab_id,
       const gfx::Point& location) override;

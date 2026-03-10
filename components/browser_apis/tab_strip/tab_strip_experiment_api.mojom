@@ -20,9 +20,12 @@ interface TabStripExperimentService {
   UpdateTabGroupVisual(NodeId id, TabGroupVisualData visual_data)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
-  // Shows the context menu for the tab identified by `tab_id` at the given
-  // location. Depending on the browser type (e.g., BrowserView or WebUI
-  // Browser), the `location` will have different origins.
+  // Replaces a tab that is currently part of a split view (the
+  // `tab_to_replace`)
+  // with a different tab (`tab_to_insert`).
+  ReplaceTabInSplit(NodeId tab_to_replace, NodeId tab_to_insert)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
   ShowTabContextMenu(NodeId tab_id, gfx.mojom.Point location)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 

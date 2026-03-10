@@ -1073,6 +1073,60 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveSplitCollection) {
   EXPECT_EQ(model->count(), 4);
 }
 
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ReplaceTabInSplit) {
+  mojo::Remote<TabStripService> remote;
+  mojo::Remote<TabStripExperimentService> experiment_remote;
+  tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
+  tab_strip_service_mojo_handler_->AcceptExperimental(
+      experiment_remote.BindNewPipeAndPassReceiver());
+
+  TabStripModel* model = GetTabStripModel();
+  for (int i = 0; i < 3; i++) {
+    base::RunLoop create_loop;
+    remote->CreateTabAt(std::nullopt,
+                        std::make_optional(GURL("http://somewhere.nowhere")),
+                        base::BindLambdaForTesting(
+                            [&](TabStripService::CreateTabAtResult result) {
+                              ASSERT_TRUE(result.has_value());
+                              create_loop.Quit();
+                            }));
+    create_loop.Run();
+  }
+  ASSERT_EQ(model->count(), 4);
+
+  // Create a split with tabs at index 2 and 3.
+  model->ActivateTabAt(2);
+  const split_tabs::SplitTabId split_id =
+      model->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                           split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  auto split_tab_handle = model->GetTabAtIndex(2)->GetHandle();
+  auto replacement_tab_handle = model->GetTabAtIndex(0)->GetHandle();
+
+  tabs_api::NodeId split_tab_id =
+      tabs_api::NodeId::FromTabHandle(split_tab_handle);
+  tabs_api::NodeId replacement_tab_id =
+      tabs_api::NodeId::FromTabHandle(replacement_tab_handle);
+
+  base::RunLoop replace_loop;
+  experiment_remote->ReplaceTabInSplit(
+      split_tab_id, replacement_tab_id,
+      base::BindLambdaForTesting(
+          [&](TabStripExperimentService::ReplaceTabInSplitResult result) {
+            ASSERT_TRUE(result.has_value());
+            replace_loop.Quit();
+          }));
+  replace_loop.Run();
+
+  // The split tab should have been closed, and the replacement tab should now
+  // be part of the split at the same position.
+  ASSERT_EQ(model->count(), 3);
+  int replacement_index = model->GetIndexOfTab(replacement_tab_handle.Get());
+  ASSERT_NE(TabStripModel::kNoTab, replacement_index);
+  EXPECT_EQ(model->GetSplitForTab(replacement_index).value(), split_id);
+  EXPECT_TRUE(replacement_tab_handle.Get()->IsActivated());
+}
+
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest,
                        UpdateTabGroupVisualData) {
   mojo::Remote<TabStripService> remote;
