@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
@@ -177,6 +178,8 @@ NSString* AccessibilityIdentifierForItemIdentifier(
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   switch (itemType) {
     case kPasswordsAndPasskeysIdentifier: {
+      base::RecordAction(
+          base::UserMetricsAction("OtherDataPage_OpenLink_ToPasswordSettings"));
       [self.quickDeleteHandler stopQuickDeleteAndOpenPasswordSettingsPage];
       return;
     }
@@ -186,10 +189,14 @@ NSString* AccessibilityIdentifierForItemIdentifier(
       if (_defaultSearchEngineState != DefaultSearchEngineState::kGoogle) {
         return;
       }
+      base::RecordAction(
+          base::UserMetricsAction("OtherDataPage_OpenLink_ToSearchHistory"));
       [self openUrl:GURL(kClearBrowsingDataDSESearchUrlInFooterURL)];
       return;
     }
     case kMyActivityIdentifier: {
+      base::RecordAction(
+          base::UserMetricsAction("OtherDataPage_OpenLink_ToMyActivity"));
       [self openUrl:GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL)];
       return;
     }

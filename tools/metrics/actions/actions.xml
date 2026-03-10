@@ -36651,6 +36651,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="OtherDataPage_OpenLink_ToMyActivity">
+  <owner>novakovica@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Records when the user clicks on the &quot;My Activity&quot; cell in the
+    Quick Delete Other Data page to be redirected to the &quot;My Activity&quot;
+    page.
+  </description>
+</action>
+
+<action name="OtherDataPage_OpenLink_ToPasswordSettings">
+  <owner>novakovica@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Records when the user clicks on the &quot;Passwords and passkeys&quot; cell
+    in the Quick Delete Other Data page to be redirected to the Password
+    Settings page.
+  </description>
+</action>
+
+<action name="OtherDataPage_OpenLink_ToSearchHistory">
+  <owner>novakovica@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <description>
+    Records when the user clicks on the &quot;Search history&quot; cell in the
+    Quick Delete Other Data page to be redirected to the &quot;Search
+    history&quot; page.
+  </description>
+</action>
+
 <action name="OutdatedPluginInfobar.AllowThisTime">
   <obsolete>Removed in M107</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
