@@ -5,7 +5,6 @@
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 
 #include <fuchsia/sysmem/cpp/fidl.h>
-#include <inttypes.h>
 #include <lib/zx/eventpair.h>
 #include <vulkan/vulkan.h>
 
@@ -18,6 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -88,10 +89,13 @@ std::optional<gfx::Size> ParseMinBufferSize() {
           switches::kMinVideoDecoderOutputBufferSize);
   if (min_buffer_size_arg.empty())
     return std::nullopt;
+
+  auto parts = base::SplitStringPiece(
+      min_buffer_size_arg, "x", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   size_t width;
   size_t height;
-  if (UNSAFE_TODO(sscanf(min_buffer_size_arg.c_str(), "%zux%zu" SCNu32, &width,
-                         &height)) != 2) {
+  if (parts.size() != 2 || !base::StringToSizeT(parts[0], &width) ||
+      !base::StringToSizeT(parts[1], &height)) {
     LOG(WARNING) << "Invalid value for --"
                  << switches::kMinVideoDecoderOutputBufferSize << ": '"
                  << min_buffer_size_arg << "'";
