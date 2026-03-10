@@ -11,20 +11,18 @@ import '../site_favicon.js';
 
 import {assert} from '//resources/js/assert.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
+import {GlicBrowserProxyImpl} from './glic_browser_proxy.js';
+import type {GlicBrowserProxy, LoginPermission} from './glic_browser_proxy.js';
 import {getTemplate} from './glic_login_permissions_page.html.js';
 
-// TODO(crbug.com/481214101): Update with proper mojo types.
-export interface LoginPermission {
-  url: string;
-  username: string;
-}
-
-const SettingsGlicLoginPermissionsPageElementBase = I18nMixin(PolymerElement);
+const SettingsGlicLoginPermissionsPageElementBase =
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsGlicLoginPermissionsPageElement extends
     SettingsGlicLoginPermissionsPageElementBase {
@@ -50,8 +48,21 @@ export class SettingsGlicLoginPermissionsPageElement extends
     };
   }
 
+  private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
   declare private actorLoginPermissions_: LoginPermission[];
   declare private selectedPermissionToRemove_: LoginPermission|null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addWebUiListener(
+        'actor-login-permissions-changed', (permissions: LoginPermission[]) => {
+          this.actorLoginPermissions_ = permissions;
+        });
+
+    this.browserProxy_.getActorLoginPermissions().then(permissions => {
+      this.actorLoginPermissions_ = permissions;
+    });
+  }
 
   private onRemoveActorLoginPermissionClick_(
       e: DomRepeatEvent<LoginPermission>) {
@@ -63,8 +74,10 @@ export class SettingsGlicLoginPermissionsPageElement extends
         this.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
             'settings-simple-confirmation-dialog');
     assert(dialog);
+    assert(this.selectedPermissionToRemove_);
     if (dialog.wasConfirmed()) {
-      // TODO(crbug.com/481214101): Implement remove logic.
+      this.browserProxy_.revokeActorLoginPermission(
+          this.selectedPermissionToRemove_.signonRealm);
     }
     this.selectedPermissionToRemove_ = null;
   }

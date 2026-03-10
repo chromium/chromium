@@ -54,7 +54,7 @@
   <settings-simple-confirmation-dialog
       title-text="$i18n{glicRemoveActorLoginDialogTitle}"
       body-text="[[getRemoveDialogDescription_(
-          selectedPermissionToRemove_.url)]]"
+          selectedPermissionToRemove_.displayName)]]"
       confirm-text="$i18n{remove}"
       on-close="onRemoveDialogClose_">
   </settings-simple-confirmation-dialog>
@@ -76,17 +76,17 @@
     </div>
     <template is="dom-repeat" items="[[actorLoginPermissions_]]">
       <div class="flex-centered">
-        <site-favicon class="favicon" url="[[item.url]]">
+        <site-favicon class="favicon" url="[[item.signonRealm]]">
         </site-favicon>
         <div class="permission-item">
-          <div class="url-column">[[item.url]]</div>
+          <div class="url-column">[[item.displayName]]</div>
           <div class="username-column">[[item.username]]</div>
           <cr-icon-button
               class="icon-clear"
               on-click="onRemoveActorLoginPermissionClick_"
               title="$i18n{remove}"
               aria-label="[[i18n('glicRevokeActorLoginPermissionAriaLabel',
-                      item.url)]]">
+                      item.displayName)]]">
           </cr-icon-button>
         </div>
       </div>

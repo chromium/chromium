@@ -1535,6 +1535,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/usb",
       "//chrome/browser/webauthn:local_credential_management",
+      "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
 
       # No reason for this dependencies be out of alphabetical order.
       "//chrome/browser/content_extraction",

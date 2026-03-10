@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/glic_handler.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -13,9 +14,11 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -23,7 +26,23 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+using testing::_;
+using testing::Return;
+
 namespace settings {
+
+class MockActorLoginPermissionsManager
+    : public actor_login::ActorLoginPermissionsManager {
+ public:
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(void, RevokePermission, (const std::string&), (override));
+  MOCK_METHOD(base::flat_set<password_manager::ActorLoginPermission>,
+              GetAllPermissions,
+              (const syncer::SyncService*),
+              (override));
+};
+
 class GlicHandlerBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -42,6 +61,7 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
   }
 
   GlicHandler* glic_handler() { return glic_handler_.get(); }
+  content::TestWebUI* web_ui() { return web_ui_.get(); }
 
  private:
   std::unique_ptr<GlicHandler> glic_handler_;
@@ -91,5 +111,55 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, MAYBE_UpdateGlicShortcut) {
   saved_hotkey = glic::GlicLauncherConfiguration::GetGlobalHotkey();
   EXPECT_EQ(valid_shortcut.key_code(), saved_hotkey.key_code());
   EXPECT_EQ(valid_shortcut.modifiers(), saved_hotkey.modifiers());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetActorLoginPermissions) {
+  glic_handler()->AllowJavascript();
+
+  auto mock_manager =
+      std::make_unique<testing::NiceMock<MockActorLoginPermissionsManager>>();
+  password_manager::ActorLoginPermission permission;
+  permission.domain_info.signon_realm = "example.com";
+  permission.username = u"user";
+  permission.domain_info.name = "Example";
+  permission.favicon_url = GURL("http://example.com/favicon.ico");
+  EXPECT_CALL(*mock_manager, GetAllPermissions(_))
+      .WillOnce(Return(base::flat_set<password_manager::ActorLoginPermission>(
+          {permission})));
+
+  glic_handler()->observation_.Reset();
+  glic_handler()->actor_login_permissions_manager_ = std::move(mock_manager);
+  glic_handler()->observation_.Observe(
+      glic_handler()->actor_login_permissions_manager_.get());
+
+  base::ListValue args;
+  args.Append("callback-id");
+  glic_handler()->HandleGetActorLoginPermissions(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+  EXPECT_EQ("callback-id", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetBool());
+  const base::ListValue& result = data.arg3()->GetList();
+  ASSERT_EQ(1u, result.size());
+  const base::DictValue& permission_dict = result[0].GetDict();
+  EXPECT_EQ("example.com", *permission_dict.FindString("signonRealm"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, RevokeActorLoginPermission) {
+  glic_handler()->AllowJavascript();
+
+  auto mock_manager =
+      std::make_unique<testing::NiceMock<MockActorLoginPermissionsManager>>();
+  EXPECT_CALL(*mock_manager, RevokePermission("example.com"));
+
+  glic_handler()->observation_.Reset();
+  glic_handler()->actor_login_permissions_manager_ = std::move(mock_manager);
+  glic_handler()->observation_.Observe(
+      glic_handler()->actor_login_permissions_manager_.get());
+
+  base::ListValue args;
+  args.Append("example.com");
+  glic_handler()->HandleRevokeActorLoginPermission(args);
 }
 }  // namespace settings

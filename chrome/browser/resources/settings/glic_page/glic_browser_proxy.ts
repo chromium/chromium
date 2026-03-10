@@ -4,6 +4,16 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+/**
+ * Information for a login permission for a given site.
+ */
+export interface LoginPermission {
+  signonRealm: string;
+  username?: string;
+  displayName: string;
+  faviconUrl: string;
+}
+
 export interface GlicBrowserProxy {
   setGlicOsLauncherEnabled(enabled: boolean): void;
   getGlicShortcut(): Promise<string>;
@@ -12,6 +22,15 @@ export interface GlicBrowserProxy {
   setGlicFocusToggleShortcut(shortcut: string): Promise<void>;
   setShortcutSuspensionState(isSuspended: boolean): void;
   getDisallowedByAdmin(): Promise<boolean>;
+  /**
+   * Get the list of actor login permissions.
+   */
+  getActorLoginPermissions(): Promise<LoginPermission[]>;
+  /**
+   * Revoke actor login permission for a given signonRealm.
+   * @param signonRealm The signon realm for which to revoke the permission.
+   */
+  revokeActorLoginPermission(signonRealm: string): void;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -41,6 +60,14 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   getDisallowedByAdmin() {
     return sendWithPromise('getGlicDisallowedByAdmin');
+  }
+
+  getActorLoginPermissions() {
+    return sendWithPromise('getActorLoginPermissions');
+  }
+
+  revokeActorLoginPermission(signonRealm: string) {
+    chrome.send('revokeActorLoginPermission', [signonRealm]);
   }
 
   static getInstance(): GlicBrowserProxy {
