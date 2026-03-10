@@ -296,13 +296,11 @@ void PermissionRequestManager::AddRequest(
           web_contents()->GetBrowserContext(), request->requesting_origin());
 
   if (should_auto_approve_request) {
-    // TODO(crbug.com/469397053): Investigate whether
-    // PermissionClient::GetAutoApprovalStatus() should be able to distinguish
-    // between approximate and precise location. For now, we always hardcode
-    // precise location here.
     PromptOptions prompt_options =
         request->GetContentSettingsType() ==
                 ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+            // If a geolocation request should be auto-approved, we always grant
+            // precise location.
             ? PromptOptions(GeolocationPromptOptions{
                   .selected_accuracy = GeolocationAccuracy::kPrecise})
             : std::monostate();
