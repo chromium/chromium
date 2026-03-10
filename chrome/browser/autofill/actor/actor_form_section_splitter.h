@@ -70,6 +70,21 @@ enum class SectionSplitPart {
   kAddress
 };
 
+// Metrics enum for tracking the outcome of ShouldSplitOutContactInfo.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ShouldSplitOutContactInfoResult)
+enum class ShouldSplitOutContactInfoResult {
+  kShouldSplit = 0,
+  kShouldNotSplitFeatureDisabled = 1,
+  kShouldNotSplitNoTriggerFields = 2,
+  kShouldNotSplitFormNotFound = 3,
+  kShouldNotSplitAddressBeforeContactInfo = 4,
+  kShouldNotSplitNoAddressField = 5,
+  kMaxValue = kShouldNotSplitNoAddressField,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ShouldSplitOutContactInfoResult)
+
 // Returns whether a form fill request should be split into two separate virtual
 // requests: one for contact information and one for address information.
 //

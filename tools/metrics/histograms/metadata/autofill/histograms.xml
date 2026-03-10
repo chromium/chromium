@@ -989,6 +989,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo"
+    enum="ActorFormFillingShouldSplitOutContactInfoResult"
+    expires_after="2026-09-09">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the outcome of attempting to split a form section into contact
+    information and address information. Emitted when Autofill attempts to
+    generate suggestions for an Actor form filling request.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Actor.FillSuggestions.{FillingComposition}.Latency"
     units="ms" expires_after="2026-11-30">
   <owner>battre@chromium.org</owner>

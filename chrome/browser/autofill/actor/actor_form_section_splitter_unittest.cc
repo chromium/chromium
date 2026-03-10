@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -74,8 +75,42 @@ TEST_F(ActorFormSectionSplitterTest,
                                       {.server_type = EMAIL_ADDRESS},
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(ShouldSplitOutContactInfo({form.fields()[0].global_id()},
                                          manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitFeatureDisabled, 1);
+}
+
+// Tests that ShouldSplitOutContactInfo returns false and logs correctly if
+// there are no trigger fields.
+TEST_F(ActorFormSectionSplitterTest,
+       ShouldSplitOutContactInfo_NoTriggerFields) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(ShouldSplitOutContactInfo(/*trigger_fields=*/{}, manager(),
+                                         log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitNoTriggerFields, 1);
+}
+
+// Tests that ShouldSplitOutContactInfo returns false and logs correctly if
+// the form is not found.
+TEST_F(ActorFormSectionSplitterTest, ShouldSplitOutContactInfo_FormNotFound) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  base::HistogramTester histogram_tester;
+  // Use a random non-existent field ID.
+  EXPECT_FALSE(
+      ShouldSplitOutContactInfo({FieldGlobalId()}, manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitFormNotFound, 1);
 }
 
 // Tests that ShouldSplitOutContactInfo returns true for a splittable form.
@@ -88,8 +123,12 @@ TEST_F(ActorFormSectionSplitterTest,
                                       {.server_type = EMAIL_ADDRESS},
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(ShouldSplitOutContactInfo({form.fields()[0].global_id()},
                                         manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldSplit, 1);
 }
 
 // Tests that ShouldSplitOutContactInfo returns false if an address field comes
@@ -102,8 +141,13 @@ TEST_F(ActorFormSectionSplitterTest, ShouldSplitOutContactInfo_AddressFirst) {
                                       {.server_type = NAME_FULL},
                                       {.server_type = EMAIL_ADDRESS}}});
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(ShouldSplitOutContactInfo({form.fields()[0].global_id()},
                                          manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitAddressBeforeContactInfo,
+      1);
 }
 
 // Tests that ShouldSplitOutContactInfo returns false if there are no contact
@@ -115,8 +159,13 @@ TEST_F(ActorFormSectionSplitterTest, ShouldSplitOutContactInfo_NoContactInfo) {
   FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
                                       {.server_type = ADDRESS_HOME_LINE1}}});
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(ShouldSplitOutContactInfo({form.fields()[0].global_id()},
                                          manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitAddressBeforeContactInfo,
+      1);
 }
 
 // Tests that ShouldSplitOutContactInfo returns false if there are no address
@@ -128,8 +177,12 @@ TEST_F(ActorFormSectionSplitterTest, ShouldSplitOutContactInfo_NoAddress) {
   FormData form = SeeForm(
       {.fields = {{.server_type = NAME_FULL}, {.server_type = EMAIL_ADDRESS}}});
 
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(ShouldSplitOutContactInfo({form.fields()[0].global_id()},
                                          manager(), log_manager()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo",
+      ShouldSplitOutContactInfoResult::kShouldNotSplitNoAddressField, 1);
 }
 
 // Tests that ShouldSplitOutContactInfo only considers fields that are in the
