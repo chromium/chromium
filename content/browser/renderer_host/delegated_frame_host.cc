@@ -502,7 +502,7 @@ void DelegatedFrameHost::DidCopyStaleContent(
   auto transfer_resource = viz::TransferableResource::Make(
       result->GetSharedImage(),
       viz::TransferableResource::ResourceSource::kStaleContent,
-      gpu::SyncToken(), /*override=*/{.color_space = gfx::ColorSpace()});
+      gpu::SyncToken());
   viz::ReleaseCallback release_callback = result->TakeSharedImageOwnership();
   CHECK(release_callback);
 
