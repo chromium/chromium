@@ -20,6 +20,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
@@ -50,6 +51,26 @@ const char kPrefsAccessMutex[] = PREFS_ACCESS_MUTEX;
 // Total time to wait when creating prefs.
 constexpr base::TimeDelta kCreatePrefsWait(base::Minutes(2));
 
+// Attempts to update the file permissions of the prefs file to be
+// user-readable for system installations at best-effort. This is particularly
+// useful for Chrome's support tool to capture the file in diagnostic zips.
+void MaybeUpdatePrefsFilePermissions(const base::FilePath& prefs_file_path) {
+  if (GetUpdaterScope() != UpdaterScope::kSystem) {
+    return;
+  }
+  // PrefService creates files which are readable by non-Admin users on Windows
+  // by default; no action is necessary.
+#if BUILDFLAG(IS_POSIX)
+  if (!base::SetPosixFilePermissions(
+          prefs_file_path, base::FILE_PERMISSION_READ_BY_USER |
+                               base::FILE_PERMISSION_WRITE_BY_USER |
+                               base::FILE_PERMISSION_READ_BY_GROUP |
+                               base::FILE_PERMISSION_READ_BY_OTHERS)) {
+    VPLOG(1) << "Failed to set permissions on " << prefs_file_path;
+  }
+#endif  // BUILDFLAG(IS_POSIX)
+}
+
 // The prefs can fail to load, for example with `PREF_READ_ERROR_FILE_LOCKED`,
 // so this function retries a few times.
 std::unique_ptr<PrefService> CreatePrefService(
@@ -57,10 +78,12 @@ std::unique_ptr<PrefService> CreatePrefService(
     scoped_refptr<PrefRegistrySimple> pref_registry,
     base::TimeDelta wait_period) {
   const auto deadline(base::TimeTicks::Now() + wait_period);
+  base::FilePath prefs_file_path =
+      prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"));
   do {
     PrefServiceFactory pref_service_factory;
-    pref_service_factory.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
-        prefs_dir.Append(FILE_PATH_LITERAL("prefs.json"))));
+    pref_service_factory.set_user_prefs(
+        base::MakeRefCounted<JsonPrefStore>(prefs_file_path));
 
     std::unique_ptr<PrefService> pref_service(
         pref_service_factory.Create(pref_registry));
@@ -72,6 +95,7 @@ std::unique_ptr<PrefService> CreatePrefService(
          PrefService::INITIALIZATION_STATUS_SUCCESS) ||
         (pref_service->GetInitializationStatus() ==
          PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE)) {
+      MaybeUpdatePrefsFilePermissions(prefs_file_path);
       return pref_service;
     }
 

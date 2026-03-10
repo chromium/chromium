@@ -1670,6 +1670,21 @@ of the updater in existence for the scope, the updater saves a copy of the final
 log file to `Windows\SystemTemp\updater.log` for system installs, and
 `%TMP%\updater.log` for user installs.
 
+### State Persistence
+The updater's internal state is persisted in `prefs.json`. There are two types
+of `prefs.json` files:
+
+1. **Global prefs**: Located in `{UPDATER_DATA_DIR}`. This file is shared among
+   all instances of the updater and contains global state such as the active
+   updater version.
+2. **Local prefs**: Located in the versioned installation directory (e.g.,
+   `{UPDATER_DATA_DIR}\{VERSION}`). This file contains state specific to a
+   particular version of the updater, such as its qualification status.
+
+For system-scoped installations, `prefs.json` files are made readable to all
+users on the system to facilitate the collection of diagnostics data by Chrome's
+support tool.
+
 ## Network
 
 #### Proxy detection and authentication (Windows)
