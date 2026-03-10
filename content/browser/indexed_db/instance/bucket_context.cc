@@ -230,7 +230,7 @@ bool ShouldUseSqlite(SqliteRolloutStage stage,
       return false;
     case SqliteRolloutStage::kUseSqliteForNewStores:
       CHECK(!data_path.empty());
-      return !base::PathExists(
+      return base::IsDirectoryEmpty(
           data_path.Append(GetLevelDBFileName(bucket_locator)));
     case SqliteRolloutStage::kUseSqliteOnly:
       return true;
@@ -1174,9 +1174,6 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                                 histogram_suffix)),
         /*is_sqlite=*/true, histogram_suffix);
   } else {
-    bool create_sqlite_if_missing =
-        !in_memory() && create_if_missing &&
-        sqlite_rollout_stage_ == SqliteRolloutStage::kUseSqliteForNewStores;
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
     Status status, first_try_status;
@@ -1186,9 +1183,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       std::tie(backing_store, status, data_loss_info, disk_full) =
           level_db::BackingStore::OpenAndVerify(
               *this, data_path_, database_path, blob_path, lock_manager.get(),
-              is_first_attempt,
-              /*create_if_missing=*/create_if_missing &&
-                  !create_sqlite_if_missing);
+              is_first_attempt, create_if_missing);
       CHECK_EQ(status.ok(), !!backing_store);
       if (is_first_attempt) [[likely]] {
         first_try_status = status;
@@ -1197,19 +1192,8 @@ BucketContext::InitBackingStore(bool create_if_missing) {
         break;
       }
       CHECK(!backing_store);
-      if (status.IsNotFound()) {
-        if (create_sqlite_if_missing) {
-          // Clear out stale files that may have been left behind.
-          base::DeletePathRecursively(database_path);
-          base::DeletePathRecursively(blob_path);
-          // Preserve and pass on data loss info.
-          auto result = InitBackingStore(/*create_if_missing=*/true);
-          std::get<IndexedDBDataLossInfo>(result) = data_loss_info;
-          return result;
-        }
-        if (!create_if_missing) {
-          return {status, DatabaseError(), data_loss_info};
-        }
+      if (status.IsNotFound() && !create_if_missing) {
+        return {status, DatabaseError(), data_loss_info};
       }
       // If the disk is full, always exit immediately.
       if (disk_full) {

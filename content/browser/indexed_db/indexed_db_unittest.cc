@@ -20,6 +20,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -56,6 +57,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -247,9 +249,10 @@ class IndexedDBTestBase : public testing::Test {
   blink::StorageKey kInvertedSessionOnlySubdomainThirdPartyStorageKey;
   BucketLocator kInvertedSessionOnlySubdomainThirdPartyBucketLocator;
 
-  explicit IndexedDBTestBase(bool use_sqlite)
+  IndexedDBTestBase(bool use_default_buckets, bool use_sqlite)
       : sqlite_override_(
             BucketContext::OverrideShouldUseSqliteForTesting(use_sqlite)),
+        use_default_buckets_(use_default_buckets),
         use_sqlite_(use_sqlite),
         special_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
@@ -344,19 +347,15 @@ class IndexedDBTestBase : public testing::Test {
 
   ~IndexedDBTestBase() override = default;
 
+  bool UseDefaultBuckets() const { return use_default_buckets_; }
+
   bool IsSqliteBackingStoreEnabled() { return use_sqlite_; }
 
   storage::BucketInfo InitBucket(const blink::StorageKey& storage_key) {
-    storage::BucketInfo bucket;
-    quota_manager_->UpdateOrCreateBucket(
-        storage::BucketInitParams::ForDefaultBucket(storage_key),
-        base::BindOnce(
-            [](storage::BucketInfo* info,
-               storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-              *info = bucket_info.value();
-            },
-            &bucket));
-    return bucket;
+    return GetOrCreateBucket(
+        UseDefaultBuckets()
+            ? storage::BucketInitParams::ForDefaultBucket(storage_key)
+            : storage::BucketInitParams(storage_key, "non_default"));
   }
 
   void SetUpInMemoryContext() {
@@ -563,23 +562,18 @@ class IndexedDBTestBase : public testing::Test {
     MockMojoDatabaseCallbacks database_callbacks;
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-    base::RunLoop upgrade_run_loop;
+    EXPECT_CALL(client, Error).Times(0);
     EXPECT_CALL(client,
                 MockedUpgradeNeeded(IsAssociatedInterfacePtrInfoValid(true),
                                     IndexedDBDatabaseMetadata::NO_VERSION,
                                     expected_data_loss, _, _))
-        .WillOnce(testing::DoAll(
-            MoveArgPointee<0>(&pending_database),
-            ::base::test::RunClosure(upgrade_run_loop.QuitClosure())));
+        .WillOnce(MoveArgPointee<0>(&pending_database));
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(), name,
                          /*version=*/1,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          transaction_id, /*priority=*/0);
-    upgrade_run_loop.Run();
 
-    mojo::AssociatedRemote<blink::mojom::IDBDatabase> connection(
-        std::move(pending_database));
     transaction_remote->Commit(0);
     EXPECT_CALL(database_callbacks, Complete(transaction_id)).Times(1);
 
@@ -588,7 +582,9 @@ class IndexedDBTestBase : public testing::Test {
         .WillOnce(::base::test::RunClosure(success_run_loop.QuitClosure()));
     success_run_loop.Run();
 
-    return connection;
+    EXPECT_TRUE(pending_database.is_valid()) << "UpgradeNeeded was not called";
+    return mojo::AssociatedRemote<blink::mojom::IDBDatabase>(
+        std::move(pending_database));
   }
 
   // Opens an existing database and waits for success. Fails if UpgradeNeeded is
@@ -621,6 +617,7 @@ class IndexedDBTestBase : public testing::Test {
  protected:
   IndexedDBContextImpl* context() const { return context_.get(); }
   base::AutoReset<std::optional<bool>> sqlite_override_;
+  bool use_default_buckets_;
   bool use_sqlite_;
 
   base::test::TaskEnvironment task_environment_{
@@ -638,7 +635,9 @@ class IndexedDBTestBase : public testing::Test {
 class IndexedDBTest : public IndexedDBTestBase,
                       public testing::WithParamInterface<bool> {
  public:
-  IndexedDBTest() : IndexedDBTestBase(GetParam()) {}
+  IndexedDBTest()
+      : IndexedDBTestBase(/*use_default_buckets=*/true,
+                          /*use_sqlite=*/GetParam()) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -657,19 +656,9 @@ class IndexedDBTestWithBucketType
     : public IndexedDBTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  IndexedDBTestWithBucketType() : IndexedDBTestBase(std::get<1>(GetParam())) {}
-
-  bool IsDefaultBucket() const { return std::get<0>(GetParam()); }
-
-  storage::BucketInfo CreateTestBucket(
-      const std::string& origin = "http://localhost:81") {
-    blink::StorageKey storage_key =
-        blink::StorageKey::CreateFromStringForTesting(origin);
-    return GetOrCreateBucket(
-        IsDefaultBucket()
-            ? storage::BucketInitParams::ForDefaultBucket(storage_key)
-            : storage::BucketInitParams(storage_key, "non_default"));
-  }
+  IndexedDBTestWithBucketType()
+      : IndexedDBTestBase(/*use_default_buckets=*/std::get<0>(GetParam()),
+                          /*use_sqlite=*/std::get<1>(GetParam())) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2244,7 +2233,7 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 // Verifies that opening an existing database that is not currently open in the
 // backing store works as expected.
 TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
-  storage::BucketInfo bucket_info = CreateTestBucket();
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2355,7 +2344,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 // Verifies that deleting an existing database that is not currently open in the
 // backing store works as expected.
 TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
-  storage::BucketInfo bucket_info = CreateTestBucket();
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2458,7 +2447,7 @@ TEST_P(IndexedDBTest, DeleteDatabase_DuplicateRequests) {
 
 TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames_NoFactory) {
   base::HistogramTester histogram_tester;
-  storage::BucketInfo bucket_info = CreateTestBucket();
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2839,7 +2828,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 
 // Test for `IndexedDBDataFormatVersion`.
 TEST_P(IndexedDBTestWithBucketType, DataLoss) {
-  storage::BucketInfo bucket_info = CreateTestBucket();
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
   const std::u16string db_name(u"test_db");
 
@@ -2886,108 +2875,326 @@ TEST_P(IndexedDBTestWithBucketType, DataLoss) {
   }
 }
 
-TEST_P(IndexedDBTestWithBucketType, ChangingEngineDeletesOtherEngineFiles) {
-  storage::BucketInfo bucket_info = CreateTestBucket();
-  storage::BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+class IndexedDBTestForSqliteMigration
+    : public IndexedDBTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  IndexedDBTestForSqliteMigration()
+      : IndexedDBTestBase(/*use_default_buckets=*/GetParam(),
+                          /*use_sqlite=*/false) {}
+  ~IndexedDBTestForSqliteMigration() override = default;
 
-  mojo::Remote<blink::mojom::IDBFactory> factory_remote;
-  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-      checker_remote;
-  BindFactory(std::move(checker_remote),
-              factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+  void SetUp() override {
+    buckets_[StoreType::kNone] = InitBucket(
+        blink::StorageKey::CreateFromStringForTesting("http://none.com"));
 
-  // Create a database using the "other" engine.
-  GetBucketContext(bucket_info.id)
-      ->SetSqliteRolloutStageForTesting(
-          IsSqliteBackingStoreEnabled() ? SqliteRolloutStage::kUseLevelDbOnly
-                                        : SqliteRolloutStage::kUseSqliteOnly);
-  CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    {
+      storage::BucketInfo bucket_info = InitBucket(
+          blink::StorageKey::CreateFromStringForTesting("http://leveldb.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      buckets_[StoreType::kLevelDb] = bucket_info;
+    }
 
-  // Close the backing store so the next open will reinitialize it.
-  task_environment_.FastForwardBy(base::Seconds(2));
-  VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
-                      /*expected_backing_store_exists=*/false);
+    {
+      storage::BucketInfo bucket_info = InitBucket(
+          blink::StorageKey::CreateFromStringForTesting("http://sqlite.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseSqliteOnly);
+      GetBucketContext(bucket_info.id)
+          ->SetSqliteRolloutStageForTesting(SqliteRolloutStage::kUseSqliteOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      buckets_[StoreType::kSqlite] = bucket_info;
+    }
 
-  // Switch to the parameterized engine and re-create the database.
-  GetBucketContext(bucket_info.id)
-      ->SetSqliteRolloutStageForTesting(
-          IsSqliteBackingStoreEnabled() ? SqliteRolloutStage::kUseSqliteOnly
-                                        : SqliteRolloutStage::kUseLevelDbOnly);
-  CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
-  ASSERT_EQ(GetBucketContext(bucket_info.id)->IsUsingSqlite(),
-            IsSqliteBackingStoreEnabled());
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://empty_leveldb_directory.com"));
+      base::FilePath leveldb_dir_path =
+          GetFilePathForTesting(bucket_info.ToBucketLocator());
+      ASSERT_TRUE(base::CreateDirectory(leveldb_dir_path));
+      buckets_[StoreType::kEmptyLevelDbDirectory] = bucket_info;
+    }
 
-  // Close the backing store again.
-  task_environment_.FastForwardBy(base::Seconds(2));
-  VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
-                      /*expected_backing_store_exists=*/false);
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://leveldb_with_corruption_info.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      bucket_context->HandleBackingStoreCorruption("testing");
+      buckets_[StoreType::kLevelDbWithCorruptionInfo] = bucket_info;
+    }
 
-  // Switch to the other engine and verify that creating the database again
-  // succeeds. This will fail with an unmet expectation of UpgradeNeeded if the
-  // old database files were not deleted.
-  GetBucketContext(bucket_info.id)
-      ->SetSqliteRolloutStageForTesting(
-          IsSqliteBackingStoreEnabled() ? SqliteRolloutStage::kUseLevelDbOnly
-                                        : SqliteRolloutStage::kUseSqliteOnly);
-  CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://leveldb_current_missing.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      bucket_context->ForceClose(/*doom=*/false, "testing");
+      base::FilePath current_file_path = GetLevelDbCurrentFilePath(bucket_info);
+      ASSERT_TRUE(base::PathExists(current_file_path));
+      ASSERT_TRUE(base::DeleteFile(current_file_path));
+      buckets_[StoreType::kLevelDbCurrentMissing] = bucket_info;
+    }
+
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://leveldb_files_missing.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      bucket_context->ForceClose(/*doom=*/false, "testing");
+      base::FilePath current_file_path = GetLevelDbCurrentFilePath(bucket_info);
+      ASSERT_TRUE(base::PathExists(current_file_path));
+      // Delete everything except the CURRENT file.
+      base::FileEnumerator enumerator(current_file_path.DirName(),
+                                      /*recursive=*/false,
+                                      base::FileEnumerator::FILES);
+      enumerator.ForEach([&](const base::FilePath& path) {
+        if (path == current_file_path) {
+          return;
+        }
+        ASSERT_TRUE(base::DeleteFile(path));
+      });
+      buckets_[StoreType::kLevelDbFilesMissing] = bucket_info;
+    }
+
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://leveldb_internal_corruption.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      bucket_context->ForceClose(/*doom=*/false, "testing");
+      // Corrupt the MANIFEST-* files.
+      base::FileEnumerator enumerator(
+          GetFilePathForTesting(bucket_info.ToBucketLocator()),
+          /*recursive=*/false, base::FileEnumerator::FILES,
+          FILE_PATH_LITERAL("MANIFEST-*"));
+      enumerator.ForEach([](const base::FilePath& path) {
+        base::WriteFile(path, "corrupted");
+      });
+      buckets_[StoreType::kLevelDbInternalCorruption] = bucket_info;
+    }
+
+    {
+      storage::BucketInfo bucket_info =
+          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+              "http://leveldb_backing_store_corruption.com"));
+      auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
+          bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
+      // Create the backing store with a future data format version. When opened
+      // with the real (current) version, the backing store will treat the
+      // stored version as unknown and report corruption.
+      base::AutoReset<IndexedDBDataFormatVersion> override_version(
+          &IndexedDBDataFormatVersion::GetMutableCurrentForTesting(),
+          IndexedDBDataFormatVersion(99, 99));
+      CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+      buckets_[StoreType::kLevelDbBackingStoreCorruption] = bucket_info;
+    }
+
+    CloseAllBackingStores();
+  }
+
+ protected:
+  enum class StoreType {
+    kNone,
+    kLevelDb,
+    kSqlite,
+    kEmptyLevelDbDirectory,
+    // The LevelDB dir contains corruption info recorded by a prior instance.
+    kLevelDbWithCorruptionInfo,
+    // The LevelDB dir is missing the CURRENT file, which triggers internal
+    // recovery but only when create_if_missing is true.
+    kLevelDbCurrentMissing,
+    // The LevelDB dir is missing files other than CURRENT, which due to
+    // crbug.com/760362 surfaces as a persistent IO error and not corruption.
+    kLevelDbFilesMissing,
+    // Some LevelDB files are corrupted such that LevelDB code itself detects
+    // and reports corruption.
+    kLevelDbInternalCorruption,
+    // The LevelDB backing store has unexpected content which is treated as
+    // corruption at the backing store level in the first open attempt.
+    kLevelDbBackingStoreCorruption,
+  };
+
+  enum class StoreInitResult { kOpened, kCreated, kDataLoss, kFailed };
+
+  struct Expectation {
+    StoreInitResult result;
+    bool is_sqlite;
+  };
+
+  static constexpr const bool kIsSqlite = true;
+  static constexpr const bool kIsLevelDb = false;
+
+  void ValidateExpectationsForStage(
+      SqliteRolloutStage stage,
+      std::map<StoreType, Expectation> expectations) {
+    ASSERT_EQ(expectations.size(), buckets_.size());
+    for (const auto& [bucket_type, bucket_info] : buckets_) {
+      auto [factory_remote, bucket_context] =
+          BindFactoryAndOverrideStage(bucket_info, stage);
+      auto [result, is_sqlite] = expectations[bucket_type];
+      switch (result) {
+        case StoreInitResult::kOpened:
+          OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
+          EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          break;
+        case StoreInitResult::kCreated:
+          CreateDatabase(factory_remote, kDatabaseName,
+                         /*transaction_id=*/1);
+          EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          break;
+        case StoreInitResult::kDataLoss:
+          CreateDatabase(factory_remote, kDatabaseName,
+                         /*transaction_id=*/1,
+                         blink::mojom::IDBDataLoss::Total);
+          EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          break;
+        case StoreInitResult::kFailed: {
+          base::RunLoop run_loop;
+          MockMojoFactoryClient client;
+          MockMojoDatabaseCallbacks database_callbacks;
+          EXPECT_CALL(client, Error)
+              .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
+          mojo::AssociatedRemote<blink::mojom::IDBTransaction>
+              transaction_remote;
+          factory_remote->Open(
+              client.CreateInterfacePtrAndBind(),
+              database_callbacks.CreateInterfacePtrAndBind(), kDatabaseName,
+              /*version=*/1,
+              transaction_remote.BindNewEndpointAndPassReceiver(),
+              /*transaction_id=*/1, /*priority=*/0);
+          run_loop.Run();
+        } break;
+      }
+    }
+  }
+
+  void CloseAllBackingStores() {
+    task_environment_.FastForwardBy(base::Seconds(2));
+  }
+
+ private:
+  std::tuple<mojo::Remote<blink::mojom::IDBFactory>, BucketContext*>
+  BindFactoryAndOverrideStage(const storage::BucketInfo& bucket_info,
+                              SqliteRolloutStage stage) {
+    mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        checker_remote;
+    BindFactory(std::move(checker_remote),
+                factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
+    BucketContext* context = GetBucketContext(bucket_info.id);
+    context->SetSqliteRolloutStageForTesting(stage);
+    return {std::move(factory_remote), context};
+  }
+
+  base::FilePath GetLevelDbCurrentFilePath(
+      const storage::BucketInfo& bucket_info) {
+    return GetFilePathForTesting(bucket_info.ToBucketLocator())
+        .Append(FILE_PATH_LITERAL("CURRENT"));
+  }
+
+  std::map<StoreType, storage::BucketInfo> buckets_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IndexedDBTestForSqliteMigration,
+    /*use default buckets*/ testing::Bool(),
+    [](const testing::TestParamInfo<IndexedDBTestForSqliteMigration::ParamType>&
+           info) { return info.param ? "Default" : "NonDefault"; });
+
+TEST_P(IndexedDBTestForSqliteMigration, UseLevelDbOnly) {
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseLevelDbOnly,
+      {{StoreType::kNone, {StoreInitResult::kCreated, kIsLevelDb}},
+       {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kSqlite, {StoreInitResult::kCreated, kIsLevelDb}},
+       {StoreType::kEmptyLevelDbDirectory,
+        {StoreInitResult::kCreated, kIsLevelDb}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbFilesMissing,
+        {StoreInitResult::kFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+  // SQLite stores should be deleted by the above stage.
+  CloseAllBackingStores();
+  const Expectation kCreatedWithSqlite{StoreInitResult::kCreated, kIsSqlite};
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseSqliteOnly,
+      {{StoreType::kNone, kCreatedWithSqlite},
+       {StoreType::kLevelDb, kCreatedWithSqlite},
+       {StoreType::kSqlite, kCreatedWithSqlite},
+       {StoreType::kEmptyLevelDbDirectory, kCreatedWithSqlite},
+       {StoreType::kLevelDbWithCorruptionInfo, kCreatedWithSqlite},
+       {StoreType::kLevelDbCurrentMissing, kCreatedWithSqlite},
+       {StoreType::kLevelDbFilesMissing, kCreatedWithSqlite},
+       {StoreType::kLevelDbInternalCorruption, kCreatedWithSqlite},
+       {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithSqlite}});
 }
 
-TEST_P(IndexedDBTestWithBucketType, UseSqliteForNewStores) {
-  if (IsSqliteBackingStoreEnabled()) {
-    // This test is not relevant when SQLite is the only engine.
-    GTEST_SKIP();
-  }
+TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseSqliteForNewStores,
+      {{StoreType::kNone, {StoreInitResult::kCreated, kIsSqlite}},
+       {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kSqlite, {StoreInitResult::kOpened, kIsSqlite}},
+       {StoreType::kEmptyLevelDbDirectory,
+        {StoreInitResult::kCreated, kIsSqlite}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbFilesMissing,
+        {StoreInitResult::kFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+}
 
-  // Create a bucket with a LevelDB database.
-  storage::BucketInfo old_bucket = CreateTestBucket("http://oldbucket.com");
-  storage::BucketLocator old_bucket_locator = old_bucket.ToBucketLocator();
-  mojo::Remote<blink::mojom::IDBFactory> old_factory_remote;
-  {
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                old_factory_remote.BindNewPipeAndPassReceiver(), old_bucket);
-
-    CreateDatabase(old_factory_remote, kDatabaseName, /*transaction_id=*/1);
-    task_environment_.FastForwardBy(base::Seconds(2));
-    VerifyBucketContext(old_bucket_locator, /*expected_context_exists=*/true,
-                        /*expected_backing_store_exists=*/false);
-  }
-
-  // Create an empty bucket with no database.
-  storage::BucketInfo new_bucket = CreateTestBucket("http://newbucket.com");
-  mojo::Remote<blink::mojom::IDBFactory> new_factory_remote;
-  {
-    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-        checker_remote;
-    BindFactory(std::move(checker_remote),
-                new_factory_remote.BindNewPipeAndPassReceiver(), new_bucket);
-  }
-
-  // Move both buckets to the SqliteForNewStores rollout stage.
-  GetBucketContext(old_bucket.id)
-      ->SetSqliteRolloutStageForTesting(
-          SqliteRolloutStage::kUseSqliteForNewStores);
-  GetBucketContext(new_bucket.id)
-      ->SetSqliteRolloutStageForTesting(
-          SqliteRolloutStage::kUseSqliteForNewStores);
-
-  // Opening the database on the old bucket should succeed.
-  OpenDatabase(old_factory_remote, kDatabaseName, /*transaction_id=*/1);
-  EXPECT_FALSE(GetBucketContext(old_bucket.id)->IsUsingSqlite());
-
-  // Creating a database on the new bucket should succeed and use SQLite.
-  CreateDatabase(new_factory_remote, kDatabaseName, /*transaction_id=*/1);
-  EXPECT_TRUE(GetBucketContext(new_bucket.id)->IsUsingSqlite());
-
-  // Now simulate corruption in the old bucket.
-  GetBucketContext(old_bucket.id)->HandleBackingStoreCorruption("testing");
-
-  // Creating a database in the old bucket should succeed again because it was
-  // recreated with SQLite.
-  CreateDatabase(old_factory_remote, kDatabaseName, /*transaction_id=*/1,
-                 blink::mojom::IDBDataLoss::Total);
-  EXPECT_TRUE(GetBucketContext(old_bucket.id)->IsUsingSqlite());
+TEST_P(IndexedDBTestForSqliteMigration, UseSqliteOnly) {
+  const Expectation kCreatedWithSqlite{StoreInitResult::kCreated, kIsSqlite};
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseSqliteOnly,
+      {{StoreType::kNone, kCreatedWithSqlite},
+       {StoreType::kLevelDb, kCreatedWithSqlite},
+       {StoreType::kSqlite, {StoreInitResult::kOpened, kIsSqlite}},
+       {StoreType::kEmptyLevelDbDirectory, kCreatedWithSqlite},
+       {StoreType::kLevelDbWithCorruptionInfo, kCreatedWithSqlite},
+       {StoreType::kLevelDbCurrentMissing, kCreatedWithSqlite},
+       {StoreType::kLevelDbFilesMissing, kCreatedWithSqlite},
+       {StoreType::kLevelDbInternalCorruption, kCreatedWithSqlite},
+       {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithSqlite}});
+  // LevelDB stores should be deleted by the above stage.
+  CloseAllBackingStores();
+  const Expectation kCreatedWithLevelDb{StoreInitResult::kCreated, kIsLevelDb};
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseLevelDbOnly,
+      {{StoreType::kNone, kCreatedWithLevelDb},
+       {StoreType::kLevelDb, kCreatedWithLevelDb},
+       {StoreType::kSqlite, kCreatedWithLevelDb},
+       {StoreType::kEmptyLevelDbDirectory, kCreatedWithLevelDb},
+       {StoreType::kLevelDbWithCorruptionInfo, kCreatedWithLevelDb},
+       {StoreType::kLevelDbCurrentMissing, kCreatedWithLevelDb},
+       {StoreType::kLevelDbFilesMissing, kCreatedWithLevelDb},
+       {StoreType::kLevelDbInternalCorruption, kCreatedWithLevelDb},
+       {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithLevelDb}});
 }
 
 #if BUILDFLAG(IS_WIN)

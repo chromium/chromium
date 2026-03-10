@@ -59,7 +59,8 @@ class Database;
 enum class SqliteRolloutStage {
   // Use LevelDB exclusively; delete SQLite stores if found.
   kUseLevelDbOnly,
-  // Use SQLite for new stores and existing LevelDB stores that are corrupted.
+  // Use SQLite for new stores only.
+  // TODO(crbug.com/484257587): Also use SQLite for corrupted LevelDB stores.
   kUseSqliteForNewStores,
   // Use SQLite exclusively; delete LevelDB stores if found.
   kUseSqliteOnly,
@@ -320,14 +321,12 @@ class CONTENT_EXPORT BucketContext
   friend class BackingStoreTestBase;
   friend class DatabaseTest;
   friend class IndexedDBTestBase;
+  friend class IndexedDBTestForSqliteMigration;
   friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTestWithBucketType,
-                           ChangingEngineDeletesOtherEngineFiles);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTestWithBucketType, UseSqliteForNewStores);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest,
