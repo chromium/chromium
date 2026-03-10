@@ -4,6 +4,8 @@
 
 source_set("common") {
   sources = [
+    "base64_utils.cc",
+    "base64_utils.h",
     "private_ai_logger.cc",
     "private_ai_logger.h",
   ]
@@ -12,7 +14,10 @@ source_set("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "private_ai_logger_unittest.cc" ]
+  sources = [
+    "base64_utils_unittest.cc",
+    "private_ai_logger_unittest.cc",
+  ]
   deps = [
     ":common",
     "//base",

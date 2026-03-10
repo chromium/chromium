@@ -16,25 +16,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/private_ai/common/base64_utils.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 
 namespace private_ai {
-
-namespace internal {
-
-std::string Base64ToWebSafeBase64(std::string str) {
-  std::replace(str.begin(), str.end(), '+', '-');
-  std::replace(str.begin(), str.end(), '/', '_');
-  while (!str.empty() && str.back() == '=') {
-    str.pop_back();
-  }
-  return str;
-}
-
-}  // namespace internal
 
 ConnectionTokenAttestation::PendingRequest::PendingRequest(
     proto::PrivateAiRequest request,
@@ -115,13 +103,21 @@ void ConnectionTokenAttestation::OnTokenFetched(
   // The `quiche::BlindSignAuth` library returns the token and extensions
   // encoded in standard Base64. However, the Private AI server expects these
   // fields to be encoded in WebSafeBase64. We perform this conversion here.
-  std::string token_str = internal::Base64ToWebSafeBase64(auth_token->token);
-  std::string extensions_str =
-      internal::Base64ToWebSafeBase64(auth_token->encoded_extensions);
+  std::optional<std::string> token_str = ConvertBase64toBase64Url(
+      auth_token->token, base::Base64UrlEncodePolicy::OMIT_PADDING);
+  std::optional<std::string> extensions_str =
+      ConvertBase64toBase64Url(auth_token->encoded_extensions,
+                               base::Base64UrlEncodePolicy::OMIT_PADDING);
+
+  if (!token_str || !extensions_str) {
+    logger_->LogError(FROM_HERE, "Failed to decode anonymous auth token");
+    CallOnDisconnect(ErrorCode::kClientAttestationFailed);
+    return;
+  }
 
   privacy::ppn::PrivacyPassTokenData token_data;
-  token_data.set_token(token_str);
-  token_data.set_encoded_extensions(extensions_str);
+  token_data.set_token(*token_str);
+  token_data.set_encoded_extensions(*extensions_str);
 
   proto::PrivateAiRequest request_proto;
 

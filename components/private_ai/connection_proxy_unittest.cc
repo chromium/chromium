@@ -15,9 +15,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "components/private_ai/testing/fake_token_manager.h"
+#include "net/base/proxy_string_util.h"
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,7 +45,7 @@ class ConnectionProxyTest : public testing::Test {
     // Pass the raw pointer of the real service.
     // network::NetworkService inherits from network::mojom::NetworkService.
     connection_proxy_ = std::make_unique<ConnectionProxy>(
-        GURL("https://proxy.example.com"), &token_manager_,
+        GURL("https://proxy.example.com"), &logger_, &token_manager_,
         network_service_.get(),
         base::BindOnce(&ConnectionProxyTest::CreateInnerConnection,
                        base::Unretained(this)),
@@ -72,6 +74,7 @@ class ConnectionProxyTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
 
+  PrivateAiLogger logger_;
   FakeTokenManager token_manager_;
   std::unique_ptr<network::NetworkService> network_service_;
   std::unique_ptr<ConnectionProxy> connection_proxy_;
@@ -98,7 +101,8 @@ TEST_F(ConnectionProxyTest, Success) {
   base::test::TestFuture<void> inner_connection_created_future;
   on_inner_connection_created_ = inner_connection_created_future.GetCallback();
   token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
-      .token = FakeTokenManager::kFakeProxyToken});
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
   EXPECT_TRUE(inner_connection_created_future.Wait());
 
   // Inner connection should be created and request forwarded.
@@ -123,7 +127,8 @@ TEST_F(ConnectionProxyTest, SendAfterInitialization) {
   base::test::TestFuture<void> inner_connection_created_future;
   on_inner_connection_created_ = inner_connection_created_future.GetCallback();
   token_manager_.RespondToGetAuthTokenForProxy(phosphor::BlindSignedAuthToken{
-      .token = FakeTokenManager::kFakeProxyToken});
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="});
   EXPECT_TRUE(inner_connection_created_future.Wait());
   ASSERT_TRUE(inner_connection_);
 
@@ -148,9 +153,33 @@ TEST_F(ConnectionProxyTest, SendAfterInitialization) {
   EXPECT_TRUE(result.has_value());
 }
 
+TEST_F(ConnectionProxyTest, ProxyRuleFormat) {
+  phosphor::BlindSignedAuthToken auth_token{
+      .token = FakeTokenManager::kFakeProxyToken,
+      .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw=="};
+
+  // With trailing slash and no port (e.g. from GURL::spec() on a host-only URL)
+  network::mojom::CustomProxyConfigPtr config =
+      internal::CreateCustomProxyConfig(GURL("https://proxy.example.com/"),
+                                        auth_token, &logger_);
+  ASSERT_TRUE(config);
+  EXPECT_EQ(
+      net::ProxyServerToProxyUri(config->rules.single_proxies.First().First()),
+      "https://proxy.example.com:443");
+
+  // With trailing slash, path and port
+  network::mojom::CustomProxyConfigPtr config_port =
+      internal::CreateCustomProxyConfig(
+          GURL("https://proxy.example.com:8443/path/"), auth_token, &logger_);
+  ASSERT_TRUE(config_port);
+  EXPECT_EQ(net::ProxyServerToProxyUri(
+                config_port->rules.single_proxies.First().First()),
+            "https://proxy.example.com:8443");
+}
+
 TEST_F(ConnectionProxyTest, FailsWithEmptyProxyUrl) {
   EXPECT_CHECK_DEATH((void)std::make_unique<ConnectionProxy>(
-      GURL(), &token_manager_, network_service_.get(),
+      GURL(), &logger_, &token_manager_, network_service_.get(),
       base::BindOnce(&ConnectionProxyTest::CreateInnerConnection,
                      base::Unretained(this)),
       base::BindOnce(&ConnectionProxyTest::OnDisconnect,

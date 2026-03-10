@@ -93,7 +93,7 @@ TokenFetcherHelper::CreateBlindSignedAuthToken(
   if (!base::ContainsOnlyChars(privacy_pass_token_data.encoded_extensions(),
                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                "abcdefghijklmnopqrstuvwxyz"
-                               "0123456789+/=")) {
+                               "0123456789-_=")) {
     VLOG(2) << "Invalid base64 characters in encoded_extensions";
     return std::nullopt;
   }

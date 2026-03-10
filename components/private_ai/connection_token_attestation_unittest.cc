@@ -84,8 +84,8 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
     EXPECT_EQ(pending_request.feature_name(),
               proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
     privacy::ppn::PrivacyPassTokenData expected_token_data;
-    expected_token_data.set_token(FakeTokenManager::kFakeToken);
-    expected_token_data.set_encoded_extensions("test_extensions");
+    expected_token_data.set_token("dGVzdF90b2tlbg");
+    expected_token_data.set_encoded_extensions("dGVzdF9leHRlbnNpb25z");
     EXPECT_EQ(pending_request.anonymous_token_request().anonymous_token(),
               expected_token_data.SerializeAsString());
   }
@@ -209,14 +209,6 @@ TEST_F(ConnectionTokenAttestationTest, ErrorAfterFirstResponse) {
 
   // No new disconnect call expected directly from attestation heuristic.
   EXPECT_EQ(on_disconnect_counter_, 0);
-}
-
-TEST_F(ConnectionTokenAttestationTest, Base64ToWebSafeBase64) {
-  EXPECT_EQ(internal::Base64ToWebSafeBase64(""), "");
-  EXPECT_EQ(internal::Base64ToWebSafeBase64("abc"), "abc");
-  EXPECT_EQ(internal::Base64ToWebSafeBase64("a+b/c"), "a-b_c");
-  EXPECT_EQ(internal::Base64ToWebSafeBase64("A+B/C=="), "A-B_C");
-  EXPECT_EQ(internal::Base64ToWebSafeBase64("+++///"), "---___");
 }
 
 }  // namespace

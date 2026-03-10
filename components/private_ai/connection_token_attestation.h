@@ -22,10 +22,6 @@ namespace phosphor {
 class TokenManager;
 }
 
-namespace internal {
-std::string Base64ToWebSafeBase64(std::string str);
-}  // namespace internal
-
 // A decorator for `Connection` that ensures that client attestation request
 // is sent first before sending any other requests.
 //

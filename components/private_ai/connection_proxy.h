@@ -26,9 +26,19 @@ class NetworkService;
 
 namespace private_ai {
 
+class PrivateAiLogger;
+
 namespace phosphor {
 class TokenManager;
 }
+
+namespace internal {
+// Exposed for testing.
+network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
+    const GURL& proxy_url,
+    const phosphor::BlindSignedAuthToken& auth_token,
+    PrivateAiLogger* logger);
+}  // namespace internal
 
 // A decorator for `Connection` that buffers requests until a proxy connection
 // can be established.
@@ -43,6 +53,7 @@ class ConnectionProxy : public Connection {
       network::mojom::NetworkContext*)>;
 
   ConnectionProxy(const GURL& proxy_url,
+                  PrivateAiLogger* logger,
                   phosphor::TokenManager* token_manager,
                   network::mojom::NetworkService* network_service,
                   InnerConnectionFactory inner_connection_factory,
@@ -79,6 +90,7 @@ class ConnectionProxy : public Connection {
   void CallOnDisconnect(ErrorCode error_code);
 
   const GURL proxy_url_;
+  raw_ptr<PrivateAiLogger> logger_;
   raw_ptr<phosphor::TokenManager> token_manager_;
   raw_ptr<network::mojom::NetworkService> network_service_;
   InnerConnectionFactory inner_connection_factory_;

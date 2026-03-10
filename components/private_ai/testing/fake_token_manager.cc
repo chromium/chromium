@@ -13,8 +13,8 @@
 
 namespace private_ai {
 
-const char FakeTokenManager::kFakeToken[] = "test_token";
-const char FakeTokenManager::kFakeProxyToken[] = "proxy_token";
+const char FakeTokenManager::kFakeToken[] = "dGVzdF90b2tlbg==";
+const char FakeTokenManager::kFakeProxyToken[] = "cHJveHlfdG9rZW4=";
 
 FakeTokenManager::FakeTokenManager() = default;
 FakeTokenManager::~FakeTokenManager() = default;
@@ -46,7 +46,7 @@ void FakeTokenManager::RunPendingProxyCallbacks() {
     if (return_token_) {
       token = phosphor::BlindSignedAuthToken{
           .token = kFakeProxyToken,
-          .encoded_extensions = "proxy_extensions",
+          .encoded_extensions = "cHJveHlfZXh0ZW5zaW9ucw==",
           .expiration = base::Time::Now() + base::Minutes(1)};
     }
     proxy_callback_future_.Take().Run(std::move(token));
@@ -74,7 +74,7 @@ std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {
   }
   return phosphor::BlindSignedAuthToken{
       .token = kFakeToken,
-      .encoded_extensions = "test_extensions",
+      .encoded_extensions = "dGVzdF9leHRlbnNpb25z",
       .expiration = base::Time::Now() + base::Minutes(1)};
 }
 

@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/base64url.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/private_ai/common/base64_utils.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/phosphor/token_manager.h"
 #include "content/public/browser/network_service_instance.h"
@@ -18,26 +21,51 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
+#include "url/origin.h"
 
 namespace private_ai {
 
-namespace {
+namespace internal {
 
 network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
     const GURL& proxy_url,
-    const std::string& auth_token) {
+    const phosphor::BlindSignedAuthToken& auth_token,
+    PrivateAiLogger* logger) {
   network::mojom::CustomProxyConfigPtr proxy_config =
       network::mojom::CustomProxyConfig::New();
-  proxy_config->rules.ParseFromString(proxy_url.spec());
+
+  // The proxy rule parser expects exactly "[scheme://]host[:port]" and fails or
+  // ignores if a trailing slash is present like using GURL::spec().
+  proxy_config->rules.ParseFromString(
+      url::Origin::Create(proxy_url).Serialize());
+
+  std::optional<std::string> formatted_token = ConvertBase64toBase64Url(
+      auth_token.token, base::Base64UrlEncodePolicy::OMIT_PADDING);
+  if (!formatted_token) {
+    logger->LogError(FROM_HERE, "Invalid base64 encoding in private token.");
+    return nullptr;
+  }
+
+  std::optional<std::string> formatted_extensions = ConvertBase64toBase64Url(
+      auth_token.encoded_extensions, base::Base64UrlEncodePolicy::OMIT_PADDING);
+  if (!formatted_extensions) {
+    logger->LogError(FROM_HERE,
+                     "Invalid base64 encoding in private token extensions.");
+    return nullptr;
+  }
+
   net::HttpRequestHeaders headers;
-  headers.SetHeader(net::HttpRequestHeaders::kProxyAuthorization,
-                    base::StrCat({"PrivateToken ", auth_token}));
+  headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({"PrivateToken token=\"", *formatted_token,
+                    "\" extensions=\"", *formatted_extensions, "\""}));
   proxy_config->connect_tunnel_headers = headers;
   proxy_config->should_override_existing_config = true;
+  proxy_config->allow_non_idempotent_methods = true;
   return proxy_config;
 }
 
-}  // namespace
+}  // namespace internal
 
 ConnectionProxy::PendingRequest::PendingRequest(proto::PrivateAiRequest request,
                                                 base::TimeDelta timeout,
@@ -55,16 +83,19 @@ ConnectionProxy::PendingRequest& ConnectionProxy::PendingRequest::operator=(
 
 ConnectionProxy::ConnectionProxy(
     const GURL& proxy_url,
+    PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkService* network_service,
     InnerConnectionFactory inner_connection_factory,
     base::OnceCallback<void(ErrorCode)> on_disconnect)
     : proxy_url_(proxy_url),
+      logger_(logger),
       token_manager_(token_manager),
       network_service_(network_service),
       inner_connection_factory_(std::move(inner_connection_factory)),
       on_disconnect_(std::move(on_disconnect)) {
   CHECK(proxy_url_.is_valid());
+  CHECK(logger_);
   CHECK(token_manager_);
   CHECK(network_service_);
   CHECK(inner_connection_factory_);
@@ -128,20 +159,19 @@ void ConnectionProxy::OnProxyToken(
   is_initializing_ = false;
 
   if (!auth_token) {
-    LOG(ERROR) << "Failed to get auth token for proxy.";
+    logger_->LogError(FROM_HERE, "Failed to get auth token for proxy.");
     CallOnDisconnect(ErrorCode::kError);
     return;
   }
 
-  token_manager_->GetLogger()->LogInfo(
-      FROM_HERE,
-      "Got auth token for proxy. Connecting to " + proxy_url_.spec());
+  logger_->LogInfo(FROM_HERE, "Got auth token for proxy. Connecting to " +
+                                  proxy_url_.spec());
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->cert_verifier_params = content::GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->initial_custom_proxy_config =
-      CreateCustomProxyConfig(proxy_url_, auth_token->token);
+      internal::CreateCustomProxyConfig(proxy_url_, *auth_token, logger_);
 
   network_service_->CreateNetworkContext(
       proxied_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
