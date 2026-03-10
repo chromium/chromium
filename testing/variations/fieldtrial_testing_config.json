@@ -9843,9 +9843,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_200MB",
+                    "name": "Enabled_250MB",
                     "params": {
-                        "max_file_size_mb": "200"
+                        "max_file_size_mb": "250"
                     },
                     "enable_features": [
                         "EnableNewUploadSizeLimit"
