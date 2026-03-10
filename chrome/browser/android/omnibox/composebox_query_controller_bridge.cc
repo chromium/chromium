@@ -299,6 +299,9 @@ void ComposeboxQueryControllerBridge::RemoveAttachment(
       base::UnguessableToken::DeserializeFromString(token);
   if (unguessable_token.has_value()) {
     session_handle_->DeleteFile(unguessable_token.value());
+    if (input_state_model_) {
+      input_state_model_->OnContextChanged();
+    }
   }
 }
 
@@ -358,6 +361,10 @@ void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
       env, java_obj_,
       base::android::ConvertUTF8ToJavaString(env, file_token.ToString()),
       static_cast<int>(file_upload_status));
+
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
+  }
 }
 
 void ComposeboxQueryControllerBridge::OnGetTabPageContext(
