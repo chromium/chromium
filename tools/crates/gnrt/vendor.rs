@@ -329,11 +329,21 @@ fn fill_allow_unsafe_settings(
     let new_table_fn = || Item::from(Table::new());
     let new_inline_table_fn = || Item::from(InlineTable::new());
     let top_table = get_or_insert_table(&mut doc as &mut Table, "crate", new_table_fn);
+
+    let crates_with_per_epoch_key: HashSet<_> = top_table
+        .iter()
+        .filter_map(|(key, _)| {
+            let (crate_name, epoch) = config::parse_crate_key(key).ok()?;
+            epoch.is_some().then(|| crate_name.to_owned())
+        })
+        .collect();
+
     for package in deps.into_iter() {
-        // TODO(https://crbug.com/419104870): In the future an epoch-based `crate_key`
-        // may need to be consulted (in addition-to, or instead-of the `crate_key`
-        // below).
-        let crate_key = &package.package_name;
+        let crate_key = if crates_with_per_epoch_key.contains(&package.package_name) {
+            &config::make_epoch_key(&package.package_name, Epoch::from_version(&package.version))
+        } else {
+            &package.package_name
+        };
         let crate_table = get_or_insert_table(top_table, crate_key, new_table_fn);
         let extra_kv_table = get_or_insert_table(crate_table, "extra_kv", new_inline_table_fn);
 

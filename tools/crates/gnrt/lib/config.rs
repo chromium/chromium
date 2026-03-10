@@ -18,11 +18,11 @@ use std::{
     path::Path,
 };
 
-fn make_epoch_key(package_name: &str, epoch: Epoch) -> String {
+pub fn make_epoch_key(package_name: &str, epoch: Epoch) -> String {
     format!("{package_name}@{epoch}")
 }
 
-fn parse_crate_key(key: &str) -> Result<(&str, Option<Epoch>)> {
+pub fn parse_crate_key(key: &str) -> Result<(&str, Option<Epoch>)> {
     match key.find('@') {
         Some(pos) => {
             let crate_name = &key[..pos];
