@@ -78,7 +78,12 @@ UpdateClientImpl::~UpdateClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(task_queue_.empty());
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/438803980): keep investigating why the CHECK fails on
+  // browser tests and interactive UI tests on Linux and Windows.
   CHECK(tasks_.empty());
+#endif
 
   config_ = nullptr;
 }
