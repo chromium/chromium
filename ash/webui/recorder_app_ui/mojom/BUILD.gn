@@ -10,6 +10,7 @@ mojom("mojom") {
   sources = [ "recorder_app.mojom" ]
   public_deps = [
     "//chromeos/services/machine_learning/public/mojom",
+    "//components/metrics/structured/mojom",
     "//services/on_device_model/public/mojom",
   ]
   webui_module_path = "/"

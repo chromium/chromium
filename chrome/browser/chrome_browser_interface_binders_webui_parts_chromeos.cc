@@ -166,7 +166,6 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"  // nogncheck
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
@@ -594,9 +593,7 @@ void PopulateChromeWebUIFrameBindersPartsCros(
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsCros(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
   registry.ForWebUI<ash::RecorderAppUI>()
-      .Add<ash::recorder_app::mojom::PageHandler>()
-      .Add<crosapi::mojom::StructuredMetricsService>();
-
+      .Add<ash::recorder_app::mojom::PageHandler>();
   registry.ForWebUI<ash::CameraAppUI>()
       .Add<cros::mojom::CameraAppDeviceProvider>()
       .Add<ash::camera_app::mojom::CameraAppHelper>();

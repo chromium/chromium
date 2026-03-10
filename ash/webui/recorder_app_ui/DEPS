@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/ash/components/audio",
   "+components/media_device_salt",
+  "+components/metrics/structured/event.h",
   "+google_apis",
   "+services/on_device_model/public/cpp",
   "+services/on_device_model/public/mojom",

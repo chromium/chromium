@@ -2575,7 +2575,6 @@ static_library("ui") {
       "//chromeos/components/sharesheet:constants",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/crosapi/mojom:structured_metrics_service",
       "//chromeos/dbus/dlp",
       "//chromeos/dbus/power",
       "//chromeos/dbus/tpm_manager",

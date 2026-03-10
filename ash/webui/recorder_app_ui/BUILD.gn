@@ -21,7 +21,6 @@ static_library("recorder_app_ui") {
   deps = [
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
-    "//ash/webui/metrics:structured_metrics_service_wrapper",
     "//ash/webui/recorder_app_ui/mojom",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//chromeos/ash/components/audio",
@@ -40,5 +39,20 @@ static_library("recorder_app_ui") {
     "//services/on_device_model/public/cpp:buildflags",
     "//ui/message_center",
     "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "recorder_app_ui_unittest.cc" ]
+
+  deps = [
+    ":recorder_app_ui",
+    "//base/test:test_support",
+    "//components/metrics/structured:events",
+    "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
+    "//testing/gtest",
   ]
 }

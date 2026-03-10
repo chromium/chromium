@@ -11,12 +11,10 @@ assert(is_chromeos, "WebUI Structured Metrics supported in ChromeOS only")
 # Copies mojo files and code generated files to target directory.
 copy("copy_files") {
   deps = [
-    "//chromeos/crosapi/mojom:structured_metrics_service_ts__generator",
     "//components/metrics/structured:gen_structured_events_ts",
     "//components/metrics/structured/mojom:mojom_ts__generator",
   ]
   sources = [
-    "$root_gen_dir/chromeos/crosapi/mojom/structured_metrics_service.mojom-webui.ts",
     "$root_gen_dir/components/metrics/structured/mojom/event.mojom-webui.ts",
     "$root_gen_dir/components/metrics/structured/structured_events.ts",
   ]

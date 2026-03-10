@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
@@ -63,25 +62,36 @@ class RecorderAppUI
 
   void BindInterface(
       mojo::PendingReceiver<recorder_app::mojom::PageHandler> receiver);
-  void BindInterface(
-      mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver);
 
   static constexpr std::string_view GetWebUIName() { return "RecorderApp"; }
+
+  static base::TimeDelta ComputeEventUptimeForTesting(
+      base::TimeDelta system_uptime,
+      base::TimeDelta system_timestamp,
+      base::TimeDelta event_timestamp);
+
+  static void RecordStructuredMetricsForTesting(
+      std::vector<::metrics::structured::Event> events);
 
  private:
   using OnDeviceModelService =
       on_device_model::mojom::OnDeviceModelPlatformService;
-
   using MachineLearningService =
       chromeos::machine_learning::mojom::MachineLearningService;
   using SodaClientMojoRemote =
       mojo::PendingRemote<chromeos::machine_learning::mojom::SodaClient>;
   using SodaRecognizerMojoReceiver =
       mojo::PendingReceiver<chromeos::machine_learning::mojom::SodaRecognizer>;
-
   using ModelState = recorder_app::mojom::ModelState;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  static base::TimeDelta ComputeEventUptime(base::TimeDelta system_uptime,
+                                            base::TimeDelta system_timestamp,
+                                            base::TimeDelta event_timestamp);
+
+  static void RecordStructuredMetricsImpl(
+      std::vector<::metrics::structured::Event> events);
 
   void EnsureOnDeviceModelService();
 
@@ -175,6 +185,9 @@ class RecorderAppUI
   void CanCaptureSystemAudioWithLoopback(
       CanCaptureSystemAudioWithLoopbackCallback callback) override;
 
+  void RecordStructuredMetrics(
+      std::vector<::metrics::structured::Event> events) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 
@@ -222,9 +235,6 @@ class RecorderAppUI
   mojo::RemoteSet<recorder_app::mojom::QuietModeMonitor> quiet_mode_monitors_;
 
   bool in_quiet_mode_;
-
-  std::unique_ptr<ash::StructuredMetricsServiceWrapper>
-      structured_metrics_service_wrapper_;
 
   DeviceIdMappingCallback device_id_mapping_callback_;
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 
 #include <algorithm>
@@ -13,20 +12,23 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
 #include "ash/webui/common/trusted_types_util.h"
-#include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/model_constants.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "components/metrics/structured/event.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_features.h"
 #include "components/soda/soda_installer.h"
@@ -145,6 +147,53 @@ std::string GetDeviceTypeString() {
 
 }  // namespace
 
+// static
+base::TimeDelta RecorderAppUI::ComputeEventUptimeForTesting(
+    base::TimeDelta system_uptime,
+    base::TimeDelta system_timestamp,
+    base::TimeDelta event_timestamp) {
+  CHECK_IS_TEST();
+  return ComputeEventUptime(system_uptime, system_timestamp, event_timestamp);
+}
+
+// static
+base::TimeDelta RecorderAppUI::ComputeEventUptime(
+    base::TimeDelta system_uptime,
+    base::TimeDelta system_timestamp,
+    base::TimeDelta event_timestamp) {
+  base::TimeDelta result =
+      system_uptime -
+      std::max(system_timestamp - event_timestamp, base::Seconds(0));
+  if (result.is_negative()) {
+    CHECK_IS_TEST();
+  }
+  return result;
+}
+
+// static
+void RecorderAppUI::RecordStructuredMetricsForTesting(
+    std::vector<::metrics::structured::Event> events) {
+  CHECK_IS_TEST();
+  RecordStructuredMetricsImpl(std::move(events));
+}
+
+// static
+void RecorderAppUI::RecordStructuredMetricsImpl(
+    std::vector<::metrics::structured::Event> events) {
+  for (auto& event : events) {
+    if (event.IsEventSequenceType()) {
+      event.SetRecordedTimeSinceBoot(ComputeEventUptime(
+          base::SysInfo::Uptime(),
+          base::Time::NowFromSystemTime() - base::Time::UnixEpoch(),
+          // if event does not have system uptime field populated, set it as the
+          // current system timestamp.
+          event.recorded_time_since_boot()));
+    }
+    ::metrics::structured::StructuredMetricsClient::Get()->Record(
+        std::move(event));
+  }
+}
+
 bool RecorderAppUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(ash::features::kConch) ||
@@ -244,13 +293,6 @@ void RecorderAppUI::BindInterface(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   page_receivers_.Add(this, std::move(receiver));
-}
-
-void RecorderAppUI::BindInterface(
-    mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
-  structured_metrics_service_wrapper_ =
-      std::make_unique<ash::StructuredMetricsServiceWrapper>();
-  structured_metrics_service_wrapper_->BindReceiver(std::move(receiver));
 }
 
 void RecorderAppUI::EnsureOnDeviceModelService() {
@@ -864,6 +906,11 @@ void RecorderAppUI::CanCaptureSystemAudioWithLoopback(
   // Disallow audio loopback when capture system audio from microphone.
   std::move(callback).Run(
       !base::FeatureList::IsEnabled(ash::features::kConchSystemAudioFromMic));
+}
+
+void RecorderAppUI::RecordStructuredMetrics(
+    std::vector<::metrics::structured::Event> events) {
+  RecorderAppUI::RecordStructuredMetricsImpl(std::move(events));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(RecorderAppUI)

@@ -84,7 +84,7 @@ export class PlatformHandler extends PlatformHandlerBase {
 
   override readonly canCaptureSystemAudioWithLoopback = signal(false);
 
-  override readonly eventsSender = new EventsSender();
+  override readonly eventsSender = new EventsSender(this.remote);
 
   override perfLogger = new PerfLogger(this.eventsSender);
 

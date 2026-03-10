@@ -5,6 +5,7 @@
 module ash.recorder_app.mojom;
 
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
+import "components/metrics/structured/mojom/event.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
@@ -209,4 +210,9 @@ interface PageHandler {
   // via `getDisplayMedia`. Otherwise, microphone echo cancellation should be
   // turned off to capture the system audio.
   CanCaptureSystemAudioWithLoopback() => (bool supported);
+
+  // Tries to record all |events|. Events sent over will be validated to ensure
+  // they are registered in //tools/metrics/structured/sync/structured.xml. Any
+  // event that is not valid will be ignored.
+  RecordStructuredMetrics(array<metrics.structured.mojom.Event> events);
 };
