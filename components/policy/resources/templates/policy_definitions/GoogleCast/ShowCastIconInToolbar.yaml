@@ -10,8 +10,6 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Always show the <ph name="PRODUCT_NAME">Google Cast</ph> icon in the toolbar
   value: true

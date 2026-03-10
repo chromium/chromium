@@ -8,8 +8,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Disable CNAME lookup during Kerberos authentication
   value: true

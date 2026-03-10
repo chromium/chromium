@@ -153,7 +153,6 @@ schema:
     type: object
   type: array
 future_on:
-- fuchsia
 - android
 supported_on:
 - chrome.*:84-

@@ -11,8 +11,6 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Use default browser behavior.
   name: Default

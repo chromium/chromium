@@ -20,7 +20,6 @@ supported_on:
 - android:112-
 - chrome.*:112-
 - chrome_os:112-
-- fuchsia:112-
 
 features:
   dynamic_refresh: true

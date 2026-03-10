@@ -8,8 +8,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Domain Reliability data may be sent to Google depending on Chrome User Metrics (UMA) policy
   value: true

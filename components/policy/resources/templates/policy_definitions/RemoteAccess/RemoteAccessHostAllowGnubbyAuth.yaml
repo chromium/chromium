@@ -12,8 +12,6 @@ features:
   internal_only: true
   per_profile: false
   platform_only: true
-future_on:
-- fuchsia
 items:
 - caption: Enable gnubby authentication for the remote access host
   value: true

@@ -13,8 +13,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Check the option to keep existing browsing data by default
   value: true

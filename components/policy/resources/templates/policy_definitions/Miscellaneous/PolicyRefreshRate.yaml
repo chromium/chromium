@@ -10,8 +10,6 @@ example_value: 3600000
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
 - file://components/policy/OWNERS
 - anqing@chromium.org

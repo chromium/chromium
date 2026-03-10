@@ -13,8 +13,6 @@ example_value: https://dns.example.net/dns-query{?dns}
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 owners:
 - ericorth@chromium.org
 - bingler@chromium.org

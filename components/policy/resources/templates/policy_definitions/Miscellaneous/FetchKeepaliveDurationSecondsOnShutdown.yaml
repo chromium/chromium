@@ -13,7 +13,6 @@ features:
   per_profile: true
 future_on:
 - chrome_os
-- fuchsia
 owners:
 - yhirano@chromium.org
 schema:

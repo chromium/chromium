@@ -21,7 +21,6 @@ supported_on:
 - chrome.*:113-
 - chrome_os:113-
 - android:113-
-- fuchsia:113-
 items:
 - caption: Enable First-Party Sets for all affected users
   value: true

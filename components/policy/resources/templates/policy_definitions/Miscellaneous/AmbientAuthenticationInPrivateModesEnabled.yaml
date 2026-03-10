@@ -20,8 +20,6 @@ example_value: 0
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Enable ambient authentication in regular sessions only.
   name: RegularOnly

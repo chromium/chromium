@@ -13,8 +13,6 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Require site isolation for all websites
   value: true

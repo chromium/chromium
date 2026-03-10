@@ -26,8 +26,6 @@ example_value: 2
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Never use a proxy
   name: ProxyServerDisabled

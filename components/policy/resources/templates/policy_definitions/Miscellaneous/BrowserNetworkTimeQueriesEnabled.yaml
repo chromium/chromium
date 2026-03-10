@@ -8,8 +8,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow queries to a Google server to retrieve an accurate timestamp
   value: true

@@ -12,8 +12,6 @@ features:
   internal_only: true
   per_profile: false
   platform_only: true
-future_on:
-- fuchsia
 owners:
 - file://remoting/OWNERS
 - jamiewalch@chromium.org

@@ -9,8 +9,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 label: Names of the native messaging hosts to exempt from the blocklist
 owners:
 - file://components/policy/OWNERS

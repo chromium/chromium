@@ -13,8 +13,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: URL-keyed anonymized data collection is always active
   value: true

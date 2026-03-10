@@ -17,8 +17,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 label: Set download directory
 owners:
 - file://components/policy/OWNERS

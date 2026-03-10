@@ -15,7 +15,6 @@ features:
   per_profile: true
 future_on:
 - android
-- fuchsia
 items:
 - caption: Disable <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>
   value: true

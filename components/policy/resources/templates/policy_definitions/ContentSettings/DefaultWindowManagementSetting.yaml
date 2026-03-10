@@ -12,8 +12,6 @@ example_value: 2
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Denies the Window Management permission on all sites by default
   name: BlockWindowManagement

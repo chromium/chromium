@@ -8,8 +8,6 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Suppress warnings when Chrome is running on an unsupported system
   value: true

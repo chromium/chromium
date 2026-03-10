@@ -12,8 +12,6 @@ desc: |-
   <ph name="PRIVACY_SANDBOX_SITE_ENABLED_ADS_ENABLED_POLICY_NAME">PrivacySandboxSiteEnabledAdsEnabled</ph>
   <ph name="PRIVACY_SANDBOX_AD_MEASUREMENT_ENABLED_POLICY_NAME">PrivacySandboxAdMeasurementEnabled</ph>
 example_value: false
-future_on:
- - fuchsia
 features:
   dynamic_refresh: true
   per_profile: true

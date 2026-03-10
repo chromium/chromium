@@ -10,8 +10,6 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow users to select "Always allow" when an external protocol dialog is
     shown to skip future confirmation prompts

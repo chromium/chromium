@@ -11,8 +11,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Use a Google web service to help resolve spelling errors
   value: true

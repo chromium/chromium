@@ -17,8 +17,6 @@ features:
   dynamic_refresh: true
   metapolicy_type: merge
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Managed user manual exception URLs
   name: ContentPackManualBehaviorURLs

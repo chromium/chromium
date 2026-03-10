@@ -14,8 +14,6 @@ example_value: 0
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Do not filter sites for adult content
   name: SafeSitesFilterDisabled

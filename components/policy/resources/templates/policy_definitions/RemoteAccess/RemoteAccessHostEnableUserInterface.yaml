@@ -10,8 +10,6 @@ features:
   internal_only: true
   per_profile: false
   platform_only: true
-future_on:
-- fuchsia
 items:
 - caption: Enable connection-related UI on the remote host desktop when a connection
     is active

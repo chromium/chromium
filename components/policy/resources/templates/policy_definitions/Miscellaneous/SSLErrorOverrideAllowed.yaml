@@ -8,8 +8,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow users to click through SSL warning pages
   value: true

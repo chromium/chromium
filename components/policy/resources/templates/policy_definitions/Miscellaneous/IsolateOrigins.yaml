@@ -16,8 +16,6 @@ example_value: https://a.example.com/,https://othersite.org/,https://[*.]corp.ex
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 owners:
 - alexmos@chromium.org
 - creis@chromium.org

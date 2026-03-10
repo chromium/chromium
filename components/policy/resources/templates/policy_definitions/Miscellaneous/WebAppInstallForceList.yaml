@@ -68,8 +68,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 label: URLs for Web Apps to be silently installed.
 owners:
 - file://chrome/browser/web_applications/OWNERS

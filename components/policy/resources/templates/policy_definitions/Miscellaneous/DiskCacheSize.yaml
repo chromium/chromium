@@ -12,8 +12,6 @@ example_value: 104857600
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 label: Set disk cache size
 owners:
 - file://components/policy/OWNERS

@@ -14,8 +14,6 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow Chrome to block navigations to external protocols inside sandboxed
     iframe

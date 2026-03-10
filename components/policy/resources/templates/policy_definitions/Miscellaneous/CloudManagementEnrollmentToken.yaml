@@ -8,8 +8,6 @@ features:
   dynamic_refresh: false
   per_profile: false
   platform_only: true
-future_on:
-- fuchsia
 owners:
 - zmin@chromium.org
 - pastarmovj@chromium.org

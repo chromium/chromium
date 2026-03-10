@@ -24,7 +24,6 @@ features:
   per_profile: false
 future_on:
 - android
-- fuchsia
 owners:
 - reillyg@chromium.org
 - file://content/browser/serial/OWNERS

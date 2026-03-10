@@ -16,8 +16,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: port 554 (can be unblocked until 2021/10/15)
   name: '554'

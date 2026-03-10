@@ -12,8 +12,6 @@ example_value: false
 features:
   dynamic_refresh: false
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Keep whitespace for all mime-types
   value: true

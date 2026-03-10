@@ -25,7 +25,6 @@ schema:
   type: integer
 supported_on:
 - chrome.*:91-
-- fuchsia:106-
 future_on:
 - chrome_os
 tags: []

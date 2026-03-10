@@ -7,8 +7,6 @@ example_value: '*.example.com,foobar.example.com'
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 owners:
 - file://components/policy/OWNERS
 - atwilson@chromium.org

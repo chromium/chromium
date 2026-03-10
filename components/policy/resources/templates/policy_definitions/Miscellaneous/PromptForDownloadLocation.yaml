@@ -8,8 +8,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Ask the user where to save the file before downloading
   value: true

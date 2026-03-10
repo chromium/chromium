@@ -21,7 +21,6 @@ supported_on:
 - android:124-131
 - chrome.*:124-131
 - chrome_os:124-131
-- fuchsia:124-131
 
 deprecated: true
 

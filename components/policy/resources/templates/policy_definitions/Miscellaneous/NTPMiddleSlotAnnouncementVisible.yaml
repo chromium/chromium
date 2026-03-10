@@ -9,8 +9,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: New Tab Page will show the middle slot announcement if it is available
   value: true

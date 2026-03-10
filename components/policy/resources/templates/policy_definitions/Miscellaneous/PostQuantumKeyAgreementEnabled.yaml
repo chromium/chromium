@@ -18,8 +18,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Use Default Value for post-quantum key agreement for TLS
   value: null

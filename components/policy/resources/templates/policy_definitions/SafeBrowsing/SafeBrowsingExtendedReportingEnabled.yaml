@@ -13,8 +13,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Enable reporting of system information and page content to help improve
     Safe Browsing

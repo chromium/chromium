@@ -25,6 +25,5 @@ supported_on:
 - android:128-
 - chrome.*:128-
 - chrome_os:128-
-- fuchsia:128-
 tags: []
 type: main

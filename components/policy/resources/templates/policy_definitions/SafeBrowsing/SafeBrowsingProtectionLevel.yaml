@@ -20,8 +20,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Safe Browsing is never active.
   name: NoProtection

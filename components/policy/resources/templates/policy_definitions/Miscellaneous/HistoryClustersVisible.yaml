@@ -13,8 +13,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Chrome history page organized into groups will be visible at chrome://history/grouped.
   value: true

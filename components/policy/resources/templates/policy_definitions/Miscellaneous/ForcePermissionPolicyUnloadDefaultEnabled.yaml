@@ -50,6 +50,5 @@ supported_on:
 - android:117-
 - chrome.*:117-
 - chrome_os:117-
-- fuchsia:117-
 tags: []
 type: main

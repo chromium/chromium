@@ -20,8 +20,6 @@ features:
   can_be_recommended: false
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Use an anonymous Google service to provide automatic descriptions for unlabeled
     images

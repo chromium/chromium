@@ -19,8 +19,6 @@ example_value: basic,digest,ntlm,negotiate
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 owners:
 - file://components/policy/OWNERS
 - rsorokin@chromium.org

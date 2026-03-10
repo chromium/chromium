@@ -12,8 +12,6 @@ example_value: 0
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Reduced User Agent.
   name: Default

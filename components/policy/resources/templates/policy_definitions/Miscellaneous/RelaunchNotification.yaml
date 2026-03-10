@@ -11,8 +11,6 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Show a recurring prompt to the user indicating that a relaunch is recommended
   name: Recommended

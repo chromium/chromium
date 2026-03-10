@@ -19,8 +19,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Scripts for workers (Web Workers, Service Workers, etc.) require a JavaScript
     MIME type, like <ph name="MIMETYPE_TEXT_JAVASCRIPT">text/javascript</ph>. Worker

@@ -13,8 +13,6 @@ features:
   dynamic_refresh: true
   metapolicy_type: merge
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Enable merging of user-level cloud policies.
   value: true

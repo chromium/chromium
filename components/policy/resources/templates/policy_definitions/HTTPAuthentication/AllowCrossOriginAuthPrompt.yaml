@@ -10,8 +10,6 @@ example_value: false
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- fuchsia
 items:
 - caption: Allow third-party images to show an authentication prompt
   value: true
