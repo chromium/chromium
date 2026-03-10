@@ -1,11 +1,10 @@
 {
   "name" : "Content Settings API Test Extension",
   "version" : "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description" : "Content Settings API Test Extension",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": true
+    "service_worker": "test.js"
   },
   "permissions": [ "contentSettings" ]
 }

@@ -310,31 +310,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionContentSettingsApiTestWithClipboard,
                          ::testing::Bool());
 
-class ExtensionContentSettingsApiTestWithContextType
-    : public ExtensionContentSettingsApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionContentSettingsApiTestWithContextType()
-      : ExtensionContentSettingsApiTest(GetParam()) {}
-  ~ExtensionContentSettingsApiTestWithContextType() override = default;
-  ExtensionContentSettingsApiTestWithContextType(
-      const ExtensionContentSettingsApiTestWithContextType&) = delete;
-  ExtensionContentSettingsApiTestWithContextType& operator=(
-      const ExtensionContentSettingsApiTestWithContextType&) = delete;
-};
-
-// Android only supports MV3 and later, therefore don't need to test for
-// persistent background context.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionContentSettingsApiTestWithContextType,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContentSettingsApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithClipboard, Standard) {
   CheckContentSettingsDefault();
 
@@ -360,7 +335,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithClipboard, Standard) {
   CheckContentSettingsDefault();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
+IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
                        UnsupportedDefaultSettings) {
   const char kExtensionPath[] = "content_settings/unsupporteddefaultsettings";
   EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
@@ -368,8 +343,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
 
 // Tests if an extension clearing content settings for one content type leaves
 // the others unchanged.
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
-                       ClearProperlyGranular) {
+IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest, ClearProperlyGranular) {
   const char kExtensionPath[] = "content_settings/clearproperlygranular";
   EXPECT_TRUE(RunExtensionTest(kExtensionPath)) << message_;
 }
@@ -416,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithContextType,
+IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
                        EmbeddedSettingsMetric) {
   base::HistogramTester histogram_tester;
   const char kExtensionPath[] = "content_settings/embeddedsettingsmetric";
