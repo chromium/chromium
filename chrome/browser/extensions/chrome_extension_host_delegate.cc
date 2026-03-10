@@ -115,7 +115,14 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
   // NOTE: This effectively reloads the URL, which is wrong. Unfortunately
   // this is the best we can do until NavigateParams::contents_to_insert is
   // supported. See browser_navigator_android.cc or http://crbug.com/441594986.
-  NavigateParams params(browser, target_url, ui::PAGE_TRANSITION_LINK);
+  NavigateParams params(browser, nullptr);
+  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
+    params.contents_to_insert = std::move(web_contents);
+  } else {
+    params.url = std::move(target_url);
+    params.transition = ui::PAGE_TRANSITION_LINK;
+  }
 #else
   NavigateParams params(browser, std::move(web_contents));
 #endif

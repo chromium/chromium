@@ -22,11 +22,23 @@
 
 namespace {
 
+// Returns true if inserting WebContents via `contents_to_insert` is supported.
+// TODO(crbug.com/477944342): Expand the scenarios where we support it.
+bool SupportsContentsToInsert(NavigateParams* params) {
+  switch (params->disposition) {
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Returns true if NavigateParams are valid, false otherwise.
 bool ValidNavigateParams(NavigateParams* params) {
   // TODO (crbug.com/441594986) Confirm this is correct.
   DCHECK(params->browser);
-  DCHECK(!params->contents_to_insert);
+  DCHECK(!params->contents_to_insert || SupportsContentsToInsert(params));
   DCHECK(!params->switch_to_singleton_tab);
 
   if (!params->initiating_profile) {
@@ -167,11 +179,15 @@ raw_ptr<tabs::TabInterface> GetOrCreateTabForDisposition(
         parent = TabAndroid::FromWebContents(params->source_contents);
       }
 
-      // Create a WebContents.
-      content::WebContents::CreateParams create_params(
-          params->initiating_profile);
-      std::unique_ptr<content::WebContents> web_contents =
-          content::WebContents::Create(create_params);
+      // Use the supplied WebContents or create a new one.
+      std::unique_ptr<content::WebContents> web_contents;
+      if (params->contents_to_insert) {
+        web_contents = std::move(params->contents_to_insert);
+      } else {
+        content::WebContents::CreateParams create_params(
+            params->initiating_profile);
+        web_contents = content::WebContents::Create(create_params);
+      }
 
       // Create a new tab.
       tabs::TabInterface* new_tab = tab_model->CreateTab(

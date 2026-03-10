@@ -28,6 +28,14 @@
 
 namespace {
 
+// Navigates and waits for navigations to complete.
+void NavigateAndWait(NavigateParams* params) {
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(params);
+  ASSERT_TRUE(handle);
+  content::TestNavigationObserver observer(handle->GetWebContents());
+  observer.Wait();
+}
+
 // Helper classes used to track tabs and navigations.
 class NavigationCounter : public content::WebContentsObserver {
  public:
@@ -111,6 +119,11 @@ class NavigateAndroidBrowserTest : public BrowserWindowAndroidBrowserTestBase {
     EXPECT_TRUE(incognito_window);
     EXPECT_TRUE(incognito_window->GetProfile()->IsOffTheRecord());
     return incognito_window;
+  }
+
+  std::unique_ptr<content::WebContents> CreateWebContents() {
+    content::WebContents::CreateParams create_params(GetProfile());
+    return content::WebContents::Create(create_params);
   }
 
   raw_ptr<BrowserWindowInterface> browser_window_;
@@ -790,4 +803,50 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   tabs::TabInterface* new_tab = tab_list_->GetTab(3);
   ASSERT_TRUE(new_tab);
   EXPECT_EQ(url_new, new_tab->GetContents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Navigate_WithWebContents_NewForegroundTab) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1, tab_list_->GetTabCount());
+
+  // Create a WebContents.
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  // Prepare to open a new foreground tab with the existing WebContents.
+  NavigateParams params(browser_window_, std::move(web_contents));
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  // Navigate and wait for navigation to complete.
+  NavigateAndWait(&params);
+
+  // Verify the tab count increased.
+  EXPECT_EQ(2, tab_list_->GetTabCount());
+
+  // Verify the new tab used the existing WebContents.
+  EXPECT_EQ(params.navigated_or_inserted_contents,
+            tab_list_->GetTab(1)->GetContents());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Navigate_WithWebContents_NewBackgroundTab) {
+  const GURL url1 = StartAtURL("/title1.html");
+  ASSERT_EQ(1, tab_list_->GetTabCount());
+
+  // Create a WebContents.
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  // Prepare to open a new background tab with the existing WebContents.
+  NavigateParams params(browser_window_, std::move(web_contents));
+  params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+
+  // Navigate and wait for navigation to complete.
+  NavigateAndWait(&params);
+
+  // Verify the tab count increased.
+  EXPECT_EQ(2, tab_list_->GetTabCount());
+
+  // Verify the new tab used the existing WebContents.
+  EXPECT_EQ(params.navigated_or_inserted_contents,
+            tab_list_->GetTab(1)->GetContents());
 }
