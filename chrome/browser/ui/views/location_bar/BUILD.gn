@@ -235,6 +235,7 @@ source_set("browser_tests") {
     "intent_chip_button_test_base.h",
     "location_bar_view_browsertest.cc",
     "location_icon_view_browsertest.cc",
+    "webui_location_bar_browsertest.cc",
     "zoom_bubble_view_browsertest.cc",
   ]
   deps = [
