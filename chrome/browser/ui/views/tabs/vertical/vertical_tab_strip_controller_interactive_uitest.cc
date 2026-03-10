@@ -78,9 +78,8 @@ class VerticalTabStripControllerInteractiveUiTest
   }
 };
 
-// TODO(crbug.com/478118942): This test is flaky on Mac and Win platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       DISABLED_VerifyTabSelection) {
+                       VerifyTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -226,9 +225,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           0));
 }
 
-// TODO(crbug.com/478118942): This test is flaky on Mac and Win platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       DISABLED_ToggleTabSelection) {
+                       ToggleTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
