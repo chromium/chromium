@@ -7,21 +7,36 @@ package org.chromium.chrome.browser.feed;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.text.format.DateUtils;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.GeneralLocation;
+import androidx.test.espresso.action.GeneralSwipeAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -32,8 +47,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -43,6 +64,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
@@ -53,18 +76,26 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NtpSmoothTransitionDelegate;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -92,10 +123,17 @@ import java.util.concurrent.TimeoutException;
     "disable-features=IPH_FeedHeaderMenu"
 })
 public class FeedV2NewTabPageTest {
+    private static final int SIGNIN_PROMO_POSITION = 2;
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
 
-    @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
+    // Espresso ViewAction that performs a swipe from center to left across the vertical center
+    // of the view. Used instead of ViewAction.swipeLeft which swipes from right edge to
+    // avoid conflict with gesture navigation UI which consumes the edge swipe.
+    private static final ViewAction SWIPE_LEFT =
+            new GeneralSwipeAction(
+                    Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
+
+    private final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
@@ -109,6 +147,21 @@ public class FeedV2NewTabPageTest {
                     .setRevision(2)
                     .build();
 
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+
+    // Mock sign-in environment needs to be destroyed after ChromeActivity in case there are
+    // observers registered in the AccountManagerFacade mock.
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private SetupListManager mSetupListManager;
+
     private Tab mTab;
     private NewTabPage mNtp;
     private EmbeddedTestServer mTestServer;
@@ -117,7 +170,13 @@ public class FeedV2NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
         EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
+        // Pretend Google Play services are available as it is required for the sign-in
+        when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
         mActivityTestRule.startOnBlankPage();
 
@@ -266,6 +325,165 @@ public class FeedV2NewTabPageTest {
                             }
                         });
         callbackHelper.waitForNext();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisabledTest(message = "https://crbug.com/1046822")
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_DismissBySwipe() {
+        openNewTabPage();
+        boolean dismissed =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        if (dismissed) {
+            ChromeSharedPreferences.getInstance()
+                    .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false);
+        }
+
+        // Verify that sign-in promo is displayed initially.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Swipe away the sign-in promo.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(
+                        RecyclerViewActions.actionOnItemAtPosition(
+                                SIGNIN_PROMO_POSITION, SWIPE_LEFT));
+
+        ViewGroup view = (ViewGroup) mNtp.getCoordinatorForTesting().getRecyclerView();
+        waitForNoView(withId(R.id.signin_promo_view_container));
+        waitForView(view, allOf(withId(R.id.header_title), isDisplayed()));
+
+        // Verify that sign-in promo is gone, but new tab page layout and header are displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        onView(withId(R.id.header_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.ntp_content)).check(matches(isDisplayed()));
+
+        // Reset state.
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, dismissed);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_AccountsNotReady() {
+        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
+            openNewTabPage();
+            // Check that the sign-in promo is not shown if accounts are not ready.
+            onView(withId(R.id.feed_stream_recycler_view))
+                    .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+            onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_HiddenWhenSetupListActive() {
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(true);
+
+        openNewTabPage();
+
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_AccountsReady() {
+        openNewTabPage();
+        // Check that the sign-in promo is displayed this time.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_NotShownAfterSignIn() {
+        openNewTabPage();
+        // Check that the sign-in promo is displayed.
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromoDisplayedWithAADCMinorAccount() {
+        mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
+
+        openNewTabPage();
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+
+        // Check that the sign-in promo is displayed.
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void testSignInPromo_shownIfTimeElapsedSinceFirstShownIsLessThanFirstShownLimit() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Advance time, but not beyond the first time shown limit.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS - 1)
+                        * DateUtils.HOUR_IN_MILLIS);
+
+        // Open a new tab, the promo should still be shown.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton"
+    })
+    public void
+            testSignInPromo_shownIfTimeElapsedSinceFirstShownExceedsFirstShownLimitAndResetThreshold() {
+        // Show the promo for the first time.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
+
+        // Advance time beyond the the first time shown limit and the last time shown reset period.
+        mFakeTimeTestRule.advanceMillis(
+                (NtpSigninPromoDelegate.NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS));
+        // Open a new tab, the promo should be shown.
+        openNewTabPage();
+        onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
 
     @Test
