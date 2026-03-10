@@ -228,11 +228,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
-      CheckViewProperty(
-          ContentSettingImageView::kMediaActivityIndicatorElementId,
-          &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kVideocamChromeRefreshIcon));
+      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
+      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
+                        &ContentSettingImageView::get_icon_for_testing,
+                        &vector_icons::kVideocamChromeRefreshIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -248,11 +247,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
-      CheckViewProperty(
-          ContentSettingImageView::kMediaActivityIndicatorElementId,
-          &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kMicChromeRefreshIcon));
+      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
+      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
+                        &ContentSettingImageView::get_icon_for_testing,
+                        &vector_icons::kMicChromeRefreshIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
@@ -268,11 +266,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      WaitForShow(ContentSettingImageView::kMediaActivityIndicatorElementId),
+      WaitForShow(ContentSettingImageModel::kMediaStreamIconElementId),
       // In case both camera and microphone permissions are requested and used
       // at once, we show a single indicator with a camera icon.
-      CheckViewProperty(
-          ContentSettingImageView::kMediaActivityIndicatorElementId,
-          &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kVideocamChromeRefreshIcon));
+      CheckViewProperty(ContentSettingImageModel::kMediaStreamIconElementId,
+                        &ContentSettingImageView::get_icon_for_testing,
+                        &vector_icons::kVideocamChromeRefreshIcon));
 }

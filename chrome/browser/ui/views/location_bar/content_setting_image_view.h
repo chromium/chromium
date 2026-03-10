@@ -60,10 +60,6 @@ class ContentSettingImageView : public IconLabelBubbleView,
   METADATA_HEADER(ContentSettingImageView, IconLabelBubbleView)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaActivityIndicatorElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiActivityIndicatorElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiSysexActivityIndicatorElementId);
-
   ContentSettingImageView(std::unique_ptr<ContentSettingImageModel> image_model,
                           IconLabelBubbleView::Delegate* parent_delegate,
                           ContentSettingImageViewDelegate* delegate,

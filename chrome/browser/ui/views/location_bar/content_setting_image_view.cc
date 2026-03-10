@@ -95,11 +95,6 @@ std::optional<ViewID> GetViewID(
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
-                                      kMediaActivityIndicatorElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageView,
-                                      kMidiSysexActivityIndicatorElementId);
-
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
     IconLabelBubbleView::Delegate* parent_delegate,
@@ -210,25 +205,8 @@ void ContentSettingImageView::Update() {
 }
 
 void ContentSettingImageView::UpdateElementIdentifier() {
-  std::optional<ui::ElementIdentifier> element_identifier;
-  switch (content_setting_image_model_->image_type()) {
-    case ContentSettingImageModel::ImageType::NOTIFICATIONS:
-      element_identifier = kNotificationContentSettingImageView;
-      break;
-    case ContentSettingImageModel::ImageType::MEDIASTREAM:
-      element_identifier = kMediaActivityIndicatorElementId;
-      break;
-    case ContentSettingImageModel::ImageType::MIDI_SYSEX:
-      element_identifier = kMidiSysexActivityIndicatorElementId;
-      break;
-    default:
-      break;
-  }
-  if (element_identifier) {
-    SetProperty(views::kElementIdentifierKey, *element_identifier);
-  } else {
-    ClearProperty(views::kElementIdentifierKey);
-  }
+  SetProperty(views::kElementIdentifierKey,
+              content_setting_image_model_->GetElementIdentifier());
 }
 
 void ContentSettingImageView::SetIconColor(std::optional<SkColor> color) {
@@ -285,7 +263,8 @@ bool ContentSettingImageView::ShowBubbleImpl() {
         content_setting_image_model_->CreateBubbleModel(
             delegate_->GetContentSettingBubbleModelDelegate(), web_contents),
         web_contents, anchor, views::BubbleBorder::TOP_RIGHT);
-    bubble_view_->SetHighlightedButton(this);
+    bubble_view_->SetHighlightedElement(
+        content_setting_image_model_->GetElementIdentifier());
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     observation_.Observe(bubble_widget);

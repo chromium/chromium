@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kBlockButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
+      AfterShow(ContentSettingImageModel::kMidiSysexIconElementId,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
                   EXPECT_EQ(element_view->get_icon_for_testing(),
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(MidiPermissionsFlowInteractiveUITest,
       NavigateAndRequestMidi(),
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
-      AfterShow(ContentSettingImageView::kMidiSysexActivityIndicatorElementId,
+      AfterShow(ContentSettingImageModel::kMidiSysexIconElementId,
                 base::BindOnce([](ui::TrackedElement* element) {
                   auto* element_view = AsView<ContentSettingImageView>(element);
                   EXPECT_EQ(element_view->get_icon_for_testing(),

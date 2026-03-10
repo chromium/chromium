@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -62,6 +63,30 @@ class ContentSettingImageModel {
 
     NUM_IMAGE_TYPES
   };
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookiesIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImagesIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kJavaScriptIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPopupsIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGeolocationIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMixedScriptIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProtocolHandlersIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaStreamIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAdsIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutomaticDownloadsIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiSysexIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSoundIconElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFramebustElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSensorsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClipboardRWElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStorageAccessElementId);
+  // Notifications has global ID kNotificationContentSettingImageView.
+#if BUILDFLAG(IS_CHROMEOS)
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSmartCardIconElementId);
+#endif
+#if BUILDFLAG(IS_WIN)
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProtectedMediaElementId);
+#endif
 
   ContentSettingImageModel(const ContentSettingImageModel&) = delete;
   ContentSettingImageModel& operator=(const ContentSettingImageModel&) = delete;
@@ -121,6 +146,9 @@ class ContentSettingImageModel {
   const gfx::VectorIcon* get_icon_badge() const { return icon_badge_; }
 
   ImageType image_type() const { return image_type_; }
+
+  // Returns the element identifier to use that's appropriate for this type.
+  ui::ElementIdentifier GetElementIdentifier() const;
 
   // Public for testing.
   void set_explanatory_string_id(int text_id) {

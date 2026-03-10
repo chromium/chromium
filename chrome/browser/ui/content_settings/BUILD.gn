@@ -15,6 +15,7 @@ source_set("content_settings") {
     "//components/content_settings/core/common",
     "//components/custom_handlers",
     "//services/device/public/cpp/geolocation:buildflags",
+    "//ui/base/interaction",
   ]
 
   if (!is_android) {

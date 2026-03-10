@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
@@ -69,6 +70,47 @@
 
 using content::WebContents;
 using content_settings::PageSpecificContentSettings;
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kCookiesIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kImagesIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kJavaScriptIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kPopupsIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kGeolocationIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kMixedScriptIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kProtocolHandlersIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kMediaStreamIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kAdsIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kAutomaticDownloadsIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kMidiSysexIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kSoundIconElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kFramebustElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kSensorsElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kClipboardRWElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kStorageAccessElementId);
+#if BUILDFLAG(IS_CHROMEOS)
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kSmartCardIconElementId);
+#endif
+#if BUILDFLAG(IS_WIN)
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContentSettingImageModel,
+                                      kProtectedMediaElementId);
+#endif
 
 // The image models hierarchy:
 //
@@ -1325,6 +1367,56 @@ gfx::Image ContentSettingImageModel::GetIcon(SkColor icon_color) const {
 
 void ContentSettingImageModel::SetIconSize(int icon_size) {
   icon_size_ = icon_size;
+}
+
+ui::ElementIdentifier ContentSettingImageModel::GetElementIdentifier() const {
+  switch (image_type_) {
+    case ImageType::COOKIES:
+      return kCookiesIconElementId;
+    case ImageType::IMAGES:
+      return kImagesIconElementId;
+    case ImageType::JAVASCRIPT:
+      return kJavaScriptIconElementId;
+    case ImageType::POPUPS:
+      return kPopupsIconElementId;
+    case ImageType::GEOLOCATION:
+      return kGeolocationIconElementId;
+    case ImageType::MIXEDSCRIPT:
+      return kMixedScriptIconElementId;
+    case ImageType::PROTOCOL_HANDLERS:
+      return kProtocolHandlersIconElementId;
+    case ImageType::MEDIASTREAM:
+      return kMediaStreamIconElementId;
+    case ImageType::ADS:
+      return kAdsIconElementId;
+    case ImageType::AUTOMATIC_DOWNLOADS:
+      return kAutomaticDownloadsIconElementId;
+    case ImageType::MIDI_SYSEX:
+      return kMidiSysexIconElementId;
+    case ImageType::SOUND:
+      return kSoundIconElementId;
+    case ImageType::FRAMEBUST:
+      return kFramebustElementId;
+    case ImageType::SENSORS:
+      return kSensorsElementId;
+    case ImageType::CLIPBOARD_READ_WRITE:
+      return kClipboardRWElementId;
+    case ImageType::STORAGE_ACCESS:
+      return kStorageAccessElementId;
+    case ImageType::NOTIFICATIONS:
+      return kNotificationContentSettingImageView;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ImageType::SMART_CARD:
+      return kSmartCardIconElementId;
+#endif
+#if BUILDFLAG(IS_WIN)
+    case ImageType::PROTECTED_MEDIA_IDENTIFIER:
+      return kProtectedMediaElementId;
+#endif
+    case ImageType::NUM_IMAGE_TYPES:
+      NOTREACHED();
+  }
+  NOTREACHED();
 }
 
 int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
