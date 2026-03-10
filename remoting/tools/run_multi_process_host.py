@@ -12,9 +12,11 @@ The script will elevate itself and ask for your password.
 """
 
 import argparse
+import atexit
 import hashlib
 import os
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -28,9 +30,52 @@ def run_command(command):
             "Command failed with exit code "
             f"{e.returncode}: {' '.join(command)}",
             file=sys.stderr)
-        print(e.stdout, file=sys.stderr)
-        print(e.stderr, file=sys.stderr)
         raise
+
+
+def terminate_remote_sessions():
+    print("Cleaning up remote sessions...")
+    try:
+        result = subprocess.run(["loginctl", "list-sessions", "--no-legend"],
+                                capture_output=True,
+                                text=True,
+                                check=True)
+        for line in result.stdout.splitlines():
+            parts = line.split()
+            if not parts:
+                continue
+            session_id = parts[0]
+            show_session_command = [
+                "loginctl", "show-session", session_id, "-p", "Remote", "-p",
+                "Type"
+            ]
+            show_result = subprocess.run(show_session_command,
+                                         capture_output=True,
+                                         text=True,
+                                         check=False)
+            if show_result.returncode != 0:
+                continue
+
+            props = {}
+            for show_line in show_result.stdout.splitlines():
+                if "=" in show_line:
+                    k, v = show_line.split("=", 1)
+                    props[k] = v
+
+            if (props.get("Remote") == "yes"
+                    and props.get("Type") in ["wayland", "x11"]):
+                print(f"Terminating remote session {session_id} "
+                      f"(Type={props.get('Type')})...")
+                subprocess.run(["loginctl", "terminate-session", session_id],
+                               check=False)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to list sessions: {e}", file=sys.stderr)
+
+
+def handle_signal(signum, frame):
+    del signum, frame # Unused
+    # This will trigger atexit handlers.
+    sys.exit(0)
 
 
 def systemctl_user(action, unit):
@@ -152,6 +197,12 @@ NoDisplay=true
     daemon_command = \
         [os.path.join(abs_out_dir, "remoting_me2me_host"), "--type=daemon"]
     print(f"Starting CRD host daemon: {' '.join(daemon_command)}")
+
+    signal.signal(signal.SIGTERM, handle_signal)
+    signal.signal(signal.SIGINT, handle_signal)
+    signal.signal(signal.SIGHUP, handle_signal)
+
+    atexit.register(terminate_remote_sessions)
     try:
         # Use subprocess.run to block and stream output
         subprocess.run(daemon_command, check=True)
@@ -164,43 +215,6 @@ NoDisplay=true
         print("\nCaught KeyboardInterrupt. Stopping host daemon...")
         # subprocess.run handles cleanup on KeyboardInterrupt
     print("CRD host daemon stopped.")
-
-    print("Cleaning up remote sessions...")
-    try:
-        result = subprocess.run(["loginctl", "list-sessions", "--no-legend"],
-                                capture_output=True,
-                                text=True,
-                                check=True)
-        for line in result.stdout.splitlines():
-            parts = line.split()
-            if not parts:
-                continue
-            session_id = parts[0]
-            show_session_command = [
-                "loginctl", "show-session", session_id, "-p", "Remote", "-p",
-                "Type"
-            ]
-            show_result = subprocess.run(show_session_command,
-                                         capture_output=True,
-                                         text=True,
-                                         check=False)
-            if show_result.returncode != 0:
-                continue
-
-            props = {}
-            for show_line in show_result.stdout.splitlines():
-                if "=" in show_line:
-                    k, v = show_line.split("=", 1)
-                    props[k] = v
-
-            if (props.get("Remote") == "yes"
-                    and props.get("Type") in ["wayland", "x11"]):
-                print(f"Terminating remote session {session_id} "
-                      f"(Type={props.get('Type')})...")
-                subprocess.run(["loginctl", "terminate-session", session_id],
-                               check=False)
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to list sessions: {e}", file=sys.stderr)
 
 
 def main():
