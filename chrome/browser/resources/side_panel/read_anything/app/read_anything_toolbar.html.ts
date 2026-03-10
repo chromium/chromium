@@ -87,6 +87,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         iron-icon="read-anything:highlight-on"
         title="${this.getHighlightButtonLabel_()}"
         aria-label="${this.getHighlightButtonLabel_()}"
+        aria-haspopup="menu"
         @click="${this.onHighlightClick_}">
     </cr-icon-button>
 
