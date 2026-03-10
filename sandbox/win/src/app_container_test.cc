@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/process_mitigations_unittest.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/common/test_utils.h"
@@ -514,25 +515,16 @@ TEST(LowBoxTest, ChildProcessMitigationLowBox) {
     return;
   }
 
-  TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
+  TestChildProcessTestRunner runner(JobLevel::kLimitedUser, USER_UNPROTECTED,
+                                    USER_UNPROTECTED);
 
-  EXPECT_EQ(SBOX_ALL_OK,
-            runner.GetPolicy()->GetConfig()->SetLowBox(kAppContainerSid));
-
-  // Now set the job level to be <= JobLevel::kLimitedUser
-  // and ensure we can no longer create a child process.
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetJobLevel(
-                             JobLevel::kLimitedUser, 0));
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetConfig()->SetLowBox(kAppContainerSid));
 
   base::FilePath cmd;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd));
   cmd = cmd.Append(L"calc.exe");
 
-  std::wstring test_command = L"TestChildProcess \"";
-  test_command += cmd.value();
-  test_command += L"\" false";
-
-  EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(test_command.c_str()));
+  EXPECT_EQ(SBOX_TEST_SECOND_ERROR, runner.RunTest(cmd.value(), L"false"));
 }
 
 }  // namespace sandbox

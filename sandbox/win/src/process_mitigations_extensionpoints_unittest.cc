@@ -12,6 +12,7 @@
 #include "base/win/startup_information.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/process_mitigations.h"
+#include "sandbox/win/src/process_mitigations_unittest.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/hooking_dll.h"
 #include "sandbox/win/tests/integration_tests/hooking_win_proc.h"
@@ -363,30 +364,23 @@ namespace sandbox {
 // This test validates that setting the MITIGATION_EXTENSION_POINT_DISABLE
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin8ExtensionPointPolicySuccess) {
-  std::wstring test_command = L"CheckPolicy ";
-  test_command += std::to_wstring(sandbox::TESTPOLICY_EXTENSIONPOINT);
-
   //---------------------------------
   // 1) Test setting pre-startup.
   //---------------------------------
-  TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
-
-  EXPECT_EQ(policy->GetConfig()->SetProcessMitigations(
+  CheckPolicyTestRunner runner;
+  EXPECT_EQ(runner.GetConfig()->SetProcessMitigations(
                 MITIGATION_EXTENSION_POINT_DISABLE),
             SBOX_ALL_OK);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(TESTPOLICY_EXTENSIONPOINT));
 
   //---------------------------------
   // 2) Test setting post-startup.
   //---------------------------------
-  TestRunner runner2;
-  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
-
-  EXPECT_EQ(policy2->GetConfig()->SetDelayedProcessMitigations(
+  CheckPolicyTestRunner runner2;
+  EXPECT_EQ(runner2.GetConfig()->SetDelayedProcessMitigations(
                 MITIGATION_EXTENSION_POINT_DISABLE),
             SBOX_ALL_OK);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(TESTPOLICY_EXTENSIONPOINT));
 }
 
 // This test validates that a "legitimate" global hook CAN be set on the

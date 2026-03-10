@@ -23,13 +23,14 @@ enum MethodCall { kRatchetDown = 1, kSetStart, kLockdown };
 // - Use enum TestPolicy defined in integration_tests_common.h to specify which
 //   policy to check - passed as arg1.
 //------------------------------------------------------------------------------
-SBOX_TESTS_COMMAND int CheckDeath(int argc, wchar_t** argv) {
-  if (argc < 2)
+SBOX_TEST_COMMAND(CheckDeath) {
+  if (args.size() < 2) {
     return SBOX_TEST_INVALID_PARAMETER;
+  }
 
-  for (int i = 0; i < argc; i++) {
+  for (const auto& arg : args) {
     int test;
-    if (!base::StringToInt(UNSAFE_TODO(argv[i]), &test)) {
+    if (!base::StringToInt(arg, &test)) {
       return SBOX_TEST_INVALID_PARAMETER;
     }
 
@@ -55,63 +56,38 @@ SBOX_TESTS_COMMAND int CheckDeath(int argc, wchar_t** argv) {
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownOrderMatters) {
-  std::wstring test_command = L"CheckDeath ";
-  test_command += base::NumberToWString(kRatchetDown);
-  test_command += L" ";
-  test_command += base::NumberToWString(kSetStart);
-
-  TestRunner runner;
+  CheckDeathTestRunner runner;
   // We should hit a DCHECK in the child which will cause the process to crash
   EXPECT_EQ(STATUS_BREAKPOINT,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
+            static_cast<ULONG>(runner.RunTest(kRatchetDown, kSetStart)));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive) {
-  std::wstring test_command = L"CheckDeath ";
-  test_command += base::NumberToWString(kRatchetDown);
-  test_command += L" ";
-  test_command += base::NumberToWString(kLockdown);
-
-  TestRunner runner;
+  CheckDeathTestRunner runner;
   // We should hit a DCHECK in the child which will cause the process to crash
   EXPECT_EQ(STATUS_BREAKPOINT,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
+            static_cast<ULONG>(runner.RunTest(kRatchetDown, kLockdown)));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckRatchetDownAndLockdownExclusive2) {
-  std::wstring test_command = L"CheckDeath ";
-  test_command += base::NumberToWString(kLockdown);
-  test_command += L" ";
-  test_command += base::NumberToWString(kRatchetDown);
-
-  TestRunner runner;
+  CheckDeathTestRunner runner;
   // We should hit a DCHECK in the child which will cause the process to crash
   EXPECT_EQ(STATUS_BREAKPOINT,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
+            static_cast<ULONG>(runner.RunTest(kLockdown, kRatchetDown)));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive) {
-  std::wstring test_command = L"CheckDeath ";
-  test_command += base::NumberToWString(kLockdown);
-  test_command += L" ";
-  test_command += base::NumberToWString(kSetStart);
-
-  TestRunner runner;
+  CheckDeathTestRunner runner;
   // We should hit a DCHECK in the child which will cause the process to crash
   EXPECT_EQ(STATUS_BREAKPOINT,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
+            static_cast<ULONG>(runner.RunTest(kLockdown, kSetStart)));
 }
 
 TEST(ProcessMitigationsDeathTest, CheckSetStartAndLockdownExclusive2) {
-  std::wstring test_command = L"CheckDeath ";
-  test_command += base::NumberToWString(kSetStart);
-  test_command += L" ";
-  test_command += base::NumberToWString(kLockdown);
-
-  TestRunner runner;
+  CheckDeathTestRunner runner;
   // We should hit a DCHECK in the child which will cause the process to crash
   EXPECT_EQ(STATUS_BREAKPOINT,
-            static_cast<ULONG>(runner.RunTest(test_command.c_str())));
+            static_cast<ULONG>(runner.RunTest(kSetStart, kLockdown)));
 }
 
 }  // namespace sandbox
