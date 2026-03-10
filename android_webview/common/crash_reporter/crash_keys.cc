@@ -222,6 +222,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // crbug.com/456871291
     "BadHistogramArgs-name",
 
+    // crbug.com/40260662
+    "PersistentSampleMap-corrupted",
+
     nullptr};
 // clang-format on
 
