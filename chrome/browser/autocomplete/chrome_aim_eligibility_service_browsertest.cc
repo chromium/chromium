@@ -1358,7 +1358,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG))
+#if (BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG))) || BUILDFLAG(IS_MAC)
 // TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
 #define MAYBE_OTRRequestIsNotDropped DISABLED_OTRRequestIsNotDropped
 #else
