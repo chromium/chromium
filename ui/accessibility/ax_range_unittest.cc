@@ -607,11 +607,19 @@ TEST_F(AXRangeTest, BeginAndEndIterators) {
   TestPositionRange nullptr_and_null_position(nullptr, null_position->Clone());
   EXPECT_EQ(TestPositionRange::Iterator(), nullptr_and_null_position.begin());
   EXPECT_EQ(TestPositionRange::Iterator(), nullptr_and_null_position.end());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            nullptr_and_null_position.rbegin());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            nullptr_and_null_position.rend());
 
   TestPositionRange test_position1_and_nullptr(test_position1->Clone(),
                                                nullptr);
   EXPECT_EQ(TestPositionRange::Iterator(), test_position1_and_nullptr.begin());
   EXPECT_EQ(TestPositionRange::Iterator(), test_position1_and_nullptr.end());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            test_position1_and_nullptr.rbegin());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            test_position1_and_nullptr.rend());
 
   TestPositionRange null_position_and_test_position2(null_position->Clone(),
                                                      test_position2->Clone());
@@ -619,6 +627,10 @@ TEST_F(AXRangeTest, BeginAndEndIterators) {
             null_position_and_test_position2.begin());
   EXPECT_EQ(TestPositionRange::Iterator(),
             null_position_and_test_position2.end());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            null_position_and_test_position2.rbegin());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(),
+            null_position_and_test_position2.rend());
 
   TestPositionRange test_position1_and_test_position2(test_position1->Clone(),
                                                       test_position2->Clone());
@@ -633,6 +645,12 @@ TEST_F(AXRangeTest, BeginAndEndIterators) {
             test_position1_and_test_position2.begin());
   EXPECT_EQ(TestPositionRange::Iterator(nullptr, test_position2->Clone()),
             test_position1_and_test_position2.end());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(test_position1->Clone(),
+                                               test_position2->Clone()),
+            test_position1_and_test_position2.rbegin());
+  EXPECT_EQ(
+      TestPositionRange::ReverseIterator(test_position1->Clone(), nullptr),
+      test_position1_and_test_position2.rend());
 
   TestPositionRange test_position3_and_test_position4(test_position3->Clone(),
                                                       test_position4->Clone());
@@ -651,6 +669,12 @@ TEST_F(AXRangeTest, BeginAndEndIterators) {
             test_position3_and_test_position4.end());
   EXPECT_EQ(TestPositionRange::Iterator(nullptr, test_position4->Clone()),
             test_position3_and_test_position4.end());
+  EXPECT_EQ(TestPositionRange::ReverseIterator(test_position3->Clone(),
+                                               test_position4->Clone()),
+            test_position3_and_test_position4.rbegin());
+  EXPECT_EQ(
+      TestPositionRange::ReverseIterator(test_position3->Clone(), nullptr),
+      test_position3_and_test_position4.rend());
 }
 
 TEST_F(AXRangeTest, LeafTextRangeIteration) {
@@ -717,13 +741,27 @@ TEST_F(AXRangeTest, LeafTextRangeIteration) {
           actual_ranges.emplace_back(std::move(leaf_text_range));
         }
 
-        EXPECT_EQ(expected_ranges.size(), actual_ranges.size());
-        size_t element_count =
-            std::min(expected_ranges.size(), actual_ranges.size());
+        const size_t element_count = expected_ranges.size();
+        ASSERT_EQ(element_count, actual_ranges.size());
         for (size_t i = 0; i < element_count; ++i) {
           EXPECT_EQ(expected_ranges[i], actual_ranges[i]);
           EXPECT_EQ(expected_ranges[i].anchor()->GetAnchor(),
                     actual_ranges[i].anchor()->GetAnchor());
+        }
+
+        // Reverse iterator.
+        actual_ranges.clear();
+        for (auto leaf_text_range = test_range.rbegin();
+             leaf_text_range != test_range.rend(); --leaf_text_range) {
+          EXPECT_TRUE((*leaf_text_range).IsLeafTextRange());
+          actual_ranges.emplace_back(*leaf_text_range);
+        }
+
+        ASSERT_EQ(element_count, actual_ranges.size());
+        for (size_t i = 0; i < element_count; ++i) {
+          EXPECT_EQ(expected_ranges[i], actual_ranges[element_count - 1 - i]);
+          EXPECT_EQ(expected_ranges[i].anchor()->GetAnchor(),
+                    actual_ranges[element_count - 1 - i].anchor()->GetAnchor());
         }
       };
 

@@ -292,6 +292,97 @@ class AXRange final {
     return Iterator(nullptr, std::move(forward_range.focus_));
   }
 
+  // Similar to Iterator class, but moves in the reverse direction.
+  class ReverseIterator {
+   public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = AXRange;
+    using difference_type = std::ptrdiff_t;
+    using pointer = AXRange*;
+    using reference = AXRange&;
+
+    ReverseIterator()
+        : anchor_(AXPositionType::CreateNullPosition()),
+          focus_(AXPositionType::CreateNullPosition()) {}
+
+    ReverseIterator(AXPositionInstance start, AXPositionInstance end) {
+      if (start && !start->IsNullPosition()) {
+        anchor_ = start->AsLeafTextPosition();
+        focus_ = !end ? AXPositionType::CreateNullPosition()
+                      : end->AsLeafTextPosition();
+      } else {
+        anchor_ = AXPositionType::CreateNullPosition();
+        focus_ = AXPositionType::CreateNullPosition();
+      }
+    }
+
+    ReverseIterator(const ReverseIterator& other) = delete;
+
+    ReverseIterator(ReverseIterator&& other)
+        : anchor_(std::move(other.anchor_)), focus_(std::move(other.focus_)) {}
+
+    ~ReverseIterator() = default;
+
+    bool operator==(const ReverseIterator& other) const {
+      return anchor_->GetAnchor() == other.anchor_->GetAnchor() &&
+             focus_->GetAnchor() == other.focus_->GetAnchor() &&
+             *anchor_ == *other.anchor_ && *focus_ == *other.focus_;
+    }
+
+    bool operator!=(const ReverseIterator& other) const {
+      return !(*this == other);
+    }
+
+    ReverseIterator& operator--() {
+      DCHECK(!focus_->IsNullPosition());
+      if (anchor_->GetAnchor() == focus_->GetAnchor()) {
+        focus_ = AXPositionType::CreateNullPosition();
+      } else {
+        focus_ = focus_->CreatePreviousLeafTreePosition()
+                     ->CreatePositionAtEndOfAnchor();
+        DCHECK_LE(*anchor_, *focus_);
+      }
+      return *this;
+    }
+
+    AXRange operator*() const {
+      DCHECK(!focus_->IsNullPosition());
+      AXPositionInstance current_anchor =
+          (anchor_->GetAnchor() != focus_->GetAnchor())
+              ? focus_->CreatePositionAtStartOfAnchor()
+              : anchor_->Clone();
+      DCHECK_LE(*anchor_, *current_anchor);
+
+      AXRange current_leaf_text_range(current_anchor->AsTextPosition(),
+                                      focus_->AsTextPosition());
+      DCHECK(current_leaf_text_range.IsLeafTextRange());
+      return std::move(current_leaf_text_range);
+    }
+
+   private:
+    AXPositionInstance anchor_;
+    AXPositionInstance focus_;
+  };
+
+  ReverseIterator rbegin() const {
+    if (IsNull()) {
+      return ReverseIterator(nullptr, nullptr);
+    }
+    AXRange forward_range = AsForwardRange();
+    return ReverseIterator(std::move(forward_range.anchor_),
+                           std::move(forward_range.focus_));
+  }
+
+  ReverseIterator rend() const {
+    if (IsNull()) {
+      return ReverseIterator(AXPositionType::CreateNullPosition(),
+                             AXPositionType::CreateNullPosition());
+    }
+    AXRange forward_range = AsForwardRange();
+    return ReverseIterator(std::move(forward_range.anchor_),
+                           AXPositionType::CreateNullPosition());
+  }
+
   // Returns the concatenation of the accessible names of all text nodes
   // contained between this AXRange's endpoints.
   // Pass a |max_count| of -1 to retrieve all text in the AXRange.
@@ -363,17 +454,16 @@ class AXRange final {
           crossed_paragraph_boundary = false;
         }
 
-        int current_end_offset =
-            (start->GetAnchor() != end->GetAnchor())
-                ? start->MaxTextOffset(embedded_object_behavior)
-                : end->text_offset();
+        int focus_offset = (start->GetAnchor() != end->GetAnchor())
+                               ? start->MaxTextOffset(embedded_object_behavior)
+                               : end->text_offset();
 
-        if (current_end_offset > start->text_offset()) {
+        if (focus_offset > start->text_offset()) {
           int characters_to_append =
               (max_count > 0)
                   ? std::min(max_count - static_cast<int>(range_text.length()),
-                             current_end_offset - start->text_offset())
-                  : current_end_offset - start->text_offset();
+                             focus_offset - start->text_offset())
+                  : focus_offset - start->text_offset();
 
           std::u16string position_text =
               start->GetText(embedded_object_behavior);
