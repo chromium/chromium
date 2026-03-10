@@ -9,8 +9,6 @@
 
 #include <optional>
 
-#include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video_capture_types.h"

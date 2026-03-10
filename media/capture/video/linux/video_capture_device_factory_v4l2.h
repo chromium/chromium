@@ -14,10 +14,11 @@
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
-#include "media/capture/video/linux/v4l2_capture_device.h"
 #include "media/capture/video_capture_types.h"
 
 namespace media {
+
+class V4L2CaptureDevice;
 
 // Extension of VideoCaptureDeviceFactory to create and manipulate Linux
 // devices.

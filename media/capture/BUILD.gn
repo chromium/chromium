@@ -53,11 +53,12 @@ component("capture_base") {
   ]
 }
 
-# Target which allows breakout of Android BUILD.gn files.
+# Target which allows breakout of platform-specific BUILD.gn files.
 source_set("capture_device_specific") {
   visibility = [
     ":capture_lib",
     "//media/capture/video/android",
+    "//media/capture/video/linux",
     "//media/capture/video/win",
   ]
   defines = [ "CAPTURE_IMPLEMENTATION" ]
@@ -238,39 +239,7 @@ component("capture_lib") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "video/linux/scoped_v4l2_device_fd.cc",
-      "video/linux/scoped_v4l2_device_fd.h",
-      "video/linux/v4l2_capture_delegate.cc",
-      "video/linux/v4l2_capture_delegate.h",
-      "video/linux/v4l2_capture_device.h",
-      "video/linux/v4l2_capture_device_impl.cc",
-      "video/linux/v4l2_capture_device_impl.h",
-      "video/linux/video_capture_device_factory_linux.cc",
-      "video/linux/video_capture_device_factory_linux.h",
-      "video/linux/video_capture_device_factory_v4l2.cc",
-      "video/linux/video_capture_device_factory_v4l2.h",
-      "video/linux/video_capture_device_linux.cc",
-      "video/linux/video_capture_device_linux.h",
-    ]
-    if (rtc_use_pipewire) {
-      sources += [
-        "video/linux/video_capture_device_factory_webrtc.cc",
-        "video/linux/video_capture_device_factory_webrtc.h",
-        "video/linux/video_capture_device_webrtc.cc",
-        "video/linux/video_capture_device_webrtc.h",
-      ]
-    }
-    deps += [ "//gpu/command_buffer/client" ]
-  }
-
-  if (is_linux) {
-    sources += [
-      "video/linux/v4l2_capture_delegate_gpu_helper.cc",
-      "video/linux/v4l2_capture_delegate_gpu_helper.h",
-      "video/linux/v4l2_gpu_memory_buffer_tracker.cc",
-      "video/linux/v4l2_gpu_memory_buffer_tracker.h",
-    ]
+    deps += [ "video/linux" ]
   }
 
   if (is_chromeos) {
@@ -437,12 +406,7 @@ source_set("test_support") {
   ]
 
   if (is_linux) {
-    sources += [
-      "video/linux/fake_device_provider.cc",
-      "video/linux/fake_device_provider.h",
-      "video/linux/fake_v4l2_impl.cc",
-      "video/linux/fake_v4l2_impl.h",
-    ]
+    public_deps = [ "video/linux:test_support" ]
   }
 
   if (is_mac) {
@@ -509,17 +473,7 @@ test("capture_unittests") {
   ]
 
   if (is_linux) {
-    sources += [
-      "video/linux/v4l2_capture_delegate_unittest.cc",
-      "video/linux/video_capture_device_factory_v4l2_unittest.cc",
-    ]
-  }
-
-  if (is_linux) {
-    sources += [
-      "video/linux/v4l2_capture_delegate_gpu_helper_unittest.cc",
-      "video/linux/v4l2_gpu_memory_buffer_tracker_unittest.cc",
-    ]
+    deps += [ "video/linux:unit_tests" ]
     data += [ "//media/test/data/one_frame_1280x720.mjpeg" ]
   }
 

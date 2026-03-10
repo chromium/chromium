@@ -4,6 +4,8 @@
 
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 
+#include "media/capture/video/linux/v4l2_capture_device.h"
+
 namespace media {
 
 ScopedV4L2DeviceFD::ScopedV4L2DeviceFD(V4L2CaptureDevice* v4l2)

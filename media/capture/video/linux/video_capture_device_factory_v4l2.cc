@@ -22,6 +22,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
+#include "media/capture/video/linux/v4l2_capture_device.h"
+#include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/linux/video_capture_device_linux.h"
 
 #if BUILDFLAG(IS_OPENBSD)

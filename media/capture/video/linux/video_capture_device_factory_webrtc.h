@@ -8,7 +8,6 @@
 #include "media/capture/video/video_capture_device_factory.h"
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread.h"
 #include "media/capture/video_capture_types.h"
 
 #include "third_party/webrtc/common_video/libyuv/include/webrtc_libyuv.h"

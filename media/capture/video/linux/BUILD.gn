@@ -1,0 +1,130 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/webrtc/webrtc.gni")
+
+assert(is_linux || is_chromeos)
+
+source_set("linux") {
+  visibility = [
+    ":test_support",
+    ":unit_tests",
+    "//media/capture:capture_lib",
+  ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+  sources = [
+    "scoped_v4l2_device_fd.cc",
+    "scoped_v4l2_device_fd.h",
+    "v4l2_capture_delegate.cc",
+    "v4l2_capture_delegate.h",
+    "v4l2_capture_device.h",
+    "v4l2_capture_device_impl.cc",
+    "v4l2_capture_device_impl.h",
+    "video_capture_device_factory_linux.cc",
+    "video_capture_device_factory_linux.h",
+    "video_capture_device_factory_v4l2.cc",
+    "video_capture_device_factory_v4l2.h",
+    "video_capture_device_linux.cc",
+    "video_capture_device_linux.h",
+  ]
+
+  if (rtc_use_pipewire) {
+    sources += [
+      "video_capture_device_factory_webrtc.cc",
+      "video_capture_device_factory_webrtc.h",
+      "video_capture_device_webrtc.cc",
+      "video_capture_device_webrtc.h",
+    ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "v4l2_capture_delegate_gpu_helper.cc",
+      "v4l2_capture_delegate_gpu_helper.h",
+      "v4l2_gpu_memory_buffer_tracker.cc",
+      "v4l2_gpu_memory_buffer_tracker.h",
+    ]
+  }
+
+  public_deps = [
+    "//media/capture:capture_base",
+    "//media/capture:capture_device_specific",
+    "//media/capture:capture_gpu_channel",
+    "//media/capture:capture_switches",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/viz/common/resources:shared_image_format",
+    "//gpu/command_buffer/client",
+    "//media",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
+    "//media/mojo/mojom",
+    "//services/service_manager/public/cpp",
+    "//services/video_capture/public/mojom",
+    "//third_party/libyuv",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+}
+
+source_set("test_support") {
+  visibility = [
+    ":unit_tests",
+    "//media/capture:test_support",
+  ]
+  testonly = true
+
+  sources = [
+    "fake_device_provider.cc",
+    "fake_device_provider.h",
+    "fake_v4l2_impl.cc",
+    "fake_v4l2_impl.h",
+  ]
+
+  public_deps = [ ":linux" ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media:test_support",
+    "//media/capture:capture_base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  visibility = [ "//media/capture:capture_unittests" ]
+  testonly = true
+
+  sources = [
+    "v4l2_capture_delegate_gpu_helper_unittest.cc",
+    "v4l2_capture_delegate_unittest.cc",
+    "v4l2_gpu_memory_buffer_tracker_unittest.cc",
+    "video_capture_device_factory_v4l2_unittest.cc",
+  ]
+
+  deps = [
+    ":linux",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//gpu:test_support",
+    "//gpu/command_buffer/client",
+    "//media:test_support",
+    "//media/capture",
+    "//media/capture:test_support",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//mojo/core/embedder",
+    "//services/video_capture/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/libyuv",
+    "//ui/gfx:test_support",
+  ]
+}

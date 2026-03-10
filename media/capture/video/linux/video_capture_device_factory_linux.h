@@ -7,14 +7,16 @@
 #ifndef MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_LINUX_H_
 #define MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_LINUX_H_
 
-#include "base/memory/weak_ptr.h"
+#include <memory>
 
-#if defined(WEBRTC_USE_PIPEWIRE)
-#include "media/capture/video/linux/video_capture_device_factory_webrtc.h"
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
+#include "base/memory/weak_ptr.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
 namespace media {
+
+#if defined(WEBRTC_USE_PIPEWIRE)
+class VideoCaptureDeviceFactoryWebRtc;
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
 
 // Extension of VideoCaptureDeviceFactory to create and manipulate Linux
 // devices.

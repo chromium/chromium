@@ -6,9 +6,10 @@
 #define MEDIA_CAPTURE_VIDEO_LINUX_SCOPED_V4L2_DEVICE_FD_H_
 
 #include "base/memory/raw_ptr.h"
-#include "media/capture/video/linux/v4l2_capture_device.h"
 
 namespace media {
+
+class V4L2CaptureDevice;
 
 class ScopedV4L2DeviceFD {
  public:
