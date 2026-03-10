@@ -346,13 +346,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor showContextMenuDescription_: boolean =
       this.contextMenuDescriptionEnabled_;
   protected accessor isOmniboxInCompactMode_: boolean = false;
-  // Synchronous immediate guard used to deduplicate processing
-  // autochips being added, not fully processed chips.
-  protected pendingAutomaticActiveTabUrl_: string = '';
-
-  // Retains the latest version of the pending automatic active tab's title.
-  protected pendingAutomaticActiveTabTitle_: string = '';
-
+  protected autoActiveTabUploadingTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
   private showTypedSuggest_: boolean =
       loadTimeData.getBoolean('composeboxShowTypedSuggest');
@@ -391,7 +385,6 @@ export class ComposeboxElement extends I18nMixinLit
   private pendingUploads_: Set<string> = new Set<string>([]);
   private contextMenuOpened_: boolean = false;
   private automaticActiveTab_: ComposeboxFile|null = null;
-
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
   private maxFileCount_: number =
@@ -1066,45 +1059,38 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
-    if (!tab) {
-      if (this.automaticActiveTab_) {
-        this.deleteFile(this.automaticActiveTab_.uuid);
-        this.automaticActiveTab_ = null;
-        // TODO(crbug.com/482150500): Correctly query for url based suggestions
-        // when delayed tab is present. Right now, while url-based suggestions
-        // are not set-up, clear autocomplete matches if current autochip is
-        // being cleared.
+    const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
+        (!tab || this.automaticActiveTab_.url !== tab.url);
+    if (shouldDeleteAutomaticActiveTab) {
+      this.autoActiveTabUploadingTitle_ = '';
+      this.deleteFile(this.automaticActiveTab_!.uuid);
+      this.automaticActiveTab_ = null;
+
+      // TODO(crbug.com/482150500): Correctly query for url based suggestions
+      // when delayed tab is present. Right now, while url-based suggestions are
+      // not set-up, clear the autocomplete matches.
+      if (!tab) {
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
-      return;
     }
 
-    // If the last fully uploaded tab is the same as the current potential
-    // auto chip, do not update the auto chip or its title. Note that
-    // last uploading tab != last uploaded tab. Tabs can be uploading AND not
-    // be stored in `automaticActiveTab_`, as `automaticActiveTab_` is async
-    // state (runs too late) & represents the last fully uploaded auto chip.
-    const tabDifferentfromLastUploaded =
-        !this.automaticActiveTab_ || (this.automaticActiveTab_.url !== tab.url);
-    if (tabDifferentfromLastUploaded) {
-      if (this.automaticActiveTab_) {
-        this.deleteFile(this.automaticActiveTab_.uuid);
-        this.automaticActiveTab_ = null;
-      }
-      // If current tab is the same as the currently uploading tab (same url),
-      // allow updates to the uploading tab's title from this update,
-      // but do not upload it again.
-      if (this.pendingAutomaticActiveTabUrl_ === tab.url) {
-        this.pendingAutomaticActiveTabTitle_ = tab.title;
+    if (tab) {
+      // Ignore the `TabInfo` update if there is a matching
+      // `automaticActiveTab_`.
+      if (this.automaticActiveTab_ &&
+          tab.url === this.automaticActiveTab_.url &&
+          tab.tabId === this.automaticActiveTab_.tabId) {
         return;
       }
-      // Otherwise, prepare to replace the auto chip:
-      this.pendingAutomaticActiveTabUrl_ = tab.url;
-      this.pendingAutomaticActiveTabTitle_ = tab.title;
 
-      // Do not reset above pending states in this async callback since
-      // later requests make any older async callback updates irrelevant.
-      // Add the `TabInfo` as `ComposeboxFile` in carousel.
+      // If an autochip is currently being uploaded but carousel attachment has
+      // not been created yet, allow updates to its title. Absence of this
+      // chip means that there is no currently no auto active tab uploading.
+      if (this.autoActiveTabUploadingTitle_) {
+        this.autoActiveTabUploadingTitle_ = tab.title;
+        return;
+      }
+
       this.addTabContextHandleCallback_(
           {
             tabId: tab.tabId,
@@ -1154,19 +1140,19 @@ export class ComposeboxElement extends I18nMixinLit
   private async addTabContextHandleCallback_(
       tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false) {
     try {
+      this.autoActiveTabUploadingTitle_ =
+          replaceAutoActiveTabToken ? tabUpload.title : '';
+
       const token = await this.searchboxHandler_.addTabContext(
           tabUpload.tabId, tabUpload.delayUpload);
-      if (!token) {
-        return;
-      }
+
       const attachment: ComposeboxFile = {
         uuid: token,
         // Adding a tab is asynchronous. For auto active tabs, a title update
         // might be received after the upload process has been started. In order
         // to prevent adding duplicate chips from this update, simply update the
-        // title of the initial upload instead based on whatever the latest
-        // title update received is.
-        name: replaceAutoActiveTabToken ? this.pendingAutomaticActiveTabTitle_ :
+        // title of the initial upload instead.
+        name: replaceAutoActiveTabToken ? this.autoActiveTabUploadingTitle_ :
                                           tabUpload.title,
         dataUrl: null,
         objectUrl: null,
@@ -1183,15 +1169,11 @@ export class ComposeboxElement extends I18nMixinLit
           [...this.files_.entries(), [attachment.uuid, attachment]]);
       this.addedTabsIds_ = new Map(
           [...this.addedTabsIds_.entries(), [tabUpload.tabId, attachment.uuid]]);
-
-      // Do not reset pending active tab to avoid overwriting
-      // synchronous "pending statuses" that are queued (since this function
-      // is asynchronous and can run much later).
       if (replaceAutoActiveTabToken) {
         this.automaticActiveTab_ =
             Object.assign(attachment, {uuid: attachment.uuid});
+        this.autoActiveTabUploadingTitle_ = '';
       }
-
       this.focusInput();
 
     } catch (e) {
@@ -2131,9 +2113,6 @@ export class ComposeboxElement extends I18nMixinLit
   clearAllInputs(
       querySubmitted: boolean, shouldBlockAutoSuggestedTabs: boolean) {
     this.clearInput();
-    this.automaticActiveTab_ = null;
-    this.pendingAutomaticActiveTabUrl_ = '';
-    this.pendingAutomaticActiveTabTitle_ = '';
     // Let `querySubmit_` handle clearing files if the tool mode is a tool mode
     // that should be cleared after submitting. For all other general
     // clearing, clear input here.
