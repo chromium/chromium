@@ -341,6 +341,7 @@ BASE_DECLARE_FEATURE(kFirstRunDesktopChoiceScreenRefresh);
 // flags).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region);
+// LINT.IfChange(FirstRunDesktopSignInPromoVariation)
 enum class FirstRunDesktopSignInPromoVariation {
   // Default sign-in promo containing both sign-in and don't sign-in buttons
   // next to each other on the promo page.
@@ -353,6 +354,7 @@ enum class FirstRunDesktopSignInPromoVariation {
   // don't sign in button is moved to the Gaia page.
   kDontSignInOnGaiaPage = 2,
 };
+// LINT.ThenChange(//chrome/browser/resources/intro/sign_in_promo_refresh.ts:Variation)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<FirstRunDesktopSignInPromoVariation>
     kFirstRunDesktopSignInPromoVariation;

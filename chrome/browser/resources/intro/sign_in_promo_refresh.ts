@@ -18,6 +18,14 @@ import {IntroBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './sign_in_promo_refresh.css.js';
 import {getHtml} from './sign_in_promo_refresh.html.js';
 
+// LINT.IfChange(Variation)
+export enum Variation {
+  DEFAULT = 0,
+  DONT_SIGN_IN_IN_TOP_RIGHT_CORNER = 1,
+  DONT_SIGN_IN_ON_GAIA = 2,
+}
+// LINT.ThenChange(//components/signin/public/base/signin_switches.h:FirstRunDesktopSignInPromoVariation)
+
 export interface SignInPromoRefreshElement {
   $: {
     acceptSignInButton: CrButtonElement,
@@ -64,8 +72,6 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
     };
   }
 
-  private browserProxy_: IntroBrowserProxy =
-      IntroBrowserProxyImpl.getInstance();
   protected accessor benefitCards_: BenefitCard[];
   protected accessor managedDeviceDisclaimer_: string = '';
   protected accessor isDeviceManaged_: boolean =
@@ -73,6 +79,10 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected accessor usePrimaryAndTonalButtonsForPromos_: boolean =
       loadTimeData.getBoolean('usePrimaryAndTonalButtonsForPromos');
   private accessor anyButtonClicked_: boolean = false;
+  private browserProxy_: IntroBrowserProxy =
+      IntroBrowserProxyImpl.getInstance();
+  private variation_: Variation =
+      loadTimeData.getInteger('signInPromoVariation') as Variation;
 
   constructor() {
     super();
@@ -144,6 +154,10 @@ export class SignInPromoRefreshElement extends SignInPromoRefreshElementBase {
   protected getDisclaimerVisibilityClass_(): string {
     return this.managedDeviceDisclaimer_.length === 0 ? 'temporarily-hidden' :
                                                         'fast-fade-in';
+  }
+
+  protected get isTopRightCornerVariation_(): boolean {
+    return this.variation_ === Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER;
   }
 }
 

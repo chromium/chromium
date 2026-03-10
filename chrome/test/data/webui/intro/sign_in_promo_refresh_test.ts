@@ -6,6 +6,7 @@ import 'chrome://intro/sign_in_promo_refresh.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
 import type {SignInPromoRefreshElement} from 'chrome://intro/sign_in_promo_refresh.js';
+import {Variation} from 'chrome://intro/sign_in_promo_refresh.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -23,6 +24,17 @@ function assertSignInButtonsEnabled(element: SignInPromoRefreshElement) {
   assertFalse(element.$.declineSignInButton.disabled);
 }
 
+function variationToTestSuffix(variation: Variation): string {
+  switch (variation) {
+    case Variation.DEFAULT:
+      return 'Default';
+    case Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER:
+      return 'DontSignInInTopRightCorner';
+    default:
+      assertTrue(false, 'Unknown variation');
+  }
+}
+
 suite('SignInPromoRefreshTest', function() {
   let signInPromoElement: SignInPromoRefreshElement;
   let testBrowserProxy: TestIntroBrowserProxy;
@@ -36,70 +48,143 @@ suite('SignInPromoRefreshTest', function() {
     signInPromoElement.remove();
   });
 
-  suite('NonManagedDevice', function() {
-    setup(function() {
-      loadTimeData.overrideValues({
-        isDeviceManaged: false,
+  [Variation.DEFAULT, Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER].forEach(
+      (variation) => {
+        suite(
+            'NonManagedDevice' + variationToTestSuffix(variation), function() {
+              setup(function() {
+                loadTimeData.overrideValues({
+                  isDeviceManaged: false,
+                  signInPromoVariation: variation,
+                });
+
+                document.body.innerHTML = window.trustedTypes!.emptyHTML;
+                signInPromoElement =
+                    document.createElement('sign-in-promo-refresh');
+                document.body.appendChild(signInPromoElement);
+                return microtasksFinished();
+              });
+
+              test('accept sign-in button clicked', async function() {
+                assertSignInButtonsEnabled(signInPromoElement);
+                assertEquals(
+                    0, testBrowserProxy.getCallCount('continueWithAccount'));
+                signInPromoElement.$.acceptSignInButton.click();
+                await microtasksFinished();
+                assertSignInButtonsDisabled(signInPromoElement);
+                assertEquals(
+                    1, testBrowserProxy.getCallCount('continueWithAccount'));
+              });
+
+              test('decline sign-in button clicked', async function() {
+                assertSignInButtonsEnabled(signInPromoElement);
+                assertEquals(
+                    0, testBrowserProxy.getCallCount('continueWithoutAccount'));
+                signInPromoElement.$.declineSignInButton.click();
+                await microtasksFinished();
+                assertSignInButtonsDisabled(signInPromoElement);
+                assertEquals(
+                    1, testBrowserProxy.getCallCount('continueWithoutAccount'));
+              });
+
+              test(
+                  '"reset-intro-buttons" event resets buttons',
+                  async function() {
+                    assertSignInButtonsEnabled(signInPromoElement);
+                    signInPromoElement.$.acceptSignInButton.click();
+                    await microtasksFinished();
+                    assertSignInButtonsDisabled(signInPromoElement);
+                    webUIListenerCallback('reset-intro-buttons');
+                    await microtasksFinished();
+                    assertSignInButtonsEnabled(signInPromoElement);
+                  });
+            });
       });
 
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      signInPromoElement = document.createElement('sign-in-promo-refresh');
-      document.body.appendChild(signInPromoElement);
-      return microtasksFinished();
-    });
+  [Variation.DEFAULT, Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER].forEach(
+      (variation) => {
+        suite('ManagedDevice' + variationToTestSuffix(variation), function() {
+          setup(function() {
+            loadTimeData.overrideValues({
+              isDeviceManaged: true,
+              signInPromoVariation: variation,
+            });
 
-    test('accept sign-in button clicked', async function() {
-      assertSignInButtonsEnabled(signInPromoElement);
-      assertEquals(0, testBrowserProxy.getCallCount('continueWithAccount'));
-      signInPromoElement.$.acceptSignInButton.click();
-      await microtasksFinished();
-      assertSignInButtonsDisabled(signInPromoElement);
-      assertEquals(1, testBrowserProxy.getCallCount('continueWithAccount'));
-    });
+            document.body.innerHTML = window.trustedTypes!.emptyHTML;
+            signInPromoElement =
+                document.createElement('sign-in-promo-refresh');
+            document.body.appendChild(signInPromoElement);
+            return microtasksFinished();
+          });
 
-    test('decline sign-in button clicked', async function() {
-      assertSignInButtonsEnabled(signInPromoElement);
-      assertEquals(0, testBrowserProxy.getCallCount('continueWithoutAccount'));
-      signInPromoElement.$.declineSignInButton.click();
-      await microtasksFinished();
-      assertSignInButtonsDisabled(signInPromoElement);
-      assertEquals(1, testBrowserProxy.getCallCount('continueWithoutAccount'));
-    });
+          test('buttons are disabled if disclaimer is empty', async function() {
+            assertSignInButtonsDisabled(signInPromoElement);
+            assertEquals(
+                '', signInPromoElement.$.disclaimerText.textContent.trim());
 
-    test('"reset-intro-buttons" event resets buttons', async function() {
-      assertSignInButtonsEnabled(signInPromoElement);
-      signInPromoElement.$.acceptSignInButton.click();
-      await microtasksFinished();
-      assertSignInButtonsDisabled(signInPromoElement);
-      webUIListenerCallback('reset-intro-buttons');
-      await microtasksFinished();
-      assertSignInButtonsEnabled(signInPromoElement);
+            webUIListenerCallback(
+                'managed-device-disclaimer-updated', 'managedDeviceDisclaimer');
+            await microtasksFinished();
+            assertEquals(
+                'managedDeviceDisclaimer',
+                signInPromoElement.$.disclaimerText.textContent.trim());
+            assertSignInButtonsEnabled(signInPromoElement);
+          });
+        });
+      });
+
+  test('default promo variation', async function() {
+    loadTimeData.overrideValues({
+      isDeviceManaged: false,
+      signInPromoVariation: Variation.DEFAULT,
     });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    signInPromoElement = document.createElement('sign-in-promo-refresh');
+    document.body.appendChild(signInPromoElement);
+    await microtasksFinished();
+
+    const createAccountDisclaimer = signInPromoElement.shadowRoot.querySelector(
+        '#create-account-disclaimer');
+    assertFalse(!!createAccountDisclaimer);
+
+    const topRightCornerContainer = signInPromoElement.shadowRoot.querySelector(
+        '#top-right-corner-container');
+    assertFalse(!!topRightCornerContainer);
+
+    const buttonContainer =
+        signInPromoElement.shadowRoot.querySelector('#buttonContainer');
+    assertTrue(!!buttonContainer);
+    assertEquals(
+        signInPromoElement.$.declineSignInButton,
+        buttonContainer.querySelector('#declineSignInButton'));
   });
 
-  suite('ManagedDevice', function() {
-    setup(function() {
-      loadTimeData.overrideValues({
-        isDeviceManaged: true,
-      });
-
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      signInPromoElement = document.createElement('sign-in-promo-refresh');
-      document.body.appendChild(signInPromoElement);
-      return microtasksFinished();
+  test('don\'t sign in in top right corner promo variation', async function() {
+    loadTimeData.overrideValues({
+      isDeviceManaged: false,
+      signInPromoVariation: Variation.DONT_SIGN_IN_IN_TOP_RIGHT_CORNER,
     });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    signInPromoElement = document.createElement('sign-in-promo-refresh');
+    document.body.appendChild(signInPromoElement);
+    await microtasksFinished();
 
-    test('buttons are disabled if disclaimer is empty', async function() {
-      assertSignInButtonsDisabled(signInPromoElement);
-      assertEquals('', signInPromoElement.$.disclaimerText.textContent.trim());
+    const createAccountDisclaimer = signInPromoElement.shadowRoot.querySelector(
+        '#create-account-disclaimer');
+    assertTrue(!!createAccountDisclaimer);
 
-      webUIListenerCallback(
-          'managed-device-disclaimer-updated', 'managedDeviceDisclaimer');
-      await microtasksFinished();
-      assertEquals(
-          'managedDeviceDisclaimer',
-          signInPromoElement.$.disclaimerText.textContent.trim());
-      assertSignInButtonsEnabled(signInPromoElement);
-    });
+    const topRightCornerContainer = signInPromoElement.shadowRoot.querySelector(
+        '#top-right-corner-container');
+    assertTrue(!!topRightCornerContainer);
+    assertEquals(
+        signInPromoElement.$.declineSignInButton,
+        topRightCornerContainer.querySelector('#declineSignInButton'));
+
+    const buttonContainer =
+        signInPromoElement.shadowRoot.querySelector('#buttonContainer');
+    assertTrue(!!buttonContainer);
+    const declineSignInButtonInButtonContainer =
+        buttonContainer.querySelector('#declineSignInButton');
+    assertFalse(!!declineSignInButtonInButtonContainer);
   });
 });
