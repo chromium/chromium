@@ -4316,6 +4316,7 @@ static_library("browser") {
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
       "//components/omnibox/browser:mojo_bindings",
+      "//components/page_image_service/mojom:mojo_bindings",
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/private_ai",

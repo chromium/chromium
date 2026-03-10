@@ -70,6 +70,7 @@ source_set("search") {
       "//chrome/common:non_code_constants",
       "//chrome/common/search:mojo_bindings",
       "//components/favicon_base",
+      "//components/page_image_service/mojom:mojo_bindings",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/common",

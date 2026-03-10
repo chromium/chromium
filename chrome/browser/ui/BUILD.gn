@@ -1778,6 +1778,7 @@ static_library("ui") {
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/webui/feedback/report_unsafe_site",
       "//chrome/browser/ui/webui/on_device_internals",
+      "//components/page_image_service/mojom:mojo_bindings",
     ]
     if (use_aura) {
       public_deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
