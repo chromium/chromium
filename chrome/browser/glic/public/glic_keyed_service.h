@@ -73,7 +73,6 @@ class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
 
-
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 class GlicActorTaskManager;
 #endif
@@ -454,8 +453,6 @@ class GlicKeyedService : public KeyedService,
 
   // Never null - GlicActorTaskManager and GlicInstanceCoordinatorImpl hold a
   // reference to this so it must be destroyed after them.
-  // NEEDS_ANDROID_IMPL: This is temporarily null on Android until
-  // ActorKeyedService stops crashing at runtime.
   std::unique_ptr<GlicActorPolicyChecker> actor_policy_checker_;
 
   std::unique_ptr<GlicEnabling> enabling_;
