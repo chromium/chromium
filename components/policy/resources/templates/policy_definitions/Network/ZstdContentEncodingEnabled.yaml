@@ -32,5 +32,6 @@ supported_on:
 - android:119-136
 - chrome.*:119-136
 - chrome_os:119-136
+deprecated: true
 tags: []
 type: main
