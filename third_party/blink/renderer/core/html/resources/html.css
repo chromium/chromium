@@ -2531,7 +2531,9 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
 [overscrollcontainer] {
   -internal-overscroll-area: auto;
 }
-
+[overscrollcontainer="overlay"] {
+  -internal-overscroll-area: overlay;
+}
 :-internal-overscroll-target {
   -internal-overscroll-position: auto;
 }

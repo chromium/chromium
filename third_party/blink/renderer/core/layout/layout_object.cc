@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
@@ -150,6 +151,7 @@
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -3888,8 +3890,12 @@ PhysicalOffset LayoutObject::OffsetFromContainerInternal(
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   DCHECK_EQ(o, Container());
-  return o->IsScrollContainer() ? OffsetFromScrollableContainer(o, mode)
-                                : PhysicalOffset();
+  PhysicalOffset offset;
+  if (o->IsScrollContainer()) {
+    offset += OffsetFromScrollableContainer(o, mode);
+  }
+  offset += OffsetFromOverscrollContainer(o, mode);
+  return offset;
 }
 
 PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
@@ -3913,6 +3919,37 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
   // ScrollOrigin accounts for other writing modes whose content's origin is not
   // at the top-left.
   return PhysicalOffset(box->GetScrollableArea()->ScrollOrigin());
+}
+
+PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
+    const LayoutObject* container,
+    MapCoordinatesFlags mode) const {
+  if (container->StyleRef().InternalOverscrollArea() !=
+      EInternalOverscrollArea::kAuto) {
+    // Container is not a shifting overscroll area container.
+    return PhysicalOffset();
+  }
+  OverscrollAreaTracker* tracker =
+      To<Element>(container->GetNode())->GetOverscrollAreaTracker();
+  const VectorOf<Element>& overscroll_areas = tracker->DOMSortedElements();
+  // If we have a non-overlay overscroll area, the content is shifted by the
+  // scroll of all overscroll areas, and each individual overscroll area is
+  // shifted by each one before it.
+  wtf_size_t affecting_overscroll_areas =
+      IsPseudoElementContent(kPseudoIdOverscrollAreaParent)
+          ? overscroll_areas.Find(
+                &To<PseudoElement>(GetNode())->UltimateOriginatingElement())
+          : overscroll_areas.size();
+
+  PhysicalOffset offset;
+  for (wtf_size_t i = 0; i < affecting_overscroll_areas; ++i) {
+    offset += OffsetFromScrollableContainer(
+        overscroll_areas[i]
+            ->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+            ->GetLayoutObject(),
+        mode);
+  }
+  return offset;
 }
 
 PhysicalOffset LayoutObject::OffsetFromAncestor(

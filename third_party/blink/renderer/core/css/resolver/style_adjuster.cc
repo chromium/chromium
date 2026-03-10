@@ -1179,8 +1179,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     if (is_transition_scope && !is_document_element) {
       builder.SetContain(builder.Contain() | kContainsLayout);
       builder.SetViewTransitionScope(EViewTransitionScope::kAll);
-    } else if (builder.InternalOverscrollArea() ==
-               EInternalOverscrollArea::kAuto) {
+    } else if (builder.InternalOverscrollArea() !=
+               EInternalOverscrollArea::kNone) {
       // TODO(crbug.com/467112943): Layout containment is currently forced to
       // ensure that the container of the overscroll areas actually contains
       // the overscroll areas. However, requiring layout containment is

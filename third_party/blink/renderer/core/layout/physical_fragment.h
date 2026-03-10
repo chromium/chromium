@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/physical_fragment_link.h"
 #include "third_party/blink/renderer/core/layout/split_axis_item.h"
 #include "third_party/blink/renderer/core/layout/style_variant.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -399,6 +400,13 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // ComputedStyle::IsScrollContainer() for details.
   bool IsScrollContainer() const {
     return IsCSSBox() && layout_object_->IsScrollContainer();
+  }
+
+  // True if this is a non-overlay overscroll container which can have
+  // its contents shifted by its ::overscroll-area-parents.
+  bool IsNonOverlayOverscrollScrollContainer() const {
+    return IsCSSBox() && layout_object_->StyleRef().InternalOverscrollArea() ==
+                             EInternalOverscrollArea::kAuto;
   }
 
   // Return true if the given object is the effective root scroller in its
