@@ -30,5 +30,7 @@ const base::FeatureParam<base::TimeDelta> kContentAnnotatorAnnotationTimeout{
     base::Seconds(10)};
 const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation{
     &kContentAnnotator, "content_annotator_enable_full_annotation", false};
+const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled{
+    &kContentAnnotator, "content_annotator_language_check_enabled", true};
 
 }  // namespace accessibility_annotator

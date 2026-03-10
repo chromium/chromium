@@ -356,6 +356,19 @@ TEST_F(ContentAnnotatorServiceTest,
     scoped_tester.ExpectUniqueSample(
         "AccessibilityAnnotator.FullAnnotationReached", false, 1);
   }
+  {
+    // Case 5: is_in_target_language is nullopt -> true
+    base::HistogramTester scoped_tester;
+    ContentClassificationResult result_null_lang;
+    result_null_lang.title_keyword_result =
+        ContentClassificationResult::Result();
+    result_null_lang.title_keyword_result->category = "test_category";
+    result_null_lang.is_sensitive = false;
+    result_null_lang.is_in_target_language = std::nullopt;
+    trigger_classification_fn(result_null_lang);
+    scoped_tester.ExpectUniqueSample(
+        "AccessibilityAnnotator.FullAnnotationReached", true, 1);
+  }
 }
 
 TEST_F(ContentAnnotatorServiceTest,

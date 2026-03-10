@@ -83,6 +83,7 @@ class ContentClassifierTest : public testing::Test {
     std::string url_match_rules;
     std::string relevance_values;
     std::optional<double> sensitivity_threshold;
+    std::optional<bool> language_check_enabled;
   };
 
   std::unique_ptr<ContentClassifier> CreateClassifier(
@@ -104,6 +105,11 @@ class ContentClassifierTest : public testing::Test {
     if (options.sensitivity_threshold.has_value()) {
       params[kContentAnnotatorSensitivityThreshold.name] =
           base::NumberToString(*options.sensitivity_threshold);
+    }
+
+    if (options.language_check_enabled.has_value()) {
+      params[kContentAnnotatorLanguageCheckEnabled.name] =
+          *options.language_check_enabled ? "true" : "false";
     }
 
     feature_list_.InitAndEnableFeatureWithParameters(kContentAnnotator, params);
@@ -372,6 +378,29 @@ TEST_F(ContentClassifierTest, Classify_LanguageCheck) {
         "AccessibilityAnnotator.UrlClassifierResult",
         variations::HashName("category_1"), 3);
   }
+}
+
+TEST_F(ContentClassifierTest, Classify_LanguageCheckGated) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ContentClassifier> classifier = CreateClassifier(
+      {.url_match_rules = R"JSON({"category_1":["/rule_1"]})JSON",
+       .language_check_enabled = false});
+  ASSERT_TRUE(classifier);
+
+  ContentClassificationInput input = CreateDefaultInput();
+  input.url = GURL("https://example.com/rule_1");
+  input.adopted_language = "de";  // Not in "en,en-US".
+  ContentClassificationResult result = classifier->Classify(input);
+
+  // The language check should be nullopt because it's gated.
+  EXPECT_FALSE(result.is_in_target_language.has_value());
+
+  // Histogram should NOT be recorded when gated.
+  histogram_tester.ExpectTotalCount("AccessibilityAnnotator.LanguageCheck", 0);
+
+  // URL classifier should still run.
+  EXPECT_TRUE(result.url_match_result.has_value());
+  EXPECT_EQ(result.url_match_result->category, "category_1");
 }
 
 TEST_F(ContentClassifierTest, Classify_SensitivityCheck) {

@@ -27,6 +27,7 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<base::TimeDelta>
     kContentAnnotatorAnnotationTimeout;
 extern const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation;
+extern const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled;
 
 }  // namespace accessibility_annotator
 
