@@ -143,18 +143,16 @@ class CORE_EXPORT FormMCPSchema {
   void AddTitle(ListedElement&, JSONObject&);
   void AddDescription(ListedElement&, JSONObject&, String = String());
 
-  // It's not clear yet where to host the toolparamtitle/description
-  // attributes for <input type=radio>, or other parameters that are
-  // associated with more than one element. For now, we use the attributes
-  // set on the first control within a group.
+  // It's not clear yet where to host the description attribute for
+  // <input type=radio>, or other parameters that are associated with more than
+  // one element. For now, we use the attributes set on the first control within
+  // a group.
   //
-  // Note that unlike AddTitle()/AddDescription(), this does not try
-  // to find "fallback" values (from <label>, etc) when tool-* attributes
-  // are missing.
+  // Note that unlike AddDescription(), this does not try to find "fallback"
+  // values (from <label>, etc) when tool-* attributes are missing.
   //
   // See also: https://github.com/webmachinelearning/webmcp/issues/71
-  void AddTitleAndDescriptionFromToolAttributesOnly(ListedElement&,
-                                                    JSONObject&);
+  void AddDescriptionFromToolAttributeOnly(ListedElement&, JSONObject&);
 
   String ToolParamTitleAttribute(ListedElement&) const;
   String ToolParamDescriptionAttribute(ListedElement&) const;

@@ -785,8 +785,8 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   schema->SetBoolean("uniqueItems", true);
 
   // Add title/description from the first control for now.
-  AddTitleAndDescriptionFromToolAttributesOnly(*controls_for_name.front(),
-                                               *schema);
+  AddTitle(*controls_for_name.front(), *schema);
+  AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
 
   return schema;
 }
@@ -803,8 +803,8 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
                    ComputeOneOfArray(controls_for_name, enum_array, required));
   schema->SetArray("enum", std::move(enum_array));
   // Add title/description from the first control for now.
-  AddTitleAndDescriptionFromToolAttributesOnly(*controls_for_name.front(),
-                                               *schema);
+  AddTitle(*controls_for_name.front(), *schema);
+  AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
   return schema;
 }
 
@@ -1056,12 +1056,8 @@ void FormMCPSchema::AddDescription(ListedElement& control,
   }
 }
 
-void FormMCPSchema::AddTitleAndDescriptionFromToolAttributesOnly(
-    ListedElement& control,
-    JSONObject& obj) {
-  if (String title = ToolParamTitleAttribute(control); !title.empty()) {
-    obj.SetString("title", title);
-  }
+void FormMCPSchema::AddDescriptionFromToolAttributeOnly(ListedElement& control,
+                                                        JSONObject& obj) {
   if (String description = ToolParamDescriptionAttribute(control);
       !description.empty()) {
     obj.SetString("description", description);
