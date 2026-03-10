@@ -157,6 +157,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ToolbarPinning" summary="the module for toolbar pinning"/>
   <variant name="TranslationSettings"
       summary="the module for Translation Settings"/>
+  <variant name="VerticalTabsLaunch" summary="the module for Vertical Tabs"/>
 </variants>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"

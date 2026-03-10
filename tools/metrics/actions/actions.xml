@@ -902,6 +902,7 @@ should be able to be added at any place in this file.
   <variant name=".TestModule" summary="Test module"/>
   <variant name=".ToolbarPinning" summary="Toolbar Pinning"/>
   <variant name=".TranslationSettings" summary="Translation Settings"/>
+  <variant name=".VerticalTabsLaunch" summary="Vertical Tabs"/>
 </variants>
 
 <action name="AboutChrome">

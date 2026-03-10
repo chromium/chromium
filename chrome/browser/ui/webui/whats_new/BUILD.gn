@@ -83,6 +83,7 @@ source_set("impl") {
       "//chrome/browser/resources/whats_new:resources",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/tabs:features",
       "//chrome/common:version_header",
       "//components/bookmarks/common",
       "//components/history_embeddings/content",

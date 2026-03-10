@@ -35,9 +35,11 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -151,6 +153,9 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kPrewarmGlicFre:
       can_execute = true;
       break;
+    case Command::kEnableVerticalTabs:
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -246,6 +251,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kPrewarmGlicFre:
       // No-op: Glic FRE pre-warming is removed.
+      break;
+    case Command::kEnableVerticalTabs:
+      EnableVerticalTabs();
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;
@@ -388,6 +396,10 @@ void BrowserCommandHandler::OpenGlicSettings() {
     NavigateToURL(net::AppendOrReplaceQueryParameter(GURL(url), "p", ks_param),
                   WindowOpenDisposition::SINGLETON_TAB);
   }
+}
+
+void BrowserCommandHandler::EnableVerticalTabs() {
+  profile_->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled, true);
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

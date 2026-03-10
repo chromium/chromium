@@ -36,6 +36,7 @@ enum Command {
   kPrewarmGlicFre = 18,
   // kOpenSplitView = 19 - deprecated
   kOpenAutofillSettings = 20,
+  kEnableVerticalTabs = 21,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:PromoBrowserCommandEnum)
 

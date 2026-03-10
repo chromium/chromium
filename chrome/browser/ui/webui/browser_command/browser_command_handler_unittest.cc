@@ -55,6 +55,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenGlic,
     Command::kOpenGlicSettings,
     Command::kPrewarmGlicFre,
+    Command::kEnableVerticalTabs,
 };
 
 class TestCommandHandler : public BrowserCommandHandler {
@@ -224,6 +225,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenGlicSettings, ());
 
   MOCK_METHOD(void, PrewarmGlicFre, ());
+
+  MOCK_METHOD(void, EnableVerticalTabs, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -695,4 +698,11 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
   info->meta_key = true;
   EXPECT_CALL(*command_handler_, OpenGlicSettings());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, EnableVerticalTabsCommand) {
+  EXPECT_TRUE(CanExecuteCommand(Command::kEnableVerticalTabs));
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, EnableVerticalTabs());
+  EXPECT_TRUE(ExecuteCommand(Command::kEnableVerticalTabs, std::move(info)));
 }

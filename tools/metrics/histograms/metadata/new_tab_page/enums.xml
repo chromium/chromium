@@ -722,6 +722,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Prewarm Glic FRE"/>
   <int value="19" label="[Deprecated] Open Split View"/>
   <int value="20" label="Open Autofill Settings"/>
+  <int value="21" label="Enable Vertical Tabs"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/js/browser_command/browser_command.mojom:Command) -->
