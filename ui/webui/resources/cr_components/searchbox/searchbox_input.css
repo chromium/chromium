@@ -18,7 +18,7 @@
 #inputInnerContainer {
   align-items: flex-start;
   display: flex;
-  min-height: var(--cr-searchbox-height, 48px);
+  min-height: 48px;
   position: relative;
   width: 100%;
 }
