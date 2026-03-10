@@ -6458,6 +6458,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5819" label="SynthesizedMiddleClickAnchor"/>
   <int value="5820" label="SynthesizedMiddleClickArea"/>
   <int value="5821" label="SynthesizedMiddleClickSVGAnchor"/>
+  <int value="5822" label="WebAuthenticationCspDisallowsRpId"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

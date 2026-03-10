@@ -118,6 +118,34 @@ using payments::mojom::blink::PaymentCredentialStorageStatus;
 
 constexpr size_t kMaxLargeBlobSize = 2048;  // 2kb.
 
+void RecordWebAuthnCspMetric(ExecutionContext* context,
+                             const String& rp_id,
+                             const String& request_type) {
+  ContentSecurityPolicy* policy =
+      context->GetContentSecurityPolicyForCurrentWorld();
+  if (!policy) {
+    return;
+  }
+  String rp_url_string = "https://" + rp_id;
+  KURL rp_url(rp_url_string);
+  if (!rp_url.IsValid()) {
+    return;
+  }
+  // We use kNoRedirect because RP IDs are not URLs and don't involve redirects.
+  // We suppress reporting because this is just for a metric, not an actual
+  // resource request that should trigger a CSP violation report.
+  bool allowed =
+      policy->AllowConnectToSource(rp_url, rp_url, RedirectStatus::kNoRedirect,
+                                   ReportingDisposition::kSuppressReporting);
+  base::UmaHistogramBoolean(
+      std::string("WebAuthentication.CspAllow.") + request_type.Utf8(),
+      allowed);
+
+  if (!allowed) {
+    UseCounter::Count(context, WebFeature::kWebAuthenticationCspDisallowsRpId);
+  }
+}
+
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
 enum class RequiredOriginType {
@@ -1906,6 +1934,9 @@ AuthenticationCredentialsContainer::create(
         resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
   }
 
+  RecordWebAuthnCspMetric(resolver->GetExecutionContext(),
+                          mojo_options->relying_party->id, "Create");
+
   LogResidentKeyRequirement(options->publicKey());
 
   auto* authenticator =
@@ -2188,6 +2219,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
         public_key_options->relying_party_id =
             context->GetSecurityOrigin()->Domain();
       }
+      RecordWebAuthnCspMetric(context, public_key_options->relying_party_id,
+                              "Get");
       get_credential_options->public_key = std::move(public_key_options);
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(

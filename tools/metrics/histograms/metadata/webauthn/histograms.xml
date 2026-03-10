@@ -284,6 +284,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.CspAllow.{RequestType}" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether a WebAuthn RP ID would be allowed by the document's Content
+    Security Policy (specifically connect-src or default-src). Recorded for
+    every navigator.credentials.{RequestType}() call that involves a public key
+    credential.
+  </summary>
+  <token key="RequestType">
+    <variant name="Create"/>
+    <variant name="Get"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Enclave.ChangePinEventsV2"
     enum="ChangePinEvent" expires_after="2026-07-12">
   <owner>derinel@google.com</owner>

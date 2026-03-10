@@ -56,6 +56,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCredentialManagerGetPublicKeyCredential,
           WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess,
           WebFeature::kCredentialManagerGetPublicKeyCredentialSuccess,
+          WebFeature::kWebAuthenticationCspDisallowsRpId,
           WebFeature::kTextToSpeech_Speak,
           WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay,
           WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop,

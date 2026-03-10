@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -152,16 +154,34 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   void Reset() {
     loop_ = std::make_unique<base::RunLoop>();
     last_mediation_ = std::nullopt;
+    make_credential_callback_.Reset();
   }
 
   std::optional<mojom::blink::Mediation> last_mediation() const {
     return last_mediation_;
   }
 
+  void WaitForCallToMakeCredential() {
+    if (make_credential_callback_) {
+      return;
+    }
+    loop_->Run();
+  }
+
+  void InvokeMakeCredentialCallback() {
+    EXPECT_TRUE(receiver_.is_bound());
+    std::move(make_credential_callback_)
+        .Run(mojom::blink::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr,
+             nullptr);
+  }
+
  protected:
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
-      MakeCredentialCallback callback) override {}
+      MakeCredentialCallback callback) override {
+    make_credential_callback_ = std::move(callback);
+    loop_->Quit();
+  }
   void GetCredential(blink::mojom::blink::GetCredentialOptionsPtr options,
                      GetCredentialCallback callback) override {
     last_mediation_ = options->mediation;
@@ -182,6 +202,7 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   mojo::Receiver<::blink::mojom::blink::Authenticator> receiver_{this};
 
   GetCredentialCallback get_callback_;
+  MakeCredentialCallback make_credential_callback_;
   std::unique_ptr<base::RunLoop> loop_;
   std::optional<mojom::blink::Mediation> last_mediation_;
 };
@@ -823,6 +844,126 @@ TEST(AuthenticationCredentialsContainerTest,
       context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "NotAllowedError");
+}
+
+TEST(AuthenticationCredentialsContainerTest, PublicKeyCspMetric) {
+  test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  // Set CSP to block connections to everything except self.
+  context.DomWindow().GetContentSecurityPolicy()->AddPolicies(
+      ParseContentSecurityPolicies(
+          "connect-src 'self'",
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          KURL("https://example.test")));
+
+  auto* request_options = CredentialRequestOptions::Create();
+  auto* public_key_request_options =
+      PublicKeyCredentialRequestOptions::Create();
+  // 'self' is example.test.
+  public_key_request_options->setRpId("example.test");
+
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_request_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  request_options->setPublicKey(public_key_request_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), request_options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToGet();
+  mock_authenticator.InvokeGetCallback();
+
+  histogram_tester.ExpectUniqueSample("WebAuthentication.CspAllow.Get", true,
+                                      1);
+
+  // Now try one that is blocked.
+  mock_authenticator.Reset();
+  public_key_request_options->setRpId("blocked.com");
+  promise = AuthenticationCredentialsContainer::credentials(
+                *context.DomWindow().navigator())
+                ->get(context.GetScriptState(), request_options,
+                      IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToGet();
+  mock_authenticator.InvokeGetCallback();
+
+  histogram_tester.ExpectBucketCount("WebAuthentication.CspAllow.Get", false,
+                                     1);
+  histogram_tester.ExpectTotalCount("WebAuthentication.CspAllow.Get", 2);
+}
+
+TEST(AuthenticationCredentialsContainerTest, PublicKeyCreateCspMetric) {
+  test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+
+  // Set CSP to block connections to everything except self.
+  context.DomWindow().GetContentSecurityPolicy()->AddPolicies(
+      ParseContentSecurityPolicies(
+          "connect-src 'self'",
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          KURL("https://example.test")));
+
+  auto* creation_options = CredentialCreationOptions::Create();
+  auto* public_key_creation_options =
+      PublicKeyCredentialCreationOptions::Create();
+  auto* rp = PublicKeyCredentialRpEntity::Create();
+  rp->setId("example.test");
+  rp->setName("Example");
+  public_key_creation_options->setRp(rp);
+
+  auto* user = PublicKeyCredentialUserEntity::Create();
+  user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+      DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+  user->setName("user");
+  user->setDisplayName("User");
+  public_key_creation_options->setUser(user);
+
+  auto* param = PublicKeyCredentialParameters::Create();
+  param->setAlg(-7);
+  param->setType("public-key");
+  public_key_creation_options->setPubKeyCredParams({param});
+
+  const Vector<uint8_t> challenge = {1, 2, 3, 4};
+  public_key_creation_options->setChallenge(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+          DOMArrayBuffer::Create(challenge)));
+  creation_options->setPublicKey(public_key_creation_options);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->create(context.GetScriptState(), creation_options,
+                              IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToMakeCredential();
+  mock_authenticator.InvokeMakeCredentialCallback();
+
+  histogram_tester.ExpectUniqueSample("WebAuthentication.CspAllow.Create", true,
+                                      1);
+
+  // Now try one that is blocked.
+  mock_authenticator.Reset();
+  public_key_creation_options->rp()->setId("blocked.com");
+  promise = AuthenticationCredentialsContainer::credentials(
+                *context.DomWindow().navigator())
+                ->create(context.GetScriptState(), creation_options,
+                         IGNORE_EXCEPTION_FOR_TESTING);
+  mock_authenticator.WaitForCallToMakeCredential();
+  mock_authenticator.InvokeMakeCredentialCallback();
+
+  histogram_tester.ExpectBucketCount("WebAuthentication.CspAllow.Create", false,
+                                     1);
+  histogram_tester.ExpectTotalCount("WebAuthentication.CspAllow.Create", 2);
 }
 
 }  // namespace blink
