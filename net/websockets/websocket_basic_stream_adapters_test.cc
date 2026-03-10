@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -810,8 +811,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
 
   // HTTP/2 raw_received_bytes() includes the 9-byte frame header for each
   // frame received so far (at least a HEADERS frame and a DATA frame).
-  int64_t received_bytes = stream->raw_received_bytes();
-  EXPECT_GE(received_bytes, static_cast<int64_t>(spdy::kFrameHeaderSize + rv));
+  EXPECT_GE(stream->raw_received_bytes().InBytes(),
+            spdy::kFrameHeaderSize + rv);
 
   // Read EOF to destroy the connection and the stream.
   // This calls SpdySession::Delegate::OnClose().
@@ -934,9 +935,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Write) {
   ASSERT_EQ(3, rv);
 
   // raw_sent_bytes() should include the HEADERS frame + DATA frame sent.
-  int64_t sent_bytes = stream->raw_sent_bytes();
-  EXPECT_GE(sent_bytes,
-            static_cast<int64_t>(spdy::kFrameHeaderSize + write_buf->size()));
+  EXPECT_GE(stream->raw_sent_bytes().InBytes(),
+            spdy::kFrameHeaderSize + write_buf->size());
 
   // Read EOF.
   ASSERT_TRUE(base::test::RunUntil([&] {

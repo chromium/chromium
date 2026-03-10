@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -1521,16 +1522,17 @@ TEST_F(SpdyStreamTest, ReceivedBytes) {
       stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND),
       IsError(ERR_IO_PENDING));
 
-  int64_t reply_frame_len = reply.size();
-  int64_t data_header_len = spdy::kDataFrameMinimumSize;
-  int64_t data_frame_len = data_header_len + kPostBodyLength;
-  int64_t response_len = reply_frame_len + data_frame_len;
+  base::ByteSize reply_frame_len(reply.size());
+  base::ByteSize data_header_len(spdy::kDataFrameMinimumSize);
+  base::ByteSize data_frame_len =
+      data_header_len + base::ByteSize(kPostBodyLength);
+  base::ByteSize response_len = reply_frame_len + data_frame_len;
 
-  EXPECT_EQ(0, stream->raw_received_bytes());
+  EXPECT_EQ(base::ByteSize(0), stream->raw_received_bytes());
 
   // REQUEST
   data.RunUntilPaused();
-  EXPECT_EQ(0, stream->raw_received_bytes());
+  EXPECT_EQ(base::ByteSize(0), stream->raw_received_bytes());
 
   // REPLY
   data.Resume();

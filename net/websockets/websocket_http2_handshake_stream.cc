@@ -199,11 +199,11 @@ bool WebSocketHttp2HandshakeStream::CanReuseConnection() const {
 }
 
 int64_t WebSocketHttp2HandshakeStream::GetTotalReceivedBytes() const {
-  return stream_ ? stream_->raw_received_bytes() : 0;
+  return stream_ ? stream_->raw_received_bytes().InBytes() : 0;
 }
 
 int64_t WebSocketHttp2HandshakeStream::GetTotalSentBytes() const {
-  return stream_ ? stream_->raw_sent_bytes() : 0;
+  return stream_ ? stream_->raw_sent_bytes().InBytes() : 0;
 }
 
 bool WebSocketHttp2HandshakeStream::GetAlternativeService(

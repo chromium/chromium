@@ -13,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -379,8 +380,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
   void AddRawReceivedBytes(size_t received_bytes);
   void AddRawSentBytes(size_t sent_bytes);
 
-  int64_t raw_received_bytes() const { return raw_received_bytes_; }
-  int64_t raw_sent_bytes() const { return raw_sent_bytes_; }
+  base::ByteSize raw_received_bytes() const { return raw_received_bytes_; }
+  base::ByteSize raw_sent_bytes() const { return raw_sent_bytes_; }
   int recv_bytes() const { return recv_bytes_; }
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
@@ -532,10 +533,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
 
   // Number of bytes that have been received on this stream, including frame
   // overhead and headers.
-  int64_t raw_received_bytes_ = 0;
+  base::ByteSize raw_received_bytes_;
   // Number of bytes that have been sent on this stream, including frame
   // overhead and headers.
-  int64_t raw_sent_bytes_ = 0;
+  base::ByteSize raw_sent_bytes_;
 
   // Number of data bytes that have been received on this stream, not including
   // frame overhead. Note that this does not count headers.

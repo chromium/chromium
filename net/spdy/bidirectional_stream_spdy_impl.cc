@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -152,7 +153,7 @@ int64_t BidirectionalStreamSpdyImpl::GetTotalReceivedBytes() const {
   if (!stream_)
     return 0;
 
-  return stream_->raw_received_bytes();
+  return stream_->raw_received_bytes().InBytes();
 }
 
 int64_t BidirectionalStreamSpdyImpl::GetTotalSentBytes() const {
@@ -162,7 +163,7 @@ int64_t BidirectionalStreamSpdyImpl::GetTotalSentBytes() const {
   if (!stream_)
     return 0;
 
-  return stream_->raw_sent_bytes();
+  return stream_->raw_sent_bytes().InBytes();
 }
 
 bool BidirectionalStreamSpdyImpl::GetLoadTimingInfo(
@@ -251,8 +252,8 @@ void BidirectionalStreamSpdyImpl::OnClose(int status) {
 
   stream_closed_ = true;
   closed_stream_status_ = status;
-  closed_stream_received_bytes_ = stream_->raw_received_bytes();
-  closed_stream_sent_bytes_ = stream_->raw_sent_bytes();
+  closed_stream_received_bytes_ = stream_->raw_received_bytes().InBytes();
+  closed_stream_sent_bytes_ = stream_->raw_sent_bytes().InBytes();
   closed_has_load_timing_info_ =
       stream_->GetLoadTimingInfo(&closed_load_timing_info_);
 

@@ -154,7 +154,7 @@ int64_t SpdyHttpStream::GetTotalReceivedBytes() const {
   if (!stream_)
     return 0;
 
-  return stream_->raw_received_bytes();
+  return stream_->raw_received_bytes().InBytes();
 }
 
 int64_t SpdyHttpStream::GetTotalSentBytes() const {
@@ -164,7 +164,7 @@ int64_t SpdyHttpStream::GetTotalSentBytes() const {
   if (!stream_)
     return 0;
 
-  return stream_->raw_sent_bytes();
+  return stream_->raw_sent_bytes().InBytes();
 }
 
 bool SpdyHttpStream::GetAlternativeService(
@@ -368,8 +368,8 @@ void SpdyHttpStream::OnClose(int status) {
   closed_stream_id_ = stream_->stream_id();
   closed_stream_has_load_timing_info_ =
       stream_->GetLoadTimingInfo(&closed_stream_load_timing_info_);
-  closed_stream_received_bytes_ = stream_->raw_received_bytes();
-  closed_stream_sent_bytes_ = stream_->raw_sent_bytes();
+  closed_stream_received_bytes_ = stream_->raw_received_bytes().InBytes();
+  closed_stream_sent_bytes_ = stream_->raw_sent_bytes().InBytes();
   stream_ = nullptr;
 
   // Callbacks might destroy |this|.
