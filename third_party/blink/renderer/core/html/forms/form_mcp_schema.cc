@@ -14,9 +14,11 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/base_text_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -27,7 +29,9 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -509,6 +513,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTextParameterSchema(
       To<HTMLFormControlElement>(controls_for_name.front()->ToHTMLElement());
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
+  AddPattern(element, *schema);
   AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
@@ -676,6 +681,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
       schema->SetDouble("multipleOf", step.ToDouble());
     }
   }
+  AddPattern(element, *schema);
   AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
@@ -1054,6 +1060,42 @@ void FormMCPSchema::AddDescription(ListedElement& control,
   if (!description.empty()) {
     obj.SetString("description", description);
   }
+}
+
+void FormMCPSchema::AddPattern(HTMLFormControlElement& form_control,
+                               JSONObject& obj) {
+  auto* input_element = DynamicTo<HTMLInputElement>(form_control);
+  if (!input_element) {
+    return;
+  }
+
+  const AtomicString& raw_pattern =
+      input_element->FastGetAttribute(html_names::kPatternAttr);
+
+  // Only consider the `pattern` HTML attribute if it is provided, and if it
+  // compiles to a proper regular expression. Non-null but empty patterns still
+  // contribute to form validation, so they must be included so that the model
+  // can consider it.
+  if (raw_pattern.IsNull()) {
+    return;
+  }
+
+  v8::Isolate* isolate = input_element->GetDocument().GetAgent().isolate();
+  ScriptRegexp* raw_regexp = MakeGarbageCollected<ScriptRegexp>(
+      isolate, raw_pattern, kTextCaseSensitive,
+      MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
+  if (!raw_regexp->IsValid()) {
+    input_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kRendering,
+            mojom::blink::ConsoleMessageLevel::kError,
+            StrCat({"Pattern attribute value ", raw_pattern,
+                    " is not a valid regular expression: ",
+                    raw_regexp->ExceptionMessage()})));
+    return;
+  }
+
+  obj.SetString("pattern", raw_pattern);
 }
 
 void FormMCPSchema::AddDescriptionFromToolAttributeOnly(ListedElement& control,

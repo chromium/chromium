@@ -142,6 +142,7 @@ class CORE_EXPORT FormMCPSchema {
 
   void AddTitle(ListedElement&, JSONObject&);
   void AddDescription(ListedElement&, JSONObject&, String = String());
+  void AddPattern(HTMLFormControlElement&, JSONObject&);
 
   // It's not clear yet where to host the description attribute for
   // <input type=radio>, or other parameters that are associated with more than

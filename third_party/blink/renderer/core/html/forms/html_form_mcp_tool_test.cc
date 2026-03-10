@@ -1061,6 +1061,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
       <input name="num4" type="number" step="13">
       <input name="num5" type="number" step="0.1">
       <input name="num6" type="number" min="0.15" step="0.1">
+      <input name="num7" type="number" pattern="[1-4]{3}">
     </form>
   )HTML");
 
@@ -1099,6 +1100,11 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_NumberInput) {
          "num6": {
            "type": "number",
            "minimum": 0.15
+         },
+         "num7": {
+           "type": "number",
+           "multipleOf": 1,
+           "pattern": "[1-4]{3}"
          }
       },
       "required": []
@@ -2074,6 +2080,67 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_BaseTextInput) {
          "hidden3": {
            "type": "string",
            "description": "DESC"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_BaseTextInputPatternAttribute) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="email1" type="email" pattern="[A-Z]{10}">
+      <input name="search1" type="search" pattern="[A-Z]{10}">
+      <input name="tel1" type="tel" pattern="[A-Z]{10}">
+      <input name="url1" type="url" pattern="[A-Z]{10}">
+      <input name="hidden1" type="hidden" pattern="[A-Z]{10}">
+      <input name="hidden2" type="hidden" toolparamtitle="TITLE" pattern="[A-Z]{10}">
+      <input name="hidden3" type="hidden" toolparamdescription="DESC" pattern="[A-Z]{10}">
+      <input name="invalid_pattern" type="text" toolparamdescription="invalid pattern input" pattern="[)]">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "email1": {
+           "type": "string",
+           "pattern": "[A-Z]{10}"
+         },
+         "search1": {
+           "type": "string",
+           "pattern": "[A-Z]{10}"
+         },
+         "tel1": {
+           "type": "string",
+           "pattern": "[A-Z]{10}"
+         },
+         "url1": {
+           "type": "string",
+           "pattern": "[A-Z]{10}"
+         },
+         "hidden2": {
+           "type": "string",
+           "pattern": "[A-Z]{10}",
+           "title": "TITLE"
+         },
+         "hidden3": {
+           "type": "string",
+           "pattern": "[A-Z]{10}",
+           "description": "DESC"
+         },
+         "invalid_pattern": {
+           "type": "string",
+           "description": "invalid pattern input"
          }
       },
       "required": []
