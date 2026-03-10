@@ -28,7 +28,9 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
@@ -859,6 +861,27 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetSizeAndPosition) {
 
   EXPECT_EQ(view_accessibility(group_ids[4])->GetSetSize(), 4);
   EXPECT_EQ(view_accessibility(group_ids[4])->GetPosInSet(), 1);
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, NonSiblingRadioButtons) {
+  // Ensure that radio buttons that aren't direct siblings read properly when
+  // the Cascading property is applied.
+  auto* group_owner =
+      widget_->GetRootView()->AddChildView(std::make_unique<View>());
+  SetCascadingRadioGroupView(group_owner, kCascadingRadioGroupView);
+
+  auto* wrapper1 = group_owner->AddChildView(std::make_unique<View>());
+  auto* radio1 =
+      wrapper1->AddChildView(std::make_unique<RadioButton>(u"Radio 1", 1));
+  auto* wrapper2 = group_owner->AddChildView(std::make_unique<View>());
+  auto* radio2 =
+      wrapper2->AddChildView(std::make_unique<RadioButton>(u"Radio 2", 1));
+
+  EXPECT_EQ(view_accessibility(radio1)->GetSetSize(), 2);
+  EXPECT_EQ(view_accessibility(radio1)->GetPosInSet(), 1);
+
+  EXPECT_EQ(view_accessibility(radio2)->GetSetSize(), 2);
+  EXPECT_EQ(view_accessibility(radio2)->GetPosInSet(), 2);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigation) {

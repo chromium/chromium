@@ -39,6 +39,7 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -1011,9 +1012,12 @@ void ViewAXPlatformNodeDelegate::GetViewsInGroupForSet(
   }
 
   View* view_to_check = view();
-  // If this view has a parent, check from the parent, to make sure we catch any
-  // siblings.
-  if (view()->parent()) {
+  // If the view is part of a cascading group, use that group.
+  if (View* parent_group_view = GetCascadingRadioGroupView(view())) {
+    view_to_check = parent_group_view;
+  } else if (view()->parent()) {
+    // If this view has a parent, check from the parent, to make sure we catch
+    // any siblings.
     view_to_check = view()->parent();
   }
   view_to_check->GetViewsInGroup(group_id, views_in_group);

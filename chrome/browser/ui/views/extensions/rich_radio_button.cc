@@ -27,8 +27,6 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
                                  const std::u16string& title,
                                  const std::u16string& description,
                                  int group_id,
-                                 int pos_in_set,
-                                 int set_size,
                                  base::RepeatingClosure on_selected_callback)
     : views::Button(base::BindRepeating(
           [](RichRadioButton* view) { view->radio_button_->SetChecked(true); },
@@ -76,9 +74,6 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
               .SetAccessibleName(title)
               .SetAccessibleDescription(description))
       .BuildChildren();
-
-  radio_button_->GetViewAccessibility().SetPosInSet(pos_in_set);
-  radio_button_->GetViewAccessibility().SetSetSize(set_size);
 
   subscription_ = radio_button_->AddCheckedChangedCallback(base::BindRepeating(
       [](views::RadioButton* button, base::RepeatingClosure closure) {

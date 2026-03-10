@@ -36,8 +36,6 @@ class RichRadioButton : public views::Button {
                   const std::u16string& title,
                   const std::u16string& description,
                   int group_id,
-                  int pos_in_set,
-                  int set_size,
                   base::RepeatingClosure on_selected_callback);
   ~RichRadioButton() override;
 
