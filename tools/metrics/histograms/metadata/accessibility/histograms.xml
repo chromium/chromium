@@ -1990,10 +1990,11 @@ even if they fit the naming pattern. -->
   <summary>
     This metric is related to the Preferred Content Size chosen by the user. It
     is only recorded once per session. This is hit if the chosen category is not
-    listed in the map defined in /ios/components/ui_util/dynamic_type_util.mm.
-    In that case, we should update the code by adding an entry for the new
-    category in that map. This is logged when the helper to returning the
-    multiplier associated with the current preferred content size is called.
+    listed in the map defined in
+    /ios/chrome/browser/shared/ui/util/dynamic_type_util.mm. In that case, we
+    should update the code by adding an entry for the new category in that map.
+    This is logged when the helper to returning the multiplier associated with
+    the current preferred content size is called.
   </summary>
 </histogram>
 

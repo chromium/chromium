@@ -447,7 +447,7 @@
   __weak __typeof(self) weakSelf = self;
 
   UIAction* newTabAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB)
                 image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
            identifier:nil
               handler:^(UIAction*) {

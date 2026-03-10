@@ -18,6 +18,8 @@ source_set("util") {
     "custom_ui_trait_accessor.mm",
     "date_localized_util.h",
     "date_localized_util.mm",
+    "dynamic_type_util.h",
+    "dynamic_type_util.mm",
     "file_size_util.h",
     "file_size_util.mm",
     "layout_guide_names.h",
