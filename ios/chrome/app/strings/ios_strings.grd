@@ -467,9 +467,18 @@
       <message name="IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE" desc="Message when opening a Voice Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to trigger a voice search.">
         Voice search
       </message>
+      <message name="IDS_IOS_APP_BAR_ALL_TABS" desc="Title of the button opening the TabGrid where all the tabs are visible. Note that if the translation is too long, the 'all' can be dropped and translate only 'Tabs'. [CHAR_LIMIT=14]" meaning="Tap this button to see all your tabs.">
+          All tabs
+          </message>
+      <message name="IDS_IOS_APP_BAR_ASK_GEMINI" desc="Title of the button opening a gemini prompt. [CHAR_LIMIT=14]" meaning="Tap this button to ask something to Gemini">
+          Ask Gemini
+          </message>
       <message name="IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP" desc="The text for the button opening a new tab group from the app bar's context menu in the tab groups page of the tab grid.">
         New Tab Group...
       </message>
+      <message name="IDS_IOS_APP_BAR_NEW" desc="Title of the button that is either creating a new tab or a new tab group. [CHAR_LIMIT=14]" meaning="Tap this button to create a new entity based on your current context">
+          New
+          </message>
       <message name="IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL" desc="Label of a button to open an application. [Length: 10em] [iOS only]">
         Open
       </message>
@@ -2310,15 +2319,6 @@
       </message>
       <message name="IDS_IOS_DEVICE_ACCOUNTS_MANAGEMENT" desc="Title of a page that shows all accounts on the user's device and lets them add, remove and otherwise manage their accounts. Avoid long strings given the limited space between surrounding buttons. [iOS only]">
         Manage Accounts
-      </message>
-      <message name="IDS_IOS_DIAMOND_PROTOTYPE_ALL_TABS" desc="Title of the button opening the Tab Grid, containing all the tabs">
-        All Tabs
-      </message>
-      <message name="IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI" desc="Title of the button opening a gemini prompt">
-        Ask Gemini
-      </message>
-      <message name="IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB" desc="Title of the button opening a new tab">
-        New Tab
       </message>
       <message name="IDS_IOS_DIRECTIONS_OMNIBOX_ACTION" desc="Directions suggestion action button [iOS only]">
         Directions

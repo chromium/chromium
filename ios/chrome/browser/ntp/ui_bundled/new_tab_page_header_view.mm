@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
@@ -37,7 +38,6 @@
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
@@ -50,6 +50,7 @@
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -1108,8 +1109,12 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Gets the fonts for the pinned and unpinned fakebox hint label, and sets
 // the correct one.
 - (void)updateHintLabelFonts {
-  _hintLabelFontSmall = LocationBarSteadyViewFont(
-      self.traitCollection.preferredContentSizeCategory);
+  UIContentSizeCategory maxCategory =
+      IsChromeNextIaEnabled() ? kLocationBarSteadyViewMaxSizeCategory
+                              : kLegacyLocationBarSteadyViewMaxSizeCategory;
+  _hintLabelFontSmall = PreferredFontForTextStyleWithMaxCategory(
+      kLocationBarFontTextStyle,
+      self.traitCollection.preferredContentSizeCategory, maxCategory);
   CGFloat bigFontSize = _hintLabelFontSmall.pointSize /
                         (1.0 - content_suggestions::kHintTextScale);
   _hintLabelFontBig = [_hintLabelFontSmall fontWithSize:bigFontSize];

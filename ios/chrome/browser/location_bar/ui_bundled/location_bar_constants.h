@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSTANTS_H_
 
 #import <CoreGraphics/CoreGraphics.h>
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // The brightness of the location bar placeholder text in regular mode,
 // on an iPhone.
@@ -24,5 +24,12 @@ extern NSString* const kOmniboxShareButtonIdentifier;
 
 // Accessibility identifier of the voice search button.
 extern NSString* const kOmniboxVoiceSearchButtonIdentifier;
+
+// The max content size of the location bar.
+extern UIContentSizeCategory const kLegacyLocationBarSteadyViewMaxSizeCategory;
+extern UIContentSizeCategory const kLocationBarSteadyViewMaxSizeCategory;
+
+// The font text style for the location bar.
+extern UIFontTextStyle const kLocationBarFontTextStyle;
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_CONSTANTS_H_

@@ -925,15 +925,14 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   // Used to easily trigger the Assistant sheet during development.
   if (IsAssistantContainerEnabled()) {
-    UIAction* assistantAction =
-        [UIAction actionWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI)
-                            image:DefaultSymbolWithPointSize(
-                                      kMagicStackSymbol, kSymbolActionPointSize)
-                       identifier:nil
-                          handler:^(UIAction* action) {
-                            [weakSelf.dispatcher showAssistant];
-                          }];
+    UIAction* assistantAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI)
+                  image:DefaultSymbolWithPointSize(kMagicStackSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf.dispatcher showAssistant];
+                }];
     [menuElements addObject:assistantAction];
   }
 
