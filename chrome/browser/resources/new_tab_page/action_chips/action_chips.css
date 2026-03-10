@@ -109,6 +109,17 @@
   mask-size: 16px;
 }
 
+.icon-type-draft-spark {
+  background-color: var(--color-new-tab-page-action-chip-text-body);
+  background-size: 24px;
+  -webkit-mask-image: url(chrome://new-tab-page/icons/canvas.svg);
+}
+
+:host([show-simplified-ui_]) .icon-type-draft-spark {
+  background-size: 16px;
+  mask-size: 16px;
+}
+
 .action-chip {
   align-items: center;
   background-color: var(--chip-background-color);

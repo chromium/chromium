@@ -102,6 +102,8 @@ export class ActionChipsElement extends CrLitElement {
         return 'icon-type-globe-with-search-loop';
       case IconType.kSubArrowRight:
         return 'icon-type-sub-arrow-right';
+      case IconType.kDraftSpark:
+        return 'icon-type-draft-spark';
       default:
         return '';
     }
@@ -117,6 +119,8 @@ export class ActionChipsElement extends CrLitElement {
         return 'tab-context';
       case IconType.kSubArrowRight:
         return `deep-dive-${index}`;
+      case IconType.kDraftSpark:
+        return 'canvas-chip';
       default:
         return null;
     }
@@ -182,6 +186,10 @@ export class ActionChipsElement extends CrLitElement {
       case IconType.kSubArrowRight:
         this.handler.activateMetricsFunnel('DeepDiveChip');
         this.onActionChipClick_(chip, ToolMode.kUnspecified);
+        break;
+      case IconType.kDraftSpark:
+        this.handler.activateMetricsFunnel('CanvasChip');
+        this.onActionChipClick_(chip, ToolMode.kCanvas);
         break;
       default:
         // Do nothing yet...

@@ -315,6 +315,39 @@ suite('NewTabPageActionChipsTest', () => {
           metrics.count(
               'NewTabPage.ActionChips.Click2', IconType.kSubArrowRight));
     });
+
+    test('canvas chip triggers chip click event', async () => {
+      // Setup.
+      await initializeChips({
+        actionChips: [{
+          suggestTemplateInfo: {
+            typeIcon: IconType.kDraftSpark,
+            primaryText: {text: 'Canvas', a11yText: null},
+            secondaryText: {text: 'Subtitle for canvas', a11yText: null},
+          },
+          suggestion: 'Suggestion for canvas',
+          tab: null,
+        }],
+      });
+      const canvasChip =
+          chips.shadowRoot.querySelector<HTMLButtonElement>('#canvas-chip');
+      assertTrue(!!canvasChip);
+
+      const whenActionChipClicked =
+          eventToPromise('action-chip-click', document.body);
+
+      // Act.
+      canvasChip.click();
+
+      // Assert.
+      const event = await whenActionChipClicked;
+
+      assertEquals('Suggestion for canvas', event.detail.searchboxText);
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
+      assertEquals(
+          1,
+          metrics.count('NewTabPage.ActionChips.Click2', IconType.kDraftSpark));
+    });
   });
 
   test('latency is recorded once for non-empty action chips', async () => {
