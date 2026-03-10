@@ -1,1 +1,3 @@
 file://components/feedback/OWNERS
+
+per-file report_unsafe_site*=file://components/safe_browsing/OWNERS
