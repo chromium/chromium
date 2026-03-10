@@ -380,8 +380,8 @@ void TranslationManagerImpl::CreateTranslator(
   std::string source_language = *std::move(maybe_source_language);
   std::string target_language = *std::move(maybe_target_language);
 
-  RecordTranslationAPICallForLanguagePair("Create", source_language,
-                                          target_language);
+  RecordTranslatorApiCallForLanguagePair("Create", source_language,
+                                         target_language);
 
   if (!IsTranslatorAllowed(browser_context())) {
     mojo::Remote(std::move(client))
@@ -461,8 +461,8 @@ void TranslationManagerImpl::TranslationAvailable(
   std::string source_language = *std::move(maybe_source_language);
   std::string target_language = *std::move(maybe_target_language);
 
-  RecordTranslationAPICallForLanguagePair("Availability", source_language,
-                                          target_language);
+  RecordTranslatorApiCallForLanguagePair("Availability", source_language,
+                                         target_language);
 
   if (!IsTranslatorAllowed(browser_context())) {
     std::move(callback).Run(CanCreateTranslatorResult::kNoDisallowedByPolicy);

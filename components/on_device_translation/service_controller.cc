@@ -59,6 +59,9 @@ using mojom::OnDeviceTranslationServiceConfigPtr;
 const char kOnDeviceTranslationServiceDisplayNamePrefix[] =
     "On-device Translation Service: ";
 
+constexpr char kCreateTranslatorMetricActionName[] = "CreateTranslator";
+constexpr char kCanTranslateMetricActionName[] = "CanTranslate";
+
 // TODO(crbug.com/419848973): This is a workaround until the "he" language code
 // is fully supported.
 std::string SwitchLanguageCodeToIwIfHe(std::string_view language_code) {
@@ -200,6 +203,10 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     return;
   }
 
+  RecordOnDeviceTranslationCallForLanguagePair(
+      kCreateTranslatorMetricActionName, *best_fit_source_language,
+      *best_fit_target_language);
+
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(source_lang, target_lang);
   std::vector<LanguagePackKey> to_be_registered_packs =
@@ -298,6 +305,9 @@ void OnDeviceTranslationServiceController::CanTranslate(
     return;
   }
 
+  RecordOnDeviceTranslationCallForLanguagePair(kCanTranslateMetricActionName,
+                                               *best_fit_source_language,
+                                               *best_fit_target_language);
   std::string source_lang = std::move(*best_fit_source_language);
   std::string target_lang = std::move(*best_fit_target_language);
   std::move(callback).Run(CanTranslateImpl(source_lang, target_lang));

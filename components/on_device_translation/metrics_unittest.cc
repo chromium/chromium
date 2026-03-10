@@ -71,7 +71,7 @@ TEST_F(TranslationMetricsTest, RecordLanguagePairUma) {
 }
 
 TEST_F(TranslationMetricsTest,
-       RecordLanguageTranslationAPICallForLanguagePair) {
+       RecordLanguageOnDeviceTranslationCallForLanguagePair) {
   const char kTestSourceLanguageHistogramName[] =
       "Translate.OnDeviceTranslation.Create.SourceLanguage";
   const char kTestTargetLanguageHistogramName[] =
@@ -80,7 +80,7 @@ TEST_F(TranslationMetricsTest,
       "Translate.OnDeviceTranslation.Create.LanguagePair";
   {
     base::HistogramTester histogram_tester;
-    RecordTranslationAPICallForLanguagePair("Create", "en", "es");
+    RecordOnDeviceTranslationCallForLanguagePair("Create", "en", "es");
     histogram_tester.ExpectUniqueSample(kTestSourceLanguageHistogramName,
                                         kLanguageCodeEn, 1);
     histogram_tester.ExpectUniqueSample(kTestTargetLanguageHistogramName,
@@ -93,7 +93,7 @@ TEST_F(TranslationMetricsTest,
   {
     // Test recording an unknown language code as source language
     base::HistogramTester histogram_tester;
-    RecordTranslationAPICallForLanguagePair("Create", "xxxxx", "es");
+    RecordOnDeviceTranslationCallForLanguagePair("Create", "xxxxx", "es");
     histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
@@ -102,7 +102,7 @@ TEST_F(TranslationMetricsTest,
   {
     // Test recording an unknown language code as target language
     base::HistogramTester histogram_tester;
-    RecordTranslationAPICallForLanguagePair("Create", "en", "xxxxx");
+    RecordOnDeviceTranslationCallForLanguagePair("Create", "en", "xxxxx");
     histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
@@ -111,7 +111,54 @@ TEST_F(TranslationMetricsTest,
   {
     // Test recording an unknown language code as source and target language
     base::HistogramTester histogram_tester;
-    RecordTranslationAPICallForLanguagePair("Create", "xxxx", "xxxxx");
+    RecordOnDeviceTranslationCallForLanguagePair("Create", "xxxx", "xxxxx");
+    histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
+  }
+}
+
+TEST_F(TranslationMetricsTest, RecordLanguageTranslatorApiCallForLanguagePair) {
+  const char kTestSourceLanguageHistogramName[] =
+      "Translate.TranslatorApi.Create.SourceLanguage";
+  const char kTestTargetLanguageHistogramName[] =
+      "Translate.TranslatorApi.Create.TargetLanguage";
+  const char kTestLanguagePairHistogramName[] =
+      "Translate.TranslatorApi.Create.LanguagePair";
+  {
+    base::HistogramTester histogram_tester;
+    RecordTranslatorApiCallForLanguagePair("Create", "en", "es");
+    histogram_tester.ExpectUniqueSample(kTestSourceLanguageHistogramName,
+                                        kLanguageCodeEn, 1);
+    histogram_tester.ExpectUniqueSample(kTestTargetLanguageHistogramName,
+                                        kLanguageCodeEs, 1);
+    histogram_tester.ExpectUniqueSample(
+        kTestLanguagePairHistogramName,
+        kLanguageCodeEn * 1000 + kLanguageCodeEs, 1);
+  }
+
+  {
+    // Test recording an unknown language code as source language
+    base::HistogramTester histogram_tester;
+    RecordTranslatorApiCallForLanguagePair("Create", "xxxxx", "es");
+    histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
+  }
+
+  {
+    // Test recording an unknown language code as target language
+    base::HistogramTester histogram_tester;
+    RecordTranslatorApiCallForLanguagePair("Create", "en", "xxxxx");
+    histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
+    histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
+  }
+
+  {
+    // Test recording an unknown language code as source and target language
+    base::HistogramTester histogram_tester;
+    RecordTranslatorApiCallForLanguagePair("Create", "xxxx", "xxxxx");
     histogram_tester.ExpectTotalCount(kTestSourceLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestTargetLanguageHistogramName, 0);
     histogram_tester.ExpectTotalCount(kTestLanguagePairHistogramName, 0);
