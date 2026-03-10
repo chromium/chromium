@@ -291,6 +291,11 @@ void ExtensionSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   // Store the current `window_id_`. if the window later closes, the browser may
   // no longer be retrievable.
   window_id_ = ExtensionTabUtil::GetWindowId(GetBrowser());
+
+  // Focus on the host's view when the side panel is first shown.
+  if (host_ && host_->host_contents()) {
+    host_->host_contents()->Focus();
+  }
 }
 
 // There are three scenarios that trigger OnClosed():
