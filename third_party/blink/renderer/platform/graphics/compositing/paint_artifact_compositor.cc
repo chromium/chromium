@@ -393,29 +393,53 @@ cc::Layer* ForeignLayer(const PaintChunk& chunk,
   return foreign_layer ? foreign_layer->GetLayer() : nullptr;
 }
 
+std::string DescribePaintPropertyNode(const PaintPropertyNode& node,
+                                      const PaintPropertyNode* parent) {
+  return String::Format(
+             "Parent %p : (%s) \n Self %p : (%s)", parent,
+             parent ? parent->ToJSON()->ToJSONString().Utf8().c_str() : "",
+             &node, node.ToJSON()->ToJSONString().Utf8().c_str())
+      .Utf8();
+}
+
 void DumpWithDifferingPaintPropertiesIncluded(const PaintChunk& previous,
                                               const PaintChunk& repainted) {
+  // Report the full property tree state, including pointers and parents to give
+  // full context for debugging. This dump occurs when the paint property tree
+  // has been modified but that modification hasn't dirtied an object's
+  // PaintLayer, allowing a cached subsequence to be improperly reused. This can
+  // occur when the insertion or deletion of a node is obscured by a child node.
   SCOPED_CRASH_KEY_STRING1024(
-      "PrevTransform", "json",
-      previous.properties.Transform().ToJSON()->ToJSONString().Utf8());
+      "PrevTransform", "prev_tf_property_state",
+      DescribePaintPropertyNode(
+          previous.properties.Transform(),
+          previous.properties.Transform().UnaliasedParent()));
   SCOPED_CRASH_KEY_STRING1024(
       "PrevClip", "json",
-      previous.properties.Clip().ToJSON()->ToJSONString().Utf8());
+      DescribePaintPropertyNode(previous.properties.Clip(),
+                                previous.properties.Clip().UnaliasedParent()));
   SCOPED_CRASH_KEY_STRING1024(
       "PrevEffect", "json",
-      previous.properties.Effect().ToJSON()->ToJSONString().Utf8());
+      DescribePaintPropertyNode(
+          previous.properties.Effect(),
+          previous.properties.Effect().UnaliasedParent()));
   SCOPED_CRASH_KEY_STRING1024(
       "RepaintTransform", "json",
-      repainted.properties.Transform().ToJSON()->ToJSONString().Utf8());
+      DescribePaintPropertyNode(
+          repainted.properties.Transform(),
+          repainted.properties.Transform().UnaliasedParent()));
   SCOPED_CRASH_KEY_STRING1024(
       "RepaintClip", "json",
-      repainted.properties.Clip().ToJSON()->ToJSONString().Utf8());
+      DescribePaintPropertyNode(repainted.properties.Clip(),
+                                repainted.properties.Clip().UnaliasedParent()));
   SCOPED_CRASH_KEY_STRING1024(
       "RepaintEffect", "json",
-      repainted.properties.Effect().ToJSON()->ToJSONString().Utf8());
+      DescribePaintPropertyNode(
+          repainted.properties.Effect(),
+          repainted.properties.Effect().UnaliasedParent()));
 
-  // This id is not useful on its own, but can be correlated to objects
-  // in a heap dump.
+  // Use the display item type to find where this chunk was painted. The client
+  // id is not so useful on its own, but can be correlated with a heap dump.
   SCOPED_CRASH_KEY_STRING32("ChunkId", "id", previous.id.ToString().Utf8());
 
   base::debug::DumpWithoutCrashing();
