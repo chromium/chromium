@@ -20,7 +20,7 @@ public class AccessibilityFeatureMap extends FeatureMap {
     private static final AccessibilityFeatureMap sInstance = new AccessibilityFeatureMap();
 
     public static final MutableFlagWithSafeDefault sAndroidZoomIndicator =
-            newMutableFlagWithSafeDefault(ANDROID_ZOOM_INDICATOR, false);
+            newMutableFlagWithSafeDefault(ANDROID_ZOOM_INDICATOR, true);
 
     // Do not instantiate this class.
     private AccessibilityFeatureMap() {}
