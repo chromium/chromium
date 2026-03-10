@@ -114,9 +114,11 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
   // Try a single-digit month.
   CreditCard credit_card = test::GetCreditCard();
   credit_card.SetExpirationMonth(3);
-  std::u16string value_to_fill = GetFillingValueForCreditCard(
-      credit_card, kAppLocale, mojom::ActionPersistence::kFill, field,
-      /*is_cvc_filling_supported=*/true);
+  std::u16string value_to_fill =
+      GetFillingValueAndTypeForCreditCard(
+          credit_card, kAppLocale, mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true)
+          .value;
 
   ASSERT_FALSE(value_to_fill.empty());
   content_index = GetIndexOfValue(field.options(), value_to_fill);
@@ -124,9 +126,11 @@ void TestFillingExpirationMonth(const std::vector<const char*>& values,
 
   // Try a two-digit month.
   credit_card.SetExpirationMonth(11);
-  value_to_fill = GetFillingValueForCreditCard(
-      credit_card, kAppLocale, mojom::ActionPersistence::kFill, field,
-      /*is_cvc_filling_supported=*/true);
+  value_to_fill =
+      GetFillingValueAndTypeForCreditCard(
+          credit_card, kAppLocale, mojom::ActionPersistence::kFill, field,
+          /*is_cvc_filling_supported=*/true)
+          .value;
 
   ASSERT_FALSE(value_to_fill.empty());
   content_index = GetIndexOfValue(field.options(), value_to_fill);
@@ -152,6 +156,18 @@ size_t GetNumberOffset(size_t index, const CreditCardTestCase& test) {
 class FieldFillingPaymentsUtilTest : public testing::Test {
  public:
   FieldFillingPaymentsUtilTest() = default;
+
+  std::u16string GetFillingValueForCreditCard(
+      const CreditCard& credit_card,
+      const std::string& app_locale,
+      mojom::ActionPersistence action_persistence,
+      const AutofillField& field,
+      bool is_cvc_filling_supported) {
+    return GetFillingValueAndTypeForCreditCard(credit_card, app_locale,
+                                               action_persistence, field,
+                                               is_cvc_filling_supported)
+        .value;
+  }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;

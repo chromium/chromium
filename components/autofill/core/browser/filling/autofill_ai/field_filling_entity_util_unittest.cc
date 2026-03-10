@@ -115,9 +115,10 @@ std::u16string GetFillValueForEntity(
     }
   }
 
-  return GetFillValueForEntity(entity, fields_and_types, *fields[0],
-                               action_persistence, app_locale,
-                               address_normalizer);
+  return GetFillingValueAndTypeForEntity(entity, fields_and_types, *fields[0],
+                                         action_persistence, app_locale,
+                                         address_normalizer)
+      .value;
 }
 
 // Wrapper for GetFillValueForEntity() that calls DetermineAttributeTypes() for

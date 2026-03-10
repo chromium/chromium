@@ -58,7 +58,7 @@ std::u16string GetValueForProfile(const AutofillProfile& profile,
                                   AddressNormalizer* address_normalizer) {
   return GetFillingValueAndTypeForProfile(profile, app_locale, field_type,
                                           field_data, address_normalizer)
-      .first;
+      .value;
 }
 
 class FieldFillingAddressUtilTest : public testing::Test {

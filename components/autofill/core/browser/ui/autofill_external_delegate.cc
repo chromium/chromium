@@ -1029,10 +1029,11 @@ void AutofillExternalDelegate::OnCreditCardScanned(const CreditCard& card) {
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
-  const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
-      profile, manager_->client().GetAppLocale(),
-      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
-      manager_->client().GetAddressNormalizer());
+  const auto& [filling_value, select_text, filling_type] =
+      GetFillingValueAndTypeForProfile(
+          profile, manager_->client().GetAppLocale(),
+          AutofillType(*suggestion.field_by_field_filling_type_used),
+          query_field_, manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
@@ -1045,10 +1046,11 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
-  const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
-      profile, manager_->client().GetAppLocale(),
-      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
-      manager_->client().GetAddressNormalizer());
+  const auto& [filling_value, select_text, filling_type] =
+      GetFillingValueAndTypeForProfile(
+          profile, manager_->client().GetAppLocale(),
+          AutofillType(*suggestion.field_by_field_filling_type_used),
+          query_field_, manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,

@@ -246,7 +246,7 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
   return fillable_fields;
 }
 
-std::u16string GetFillValueForEntity(
+FillingValueAndType GetFillingValueAndTypeForEntity(
     const EntityInstance& entity,
     base::span<const AutofillFieldWithAttributeType> fields_and_types,
     const AutofillField& field,
@@ -268,24 +268,29 @@ std::u16string GetFillValueForEntity(
     return entity.attribute(it->type);
   }();
 
+  FieldType field_type = field.Type().GetAutofillAiType(entity.type());
   if (!attribute) {
-    return u"";
+    return FillingValueAndType(u"", field_type);
   }
 
   if (field.IsSelectElement()) {
     std::optional<SelectOption> select_control_option =
         GetOptionForSelect(*attribute, field, app_locale, address_normalizer);
-    return select_control_option ? std::move(select_control_option->value)
-                                 : u"";
+    return FillingValueAndType(
+        select_control_option ? std::move(select_control_option->value) : u"",
+        select_control_option ? std::move(select_control_option->text) : u"",
+        field_type);
+  } else {
+    std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);
+
+    const bool should_obfuscate =
+        action_persistence != mojom::ActionPersistence::kFill &&
+        attribute->type().is_obfuscated();
+
+    return FillingValueAndType(should_obfuscate ? GetObfuscatedValue(fill_value)
+                                                : std::move(fill_value),
+                               field_type);
   }
-
-  std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);
-
-  const bool should_obfuscate =
-      action_persistence != mojom::ActionPersistence::kFill &&
-      attribute->type().is_obfuscated();
-
-  return should_obfuscate ? GetObfuscatedValue(fill_value) : fill_value;
 }
 
 bool WillFillSensitiveAttributes(const EntityInstance& entity,
