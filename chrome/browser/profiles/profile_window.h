@@ -10,13 +10,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #error "Not used on Android"
 #endif
 
-class BrowserList;
+class Browser;
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 class Profile;
 
 namespace base {
@@ -89,7 +92,8 @@ void CloseProfileWindows(Profile* profile);
 // is created and the callback is executed.
 // Warning: this may be called with a nullptr Browser in case of failure (e.g.
 // if the profile or the browser is destroyed during the operation).
-class BrowserAddedForProfileObserver : public BrowserListObserver {
+class BrowserAddedForProfileObserver : public BrowserCollectionObserver,
+                                       public ProfileObserver {
  public:
   BrowserAddedForProfileObserver(Profile* profile,
                                  base::OnceCallback<void(Browser*)> callback);
@@ -101,9 +105,12 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
       const BrowserAddedForProfileObserver&) = delete;
 
  private:
-  // Overridden from BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // Overridden from BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+
+  // Overridden from ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   void NotifyBrowserCreatedAnDie();
 
@@ -111,8 +118,9 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
   base::WeakPtr<Profile> profile_;
   raw_ptr<Browser> browser_ = nullptr;
   base::OnceCallback<void(Browser*)> callback_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace profiles
