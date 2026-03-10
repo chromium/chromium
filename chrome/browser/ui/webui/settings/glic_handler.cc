@@ -80,6 +80,14 @@ void GlicHandler::RegisterMessages() {
       "revokeActorLoginPermission",
       base::BindRepeating(&GlicHandler::HandleRevokeActorLoginPermission,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getGlicSelectionShortcut",
+      base::BindRepeating(&GlicHandler::HandleGetGlicSelectionShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setGlicSelectionShortcut",
+      base::BindRepeating(&GlicHandler::HandleSetGlicSelectionShortcut,
+                          base::Unretained(this)));
 }
 
 void GlicHandler::OnJavascriptAllowed() {
@@ -199,6 +207,29 @@ void GlicHandler::HandleGetGlicDisallowedByAdmin(const base::ListValue& args) {
       glic::GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
 
   ResolveJavascriptCallback(callback_id, base::Value(disallowed));
+}
+
+void GlicHandler::HandleGetGlicSelectionShortcut(const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  AllowJavascript();
+  ResolveJavascriptCallback(
+      callback_id,
+      base::UTF16ToUTF8(
+          glic::GlicLauncherConfiguration::GetSelectionGlobalHotkey()
+              .GetShortcutText()));
+}
+
+void GlicHandler::HandleSetGlicSelectionShortcut(const base::ListValue& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const std::string accelerator_string = args[1].GetString();
+  g_browser_process->local_state()->SetString(glic::prefs::kGlicSelectionHotkey,
+                                              accelerator_string);
+
+  AllowJavascript();
+  ResolveJavascriptCallback(callback_id, base::Value());
 }
 
 void GlicHandler::FireOnGlicDisallowedByAdminChanged() {

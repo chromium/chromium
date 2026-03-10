@@ -70,6 +70,13 @@ class GlicHandler : public SettingsPageUIHandler,
   // Handles requests to revoke an actor login permission.
   void HandleRevokeActorLoginPermission(const base::ListValue& args);
 
+  // Sends to the settings page the last saved shortcut.
+  void HandleGetGlicSelectionShortcut(const base::ListValue& args);
+
+  // Updates the registered glic selection hotkey with the one provided in
+  // `args`.
+  void HandleSetGlicSelectionShortcut(const base::ListValue& args);
+
   // Notifies the client whether glic is disallowed by their administrator,
   // either on request or because it changed.
   void FireOnGlicDisallowedByAdminChanged();

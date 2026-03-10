@@ -28,6 +28,8 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'setGlicFocusToggleShortcut',
       'setShortcutSuspensionState',
       'getDisallowedByAdmin',
+      'getGlicSelectionShortcut',
+      'setGlicSelectionShortcut',
     ]);
   }
 
@@ -107,5 +109,15 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
 
   revokeActorLoginPermission(signonRealm: string) {
     this.methodCalled('revokeActorLoginPermission', signonRealm);
+  }
+
+  getGlicSelectionShortcut() {
+    this.methodCalled('getGlicSelectionShortcut');
+    return Promise.resolve(this.glicShortcutResponse_);
+  }
+
+  setGlicSelectionShortcut(shortcut: string) {
+    this.methodCalled('setGlicSelectionShortcut', shortcut);
+    return Promise.resolve();
   }
 }

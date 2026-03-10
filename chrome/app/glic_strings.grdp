@@ -159,6 +159,9 @@
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_LEARN_MORE_ARIA_LABEL" desc="Aria label for the 'Learn more' link for the navigation shortcut setting in Gemini in Chrome settings.">
     Learn more about the navigation shortcut
   </message>
+  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_LEARN_MORE_ARIA_LABEL" desc="Aria label for the 'Learn more' link for the selection shortcut setting in Gemini in Chrome settings.">
+    Learn more about the selection shortcut
+  </message>
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" desc="Title for the navigation shortcut setting to leave and return to Gemini in Chrome.">
     Navigation shortcut
   </message>
@@ -170,6 +173,18 @@
   </message>
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
     To leave or return to Gemini, use keyboard shortcut.
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT" desc="Title for the selection shortcut setting to trigger selection mode in Gemini in Chrome.">
+    Selection shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_EDIT_LABEL" desc="Label of the edit selection shortcut setting button.">
+    Edit selection shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_CLEAR_LABEL" desc="Label of the clear selection shortcut setting button.">
+    Clear selection shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_SUBLABEL" desc="Sublabel describing the selection shortcut triggering in Gemini.">
+    To select part of the screen in Gemini, use keyboard shortcut.
   </message>
   <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" desc="Name of the closed captioning setting.">
     Closed Captioning
