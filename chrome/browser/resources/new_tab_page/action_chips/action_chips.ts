@@ -104,6 +104,8 @@ export class ActionChipsElement extends CrLitElement {
         return 'icon-type-sub-arrow-right';
       case IconType.kDraftSpark:
         return 'icon-type-draft-spark';
+      case IconType.kFavicon:
+        return 'icon-type-favicon';
       default:
         return '';
     }

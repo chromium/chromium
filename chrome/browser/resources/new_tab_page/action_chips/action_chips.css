@@ -77,47 +77,24 @@
   overflow: hidden;
 }
 
-.icon-type-banana {
-  background-image: url(chrome://new-tab-page/icons/banana.svg);
-  background-size: 24px;
-}
-
-:host([show-simplified-ui_]) .icon-type-banana {
-  background-size: 16px;
-  mask-size: 16px;
+.action-chip-icon-container:not(.icon-type-favicon):not(.icon-type-banana) {
+  background-color: var(--color-new-tab-page-action-chip-text-body);
 }
 
 .icon-type-sub-arrow-right {
-  background-color: var(--color-new-tab-page-action-chip-text-body);
-  background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
 }
 
-:host([show-simplified-ui_]) .icon-type-sub-arrow-right {
-  background-size: 16px;
-  mask-size: 16px;
-}
-
 .icon-type-globe-with-search-loop {
-  background-color: var(--color-new-tab-page-action-chip-text-body);
-  background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/deep_search.svg);
 }
 
-:host([show-simplified-ui_]) .icon-type-globe-with-search-loop {
-  background-size: 16px;
-  mask-size: 16px;
-}
-
 .icon-type-draft-spark {
-  background-color: var(--color-new-tab-page-action-chip-text-body);
-  background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/canvas.svg);
 }
 
-:host([show-simplified-ui_]) .icon-type-draft-spark {
-  background-size: 16px;
-  mask-size: 16px;
+.icon-type-banana {
+  background-image: url(chrome://new-tab-page/icons/banana.svg);
 }
 
 .action-chip {
@@ -213,8 +190,17 @@
 }
 
 .action-chip-icon-container {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
   border-radius: 100%;
   height: 24px;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: 100%;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
   width: 24px;
 }
 
