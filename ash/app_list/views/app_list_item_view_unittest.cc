@@ -80,6 +80,11 @@ class AppListItemViewTest : public AshTestBase {
         base::DoNothing());
   }
 
+  void TearDown() override {
+    drag_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   static views::View* GetNewInstallDot(AppListItemView* view) {
     return view->new_install_dot_;
   }
@@ -118,7 +123,7 @@ class AppListItemViewTest : public AshTestBase {
   }
 
   int drag_started_on_controller_ = 0;
-  raw_ptr<AppListItemView, DanglingUntriaged> drag_view_;
+  raw_ptr<AppListItemView> drag_view_;
 };
 
 TEST_F(AppListItemViewTest, NewInstallDot) {
