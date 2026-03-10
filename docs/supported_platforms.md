@@ -227,6 +227,15 @@ Details are [here](https://chromium.googlesource.com/chromium/src/chromecast/REA
 Cronet is an Android library that packages Chromium's network stack. The
 embedder code for Cronet lives in //components/cronet. Details are [here](https://chromium.googlesource.com/chromium/src/+/main/components/cronet/README.md).
 
+One particularity of Cronet is that at any given time it may be supported on a
+broader range of Android versions than Chrome on Android due to aligning
+with [Google Play Services minSDK](https://android-developers.googleblog.com/search/label/Google%20Play%20services). For example, as of
+March 2026, Cronet is supported on Android M+ whereas Chrome on Android is
+supported on Android Q+. This has the implication that Chromium code that is
+used as part of Cronet must be able to build and run with the minimum Android
+version that Cronet supports rather than just the minimum Android version that
+Chrome on Android supports.
+
 ### Fuchsia WebEngine
 
 Fuchsia WebEngine is an application running on the Fuchsia operating system for
