@@ -42,7 +42,6 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kGoogleTalkOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kGoogleUserInfoEmail, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kGoogleUserInfoProfile, OAuth2ScopeRestriction::kNoRestriction},
- {GaiaConstants::kIpProtectionAuthScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kKAnonymityServiceOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kKidFamilyReadonlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kKidManagementPrivilegedOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
@@ -108,7 +107,7 @@ TEST(AccessTokenRestrictionTest, PrivilegedOAuth2Consumer) {
   EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer(
       signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics));
   EXPECT_FALSE(signin::IsPrivilegedOAuth2Consumer(
-      signin::OAuthConsumerId::kIpProtectionService));
+      signin::OAuthConsumerId::kOptimizationGuideGetHints));
 }
 
 }  // namespace

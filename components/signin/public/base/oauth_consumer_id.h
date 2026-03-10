@@ -20,7 +20,7 @@ enum class OAuthConsumerId {
   kSync = 0,
   kWallpaperGooglePhotosFetcher = 1,
   kWallpaperFetcherDelegate = 2,
-  kIpProtectionService = 3,
+  // kIpProtectionService = 3, // Removed due to deprecation.
   kSanitizedImageSource = 4,
   kOptimizationGuideGetHints = 5,
   kOptimizationGuideModelExecution = 6,

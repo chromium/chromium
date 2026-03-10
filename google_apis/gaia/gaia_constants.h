@@ -34,7 +34,6 @@ extern const char kKidsSupervisionSetupChildOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleTalkOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoEmail[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGoogleUserInfoProfile[];
-COMPONENT_EXPORT(GOOGLE_APIS) extern const char kIpProtectionAuthScope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kParentApprovalOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPeopleApiReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
