@@ -26,6 +26,11 @@ class TabStripModel;
 // TODO (crbug.com/409086859). See bug for dd.
 // tabs_api::mojom::TabStripController is an experimental TabStrip Api between
 // any view and the TabStripModel.
+// The tab strip api spec requires that the client receives all events before
+// a method returns. To accomplish this, we must ensure that all observer events
+// are sent before returning the result. To accomplish this, the underlying tab
+// strip api uses a RAII session object which will replay events right before
+// a subroutine returns.
 class TabStripServiceMojoHandler
     : public tabs_api::observation::TabStripApiBatchedObserver,
       public tabs_api::mojom::TabStripService,

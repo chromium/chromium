@@ -19,6 +19,18 @@ struct TabsSnapshot {
   // The interface is associated with the interface used to retrieve this
   // stream. This means that the ordering of the message between the remote
   // and the observation stream is preserved.
+  // The service will guarantee that all observation events will be received
+  // before a method returns.
+  //
+  // For example:
+  //   [service]                         [client]
+  //                                <= (ActivateTab)
+  //  (Tab Activated Event)  =>
+  //  (ActivateTab Response) =>
+  //
+  // Clients can therefore assume that all necessary transformations have
+  // already been applied once a method invocation completes (unless the
+  // request was rejected).
   pending_associated_receiver<TabsObserver> stream;
 };
 
