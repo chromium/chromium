@@ -192,6 +192,11 @@ Android WebView is an Android system component for displaying web content.
 The embedder code for Android WebView lives in //android_webview. Details are
 [here](https://chromium.googlesource.com/chromium/src/+/main/android_webview/README.md).
 
+Currently (and for all past versions), WebView supports exactly the same
+architectures and Android OS versions as the same version of Chrome on Android
+does. It's theoretically possible that this may change in the future, but not
+that likely.
+
 ### Chromecast
 
 The embedder code for Chromecast lives in //chromecast. This code is used to
