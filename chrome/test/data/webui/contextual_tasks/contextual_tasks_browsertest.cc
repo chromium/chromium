@@ -31,7 +31,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_MiscInputs) {
+// TODO(crbug.com/490228606): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Composebox_MiscInputs DISABLED_Composebox_MiscInputs
+#else
+#define MAYBE_Composebox_MiscInputs Composebox_MiscInputs
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       MAYBE_Composebox_MiscInputs) {
   RunTest("contextual_tasks/composebox_misc_inputs_test.js", "mocha.run();");
 }
 
