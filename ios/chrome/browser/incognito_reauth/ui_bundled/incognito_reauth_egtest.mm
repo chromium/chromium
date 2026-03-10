@@ -213,13 +213,10 @@ using chrome_test_util::TabGroupCreationView;
       assertWithMatcher:grey_nil()];
 }
 
-// Tests that the user can swipe to the regular tab grid when the incognito
-// panel is blocked by the reauth UI.
-- (void)testToolbarVisibilityWhileBlockedRightAfterColdLaunch {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/490032870): Re-enable after fixing iPad behavior.
-    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
-  }
+// Tests that if the user opens an incognito tab, backgrounds the app and
+// foregrounds again, they will see the incognito block reauth UI, and can swipe
+// to the regular tab grid.
+- (void)testBackgroundAndForegroundFromIncognitoPageShouldShowBlockUI {
   [ChromeEarlGrey openNewIncognitoTab];
   [self displayBlockingUI];
   // Verify blocking UI is displaying and bottom toolbar buttons are disabled.
