@@ -356,6 +356,54 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   }
 }
 
+// Glic floaty and live modes are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       SidePanelActivationStopsFloatyListening) {
+  // Open floaty and start listening
+  coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false,
+                       /*deprecated_conversation_id=*/std::nullopt);
+  GlicInstanceImpl* floaty_instance =
+      static_cast<GlicInstanceImpl*>(coordinator().GetActiveInstance());
+  ASSERT_TRUE(floaty_instance);
+  ASSERT_TRUE(floaty_instance->IsDetached());
+
+  floaty_instance->host().OnMicrophoneStatusChanged(
+      mojom::MicrophoneStatus::kListening);
+  EXPECT_EQ(floaty_instance->host().microphone_status(),
+            mojom::MicrophoneStatus::kListening);
+
+  // Now open a new side panel
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+
+  coordinator().Toggle(tab2->GetBrowserWindowInterface(),
+                       /*prevent_close=*/true,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false,
+                       /*deprecated_conversation_id=*/std::nullopt);
+  ASSERT_TRUE(WaitForGlicOpen(tab2));
+  GlicInstanceImpl* side_panel_instance = GetInstanceForTab(tab2);
+  ASSERT_TRUE(side_panel_instance);
+  ASSERT_TRUE(side_panel_instance->IsAttached());
+
+  // Manually activate the side panel
+  side_panel_instance->OnEmbedderWindowActivationChanged(true);
+  EXPECT_EQ(coordinator().GetActiveInstance(), side_panel_instance);
+
+  // Verify that Floaty has stopped listening
+  floaty_instance->host().OnMicrophoneStatusChanged(
+      mojom::MicrophoneStatus::kNotListening);
+  EXPECT_EQ(floaty_instance->host().microphone_status(),
+            mojom::MicrophoneStatus::kNotListening);
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabContentsDaisyChainingSuppressedWhenUnifiedFreShown) {
   // SKIP_NEEDS_ANDROID_IMPL removed

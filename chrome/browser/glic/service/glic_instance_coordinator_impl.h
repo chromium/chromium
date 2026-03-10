@@ -241,6 +241,10 @@ class GlicInstanceCoordinatorImpl
   void NotifyActiveInstanceChanged();
   void ComputeContentAccessIndicator();
 
+  // If a side panel instance becomes active, any separate floaty that is
+  // currently listening should stop.
+  void MaybeStopListeningFloaty(GlicInstanceImpl* active_instance);
+
   void OnTabsInserted(const TabStripModelChange::Insert* insert);
   void MaybeDaisyChainNewTab(const TabCreationEvent& event);
   void MaybeDaisyChainFromLinkClick(const TabCreationEvent& event);

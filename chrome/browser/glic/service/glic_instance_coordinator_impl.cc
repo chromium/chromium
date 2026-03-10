@@ -155,6 +155,7 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
   if (is_active && active_instance_ != instance) {
     active_instance_ = instance;
     last_active_instance_ = active_instance_;
+    MaybeStopListeningFloaty(instance);
   } else if (!is_active && active_instance_ == instance) {
     active_instance_ = nullptr;
   } else {
@@ -1157,6 +1158,24 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
       pinned_instance->sharing_manager().PinTabs({tab->GetHandle()},
                                                  GlicPinTrigger::kRestore);
     }
+  }
+}
+
+void GlicInstanceCoordinatorImpl::MaybeStopListeningFloaty(
+    GlicInstanceImpl* instance) {
+  if (!instance) {
+    return;
+  }
+  auto* floaty_instance = GetInstanceWithFloaty();
+  if (!floaty_instance || instance == floaty_instance) {
+    return;
+  }
+
+  // Another instance has become active, so stop the floaty instance
+  // from listening to ensure a single active instance.
+  if (floaty_instance->host().microphone_status() ==
+      mojom::MicrophoneStatus::kListening) {
+    floaty_instance->host().StopMicrophone(base::DoNothing());
   }
 }
 
