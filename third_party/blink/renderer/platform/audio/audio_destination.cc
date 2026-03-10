@@ -488,11 +488,7 @@ AudioDestination::AudioDestination(
         media::AudioBus::CreateWrapper(render_bus_->NumberOfChannels());
     resampler_bus_->set_frames(render_bus_->length());
     for (unsigned int i = 0; i < render_bus_->NumberOfChannels(); ++i) {
-      // TODO(crbug.com/375449662): Spanify `AudioChannel::MuteableData`.
-      resampler_bus_->SetChannelData(
-          i, UNSAFE_TODO(base::span(
-                 render_bus_->Channel(i)->MutableData(),
-                 base::checked_cast<size_t>(render_bus_->length()))));
+      resampler_bus_->SetChannelData(i, render_bus_->Channel(i)->MutableSpan());
     }
   } else {
     SendLogMessage(
