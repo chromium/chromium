@@ -11,7 +11,7 @@ fn make_font_ref_internal<'a>(font_data: &'a [u8], index: u32) -> Result<FontRef
     }
 }
 
-fn english_unique_font_names<'a>(font_bytes: &[u8], index: u32) -> Vec<String> {
+fn english_unique_font_names(font_bytes: &[u8], index: u32) -> Vec<String> {
     if let Ok(font_ref) = make_font_ref_internal(font_bytes, index) {
         let mut return_vec = Vec::new();
         for id in [StringId::FULL_NAME, StringId::POSTSCRIPT_NAME] {
@@ -45,7 +45,7 @@ unsafe fn offset_first_table(font_bytes: &[u8]) -> u64 {
     }
 }
 
-fn indexable_num_fonts<'a>(font_bytes: &[u8]) -> u32 {
+fn indexable_num_fonts(font_bytes: &[u8]) -> u32 {
     let maybe_font_or_collection = FileRef::new(font_bytes);
     match maybe_font_or_collection {
         Ok(FileRef::Collection(collection)) => collection.len(),
@@ -63,8 +63,8 @@ pub mod ffi {
         /// ambiguous and means either a single font file
         /// or a collection, but since `english_unique_font_names` ignore the
         /// argument if the font is not a collection, this is ok.
-        unsafe fn indexable_num_fonts<'a>(font_bytes: &[u8]) -> u32;
-        unsafe fn english_unique_font_names<'a>(font_bytes: &[u8], index: u32) -> Vec<String>;
+        unsafe fn indexable_num_fonts(font_bytes: &[u8]) -> u32;
+        unsafe fn english_unique_font_names(font_bytes: &[u8], index: u32) -> Vec<String>;
         unsafe fn offset_first_table(font_bytes: &[u8]) -> u64;
     }
 }
