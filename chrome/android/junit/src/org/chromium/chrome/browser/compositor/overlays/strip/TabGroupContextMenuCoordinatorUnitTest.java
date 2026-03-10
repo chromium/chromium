@@ -54,6 +54,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -100,7 +101,10 @@ import java.util.function.BiConsumer;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.DATA_SHARING})
+@EnableFeatures({
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP
+})
 public class TabGroupContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final Token TAB_GROUP_ID = new Token(3L, 4L);
@@ -136,6 +140,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     private static final int INSTANCE_ID_2 = 6;
     private static final String WINDOW_TITLE_1 = "Window Title 1";
     private static final String WINDOW_TITLE_2 = "Window Title 2";
+    private static final String INCOGNITO_WINDOW_TITLE = "Incognito Window";
     private static final int TASK_ID = 7;
     private static final int NUM_TABS = 1;
     private static final int NUM_INCOGNITO_TABS = 0;
@@ -168,6 +173,20 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     LAST_ACCESSED_TIME,
                     /* closureTime= */ 0);
 
+    private static final InstanceInfo INSTANCE_INFO_INCOGNITO =
+            new InstanceInfo(
+                    INSTANCE_ID_2,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    INCOGNITO_WINDOW_TITLE,
+                    /* customTitle= */ null,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ true,
+                    LAST_ACCESSED_TIME,
+                    /* closureTime= */ 0);
+
     // Other dependencies
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
@@ -196,7 +215,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.addTab(0);
         mTabModel.setIndex(0, TabSelectionType.FROM_NEW);
+        // Non-incognito by default.
         when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabModel.setTabRemoverForTesting(mTabRemover);
         mTabModel.setTabCreatorForTesting(mTabCreator);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -263,6 +284,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Feature("Tab Strip Group Context Menu")
     @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_Incognito() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
         ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
@@ -271,17 +294,18 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // Assert: verify normal menu items.
-        verifyNormalListItems(modelList, 3);
+        verifyNormalListItems(modelList, 3, /* isIncognito= */ true, List.of());
     }
 
     @Test
     @Feature("Tab Strip Group Context Menu")
     @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testListMenuItems_Incognito_multipleWindows() {
+    public void testListMenuItems_Incognito_multipleWindows_IncognitoOnlyWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         MultiWindowUtils.setInstanceCountForTesting(2);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
 
         mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
         ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
@@ -290,7 +314,35 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // Assert: verify normal menu items.
-        verifyNormalListItems(modelList, 3, /* isIncognito= */ true);
+        // Only the incognito window should be available as a destination (the non-incognito windows
+        // should be filtered out).
+        verifyNormalListItems(
+                modelList, 3, /* isIncognito= */ true, List.of(INCOGNITO_WINDOW_TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_Incognito_multipleWindows_MixedIncognitoWindows() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // Assert: verify number of items in the model list.
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+
+        // Assert: verify normal menu items.
+        // All windows except the current window should be shown.
+        verifyNormalListItems(
+                modelList,
+                3,
+                /* isIncognito= */ true,
+                List.of(WINDOW_TITLE_2, INCOGNITO_WINDOW_TITLE));
     }
 
     @Test
@@ -611,13 +663,13 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
-                4,
+                5,
                 R.plurals.move_group_to_another_window_context_menu_item,
                 List.of(),
                 mActivity);
 
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(
-                modelList, 4, mOnItemClickedCallback, TAB_GROUP_ID, COLLABORATION_ID);
+                modelList, 5, mOnItemClickedCallback, TAB_GROUP_ID, COLLABORATION_ID);
 
         verify(mMultiInstanceManager, times(1))
                 .moveTabGroupToOtherWindow(
@@ -636,7 +688,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
 
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
-                modelList, 4, WINDOW_TITLE_2, mMenuView);
+                modelList, 5, WINDOW_TITLE_2, mMenuView);
 
         verify(mMultiInstanceManager)
                 .moveTabGroupToWindowByIdChecked(
@@ -663,12 +715,15 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifyNormalListItems(ModelList modelList, int closeGroupPosition) {
-        verifyNormalListItems(modelList, closeGroupPosition, false);
+        verifyNormalListItems(modelList, closeGroupPosition, false, List.of(WINDOW_TITLE_2));
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifyNormalListItems(
-            ModelList modelList, int closeGroupPosition, boolean isIncognito) {
+            ModelList modelList,
+            int closeGroupPosition,
+            boolean isIncognito,
+            List<String> expectedWindowTitles) {
         verifyDivider(modelList.get(0));
         assertEquals(
                 R.id.open_new_tab_in_group,
@@ -682,7 +737,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 modelList,
                 closeGroupPosition + 1,
                 R.plurals.move_group_to_another_window_context_menu_item,
-                List.of(WINDOW_TITLE_2),
+                expectedWindowTitles,
                 mActivity,
                 isIncognito);
     }
@@ -1017,7 +1072,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         var modelList = new ModelList();
         mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
 
-        ListItem moveToWindowItem = modelList.get(4);
+        ListItem moveToWindowItem = modelList.get(5);
         assertNotNull(moveToWindowItem);
 
         var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
@@ -1055,7 +1110,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         var modelList = new ModelList();
         mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
 
-        ListItem moveToWindowItem = modelList.get(4);
+        ListItem moveToWindowItem = modelList.get(5);
         assertNotNull(moveToWindowItem);
 
         var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
