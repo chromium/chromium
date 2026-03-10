@@ -35,7 +35,9 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/common/webui_url_constants.h"
+#else
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -256,7 +258,8 @@ bool IsNTPURL(const GURL& url) {
     return true;
   }
 #if BUILDFLAG(IS_ANDROID)
-  return false;
+  return (url.SchemeIs(chrome::kChromeNativeScheme) &&
+          url.host() == chrome::kChromeUINewTabHost);
 #else
   return NewTabPageUI::IsNewTabPageOrigin(url) ||
          NewTabPageThirdPartyUI::IsNewTabPageOrigin(url);

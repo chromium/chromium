@@ -264,6 +264,9 @@ class ActiveStateCalculator : public PanelStateObserver {
     host_->AddPanelStateObserver(this);
     PanelStateChanged(host_->GetPanelState(nullptr),
                       {.attached_browser = nullptr, .glic_widget = nullptr});
+    // Calculate state immediately to avoid having an outdated state before
+    // calc_timer_ triggers recalculation and any observers are attached.
+    RecalculateAndNotify();
   }
   ~ActiveStateCalculator() override { host_->RemovePanelStateObserver(this); }
 
