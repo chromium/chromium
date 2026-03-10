@@ -11812,6 +11812,24 @@
             ]
         }
     ],
+    "GlicTryItUnlaunch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Unlaunched_20260309",
+                    "disable_features": [
+                        "IPH_GlicTryIt"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicUseMainPartitionForUnifiedFre": [
         {
             "platforms": [
