@@ -129,7 +129,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
-                Features.ASYNC_WEBVIEW_STARTUP_V2 + Features.DEV_SUFFIX,
+                Features.ASYNC_WEBVIEW_STARTUP_V2,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 Features.ADD_QUIC_HINTS_V1,
                 Features.ON_NAVIGATION_COMPLETED_NON_COMMITTED,
