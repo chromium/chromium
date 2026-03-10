@@ -770,7 +770,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     [view addLayoutGuide:_moduleLayoutGuide];
     [NSLayoutConstraint activateConstraints:@[
       [_moduleLayoutGuide.centerXAnchor
-          constraintEqualToAnchor:view.centerXAnchor],
+          constraintEqualToAnchor:view.safeAreaLayoutGuide.centerXAnchor],
       [_moduleLayoutGuide.topAnchor constraintEqualToAnchor:view.topAnchor],
       [_moduleLayoutGuide.bottomAnchor
           constraintEqualToAnchor:view.bottomAnchor],
