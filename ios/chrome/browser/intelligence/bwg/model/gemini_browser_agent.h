@@ -349,6 +349,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // this timer will reset the fullscreen disabler after a short delay.
   base::OneShotTimer fullscreen_disabler_timer_;
 
+  // Whether the floaty is hidden by the keyboard.
+  bool is_hidden_by_keyboard_ = false;
+
   // Weak pointer factory.
   base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};
 };
