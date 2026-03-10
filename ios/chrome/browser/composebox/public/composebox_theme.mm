@@ -105,7 +105,7 @@
 }
 
 - (UIColor*)canvasButtonTextColor {
-  return [UIColor colorNamed:kTextPrimaryColor];
+  return [UIColor colorNamed:kBlue600Color];
 }
 
 - (UIColor*)canvasButtonBackgroundColor {
@@ -117,7 +117,7 @@
 }
 
 - (UIColor*)deepSearchButtonTextColor {
-  return [UIColor colorNamed:kTextPrimaryColor];
+  return [UIColor colorNamed:kBlue600Color];
 }
 
 - (UIColor*)deepSearchButtonBackgroundColor {
