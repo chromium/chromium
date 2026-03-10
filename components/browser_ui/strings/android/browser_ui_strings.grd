@@ -1261,6 +1261,9 @@
       <message name="IDS_EDUCATIONAL_TIP_SEE_MORE" desc="Text for a link to view all Educational tip items in two cell mode.">
         See more
       </message>
+      <message name="IDS_ACCESSIBILITY_EDUCATIONAL_TIP_SETUP_LIST_SEE_MORE" is_accessibility_with_no_ui="true" desc="Accessibility label of the see more button of the setup list module.">
+        See more setup list
+      </message>
       <message name="IDS_USE_CHROME_BY_DEFAULT" desc="Generic title prompting the user to set Chrome as their default browser.">
         Use Chrome by default
       </message>

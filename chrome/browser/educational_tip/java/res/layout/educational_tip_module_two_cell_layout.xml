@@ -48,6 +48,7 @@ found in the LICENSE file.
             android:id="@+id/see_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/accessibility_educational_tip_setup_list_see_more"
             android:text="@string/educational_tip_see_more"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"/>
 
