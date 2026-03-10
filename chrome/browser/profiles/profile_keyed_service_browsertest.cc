@@ -901,7 +901,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
     "WebAppProvider",
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     "WebAuthenticationProxyAPI",
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     "WebcamPrivateAPI",
 #endif  // BUILDFLAG(IS_CHROMEOS)

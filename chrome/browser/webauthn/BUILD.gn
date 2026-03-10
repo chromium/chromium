@@ -61,6 +61,10 @@ source_set("chrome_web_authentication_delegate") {
     "//device/fido",
   ]
 
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/extensions/api/web_authentication_proxy" ]
+  }
+
   if (!is_android) {
     sources += [
       "chrome_web_authentication_delegate.cc",
@@ -69,7 +73,6 @@ source_set("chrome_web_authentication_delegate") {
 
     deps += [
       ":unexportable_key_utils",
-      "//chrome/browser/extensions/api/web_authentication_proxy",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
       "//chrome/browser/ui/passwords",

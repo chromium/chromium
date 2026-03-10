@@ -21,8 +21,6 @@
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
-#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
-#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/webrtc_audio_private/webrtc_audio_private_api.h"
 #include "chrome/browser/extensions/commands/command_service.h"
@@ -58,6 +56,11 @@
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_api.h"
+#include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/wm/wm_desks_private_events.h"
@@ -102,9 +105,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabGroupsEventRouterFactory::GetInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
-  extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
-  extensions::WebAuthenticationProxyRegistrarFactory::GetInstance();
-  extensions::WebAuthenticationProxyServiceFactory::GetInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();
   extensions::WebrtcAudioPrivateEventService::GetFactoryInstance();
 
@@ -148,6 +148,13 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::WMDesksPrivateEventsAPI::GetFactoryInstance();
 #endif
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // These APIs are intentionally not supported on desktop Android.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  extensions::WebAuthenticationProxyAPI::GetFactoryInstance();
+  extensions::WebAuthenticationProxyRegistrarFactory::GetInstance();
+  extensions::WebAuthenticationProxyServiceFactory::GetInstance();
+#endif
 }
 
 }  // namespace chrome_extensions

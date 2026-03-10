@@ -56,7 +56,6 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/search",
     "//chrome/browser/extensions/api/tab_capture",
     "//chrome/browser/extensions/api/tab_groups",
-    "//chrome/browser/extensions/api/web_authentication_proxy",
     "//chrome/browser/extensions/api/web_navigation",
     "//chrome/browser/extensions/api/web_view",
     "//chrome/browser/extensions/api/webrtc_audio_private",
@@ -86,6 +85,11 @@ group("api_implementations") {
 
     if (enable_pdf) {
       public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      public_deps +=
+          [ "//chrome/browser/extensions/api/web_authentication_proxy" ]
     }
 
     if (is_chromeos) {

@@ -1819,8 +1819,6 @@ source_set("platform_browser_tests") {
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/services/tts",
       ]
-    } else {
-      sources += [ "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc" ]
     }
 
     # ChromeOS and Android don't use the download bubble UI.
@@ -5030,6 +5028,7 @@ if (!is_android) {
         sources += [
           "../browser/extensions/api/experimental_actor/experimental_actor_apitest.cc",
           "../browser/extensions/api/proxy_override_rules/proxy_override_rules_private_apitest.cc",
+          "../browser/extensions/api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
           "../browser/supervised_user/supervised_user_pending_state_navigation_browsertest.cc",
           "../browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         ]

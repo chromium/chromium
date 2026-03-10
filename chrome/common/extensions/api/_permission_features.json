@@ -1081,7 +1081,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3,
-    "platforms": ["desktop_android", "linux", "mac", "win"]
+    "platforms": ["linux", "mac", "win"]
   },
   "webNavigation": {
     "channel": "stable",

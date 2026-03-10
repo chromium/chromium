@@ -4,7 +4,10 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions_core)
+assert(enable_extensions)
+
+# This API is limited to Win/Mac/Linux.
+assert(is_win || is_mac || is_linux)
 
 source_set("web_authentication_proxy") {
   sources = [

@@ -21,7 +21,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/permissions_manager.h"
-#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -30,8 +29,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
-
 namespace extensions {
 namespace {
 
@@ -39,7 +36,6 @@ namespace {
 // localhost. Must be from `net::EmbeddedTestServer::CERT_TEST_NAMES`.
 constexpr char kTestDomain[] = "a.test";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 //  base64url('test') = 'dGVzdA'. This matches the credential ID of
 //  `MAKE_CREDENTIAL_RESPONSE_JSON` in the JS tests.
 constexpr char kTestCredentialId[] = "dGVzdA";
@@ -55,7 +51,6 @@ auto IsJsErrorWithMessage(std::string_view name, std::string_view message) {
   return content::EvalJsResult::ErrorIs(
       base::StrCat({kJsErrorPrefix, name, ": ", message, "\"\n"}));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class WebAuthenticationProxyApiTest : public ExtensionApiTest {
  protected:
@@ -251,9 +246,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, AttachSecondExtension) {
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/430376955): enable more web authentication proxy api tests on
-// desktop Android.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAA) {
   SetJsTestName("isUvpaa");
   // Load the extension and wait for its proxy event handler to be installed.
@@ -287,7 +279,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAAResolvesOnDetach) {
   ready_listener.Reply("");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
                        CallIsUVPAAWhileNotAttached) {
@@ -308,9 +299,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/430376955): enable more web authentication proxy api tests on
-// desktop Android.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredential) {
   SetJsTestName("makeCredential");
   ResultCatcher result_catcher;
@@ -484,7 +472,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, GetAssertionCancel) {
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
                        RemoteSessionStateChange) {
@@ -510,12 +497,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // An extension with manifest value `"incognito": "spanning"` (the default) that
 // attached in a main profile should also be attached in associated incognito
 // profiles.
-// TODO(crbug.com/430376955): enable more web authentication proxy api tests on
-// desktop Android.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IncognitoSpanning) {
   SetJsTestName("incognitoSpanning");
 
@@ -551,7 +535,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IncognitoSpanning) {
   EXPECT_FALSE(ProxyIsActiveForContext(profile()));
   EXPECT_FALSE(ProxyIsActiveForContext(incognito_context));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // An extension with manifest value `"incognito": "spanning"` (the default) but
 // that isn't permitted to run in incognito should not be considered attached in
@@ -578,9 +561,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IncognitoNotAllowed) {
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/430376955): enable more web authentication proxy api tests on
-// desktop Android.
 // A split mode extension can be active in regular and incognito profiles.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
                        SplitIncognitoAndRegular) {
@@ -684,7 +664,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitIncognitoOnly) {
   EXPECT_FALSE(ProxyIsActiveForContext(profile()));
   EXPECT_FALSE(ProxyIsActiveForContext(incognito_context));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // A split mode extension should reattach after the incognito window is
 // destroyed and recreated.
@@ -732,7 +711,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, SplitModeDestruction) {
   EXPECT_EQ(ProxyForContext(incognito_context), extension);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // The webAuthenticationproxy API does not consider user host permissions.
 IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, UserHostPermissions) {
   SetJsTestName("policyBlockedHosts");
@@ -814,7 +792,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTestWithPolicyOverride,
     EXPECT_EQ(NavigateAndCallIsUVPAA(), test.expect_proxy_active);
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 }  // namespace extensions

@@ -40,7 +40,6 @@ schema_sources_ = [
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
-  "web_authentication_proxy.webidl",
   "web_navigation.json",
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and
@@ -98,6 +97,10 @@ if (enable_extensions) {
     # as such do not belong in a conditional.
     "webrtc_desktop_capture_private.idl",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    schema_sources_ += [ "web_authentication_proxy.webidl" ]
+  }
 
   if (is_chromeos) {
     schema_sources_ += [
