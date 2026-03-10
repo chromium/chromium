@@ -28,11 +28,8 @@
 #include <algorithm>
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/pod_arena_test_helpers.h"
 
 namespace blink {
-
-using arena_test_helpers::TrackedAllocator;
 
 namespace {
 
@@ -52,29 +49,6 @@ struct TestClassABCD {
 }  // anonymous namespace
 
 class PodArenaTest : public testing::Test {};
-
-// Make sure the arena can successfully allocate from more than one
-// region.
-TEST_F(PodArenaTest, CanAllocateFromMoreThanOneRegion) {
-  scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
-  scoped_refptr<PodArena> arena = PodArena::Create(allocator);
-  int num_iterations = 10 * PodArena::kDefaultChunkSize / sizeof(TestClassXYZW);
-  for (int i = 0; i < num_iterations; ++i)
-    arena->AllocateObject<TestClassXYZW>();
-  EXPECT_GT(allocator->NumRegions(), 1);
-}
-
-// Make sure the arena frees all allocated regions during destruction.
-TEST_F(PodArenaTest, FreesAllAllocatedRegions) {
-  scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
-  {
-    scoped_refptr<PodArena> arena = PodArena::Create(allocator);
-    for (int i = 0; i < 3; i++)
-      arena->AllocateObject<TestClassXYZW>();
-    EXPECT_GT(allocator->NumRegions(), 0);
-  }
-  EXPECT_TRUE(allocator->IsEmpty());
-}
 
 // Make sure the arena runs constructors of the objects allocated within.
 TEST_F(PodArenaTest, RunsConstructors) {

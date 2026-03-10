@@ -41,12 +41,6 @@ class PodFreeListArena : public RefCounted<PodFreeListArena<T>> {
     return base::AdoptRef(new PodFreeListArena);
   }
 
-  // Creates a new PodFreeListArena configured with the given Allocator.
-  static scoped_refptr<PodFreeListArena> Create(
-      scoped_refptr<PodArena::Allocator> allocator) {
-    return base::AdoptRef(new PodFreeListArena(std::move(allocator)));
-  }
-
   // Allocates an object from the arena.
   T* AllocateObject() {
     void* ptr = AllocateFromFreeList();
@@ -84,10 +78,6 @@ class PodFreeListArena : public RefCounted<PodFreeListArena<T>> {
 
  private:
   PodFreeListArena() : arena_(PodArena::Create()), free_list_(nullptr) {}
-
-  explicit PodFreeListArena(scoped_refptr<PodArena::Allocator> allocator)
-      : arena_(PodArena::Create(std::move(allocator))), free_list_(nullptr) {}
-
   ~PodFreeListArena() = default;
 
   void* AllocateFromFreeList() {

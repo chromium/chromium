@@ -48,44 +48,9 @@ class PodArena final : public RefCounted<PodArena> {
   USING_FAST_MALLOC(PodArena);
 
  public:
-  // The arena is configured with an allocator, which is responsible
-  // for allocating and freeing chunks of memory at a time.
-  class Allocator : public RefCounted<Allocator> {
-   public:
-    virtual void* Allocate(size_t size) = 0;
-    virtual void Free(void* ptr) = 0;
-
-   protected:
-    virtual ~Allocator() = default;
-    friend class RefCounted<Allocator>;
-  };
-
-  // The Arena's default allocator, which uses fastMalloc and
-  // fastFree to allocate chunks of storage.
-  class FastMallocAllocator : public Allocator {
-   public:
-    static scoped_refptr<FastMallocAllocator> Create() {
-      return base::AdoptRef(new FastMallocAllocator);
-    }
-
-    void* Allocate(size_t size) override {
-      return Partitions::FastMalloc(size,
-                                    WTF_HEAP_PROFILER_TYPE_NAME(PodArena));
-    }
-    void Free(void* ptr) override { Partitions::FastFree(ptr); }
-
-   protected:
-    FastMallocAllocator() = default;
-  };
-
-  // Creates a new PodArena configured with a FastMallocAllocator.
+  // Creates a new PodArena.
   static scoped_refptr<PodArena> Create() {
     return base::AdoptRef(new PodArena);
-  }
-
-  // Creates a new PodArena configured with the given Allocator.
-  static scoped_refptr<PodArena> Create(scoped_refptr<Allocator> allocator) {
-    return base::AdoptRef(new PodArena(std::move(allocator)));
   }
 
   // Allocates an object from the arena.
@@ -107,15 +72,7 @@ class PodArena final : public RefCounted<PodArena> {
  protected:
   friend class RefCounted<PodArena>;
 
-  PodArena()
-      : allocator_(FastMallocAllocator::Create()),
-        current_(nullptr),
-        current_chunk_size_(kDefaultChunkSize) {}
-
-  explicit PodArena(scoped_refptr<Allocator> allocator)
-      : allocator_(std::move(allocator)),
-        current_(nullptr),
-        current_chunk_size_(kDefaultChunkSize) {}
+  PodArena() : current_(nullptr), current_chunk_size_(kDefaultChunkSize) {}
 
   template <class T>
   void* AllocateBase() {
@@ -130,8 +87,7 @@ class PodArena final : public RefCounted<PodArena> {
     if (!ptr) {
       if (rounded_size > current_chunk_size_)
         current_chunk_size_ = rounded_size;
-      chunks_.push_back(
-          std::make_unique<Chunk>(allocator_.get(), current_chunk_size_));
+      chunks_.push_back(std::make_unique<Chunk>(current_chunk_size_));
       current_ = chunks_.back().get();
       ptr = current_->Allocate(rounded_size);
     }
@@ -143,21 +99,19 @@ class PodArena final : public RefCounted<PodArena> {
     USING_FAST_MALLOC(Chunk);
 
    public:
-    // Allocates a block of memory of the given size from the passed
-    // Allocator.
-    Chunk(Allocator* allocator, size_t size)
-        : allocator_(allocator), current_offset_(0) {
-      uint8_t* allocated = static_cast<uint8_t*>(allocator_->Allocate(size));
-      // SAFETY: Allocate() ensures `allocated` has `size` bytes.
+    // Allocates a block of memory of the given size.
+    explicit Chunk(size_t size) : current_offset_(0) {
+      uint8_t* allocated = static_cast<uint8_t*>(
+          Partitions::FastMalloc(size, WTF_HEAP_PROFILER_TYPE_NAME(PodArena)));
+      // SAFETY: FastMalloc() ensures `allocated` has `size` bytes.
       base_ = UNSAFE_BUFFERS(base::span<uint8_t>(allocated, allocated + size));
     }
 
     Chunk(const Chunk&) = delete;
     Chunk& operator=(const Chunk&) = delete;
 
-    // Frees the memory allocated from the Allocator in the
-    // constructor.
-    ~Chunk() { allocator_->Free(base_.data()); }
+    // Frees the memory allocated in the constructor.
+    ~Chunk() { Partitions::FastFree(base_.data()); }
 
     // Returns a pointer to "size" bytes of storage, or 0 if this
     // Chunk could not satisfy the allocation.
@@ -176,12 +130,10 @@ class PodArena final : public RefCounted<PodArena> {
     }
 
    protected:
-    Allocator* allocator_;
     base::span<uint8_t> base_;
     size_t current_offset_;
   };
 
-  scoped_refptr<Allocator> allocator_;
   Chunk* current_;
   size_t current_chunk_size_;
   Vector<std::unique_ptr<Chunk>> chunks_;

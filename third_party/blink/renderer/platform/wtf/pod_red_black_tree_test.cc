@@ -28,29 +28,13 @@
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/pod_arena_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/pod_tree_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-using arena_test_helpers::TrackedAllocator;
 using tree_test_helpers::InitRandom;
 using tree_test_helpers::NextRandom;
-
-TEST(PodRedBlackTreeTest, TestTreeAllocatesFromArena) {
-  scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
-  {
-    using PodIntegerArena = PodFreeListArena<PodRedBlackTree<int>::Node>;
-    scoped_refptr<PodIntegerArena> arena = PodIntegerArena::Create(allocator);
-    PodRedBlackTree<int> tree(arena);
-    int num_additions = 2 * PodArena::kDefaultChunkSize / sizeof(int);
-    for (int i = 0; i < num_additions; ++i)
-      tree.Add(i);
-    EXPECT_GT(allocator->NumRegions(), 1);
-  }
-  EXPECT_EQ(allocator->NumRegions(), 0);
-}
 
 TEST(PodRedBlackTreeTest, TestSingleElementInsertion) {
   PodRedBlackTree<int> tree;

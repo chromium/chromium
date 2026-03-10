@@ -47,9 +47,6 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
 
   PodIntervalTree() : PodRedBlackTree<IntervalType>() {}
 
-  explicit PodIntervalTree(scoped_refptr<PodArena> arena)
-      : PodRedBlackTree<IntervalType>(arena) {}
-
   PodIntervalTree(const PodIntervalTree&) = delete;
   PodIntervalTree& operator=(const PodIntervalTree&) = delete;
 

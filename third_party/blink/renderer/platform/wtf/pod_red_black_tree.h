@@ -102,19 +102,6 @@ class PodRedBlackTree {
 #endif
   {
   }
-
-  // Constructs a new red-black tree, allocating temporary objects
-  // from the given PodArena.
-  explicit PodRedBlackTree(scoped_refptr<PodFreeListArena<Node>> arena)
-      : arena_(std::move(arena)),
-        root_(nullptr)
-#ifndef NDEBUG
-        ,
-        verbose_debugging_(false)
-#endif
-  {
-  }
-
   virtual ~PodRedBlackTree() = default;
 
   void Add(const T& data) {

@@ -28,12 +28,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/pod_arena_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-using arena_test_helpers::TrackedAllocator;
 
 namespace {
 
@@ -61,31 +58,6 @@ class PodFreeListArenaTest : public testing::Test {
     return arena->GetFreeListSizeForTesting();
   }
 };
-
-// Make sure the arena can successfully allocate from more than one
-// region.
-TEST_F(PodFreeListArenaTest, CanAllocateFromMoreThanOneRegion) {
-  scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
-  scoped_refptr<PodFreeListArena<TestClass1>> arena =
-      PodFreeListArena<TestClass1>::Create(allocator);
-  int num_iterations = 10 * PodArena::kDefaultChunkSize / sizeof(TestClass1);
-  for (int i = 0; i < num_iterations; ++i)
-    arena->AllocateObject();
-  EXPECT_GT(allocator->NumRegions(), 1);
-}
-
-// Make sure the arena frees all allocated regions during destruction.
-TEST_F(PodFreeListArenaTest, FreesAllAllocatedRegions) {
-  scoped_refptr<TrackedAllocator> allocator = TrackedAllocator::Create();
-  {
-    scoped_refptr<PodFreeListArena<TestClass1>> arena =
-        PodFreeListArena<TestClass1>::Create(allocator);
-    for (int i = 0; i < 3; i++)
-      arena->AllocateObject();
-    EXPECT_GT(allocator->NumRegions(), 0);
-  }
-  EXPECT_TRUE(allocator->IsEmpty());
-}
 
 // Make sure the arena runs constructors of the objects allocated within.
 TEST_F(PodFreeListArenaTest, RunsConstructorsOnNewObjects) {

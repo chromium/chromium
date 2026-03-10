@@ -342,7 +342,6 @@ source_set("wtf_unittests_sources") {
     "linked_hash_set_test.cc",
     "math_extras_test.cc",
     "pod_arena_test.cc",
-    "pod_arena_test_helpers.h",
     "pod_free_list_arena_test.cc",
     "pod_interval_tree_test.cc",
     "pod_red_black_tree_test.cc",
