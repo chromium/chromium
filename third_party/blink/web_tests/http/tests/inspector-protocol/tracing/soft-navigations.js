@@ -92,6 +92,7 @@
   // presentation time value to mark the timestamp, explicitly.
   const supportedTraceEventNames = [
     'SoftNavigationStart',
+    'SoftNavigationEmitted',
     'largestContentfulPaint::Candidate',
     'largestContentfulPaint::CandidateForSoftNavigation',
   ];
@@ -146,25 +147,27 @@
 
   const timestamps = new TimestampMapper();
   const ids = new IdMapper();
-  const softNavs = [];
+  const softNavStarts = [];
+  const softNavEmitted = [];
   const lcpCandidates = [];
   const lcpCandidatesForSoftNav = []
   for (const event of filteredEvents) {
     if (event.name === 'SoftNavigationStart') {
-      testRunner.log('-> SoftNavigation event');
-      testRunner.log(
-        '   timeOrigin: ' +
-        timestamps.map(event.args.context.timeOrigin));
+      testRunner.log('-> SoftNavigationStart event');
       testRunner.log('   ts: ' + timestamps.map(event.ts));
-      testRunner.log(
-          '   firstContentfulPaint: ' +
-          timestamps.map(event.args.context.firstContentfulPaint));
       testRunner.log('   frame: ' + ids.map(event.args.frame));
       testRunner.log(
           '   performanceTimelineNavigationId: ' +
           ids.map(event.args.context.performanceTimelineNavigationId));
       testRunner.log('   URL: ' + event.args.context.URL)
-      softNavs.push(event);
+      softNavStarts.push(event);
+    } else if (event.name === 'SoftNavigationEmitted') {
+      testRunner.log('-> SoftNavigationEmitted event');
+      testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log(
+          '   performanceTimelineNavigationId: ' +
+          ids.map(event.args.context.performanceTimelineNavigationId));
+      softNavEmitted.push(event);
     } else if (event.name === 'largestContentfulPaint::CandidateForSoftNavigation') {
       testRunner.log('-> LCP candidate for soft navigation event');
       testRunner.log('   ts: ' + timestamps.map(event.ts));
@@ -184,8 +187,11 @@
     }
   }
 
-  testRunner.log('\nSoftNavigation event shape:');
-  tracingHelper.logEventShape(softNavs[0]);
+  testRunner.log('\nSoftNavigationStart event shape:');
+  tracingHelper.logEventShape(softNavStarts[0]);
+
+  testRunner.log('\nSoftNavigationEmitted event shape:');
+  tracingHelper.logEventShape(softNavEmitted[0]);
 
   testRunner.log('\nLCP candidate event shape:');
   tracingHelper.logEventShape(lcpCandidates[0]);

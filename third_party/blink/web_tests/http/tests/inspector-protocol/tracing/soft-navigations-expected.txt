@@ -14,19 +14,20 @@ Tracing complete
    ts: 1
    frame: id_0
    performanceTimelineNavigationId: id_1
--> SoftNavigation event
-   timeOrigin: 2
+-> SoftNavigationStart event
    ts: 2
-   firstContentfulPaint: 3
    frame: id_0
    performanceTimelineNavigationId: id_2
    URL: http://127.0.0.1:8000/greeting
--> LCP candidate for soft navigation event
+-> SoftNavigationEmitted event
    ts: 3
+   performanceTimelineNavigationId: id_2
+-> LCP candidate for soft navigation event
+   ts: 4
    frame: id_0
    performanceTimelineNavigationId: id_2
 
-SoftNavigation event shape:
+SoftNavigationStart event shape:
 Object: {
 	args: {
 		context: {
@@ -41,6 +42,32 @@ Object: {
 			urlChangeTime: number
 		}
 		frame: string
+	}
+	cat: string
+	id2: {
+		local: string
+	}
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
+
+SoftNavigationEmitted event shape:
+Object: {
+	args: {
+		context: {
+			URL: string
+			domModifications: number
+			firstContentfulPaint: number
+			paintedArea: number
+			performanceTimelineNavigationId: number
+			processingEnd: number
+			softNavContextId: number
+			timeOrigin: number
+			urlChangeTime: number
+		}
 	}
 	cat: string
 	id2: {
