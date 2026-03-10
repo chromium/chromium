@@ -68,7 +68,7 @@ class GamepadHapticActuator {
   static constexpr double kMaxEffectDurationMillis = 5000.0;
 
   bool not_null = false;
-  GamepadHapticActuatorType type;
+  GamepadHapticActuatorType type = GamepadHapticActuatorType::kVibration;
 };
 
 class GamepadEffectParameters {
@@ -179,7 +179,7 @@ class GamepadImpl {
 
   GamepadPose pose;
 
-  GamepadHand hand;
+  GamepadHand hand = GamepadHand::kNone;
 
   unsigned display_id = 0;
 
