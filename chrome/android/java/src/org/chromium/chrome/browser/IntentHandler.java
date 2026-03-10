@@ -124,6 +124,10 @@ public class IntentHandler {
     public static final String EXTRA_PAGE_TRANSITION_BOOKMARK_ID =
             "com.google.chrome.transition_bookmark_id";
 
+    /** An extra to specify a text fragment selector to scroll to without highlight. */
+    public static final String EXTRA_SCROLL_TO_TEXT_FRAGMENT =
+            "com.google.chrome.scroll_to_text_fragment";
+
     /** The original intent of the given intent before it was modified. */
     public static final String EXTRA_ORIGINAL_INTENT = "com.android.chrome.original_intent";
 
@@ -1741,6 +1745,17 @@ public class IntentHandler {
         // system.
         int transitionType = PageTransition.LINK | PageTransition.FROM_API;
         loadUrlParams.setTransitionType(getTransitionTypeFromIntent(intent, transitionType));
+
+        if (IntentUtils.isTrustedIntentFromSelf(intent)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
+            @Nullable String scrollToTextFragment =
+                    IntentUtils.safeGetStringExtra(intent, EXTRA_SCROLL_TO_TEXT_FRAGMENT);
+            if (!TextUtils.isEmpty(scrollToTextFragment)) {
+                loadUrlParams.setInternalScrollToTextFragment(scrollToTextFragment);
+            }
+        }
+
         String referrer = getReferrerUrlIncludingExtraHeaders(intent);
         if (referrer != null) {
             loadUrlParams.setReferrer(

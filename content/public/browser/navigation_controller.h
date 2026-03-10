@@ -348,7 +348,33 @@ class NavigationController {
     // A text fragment selector (that uses the syntax defined in
     // https://wicg.github.io/scroll-to-text-fragment/#syntax) to scroll the
     // matched text into the viewport without applying the standard highlight
-    // styling. This is used for cross-device scroll restoration.
+    // styling.
+    //
+    // This is intended for features that synchronize scroll state across
+    // devices or browser sessions (e.g., Chrome's Send Tab To Self). It is used
+    // instead of the standard blink::PageState restoration mechanism because
+    // PageState relies on layout-dependent pixel offsets. Pixel offsets do not
+    // translate well across vastly different form factors and viewport sizes
+    // (e.g., moving from mobile to desktop). A text fragment anchors to the
+    // content itself, making it robust against these layout differences.
+    //
+    // It is passed internally rather than appending `#:~:text=` to the URL
+    // because modifying the visible URL with arbitrary fragment strings can
+    // confuse users. Furthermore, standard URL text fragments apply a default
+    // visual highlight to the text, which is jarring when the user simply
+    // expects their previous scroll position to be restored.
+    //
+    // Usage of this parameter should be restricted to browser-initiated
+    // navigations. It must not be initiated from untrusted web content or
+    // arbitrary third-party apps, as allowing invisible, programmatic
+    // scrolling to arbitrary text on a page could introduce security risks
+    // (e.g., clickjacking).
+    //
+    // SECURITY NOTE: Because this payload may originate from a potentially
+    // compromised remote client, the privileged browser process must treat it
+    // as an opaque string. It should never be parsed or evaluated in the
+    // browser process, and must only be parsed by the sandboxed renderer.
+    //
     // The string should contain only the selector value (the part after
     // "text=" in a URL directive), not the "text=" prefix itself.
     std::optional<std::string> internal_scroll_to_text_fragment;

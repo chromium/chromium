@@ -240,7 +240,8 @@ import java.util.Map;
                                             ? 0
                                             : params.getNavigationUIDataSupplier().get(),
                                     params.getIsPdf(),
-                                    params.getRemoveExtraHeadersOnCrossOriginRedirect());
+                                    params.getRemoveExtraHeadersOnCrossOriginRedirect(),
+                                    params.getInternalScrollToTextFragment());
             // Use the navigation handle object to store user data passed in.
             if (navigationHandle != null) {
                 navigationHandle.setUserDataHost(params.takeNavigationHandleUserData());
@@ -487,7 +488,8 @@ import java.util.Map;
                 long inputStart,
                 long navigationUIDataPtr,
                 boolean isPdf,
-                boolean removeExtraHeadersOnCrossOriginRedirect);
+                boolean removeExtraHeadersOnCrossOriginRedirect,
+                @Nullable String internalScrollToTextFragment);
 
         void clearHistory(long nativeNavigationControllerAndroid);
 

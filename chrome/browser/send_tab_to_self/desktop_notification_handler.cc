@@ -120,7 +120,7 @@ void DesktopNotificationHandler::OnClick(
       shared_highlighting::TextFragment tf =
           entry->GetPageContext()
               .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
-      params.scroll_to_text_fragment =
+      params.internal_scroll_to_text_fragment =
           tf.ToEscapedString(shared_highlighting::TextFragment::
                                  EscapedStringFormat::kWithoutTextDirective);
     }

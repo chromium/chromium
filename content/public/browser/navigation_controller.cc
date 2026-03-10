@@ -42,7 +42,8 @@ NavigationController::LoadURLParams::LoadURLParams(const OpenURLParams& input)
       reload_type(input.reload_type),
       impression(input.impression),
       is_pdf(input.is_pdf),
-      has_rel_opener(input.has_rel_opener) {
+      has_rel_opener(input.has_rel_opener),
+      internal_scroll_to_text_fragment(input.internal_scroll_to_text_fragment) {
 #if DCHECK_IS_ON()
   DCHECK(input.Valid());
 #endif

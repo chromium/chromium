@@ -78,6 +78,8 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->blob_url_loader_factory = params.blob_url_loader_factory;
   this->href_translate = params.href_translate;
   this->impression = params.impression;
+  this->internal_scroll_to_text_fragment =
+      params.internal_scroll_to_text_fragment;
 
   // Implementation notes:
   //   The following NavigateParams don't have an equivalent in OpenURLParams:

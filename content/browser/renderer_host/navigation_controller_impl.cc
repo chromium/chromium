@@ -4515,6 +4515,12 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*internal_scroll_to_text_fragment=*/
           params.internal_scroll_to_text_fragment);
 
+  // internal_scroll_to_text_fragment should only be set for browser-initiated
+  // navigations.
+  if (params.internal_scroll_to_text_fragment) {
+    CHECK(!params.is_renderer_initiated);
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();

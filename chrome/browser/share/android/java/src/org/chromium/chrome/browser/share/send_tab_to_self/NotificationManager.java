@@ -24,8 +24,10 @@ import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -52,11 +54,16 @@ public class NotificationManager {
     private static final String NOTIFICATION_ACTION_TIMEOUT = "send_tab_to_self.timeout";
 
     /**
-     * Open the URL specified within Chrome.
+     * Opens the URL for the Send Tab To Self notification.
      *
      * @param uri The URI to open.
+     * @param scrollToTextFragment The text fragment to scroll to, or null. This is a text fragment
+     *     selector (using the syntax defined in
+     *     https://wicg.github.io/scroll-to-text-fragment/#syntax) that should be scrolled into view
+     *     without applying standard highlight styling. This is used for cross-device scroll
+     *     restoration and is expected to be set only for trusted navigations.
      */
-    private static void openUrl(@Nullable Uri uri) {
+    private static void openUrl(@Nullable Uri uri, @Nullable String scrollToTextFragment) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent =
                 new Intent()
@@ -66,6 +73,13 @@ public class NotificationManager {
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName())
                         .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+
+        if (scrollToTextFragment != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
+            intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
+        }
+
         IntentUtils.addTrustedIntentExtras(intent);
         context.startActivity(intent);
     }
@@ -80,7 +94,10 @@ public class NotificationManager {
         final Profile profile = ProfileManager.getLastUsedRegularProfile();
         switch (action) {
             case NOTIFICATION_ACTION_TAP:
-                openUrl(intent.getData());
+                String scrollToTextFragment =
+                        IntentUtils.safeGetStringExtra(
+                                intent, IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT);
+                openUrl(intent.getData(), scrollToTextFragment);
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.deleteEntry(profile, guid);
                 MetricsRecorder.recordNotificationOpened();
@@ -123,7 +140,7 @@ public class NotificationManager {
      * @param url URL to open when the user taps on the notification.
      * @param title Title to display within the notification.
      * @param timeoutAtMillis Specifies how long until the notification should be automatically
-     *            hidden.
+     *     hidden.
      * @return whether the notification was successfully displayed
      */
     @CalledByNative
@@ -133,7 +150,8 @@ public class NotificationManager {
             String title,
             String deviceName,
             long timeoutAtMillis,
-            Class<? extends BroadcastReceiver> broadcastReceiver) {
+            Class<? extends BroadcastReceiver> broadcastReceiver,
+            @Nullable String scrollToTextFragment) {
         // A notification associated with this Share entry already exists. Don't display a new one.
         if (NotificationSharedPrefManager.findActiveNotification(guid) != null) {
             return false;
@@ -145,15 +163,20 @@ public class NotificationManager {
 
         int nextId = NotificationSharedPrefManager.getNextNotificationId();
         Uri uri = Uri.parse(url);
+
+        Intent tapIntent =
+                new Intent(context, broadcastReceiver)
+                        .setData(uri)
+                        .setAction(NOTIFICATION_ACTION_TAP)
+                        .putExtra(NOTIFICATION_GUID_EXTRA, guid);
+        if (scrollToTextFragment != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)) {
+            tapIntent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, scrollToTextFragment);
+        }
+
         PendingIntentProvider contentIntent =
-                PendingIntentProvider.getBroadcast(
-                        context,
-                        nextId,
-                        new Intent(context, broadcastReceiver)
-                                .setData(uri)
-                                .setAction(NOTIFICATION_ACTION_TAP)
-                                .putExtra(NOTIFICATION_GUID_EXTRA, guid),
-                        0);
+                PendingIntentProvider.getBroadcast(context, nextId, tapIntent, 0);
         PendingIntentProvider deleteIntent =
                 PendingIntentProvider.getBroadcast(
                         context,

@@ -50,6 +50,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
@@ -74,6 +75,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
 public class IntentHandlerRobolectricTest {
     private static final String[] ACCEPTED_NON_HTTP_AND_HTTPS_URLS = {
         "chrome://newtab",
@@ -243,6 +245,7 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNewIntentInitiator() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -766,5 +769,43 @@ public class IntentHandlerRobolectricTest {
         assertEquals(
                 ExternalAppId.SAMSUNG_LAUNCHER,
                 IntentHandler.determineExternalIntentSource(intent, activity));
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollToTextFragment_Trusted() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, "selector");
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        assertEquals("selector", params.getInternalScrollToTextFragment());
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollToTextFragment_Untrusted() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, "selector");
+
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertNull(params.getInternalScrollToTextFragment());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
+    public void testScrollToTextFragment_FeatureDisabled() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(GOOGLE_URL));
+        intent.putExtra(IntentHandler.EXTRA_SCROLL_TO_TEXT_FRAGMENT, "selector");
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
+        Assert.assertNull(params.getInternalScrollToTextFragment());
     }
 }

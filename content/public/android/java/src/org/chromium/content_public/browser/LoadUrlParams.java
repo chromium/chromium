@@ -57,6 +57,7 @@ public class LoadUrlParams {
     private @Nullable Supplier<Long> mNavigationUIDataSupplier;
     private boolean mIsPdf;
     private boolean mRemoveExtraHeadersOnCrossOriginRedirect;
+    private @Nullable String mInternalScrollToTextFragment;
 
     /**
      * Creates an instance with default page transition type.
@@ -135,6 +136,7 @@ public class LoadUrlParams {
         copy.mAdditionalNavigationParams = other.mAdditionalNavigationParams;
         copy.mRemoveExtraHeadersOnCrossOriginRedirect =
                 other.mRemoveExtraHeadersOnCrossOriginRedirect;
+        copy.mInternalScrollToTextFragment = other.mInternalScrollToTextFragment;
         return copy;
     }
 
@@ -659,6 +661,28 @@ public class LoadUrlParams {
      */
     public boolean getRemoveExtraHeadersOnCrossOriginRedirect() {
         return mRemoveExtraHeadersOnCrossOriginRedirect;
+    }
+
+    /**
+     * @return The internal scroll-to-text fragment. This is a text fragment selector (using the
+     *     syntax defined in https://wicg.github.io/scroll-to-text-fragment/#syntax) that should be
+     *     scrolled into view without applying standard highlight styling. This is used for
+     *     cross-device scroll restoration and is expected to be set only for trusted navigations.
+     */
+    public @Nullable String getInternalScrollToTextFragment() {
+        return mInternalScrollToTextFragment;
+    }
+
+    /**
+     * Sets the internal scroll-to-text fragment.
+     *
+     * @param internalScrollToTextFragment The text fragment selector to scroll to without
+     *     highlighting (syntax defined in https://wicg.github.io/scroll-to-text-fragment/#syntax).
+     *     This is used for cross-device scroll restoration and is expected to be set only for
+     *     trusted navigations.
+     */
+    public void setInternalScrollToTextFragment(@Nullable String internalScrollToTextFragment) {
+        mInternalScrollToTextFragment = internalScrollToTextFragment;
     }
 
     @NativeMethods

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +42,21 @@ using base::android::ScopedJavaLocalRef;
 namespace send_tab_to_self {
 
 namespace {
+
+std::optional<std::string> GetScrollToTextFragmentFromEntry(
+    const SendTabToSelfEntry& entry) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) ||
+      entry.GetPageContext().scroll_position.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  shared_highlighting::TextFragment tf =
+      entry.GetPageContext()
+          .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
+
+  return tf.ToEscapedString(shared_highlighting::TextFragment::
+                                EscapedStringFormat::kWithoutTextDirective);
+}
 
 void LogDismissReason(messages::DismissReason dismiss_reason) {
   switch (dismiss_reason) {
@@ -95,19 +112,25 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
     JNIEnv* env = AttachCurrentThread();
 
     // Set the expiration to 10 days from when the notification is displayed.
-    base::Time expiraton_time = entry.GetSharedTime() + base::Days(10);
+    base::Time expiration_time = entry.GetSharedTime() + base::Days(10);
 
     ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
         Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
             env);
+
+    std::optional<std::string> internal_scroll_to_text_fragment =
+        GetScrollToTextFragmentFromEntry(entry);
 
     Java_NotificationManager_showNotification(
         env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
         ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
         ConvertUTF8ToJavaString(env, entry.GetTitle()),
         ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
-        expiraton_time.InMillisecondsSinceUnixEpoch(),
-        send_tab_to_self_notification_receiver_class);
+        expiration_time.InMillisecondsSinceUnixEpoch(),
+        send_tab_to_self_notification_receiver_class,
+        internal_scroll_to_text_fragment
+            ? ConvertUTF8ToJavaString(env, *internal_scroll_to_text_fragment)
+            : nullptr);
   }
 }
 
@@ -130,13 +153,20 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
+
+  const SendTabToSelfEntry* entry =
+      send_tab_to_self_model_->GetEntryByGUID(guid);
+
+  if (entry) {
+    params.internal_scroll_to_text_fragment =
+        GetScrollToTextFragmentFromEntry(*entry);
+  }
+
   content::WebContents* new_contents =
       web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 
   if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields) &&
       new_contents) {
-    const SendTabToSelfEntry* entry =
-        send_tab_to_self_model_->GetEntryByGUID(guid);
     if (entry) {
       FillWebContents(new_contents, url::Origin::Create(entry->GetURL()),
                       entry->GetPageContext());

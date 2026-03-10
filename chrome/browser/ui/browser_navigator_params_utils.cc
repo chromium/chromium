@@ -40,7 +40,7 @@ content::NavigationController::LoadURLParams LoadURLParamsFromNavigateParams(
   load_url_params.reload_type = params->reload_type;
   load_url_params.impression = params->impression;
   load_url_params.internal_scroll_to_text_fragment =
-      params->scroll_to_text_fragment;
+      params->internal_scroll_to_text_fragment;
 
   if (params->post_data) {
     load_url_params.load_type =

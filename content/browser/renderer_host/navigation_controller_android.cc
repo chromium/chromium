@@ -236,7 +236,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     int64_t input_start,
     int64_t navigation_ui_data_ptr,
     bool is_pdf,
-    bool remove_extra_headers_on_cross_origin_redirect) {
+    bool remove_extra_headers_on_cross_origin_redirect,
+    const JavaRef<jstring>& internal_scroll_to_text_fragment) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -326,6 +327,11 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     params.input_start = base::TimeTicks::FromUptimeMillis(input_start);
 
   params.navigation_ui_data = std::move(navigation_ui_data);
+
+  if (internal_scroll_to_text_fragment) {
+    params.internal_scroll_to_text_fragment =
+        ConvertJavaStringToUTF8(env, internal_scroll_to_text_fragment);
+  }
 
   base::WeakPtr<NavigationHandle> handle =
       navigation_controller_->LoadURLWithParams(params);
