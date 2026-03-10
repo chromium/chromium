@@ -28,6 +28,9 @@ class DummyModelProvider : public ModelProvider {
   bool ModelAvailable() override { return false; }
 };
 
+// Global TestDefaultModelOverride instance.
+TestDefaultModelOverride* g_test_default_model_override_instance = nullptr;
+
 }  // namespace
 
 ModelProviderFactoryImpl::ModelProviderFactoryImpl(
@@ -67,11 +70,12 @@ std::unique_ptr<ModelProvider> ModelProviderFactoryImpl::CreateProvider(
 
 std::unique_ptr<DefaultModelProvider>
 ModelProviderFactoryImpl::CreateDefaultProvider(proto::SegmentId segment_id) {
-  auto test_override =
-      TestDefaultModelOverride::GetInstance().TakeOwnershipOfModelProvider(
-          segment_id);
-  if (test_override) {
-    return test_override;
+  if (TestDefaultModelOverride* instance =
+          TestDefaultModelOverride::GetInstance()) {
+    auto test_override = instance->TakeOwnershipOfModelProvider(segment_id);
+    if (test_override) {
+      return test_override;
+    }
   }
 
   auto it = default_models_.find(segment_id);
@@ -83,12 +87,18 @@ ModelProviderFactoryImpl::CreateDefaultProvider(proto::SegmentId segment_id) {
   return std::move(it->second);
 }
 
-TestDefaultModelOverride::TestDefaultModelOverride() = default;
-TestDefaultModelOverride::~TestDefaultModelOverride() = default;
+TestDefaultModelOverride::TestDefaultModelOverride() {
+  CHECK(!g_test_default_model_override_instance);
+  g_test_default_model_override_instance = this;
+}
 
-TestDefaultModelOverride& TestDefaultModelOverride::GetInstance() {
-  static base::NoDestructor<TestDefaultModelOverride> instance;
-  return *instance;
+TestDefaultModelOverride::~TestDefaultModelOverride() {
+  CHECK_EQ(g_test_default_model_override_instance, this);
+  g_test_default_model_override_instance = nullptr;
+}
+
+TestDefaultModelOverride* TestDefaultModelOverride::GetInstance() {
+  return g_test_default_model_override_instance;
 }
 
 std::unique_ptr<DefaultModelProvider>

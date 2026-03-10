@@ -70,7 +70,9 @@ std::optional<float> RunQueryAndGetResult(UkmDatabase* database,
 UkmDataManagerTestUtils::UkmDataManagerTestUtils(
     ukm::TestUkmRecorder* ukm_recorder,
     bool owned_db_client)
-    : ukm_recorder_(ukm_recorder) {
+    : ukm_recorder_(ukm_recorder),
+      test_default_model_override_(
+          std::make_unique<TestDefaultModelOverride>()) {
   if (owned_db_client) {
     owned_db_client_ = std::make_unique<UkmDatabaseClient>();
     ukm_database_client_ = owned_db_client_.get();
@@ -100,8 +102,8 @@ void UkmDataManagerTestUtils::PreProfileInit(
 
     default_overrides_[segment.first] = provider.get();
     // Default model must be overridden before the platform is created:
-    TestDefaultModelOverride::GetInstance().SetModelForTesting(
-        segment.first, std::move(provider));
+    test_default_model_override_->SetModelForTesting(segment.first,
+                                                     std::move(provider));
   }
 
   if (owned_db_client_) {

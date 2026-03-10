@@ -23,6 +23,8 @@ class HistoryService;
 
 namespace segmentation_platform {
 
+class TestDefaultModelOverride;
+
 // Utility used for testing UKM based engine.
 class UkmDataManagerTestUtils {
  public:
@@ -85,6 +87,7 @@ class UkmDataManagerTestUtils {
   raw_ptr<history::HistoryService, DanglingUntriaged> history_service_;
   raw_ptr<UkmDatabaseClient> ukm_database_client_;
 
+  std::unique_ptr<TestDefaultModelOverride> test_default_model_override_;
   std::unique_ptr<UkmDatabaseClient> owned_db_client_;
 
   std::map<proto::SegmentId, raw_ptr<MockDefaultModelProvider, CtnExperimental>>

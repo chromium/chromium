@@ -51,9 +51,11 @@ class ModelProviderFactoryImpl : public ModelProviderFactory {
 // Used only in tests to override the default model.
 class TestDefaultModelOverride {
  public:
-  static TestDefaultModelOverride& GetInstance();
+  static TestDefaultModelOverride* GetInstance();
 
+  TestDefaultModelOverride();
   ~TestDefaultModelOverride();
+
   TestDefaultModelOverride(const TestDefaultModelOverride& client) = delete;
   TestDefaultModelOverride& operator=(const TestDefaultModelOverride& client) =
       delete;
@@ -65,10 +67,6 @@ class TestDefaultModelOverride {
                           std::unique_ptr<DefaultModelProvider>);
 
  private:
-  friend class base::NoDestructor<TestDefaultModelOverride>;
-
-  TestDefaultModelOverride();
-
   std::map<proto::SegmentId, std::unique_ptr<DefaultModelProvider>>
       default_providers_;
 };
