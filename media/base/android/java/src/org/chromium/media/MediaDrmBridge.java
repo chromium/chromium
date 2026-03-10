@@ -739,7 +739,7 @@ public class MediaDrmBridge {
             Log.i(TAG, "Force closing session %s", sessionId);
 
             closeSessionNoException(sessionId);
-            onSessionClosed(sessionId);
+            onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.CLOSE);
         }
         mSessionManager = new MediaDrmSessionManager(mStorage);
 
@@ -986,7 +986,7 @@ public class MediaDrmBridge {
         mSessionManager.remove(sessionId);
         // Code in media_key_session.cc expects the closed event to happen before the close()
         // promise is resolved.
-        onSessionClosed(sessionId);
+        onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.CLOSE);
         onPromiseResolved(promiseId);
         Log.i(TAG, "Session %s closed", sessionId);
     }
@@ -1602,9 +1602,11 @@ public class MediaDrmBridge {
                         mNativeMediaDrmBridge, sessionId.emeId(), requestType, request.getData());
     }
 
-    private void onSessionClosed(final SessionId sessionId) {
+    private void onSessionClosed(
+            final SessionId sessionId, final @MediaDrmCdmSessionClosedReason int reason) {
         if (isNativeMediaDrmBridgeValid()) {
-            MediaDrmBridgeJni.get().onSessionClosed(mNativeMediaDrmBridge, sessionId.emeId());
+            MediaDrmBridgeJni.get()
+                    .onSessionClosed(mNativeMediaDrmBridge, sessionId.emeId(), reason);
         }
     }
 
@@ -1704,6 +1706,10 @@ public class MediaDrmBridge {
                         return;
                     }
                     break;
+                case MediaDrm.EVENT_SESSION_RECLAIMED:
+                    Log.d(TAG, "MediaDrm.EVENT_SESSION_RECLAIMED for session %s", sessionId);
+                    onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.SESSION_RECLAIMED);
+                    break;
                 default:
                     Log.w(TAG, "Ignoring MediaDrm event %d for session %s", event, sessionId);
                     break;
@@ -1736,9 +1742,8 @@ public class MediaDrmBridge {
 
                             Log.d(TAG, "SessionLost: " + sessionId);
                             // TODO(crbug.com/40181810): Consider passing a reason for sessionClosed
-                            // that more closely
-                            // represents a lost state.
-                            onSessionClosed(sessionId);
+                            // that more closely represents a lost state.
+                            onSessionClosed(sessionId, MediaDrmCdmSessionClosedReason.CLOSE);
                         }
                     });
         }
@@ -1877,7 +1882,7 @@ public class MediaDrmBridge {
         void onSessionMessage(
                 long nativeMediaDrmBridge, byte[] emeSessionId, int requestType, byte[] message);
 
-        void onSessionClosed(long nativeMediaDrmBridge, byte[] emeSessionId);
+        void onSessionClosed(long nativeMediaDrmBridge, byte[] emeSessionId, int reason);
 
         void onSessionKeysChange(
                 long nativeMediaDrmBridge,

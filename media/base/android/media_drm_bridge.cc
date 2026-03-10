@@ -361,6 +361,21 @@ CreateCdmTypedStatus ConvertMediaDrmCreateError(
   return CreateCdmTypedStatus::Codes::kUnknownError;
 }
 
+CdmSessionClosedReason ToCdmSessionClosedReason(
+    MediaDrmBridge::MediaDrmCdmSessionClosedReason reason) {
+  switch (reason) {
+    case MediaDrmBridge::MediaDrmCdmSessionClosedReason::CLOSE:
+      return CdmSessionClosedReason::kClose;
+    case MediaDrmBridge::MediaDrmCdmSessionClosedReason::SESSION_RECLAIMED:
+      return CdmSessionClosedReason::kResourceEvicted;
+    case MediaDrmBridge::MediaDrmCdmSessionClosedReason::SESSION_LOST:
+      return CdmSessionClosedReason::kHardwareContextReset;
+  }
+
+  // Default return a generic close.
+  return CdmSessionClosedReason::kClose;
+}
+
 }  // namespace
 
 // static
@@ -913,14 +928,17 @@ void MediaDrmBridge::OnSessionMessage(JNIEnv* env,
 }
 
 void MediaDrmBridge::OnSessionClosed(JNIEnv* env,
-                                     const JavaRef<jbyteArray>& j_session_id) {
+                                     const JavaRef<jbyteArray>& j_session_id,
+                                     int32_t j_reason) {
   DVLOG(2) << __func__;
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
-  // TODO(crbug.com/40181810): Support other closed reasons.
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(session_closed_cb_, std::move(session_id),
-                                CdmSessionClosedReason::kClose));
+      FROM_HERE,
+      base::BindOnce(
+          session_closed_cb_, std::move(session_id),
+          ToCdmSessionClosedReason(
+              static_cast<MediaDrmCdmSessionClosedReason>(j_reason))));
 }
 
 void MediaDrmBridge::OnSessionKeysChange(
