@@ -9,6 +9,19 @@
 
 #include "remoting/host/linux/gvariant_type.h"
 
+namespace remoting::org_gnome_DisplayManager_Manager {
+
+// property
+struct Version {
+  static constexpr char kInterfaceName[] = "org.gnome.DisplayManager.Manager";
+  static constexpr char kPropertyName[] = "Version";
+  static constexpr gvariant::Type kType{"s"};
+  static constexpr bool kReadable = true;
+  static constexpr bool kWritable = false;
+};
+
+}  // namespace remoting::org_gnome_DisplayManager_Manager
+
 namespace remoting::org_gnome_DisplayManager_RemoteDisplayFactory {
 
 // method

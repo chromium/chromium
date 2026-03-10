@@ -10,6 +10,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -108,6 +109,14 @@ class GdmRemoteDisplayManager {
   // Returns all GDM remote displays.
   const RemoteDisplayMap& remote_displays() const { return remote_displays_; }
 
+  // Returns the version of GDM. Must be called after this class is initialized.
+  const std::string& version() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_EQ(initialization_state_, InitializationState::INITIALIZED);
+
+    return version_;
+  }
+
  private:
   enum class InitializationState {
     NOT_INITIALIZED,
@@ -120,6 +129,8 @@ class GdmRemoteDisplayManager {
       const gvariant::ObjectPath& display_path,
       gvariant::GVariantRef<"a{sa{sv}}"> interfaces_and_properties);
 
+  void OnGetVersionResult(Callback init_callback,
+                          base::expected<std::string, Loggable> result);
   void OnGetAllRemoteDisplaysResult(
       Callback init_callback,
       base::expected<std::tuple<gvariant::GVariantRef<"a{oa{sa{sv}}}">>,
@@ -147,6 +158,7 @@ class GdmRemoteDisplayManager {
       sequence_checker_) = InitializationState::NOT_INITIALIZED;
   raw_ptr<Observer> observer_ GUARDED_BY_CONTEXT(sequence_checker_);
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::string version_ GUARDED_BY_CONTEXT(sequence_checker_);
   RemoteDisplayMap remote_displays_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<GDBusConnectionRef::SignalSubscription>

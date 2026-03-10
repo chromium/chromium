@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/base/switches.h"
@@ -434,12 +435,15 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
   } else {
     LOG(ERROR) << user_info_expected.error();
   }
-  if (session.session_info->session_class == "user") {
+
+  base::Version gdm_version(remote_display_manager_.version());
+  if (session.session_info->session_class == "user" ||
+      (gdm_version.IsValid() && gdm_version >= base::Version("49"))) {
     FetchSystemdEnvironmentVariables(display_name, display_path,
                                      session.session_info->username);
   } else {
-    // TODO: crbug.com/488713023 - poll systemd user environment variables for
-    // GNOME 49.
+    // TODO: crbug.com/488713023 - remove this branch once we no longer need
+    // this for development (everyone is on GDM 49+).
     auto pending_session_reporter_info_it =
         pending_session_reporter_info_.find(session.session_info->session_id);
     if (pending_session_reporter_info_it !=

@@ -33,6 +33,33 @@ def run_command(command):
         raise
 
 
+def get_gdm_version():
+    try:
+        result = subprocess.run(["gdm3", "--version"],
+                                capture_output=True,
+                                text=True,
+                                check=True)
+        # result.stdout: "GDM 38.0\n"
+        output = result.stdout.strip()
+        if output.startswith("GDM "):
+            return output[4:]
+        return output
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+
+def is_gdm_version_ge_49():
+    version_str = get_gdm_version()
+    if not version_str:
+        return False
+    try:
+        # Version might be "49.0" or just "49"
+        major_version = int(version_str.split(".")[0])
+        return major_version >= 49
+    except (ValueError, IndexError):
+        return False
+
+
 def terminate_remote_sessions():
     print("Cleaning up remote sessions...")
     try:
@@ -175,24 +202,28 @@ def root_main(out_dir, user_home):
         print("ACLs updated.")
 
     # Add an autostart entry for the login session reporter.
-    # TODO: crbug.com/488713023 - remove this once we have added support for
-    # GNOME 49's dynamic greeter user.
-    abs_out_dir = os.path.abspath(out_dir)
-    login_reporter_desktop_path = \
-        "/usr/share/gdm/greeter/autostart/crd-login-session-reporter.desktop"
-    if not os.path.exists(login_reporter_desktop_path):
-        print(f"Creating {login_reporter_desktop_path}...")
-        desktop_content = f"""[Desktop Entry]
+    # TODO: crbug.com/488713023 - remove this once we no longer need this for
+    # development (everyone is on GDM 49+).
+    if is_gdm_version_ge_49():
+        print("GDM version is 49 or higher. Skipping login session reporter "
+              "autostart.")
+    else:
+        abs_out_dir = os.path.abspath(out_dir)
+        login_reporter_desktop_path = "/usr/share/gdm/greeter/autostart/"\
+            "crd-login-session-reporter.desktop"
+        if not os.path.exists(login_reporter_desktop_path):
+            print(f"Creating {login_reporter_desktop_path}...")
+            desktop_content = f"""[Desktop Entry]
 Type=Application
 Name=CRD Login Session Reporter
 Exec={abs_out_dir}/login_session_reporter
 NoDisplay=true
 """
-        os.makedirs(os.path.dirname(login_reporter_desktop_path),
-                    exist_ok=True)
-        with open(login_reporter_desktop_path, "w", encoding='utf-8') as f:
-            f.write(desktop_content)
-        print(f"{login_reporter_desktop_path} created.")
+            os.makedirs(os.path.dirname(login_reporter_desktop_path),
+                        exist_ok=True)
+            with open(login_reporter_desktop_path, "w", encoding='utf-8') as f:
+                f.write(desktop_content)
+            print(f"{login_reporter_desktop_path} created.")
 
     daemon_command = \
         [os.path.join(abs_out_dir, "remoting_me2me_host"), "--type=daemon"]

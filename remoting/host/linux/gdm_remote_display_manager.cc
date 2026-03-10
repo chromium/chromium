@@ -31,6 +31,7 @@ using gvariant::ObjectPath;
 using gvariant::ObjectPathCStr;
 
 constexpr char kGdmBusName[] = "org.gnome.DisplayManager";
+constexpr ObjectPathCStr kGdmManagerPath = "/org/gnome/DisplayManager/Manager";
 constexpr ObjectPathCStr kGdmDisplaysPath =
     "/org/gnome/DisplayManager/Displays";
 constexpr ObjectPathCStr kGdmRemoteDisplayFactoryPath =
@@ -56,11 +57,10 @@ void GdmRemoteDisplayManager::Init(GDBusConnectionRef connection,
   initialization_state_ = InitializationState::INITIALIZING;
   SubscribeSignals();
 
-  // Get all remote displays that have already been created before the
-  // initialization.
-  connection_.Call<org_freedesktop_DBus_ObjectManager::GetManagedObjects>(
-      kGdmBusName, kGdmDisplaysPath, std::tuple(),
-      base::BindOnce(&GdmRemoteDisplayManager::OnGetAllRemoteDisplaysResult,
+  // Get GDM version first.
+  connection_.GetProperty<org_gnome_DisplayManager_Manager::Version>(
+      kGdmBusName, kGdmManagerPath,
+      base::BindOnce(&GdmRemoteDisplayManager::OnGetVersionResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -95,6 +95,28 @@ void GdmRemoteDisplayManager::SubscribeSignals() {
       kGdmBusName, kGdmDisplaysPath,
       base::BindRepeating(&GdmRemoteDisplayManager::OnInterfacesRemoved,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GdmRemoteDisplayManager::OnGetVersionResult(
+    Callback init_callback,
+    base::expected<std::string, Loggable> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(initialization_state_, InitializationState::INITIALIZING);
+
+  if (!result.has_value()) {
+    initialization_state_ = InitializationState::NOT_INITIALIZED;
+    std::move(init_callback).Run(base::unexpected(result.error()));
+    return;
+  }
+
+  version_ = std::move(result.value());
+
+  // Get all remote displays that have already been created before the
+  // initialization.
+  connection_.Call<org_freedesktop_DBus_ObjectManager::GetManagedObjects>(
+      kGdmBusName, kGdmDisplaysPath, std::tuple(),
+      base::BindOnce(&GdmRemoteDisplayManager::OnGetAllRemoteDisplaysResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(init_callback)));
 }
 
 void GdmRemoteDisplayManager::OnGetAllRemoteDisplaysResult(
