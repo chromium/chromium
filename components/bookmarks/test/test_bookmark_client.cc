@@ -22,7 +22,9 @@
 
 namespace bookmarks {
 
-TestBookmarkClient::TestBookmarkClient() = default;
+TestBookmarkClient::TestBookmarkClient(
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : os_crypt_async_(os_crypt_async) {}
 
 TestBookmarkClient::~TestBookmarkClient() = default;
 
@@ -172,10 +174,12 @@ void TestBookmarkClient::TriggerPersistentLogInterval() {
 
 void TestBookmarkClient::GetEncryptor(
     base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
-  if (!os_crypt_async_) {
-    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
+  if (os_crypt_async_) {
+    os_crypt_async_->GetInstance(std::move(callback));
+  } else {
+    os_crypt_async::GetTestOSCryptAsyncForTesting()->GetInstance(
+        std::move(callback));
   }
-  os_crypt_async_->GetInstance(std::move(callback));
 }
 
 }  // namespace bookmarks

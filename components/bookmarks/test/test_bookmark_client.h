@@ -28,7 +28,8 @@ class BookmarkModel;
 
 class TestBookmarkClient : public BookmarkClient {
  public:
-  TestBookmarkClient();
+  explicit TestBookmarkClient(
+      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr);
 
   TestBookmarkClient(const TestBookmarkClient&) = delete;
   TestBookmarkClient& operator=(const TestBookmarkClient&) = delete;
@@ -144,7 +145,7 @@ class TestBookmarkClient : public BookmarkClient {
           DecodeAccountBookmarkSyncMetadataResult::kSuccess;
 
   base::RepeatingClosure metrics_callback_;
-  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace bookmarks

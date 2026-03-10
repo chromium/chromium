@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -2901,6 +2900,13 @@ class BookmarkModelLoadTest
     test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
   }
 
+  std::unique_ptr<BookmarkModel> CreateBookmarkModel() {
+    return std::make_unique<BookmarkModel>(
+        std::make_unique<TestBookmarkClient>(os_crypt_async_.get()));
+  }
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_ =
+      os_crypt_async::GetTestOSCryptAsyncForTesting();
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2910,8 +2916,7 @@ TEST_P(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -2925,8 +2930,7 @@ TEST_P(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -2946,8 +2950,7 @@ TEST_P(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
@@ -2963,8 +2966,7 @@ TEST_P(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   task_environment.FastForwardUntilNoTasksRemain();
 
   // Recreate the model and ensure account nodes are loaded.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -2991,7 +2993,7 @@ TEST_P(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   {
-    auto client = std::make_unique<TestBookmarkClient>();
+    auto client = std::make_unique<TestBookmarkClient>(os_crypt_async_.get());
     TestBookmarkClient* client_ptr = client.get();
     BookmarkModel model(std::move(client));
     model.Load(tmp_dir.GetPath());
@@ -3010,7 +3012,7 @@ TEST_P(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
 
   // Recreate the model and ensure account sync metadata is passed to
   // BookmarkClient although there are no account bookmarks.
-  auto client = std::make_unique<TestBookmarkClient>();
+  auto client = std::make_unique<TestBookmarkClient>(os_crypt_async_.get());
   TestBookmarkClient* client_ptr = client.get();
   BookmarkModel model(std::move(client));
   model.Load(tmp_dir.GetPath());
@@ -3035,8 +3037,7 @@ TEST_P(BookmarkModelLoadTest,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   {
-    auto model =
-        std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+    auto model = CreateBookmarkModel();
     model->Load(tmp_dir.GetPath());
     test::WaitForBookmarkModelToLoad(model.get());
     model->CreateAccountPermanentFolders();
@@ -3050,7 +3051,7 @@ TEST_P(BookmarkModelLoadTest,
 
   // Load the model from disk, but pretend that the client responded with
   // `kMustRemoveAccountPermanentFolders` when decoding account sync metadata.
-  auto client = std::make_unique<TestBookmarkClient>();
+  auto client = std::make_unique<TestBookmarkClient>(os_crypt_async_.get());
   client->SetDecodeAccountBookmarkSyncMetadataResult(
       BookmarkClient::DecodeAccountBookmarkSyncMetadataResult::
           kMustRemoveAccountPermanentFolders);
@@ -3074,8 +3075,7 @@ TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3087,8 +3087,7 @@ TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3108,8 +3107,7 @@ TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
@@ -3122,8 +3120,7 @@ TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3140,8 +3137,7 @@ TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3155,8 +3151,7 @@ TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3177,8 +3172,7 @@ TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
@@ -3194,8 +3188,7 @@ TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3216,8 +3209,7 @@ TEST_P(BookmarkModelLoadTest,
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   model->CreateAccountPermanentFolders();
@@ -3233,8 +3225,7 @@ TEST_P(BookmarkModelLoadTest,
 
   // Recreate the model and ensure GetBookmarksMatching() returns the url that
   // was added.
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3351,20 +3342,62 @@ void AssertSameFileContent(const base::FilePath& unencrypted_file_path,
   EXPECT_EQ(file_content, decrypted_file_content);
 }
 
-TEST(BookmarkModelEncryptedStorageTest,
-     SaveSameContentEncryptedAndUnencryptedToDisk) {
+class BookmarkModelStorageWithSecondayFileTest
+    : public testing::TestWithParam<BookmarkEncryptionStage> {
+ protected:
+  BookmarkModelStorageWithSecondayFileTest() {
+    test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
+  }
+
+  std::unique_ptr<BookmarkModel> CreateBookmarkModel() {
+    return std::make_unique<BookmarkModel>(
+        std::make_unique<TestBookmarkClient>(os_crypt_async_.get()));
+  }
+
+  const base::FilePath GetLocalOrSyncableSecondaryFilename() {
+    return IsEncryptedFilePrimary()
+               ? base::FilePath(kLocalOrSyncableBookmarksFileName)
+               : base::FilePath(kEncryptedLocalOrSyncableBookmarksFileName);
+  }
+
+  const base::FilePath GetAccountSecondaryFilename() {
+    return IsEncryptedFilePrimary()
+               ? base::FilePath(kAccountBookmarksFileName)
+               : base::FilePath(kEncryptedAccountBookmarksFileName);
+  }
+
+  std::string GetPrimaryHistogramName(std::string_view histogram_name_prefix) {
+    return base::StrCat({histogram_name_prefix, IsEncryptedFilePrimary()
+                                                    ? ".Encrypted"
+                                                    : ".ClearText"});
+  }
+
+  std::string GetSecondaryHistogramName(
+      std::string_view histogram_name_prefix) {
+    return base::StrCat({histogram_name_prefix, IsEncryptedFilePrimary()
+                                                    ? ".ClearText"
+                                                    : ".Encrypted"});
+  }
+
+  bool IsEncryptedFilePrimary() {
+    return GetParam() == BookmarkEncryptionStage::kWriteBothReadPreferEncrypted;
+  }
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_ =
+      os_crypt_async::GetTestOSCryptAsyncForTesting();
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(BookmarkModelStorageWithSecondayFileTest,
+       SaveSameContentEncryptedAndUnencryptedToDisk) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
-  base::test::ScopedFeatureList encryption_features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
 
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
 
@@ -3404,92 +3437,117 @@ TEST(BookmarkModelEncryptedStorageTest,
       model->client());
 }
 
-TEST(BookmarkModelEncryptedStorageTest, CheckEncryptedBookmarksFile) {
+TEST_P(BookmarkModelStorageWithSecondayFileTest,
+       SecondaryFileIsVerifiedOnLoad) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
-  base::test::ScopedFeatureList encryption_features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
 
-  base::HistogramTester histogram_tester;
+  // First create the local-or-syncable and account bookmarks primary and
+  // secondary files.
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
-
-  // Create local-or-syncable bookmarks file.
   model->AddURL(model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
   task_environment.FastForwardUntilNoTasksRemain();
-  // Create account bookmarks file.
   model->CreateAccountPermanentFolders();
   task_environment.FastForwardUntilNoTasksRemain();
 
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  // Reload the model and verify that the secondary files matches the primary
+  // files.
+  base::HistogramTester histogram_tester;
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   task_environment.FastForwardUntilNoTasksRemain();
 
-  histogram_tester.ExpectTotalCount(
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable.ClearText",
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable.Encrypted",
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.EncryptedBookmarksFileMatchesResult.LocalOrSyncable", true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.BookmarksFileLoadResult.Account.ClearText",
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
       "Bookmarks.BookmarksFileLoadResult.Account.Encrypted",
-      /*expected_count=*/1);
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Bookmarks.EncryptedBookmarksFileMatchesResult.Account", true,
+      /*expected_bucket_count=*/1);
 }
 
-TEST(BookmarkModelEncryptedStorageTest, EncryptedBookmarksFileCreatedOnLoad) {
+TEST_P(BookmarkModelStorageWithSecondayFileTest,
+       SecondaryBookmarksFileIsRecreatedOnLoadIfMissing) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
-  base::HistogramTester histogram_tester;
+  // First create the local-or-syncable and account bookmarks primary files and
+  // delete any secondary files.
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  auto model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  auto model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
-
-  // Create local-or-syncable bookmarks file.
   model->AddURL(model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
   task_environment.FastForwardUntilNoTasksRemain();
-  // Create account bookmarks file.
   model->CreateAccountPermanentFolders();
-  // Only clear-text files should be created.
   task_environment.FastForwardUntilNoTasksRemain();
-  ASSERT_TRUE(base::PathExists(
-      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName)));
-  ASSERT_TRUE(
-      base::PathExists(tmp_dir.GetPath().Append(kAccountBookmarksFileName)));
-  ASSERT_FALSE(base::PathExists(
-      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName)));
-  ASSERT_FALSE(base::PathExists(
-      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName)));
+  // Delete the secondary files.
+  ASSERT_TRUE(base::DeleteFile(
+      tmp_dir.GetPath().Append(GetLocalOrSyncableSecondaryFilename())));
+  ASSERT_TRUE(base::DeleteFile(
+      tmp_dir.GetPath().Append(GetAccountSecondaryFilename())));
 
-  base::test::ScopedFeatureList encryption_features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
-  model =
-      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  // Reload the model and verify that the secondary files is recreated.
+  base::HistogramTester histogram_tester;
+  model = CreateBookmarkModel();
   model->Load(tmp_dir.GetPath());
   test::WaitForBookmarkModelToLoad(model.get());
   task_environment.FastForwardUntilNoTasksRemain();
-  // Both clear-text and encrypted files should be created.
+
+  histogram_tester.ExpectUniqueSample(
+      GetPrimaryHistogramName(
+          "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable"),
+      metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      GetSecondaryHistogramName(
+          "Bookmarks.BookmarksFileLoadResult.LocalOrSyncable"),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
   AssertSameFileContent(
       tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName),
       tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName),
       model->client());
+
+  histogram_tester.ExpectUniqueSample(
+      GetPrimaryHistogramName("Bookmarks.BookmarksFileLoadResult.Account"),
+      metrics::BookmarksFileLoadResult::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      GetSecondaryHistogramName("Bookmarks.BookmarksFileLoadResult.Account"),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
   AssertSameFileContent(
       tmp_dir.GetPath().Append(kAccountBookmarksFileName),
       tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName),
       model->client());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BookmarkModelStorageWithSecondayFileTest,
+    BookmarkModelStorageWithSecondayFileTest,
+    ::testing::Values(BookmarkEncryptionStage::kWriteBothReadOnlyClear,
+                      BookmarkEncryptionStage::kWriteBothReadPreferEncrypted));
 
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL());

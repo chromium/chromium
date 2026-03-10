@@ -46,27 +46,44 @@ class BookmarkStorage
   };
 
   // Creates a BookmarkStorage for the specified model. `model` must not be null
-  // and must outlive this object. The data will saved to a file using the
-  // specified `file_path`. This data includes the set of permanent nodes
+  // and must outlive this object. This data includes the set of permanent nodes
   // determined by `permanent_node_selection`.
   //
-  // A backup file may be generated using a name derived from `file_path`
-  // (appending suffix kBackupExtension).
+  // Based on ShouldWriteBookmarksToSecondaryFileOnDisk and
+  // ShouldUseEncryptedBookmarksAsPrimarySource defined in
+  // components/bookmarks/common/bookmark_features.h, the data will saved to a
+  // file using the specified `file_path` and/or will be encrypted and then
+  // saved to a file using the specified `encrypted_file_path`.
+  //
+  // If ShouldWriteBookmarksToSecondaryFileOnDisk and
+  // ShouldUseEncryptedBookmarksAsPrimarySource are both false, only save the
+  // data to `file_path`. This is the default behavior.
+  //
+  // If ShouldWriteBookmarksToSecondaryFileOnDisk is true and
+  // ShouldUseEncryptedBookmarksAsPrimarySource is false, first save the data to
+  // `file_path` and then encrypt the data and save it to `encrypted_file_path`.
+  //
+  // If ShouldWriteBookmarksToSecondaryFileOnDisk and
+  // ShouldUseEncryptedBookmarksAsPrimarySource are both true, first encrypt the
+  // data and save it to `encrypted_file_path` and then save the unencrypted
+  // data to `file_path`.
+  //
+  // If ShouldWriteBookmarksToSecondaryFileOnDisk is false and
+  // ShouldUseEncryptedBookmarksAsPrimarySource is true, only encrypt the
+  // data and save it to `encrypted_file_path`.
+  //
+  // If data is encrypted, an encryptor must be provided.
+  //
+  // Backup files may be generated using a name derived from `file_path` and/or
+  // `encrypted_file_path` (appending suffix kBackupExtension).
   //
   // All disk writes will be executed as a task in a backend task runner.
-  //
-  // Based on feature flags defined in
-  // components/bookmarks/common/bookmark_features.h, an additional encrypted
-  // copy of the bookmarks might be saved to the specified path. If this
-  // additional save is required, an encryptor and an encrypted file
-  // path must be provided. This encrypted write operation is scheduled on the
-  // same backend task runner.
   BookmarkStorage(
       const BookmarkModel* model,
       PermanentNodeSelection permanent_node_selection,
       const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
           encryptor,
-      const base::FilePath& file_path,
+      const base::FilePath& clear_text_file_path,
       const base::FilePath& encrypted_file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
@@ -116,6 +133,10 @@ class BookmarkStorage
   // If there is a pending write, it performs it immediately.
   void SaveNowIfScheduled();
 
+  // If primary file is encrypted, return the clear text file path and vice
+  // versa.
+  base::FilePath GetSecondaryFilePath() const;
+
   const raw_ptr<const BookmarkModel> model_;
 
   // Sequenced task runner where disk writes will be performed at.
@@ -128,6 +149,10 @@ class BookmarkStorage
   const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
       encryptor_;
 
+  // The encryption type of the primary file.
+  const StorageFileEncryptionType primary_file_encryption_type_;
+
+  const base::FilePath clear_text_file_path_;
   const base::FilePath encrypted_file_path_;
 
   // Helper to write bookmark data safely.

@@ -16,7 +16,8 @@ namespace bookmarks::test {
 inline constexpr std::array<BookmarkEncryptionStage, 3>
     kAllBookmarkEncryptionStages = {
         BookmarkEncryptionStage::kDisabled,
-        BookmarkEncryptionStage::kWriteBothReadOnlyClear};
+        BookmarkEncryptionStage::kWriteBothReadOnlyClear,
+        BookmarkEncryptionStage::kWriteBothReadPreferEncrypted};
 
 void InitFeaturesForBookmarkTestEncryptionStage(
     base::test::ScopedFeatureList& features,

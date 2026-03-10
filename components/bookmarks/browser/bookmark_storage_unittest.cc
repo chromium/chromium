@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -274,10 +275,18 @@ TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
   EXPECT_FALSE(file_content->empty());
 }
 
-TEST(BookmarkStorageTest, ShouldSaveUnencryptedAndEncryptedBookmarks) {
-  base::test::ScopedFeatureList features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+class BookmarkStorageWithSecondayFileTest
+    : public testing::TestWithParam<BookmarkEncryptionStage> {
+ protected:
+  BookmarkStorageWithSecondayFileTest() {
+    test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       ShouldSaveUnencryptedAndEncryptedBookmarks) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
@@ -317,10 +326,8 @@ TEST(BookmarkStorageTest, ShouldSaveUnencryptedAndEncryptedBookmarks) {
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
 }
 
-TEST(BookmarkStorageTest, ShouldGenerateTwoBackupFilesUponFirstSave) {
-  base::test::ScopedFeatureList features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       ShouldGenerateTwoBackupFilesUponFirstSave) {
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
   const base::FilePath bookmarks_file_path =
@@ -368,11 +375,8 @@ TEST(BookmarkStorageTest, ShouldGenerateTwoBackupFilesUponFirstSave) {
   EXPECT_FALSE(base::PathExists(encrypted_backup_file_path));
 }
 
-TEST(BookmarkStorageTest,
-     SaveToSingleFileNow_OnlyEncryptedFileIsSavedRightAway) {
-  base::test::ScopedFeatureList features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       SaveToSingleFileNow_OnlyEncryptedFileIsSavedRightAway) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
@@ -411,11 +415,8 @@ TEST(BookmarkStorageTest,
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
 }
 
-TEST(BookmarkStorageTest,
-     SaveToSingleFileNow_OnlyClearTextFileIsSavedRightAway) {
-  base::test::ScopedFeatureList features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       SaveToSingleFileNow_OnlyClearTextFileIsSavedRightAway) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
@@ -452,11 +453,8 @@ TEST(BookmarkStorageTest,
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 0);
 }
 
-TEST(BookmarkStorageTest,
-     SaveToSingleFileNow_SaveToBothFilesIfWriteAlreadyScheduled) {
-  base::test::ScopedFeatureList features;
-  test::InitFeaturesForBookmarkTestEncryptionStage(
-      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       SaveToSingleFileNow_SaveToBothFilesIfWriteAlreadyScheduled) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
@@ -495,5 +493,11 @@ TEST(BookmarkStorageTest,
   histogram_tester.ExpectTotalCount(
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BookmarkStorageWithSecondayFileTest,
+    BookmarkStorageWithSecondayFileTest,
+    ::testing::Values(BookmarkEncryptionStage::kWriteBothReadOnlyClear,
+                      BookmarkEncryptionStage::kWriteBothReadPreferEncrypted));
 
 }  // namespace bookmarks

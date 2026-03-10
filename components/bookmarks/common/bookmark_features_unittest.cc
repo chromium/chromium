@@ -22,19 +22,31 @@ class BookmarkFeaturesWithEncryptionTest
     return GetParam() == BookmarkEncryptionStage::kWriteBothReadOnlyClear;
   }
 
+  bool IsWriteBothReadPreferEncryptedStage() {
+    return GetParam() == BookmarkEncryptionStage::kWriteBothReadPreferEncrypted;
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(BookmarkFeaturesWithEncryptionTest,
-       ShouldWriteEncryptedBookmarksToDisk) {
-  EXPECT_EQ(ShouldWriteEncryptedBookmarksToDisk(),
-            IsWriteBothReadOnlyClearStage());
+       ShouldWriteBookmarksToSecondaryFileOnDisk) {
+  EXPECT_EQ(
+      ShouldWriteBookmarksToSecondaryFileOnDisk(),
+      IsWriteBothReadOnlyClearStage() || IsWriteBothReadPreferEncryptedStage());
 }
 
 TEST_P(BookmarkFeaturesWithEncryptionTest,
-       ShouldVerifyEncryptedBookmarksDataOnLoad) {
-  EXPECT_EQ(ShouldVerifyEncryptedBookmarksDataOnLoad(),
-            IsWriteBothReadOnlyClearStage());
+       ShouldVerifyBookmarksDataInSecondaryFileOnLoad) {
+  EXPECT_EQ(
+      ShouldVerifyBookmarksDataInSecondaryFileOnLoad(),
+      IsWriteBothReadOnlyClearStage() || IsWriteBothReadPreferEncryptedStage());
+}
+
+TEST_P(BookmarkFeaturesWithEncryptionTest,
+       ShouldUseEncryptedBookmarksAsPrimarySource) {
+  EXPECT_EQ(ShouldUseEncryptedBookmarksAsPrimarySource(),
+            IsWriteBothReadPreferEncryptedStage());
 }
 
 INSTANTIATE_TEST_SUITE_P(
