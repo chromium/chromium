@@ -173,7 +173,6 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   base::ObserverList<
       Observer,
       /*check_empty=*/false,
-      /*reentrancy=*/
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
 

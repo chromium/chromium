@@ -510,7 +510,6 @@ class ASH_EXPORT AppListControllerImpl
   base::ObserverList<
       AppListControllerObserver,
       /*check_empty=*/false,
-      /*reentrancy=*/
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
 

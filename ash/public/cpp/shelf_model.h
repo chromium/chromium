@@ -250,8 +250,12 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // user interaction.
   int current_mutation_is_user_triggered_ = 0;
 
-  base::ObserverList<ShelfModelObserver>::UncheckedAndDanglingUntriaged
-      observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ShelfModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::
+      UncheckedAndDanglingUntriaged observers_;
 
   std::map<ShelfID, std::unique_ptr<ShelfItemDelegate>>
       id_to_item_delegate_map_;
