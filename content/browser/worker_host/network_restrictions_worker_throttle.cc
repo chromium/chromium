@@ -5,6 +5,7 @@
 #include "content/browser/worker_host/network_restrictions_worker_throttle.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -15,21 +16,22 @@ namespace content {
 // static
 std::unique_ptr<NetworkRestrictionsWorkerThrottle>
 NetworkRestrictionsWorkerThrottle::Create(
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartitionImpl> storage_partition,
     const base::UnguessableToken& network_restrictions_id,
     PolicyContainerPolicies creator_policies) {
   if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists)) {
     return nullptr;
   }
   return std::make_unique<NetworkRestrictionsWorkerThrottle>(
-      storage_partition, network_restrictions_id, std::move(creator_policies));
+      std::move(storage_partition), network_restrictions_id,
+      std::move(creator_policies));
 }
 
 NetworkRestrictionsWorkerThrottle::NetworkRestrictionsWorkerThrottle(
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartitionImpl> storage_partition,
     const base::UnguessableToken& network_restrictions_id,
     PolicyContainerPolicies creator_policies)
-    : storage_partition_(storage_partition),
+    : storage_partition_(std::move(storage_partition)),
       network_restrictions_id_(network_restrictions_id),
       creator_policies_(std::move(creator_policies)) {}
 
@@ -40,6 +42,10 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
+  if (!storage_partition_) {
+    return;
+  }
+
   PolicyContainerPolicies policies;
   if (response_url.SchemeIsLocal()) {
     policies.connection_allowlists = creator_policies_.connection_allowlists;
@@ -59,11 +65,10 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
   }
 
   *defer = true;
-  static_cast<StoragePartitionImpl*>(storage_partition_)
-      ->RevokeNetworkForNoncesInNetworkContext(
-          {{network_restrictions_id_, std::move(allowlisted_patterns)}},
-          base::BindOnce(&NetworkRestrictionsWorkerThrottle::OnRevokeComplete,
-                         weak_factory_.GetWeakPtr()));
+  storage_partition_->RevokeNetworkForNoncesInNetworkContext(
+      {{network_restrictions_id_, std::move(allowlisted_patterns)}},
+      base::BindOnce(&NetworkRestrictionsWorkerThrottle::OnRevokeComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 const char*

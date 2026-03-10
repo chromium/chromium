@@ -543,7 +543,9 @@ void WorkerScriptFetcher::CreateScriptLoader(
 
   if (worker_network_restrictions_id && creator_policies) {
     if (auto throttle = NetworkRestrictionsWorkerThrottle::Create(
-            factory_process->GetStoragePartition(),
+            static_cast<StoragePartitionImpl*>(
+                factory_process->GetStoragePartition())
+                ->GetWeakPtr(),
             *worker_network_restrictions_id, creator_policies->Clone())) {
       throttles.push_back(std::move(throttle));
     }
