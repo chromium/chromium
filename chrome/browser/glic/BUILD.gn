@@ -123,6 +123,7 @@ source_set("glic") {
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs:tabs_public",
       "//ui/views",
       "//ui/views/controls/webview",
     ]
@@ -410,6 +411,7 @@ source_set("impl") {
       "//chrome/browser/skills:ui",
       "//chrome/browser/themes",
       "//chrome/browser/ui/tabs:glic",
+      "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/glic",
       "//components/password_manager/core/browser/actor_login:common",

@@ -38,6 +38,10 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
                           const GURL& preprod_url,
                           const GURL& prod_url) override;
 
+  void TriggerInvokeFromInternalsAction(
+      mojom::TriggerInvokeFromInternalsOptionsPtr options,
+      TriggerInvokeFromInternalsActionCallback callback) override;
+
  private:
   GlicKeyedService* GetGlicService();
 

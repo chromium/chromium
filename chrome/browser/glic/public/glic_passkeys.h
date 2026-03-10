@@ -15,6 +15,8 @@ class PasswordChangeFromCheckupDelegate;
 
 namespace glic {
 
+class GlicInternalsPageHandler;
+
 // Passkey for invoking glic with auto submit. Reach out to OWNERS before
 // adding new callers.
 class InvokeWithAutoSubmitPasskeyProvider {
@@ -29,6 +31,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
   friend class ::PasswordChangeFromCheckupDelegate;
+  friend class GlicInternalsPageHandler;
 };
 
 using InvokeWithAutoSubmitPasskey =

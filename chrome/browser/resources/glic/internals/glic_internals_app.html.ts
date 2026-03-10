@@ -9,9 +9,15 @@ import type {GlicInternalsAppElement} from './glic_internals_app.js';
 export function getHtml(this: GlicInternalsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div id="contents" class="tab-contents">
-    <h2>Enablement State</h2>
-    ${this.data_?.enablement ? html`
+  <div>
+    <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
+        .selected="${this.selectedTabIndex_}"
+        @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
+    </cr-tabs>
+    <div id="general-contents" class="tab-contents"
+        ?hidden="${this.selectedTabIndex_ !== 0}">
+        <h2>Enablement State</h2>
+        ${this.data_?.enablement ? html`
       <table>
         <tr>
           <th>Property</th>
@@ -100,6 +106,37 @@ export function getHtml(this: GlicInternalsAppElement) {
         <cr-button @click="${this.onSavePresetsClick_}">Save</cr-button>
       </div>` :
       html`<h3 id="loadingMsg">Loading...</h3>`}
+      </div>
+
+      <!-- ================= DEBUG CONTROLS TAB ================= -->
+      <div id="debug-controls-contents" class="tab-contents"
+          ?hidden="${this.selectedTabIndex_ !== 1}">
+        <h2>Debug Controls</h2>
+        <div class="presets-container">
+          <h3>Invoke</h3>
+          <label for="invokePromptInput">Prompt</label>
+          <input id="invokePromptInput" .value="${this.invokePrompt_}"
+              @input="${this.onInvokePromptInput_}">
+          </input>
+          <label>
+            <input type="checkbox" .checked="${this.invokeAutoSubmit_}"
+                @change="${this.onInvokeAutoSubmitChange_}">
+            Auto Submit
+          </label>
+          <cr-button @click="${this.onTriggerInvokeClick_}">
+            Trigger Invoke
+          </cr-button>
+
+          <div class="log-container"
+              style="margin-top: 10px; padding: 5px; border: 1px solid #ccc;
+                     max-height: 200px; overflow-y: auto;
+                     font-family: monospace;">
+            ${this.invokeLogs_.map(
+              log => html`<pre style="margin: 0;">${log}</pre>`)}
+          </div>
+        </div>
+      </div>
+
   </div>
 <!--_html_template_end_-->`;
   // clang-format on

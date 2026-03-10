@@ -228,6 +228,43 @@ enum PrepareForClientResult {
   kRequiresSignIn,
 };
 
+// Use ongoing conversation for the tab if it exists. Otherwise, fall back
+// to the default behavior for opening the UI (typically a new conversation).
+struct DefaultConversation {};
+
+// Always invoke into a new conversation.
+struct NewConversation {};
+
+// Defines the conversation an invocation targets.
+union InvokeConversationSelection {
+  DefaultConversation default_conversation;
+  NewConversation new_conversation;
+  string conversation_id;
+};
+
+// The level of in-flight navigation events allowed without canceling the
+// invocation.
+enum AllowedInflightNavigation {
+  kNone,
+  kSameDomain,
+  kAll,
+};
+
+// Configuration options for invoking Glic from the internals page.
+struct TriggerInvokeFromInternalsOptions {
+  InvocationSource invocation_source;
+  array<string> prompts;
+  AdditionalContext? additional_context;
+  InvokeConversationSelection conversation;
+  FeatureMode? feature_mode;
+  bool disable_zss;
+  string? skill_id;
+  string? error_message;
+  mojo_base.mojom.TimeDelta? timeout;
+  AllowedInflightNavigation allowed_inflight_navigation;
+  bool auto_submit;
+};
+
 // Page handler for the glic WebUI.
 interface PageHandler {
   // Creates a WebClientHandler, for use by a single web client instance.
@@ -278,6 +315,10 @@ interface InternalsPageHandler {
                      url.mojom.Url staging,
                      url.mojom.Url preprod,
                      url.mojom.Url prod);
+
+  // Triggers an invocation for testing from the internals page.
+  TriggerInvokeFromInternalsAction(TriggerInvokeFromInternalsOptions options)
+      => (bool success, string error_message);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

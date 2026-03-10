@@ -13,10 +13,15 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
@@ -129,6 +134,105 @@ void GlicInternalsPageHandler::SetGuestUrlPresets(const GURL& autopush_url,
                                               preprod_url.spec());
   g_browser_process->local_state()->SetString(prefs::kGlicGuestUrlPresetProd,
                                               prod_url.spec());
+}
+
+void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
+    mojom::TriggerInvokeFromInternalsOptionsPtr mojo_options,
+    TriggerInvokeFromInternalsActionCallback callback) {
+  GlicKeyedService* service = GetGlicService();
+  if (!service) {
+    std::move(callback).Run(false, "No GlicKeyedService available.");
+    return;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(webui_contents_);
+  if (!tab) {
+    std::move(callback).Run(false, "No active tab found.");
+    return;
+  }
+
+  GlicInvokeOptions options{mojo_options->invocation_source};
+  options.prompts = std::move(mojo_options->prompts);
+
+  if (mojo_options->additional_context) {
+    options.additional_context = std::move(mojo_options->additional_context);
+  }
+
+  if (mojo_options->conversation->is_new_conversation()) {
+    options.conversation = NewConversation();
+  } else if (mojo_options->conversation->is_conversation_id()) {
+    options.conversation = mojo_options->conversation->get_conversation_id();
+  } else {
+    options.conversation = DefaultConversation();
+  }
+
+  options.feature_mode = mojo_options->feature_mode;
+  options.disable_zss = mojo_options->disable_zss;
+  options.skill_id = std::move(mojo_options->skill_id);
+  options.error_message = std::move(mojo_options->error_message);
+  options.timeout = mojo_options->timeout;
+
+  switch (mojo_options->allowed_inflight_navigation) {
+    case mojom::AllowedInflightNavigation::kSameDomain:
+      options.allowed_inflight_navigation =
+          AllowedInflightNavigation::kSameDomain;
+      break;
+    case mojom::AllowedInflightNavigation::kNone:
+      options.allowed_inflight_navigation = AllowedInflightNavigation::kNone;
+      break;
+    case mojom::AllowedInflightNavigation::kAll:
+      options.allowed_inflight_navigation = AllowedInflightNavigation::kAll;
+      break;
+  }
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+  options.on_success = base::BindOnce(
+      [](TriggerInvokeFromInternalsActionCallback cb) {
+        std::move(cb).Run(true, "");
+      },
+      std::move(split_callback.first));
+
+  options.on_error = base::BindOnce(
+      [](TriggerInvokeFromInternalsActionCallback cb, GlicInvokeError error) {
+        std::string error_msg;
+        switch (error) {
+          case GlicInvokeError::kTimeout:
+            error_msg = "Timeout";
+            break;
+          case GlicInvokeError::kInvalidConversationId:
+            error_msg = "Invalid Conversation ID";
+            break;
+          case GlicInvokeError::kInvalidTab:
+            error_msg = "Invalid Tab";
+            break;
+          case GlicInvokeError::kTabClosed:
+            error_msg = "Tab Closed";
+            break;
+          case GlicInvokeError::kInstanceDestroyed:
+            error_msg = "Instance Destroyed";
+            break;
+          case GlicInvokeError::kInvokeInProgress:
+            error_msg = "Invoke In Progress";
+            break;
+          case GlicInvokeError::kUnknown:
+          default:
+            error_msg = "Unknown Error";
+            break;
+        }
+        std::move(cb).Run(false, error_msg);
+      },
+      std::move(split_callback.second));
+
+  if (mojo_options->auto_submit) {
+    service->InvokeWithAutoSubmit(
+        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab,
+        std::move(options));
+  } else {
+    static_cast<GlicInstanceCoordinatorImpl&>(service->window_controller())
+        .Invoke(tab, std::move(options));
+  }
 }
 
 }  // namespace glic

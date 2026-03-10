@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic.mojom-webui.js';
+import {ActuationEligibility, AllowedInflightNavigation, InternalsPageHandlerFactory, InternalsPageHandlerRemote, InvocationSource} from '../glic.mojom-webui.js';
 import type {InternalsDataPayload} from '../glic.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
@@ -29,10 +30,22 @@ export class GlicInternalsAppElement extends CrLitElement {
   static override get properties() {
     return {
       data_: {type: Object},
+      invokePrompt_: {type: String},
+      invokeAutoSubmit_: {type: Boolean},
+      invokeLogs_: {type: Array},
+      selectedTabIndex_: {type: Number},
+      tabNames_: {type: Array},
     };
   }
 
   protected accessor data_: InternalsDataPayload|undefined;
+  protected accessor invokePrompt_: string = '';
+  protected accessor invokeAutoSubmit_: boolean = true;
+  protected accessor invokeLogs_: string[] = [];
+  protected accessor selectedTabIndex_: number = 0;
+  protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
+
+
 
   private pageHandler_ = new InternalsPageHandlerRemote();
 
@@ -152,6 +165,48 @@ export class GlicInternalsAppElement extends CrLitElement {
         value: !this.data_.enablement.actuationNotConsented,
       },
     ];
+  }
+
+  protected onInvokePromptInput_(e: Event) {
+    this.invokePrompt_ = (e.target as HTMLInputElement).value;
+  }
+
+  protected onInvokeAutoSubmitChange_(e: Event) {
+    this.invokeAutoSubmit_ = (e.target as HTMLInputElement).checked;
+  }
+
+  protected onTriggerInvokeClick_() {
+    this.invokeLogs_ =
+        [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
+    console.info(this.invokeLogs_[0]);
+
+    const options = {
+      invocationSource: InvocationSource.kOsButton,
+      prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
+      additionalContext: null,
+      conversation: {defaultConversation: {}},
+      featureMode: null,
+      disableZss: false,
+      skillId: null,
+      errorMessage: null,
+      timeout: null,
+      allowedInflightNavigation: AllowedInflightNavigation.kNone,
+      autoSubmit: this.invokeAutoSubmit_,
+    };
+
+    this.pageHandler_.triggerInvokeFromInternalsAction(options).then(
+        ({success, errorMessage}) => {
+          const timestamp = new Date().toLocaleTimeString();
+          const logEntry = `[${timestamp}] ${
+              success ? 'SUCCESS' : 'ERROR: ' + errorMessage}`;
+          this.invokeLogs_ = [...this.invokeLogs_, logEntry];
+          console.info(logEntry);
+        });
+  }
+
+  protected onSelectedTabIndexSelectedChanged_(
+      e: CustomEvent<{value: number}>) {
+    this.selectedTabIndex_ = e.detail.value;
   }
 }
 

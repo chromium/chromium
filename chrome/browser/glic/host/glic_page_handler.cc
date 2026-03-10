@@ -2598,8 +2598,6 @@ void GlicPageHandler::WebUiStateChanged(glic::mojom::WebUiState new_state) {
   host().WebUiStateChanged(this, new_state);
 }
 
-
-
 void GlicPageHandler::PanelStateChanged(
     const glic::mojom::PanelState& panel_state,
     const PanelStateContext& context) {
