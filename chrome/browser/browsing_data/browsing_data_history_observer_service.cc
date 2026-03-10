@@ -126,6 +126,10 @@ BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
 BrowsingDataHistoryObserverService::~BrowsingDataHistoryObserverService() =
     default;
 
+void BrowsingDataHistoryObserverService::Shutdown() {
+  history_observation_.Reset();
+}
+
 void BrowsingDataHistoryObserverService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {

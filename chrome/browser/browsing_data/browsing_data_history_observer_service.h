@@ -34,6 +34,9 @@ class BrowsingDataHistoryObserverService
 
   ~BrowsingDataHistoryObserverService() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
