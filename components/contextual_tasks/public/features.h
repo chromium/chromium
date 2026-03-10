@@ -55,6 +55,9 @@ BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 
+// Enables the use of Stratus dark mode colors.
+BASE_DECLARE_FEATURE(kContextualTasksUseStratusDarkModeColors);
+
 // Enables use of TabListInterface::InsertWebContentsAt in
 // ContextualTasksUiService.
 BASE_DECLARE_FEATURE(kContextualTasksInsertWebContentsAt);
@@ -253,6 +256,9 @@ extern bool ShouldEnableCookieSync();
 // Returns whether the input plate can be locked and unlocked by a message
 // from AIM.
 extern bool ShouldEnableLockAndUnlockInputCapability();
+
+// Returns whether the Stratus dark mode colors should be used.
+extern bool ShouldUseStratusDarkModeColors();
 
 // Returns whether the file hint is enabled in the composebox.
 extern bool GetEnableFileHint();

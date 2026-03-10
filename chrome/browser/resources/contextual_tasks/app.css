@@ -243,6 +243,85 @@
   --color-searchbox-results-foreground: rgba(255, 255, 255, 1);
 }
 
+:host([use-stratus-dark-mode-colors_][dark-mode_]) {
+  /* New color variables for Stratus dark mode colors. */
+  --surface-background-color: rgba(34, 36, 43, 1);
+  --surface-container-color: rgba(44, 46, 54, 1);
+  --surface-container-high-color: rgba(54, 56, 64, 1);
+  --surface-container-highest-color: rgba(66, 68, 77, 1);
+  --surface-highest-container-button-hover-color: rgba(66, 68, 77, 1);
+  --divider-color: rgba(54, 56, 64, 1);
+  --divider-variant-color: rgba(79, 81, 89, 1);
+  --outline-color: rgba(54, 56, 64, 1);
+  --outline-variant-color: rgba(79, 81, 89, 1);
+  --on-surface-default-text-color: rgba(230, 232, 240, 1);
+  --on-surface-default-disabled-text-color: rgba(230, 232, 240, 0.38);
+  --on-surface-emphasis-text-color: rgba(230, 232, 240, 1);
+  --on-surface-de-emphasis-text-color: rgba(173, 175, 184, 1);
+
+  /* Panel surface colors */
+  --search-background-color: var(--surface-background-color);
+  --search-background-color-rgb: 34, 36, 42;
+
+  /* Composebox colors */
+  --color-composebox-input-plate-outline: var(--outline-color);
+  --cr-composebox-background-color: var(--surface-container-color);
+
+  /* Font colors */
+  --color-composebox-font: var(--on-surface-default-text-color);
+  --color-composebox-font-dark: var(--on-surface-de-emphasis-text-color);
+  --color-composebox-font-light: var(--on-surface-emphasis-text-color);
+  --color-zero-state-greeting: var(--on-surface-default-text-color);
+  --color-composebox-file-chip-text: var(--on-surface-default-text-color);
+  --cr-primary-text-color: var(--on-surface-default-text-color);
+
+  /* File chip colors */
+  --color-composebox-file-chip-background:
+    var(--surface-container-highest-color);
+  --color-composebox-file-chip-background-hovered:
+    var(--surface-highest-container-button-hover-color);
+
+  /* Composebox button colors */
+  --color-composebox-voice-lens-button: var(--on-surface-default-text-color);
+  --color-composebox-cancel-button: var(--on-surface-default-text-color);
+  --color-composebox-hover: var(--surface-highest-container-button-hover-color);
+  --color-composebox-lens-active-background:
+    var(--surface-highest-container-button-hover-color);
+  --color-searchbox-results-background-hovered:
+    var(--surface-highest-container-button-hover-color);
+
+  /* Toolbar Menu colors  */
+  --toolbar-menu-background-color: var(--surface-background-color);
+  --toolbar-divider-color: var(--divider-variant-color);
+  --toolbar-text-color: var(--on-surface-default-text-color);
+
+  /* Active tool chip colors */
+  --color-composebox-context-entrypoint-hover-background:
+    var(--surface-container-highest-color);
+  --color-searchbox-results-foreground:
+    var(--on-surface-default-text-color);
+
+  /* Tool menu colors */
+  --color-composebox-background: var(--surface-background-color);
+  --color-menu-background: var(--cr-menu-background-color);
+  --cr-menu-background-color: var(--surface-background-color);
+  --color-composebox-file-carousel-divider: var(--divider-color);
+  --color-composebox-context-entrypoint-text-disabled:
+    var(--on-surface-default-disabled-text-color);
+
+  /* Onboarding tooltip colors */
+  --paper-tooltip-background: var(--surface-container-high-color);
+  --paper-tooltip-text-color: var(--on-surface-default-text-color);
+
+  /* Suggest colors */
+  --color-composebox-zero-state-suggestions-background-hovered:
+    var(--surface-highest-container-button-hover-color);
+  --color-composebox-loading-start: var(--surface-container-color);
+  --color-suggestions-background-loading:var(--surface-container-color);
+  --color-zero-state-match-icon: var(--on-surface-de-emphasis-text-color);
+  --color-zero-state-match-text: var(--on-surface-de-emphasis-text-color);
+}
+
 [hidden] {
   display: none !important;
 }
