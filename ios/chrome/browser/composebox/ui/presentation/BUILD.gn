@@ -11,6 +11,7 @@ source_set("presentation") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/ui:ui_constants",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/shared/public/commands",
