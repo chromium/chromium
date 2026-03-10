@@ -496,29 +496,22 @@ void FuchsiaVideoDecoder::OnStreamProcessorAllocateOutputBuffers(
   constraints.set_min_buffer_count_for_shared_slack(kMaxUsedOutputBuffers -
                                                     kOutputBuffersForCamping);
 
-  for (size_t pixel_format_index = 0;
-       pixel_format_index < std::size(kSupportedPixelFormats);
-       ++pixel_format_index) {
+  for (const auto& pixel_format : kSupportedPixelFormats) {
     auto& image_constraints =
         constraints.mutable_image_format_constraints()->emplace_back();
-    image_constraints.set_pixel_format(
-        UNSAFE_TODO(kSupportedPixelFormats[pixel_format_index]));
+    image_constraints.set_pixel_format(pixel_format);
     image_constraints.set_pixel_format_modifier(
         fuchsia::images2::PixelFormatModifier::LINEAR);
 
-    for (size_t i = 0; i < std::size(kSupportedColorSpaces); ++i) {
-      image_constraints.mutable_color_spaces()->emplace_back(
-          UNSAFE_TODO(kSupportedColorSpaces[i]));
+    for (const auto& color_space : kSupportedColorSpaces) {
+      image_constraints.mutable_color_spaces()->emplace_back(color_space);
     }
   }
 
   auto min_buffer_size = GetMinBufferSize();
   if (min_buffer_size) {
-    for (size_t pixel_format_index = 0;
-         pixel_format_index < std::size(kSupportedPixelFormats);
-         ++pixel_format_index) {
-      auto& image_constraints = constraints.mutable_image_format_constraints()->at(
-          pixel_format_index);
+    for (auto& image_constraints :
+         *constraints.mutable_image_format_constraints()) {
       image_constraints.set_required_max_size(fuchsia::math::SizeU{
           static_cast<uint32_t>(min_buffer_size->width()),
           static_cast<uint32_t>(min_buffer_size->height())});
