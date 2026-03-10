@@ -314,10 +314,10 @@
   </message>
 
   <!-- Glic button and tab strip context menu -->
-  <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">
+  <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned." formatter_data="android_java">
     Pin Gemini
   </message>
-  <message name="IDS_GLIC_UNPIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned.">
+  <message name="IDS_GLIC_UNPIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned." formatter_data="android_java">
     Unpin Gemini
   </message>
 
@@ -401,7 +401,7 @@
   </message>
 
   <!-- Glic button context menu. -->
-  <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
+  <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic." formatter_data="android_java">
     Unpin
   </message>
 

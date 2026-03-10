@@ -91,7 +91,7 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
         assertEquals(1, adapter.getCount());
         PropertyModel model = ((ListItem) adapter.getItem(0)).model;
-        assertEquals(R.string.menu_unpin_glic_button, model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(R.string.glic_button_cxmenu_unpin, model.get(ListMenuItemProperties.TITLE_ID));
 
         // Click "Unpin".
         mCoordinator.getListMenuDelegate().onItemSelected(model, listView);

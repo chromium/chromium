@@ -52,7 +52,7 @@ public class GlicButtonContextMenuCoordinator {
         ModelList modelList = new ModelList();
         modelList.add(
                 new ListItemBuilder()
-                        .withTitleRes(R.string.menu_unpin_glic_button)
+                        .withTitleRes(R.string.glic_button_cxmenu_unpin)
                         .withMenuId(R.id.unpin_glic)
                         .withIsIncognito(false)
                         .build());

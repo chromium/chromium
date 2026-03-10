@@ -182,14 +182,14 @@ public class TabStripContextMenuCoordinator {
                 if (isPinned) {
                     itemList.add(
                             new ListItemBuilder()
-                                    .withTitleRes(R.string.menu_unpin_glic)
+                                    .withTitleRes(R.string.glic_unpin)
                                     .withMenuId(R.id.unpin_glic)
                                     .withIsIncognito(false)
                                     .build());
                 } else {
                     itemList.add(
                             new ListItemBuilder()
-                                    .withTitleRes(R.string.menu_pin_glic)
+                                    .withTitleRes(R.string.glic_pin)
                                     .withMenuId(R.id.pin_glic)
                                     .withIsIncognito(false)
                                     .build());

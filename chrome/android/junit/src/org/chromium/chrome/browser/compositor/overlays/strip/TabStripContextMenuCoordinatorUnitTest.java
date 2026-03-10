@@ -224,8 +224,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 6);
         assertEquals(
-                R.string.menu_pin_glic,
-                getItemModelAtPosition(5).get(ListMenuItemProperties.TITLE_ID));
+                R.string.glic_pin, getItemModelAtPosition(5).get(ListMenuItemProperties.TITLE_ID));
 
         // Act: Select "Pin Gemini" option.
         mCoordinator
@@ -247,7 +246,7 @@ public class TabStripContextMenuCoordinatorUnitTest {
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 6);
         assertEquals(
-                R.string.menu_unpin_glic,
+                R.string.glic_unpin,
                 getItemModelAtPosition(5).get(ListMenuItemProperties.TITLE_ID));
 
         // Act: Select "Unpin Gemini" option.
