@@ -352,6 +352,7 @@ static_library("ui") {
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/search_engines",
+    "//chrome/browser/search_provider_logos",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/sessions",
     "//chrome/browser/share",

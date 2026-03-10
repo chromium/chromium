@@ -4217,6 +4217,7 @@ if (!is_android) {
       "//chrome/browser/preloading/prefetch:test_support",
       "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/resource_coordinator",
+      "//chrome/browser/search_provider_logos",
       "//chrome/browser/sessions",
       "//chrome/browser/sharing",
       "//chrome/browser/signin:signin_promo",
