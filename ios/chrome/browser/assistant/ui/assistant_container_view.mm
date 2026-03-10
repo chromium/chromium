@@ -21,16 +21,10 @@ constexpr CGFloat kGrabberHeight = 4.0;
 constexpr CGFloat kGrabberTopMargin = 5.0;
 constexpr CGFloat kGrabberAlpha = 0.24;
 
-// Content styling.
-constexpr CGFloat kContentTopMargin = 16.0;
-
 }  // namespace
 
 @implementation AssistantContainerView {
-  UIView* _scrollContainerView;
-  UIScrollView* _scrollView;
   UIView* _grabberView;
-  CAGradientLayer* _maskLayer;
   CGFloat _cornerRadius;
   CACornerMask _maskedCorners;
 }
@@ -75,8 +69,6 @@ constexpr CGFloat kContentTopMargin = 16.0;
                   byRoundingCorners:rectCorners
                         cornerRadii:CGSizeMake(_cornerRadius, _cornerRadius)]
           .CGPath;
-
-  [self updateScrollContainerMask];
 }
 
 #pragma mark - Private
@@ -109,34 +101,12 @@ constexpr CGFloat kContentTopMargin = 16.0;
 
 // Sets up the view hierarchy by creating and adding subviews.
 - (void)setUpSubviews {
-  _scrollContainerView = [[UIView alloc] init];
-  _scrollContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self addSubview:_scrollContainerView];
-
-  // Initialize the gradient mask layer to fade out content at the top.
-  _maskLayer = [CAGradientLayer layer];
-  _maskLayer.colors = @[
-    (id)[UIColor clearColor].CGColor, (id)[UIColor blackColor].CGColor,
-    (id)[UIColor blackColor].CGColor
-  ];
-  _scrollContainerView.layer.mask = _maskLayer;
-
-  _scrollView = [[UIScrollView alloc] init];
-  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_scrollContainerView addSubview:_scrollView];
-
   _contentView = [[UIView alloc] init];
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_scrollView addSubview:_contentView];
+  [self addSubview:_contentView];
 
   _grabberView = [self createGrabberView];
   [self addSubview:_grabberView];
-
-  // Add a low-priority height constraint to allow content to fill the scroll
-  // view if it's smaller, while still allowing it to grow larger.
-  NSLayoutConstraint* contentViewHeightConstraint = [_contentView.heightAnchor
-      constraintGreaterThanOrEqualToAnchor:_scrollView.heightAnchor];
-  contentViewHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
   [NSLayoutConstraint activateConstraints:@[
     // Grabber view constraints.
@@ -145,18 +115,9 @@ constexpr CGFloat kContentTopMargin = 16.0;
                                            constant:kGrabberTopMargin],
     [_grabberView.widthAnchor constraintEqualToConstant:kGrabberWidth],
     [_grabberView.heightAnchor constraintEqualToConstant:kGrabberHeight],
-
-    // Content view constraints.
-    [_contentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [_contentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [_contentView.topAnchor constraintEqualToAnchor:_scrollView.topAnchor],
-    [_contentView.bottomAnchor
-        constraintEqualToAnchor:_scrollView.bottomAnchor],
-    contentViewHeightConstraint,
   ]];
 
-  AddSameConstraints(_scrollContainerView, self);
-  AddSameConstraints(_scrollContainerView, _scrollView);
+  AddSameConstraints(_contentView, self);
 }
 
 // Creates and configures the grabber view.
@@ -167,22 +128,6 @@ constexpr CGFloat kContentTopMargin = 16.0;
       [[UIColor blackColor] colorWithAlphaComponent:kGrabberAlpha];
   grabberView.layer.cornerRadius = kGrabberHeight / 2.0;
   return grabberView;
-}
-
-// Updates the gradient mask over the scroll container to ensure
-// exactly the top `kContentTopMargin` is faded out.
-- (void)updateScrollContainerMask {
-  _maskLayer.frame = _scrollContainerView.bounds;
-
-  CGFloat containerHeight = _scrollContainerView.bounds.size.height;
-  if (containerHeight <= 0) {
-    return;
-  }
-
-  // To ensure exactly `kContentTopMargin` points are faded out the ratio must
-  // be calculated dynamically.
-  CGFloat fadeRatio = MIN(1.0, kContentTopMargin / containerHeight);
-  _maskLayer.locations = @[ @0.0, @(fadeRatio), @1.0 ];
 }
 
 @end

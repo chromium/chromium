@@ -14,11 +14,8 @@
 // +----------------------------------+
 // |             Grabber              |
 // +----------------------------------+
-// |           scrollView             |
-// |  +----------------------------+  |
-// |  |        contentView         |  |
-// |  |  (Child VC View goes here) |  |
-// |  +----------------------------+  |
+// |           contentView            |
+// |    (Child VC View goes here)     |
 // +----------------------------------+
 @interface AssistantContainerView : UIView
 
