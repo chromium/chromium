@@ -183,6 +183,7 @@ SidePanelHeaderController::CreateOpenNewTabButton() {
                      side_panel_entry_->GetOpenInNewTabURL().is_valid());
   button->SetProperty(views::kElementIdentifierKey,
                       kSidePanelOpenInNewTabButtonElementId);
+  button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   open_new_tab_button_ = button.get();
   return button;
@@ -200,6 +201,7 @@ SidePanelHeaderController::CreateMoreInfoButton() {
       IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP));
   button->SetProperty(views::kElementIdentifierKey,
                       kSidePanelMoreInfoButtonElementId);
+  button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   // A menu button controller is used so that the button remains pressed while
   // the menu is open.
@@ -227,6 +229,7 @@ SidePanelHeaderController::CreateCloseButton() {
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_CLOSE));
   button->SetProperty(views::kElementIdentifierKey,
                       kSidePanelCloseButtonElementId);
+  button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   close_button_ = button.get();
   return button;
 }
