@@ -10,7 +10,12 @@ from collections import Counter
 from typing import FrozenSet, Iterator, List, NamedTuple, Optional, Tuple
 
 
-class LineType(enum.Enum):
+class LineType(enum.StrEnum):
+    """The type of line in a testharness test `-expected.txt`.
+
+    The values are prefixes that start each line in `-expected.txt`. Consult
+    `/resources/testdriver-vendor.js` for how the output is produced.
+    """
     TESTHARNESS_HEADER = 'This is a testharness.js-based test.'
     WDSPEC_HEADER = 'This is a wdspec test.'
     FOOTER = 'Harness: the test ran to completion.'
