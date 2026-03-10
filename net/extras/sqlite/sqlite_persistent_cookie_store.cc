@@ -182,14 +182,14 @@ namespace {
 //
 // Version 24 - 2024/08/15 - https://crrev.com/c/5792044
 // Version 23 - 2024/04/10 - https://crrev.com/c/5169630
-// Version 22 - 2024/03/22 - https://crrev.com/c/5378176
 //
 // Versions older than two years should be removed and marked as unsupported.
-// This was last done in February 2026. https://crrev.com/c/7559075
+// This was last done in March 2026. https://crrev.com/c/7620217
 // Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
 // to test the latest unsupported version number.
 //
 // Unsupported versions:
+// Version 22 - 2024/03/22 - https://crrev.com/c/5378176
 // Version 21 - 2023/11/22 - https://crrev.com/c/5049032
 // Version 20 - 2023/11/14 - https://crrev.com/c/5030577
 // Version 19 - 2023/09/22 - https://crrev.com/c/4704672
@@ -640,7 +640,7 @@ CookieSourceScheme DBToCookieSourceScheme(int value) {
   return static_cast<CookieSourceScheme>(value);
 }
 
-bool CreateV23Schema(sql::Database* db) {
+bool CreateV24Schema(sql::Database* db) {
   CHECK(!db->DoesTableExist("cookies"));
 
   static constexpr char kCreateTableQuery[] =
@@ -672,11 +672,6 @@ bool CreateV23Schema(sql::Database* db) {
       "name, path, source_scheme, source_port)";
 
   return db->Execute(kCreateTableQuery) && db->Execute(kCreateIndexQuery);
-}
-
-// v24 schema is identical to v23 schema.
-bool CreateV24Schema(sql::Database* db) {
-  return CreateV23Schema(db);
 }
 
 }  // namespace
@@ -1047,75 +1042,6 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
 std::optional<int>
 SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-
-  if (cur_version == 22) {
-    SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV23");
-    sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      return std::nullopt;
-    }
-
-    if (!db()->Execute("DROP TABLE IF EXISTS cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("ALTER TABLE cookies RENAME TO cookies_old")) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP INDEX IF EXISTS cookies_unique_index")) {
-      return std::nullopt;
-    }
-
-    if (!CreateV23Schema(db())) {
-      return std::nullopt;
-    }
-    /*
-     For the case statement setting source_scheme,
-     value of 0 reflects int value of CookieSourceScheme::kUnset
-     value of 2 reflects int value of CookieSourceScheme::kSecure
-
-     For the case statement setting has_cross_site_ancestor, it has the
-     potential to have a origin mismatch due to substring operations.
-      EX: the domain ample.com will appear as a substring of the domain
-      example.com even though they are different origins.
-     We are ok with this because the other elements of the UNIQUE INDEX
-     will always be different preventing accidental access.
-    */
-
-    static constexpr char insert_cookies_sql[] =
-        "INSERT OR REPLACE INTO cookies "
-        "(creation_utc, host_key, top_frame_site_key, name, value, "
-        "encrypted_value, path, expires_utc, is_secure, is_httponly, "
-        "last_access_utc, has_expires, is_persistent, priority, samesite, "
-        "source_scheme, source_port, last_update_utc, source_type, "
-        "has_cross_site_ancestor) "
-        "SELECT creation_utc, host_key, top_frame_site_key, name, value,"
-        "       encrypted_value, path, expires_utc, is_secure, is_httponly,"
-        "       last_access_utc, has_expires, is_persistent, priority, "
-        "       samesite, "
-        "       CASE WHEN source_scheme = 0 AND is_secure = 1 "
-        "           THEN 2 ELSE source_scheme END, "
-        "       source_port, last_update_utc, source_type, "
-        "       CASE WHEN INSTR(top_frame_site_key, '://') > 0 AND host_key "
-        "           LIKE CONCAT('%', SUBSTR(top_frame_site_key, "
-        "           INSTR(top_frame_site_key,'://') + 3),  '%') "
-        "           THEN 0 ELSE 1 "
-        "           END AS has_cross_site_ancestor "
-        "FROM cookies_old ORDER BY creation_utc ASC";
-    if (!db()->Execute(insert_cookies_sql)) {
-      return std::nullopt;
-    }
-    if (!db()->Execute("DROP TABLE cookies_old")) {
-      return std::nullopt;
-    }
-
-    ++cur_version;
-    if (!meta_table()->SetVersionNumber(cur_version) ||
-        !meta_table()->SetCompatibleVersionNumber(
-            std::min(cur_version, kCompatibleVersionNumber)) ||
-        !transaction.Commit()) {
-      return std::nullopt;
-    }
-  }
 
   if (cur_version == 23) {
     SCOPED_UMA_HISTOGRAM_TIMER("Cookie.TimeDatabaseMigrationToV24");
