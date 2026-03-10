@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/picture_in_picture/ui/picture_in_picture_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Key path for time control status.
@@ -24,6 +26,14 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 // Delay to wait before checking if the app was restored from picture in
 // picture or manually (App switcher, App icon...).
 constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(50);
+// Accessibility label for the picture in picture view controller.
+NSString* accessibilityLabel(PictureInPictureFeature feature) {
+  switch (feature) {
+    case PictureInPictureFeature::kDefaultBrowser:
+      return l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_PIP_ACCESSIBILITY_ANNOUNCEMENT);
+  }
+}
 }  // namespace
 
 @interface PictureInPictureViewController () <
@@ -125,6 +135,9 @@ constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(50);
 - (void)configurePlayer {
   // Configure the player view.
   _playerView = [[UIView alloc] init];
+  _playerView.isAccessibilityElement = YES;
+  _playerView.accessibilityTraits = UIAccessibilityTraitStartsMediaSession;
+  _playerView.accessibilityLabel = accessibilityLabel(_feature);
   _playerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.contentView addSubview:_playerView];
   [NSLayoutConstraint activateConstraints:@[
