@@ -98,6 +98,9 @@ class EntityDataManager
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Adds an entity if it doesn't exist in the database yet; otherwise updates
   // it.
   void AddOrUpdateEntityInstance(EntityInstance entity);

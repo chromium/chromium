@@ -50,6 +50,9 @@ class AutofillAiModelCacheImpl : public AutofillAiModelCache,
   AutofillAiModelCacheImpl& operator=(AutofillAiModelCacheImpl&&) = delete;
   ~AutofillAiModelCacheImpl() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // AutofillAiModelCache:
   void Update(FormSignature form_signature,
               ModelResponse response,

@@ -102,6 +102,10 @@ EntityDataManager::~EntityDataManager() {
   }
 }
 
+void EntityDataManager::Shutdown() {
+  history_service_observation_.Reset();
+}
+
 void EntityDataManager::LoadEntities() {
   if (pending_query_) {
     webdata_service_->CancelRequest(pending_query_);

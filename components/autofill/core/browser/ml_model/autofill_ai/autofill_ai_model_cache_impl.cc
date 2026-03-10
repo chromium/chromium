@@ -62,6 +62,10 @@ AutofillAiModelCacheImpl::AutofillAiModelCacheImpl(
 
 AutofillAiModelCacheImpl::~AutofillAiModelCacheImpl() = default;
 
+void AutofillAiModelCacheImpl::Shutdown() {
+  history_observation_.Reset();
+}
+
 void AutofillAiModelCacheImpl::Update(
     FormSignature form_signature,
     ModelResponse response,
