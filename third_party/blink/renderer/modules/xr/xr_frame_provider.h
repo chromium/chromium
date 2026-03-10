@@ -35,6 +35,11 @@ class XRWebGLLayer;
 class XrLayerClient;
 class XRFrameTransportDelegate;
 
+struct XRLayerUpdate {
+  device::LayerId layer_id;
+  std::unique_ptr<SharedImageHolder> current_frame_image;
+};
+
 // This class manages requesting and dispatching frame updates, which includes
 // pose information for a given XRDevice.
 class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
@@ -208,8 +213,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   // Temporarily store the images and ids for the current frame during layer
   // submitting. Will be empty after OnFrameEnd.
-  Vector<device::LayerId> layer_ids_;
-  Vector<std::unique_ptr<SharedImageHolder>> current_frame_images_;
+  Vector<XRLayerUpdate> layers_;
 };
 
 }  // namespace blink

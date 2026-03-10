@@ -702,7 +702,7 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
     // Image is written to shared buffer already. No need to hold it.
     DVLOG(3) << __func__ << ": FrameSubmit for SharedBuffer mode";
     any_layer_changed_ = true;
-    layer_ids_.push_back(layer_id);
+    layers_.emplace_back(layer_id, nullptr);
     return;
   } else {
     CHECK_NE(client->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU)
@@ -717,8 +717,7 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
   }
 
   any_layer_changed_ = true;
-  current_frame_images_.push_back(std::move(image_ref));
-  layer_ids_.push_back(layer_id);
+  layers_.emplace_back(layer_id, std::move(image_ref));
 }
 
 // TODO(bajones): This only works because we're restricted to a single layer at
@@ -812,8 +811,7 @@ void XRFrameProvider::UpdateLayerViewports(XRProjectionLayer* layer) {
 
 void XRFrameProvider::ClearCachedLayersData() {
   any_layer_changed_ = false;
-  current_frame_images_.clear();
-  layer_ids_.clear();
+  layers_.clear();
 }
 
 void XRFrameProvider::SubmitFrame(
@@ -830,8 +828,6 @@ void XRFrameProvider::SubmitFrame(
   // Ensure temporary data is always reset.
   bool was_any_layer_changed = any_layer_changed_;
   any_layer_changed_ = false;
-  auto image_refs = std::move(current_frame_images_);
-  auto layer_ids = std::move(layer_ids_);
 
   if (frame_id_ < 0) {
     // There is no valid frame_id_, and the browser side is not currently
@@ -864,12 +860,23 @@ void XRFrameProvider::SubmitFrame(
 
   frame_transport_->FramePreImage(transport_delegate);
 
+  size_t n_layers = layers_.size();
+  Vector<device::LayerId> layer_ids;
+  Vector<std::unique_ptr<SharedImageHolder>> image_refs;
+  layer_ids.reserve(n_layers);
+  image_refs.reserve(n_layers);
+
+  for (auto& layer : layers_) {
+    layer_ids.push_back(layer.layer_id);
+    image_refs.push_back(std::move(layer.current_frame_image));
+  }
+
   // The backend expects an empty layer ID list if the 'layers' feature is not
   // enabled.
   if (!layer_manager_.is_bound()) {
     // At this case, only a single layer should exist since the
     // layers feature is not enabled.
-    CHECK_EQ(layer_ids.size(), 1U);
+    CHECK_EQ(layers_.size(), 1U);
     layer_ids.clear();
   }
 
