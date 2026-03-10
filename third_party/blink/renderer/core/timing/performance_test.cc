@@ -254,8 +254,7 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
   ASSERT_TRUE(performance);
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), info, false, nullptr, window,
-      performance->NavigationId());
+      AtomicString("event"), info, false, window, performance->NavigationId());
 
   base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
                                      Performance::kDoNotRecordSwaps);
@@ -285,9 +284,9 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
         .processing_start_time = base_->MsAfterTimeOrigin(0),
         .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
-    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), info, false, nullptr, window,
-        performance->NavigationId());
+    PerformanceEventTiming* entry =
+        PerformanceEventTiming::Create(AtomicString("event"), info, false,
+                                       window, performance->NavigationId());
     test_buffer_.push_back(*entry);
   }
 
@@ -297,8 +296,7 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
       .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), info, false, nullptr, window,
-      performance->NavigationId());
+      AtomicString("event"), info, false, window, performance->NavigationId());
 
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
@@ -333,9 +331,9 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
         .processing_start_time = base_->MsAfterTimeOrigin(0),
         .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
-    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), info, false, nullptr, window,
-        performance->NavigationId());
+    PerformanceEventTiming* entry =
+        PerformanceEventTiming::Create(AtomicString("event"), info, false,
+                                       window, performance->NavigationId());
     test_buffer_.push_back(*entry);
   }
 
@@ -345,8 +343,7 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
       .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), info, false, nullptr, window,
-      performance->NavigationId());
+      AtomicString("event"), info, false, window, performance->NavigationId());
 
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
@@ -382,9 +379,9 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
         .processing_start_time = base_->MsAfterTimeOrigin(0),
         .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
-    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), info, false, nullptr, window,
-        performance->NavigationId());
+    PerformanceEventTiming* entry =
+        PerformanceEventTiming::Create(AtomicString("event"), info, false,
+                                       window, performance->NavigationId());
     first_vector.push_back(*entry);
     test_vector.push_back(*entry);
   }
@@ -397,9 +394,9 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
         .processing_start_time = base_->MsAfterTimeOrigin(0),
         .processing_end_time = base_->MsAfterTimeOrigin(0)};
 
-    PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), info, false, nullptr, window,
-        performance->NavigationId());
+    PerformanceEventTiming* entry =
+        PerformanceEventTiming::Create(AtomicString("event"), info, false,
+                                       window, performance->NavigationId());
     second_vector.push_back(*entry);
     test_vector.push_back(*entry);
   }

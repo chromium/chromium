@@ -1159,8 +1159,7 @@ void EventTarget::DispatchEnqueuedEvent(
   // hashchange (and has no effect for other enqueued events that are not
   // navigation events).
   NavigationEventTiming event_timing_scope(
-      ExecutingWindow() ? ExecutingWindow()->GetFrame() : nullptr, *event,
-      this);
+      ExecutingWindow() ? ExecutingWindow()->GetFrame() : nullptr, *event);
   DispatchEvent(*event);
 }
 

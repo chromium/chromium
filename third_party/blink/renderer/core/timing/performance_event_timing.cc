@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -24,14 +25,13 @@ PerformanceEventTiming* PerformanceEventTiming::Create(
     const AtomicString& event_type,
     EventTimingReportingInfo reporting_info,
     bool cancelable,
-    EventTarget* target,
     DOMWindow* source,
     uint64_t navigation_id,
     std::optional<PerformanceTimelineEntryIdInfo> interaction_id) {
   CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
       event_type, performance_entry_names::kEvent, std::move(reporting_info),
-      cancelable, target, source, navigation_id, interaction_id);
+      cancelable, source, navigation_id, interaction_id);
 }
 
 // static
@@ -41,9 +41,11 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
           *entry->GetEventTimingReportingInfo(), entry->cancelable(),
-          entry->target(), entry->source(), entry->navigationId(),
+          entry->source(), entry->navigationId(),
           entry->GetInteractionIdInfo());
   first_input->SetDuration(entry->duration_);
+  first_input->SetTarget(entry->target_);
+  first_input->SetTargetSelector(entry->target_selector_);
   return first_input;
 }
 
@@ -78,7 +80,6 @@ PerformanceEventTiming::PerformanceEventTiming(
     const AtomicString& entry_type,
     EventTimingReportingInfo reporting_info,
     bool cancelable,
-    EventTarget* target,
     DOMWindow* source,
     uint64_t navigation_id,
     std::optional<PerformanceTimelineEntryIdInfo> interaction_id)
@@ -93,9 +94,7 @@ PerformanceEventTiming::PerformanceEventTiming(
       entry_type_(entry_type),
       cancelable_(cancelable),
       interaction_id_(interaction_id),
-      reporting_info_(reporting_info) {
-  SetTarget(target);
-}
+      reporting_info_(reporting_info) {}
 
 PerformanceEventTiming::~PerformanceEventTiming() = default;
 
@@ -130,8 +129,11 @@ Node* PerformanceEventTiming::target() const {
 }
 
 void PerformanceEventTiming::SetTarget(EventTarget* target) {
-  target_selector_ = EventTargetToString(target);
   target_ = target ? target->ToNode() : nullptr;
+}
+
+void PerformanceEventTiming::SetTargetSelector(const AtomicString& selector) {
+  target_selector_ = selector;
 }
 
 uint64_t PerformanceEventTiming::interactionId() const {

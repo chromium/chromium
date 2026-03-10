@@ -117,8 +117,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // It will always return an instance of PerformanceEventTiming.
   PerformanceEventTiming* EventTimingProcessingStart(
       const Event& event,
-      base::TimeTicks processing_start,
-      EventTarget* hit_test_target);
+      base::TimeTicks processing_start);
   void EventTimingProcessingEnd(PerformanceEventTiming* entry,
                                 const Event& event,
                                 base::TimeTicks processing_end);

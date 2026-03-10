@@ -1013,7 +1013,7 @@ void LocalDOMWindow::DispatchPopstateEvent(
   DCHECK(GetFrame());
   auto* event = PopStateEvent::Create(std::move(state_object), history(),
                                       has_ua_visual_transition, involvement);
-  NavigationEventTiming event_timing_scope(GetFrame(), *event, this);
+  NavigationEventTiming event_timing_scope(GetFrame(), *event);
   DispatchEvent(*event);
 }
 LocalDOMWindow::~LocalDOMWindow() = default;

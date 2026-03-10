@@ -120,39 +120,30 @@ bool IsNavigationEventType(const Event& event) {
 
 }  // namespace
 
-UIEventTiming::UIEventTiming(LocalFrame* frame,
-                             const Event& event,
-                             EventTarget* hit_test_target) {
+UIEventTiming::UIEventTiming(LocalFrame* frame, const Event& event) {
   if (IsStandardEventType(event)) {
-    timing_.emplace(base::PassKey<UIEventTiming>(), frame, event,
-                    hit_test_target);
+    timing_.emplace(base::PassKey<UIEventTiming>(), frame, event);
   }
 }
 
 NavigationEventTiming::NavigationEventTiming(LocalFrame* frame,
-                                             const Event& event,
-                                             EventTarget* hit_test_target) {
+                                             const Event& event) {
   if (IsNavigationEventType(event)) {
-    timing_.emplace(base::PassKey<NavigationEventTiming>(), frame, event,
-                    hit_test_target);
+    timing_.emplace(base::PassKey<NavigationEventTiming>(), frame, event);
   }
 }
 
 EventTiming::EventTiming(base::PassKey<UIEventTiming>,
                          LocalFrame* frame,
-                         const Event& event,
-                         EventTarget* hit_test_target)
-    : EventTiming(frame, event, hit_test_target) {}
+                         const Event& event)
+    : EventTiming(frame, event) {}
 
 EventTiming::EventTiming(base::PassKey<NavigationEventTiming>,
                          LocalFrame* frame,
-                         const Event& event,
-                         EventTarget* hit_test_target)
-    : EventTiming(frame, event, hit_test_target) {}
+                         const Event& event)
+    : EventTiming(frame, event) {}
 
-EventTiming::EventTiming(LocalFrame* frame,
-                         const Event& event,
-                         EventTarget* hit_test_target) {
+EventTiming::EventTiming(LocalFrame* frame, const Event& event) {
   if (!frame) {
     return;
   }
@@ -179,8 +170,7 @@ EventTiming::EventTiming(LocalFrame* frame,
 
   performance_ = performance;
   event_ = &event;
-  entry_ = performance->EventTimingProcessingStart(event, processing_start,
-                                                   hit_test_target);
+  entry_ = performance->EventTimingProcessingStart(event, processing_start);
   CHECK(entry_);
 
   if (auto* heuristics = window->GetSoftNavigationHeuristics()) {

@@ -99,7 +99,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
       const AtomicString& event_type,
       EventTimingReportingInfo,
       bool cancelable,
-      EventTarget*,
       DOMWindow*,
       uint64_t navigation_id,
       std::optional<PerformanceTimelineEntryIdInfo> interaction_id =
@@ -114,7 +113,6 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
                          const AtomicString& entry_type,
                          EventTimingReportingInfo,
                          bool cancelable,
-                         EventTarget*,
                          DOMWindow*,
                          uint64_t navigation_id,
                          std::optional<PerformanceTimelineEntryIdInfo>
@@ -133,6 +131,7 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   Node* target() const;
 
   void SetTarget(EventTarget* target);
+  void SetTargetSelector(const AtomicString& selector);
 
   uint64_t interactionId() const;
 

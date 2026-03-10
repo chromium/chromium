@@ -31,7 +31,7 @@ PerformanceEventTiming* CreatePerformanceEventTimingForTest(
   reporting_info.frame_index = 1;
 
   return PerformanceEventTiming::Create(
-      event_type, reporting_info, /*cancelable=*/true, target, source,
+      event_type, reporting_info, /*cancelable=*/true, source,
       /*navigation_id=*/1, PerformanceTimelineEntryIdInfo(1, 1));
 }
 

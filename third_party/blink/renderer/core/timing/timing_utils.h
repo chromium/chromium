@@ -7,10 +7,18 @@
 namespace blink {
 
 class EventTarget;
+class EventPath;
 
 // Returns a string representation of an EventTarget, suitable for including in
 // performance timeline entries.
+// This may be used for non-UI events and is currently used by the Long
+// Animation Frames (LoAF) API.
 CORE_EXPORT AtomicString EventTargetToString(EventTarget*);
+
+// Returns a string representation of an EventPath (CSS selector style).
+// This is primarily intended for UI events where the propagation path
+// provides meaningful context about the interaction.
+CORE_EXPORT AtomicString EventPathToSelector(const EventPath&);
 
 }  // namespace blink
 

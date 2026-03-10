@@ -262,7 +262,8 @@ MouseEventManager::DispatchMouseEvent(
         HTMLDialogElement::HandleDialogLightDismissForClick(
             *pointer_down_target, *pointer_up_target);
       }
-      UIEventTiming event_timing(frame_, *event, target);
+      UIEventTiming event_timing(frame_, *event);
+
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
@@ -278,7 +279,8 @@ MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      UIEventTiming event_timing(frame_, *event, target);
+      UIEventTiming event_timing(frame_, *event);
+
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));

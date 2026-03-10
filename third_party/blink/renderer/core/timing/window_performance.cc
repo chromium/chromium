@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/ui_event.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -97,6 +98,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
@@ -564,8 +566,7 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
 
 PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
     const Event& event,
-    base::TimeTicks processing_start,
-    EventTarget* hit_test_target) {
+    base::TimeTicks processing_start) {
   CHECK(DomWindow());
   CHECK(DomWindow()->GetFrame());
   CHECK(!processing_start.is_null());
@@ -627,8 +628,8 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   // `target` can be non-null but detached from DOM and GC-ed before observer
   // fires.
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-      event_type, reporting_info, event.cancelable(), hit_test_target,
-      DomWindow(), NavigationId());
+      event_type, reporting_info, event.cancelable(), DomWindow(),
+      NavigationId());
   active_event_timing_entries_.push_back(entry);
   event_timing_entries_.push_back(entry);
   current_event_ = &event;
@@ -682,11 +683,19 @@ void WindowPerformance::EventTimingProcessingEnd(
 #endif  // BUILDFLAG(IS_MAC)
   }
 
-  if (event.RawTarget()) {
+  if (event.target()) {
     // `event->target()` is assigned as part of EventDispatch, and will be unset
     // whenever we skip dispatch. (See: crbug.com/1367329).
     // Note: target may be dom detached, and even GC-ed, before Observer fires.
-    entry->SetTarget(event.RawTarget());
+    entry->SetTarget(event.target());
+  }
+
+  if (RuntimeEnabledFeatures::EventTimingTargetSelectorEnabled()) {
+    if (event.IsUIEvent() && event.HasEventPath()) {
+      entry->SetTargetSelector(EventPathToSelector(event.GetEventPath()));
+    } else {
+      entry->SetTargetSelector(EventTargetToString(event.target()));
+    }
   }
 
   // A context menu can prevent next paint.

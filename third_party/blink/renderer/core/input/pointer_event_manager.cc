@@ -158,7 +158,7 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
   pointer_event->SetTrusted(true);
-  UIEventTiming event_timing(frame_, *pointer_event, target);
+  UIEventTiming event_timing(frame_, *pointer_event);
 
   if (event_type == event_type_names::kPointerdown ||
       event_type == event_type_names::kPointerover ||

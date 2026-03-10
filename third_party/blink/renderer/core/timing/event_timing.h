@@ -38,12 +38,10 @@ class CORE_EXPORT EventTiming final {
  public:
   EventTiming(base::PassKey<UIEventTiming>,
               LocalFrame* frame,
-              const Event& event,
-              EventTarget* hit_test_target);
+              const Event& event);
   EventTiming(base::PassKey<NavigationEventTiming>,
               LocalFrame* frame,
-              const Event& event,
-              EventTarget* hit_test_target);
+              const Event& event);
   ~EventTiming();
 
   EventTiming(const EventTiming&) = delete;
@@ -57,9 +55,7 @@ class CORE_EXPORT EventTiming final {
   }
 
  private:
-  EventTiming(LocalFrame* frame,
-              const Event& event,
-              EventTarget* hit_test_target);
+  EventTiming(LocalFrame* frame, const Event& event);
 
   WindowPerformance* performance_ = nullptr;
   const Event* event_ = nullptr;
@@ -71,9 +67,7 @@ class CORE_EXPORT UIEventTiming final {
   STACK_ALLOCATED();
 
  public:
-  UIEventTiming(LocalFrame* frame,
-                const Event& event,
-                EventTarget* hit_test_target);
+  UIEventTiming(LocalFrame* frame, const Event& event);
 
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     return timing_ ? timing_->GetInteractionIdInfo() : std::nullopt;
@@ -87,9 +81,7 @@ class CORE_EXPORT NavigationEventTiming final {
   STACK_ALLOCATED();
 
  public:
-  NavigationEventTiming(LocalFrame* frame,
-                        const Event& event,
-                        EventTarget* hit_test_target);
+  NavigationEventTiming(LocalFrame* frame, const Event& event);
 
   std::optional<PerformanceTimelineEntryIdInfo> GetInteractionIdInfo() const {
     return timing_ ? timing_->GetInteractionIdInfo() : std::nullopt;

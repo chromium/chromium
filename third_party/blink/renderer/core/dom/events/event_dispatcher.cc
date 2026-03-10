@@ -195,7 +195,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   auto& document = node_->GetDocument();
   LocalFrame* frame = document.GetFrame();
 
-  UIEventTiming event_timing(frame, *event_, event_->RawTarget());
+  UIEventTiming event_timing(frame, *event_);
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
       view_) {

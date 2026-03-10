@@ -861,7 +861,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // in the intercept() handlers, which can be dispatched async.  Investigate
     // ways to measure such multi-part + promise-awaiting events.
     NavigationEventTiming event_timing_scope(window_->GetFrame(),
-                                             *navigate_event, this);
+                                             *navigate_event);
     // Save interactionId for async `NavigateEvent::CommitNow()` use case.
     // Note: we don't use this to measure the navigate event continuation
     // (yet!), but to match `popstate` and `hashchange` events to this one.
