@@ -71,10 +71,26 @@ suite('TopToolbarTest', () => {
     });
 
     test('handles thread history button click', async () => {
+      topToolbar.isAiPage = true;
+      await microtasksFinished();
+
       const historyButton = topToolbar.$.threadHistoryButton;
       assertTrue(!!historyButton);
       historyButton.click();
       await proxy.handler.whenCalled('showThreadHistory');
+    });
+
+    test('hides thread history button on SRP', async () => {
+      const historyButton = topToolbar.$.threadHistoryButton;
+      assertTrue(!!historyButton);
+
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+      assertTrue(historyButton.hidden);
+
+      topToolbar.isAiPage = true;
+      await microtasksFinished();
+      assertFalse(historyButton.hidden);
     });
 
     test('handles close button click', async () => {
