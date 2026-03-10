@@ -300,6 +300,27 @@ class TestBrowserAutofillManagerWithTestCCAM
   FieldGlobalId last_trigger_field_id_;
 };
 
+class TestActorChromeAutofillClient : public TestContentAutofillClient {
+ public:
+  explicit TestActorChromeAutofillClient(content::WebContents* web_contents)
+      : TestContentAutofillClient(web_contents) {
+    recorder_ = std::make_unique<ActorKeyMetricsRecorder>(this);
+  }
+
+  std::unique_ptr<AutofillManager> CreateManager(
+      base::PassKey<ContentAutofillDriver> pass_key,
+      ContentAutofillDriver& driver) override {
+    return std::make_unique<TestBrowserAutofillManagerWithTestCCAM>(&driver);
+  }
+
+  ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder() override {
+    return recorder_.get();
+  }
+
+ private:
+  std::unique_ptr<ActorKeyMetricsRecorder> recorder_;
+};
+
 class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   ActorFormFillingServiceTest()
@@ -358,8 +379,9 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  TestContentAutofillClient& client() {
-    return CHECK_DEREF(autofill_client_injector_[web_contents()]);
+  TestActorChromeAutofillClient& client() {
+    return *static_cast<TestActorChromeAutofillClient*>(
+        autofill_client_injector_[web_contents()]);
   }
   TestCreditCardAccessManager& credit_card_access_manager() {
     return CHECK_DEREF(static_cast<TestCreditCardAccessManager*>(
@@ -375,7 +397,8 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     return CHECK_DEREF(autofill_driver_injector_[web_contents()]);
   }
   TestBrowserAutofillManagerWithTestCCAM& manager() {
-    return CHECK_DEREF(autofill_manager_injector_[web_contents()]);
+    return static_cast<TestBrowserAutofillManagerWithTestCCAM&>(
+        driver().GetAutofillManager());
   }
   ActorFormFillingService& service() { return service_; }
   tabs::TabInterface& tab() { return mock_tab; }
@@ -390,12 +413,10 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   tabs::MockTabInterface mock_tab;
-  TestAutofillClientInjector<TestContentAutofillClient>
+  TestAutofillClientInjector<TestActorChromeAutofillClient>
       autofill_client_injector_;
   TestAutofillDriverInjector<RecordingTestContentAutofillDriver>
       autofill_driver_injector_;
-  TestAutofillManagerInjector<TestBrowserAutofillManagerWithTestCCAM>
-      autofill_manager_injector_;
   ActorFormFillingServiceImpl service_;
   absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
 };

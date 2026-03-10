@@ -91,6 +91,7 @@ class AccessibilityQueryService;
 
 namespace autofill {
 
+class ActorKeyMetricsRecorder;
 class AutofillManager;
 class AddressNormalizer;
 class AutocompleteHistoryManager;
@@ -585,6 +586,9 @@ class AutofillClient {
   // Returns whether there is an active actor task for this client's tab (if
   // one exists).
   virtual bool IsTabInActorMode() const;
+
+  // Returns the `ActorKeyMetricsRecorder` for the current tab (if one exists).
+  virtual ActorKeyMetricsRecorder* GetActorKeyMetricsRecorder();
 
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;

@@ -27,8 +27,19 @@ ActorKeyMetricsRecorder::ProductState&
 ActorKeyMetricsRecorder::ProductState::operator=(ProductState&&) = default;
 ActorKeyMetricsRecorder::ProductState::~ProductState() = default;
 
-ActorKeyMetricsRecorder::ActorKeyMetricsRecorder() = default;
+ActorKeyMetricsRecorder::ActorKeyMetricsRecorder(AutofillClient* client) {
+  if (managers_observation_.autofill_driver_factory() == nullptr) {
+    managers_observation_.Observe(
+        client, ScopedAutofillManagersObservation::InitializationPolicy::
+                    kObservePreexistingManagers);
+  }
+}
+
 ActorKeyMetricsRecorder::~ActorKeyMetricsRecorder() = default;
+
+void ActorKeyMetricsRecorder::RecordFormToFill(FormGlobalId form_id) {
+  forms_to_fill_.insert(form_id);
+}
 
 void ActorKeyMetricsRecorder::OnSuggestionsGenerated(
     FormGlobalId form_id,
@@ -38,25 +49,44 @@ void ActorKeyMetricsRecorder::OnSuggestionsGenerated(
   }
 }
 
-void ActorKeyMetricsRecorder::OnFormFilled(
-    FormGlobalId form_id,
-    base::span<const FieldGlobalId> field_ids,
-    const base::flat_set<FillingProduct>& products) {
-  for (FillingProduct product : products) {
-    states_[std::to_underlying(product)].actor_filled_fields[form_id].insert(
-        field_ids.begin(), field_ids.end());
-  }
-}
-
-void ActorKeyMetricsRecorder::OnFormsRemoved(
-    base::span<const FormGlobalId> form_ids) {
-  for (const FormGlobalId& form_id : form_ids) {
+void ActorKeyMetricsRecorder::OnAfterFormsSeen(
+    AutofillManager& manager,
+    base::span<const FormGlobalId> updated_forms,
+    base::span<const FormGlobalId> removed_forms) {
+  for (const FormGlobalId& form_id : removed_forms) {
+    forms_to_fill_.erase(form_id);
     for (ProductState& state : states_) {
       state.recorded_forms.erase(form_id);
       state.with_actor_suggestions.erase(form_id);
       state.actor_filled_fields.erase(form_id);
     }
   }
+}
+
+void ActorKeyMetricsRecorder::OnAfterFormSubmitted(AutofillManager& manager,
+                                                   const FormData& form) {
+  if (const FormStructure* form_structure =
+          manager.FindCachedFormById(form.global_id())) {
+    RecordKeyMetrics(manager, *form_structure);
+  }
+  forms_to_fill_.erase(form.global_id());
+}
+
+void ActorKeyMetricsRecorder::OnFillOrPreviewForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    mojom::ActionPersistence action_persistence,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const FillingPayload& filling_payload) {
+  if (!forms_to_fill_.contains(form_id)) {
+    return;
+  }
+  FillingProduct product =
+      std::holds_alternative<const CreditCard*>(filling_payload)
+          ? FillingProduct::kCreditCard
+          : FillingProduct::kAddress;
+  states_[std::to_underlying(product)].actor_filled_fields[form_id].insert(
+      filled_field_ids.begin(), filled_field_ids.end());
 }
 
 void ActorKeyMetricsRecorder::RecordKeyMetrics(
