@@ -1840,7 +1840,7 @@ bool Element::IsDialogInTopLayer() {
 // foo was opened with `foo.showPopover()` (no invoker specified), then this
 // function will return nullptr.
 HTMLElement* Element::GetOpenPopoverTarget() const {
-  if (!IsFocusable() || !IsInTreeScope()) {
+  if (!IsInTreeScope()) {
     return nullptr;
   }
   InvokerData* data = GetInvokerData();
