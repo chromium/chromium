@@ -199,6 +199,7 @@ fuzzer_test("cast_message_fuzzer") {
     "//base",
     "//components/media_router/common/providers/cast/channel",
     "//net",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
   seed_corpus = "fuzz_corpus"
