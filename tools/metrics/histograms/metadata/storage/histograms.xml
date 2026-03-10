@@ -33,8 +33,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="IndexedDBBackingStoreType">
-  <variant name="InMemory"/>
-  <variant name="OnDisk"/>
+  <variant name="Experimental"
+      summary="experimental (belongs to the treatment or control group of an
+               experiment targeting on-disk backing stores)"/>
+  <variant name="InMemory" summary="in-memory"/>
+  <variant name="OnDisk" summary="on-disk"/>
 </variants>
 
 <variants name="IndexedDBTransactionCount">

@@ -31,6 +31,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -3031,34 +3032,50 @@ class IndexedDBTestForSqliteMigration
   struct Expectation {
     StoreInitResult result;
     bool is_sqlite;
+    std::string_view histogram_suffix = ".OnDisk";
   };
 
   static constexpr const bool kIsSqlite = true;
   static constexpr const bool kIsLevelDb = false;
+  static constexpr const std::string_view kExperimentalSuffix = ".Experimental";
 
   void ValidateExpectationsForStage(
       SqliteRolloutStage stage,
       std::map<StoreType, Expectation> expectations) {
     ASSERT_EQ(expectations.size(), buckets_.size());
     for (const auto& [bucket_type, bucket_info] : buckets_) {
+      LOG(INFO) << "Validating bucket " << bucket_info.storage_key.origin();
+      base::HistogramTester histograms;
       auto [factory_remote, bucket_context] =
           BindFactoryAndOverrideStage(bucket_info, stage);
-      auto [result, is_sqlite] = expectations[bucket_type];
+      auto [result, is_sqlite, histogram_suffix] = expectations[bucket_type];
       switch (result) {
         case StoreInitResult::kOpened:
           OpenDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          histograms.ExpectUniqueSample(
+              base::StrCat(
+                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
+              0 /*Status::Type::kOk*/, 1);
           break;
         case StoreInitResult::kCreated:
           CreateDatabase(factory_remote, kDatabaseName,
                          /*transaction_id=*/1);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          histograms.ExpectUniqueSample(
+              base::StrCat(
+                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
+              0 /*Status::Type::kOk*/, 1);
           break;
         case StoreInitResult::kDataLoss:
           CreateDatabase(factory_remote, kDatabaseName,
                          /*transaction_id=*/1,
                          blink::mojom::IDBDataLoss::Total);
           EXPECT_EQ(is_sqlite, bucket_context->IsUsingSqlite());
+          histograms.ExpectUniqueSample(
+              base::StrCat(
+                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
+              0 /*Status::Type::kOk*/, 1);
           break;
         case StoreInitResult::kFailed: {
           base::RunLoop run_loop;
@@ -3075,6 +3092,14 @@ class IndexedDBTestForSqliteMigration
               transaction_remote.BindNewEndpointAndPassReceiver(),
               /*transaction_id=*/1, /*priority=*/0);
           run_loop.Run();
+          histograms.ExpectTotalCount(
+              base::StrCat(
+                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
+              1);
+          histograms.ExpectBucketCount(
+              base::StrCat(
+                  {"IndexedDB.BackingStore.CreateIfMissing", histogram_suffix}),
+              0 /*Status::Type::kOk*/, 0);
         } break;
       }
     }
@@ -3148,14 +3173,16 @@ TEST_P(IndexedDBTestForSqliteMigration, UseLevelDbOnly) {
        {StoreType::kLevelDbBackingStoreCorruption, kCreatedWithSqlite}});
 }
 
-TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
+TEST_P(IndexedDBTestForSqliteMigration, UseLevelDbAsControl) {
   ValidateExpectationsForStage(
-      SqliteRolloutStage::kUseSqliteForNewStores,
-      {{StoreType::kNone, {StoreInitResult::kCreated, kIsSqlite}},
+      SqliteRolloutStage::kUseLevelDbAsControl,
+      {{StoreType::kNone,
+        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
-       {StoreType::kSqlite, {StoreInitResult::kOpened, kIsSqlite}},
+       {StoreType::kSqlite,
+        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kEmptyLevelDbDirectory,
-        {StoreInitResult::kCreated, kIsSqlite}},
+        {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
         {StoreInitResult::kDataLoss, kIsLevelDb}},
        {StoreType::kLevelDbCurrentMissing,
@@ -3166,6 +3193,70 @@ TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
         {StoreInitResult::kDataLoss, kIsLevelDb}},
        {StoreType::kLevelDbBackingStoreCorruption,
         {StoreInitResult::kDataLoss, kIsLevelDb}}});
+  // The experimental suffix should persist across opens.
+  CloseAllBackingStores();
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseLevelDbAsControl,
+      {{StoreType::kNone,
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+       {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kSqlite,
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+       {StoreType::kEmptyLevelDbDirectory,
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbFilesMissing,
+        {StoreInitResult::kFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {StoreInitResult::kOpened, kIsLevelDb}}});
+}
+
+TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseSqliteForNewStores,
+      {{StoreType::kNone,
+        {StoreInitResult::kCreated, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kSqlite,
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kEmptyLevelDbDirectory,
+        {StoreInitResult::kCreated, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbFilesMissing,
+        {StoreInitResult::kFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+  // SQLite should persist across opens.
+  CloseAllBackingStores();
+  ValidateExpectationsForStage(
+      SqliteRolloutStage::kUseSqliteForNewStores,
+      {{StoreType::kNone,
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kLevelDb, {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kSqlite,
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kEmptyLevelDbDirectory,
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
+       {StoreType::kLevelDbWithCorruptionInfo,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbCurrentMissing,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbFilesMissing,
+        {StoreInitResult::kFailed, kIsLevelDb}},
+       {StoreType::kLevelDbInternalCorruption,
+        {StoreInitResult::kOpened, kIsLevelDb}},
+       {StoreType::kLevelDbBackingStoreCorruption,
+        {StoreInitResult::kOpened, kIsLevelDb}}});
 }
 
 TEST_P(IndexedDBTestForSqliteMigration, UseSqliteOnly) {

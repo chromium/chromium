@@ -94,6 +94,8 @@ BASE_FEATURE(kIdbSqliteOnDiskRollout, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
         {SqliteRolloutStage::kUseLevelDbOnly, "UseLevelDbOnly"},
+        {SqliteRolloutStage::kUseLevelDbAsControl,
+         "UseExperimentalVariantforNewStores"},
         {SqliteRolloutStage::kUseSqliteForNewStores, "UseSqliteForNewStores"},
         {SqliteRolloutStage::kUseSqliteOnly, "UseSqliteOnly"},
 };
@@ -222,27 +224,59 @@ SqliteRolloutStage GetSqliteRolloutStage(bool in_memory) {
   return SqliteRolloutStage::kUseLevelDbOnly;
 }
 
+bool DoesLevelDbStoreExist(const storage::BucketLocator& bucket_locator,
+                           const base::FilePath& data_path) {
+  CHECK(!data_path.empty());
+  return !base::IsDirectoryEmpty(
+      data_path.Append(GetLevelDBFileName(bucket_locator)));
+}
+
+base::FilePath GetLevelDbExperimentalTagPath(
+    const storage::BucketLocator& bucket_locator,
+    const base::FilePath& data_path) {
+  constexpr const std::string_view kCurrentTag = "exp-v1";
+  CHECK(!data_path.empty());
+  return data_path.Append(GetLevelDBFileName(bucket_locator))
+      .AppendASCII(kCurrentTag);
+}
+
 bool ShouldUseSqlite(SqliteRolloutStage stage,
                      const storage::BucketLocator& bucket_locator,
                      const base::FilePath& data_path) {
   switch (stage) {
     case SqliteRolloutStage::kUseLevelDbOnly:
       return false;
+    case SqliteRolloutStage::kUseLevelDbAsControl:
+      return false;
     case SqliteRolloutStage::kUseSqliteForNewStores:
-      CHECK(!data_path.empty());
-      return base::IsDirectoryEmpty(
-          data_path.Append(GetLevelDBFileName(bucket_locator)));
+      return !DoesLevelDbStoreExist(bucket_locator, data_path);
     case SqliteRolloutStage::kUseSqliteOnly:
       return true;
   }
 }
 
-std::string_view DetermineHistogramSuffix(const base::FilePath& data_path) {
+std::string_view DetermineHistogramSuffix(
+    SqliteRolloutStage stage,
+    const storage::BucketLocator& bucket_locator,
+    const base::FilePath& data_path) {
   if (data_path.empty()) {
     return ".InMemory";
   }
-  // This will change when additional SQLite rollout stages are added.
-  return ".OnDisk";
+  switch (stage) {
+    case SqliteRolloutStage::kUseLevelDbOnly:
+      return ".OnDisk";
+    case SqliteRolloutStage::kUseLevelDbAsControl:
+      return base::PathExists(
+                 GetLevelDbExperimentalTagPath(bucket_locator, data_path)) ||
+                     !DoesLevelDbStoreExist(bucket_locator, data_path)
+                 ? ".Experimental"
+                 : ".OnDisk";
+    case SqliteRolloutStage::kUseSqliteForNewStores:
+      return ShouldUseSqlite(stage, bucket_locator, data_path) ? ".Experimental"
+                                                               : ".OnDisk";
+    case SqliteRolloutStage::kUseSqliteOnly:
+      return ".OnDisk";
+  }
 }
 
 }  // namespace
@@ -690,8 +724,8 @@ void BucketContext::Open(
 
   IndexedDBDataLossInfo data_loss_info;
   if (!backing_store_) {
-    std::string_view suffix_if_init_fails =
-        DetermineHistogramSuffix(data_path_);
+    std::string_view suffix_if_init_fails = DetermineHistogramSuffix(
+        sqlite_rollout_stage_, bucket_locator(), data_path_);
     Status s;
     DatabaseError error;
     std::tie(s, error, data_loss_info) =
@@ -1053,7 +1087,8 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   CHECK(!backing_store_);
   bool should_use_sqlite =
       ShouldUseSqlite(sqlite_rollout_stage_, bucket_locator(), data_path_);
-  std::string_view histogram_suffix = DetermineHistogramSuffix(data_path_);
+  std::string_view histogram_suffix = DetermineHistogramSuffix(
+      sqlite_rollout_stage_, bucket_locator(), data_path_);
 
   // Construct paths and create required directories.
   base::FilePath blob_path;
@@ -1132,7 +1167,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       return {Status::IOError("File path too long"), CreateDefaultError(),
               IndexedDBDataLossInfo()};
     }
-    if (should_use_sqlite && base::IsDirectoryEmpty(database_path)) {
+    if (base::IsDirectoryEmpty(database_path)) {
       if (!create_if_missing) {
         return {Status::NotFound("Backing store does not exist"),
                 DatabaseError(), IndexedDBDataLossInfo()};
@@ -1142,6 +1177,10 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                          bucket_locator());
         return {Status::IOError("Unable to create IndexedDB database path"),
                 CreateDefaultError(), IndexedDBDataLossInfo()};
+      }
+      if (sqlite_rollout_stage_ == SqliteRolloutStage::kUseLevelDbAsControl) {
+        base::WriteFile(
+            GetLevelDbExperimentalTagPath(bucket_locator(), data_path_), "");
       }
     }
   }

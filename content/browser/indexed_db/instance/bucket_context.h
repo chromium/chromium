@@ -58,11 +58,19 @@ class Database;
 // `kIdbSqliteOnDiskRolloutStages` when adding new values.
 enum class SqliteRolloutStage {
   // Use LevelDB exclusively; delete SQLite stores if found.
+  // All on-disk stores emit metrics to the "OnDisk" variant.
   kUseLevelDbOnly,
+  // Functionally, the same as `kUseLevelDbOnly`.
+  // On-disk stores created during this stage emit metrics to the "Experimental"
+  // variant and previously existing stores emit to the "OnDisk" variant.
+  kUseLevelDbAsControl,
   // Use SQLite for new stores only.
+  // On-disk SQLite stores emit metrics to the "Experimental" variant and
+  // on-disk LevelDB stores emit to the "OnDisk" variant.
   // TODO(crbug.com/484257587): Also use SQLite for corrupted LevelDB stores.
   kUseSqliteForNewStores,
   // Use SQLite exclusively; delete LevelDB stores if found.
+  // All on-disk stores emit metrics to the "OnDisk" variant.
   kUseSqliteOnly,
 };
 
