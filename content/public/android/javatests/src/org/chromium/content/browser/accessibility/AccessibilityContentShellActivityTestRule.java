@@ -379,8 +379,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Helper method to set extended selection. Will be replaced with a call to
-     * performActionOnUiThread once required API is released.
+     * Helper method to set extended selection.
      *
      * @param viewId int virtualViewId of the node to which selection is assigned.
      * @param startNodeId int virtualViewId of the start node.
