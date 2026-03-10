@@ -3,10 +3,14 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "common/device_attestation_types.h" ]
 }
 
 static_library("device_attestation") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "device_attestation_service.h",
     "device_attestation_service_factory.h",
@@ -30,6 +34,8 @@ static_library("device_attestation") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "mock_device_attestation_service.h",
     "scoped_device_attestation_service_factory.h",

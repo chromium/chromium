@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("mac") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "metrics_util.h",
     "secure_enclave_client.h",
@@ -42,6 +44,8 @@ source_set("mac") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "mock_secure_enclave_client.h",
     "mock_secure_enclave_helper.h",
@@ -62,6 +66,8 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "secure_enclave_client_unittest.mm",
     "secure_enclave_signing_key_unittest.mm",

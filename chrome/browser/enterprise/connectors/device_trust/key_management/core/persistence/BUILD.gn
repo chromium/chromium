@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("persistence") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "key_persistence_delegate.h",
     "key_persistence_delegate_factory.h",
@@ -64,6 +66,8 @@ source_set("persistence") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "mock_key_persistence_delegate.h",
     "scoped_key_persistence_delegate_factory.h",
@@ -90,6 +94,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   deps = [
     ":persistence",

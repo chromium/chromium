@@ -6,6 +6,7 @@ import("//build/config/features.gni")
 
 static_library("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   public = [ "test_utils.h" ]
 

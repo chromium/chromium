@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("idle") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "action_type.cc",
     "action_type.h",
@@ -26,6 +28,7 @@ source_set("idle") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "idle_timeout_policy_handler_unittest.cc",

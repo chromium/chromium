@@ -6,6 +6,8 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "management_context_mixin.h",
     "test_constants.h",

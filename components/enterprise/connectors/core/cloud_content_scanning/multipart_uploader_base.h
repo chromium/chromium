@@ -131,13 +131,11 @@ class MultipartUploadRequestBase : public ConnectorUploadRequest {
   void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
                       file_access::ScopedFileAccess file_access);
 
-  std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
   std::string boundary_;
   base::Time start_time_;
   base::TimeDelta current_backoff_;
   int retry_count_;
   bool scan_complete_ = false;
-  bool is_obfuscated_ = false;
 
   base::WeakPtrFactory<MultipartUploadRequestBase> weak_factory_{this};
 };

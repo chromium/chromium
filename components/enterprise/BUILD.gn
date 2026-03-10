@@ -4,7 +4,13 @@
 
 import("//components/enterprise/buildflags/buildflags.gni")
 
+config("extra_warnings") {
+  cflags = [ "-Wshadow-field" ]
+}
+
 static_library("enterprise") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "browser/reporting/browser_report_generator.cc",
     "browser/reporting/browser_report_generator.h",
@@ -146,6 +152,7 @@ static_library("enterprise") {
 
 static_library("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   if (!is_chromeos) {
     sources = [
@@ -161,6 +168,7 @@ static_library("test_support") {
 
 static_library("reporting_test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "browser/reporting/fake_browser_report_generator_delegate.cc",
@@ -178,6 +186,7 @@ static_library("reporting_test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "browser/identifiers/profile_id_service_unittest.cc",

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 static_library("content") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "clipboard_restriction_service.cc",
     "clipboard_restriction_service.h",
@@ -28,6 +30,7 @@ static_library("content") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "clipboard_restriction_service_unittest.cc",

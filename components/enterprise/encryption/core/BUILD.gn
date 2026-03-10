@@ -5,6 +5,8 @@
 import("//build/config/features.gni")
 
 source_set("features") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "features.cc" ]
   public = [ "features.h" ]
   public_deps = [ "//base" ]

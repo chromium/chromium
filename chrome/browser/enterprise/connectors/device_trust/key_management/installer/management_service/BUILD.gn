@@ -4,6 +4,8 @@
 
 if (is_linux) {
   executable("chrome_management_service") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     sources = [ "chrome_management_service_main.cc" ]
 
     deps = [
@@ -17,6 +19,8 @@ if (is_linux) {
   }
 
   source_set("management_service") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [ "chrome_management_service.h" ]
 
     sources = [ "chrome_management_service.cc" ]
@@ -45,6 +49,8 @@ if (is_linux) {
 
 if (is_linux || is_win) {
   source_set("metrics") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [ "metrics_utils.h" ]
 
     sources = [ "metrics_utils.cc" ]
@@ -53,6 +59,8 @@ if (is_linux || is_win) {
   }
 
   source_set("rotate_util") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [ "rotate_util.h" ]
 
     sources = [ "rotate_util.cc" ]
@@ -72,6 +80,7 @@ if (is_linux || is_win) {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "rotate_util_unittest.cc" ]
 

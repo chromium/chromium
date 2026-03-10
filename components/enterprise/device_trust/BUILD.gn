@@ -4,6 +4,8 @@
 import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("device_trust") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "prefs.cc",
     "prefs.h",

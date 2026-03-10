@@ -4,6 +4,8 @@
 
 if (is_win) {
   source_set("fetcher") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [
       "win_network_fetcher.h",
       "win_network_fetcher_factory.h",
@@ -26,6 +28,8 @@ if (is_win) {
 
   source_set("test_support") {
     testonly = true
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [
       "mock_win_network_fetcher.h",
       "mock_win_network_fetcher_factory.h",

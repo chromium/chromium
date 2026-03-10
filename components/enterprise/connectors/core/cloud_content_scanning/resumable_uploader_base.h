@@ -153,8 +153,6 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   // retrieving the data.
   ScanRequestUploadResult get_data_result_;
 
-  bool is_obfuscated_ = false;
-
   bool force_sync_upload_ = false;
 
   base::WeakPtrFactory<ResumableUploadRequestBase> weak_factory_{this};

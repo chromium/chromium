@@ -7,6 +7,8 @@ import("//components/enterprise/buildflags/buildflags.gni")
 assert(enterprise_client_certificates)
 
 source_set("dm_server_client") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "dm_server_client.h" ]
 
   sources = [ "dm_server_client.cc" ]
@@ -21,12 +23,16 @@ source_set("dm_server_client") {
 }
 
 source_set("cloud_management_delegate") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "cloud_management_delegate.h" ]
 
   public_deps = [ "//components/policy/core/common" ]
 }
 
 source_set("management_delegate") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "browser_cloud_management_delegate.h",
     "profile_cloud_management_delegate.h",
@@ -56,6 +62,8 @@ source_set("management_delegate") {
 }
 
 source_set("core") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "certificate_provisioning_service.h",
     "certificate_store.h",
@@ -160,6 +168,8 @@ source_set("core") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "mock_certificate_provisioning_service.cc",
     "mock_certificate_provisioning_service.h",
@@ -204,6 +214,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "certificate_provisioning_service_unittest.cc",

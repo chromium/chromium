@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "key_network_delegate.h",
     "key_upload_request.h",
@@ -28,6 +30,8 @@ source_set("common") {
 }
 
 source_set("network") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "mojo_key_network_delegate.h" ]
 
   sources = [ "mojo_key_network_delegate.cc" ]
@@ -52,6 +56,8 @@ source_set("network") {
 
 if (is_win) {
   source_set("win_key_network_delegate") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     public = [ "win_key_network_delegate.h" ]
 
     sources = [ "win_key_network_delegate.cc" ]
@@ -70,6 +76,8 @@ if (is_win) {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "mock_key_network_delegate.h" ]
 
   sources = [ "mock_key_network_delegate.cc" ]
@@ -83,6 +91,8 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "mojo_key_network_delegate_unittest.cc" ]
 
   deps = [

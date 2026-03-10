@@ -8,6 +8,8 @@ assert(enterprise_client_certificates)
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   deps = [ "//components/enterprise/client_certificates/core:unit_tests" ]
 
   if (is_android) {

@@ -4,6 +4,7 @@
 
 component("enterprise_obfuscation") {
   defines = [ "IS_ENTERPRISE_OBFUSCATION_IMPL" ]
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "download_obfuscator.cc",
@@ -27,6 +28,7 @@ component("enterprise_obfuscation") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "download_obfuscator_unittest.cc",

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("prefs") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "promotion_prefs.cc",
     "promotion_prefs.h",
@@ -15,6 +17,8 @@ source_set("prefs") {
 }
 
 source_set("promotion") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "promotion_eligibility_checker.cc",
     "promotion_eligibility_checker.h",

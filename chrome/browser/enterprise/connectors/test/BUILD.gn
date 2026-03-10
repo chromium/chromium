@@ -6,6 +6,8 @@ import("//components/enterprise/buildflags/buildflags.gni")
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "deep_scanning_test_utils.h",
     "mock_realtime_reporting_client.h",

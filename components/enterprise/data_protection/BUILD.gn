@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("data_protection") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "data_protection_url_lookup_service.cc",
     "data_protection_url_lookup_service.h",
@@ -20,6 +22,8 @@ source_set("data_protection") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "data_protection_url_lookup_service_unittest.cc" ]
   deps = [
     ":data_protection",

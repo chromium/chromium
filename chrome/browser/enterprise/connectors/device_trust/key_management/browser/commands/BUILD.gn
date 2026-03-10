@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("commands") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   friend = [
     "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
     ":test_support",
@@ -78,6 +80,8 @@ source_set("commands") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "mock_key_rotation_command.h",
     "scoped_key_rotation_command_factory.h",
@@ -103,6 +107,8 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "key_rotation_command_factory_unittest.cc" ]
 
   deps = [

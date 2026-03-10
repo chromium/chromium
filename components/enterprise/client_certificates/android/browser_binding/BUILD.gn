@@ -8,6 +8,8 @@ assert(enterprise_client_certificates)
 assert(is_android)
 
 source_set("browser_binding") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "browser_key.h",
     "browser_key_android.cc",
@@ -30,6 +32,8 @@ source_set("browser_binding") {
 
 source_set("android_unittests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "browser_key_store_android_unittest.cc" ]
   deps = [
     ":browser_binding",

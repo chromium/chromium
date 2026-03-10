@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("sdk_manager") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "content_analysis_sdk_manager.cc",
     "content_analysis_sdk_manager.h",

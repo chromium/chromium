@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "common_types.cc",
     "device_trust_constants.cc",
@@ -26,6 +28,8 @@ source_set("common") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "common_types_unittest.cc" ]
 
   deps = [

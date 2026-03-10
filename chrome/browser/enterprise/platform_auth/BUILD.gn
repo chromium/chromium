@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("features") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "platform_auth_features.cc" ]
 
   public = [ "platform_auth_features.h" ]
@@ -12,6 +14,8 @@ source_set("features") {
 
 source_set("test_utils") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "mock_platform_auth_provider.cc",
     "scoped_set_provider_for_testing.cc",

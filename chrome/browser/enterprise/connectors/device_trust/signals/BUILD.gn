@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("signals") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "signals_filterer.h",
     "signals_service.h",
@@ -17,6 +19,8 @@ source_set("signals") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "mock_signals_filterer.cc",
     "mock_signals_filterer.h",

@@ -7,6 +7,8 @@ import("//components/enterprise/buildflags/buildflags.gni")
 assert(enterprise_client_certificates)
 
 source_set("ios") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "certificate_provisioning_service_ios.h",
     "client_identity_ios.h",
@@ -39,6 +41,7 @@ source_set("ios") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "certificate_provisioning_service_ios_unittest.mm" ]
 

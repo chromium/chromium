@@ -9,6 +9,8 @@ import("//third_party/protobuf/proto_library.gni")
 assert(enterprise_data_controls)
 
 source_set("features") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "features.cc" ]
   public = [ "features.h" ]
   public_deps = [ "//base" ]
@@ -20,6 +22,8 @@ source_set("features") {
 }
 
 source_set("browser") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "action_context.cc",
     "action_context.h",
@@ -87,6 +91,8 @@ source_set("browser") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "test_utils.cc",
     "test_utils.h",
@@ -102,6 +108,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "conditions/and_condition_unittest.cc",

@@ -10,6 +10,8 @@ if (is_android) {
 }
 
 source_set("core") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "analysis_service_settings_base.cc",
     "analysis_service_settings_base.h",
@@ -103,6 +105,8 @@ source_set("core") {
 }
 
 source_set("cloud_content_scanning") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "cloud_content_scanning/binary_upload_ack.cc",
     "cloud_content_scanning/binary_upload_ack.h",

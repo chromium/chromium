@@ -5,6 +5,8 @@
 assert(is_chromeos)
 
 source_set("ash") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "ash_attestation_cleanup_manager.cc",
     "ash_attestation_service_impl.cc",

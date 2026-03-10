@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 source_set("watermark_view_lib") {
+  # TODO(crbug.com/486837808): Fix the warnings to enable the next line.
+  # configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "settings.cc",
     "settings.h",
@@ -28,6 +31,7 @@ source_set("watermark_view_lib") {
 
 executable("watermark_app") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
     "example_app.cc",

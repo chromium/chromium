@@ -7,6 +7,8 @@ import("//components/enterprise/buildflags/buildflags.gni")
 assert(enterprise_data_controls)
 
 source_set("browser") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "last_replaced_clipboard_data.cc",
     "last_replaced_clipboard_data.h",
@@ -22,6 +24,7 @@ source_set("browser") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "last_replaced_clipboard_data_unittest.cc" ]
 

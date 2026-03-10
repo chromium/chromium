@@ -4,6 +4,7 @@
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   public = [
     "device_trust_browsertest_base.h",

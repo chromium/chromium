@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 static_library("identifiers") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "identifiers_prefs.h",
     "profile_id_delegate.h",
@@ -28,6 +30,8 @@ static_library("identifiers") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "mock_profile_id_delegate.h" ]
 
   sources = [ "mock_profile_id_delegate.cc" ]

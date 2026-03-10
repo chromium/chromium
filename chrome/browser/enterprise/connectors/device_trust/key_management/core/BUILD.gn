@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("core") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "ec_signing_key.h",
     "signing_key_pair.h",
@@ -22,12 +24,16 @@ source_set("core") {
 }
 
 source_set("constants") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "shared_command_constants.h" ]
   sources = [ "shared_command_constants.cc" ]
   deps = [ "//chrome/common:version_header" ]
 }
 
 source_set("util") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "signing_key_util.h" ]
   sources = [ "signing_key_util.cc" ]
   deps = [
@@ -39,6 +45,8 @@ source_set("util") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "ec_signing_key_unittest.cc",
     "signing_key_pair_unittest.cc",

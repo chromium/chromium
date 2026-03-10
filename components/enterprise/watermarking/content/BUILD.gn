@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 static_library("content") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "watermark_text_container.cc",
     "watermark_text_container.h",

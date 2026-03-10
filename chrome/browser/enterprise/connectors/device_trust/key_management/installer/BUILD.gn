@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("elevated_rotation") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "key_rotation_manager.h",
     "key_rotation_types.h",
@@ -36,6 +38,8 @@ source_set("elevated_rotation") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "key_rotation_manager_unittest.cc" ]
 
   deps = [

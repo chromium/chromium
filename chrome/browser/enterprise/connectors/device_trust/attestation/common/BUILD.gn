@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "attestation_utils.cc" ]
 
   public = [
@@ -20,6 +22,8 @@ source_set("common") {
 }
 
 source_set("types") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "signals_type.h" ]
 
   if (is_chromeos) {
@@ -32,6 +36,8 @@ source_set("types") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "mock_attestation_service.cc" ]
 
   public = [ "mock_attestation_service.h" ]

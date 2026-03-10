@@ -5,6 +5,8 @@
 import("//build/config/features.gni")
 
 static_library("strings") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "strings.cc",
     "strings.h",
@@ -13,6 +15,8 @@ static_library("strings") {
 
 if (use_blink) {
   static_library("files_scan_data") {
+    configs += [ "//components/enterprise:extra_warnings" ]
+
     sources = [
       "files_scan_data.cc",
       "files_scan_data.h",
@@ -26,6 +30,7 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   if (!is_ios) {
     sources = [ "files_scan_data_unittest.cc" ]

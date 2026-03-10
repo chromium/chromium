@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 static_library("data_region") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "data_region_policy_handler.cc",
     "data_region_policy_handler.h",

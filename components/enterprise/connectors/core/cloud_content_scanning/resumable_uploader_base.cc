@@ -99,7 +99,6 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
       verdict_received_callback_(std::move(verdict_received_callback)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
-      is_obfuscated_(is_obfuscated),
       force_sync_upload_(force_sync_upload) {
   AssertCalledOnUIThread();
 }

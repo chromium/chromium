@@ -115,8 +115,7 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
                              ui_task_runner),
       boundary_(net::GenerateMimeMultipartBoundary()),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
-      retry_count_(0),
-      is_obfuscated_(is_obfuscated) {
+      retry_count_(0) {
   AssertCalledOnUIThread();
 }
 

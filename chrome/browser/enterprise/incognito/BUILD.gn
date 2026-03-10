@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("incognito") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "incognito_navigation_throttle.cc",
     "incognito_navigation_throttle.h",

@@ -4,6 +4,8 @@
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "browser_signals_decorator_unittest.cc" ]
 
   deps = [

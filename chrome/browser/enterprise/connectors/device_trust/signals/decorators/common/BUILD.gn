@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [
     "common_signals_decorator.h",
     "metrics_utils.h",
@@ -31,6 +33,8 @@ source_set("common") {
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
     "mock_signals_decorator.cc",
     "mock_signals_decorator.h",
@@ -45,6 +49,8 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [ "common_signals_decorator_unittest.cc" ]
 
   deps = [

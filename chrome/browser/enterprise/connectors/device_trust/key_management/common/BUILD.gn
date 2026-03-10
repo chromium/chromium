@@ -3,5 +3,7 @@
 # found in the LICENSE file.
 
 source_set("common") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   public = [ "key_types.h" ]
 }
