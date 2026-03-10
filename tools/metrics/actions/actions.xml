@@ -28311,9 +28311,21 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuExtensions">
+  <obsolete>
+    This menu ended up being split into several different items in the menu.
+  </obsolete>
   <owner>massan@google.com</owner>
   <owner>nya@chromium.org</owner>
   <description>User pressed 'Extensions' in the app menu.</description>
+</action>
+
+<action name="MobileMenuExtensionsMenu">
+  <owner>massan@google.com</owner>
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>nya@chromium.org</owner>
+  <description>
+    User pressed 'Open extensions menu' in the app menu.
+  </description>
 </action>
 
 <action name="MobileMenuFeedback">
@@ -28395,6 +28407,13 @@ should be able to be added at any place in this file.
   <description>
     User opened 'Listen to the feed' from the app overflow menu
   </description>
+</action>
+
+<action name="MobileMenuManageExtensions">
+  <owner>massan@google.com</owner>
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>nya@chromium.org</owner>
+  <description>User pressed 'Manage extensions' in the app menu.</description>
 </action>
 
 <action name="MobileMenuMoveToOtherWindow">

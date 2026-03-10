@@ -158,8 +158,9 @@ found in the LICENSE file.
     <item type="id" name="downloads_menu_id" />
     <item type="id" name="all_bookmarks_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />
-    <item type="id" name="extensions_menu_id" />
     <item type="id" name="extensions_parent_menu_id" />
+    <item type="id" name="extensions_menu_menu_id" />
+    <item type="id" name="manage_extensions_menu_id" />
     <item type="id" name="extensions_webstore_menu_id" />
     <item type="id" name="page_zoom_id" />
     <item type="id" name="share_menu_id" />

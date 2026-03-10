@@ -4381,6 +4381,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_EXTENSIONS" desc="Menu item for opening the 'Extensions' page that allows the user to manage installed extensions. [CHAR_LIMIT=27]">
         Extensions
       </message>
+      <message name="IDS_MENU_EXTENSIONS_MENU" desc="Menu item for opening the Extensions Menu (i.e. the puzzle icon menu). [CHAR_LIMIT=27]">
+        Open extensions menu
+      </message>
       <message name="IDS_MENU_MANAGE_EXTENSIONS" desc="Menu item for opening the 'Extensions' page that allows the user to manage installed extensions. [CHAR_LIMIT=27]">
         Manage Extensions
       </message>

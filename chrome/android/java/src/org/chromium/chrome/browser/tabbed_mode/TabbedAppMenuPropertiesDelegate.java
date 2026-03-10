@@ -323,7 +323,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
                 modelList.add(buildExtensionsParentItem());
             } else {
-                modelList.add(buildExtensionsItem());
+                modelList.add(buildExtensionsMenuItem());
             }
         }
 
@@ -767,25 +767,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return ExtensionUi.isEnabled(getProfileFromTabModel());
     }
 
-    private MVCListAdapter.ListItem buildExtensionsItem() {
-        assert shouldShowExtensionsItem();
-
-        // The id {@code R.id.extensions_menu_id} is used for both when this flag is enabled and
-        // disabled but in different context.
-        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
-
-        return new MVCListAdapter.ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
-                        R.id.extensions_menu_id,
-                        R.string.menu_extensions,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_extension_24dp : 0));
-    }
-
     private MVCListAdapter.ListItem buildExtensionsParentItem() {
         assert shouldShowExtensionsItem();
 
         List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(buildExtensionsMenuItem());
         submenuItems.add(buildManageExtensionsItem());
         submenuItems.add(buildChromeWebstoreItem());
 
@@ -800,6 +786,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         submenuItems));
     }
 
+    private MVCListAdapter.ListItem buildExtensionsMenuItem() {
+        assert shouldShowExtensionsItem();
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.extensions_menu_menu_id,
+                        R.string.menu_extensions_menu,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_extension_24dp
+                                : Resources.ID_NULL));
+    }
+
     private MVCListAdapter.ListItem buildManageExtensionsItem() {
         assert shouldShowExtensionsItem();
 
@@ -810,7 +809,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
-                        R.id.extensions_menu_id,
+                        R.id.manage_extensions_menu_id,
                         R.string.menu_manage_extensions,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_extension_24dp

@@ -131,6 +131,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     }
 
     @Override
+    public void showExtensionsMenu() {
+        ListMenuButton extensionsMenuButton = mContainer.findViewById(R.id.extensions_menu_button);
+        assert extensionsMenuButton != null;
+
+        extensionsMenuButton.performClick();
+    }
+
+    @Override
     public ToolbarWidthConsumer getMenuButtonWidthConsumer() {
         return mMenuButtonWidthConsumer;
     }

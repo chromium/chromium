@@ -114,6 +114,9 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
      */
     void updateMenuButtonBackground(int backgroundResource);
 
+    /** Shows the extensions menu programmatically. */
+    void showExtensionsMenu();
+
     /** Returns the {@link ToolbarWidthConsumer} for the extensions menu icon. */
     ToolbarWidthConsumer getMenuButtonWidthConsumer();
 

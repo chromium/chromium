@@ -2483,14 +2483,29 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 parentItem.model.get(AppMenuItemProperties.ICON));
 
         assertHasSubMenuItemIds(
-                parentItem, R.id.extensions_menu_id, R.id.extensions_webstore_menu_id);
+                parentItem,
+                R.id.extensions_menu_menu_id,
+                R.id.manage_extensions_menu_id,
+                R.id.extensions_webstore_menu_id);
 
         List<MVCListAdapter.ListItem> subItems =
                 parentItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
 
-        MVCListAdapter.ListItem manageItem = subItems.get(0);
+        MVCListAdapter.ListItem menuItem = subItems.get(0);
         assertEquals(
-                R.id.extensions_menu_id, manageItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+                R.id.extensions_menu_menu_id,
+                menuItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.menu_extensions_menu),
+                menuItem.model.get(AppMenuItemProperties.TITLE));
+        assertNotNull(
+                "Manage Extensions item should have an icon.",
+                menuItem.model.get(AppMenuItemProperties.ICON));
+
+        MVCListAdapter.ListItem manageItem = subItems.get(1);
+        assertEquals(
+                R.id.manage_extensions_menu_id,
+                manageItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 ContextUtils.getApplicationContext().getString(R.string.menu_manage_extensions),
                 manageItem.model.get(AppMenuItemProperties.TITLE));
@@ -2498,7 +2513,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 "Manage Extensions item should have an icon.",
                 manageItem.model.get(AppMenuItemProperties.ICON));
 
-        MVCListAdapter.ListItem webstoreItem = subItems.get(1);
+        MVCListAdapter.ListItem webstoreItem = subItems.get(2);
         assertEquals(
                 R.id.extensions_webstore_menu_id,
                 webstoreItem.model.get(AppMenuItemProperties.MENU_ITEM_ID));
@@ -2528,14 +2543,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 findItemById(modelList, R.id.extensions_parent_menu_id);
         assertNull("Extensions parent menu item should NOT be present.", parentItem);
 
-        MVCListAdapter.ListItem originalItem = findItemById(modelList, R.id.extensions_menu_id);
+        MVCListAdapter.ListItem originalItem =
+                findItemById(modelList, R.id.extensions_menu_menu_id);
         assertNotNull("Original extensions menu item should be present.", originalItem);
 
         assertFalse(
                 "Original extensions item should not have submenu properties.",
                 originalItem.model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS));
         assertEquals(
-                ContextUtils.getApplicationContext().getString(R.string.menu_extensions),
+                ContextUtils.getApplicationContext().getString(R.string.menu_extensions_menu),
                 originalItem.model.get(AppMenuItemProperties.TITLE));
     }
 
