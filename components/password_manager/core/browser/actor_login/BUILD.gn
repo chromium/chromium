@@ -10,6 +10,7 @@ assert(!is_ios)
 # All actor_login code should be able to depend on this.
 source_set("common") {
   sources = [
+    "actor_login_permissions_manager.h",
     "actor_login_quality_logger_interface.h",
     "actor_login_types.cc",
     "actor_login_types.h",
@@ -18,8 +19,41 @@ source_set("common") {
   deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser/ui",
     "//components/translate/core/browser",
     "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("permissions_manager_impl") {
+  sources = [
+    "actor_login_permissions_manager_impl.cc",
+    "actor_login_permissions_manager_impl.h",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/password_manager/core/browser/ui",
+    "//components/sync/service",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "actor_login_permissions_manager_unittest.cc" ]
+  deps = [
+    ":common",
+    ":permissions_manager_impl",
+    "//components/affiliations/core/browser:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/sync:test_support",
+    "//testing/gtest",
     "//url",
   ]
 }
