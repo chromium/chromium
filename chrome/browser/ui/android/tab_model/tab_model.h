@@ -315,6 +315,7 @@ class TabModel : public TabListInterface {
     return custom_tab_profile_type_;
   }
   TabModelType GetTabModelType() const { return tab_model_type_; }
+  bool IsEmptyRegularModelForEphemeralOrIncognitoCct() const;
 
   static bool EnableBrowserWindowInterfaceMobile();
 

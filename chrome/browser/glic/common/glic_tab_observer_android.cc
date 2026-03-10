@@ -114,7 +114,8 @@ GlicTabObserverAndroid::~GlicTabObserverAndroid() {
 
 void GlicTabObserverAndroid::OnTabModelAdded(TabModel* model) {
   if (model->GetProfile() != profile_ ||
-      model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+      model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+      model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
     return;
   }
 

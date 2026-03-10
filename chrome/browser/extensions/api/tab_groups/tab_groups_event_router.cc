@@ -70,9 +70,11 @@ class TabGroupsEventRouter::PlatformDelegate : public TabModelListObserver,
     // TabModelEventRouter and PlatformDelegate. But we only want to observe the
     // TabModel associated with the incognito profile, not the regular profile,
     // otherwise we'll see event notifications twice (once per observer). See
-    // TestTabGroupEventsAcrossProfiles.
+    // TestTabGroupEventsAcrossProfiles. Also ignore empty regular tab models
+    // for ephemeral or incognito CCTs as they are never mutated.
     if (profile_ != model->GetProfile() ||
-        model->GetTabModelType() != TabModel::TabModelType::kStandard) {
+        model->GetTabModelType() != TabModel::TabModelType::kStandard ||
+        model->IsEmptyRegularModelForEphemeralOrIncognitoCct()) {
       return;
     }
     tab_model_observations_.AddObservation(model);
