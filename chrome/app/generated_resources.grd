@@ -7775,7 +7775,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Compare options
       </message>
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Research a topic
+        Research anything
       </message>
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
         Teach me a new skill
@@ -7787,7 +7787,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Ask about a tab
       </message>
       <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_IMAGE" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
-        Add an image and reimagine it
+        Describe your image
+      </message>
+      <message name="IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_CANVAS" desc="One of the dynamically changing placeholder texts for the NTP searchbox">
+        Create anything
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TOOLTIP" desc="The tooltip for adding a custom link shortcut. (On the New Tab Page)">
         Add shortcut
