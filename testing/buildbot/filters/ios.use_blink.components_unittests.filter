@@ -368,3 +368,7 @@
 -LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers/LevelDB
 -LocalStorageImplTest.OpeningWrappersPurgesInactiveWrappers/SQLite
 -LocalStorageImplTest.WrapperOutlivesMojoConnection/SQLite
+
+# TODO(crbug.com/491157764): The test has been failing since
+# https://crrev.com/c/7585353.
+-SecurePaymentConfirmationServiceTest.GetSecurePaymentConfirmationCapabilities_BrowserBoundKeyHardwareSupported
