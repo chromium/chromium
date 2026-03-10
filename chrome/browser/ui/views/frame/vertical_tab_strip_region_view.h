@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -61,6 +62,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   // TODO(crbug.com/465833741): Determine snapping behavior.
   static constexpr int kCollapseSnapWidth =
       (kUncollapsedMinWidth + kCollapsedWidth) / 2;
+
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnimationCompletedEvent);
 
   explicit VerticalTabStripRegionView(
       tabs::VerticalTabStripStateController* state_controller,

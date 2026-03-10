@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -41,6 +42,8 @@ class SidePanel : public views::AccessiblePaneView,
   SidePanel(const SidePanel&) = delete;
   SidePanel& operator=(const SidePanel&) = delete;
   ~SidePanel() override;
+
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kOpenAnimationCompletedEvent);
 
   SidePanelAnimationCoordinator* animation_coordinator() {
     return animation_coordinator_.get();

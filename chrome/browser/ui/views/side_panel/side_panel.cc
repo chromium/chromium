@@ -32,6 +32,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -49,6 +50,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -334,6 +336,8 @@ BEGIN_METADATA(ContentParentView)
 END_METADATA
 
 }  // namespace
+
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(SidePanel, kOpenAnimationCompletedEvent);
 
 class SidePanel::BorderView : public views::View {
   METADATA_HEADER(BorderView, views::View)
@@ -721,6 +725,8 @@ void SidePanel::OnAnimationTypeEnded(
       [[fallthrough]];
     case SidePanelAnimationCoordinator::AnimationType::kOpen:
       state_ = State::kOpen;
+      views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+          kOpenAnimationCompletedEvent, this);
       break;
     case SidePanelAnimationCoordinator::AnimationType::kClose:
       state_ = State::kClosed;

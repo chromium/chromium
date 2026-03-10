@@ -50,6 +50,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -62,6 +63,7 @@
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -75,6 +77,9 @@ constexpr int kResizeAreaWidth = 5;
 constexpr int kCollapsedResizeAreaWidth = 2;
 constexpr int kKeyboardResizeWidth = 50;
 }  // namespace
+
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(VerticalTabStripRegionView,
+                                       kAnimationCompletedEvent);
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs::VerticalTabStripStateController* state_controller,
@@ -584,7 +589,10 @@ void VerticalTabStripRegionView::AnimationEnded(
   if (tab_strip_view_) {
     tab_strip_view_->SetIsAnimatingSize(false);
   }
+  views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+      kAnimationCompletedEvent, this);
 }
+
 void VerticalTabStripRegionView::AnimationCanceled(
     const gfx::Animation* animation) {
   DCHECK_EQ(animation, &resize_animation_);
