@@ -98,7 +98,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
   RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxAutocomplete) {
+// TODO(https://crbug.com/490326237): flaky on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_ComposeboxAutocomplete DISABLED_ComposeboxAutocomplete
+#else
+#define MAYBE_ComposeboxAutocomplete ComposeboxAutocomplete
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ComposeboxAutocomplete) {
   RunTest("new_tab_page/composebox/composebox_autocomplete_test.js",
           "mocha.run()");
 }
