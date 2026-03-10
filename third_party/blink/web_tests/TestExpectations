@@ -6714,10 +6714,6 @@ crbug.com/419066541 virtual/css-gap-decorations-disabled/external/wpt/web-animat
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-many-options.tentative.html [ Failure ]
 crbug.com/362536387 external/wpt/html/semantics/forms/the-select-element/select-popover-position-with-zoom.tentative.html [ Failure ]
 
-# The listbox doesn't scroll to the selected option, during typeahead:
-crbug.com/362922565 html/select/select-typeahead-scroll.html [ Failure ]
-crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
-
 # Interesting issue with max-block-size: stretch
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.html [ Failure ]
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.html [ Failure ]
