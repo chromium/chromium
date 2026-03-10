@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -36,7 +36,8 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
                                        WebUIContentsWrapper* contents_wrapper)
     : on_show_cb_(std::move(on_show_cb)), close_cb_(std::move(close_cb)) {
   const bool is_ready_to_show = contents_wrapper->is_ready_to_show();
-  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(is_ready_to_show);
+  SidePanelHelper::GetSidePanelContentProxy(this)->SetAvailable(
+      is_ready_to_show);
   SetVisible(is_ready_to_show);
   SetID(kSidePanelWebViewId);
   contents_wrapper->SetHost(weak_factory_.GetWeakPtr());
@@ -91,7 +92,7 @@ void SidePanelWebUIView::ViewHierarchyChanged(
 
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
-  SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
+  SidePanelHelper::GetSidePanelContentProxy(this)->SetAvailable(true);
   if (on_show_cb_) {
     on_show_cb_.Run();
   }

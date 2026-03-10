@@ -29,8 +29,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header_controller.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -59,8 +59,8 @@ SidePanelCoordinator* SidePanelCoordinator::From(
 }
 
 void SidePanelCoordinator::Init(Browser* browser) {
-  SidePanelUtil::PopulateGlobalEntries(browser,
-                                       SidePanelRegistry::From(browser));
+  SidePanelHelper::PopulateGlobalEntries(browser,
+                                         SidePanelRegistry::From(browser));
 }
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {

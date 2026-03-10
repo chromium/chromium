@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/google/core/common/google_util.h"
@@ -1173,7 +1173,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
   Observe(GetSidePanelWebContents());
 
   view->SetVisible(true);
-  SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
+  SidePanelHelper::GetSidePanelContentProxy(view.get())->SetAvailable(true);
   return view;
 }
 

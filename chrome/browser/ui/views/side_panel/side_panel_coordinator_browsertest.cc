@@ -54,7 +54,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -2545,7 +2545,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
         SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = SidePanelNativeView(std::make_unique<views::View>());
-          SidePanelUtil::GetSidePanelContentProxy(view.get())
+          SidePanelHelper::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
           return view;
         }),
@@ -2559,7 +2559,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
         SidePanelEntry::Key(SidePanelEntry::Id::kLens),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = SidePanelNativeView(std::make_unique<views::View>());
-          SidePanelUtil::GetSidePanelContentProxy(view.get())
+          SidePanelHelper::GetSidePanelContentProxy(view.get())
               ->SetAvailable(false);
           return view;
         }),
@@ -2572,7 +2572,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
         SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
         base::BindRepeating([](SidePanelEntryScope&) {
           auto view = SidePanelNativeView(std::make_unique<views::View>());
-          SidePanelUtil::GetSidePanelContentProxy(view.get())
+          SidePanelHelper::GetSidePanelContentProxy(view.get())
               ->SetAvailable(true);
           return view;
         }),
@@ -2597,7 +2597,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   views::View* loading_content = loading_content_entry1_->CachedView().get();
   EXPECT_NE(loading_content, nullptr);
   SidePanelContentProxy* loading_content_proxy =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content);
   EXPECT_FALSE(loading_content_proxy->IsAvailable());
   // Set the content proxy to available.
   loading_content_proxy->SetAvailable(true);
@@ -2609,7 +2609,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   loading_content = loading_content_entry2_->CachedView().get();
   EXPECT_NE(loading_content, nullptr);
   loading_content_proxy =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content);
   EXPECT_FALSE(loading_content_proxy->IsAvailable());
   EXPECT_TRUE(
       coordinator()->IsSidePanelEntryShowing(loading_content_entry1_->key()));
@@ -2635,7 +2635,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   views::View* loading_content1 = loading_content_entry1_->CachedView().get();
   EXPECT_NE(loading_content1, nullptr);
   SidePanelContentProxy* loading_content_proxy1 =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content1);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content1);
   EXPECT_FALSE(loading_content_proxy1->IsAvailable());
   EXPECT_TRUE(
       coordinator()->IsSidePanelEntryShowing(loaded_content_entry1_->key()));
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   views::View* loading_content2 = loading_content_entry2_->CachedView().get();
   EXPECT_NE(loading_content2, nullptr);
   SidePanelContentProxy* loading_content_proxy2 =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content2);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content2);
   EXPECT_FALSE(loading_content_proxy2->IsAvailable());
   // Verify the loading_content_entry2_ is no longer the loading entry.
   EXPECT_EQ(
@@ -2689,7 +2689,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   views::View* loading_content = loading_content_entry1_->CachedView().get();
   EXPECT_NE(loading_content, nullptr);
   SidePanelContentProxy* loading_content_proxy1 =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content);
   EXPECT_FALSE(loading_content_proxy1->IsAvailable());
   EXPECT_EQ(
       coordinator()->GetLoadingEntryForTesting(loading_content_entry1_->type()),
@@ -2704,7 +2704,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLoadingContentTest,
   loading_content = loading_content_entry2_->CachedView().get();
   EXPECT_NE(loading_content, nullptr);
   SidePanelContentProxy* loading_content_proxy2 =
-      SidePanelUtil::GetSidePanelContentProxy(loading_content);
+      SidePanelHelper::GetSidePanelContentProxy(loading_content);
   EXPECT_FALSE(loading_content_proxy2->IsAvailable());
   EXPECT_TRUE(
       coordinator()->IsSidePanelEntryShowing(loading_content_entry1_->key()));

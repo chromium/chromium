@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HELPER_H_
+#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HELPER_H_
 
 #include <type_traits>
 
@@ -24,7 +24,7 @@ namespace views {
 class View;
 }  // namespace views
 
-class SidePanelUtil {
+class SidePanelHelper {
  public:
   using SidePanelContentState = ::SidePanelContentState;
 
@@ -40,4 +40,4 @@ class SidePanelUtil {
                                             SidePanelEntryKey entry_key);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_HELPER_H_

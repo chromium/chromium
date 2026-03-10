@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 
@@ -77,7 +77,7 @@ void SidePanelToolbarPinningController::UpdatePinState(
   Profile* const profile = browser_view_->GetProfile();
 
   std::optional<actions::ActionId> action_id =
-      SidePanelUtil::GetActionItem(browser_view_->browser(), entry_key)
+      SidePanelHelper::GetActionItem(browser_view_->browser(), entry_key)
           ->GetActionId();
   CHECK(action_id.has_value());
 

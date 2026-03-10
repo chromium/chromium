@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 
-#include <string_view>
-
-#include "base/notreached.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,7 +14,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/bookmarks/bookmarks_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/comments/comments_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
@@ -26,17 +22,12 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/prefs/pref_service.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 
-namespace {
-
-}  // namespace
-
 // static
-void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
-                                          SidePanelRegistry* window_registry) {
+void SidePanelHelper::PopulateGlobalEntries(
+    Browser* browser,
+    SidePanelRegistry* window_registry) {
   // Add reading list.
   browser->browser_window_features()
       ->reading_list_side_panel_coordinator()
@@ -76,7 +67,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   }
 }
 
-SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
+SidePanelContentProxy* SidePanelHelper::GetSidePanelContentProxy(
     views::View* content_view) {
   if (!content_view->GetProperty(kSidePanelContentProxyKey)) {
     content_view->SetProperty(
@@ -86,7 +77,7 @@ SidePanelContentProxy* SidePanelUtil::GetSidePanelContentProxy(
   return content_view->GetProperty(kSidePanelContentProxyKey);
 }
 
-actions::ActionItem* SidePanelUtil::GetActionItem(
+actions::ActionItem* SidePanelHelper::GetActionItem(
     Browser* browser,
     SidePanelEntry::Key entry_key) {
   BrowserActions* const browser_actions = browser->browser_actions();
