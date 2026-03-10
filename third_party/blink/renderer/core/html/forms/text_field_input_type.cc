@@ -853,4 +853,12 @@ void TextFieldInputType::FilterOptions() {
   }
 }
 
+bool TextFieldInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink

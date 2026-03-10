@@ -563,6 +563,11 @@ input[type="search" i]::-webkit-search-cancel-button {
     opacity: 0;
     pointer-events: none;
     user-select: none !important;
+
+    @supports blink-feature(AppearanceBase) {
+        /** This pseudo element doesn't exist in the standard layout. */
+        display: -internal-auto-base(revert-rule, none) !important;
+    }
 }
 
 input[type="search" i]:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-search-cancel-button {
@@ -611,6 +616,11 @@ input::-webkit-inner-spin-button {
     -webkit-user-modify: read-only !important;
     opacity: 0;
     pointer-events: none;
+
+    @supports blink-feature(AppearanceBase) {
+        /** This pseudo element doesn't exist in the standard layout. */
+        display: -internal-auto-base(revert-rule, none) !important;
+    }
 }
 
 input:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-inner-spin-button {
