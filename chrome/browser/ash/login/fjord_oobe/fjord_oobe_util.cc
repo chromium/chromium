@@ -19,7 +19,9 @@ static constexpr base::fixed_flat_set<std::string_view, 7>
 bool ShouldShowFjordOobe() {
   return features::IsFjordOobeForceEnabled() ||
          (policy::EnrollmentRequisitionManager::IsCuttlefishDevice() &&
-          features::IsFjordOobeEnabled());
+          features::IsFjordOobeEnabled()) ||
+         (policy::EnrollmentRequisitionManager::IsSquidDevice() &&
+          features::IsFjordOobeForSquidEnabled());
 }
 
 bool IsAllowlistedLanguage(std::string_view language_code) {
