@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       "skills-app", "user-skills-page", "cr-button#addSkillButton"};
   const InteractiveBrowserWindowTestApi::DeepQuery kNameInputQuery{
       "skills-dialog-app", "cr-input#nameText"};
-  const InteractiveBrowserWindowTestApi::DeepQuery kDescriptionInputQuery{
+  const InteractiveBrowserWindowTestApi::DeepQuery kInstructionsInputQuery{
       "skills-dialog-app", "textarea#instructionsText"};
   const InteractiveBrowserWindowTestApi::DeepQuery kSaveButtonQuery{
       "skills-dialog-app", "cr-button#saveButton"};
@@ -245,8 +245,8 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
                   "  el.value = 'My New Skill';"
                   "  el.dispatchEvent(new Event('input', { bubbles: true }));"
                   "}"),
-      WaitForElementExists(kSkillsDialogElementId, kDescriptionInputQuery),
-      ExecuteJsAt(kSkillsDialogElementId, kDescriptionInputQuery,
+      WaitForElementExists(kSkillsDialogElementId, kInstructionsInputQuery),
+      ExecuteJsAt(kSkillsDialogElementId, kInstructionsInputQuery,
                   "el => {"
                   "  el.value = 'Instructions';"
                   "  el.dispatchEvent(new Event('input', { bubbles: true }));"
