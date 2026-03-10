@@ -68,6 +68,13 @@ public class ActorKeyedService {
         return ActorKeyedServiceJni.get().getTask(mNativePtr, taskId);
     }
 
+    /** Returns the current active task if existing, null otherwise. */
+    public @Nullable ActorTask getCurrentActiveTask() {
+        if (mNativePtr == 0) return null;
+        List<ActorTask> tasks = getActiveTasks();
+        return (tasks != null && !tasks.isEmpty()) ? tasks.get(0) : null;
+    }
+
     /** Allows the UI to stop a running task. */
     public void stopTask(@ActorTaskId int taskId, @StoppedReason int stopReason) {
         if (mNativePtr == 0) return;
