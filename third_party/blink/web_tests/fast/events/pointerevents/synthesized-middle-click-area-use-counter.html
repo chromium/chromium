@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<body>
+  <map id="m" name="m">
+    <area href="" shape="default">
+  </map>
+  <img src="" usemap="#m" id="image">
+  <script>
+    const kSynthesizedMiddleClickArea = 5820;
+
+    test(function () {
+      const area = document.querySelector('area');
+
+      internals.clearUseCounter(document, kSynthesizedMiddleClickArea);
+      assert_false(internals.isUseCounted(document, kSynthesizedMiddleClickArea), "Area should not be counted initially");
+      const event = new MouseEvent('click', {
+        button: 1 // Middle button
+      });
+      area.dispatchEvent(event);
+      assert_true(internals.isUseCounted(document, kSynthesizedMiddleClickArea), "Area should be counted after synthesized middle click");
+    }, "Synthesized middle click on area should trigger UseCounter");
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <a href="" id="svglink"><text>link</text></a>
+  </svg>
+  <script>
+    const kSynthesizedMiddleClickSVGAnchor = 5821;
+
+    test(function () {
+      const link = document.getElementById('svglink');
+
+      internals.clearUseCounter(document, kSynthesizedMiddleClickSVGAnchor);
+      assert_false(internals.isUseCounted(document, kSynthesizedMiddleClickSVGAnchor), "SVG anchor should not be counted initially");
+      const event = new MouseEvent('click', {
+        button: 1 // Middle button
+      });
+      link.dispatchEvent(event);
+      assert_true(internals.isUseCounted(document, kSynthesizedMiddleClickSVGAnchor), "SVG anchor should be counted after synthesized middle click");
+    }, "Synthesized middle click on SVG anchor should trigger UseCounter");
+  </script>
+</body>
+</html>

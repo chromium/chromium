@@ -5133,6 +5133,9 @@ enum WebFeature {
   kHTMLInputElementTypeChangedWhileConnected = 5816,
   kHTMLButtonElementTypeChangedWhileDisconnected = 5817,
   kHTMLInputElementTypeChangedWhileDisconnected = 5818,
+  kSynthesizedMiddleClickAnchor = 5819,
+  kSynthesizedMiddleClickArea = 5820,
+  kSynthesizedMiddleClickSVGAnchor = 5821,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

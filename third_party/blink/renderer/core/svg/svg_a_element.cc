@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -124,6 +125,20 @@ void SVGAElement::DefaultEventHandler(Event& event) {
     }
 
     if (IsLinkClick(event)) {
+      // It's unclear whether synthesized middle-button "click" events should be
+      // allowed to be dispatched and create a navigation. Measure how common
+      // this is to see if we can disallow it. Per Pointer Events: "The click
+      // event should only be fired for the primary pointer button (i.e., when
+      // button value is 0, buttons value is 1). Secondary buttons (like the
+      // middle or right button on a standard mouse) MUST NOT fire click
+      // events." (https://w3c.github.io/pointerevents/#dfn-click)
+      if (event.type() == event_type_names::kClick && !event.isTrusted() &&
+          To<MouseEvent>(event).button() ==
+              static_cast<int16_t>(WebPointerProperties::Button::kMiddle)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kSynthesizedMiddleClickSVGAnchor);
+      }
+
       StringView url = StripLeadingAndTrailingHtmlSpaces(HrefString());
 
       if (url.starts_with('#')) {
