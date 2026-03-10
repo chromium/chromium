@@ -443,7 +443,9 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
     // Ensured by third_party/blink/renderer/core/loader/navigation_policy.cc.
     CHECK(base::FeatureList::IsEnabled(features::kLinkPreview));
 
-    DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
+    if (Url().ProtocolIsInHttpFamily()) {
+      DocumentSpeculationRules::From(GetDocument()).InitiatePreview(Url());
+    }
     return;
   }
 

@@ -411,7 +411,9 @@ void WebDocument::InitiatePreview(const WebURL& url) {
   }
 
   KURL kurl(url);
-  DocumentSpeculationRules::From(*document).InitiatePreview(kurl);
+  if (kurl.ProtocolIsInHttpFamily()) {
+    DocumentSpeculationRules::From(*document).InitiatePreview(kurl);
+  }
 }
 
 void WebDocument::SnapshotAccessibilityTree(

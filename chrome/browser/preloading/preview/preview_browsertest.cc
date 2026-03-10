@@ -24,10 +24,14 @@
 #include "content/public/test/mojo_capability_control_test_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 
 class PreviewBrowserTest : public InProcessBrowserTest {
  public:
@@ -407,4 +411,21 @@ IN_PROC_BROWSER_TEST_F(PreviewBrowserTest, ZoomIsDurableForHost) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
 
   expect(2, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewBrowserTest,
+                       UnexpectedPreviewKillsInitiator) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL("/title1.html")));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::SpeculationHost> remote;
+  content::test::MojoCapabilityControlTestHelper().GetInterface(
+      chrome_test_utils::GetActiveWebContents(this)->GetPrimaryMainFrame(),
+      remote.BindNewPipeAndPassReceiver());
+
+  remote->InitiatePreview(GURL("chrome://newtab"));
+  remote.FlushForTesting();
+
+  EXPECT_EQ("SH_NON_HTTP", bad_message_observer.WaitForBadMessage());
 }

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -33,6 +34,10 @@ blink::WebURL GetURL(blink::WebElement& anchor_element) {
   blink::WebURL url = anchor_element.GetDocument().CompleteURL(href);
 
   if (!url.IsValid()) {
+    return blink::WebURL();
+  }
+
+  if (!blink::ToGURL(url).SchemeIsHTTPOrHTTPS()) {
     return blink::WebURL();
   }
 

@@ -131,6 +131,11 @@ void SpeculationHostImpl::InitiatePreview(const GURL& url) {
     return;
   }
 
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    mojo::ReportBadMessage("SH_NON_HTTP");
+    return;
+  }
+
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   CHECK(web_contents);
