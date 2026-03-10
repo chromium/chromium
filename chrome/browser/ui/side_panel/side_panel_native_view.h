@@ -5,19 +5,33 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_NATIVE_VIEW_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_NATIVE_VIEW_H_
 
+#include <memory>
+
 #include "build/build_config.h"
+#include "ui/base/class_property.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "third_party/jni_zero/jni_zero.h"
 #else
-#include <memory>
-
 #include "ui/views/view.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-using SidePanelNativeView = base::android::ScopedJavaGlobalRef<jobject>;
+class SidePanelNativeViewAndroid : public ui::PropertyHandler {
+ public:
+  explicit SidePanelNativeViewAndroid(
+      base::android::ScopedJavaGlobalRef<jobject> view)
+      : view_(std::move(view)) {}
+  ~SidePanelNativeViewAndroid() override = default;
+
+  base::android::ScopedJavaGlobalRef<jobject> view() const { return view_; }
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> view_;
+};
+
+using SidePanelNativeView = std::unique_ptr<SidePanelNativeViewAndroid>;
 #else
 using SidePanelNativeView = std::unique_ptr<views::View>;
 #endif
