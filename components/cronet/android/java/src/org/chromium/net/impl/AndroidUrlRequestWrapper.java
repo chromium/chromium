@@ -72,6 +72,14 @@ class AndroidUrlRequestWrapper extends org.chromium.net.ExperimentalUrlRequest {
         mBackend.getStatus(new AndroidUrlRequestStatusListenerWrapper(listener));
     }
 
+    int getTrafficStatsUid() {
+        return mBackend.getTrafficStatsUid();
+    }
+
+    int getTrafficStatsTag() {
+        return mBackend.getTrafficStatsTag();
+    }
+
     /**
      * Creates an {@link AndroidUrlRequestWrapper} that is recorded on the callback.
      *

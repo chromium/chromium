@@ -1480,6 +1480,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsLoaderTest.java",
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
     "test/javatests/src/org/chromium/net/impl/AdaptiveBidirectionalStreamTest.java",
+    "test/javatests/src/org/chromium/net/impl/AndroidCallbackWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/AndroidHttpEngineBuilderWrapperTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetAdaptiveNetworkBidirectionalStreamTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",

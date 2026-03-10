@@ -249,7 +249,7 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
             requestBuilder.setTrafficStatsTag(trafficStatsTag);
         }
         if (trafficStatsUidSet) {
-            requestBuilder.setTrafficStatsTag(trafficStatsUid);
+            requestBuilder.setTrafficStatsUid(trafficStatsUid);
         }
         requestBuilder.bindToNetwork(getNetwork(networkHandle));
         requestBuilder.setHttpMethod(method);
