@@ -240,12 +240,12 @@ class CustomTabActivityTimeoutHandler {
 
     private boolean isTimeoutEnabledForChromeExperiment(Intent intent) {
         return IntentUtils.safeHasExtra(intent, EXTRA_TIMEOUT_MINUTES_ALLOWED)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RESET_TIMEOUT_ENABLED);
+                && ChromeFeatureList.sCctResetTimeoutEnabled.isEnabled();
     }
 
     private boolean isTimeoutEnabledForEmbedderExperiment(Intent intent) {
         return IntentUtils.safeHasExtra(intent, EXTRA_TIMEOUT_MINUTES)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED);
+                && ChromeFeatureList.sCctResetTimeoutAllowed.isEnabled();
     }
 
     private int getTimeoutMinutesForChromeExperiment(Intent intent) {
