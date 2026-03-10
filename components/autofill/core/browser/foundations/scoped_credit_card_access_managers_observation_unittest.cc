@@ -93,7 +93,7 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest,
               OnCreditCardAccessManagerDestroyed(
                   Ref(*autofill_manager(1).GetCreditCardAccessManager())));
 
-  DeleteAutofillDriver(autofill_driver(0));
+  DeleteAutofillDriver(autofill_driver(1));
   DeleteAutofillDriver(autofill_driver(0));
 }
 
