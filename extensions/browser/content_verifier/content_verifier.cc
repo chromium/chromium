@@ -84,6 +84,7 @@ base::FilePath NormalizeRelativePath(const base::FilePath& relative_path) {
 std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
     const Extension* extension,
     ContentVerifierDelegate* delegate) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ContentVerifierDelegate::VerifierSourceType source_type =
       delegate->GetVerifierSourceType(*extension);
   if (source_type == ContentVerifierDelegate::VerifierSourceType::NONE)
@@ -1043,12 +1044,22 @@ ContentVerifier::HashHelper* ContentVerifier::GetOrCreateHashHelper() {
   return hash_helper_.get();
 }
 
-void ContentVerifier::ResetIODataForTesting(const Extension* extension) {
+void ContentVerifier::ResetIODataForTesting(const Extension* extension,
+                                            base::OnceClosure callback) {
   std::unique_ptr<ContentVerifierIOData::ExtensionData> data =
       CreateIOData(extension, delegate_.get());
   // This is only used in testing; `data` must always be successfully created.
   CHECK(data);
-  io_data_.AddData(extension->id(), std::move(*data));
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<ContentVerifier> verifier,
+             const ExtensionId& extension_id,
+             std::unique_ptr<ContentVerifierIOData::ExtensionData> data) {
+            verifier->io_data_.AddData(extension_id, std::move(*data));
+          },
+          base::WrapRefCounted(this), extension->id(), std::move(data)),
+      std::move(callback));
 }
 
 base::FilePath ContentVerifier::NormalizeRelativePathForTesting(

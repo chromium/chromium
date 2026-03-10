@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -185,8 +186,12 @@ class ContentVerifierTest : public ExtensionsTest {
     OnContentVerifierReady();
   }
 
-  virtual void OnContentVerifierReady() {
-    content_verifier_->ResetIODataForTesting(extension_.get());
+  void OnContentVerifierReady() { ResetIOData(extension_.get()); }
+
+  void ResetIOData(const Extension* extension) {
+    base::RunLoop run_loop;
+    content_verifier_->ResetIODataForTesting(extension, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void TearDown() override {
@@ -526,12 +531,6 @@ class ContentVerifierExtensionRootHashTest
         // Necessary to use BrowserTaskEnvironment::RunIOThreadUntilIdle().
         ContentVerifierTest(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
-  void OnContentVerifierReady() override {
-    RunTaskOnIOThreadAndWait(
-        base::BindOnce(&ContentVerifier::ResetIODataForTesting,
-                       content_verifier(), base::RetainedRef(extension())));
-  }
-
   void RunTaskOnIOThreadAndWait(base::OnceClosure task) {
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -572,9 +571,7 @@ TEST_P(ContentVerifierExtensionRootHashTest,
     SCOPED_TRACE(
         "Waiting for the verifier to update with Extension B's data (same ID, "
         "different root)");
-    RunTaskOnIOThreadAndWait(
-        base::BindOnce(&ContentVerifier::ResetIODataForTesting,
-                       content_verifier(), base::RetainedRef(extension_b)));
+    ResetIOData(extension_b.get());
   }
   {
     TestContentHashWaiter waiter;
@@ -657,9 +654,7 @@ TEST_P(ContentVerifierExtensionRootHashTest, StaleJobOnUpdatedExtension) {
     SCOPED_TRACE(
         "Waiting for the verifier to update to Root B (simulating a "
         "corruption repair)");
-    RunTaskOnIOThreadAndWait(
-        base::BindOnce(&ContentVerifier::ResetIODataForTesting,
-                       content_verifier(), base::RetainedRef(extension_b)));
+    ResetIOData(extension_b.get());
   }
   {
     SCOPED_TRACE("waiting for extension with Root B to create it's hash");

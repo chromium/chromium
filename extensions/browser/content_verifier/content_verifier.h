@@ -149,7 +149,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<
 
   // Test helper to recompute `io_data_` for `extension` without having to
   // call `OnExtensionLoaded`.
-  void ResetIODataForTesting(const Extension* extension);
+  void ResetIODataForTesting(const Extension* extension,
+                             base::OnceClosure callback);
 
   // Test helper to clear all cached ContentHash entries from `cache_`.
   void ClearCacheForTesting();
