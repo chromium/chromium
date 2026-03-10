@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">ChromeVox ट्युटोरियलमध्ये स्वागत आहे. या ट्युटोरियलमधून कधीही बाहेर पडण्यासाठी, दोन बोटांनी उजवीकडून डावीकडे स्वाइप करा. ChromeVox कधीही सुरू किंवा बंद करण्यासाठी, दोन्ही व्हॉल्यूम बटणे पाच सेकंदांसाठी प्रेस करून धरून ठेवा. तुम्ही तयार असाल, तेव्हा पुढील धड्यावर जाण्यासाठी स्क्रीनवर एका बोटाने दोनदा टॅप करा.</translation>
 <translation id="700202842116345659">ग्रंथसूची नोंद</translation>
 <translation id="7005146664810010831">कोणतीही URL आढळली नाही</translation>
-<translation id="7026338066939101231">घट</translation>
+<translation id="7026338066939101231">कमी होणे</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{white bullet}} *{{{$$COUNT} white bullets}}</translation>
 <translation id="7037042857287298941">मागील सूची</translation>
@@ -1064,7 +1064,7 @@
 <translation id="7972507042926081808">चॅाकलेटी</translation>
 <translation id="7974390230414479278">मेनू आयटम</translation>
 <translation id="8004507136466386272">शब्द</translation>
-<translation id="8004512796067398576">बढती</translation>
+<translation id="8004512796067398576">वाढणे</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">भाषण बंद</translation>
 <translation id="801990297710781303">तळटीप</translation>

@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">Welcome sa tutorial sa ChromeVox. Para mag-exit sa tutorial na ito anumang oras, mag-swipe pakaliwa gamit ang dalawang daliri. Para i-on o i-off ang ChromeVox anumang oras, pindutin nang matagal ang parehong button ng Volume nang limang segundo. Kapag handa ka na, i-double tap ang screen gamit ang isang daliri para lumipat sa susunod na aralin.</translation>
 <translation id="700202842116345659">Entry sa bibliograpiya</translation>
 <translation id="7005146664810010831">Walang nakitang URL</translation>
-<translation id="7026338066939101231">Babaan</translation>
+<translation id="7026338066939101231">Bawas</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{puting bullet}} *{{{$$COUNT} (na) puting bullet}}</translation>
 <translation id="7037042857287298941">Nakaraang listahan</translation>
@@ -1064,7 +1064,7 @@
 <translation id="7972507042926081808">Chocolate</translation>
 <translation id="7974390230414479278">Item sa menu</translation>
 <translation id="8004507136466386272">Mga Salita</translation>
-<translation id="8004512796067398576">Taasan</translation>
+<translation id="8004512796067398576">Dagdag</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">I-off ang pananalita</translation>
 <translation id="801990297710781303">Footnote</translation>
