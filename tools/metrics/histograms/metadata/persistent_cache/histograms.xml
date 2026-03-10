@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PersistentCache.Find.{Mode}.{Client}" units="microseconds"
-    expires_after="2026-07-02">
+    expires_after="2026-09-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PersistentCache.Insert.{Client}" units="microseconds"
-    expires_after="2026-07-02">
+    expires_after="2026-09-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

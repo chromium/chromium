@@ -282,7 +282,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.BubbleAction"
-    enum="MemorySaverBubbleActionType" expires_after="2026-07-05">
+    enum="MemorySaverBubbleActionType" expires_after="2026-09-06">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -317,7 +317,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
-    enum="BooleanEnabled" expires_after="2026-07-05">
+    enum="BooleanEnabled" expires_after="2026-09-06">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

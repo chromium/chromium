@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Bruschetta.InstallResult" enum="BruschettaInstallResult"
-    expires_after="2026-07-05">
+    expires_after="2026-09-06">
   <owner>uekawa@google.com</owner>
   <owner>drmasquatch@google.com</owner>
   <owner>src/chrome/browser/ash/bruschetta/OWNERS</owner>
@@ -31,7 +31,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bruschetta.LaunchResult" enum="BruschettaResult"
-    expires_after="2026-07-05">
+    expires_after="2026-09-06">
   <owner>uekawa@google.com</owner>
   <owner>drmasquatch@google.com</owner>
   <owner>src/chrome/browser/ash/bruschetta/OWNERS</owner>

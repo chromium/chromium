@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.RollbackTargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-09-06">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-05-03">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2026-09-06">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>

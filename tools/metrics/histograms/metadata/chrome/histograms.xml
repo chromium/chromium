@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2026-07-05">
+    expires_after="2026-09-06">
   <owner>robliao@chromium.org</owner>
   <summary>
     Records time from when Widget::Show() is called to when the first frame is
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2026-07-05">
+    enum="NetworkSandboxState" expires_after="2026-09-06">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>

@@ -5327,7 +5327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.ChunkAllocationFailedReason"
-    enum="SlopBucketChunkAllocationFailedReason" expires_after="2026-07-05">
+    enum="SlopBucketChunkAllocationFailedReason" expires_after="2026-09-06">
   <owner>ricea@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -5354,7 +5354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.PeakChunksAllocated" units="chunks"
-    expires_after="2026-07-05">
+    expires_after="2026-09-06">
   <owner>ricea@chromium.org</owner>
   <owner>yoichio@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
@@ -5368,7 +5368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.SlopBucket.RequestedPriority"
-    enum="NetRequestPriority" expires_after="2026-07-05">
+    enum="NetRequestPriority" expires_after="2026-09-06">
   <owner>ricea@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5416,7 +5416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantNoVarySearchAccess" units="ms"
-    expires_after="2026-07-05">
+    expires_after="2026-09-06">
   <owner>ricea@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

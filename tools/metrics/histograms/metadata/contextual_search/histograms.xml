@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Query.Modality.V2.FunnelMetrics.{ContextualSearchFunnel}.{ContextualSearchSource}"
-    enum="ContextualSearchMultimodalState" expires_after="2026-07-05">
+    enum="ContextualSearchMultimodalState" expires_after="2026-09-06">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Query.Modality.V2.{ContextualSearchSource}"
-    enum="ContextualSearchMultimodalState" expires_after="2026-07-05">
+    enum="ContextualSearchMultimodalState" expires_after="2026-09-06">
   <owner>hujaosonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

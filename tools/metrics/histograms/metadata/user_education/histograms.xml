@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UserEducation.DesktopToIOSPromo.{PromoType}.BubbleView.Created"
-    enum="DesktopToIOSPromoBubbleType" expires_after="2026-06-04">
+    enum="DesktopToIOSPromoBubbleType" expires_after="2026-09-06">
   <owner>hiramahmood@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>

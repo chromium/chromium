@@ -1025,7 +1025,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="SupervisedUsers.WebFilterType{UserType}"
-    enum="SupervisedUserWebFilterType" expires_after="2026-07-04">
+    enum="SupervisedUserWebFilterType" expires_after="2026-09-06">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
