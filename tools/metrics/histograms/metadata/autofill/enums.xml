@@ -114,6 +114,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Prefill request not sent - not enough time."/>
 </enum>
 
+<!--  LINT.IfChange(AttemptFormFillingToolEvent) -->
+
+<enum name="AttemptFormFillingToolEvent">
+  <int value="0" label="Tool was invoked by the actor"/>
+  <int value="1"
+      label="Autofill service returned (potentially empty) suggestions
+             response"/>
+  <int value="2"
+      label="Autofill service returned a valid suggestions response"/>
+  <int value="3" label="Autofill Attention Dialog presented to the user"/>
+  <int value="4" label="Autofill Attention Dialog accepted by the user"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h:AttemptFormFillingToolEvent) -->
+
 <enum name="AufofillStructuredTokenVerificationStatus">
   <int value="0" label="No Status"/>
   <int value="1" label="Parsed"/>
@@ -293,15 +308,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Hiragana"/>
   <int value="2" label="Other"/>
 </enum>
-
-<!--  LINT.IfChange(AutofillAttentionCardEvent) -->
-
-<enum name="AutofillAttentionCardEvent">
-  <int value="0" label="Autofill Attention Card presented to the user"/>
-  <int value="1" label="Autofill Attention Card accepted by the user"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h:AutofillAttentionCardEvent) -->
 
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
