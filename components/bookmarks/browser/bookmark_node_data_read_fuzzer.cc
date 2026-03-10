@@ -6,12 +6,12 @@
 #include <stdint.h>
 
 #include "base/at_exit.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 class Environment {
  public:
@@ -22,11 +22,10 @@ class Environment {
   base::AtExitManager at_exit_manager;
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static Environment env;
 
   bookmarks::BookmarkNodeData bookmark_node_data;
-  bookmark_node_data.ReadFromPickle(
-      base::PickleIterator::WithData(UNSAFE_TODO(base::span(data, size))));
+  bookmark_node_data.ReadFromPickle(base::PickleIterator::WithData(data));
   return 0;
 }

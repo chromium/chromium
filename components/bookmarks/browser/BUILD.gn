@@ -188,6 +188,7 @@ if (!is_mac) {
       ":browser",
       "//base",
       "//base:i18n",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 }
