@@ -47,6 +47,24 @@ chromium-metrics-reviews@google.com.
   <variant name="SidePanel" summary="a side panel embedder"/>
 </variants>
 
+<variants name="GlicEntrypoint">
+  <variant name="AutoOpenedByContextualCue"/>
+  <variant name="AutoOpenedForPdf"/>
+  <variant name="Iph"/>
+  <variant name="NavigationCapture"/>
+  <variant name="Nudge"/>
+  <variant name="OsButton"/>
+  <variant name="OsHotkey"/>
+  <variant name="Other"/>
+  <variant name="PdfSummarizeButton"/>
+  <variant name="SharedImage"/>
+  <variant name="SharedTab"/>
+  <variant name="Skills"/>
+  <variant name="ThreeDotsMenu"/>
+  <variant name="TopChromeButton"/>
+  <variant name="WhatsNew"/>
+</variants>
+
 <variants name="PanelEvent">
   <variant name="OnClose" summary="the glic panel is closed."/>
   <variant name="OnOpen" summary="the glic panel is opened."/>
@@ -1355,6 +1373,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.WebUiLoadTime.{Entrypoint}.{Visibility}"
+    units="ms" expires_after="2026-11-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time it takes for the Glic WebUI to load, from the `kBeginLoad`
+    state to the `kReady` state. This is recorded for both user-visible loads
+    and non-visible pre-warming loads, distinguished by the {Entrypoint} this
+    instance was created with and {Visibility} variant.
+  </summary>
+  <token key="Entrypoint" variants="GlicEntrypoint"/>
+  <token key="Visibility" variants="Visibility"/>
+</histogram>
+
 <histogram name="Glic.Instance.WebUiLoadTime.{Visibility}" units="ms"
     expires_after="2026-11-01">
   <owner>birnie@google.com</owner>
@@ -1368,6 +1400,34 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
+<histogram name="Glic.Instance.{Entrypoint}.EventCounts"
+    enum="GlicInstanceEvent" expires_after="2026-08-02">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records every event that happens during a Glic Instance's lifecycle broken
+    down by {Entrypoint} that instance was created with. This histogram answers
+    the question: What is the total number of times each event occurred across
+    all Glic instances created via {Entrypoint}? An event is recorded each time
+    it occurs.
+  </summary>
+  <token key="Entrypoint" variants="GlicEntrypoint"/>
+</histogram>
+
+<histogram name="Glic.Instance.{Entrypoint}.HadEvent" enum="GlicInstanceEvent"
+    expires_after="2026-08-02">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle broken down by
+    {Entrypoint} that instance was created with. This histogram answers the
+    question: How many instances created via {Entrypoint} had each event type
+    occur at least once? Even if an event occurs multiple times in an instance,
+    only one event is recorded per instance.
+  </summary>
+  <token key="Entrypoint" variants="GlicEntrypoint"/>
+</histogram>
+
 <histogram name="Glic.Instance.{Entrypoint}.SidePanelFirstOpenDuration"
     units="ms" expires_after="2026-08-02">
   <owner>basiaz@google.com</owner>
@@ -1377,23 +1437,7 @@ chromium-metrics-reviews@google.com.
     time side panel was open for an instance without an error. Switching away
     from a tab with side panel counts as closure for the purpose of this metric.
   </summary>
-  <token key="Entrypoint">
-    <variant name="AutoOpenedByContextualCue"/>
-    <variant name="AutoOpenedForPdf"/>
-    <variant name="Iph"/>
-    <variant name="NavigationCapture"/>
-    <variant name="Nudge"/>
-    <variant name="OsButton"/>
-    <variant name="OsHotkey"/>
-    <variant name="Other"/>
-    <variant name="PdfSummarizeButton"/>
-    <variant name="SharedImage"/>
-    <variant name="SharedTab"/>
-    <variant name="Skills"/>
-    <variant name="ThreeDotsMenu"/>
-    <variant name="TopChromeButton"/>
-    <variant name="WhatsNew"/>
-  </token>
+  <token key="Entrypoint" variants="GlicEntrypoint"/>
 </histogram>
 
 <histogram name="Glic.Interaction.SwitchConversationTarget"
