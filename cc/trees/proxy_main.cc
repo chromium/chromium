@@ -1021,20 +1021,10 @@ bool ProxyMain::ShouldBeginMainFrameNotExpectedSoon() const {
   return true;
 }
 
-// When kMainIdleBypassScheduler is enabled, requesting
-// BeginMainFrameNotExpected bypasses updating scheduler state and performs the
-// calculation in place.
 void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
   TRACE_EVENT("cc", "ProxyMain::RequestBeginMainFrameNotExpected", "paused",
               new_state);
   DCHECK(IsMainThread());
-  if (!base::FeatureList::IsEnabled(features::kMainIdleBypassScheduler)) {
-    ImplThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl,
-                       base::Unretained(proxy_impl_.get()), new_state));
-    return;
-  }
   request_begin_main_frame_not_expected_ = new_state;
   did_notify_begin_main_frame_not_expected_until_ = false;
 

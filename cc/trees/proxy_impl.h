@@ -110,7 +110,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);
-  void RequestBeginMainFrameNotExpectedOnImpl(bool new_state);
 
   void ClearHistory() override;
   size_t CommitDurationSampleCountForTesting() const override;
@@ -197,9 +196,6 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void ScheduledActionPrepareTiles() override;
   void ScheduledActionInvalidateLayerTreeFrameSink(bool needs_redraw) override;
   void ScheduledActionPerformImplSideInvalidation() override;
-  void SendBeginMainFrameNotExpectedSoon() override;
-  void ScheduledActionBeginMainFrameNotExpectedUntil(
-      base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override {}
   void OnBeginImplFrameDeadline() override;
 

@@ -330,14 +330,6 @@ void ProxyImpl::MainFrameWillHappenOnImplForTesting(
   completion->Signal();
 }
 
-void ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl(bool new_state) {
-  DCHECK(IsImplThread());
-  DCHECK(scheduler_);
-  TRACE_EVENT1("cc", "ProxyImpl::RequestBeginMainFrameNotExpectedOnImpl",
-               "new_state", new_state);
-  scheduler_->SetMainThreadWantsBeginMainFrameNotExpected(new_state);
-}
-
 bool ProxyImpl::IsInSynchronousComposite() const {
   return false;
 }
@@ -877,21 +869,6 @@ void ProxyImpl::ScheduledActionPerformImplSideInvalidation() {
   TRACE_EVENT0("cc", "ProxyImpl::ScheduledActionPerformImplSideInvalidation");
   DCHECK(IsImplThread());
   host_impl_->InvalidateContentOnImplSide();
-}
-
-void ProxyImpl::SendBeginMainFrameNotExpectedSoon() {
-  DCHECK(IsImplThread());
-  MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::BeginMainFrameNotExpectedSoon,
-                                proxy_main_weak_ptr_));
-}
-
-void ProxyImpl::ScheduledActionBeginMainFrameNotExpectedUntil(
-    base::TimeTicks time) {
-  DCHECK(IsImplThread());
-  MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::BeginMainFrameNotExpectedUntil,
-                                proxy_main_weak_ptr_, time));
 }
 
 void ProxyImpl::OnBeginImplFrameDeadline() {

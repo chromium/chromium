@@ -226,12 +226,6 @@ SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
     case Action::PERFORM_IMPL_SIDE_INVALIDATION:
       return pbzeroSchedulerAction::
           CC_SCHEDULER_ACTION_V2_PERFORM_IMPL_SIDE_INVALIDATION;
-    case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
-      return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
-    case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
-      return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
   }
   NOTREACHED();
 }
@@ -261,12 +255,6 @@ void SchedulerStateMachine::AsProtozeroInto(
   minor_state->set_did_draw(did_draw_);
   minor_state->set_did_send_begin_main_frame_for_current_frame(
       did_send_begin_main_frame_for_current_frame_);
-  minor_state->set_did_notify_begin_main_frame_not_expected_until(
-      did_notify_begin_main_frame_not_expected_until_);
-  minor_state->set_did_notify_begin_main_frame_not_expected_soon(
-      did_notify_begin_main_frame_not_expected_soon_);
-  minor_state->set_wants_begin_main_frame_not_expected(
-      wants_begin_main_frame_not_expected_);
   minor_state->set_did_commit_during_frame(did_commit_during_frame_);
   minor_state->set_did_invalidate_layer_tree_frame_sink(
       did_invalidate_layer_tree_frame_sink_);
@@ -505,79 +493,6 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
                          TRACE_EVENT_SCOPE_THREAD);
     return false;
   }
-  return true;
-}
-
-bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedUntil() const {
-  // This method returns true if most of the conditions for sending a
-  // BeginMainFrame are met, but one is not actually requested. This gives the
-  // main thread the chance to do something else.
-
-  if (!wants_begin_main_frame_not_expected_)
-    return false;
-
-  // Don't notify if a BeginMainFrame has already been requested or is in
-  // progress.
-  if (needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE ||
-      next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
-    return false;
-  }
-
-  // Only notify when we're visible.
-  if (!visible_)
-    return false;
-
-  // There are no BeginImplFrames while viz::BeginFrameSource is paused, meaning
-  // the scheduler should send SendBeginMainFrameNotExpectedSoon instead,
-  // indicating a longer period of inactivity.
-  if (begin_frame_source_paused_)
-    return false;
-
-  // If we've gone idle and have stopped getting BeginFrames, we should send
-  // SendBeginMainFrameNotExpectedSoon instead.
-  if (!BeginFrameNeeded() &&
-      begin_impl_frame_state_ == BeginImplFrameState::IDLE) {
-    return false;
-  }
-
-  // Do not notify that no BeginMainFrame was sent too many times in a single
-  // frame.
-  if (did_notify_begin_main_frame_not_expected_until_)
-    return false;
-
-  // Do not notify if a commit happened during this frame as the main thread
-  // will already be active and does not need to be woken up to make further
-  // actions. (This occurs if the main frame was scheduled but didn't complete
-  // before the vsync deadline).
-  if (did_commit_during_frame_)
-    return false;
-
-  return true;
-}
-
-bool SchedulerStateMachine::ShouldNotifyBeginMainFrameNotExpectedSoon() const {
-  if (!wants_begin_main_frame_not_expected_)
-    return false;
-
-  // Don't notify if a BeginMainFrame has already been requested or is in
-  // progress.
-  if (needs_begin_main_frame_ ||
-      begin_main_frame_state_ != BeginMainFrameState::IDLE ||
-      next_begin_main_frame_state_ != BeginMainFrameState::IDLE) {
-    return false;
-  }
-
-  // Only send this when we've stopped getting BeginFrames and have gone idle.
-  if (BeginFrameNeeded() ||
-      begin_impl_frame_state_ != BeginImplFrameState::IDLE) {
-    return false;
-  }
-
-  // Do not notify that we're not expecting frames more than once per frame.
-  if (did_notify_begin_main_frame_not_expected_soon_)
-    return false;
-
   return true;
 }
 
@@ -820,10 +735,6 @@ SchedulerStateMachine::Action SchedulerStateMachine::NextAction() const {
     return Action::INVALIDATE_LAYER_TREE_FRAME_SINK;
   if (ShouldBeginLayerTreeFrameSinkCreation())
     return Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
-  if (ShouldNotifyBeginMainFrameNotExpectedUntil())
-    return Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
-  if (ShouldNotifyBeginMainFrameNotExpectedSoon())
-    return Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
   return Action::NONE;
 }
 
@@ -976,22 +887,6 @@ void SchedulerStateMachine::WillSendBeginMainFrame() {
   // in order to avoid the effects of delay in-between BeginImplFrame and
   // SendBeginMainFrame(), that might lead to frame pacing issues.
   last_sent_begin_main_frame_time_ = last_begin_impl_frame_time_;
-}
-
-void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedUntil() {
-  DCHECK(visible_);
-  DCHECK(!begin_frame_source_paused_);
-  DCHECK(BeginFrameNeeded() ||
-         begin_impl_frame_state_ != BeginImplFrameState::IDLE);
-  DCHECK(!did_notify_begin_main_frame_not_expected_until_);
-  did_notify_begin_main_frame_not_expected_until_ = true;
-}
-
-void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedSoon() {
-  DCHECK(!BeginFrameNeeded());
-  DCHECK(begin_impl_frame_state_ == BeginImplFrameState::IDLE);
-  DCHECK(!did_notify_begin_main_frame_not_expected_soon_);
-  did_notify_begin_main_frame_not_expected_soon_ = true;
 }
 
 bool SchedulerStateMachine::CheckWillCommit() const {
@@ -1180,11 +1075,6 @@ void SchedulerStateMachine::SetNeedsImplSideInvalidation(
       needs_first_draw_on_activation;
 }
 
-void SchedulerStateMachine::SetMainThreadWantsBeginMainFrameNotExpectedMessages(
-    bool new_state) {
-  wants_begin_main_frame_not_expected_ = new_state;
-}
-
 void SchedulerStateMachine::AbortDraw() {
   if (begin_frame_source_paused_) {
     draw_aborted_for_paused_begin_frame_ = true;
@@ -1369,8 +1259,6 @@ void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameArgs& args) {
   did_submit_in_last_frame_ = false;
   needs_one_begin_impl_frame_ = false;
 
-  did_notify_begin_main_frame_not_expected_until_ = false;
-  did_notify_begin_main_frame_not_expected_soon_ = false;
   did_send_begin_main_frame_for_current_frame_ = false;
   did_commit_during_frame_ = false;
   did_invalidate_layer_tree_frame_sink_ = false;

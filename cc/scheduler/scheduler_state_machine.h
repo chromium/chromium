@@ -146,8 +146,6 @@ class CC_EXPORT SchedulerStateMachine {
     BEGIN_LAYER_TREE_FRAME_SINK_CREATION,
     PREPARE_TILES,
     INVALIDATE_LAYER_TREE_FRAME_SINK,
-    NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL,
-    NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON,
   };
   static perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2
   ActionToProtozeroEnum(Action action);
@@ -157,8 +155,6 @@ class CC_EXPORT SchedulerStateMachine {
 
   Action NextAction() const;
   void WillSendBeginMainFrame();
-  void WillNotifyBeginMainFrameNotExpectedUntil();
-  void WillNotifyBeginMainFrameNotExpectedSoon();
   void WillCommit(bool commit_had_no_updates);
   virtual bool CheckWillCommit() const;
   void DidCommit();
@@ -281,8 +277,6 @@ class CC_EXPORT SchedulerStateMachine {
   // that should not wait more than necessary.
   void SetNeedsBeginMainFrame(bool now = false);
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
-
-  void SetMainThreadWantsBeginMainFrameNotExpectedMessages(bool new_state);
 
   // Requests a single impl frame (after the current frame if there is one
   // active).
@@ -431,8 +425,6 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldRunPostCommit() const;
   virtual bool ShouldPrepareTiles() const;
   virtual bool ShouldInvalidateLayerTreeFrameSink() const;
-  bool ShouldNotifyBeginMainFrameNotExpectedUntil() const;
-  bool ShouldNotifyBeginMainFrameNotExpectedSoon() const;
 
   void WillDrawInternal();
   void WillPerformImplSideInvalidationInternal();
@@ -479,11 +471,6 @@ class CC_EXPORT SchedulerStateMachine {
   // deadline, etc.
   bool did_draw_ = false;
   bool did_send_begin_main_frame_for_current_frame_ = true;
-
-  // Initialized to true to prevent begin main frame before begin frames have
-  // started. Reset to true when we stop asking for begin frames.
-  bool did_notify_begin_main_frame_not_expected_until_ = true;
-  bool did_notify_begin_main_frame_not_expected_soon_ = true;
 
   bool did_commit_during_frame_ = false;
   bool did_invalidate_layer_tree_frame_sink_ = false;
@@ -540,8 +527,6 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool previous_pending_tree_was_impl_side_ = false;
   bool current_pending_tree_is_impl_side_ = false;
-
-  bool wants_begin_main_frame_not_expected_ = false;
 
   // If set to true, the pending tree must be drawn at least once after
   // activation before a new tree can be activated.

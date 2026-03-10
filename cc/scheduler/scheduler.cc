@@ -303,23 +303,6 @@ base::TimeTicks Scheduler::LastBeginImplFrameTime() {
   return begin_impl_frame_tracker_.Current().frame_time;
 }
 
-void Scheduler::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
-  TRACE_EVENT1("cc", "Scheduler::BeginMainFrameNotExpectedUntil",
-               "remaining_time", (time - Now()).InMillisecondsF());
-
-  DCHECK(!inside_scheduled_action_);
-  base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-  client_->ScheduledActionBeginMainFrameNotExpectedUntil(time);
-}
-
-void Scheduler::BeginMainFrameNotExpectedSoon() {
-  TRACE_EVENT0("cc", "Scheduler::BeginMainFrameNotExpectedSoon");
-
-  DCHECK(!inside_scheduled_action_);
-  base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
-  client_->SendBeginMainFrameNotExpectedSoon();
-}
-
 void Scheduler::StartOrStopBeginFrames() {
   if (state_machine_->begin_impl_frame_state() !=
       SchedulerStateMachine::BeginImplFrameState::IDLE) {
@@ -917,12 +900,6 @@ void Scheduler::SetPauseRendering(bool pause_rendering) {
   ProcessScheduledActions();
 }
 
-void Scheduler::SetMainThreadWantsBeginMainFrameNotExpected(bool new_state) {
-  state_machine_->SetMainThreadWantsBeginMainFrameNotExpectedMessages(
-      new_state);
-  ProcessScheduledActions();
-}
-
 void Scheduler::ProcessScheduledActions() {
   // Do not perform actions during compositor shutdown.
   if (stopped_)
@@ -957,17 +934,6 @@ void Scheduler::ProcessScheduledActions() {
         state_machine_->WillSendBeginMainFrame();
         client_->ScheduledActionSendBeginMainFrame(begin_main_frame_args_);
         last_dispatched_begin_main_frame_args_ = begin_main_frame_args_;
-        break;
-      case SchedulerStateMachine::Action::
-          NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
-        state_machine_->WillNotifyBeginMainFrameNotExpectedUntil();
-        BeginMainFrameNotExpectedUntil(begin_main_frame_args_.frame_time +
-                                       begin_main_frame_args_.interval);
-        break;
-      case SchedulerStateMachine::Action::
-          NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
-        state_machine_->WillNotifyBeginMainFrameNotExpectedSoon();
-        BeginMainFrameNotExpectedSoon();
         break;
       case SchedulerStateMachine::Action::COMMIT:
         state_machine_->WillCommit(/*commit_had_no_updates=*/false);

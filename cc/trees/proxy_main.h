@@ -152,7 +152,6 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool BeginFrameNeeded() const;
   bool ShouldBeginMainFrameNotExpectedUntil() const;
   bool ShouldBeginMainFrameNotExpectedSoon() const;
-  // Attempts to idle the main thread when kMainIdleBypassScheduler is enabled.
   void MaybeIdleMainThread();
 
   bool IsMainThread() const;

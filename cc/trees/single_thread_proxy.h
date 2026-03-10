@@ -118,9 +118,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ScheduledActionPrepareTiles() override;
   void ScheduledActionInvalidateLayerTreeFrameSink(bool needs_redraw) override;
   void ScheduledActionPerformImplSideInvalidation() override;
-  void SendBeginMainFrameNotExpectedSoon() override;
-  void ScheduledActionBeginMainFrameNotExpectedUntil(
-      base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override;
   void OnBeginImplFrameDeadline() override;
 

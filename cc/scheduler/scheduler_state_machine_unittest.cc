@@ -133,10 +133,6 @@ const char* ActionToString(SchedulerStateMachine::Action action) {
       return "Action::INVALIDATE_LAYER_TREE_FRAME_SINK";
     case Action::PERFORM_IMPL_SIDE_INVALIDATION:
       return "Action::PERFORM_IMPL_SIDE_INVALIDATION";
-    case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
-      return "Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL";
-    case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
-      return "Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON";
   }
   NOTREACHED();
 }
@@ -289,16 +285,6 @@ void PerformAction(StateMachine* sm, SchedulerStateMachine::Action action) {
       sm->WillSendBeginMainFrame();
       return;
 
-    case SchedulerStateMachine::Action::
-        NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
-      sm->WillNotifyBeginMainFrameNotExpectedUntil();
-      return;
-
-    case SchedulerStateMachine::Action::
-        NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
-      sm->WillNotifyBeginMainFrameNotExpectedSoon();
-      return;
-
     case SchedulerStateMachine::Action::COMMIT: {
       bool commit_has_no_updates = false;
       sm->WillCommit(commit_has_no_updates);
@@ -428,7 +414,6 @@ TEST(SchedulerStateMachineTest,
      TestNextActionNotifyBeginMainFrameNotExpectedUntil) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  state.SetMainThreadWantsBeginMainFrameNotExpectedMessages(true);
   state.SetVisible(true);
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION);
@@ -436,8 +421,6 @@ TEST(SchedulerStateMachineTest,
   state.CreateAndInitializeLayerTreeFrameSinkWithActivatedCommit();
   state.SetNeedsOneBeginImplFrame(true);
   EXPECT_TRUE(state.BeginFrameNeeded());
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::
-                                 NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 
   state.SetNeedsRedraw(true);
@@ -451,7 +434,6 @@ TEST(SchedulerStateMachineTest,
      TestNextActionNotifyBeginMainFrameNotExpectedSoon) {
   SchedulerSettings default_scheduler_settings;
   StateMachine state(default_scheduler_settings);
-  state.SetMainThreadWantsBeginMainFrameNotExpectedMessages(true);
   state.SetVisible(true);
   EXPECT_ACTION_UPDATE_STATE(
       SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION);
@@ -459,8 +441,6 @@ TEST(SchedulerStateMachineTest,
   state.CreateAndInitializeLayerTreeFrameSinkWithActivatedCommit();
   state.SetNeedsOneBeginImplFrame(true);
   EXPECT_TRUE(state.BeginFrameNeeded());
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::
-                                 NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL);
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 
   state.SetNeedsOneBeginImplFrame(false);
@@ -468,9 +448,6 @@ TEST(SchedulerStateMachineTest,
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
   state.SetBeginImplFrameState(
       SchedulerStateMachine::BeginImplFrameState::IDLE);
-  EXPECT_ACTION_UPDATE_STATE(
-      SchedulerStateMachine::Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON);
-
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 }
 

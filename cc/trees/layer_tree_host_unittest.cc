@@ -7134,8 +7134,11 @@ class LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime
     impl_frame_args_.push_back(args);
 
     will_begin_impl_frame_count_++;
-    if (will_begin_impl_frame_count_ < 10)
+    if (will_begin_impl_frame_count_ < 10) {
       PostSetNeedsCommitToMainThread();
+    } else {
+      EndTest();
+    }
   }
 
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {
@@ -7160,15 +7163,12 @@ class LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime
 // http://crbug.com/537621
 SINGLE_THREAD_TEST_F(LayerTreeHostTestBeginMainFrameTimeIsAlsoImplTime);
 
-// Tests the flag for kMainIdleBypassScheduler works as expected, pausing
-// the main frame until the next begin_frame time.
+// Tests that pausing the main frame until the next begin_frame time.
 class LayerTreeHostTestBypassSchedulerPauseUntil : public LayerTreeHostTest {
  public:
   LayerTreeHostTestBypassSchedulerPauseUntil() = default;
 
   void BeginTest() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMainIdleBypassScheduler);
     // Send a main frame to kick off the test.
     PostSetNeedsCommitToMainThread();
     // We expect that Main will go idle until the frame interval is over.
@@ -7190,22 +7190,18 @@ class LayerTreeHostTestBypassSchedulerPauseUntil : public LayerTreeHostTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   viz::BeginFrameArgs begin_frame_args;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestBypassSchedulerPauseUntil);
 
-// Tests the flag for kMainIdleBypassScheduler works as expected, where
-// pausing and hiding the renderer in the middle of the frame lifecycle
-// causes the main thread to receive the idle signal.
+// Tests that pausing and hiding the renderer in the middle of the frame
+// lifecycle causes the main thread to receive the idle signal.
 class LayerTreeHostTestBypassSchedulerPauseSoon : public LayerTreeHostTest {
  public:
   LayerTreeHostTestBypassSchedulerPauseSoon() = default;
 
   void BeginTest() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMainIdleBypassScheduler);
     // Send a main frame to kick off the test.
     PostSetNeedsCommitToMainThread();
   }
@@ -7226,7 +7222,6 @@ class LayerTreeHostTestBypassSchedulerPauseSoon : public LayerTreeHostTest {
   void BeginMainFrameNotExpectedSoon() override { EndTest(); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedPauseRendering> scoped_pause_rendering_;
 };
 
