@@ -70,10 +70,6 @@ namespace ash {
 
 namespace {
 
-// Padding for tray icon (dp; the button that shows the palette menu).
-constexpr int kTrayIconMainAxisInset = 8;
-constexpr int kTrayIconCrossAxisInset = 0;
-
 // Width of the palette itself (dp).
 constexpr int kPaletteWidth = 332;
 
@@ -192,7 +188,13 @@ class StylusEventHandler : public ui::EventHandler {
 }  // namespace
 
 PaletteTray::PaletteTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPalette),
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel::FromVectorIcon(kPaletteTrayIconDefaultNewuiIcon,
+                                         cros_tokens::kCrosSysOnSurface,
+                                         kTrayIconSize),
+          l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE),
+          TrayBackgroundViewCatalogName::kPalette),
       palette_tool_manager_(std::make_unique<PaletteToolManager>(this)),
       welcome_bubble_(std::make_unique<PaletteWelcomeBubble>(this)),
       stylus_event_handler_(std::make_unique<StylusEventHandler>(this)),
@@ -203,11 +205,6 @@ PaletteTray::PaletteTray(Shelf* shelf)
   PaletteTool::RegisterToolInstances(palette_tool_manager_.get());
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
-  tray_container()->SetMargin(kTrayIconMainAxisInset, kTrayIconCrossAxisInset);
-  icon_ = tray_container()->AddChildView(std::move(icon));
 
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
@@ -406,7 +403,8 @@ void PaletteTray::OnThemeChanged() {
 }
 
 void PaletteTray::HandleLocaleChange() {
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
+  image_view()->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
 }
 
 void PaletteTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
@@ -549,7 +547,7 @@ void PaletteTray::AnchorUpdated() {
 }
 
 void PaletteTray::Initialize() {
-  TrayBackgroundView::Initialize();
+  ImagedTrayIcon::Initialize();
   ui::DeviceDataManager::GetInstance()->AddObserver(this);
 
   InitializeWithLocalState();
@@ -636,7 +634,7 @@ void PaletteTray::UpdateTrayIcon() {
   color = GetColorProvider()->GetColor(
       is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysOnSurface);
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
       color, kTrayIconSize));

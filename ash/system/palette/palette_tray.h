@@ -15,6 +15,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,7 +39,6 @@ class TouchEvent;
 }  // namespace ui
 
 namespace views {
-class ImageView;
 class Widget;
 }  // namespace views
 
@@ -62,9 +62,9 @@ class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
                                public SessionObserver,
                                public ShelfObserver,
                                public ShellObserver,
-                               public TrayBackgroundView,
+                               public ImagedTrayIcon,
                                public ui::InputDeviceEventObserver {
-  METADATA_HEADER(PaletteTray, TrayBackgroundView)
+  METADATA_HEADER(PaletteTray, ImagedTrayIcon)
 
  public:
   explicit PaletteTray(Shelf* shelf);
@@ -101,7 +101,7 @@ class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;
@@ -193,9 +193,6 @@ class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
   raw_ptr<PrefService> active_user_pref_service_ = nullptr;  // Not owned.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_local_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_user_;
-
-  // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // Cached palette pref value.
   bool is_palette_enabled_ = true;
