@@ -51,19 +51,12 @@ std::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     base::span<const uint8_t> encrypted_metadata,
     base::span<const uint8_t> metadata_encryption_key,
     base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key) {
-  // Init() keeps a reference to the input key, so that reference must outlive
-  // the lifetime of |aead|.
-  auto derived_key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
+  const auto key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
       metadata_encryption_key);
-
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(derived_key);
-
-  return aead.Open(
-      encrypted_metadata,
-      /*nonce=*/
-      DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(secret_key),
-      /*additional_data=*/base::span<const uint8_t>());
+  const auto nonce =
+      DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(secret_key);
+  return crypto::aead::Open(crypto::aead::AES_256_GCM, key, encrypted_metadata,
+                            nonce, /*associated_data=*/{});
 }
 
 // Returns true if the HMAC of |decrypted_metadata_key| is

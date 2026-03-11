@@ -448,21 +448,15 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
 
 std::optional<std::vector<uint8_t>>
 NearbySharePrivateCertificate::EncryptMetadata() const {
-  // Init() keeps a reference to the input key, so that reference must outlive
-  // the lifetime of |aead|.
-  auto derived_key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
+  const auto key = DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmKey>(
       metadata_encryption_key_);
-
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(derived_key);
+  const auto nonce =
+      DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(secret_key_);
 
   std::vector<uint8_t> metadata_array(unencrypted_metadata_.ByteSizeLong());
   unencrypted_metadata_.SerializeToArray(metadata_array.data(),
                                          metadata_array.size());
 
-  return aead.Seal(
-      metadata_array,
-      /*nonce=*/
-      DeriveNearbyShareKey<kNearbyShareNumBytesAesGcmIv>(secret_key_),
-      /*additional_data=*/base::span<const uint8_t>());
+  return crypto::aead::Seal(crypto::aead::AES_256_GCM, key, metadata_array,
+                            nonce, /*associated_data=*/{});
 }
