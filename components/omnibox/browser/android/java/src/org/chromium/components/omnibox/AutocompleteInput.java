@@ -313,7 +313,46 @@ public class AutocompleteInput implements UserData {
 
     /** Returns whether exact keyword match is allowed with current input. */
     public boolean allowExactKeywordMatch() {
-        return mAllowExactKeywordMatch;
+        return mAllowExactKeywordMatch || getSiteSearchData() != null;
+    }
+
+    /**
+     * Returns the user text formatted for autocomplete.
+     *
+     * <p>When the user is in Keyword mode (e.g., Site Search), this method concatenates the keyword
+     * and user text. This concatenation approach mirrors how Desktop/Views handles it: the UI
+     * separates the keyword into a chip visually, but silently prepends it to the query string
+     * right before passing it to the C++ controller. Doing it this way keeps the JNI boundary and
+     * cross-platform parsing logic unchanged.
+     *
+     * @return The text to be sent to the AutocompleteController.
+     */
+    public String getTextForAutocomplete() {
+        SiteSearchData siteSearchData = getSiteSearchData();
+        if (siteSearchData != null) {
+            return siteSearchData.keyword + " " + mUserText;
+        }
+        return mUserText;
+    }
+
+    /**
+     * Calculates the adjusted cursor position for autocomplete.
+     *
+     * <p>Adjusts the cursor position to account for the prepended keyword.
+     *
+     * @param currentCursorPosition The cursor position in the UI text field.
+     * @return The adjusted cursor position.
+     */
+    public int getCursorPositionForAutocomplete(int currentCursorPosition) {
+        SiteSearchData siteSearchData = getSiteSearchData();
+        if (siteSearchData != null && currentCursorPosition >= 0) {
+            // It's possible the UI text has not synchronously updated yet, meaning the reported
+            // cursor position is out of bounds for the logical text. Cap it to the length of the
+            // user text.
+            int safeCursorPosition = Math.min(currentCursorPosition, mUserText.length());
+            return safeCursorPosition + siteSearchData.keyword.length() + 1;
+        }
+        return currentCursorPosition;
     }
 
     /** Returns the text as currently typed by the User. */
