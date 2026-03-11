@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
@@ -42,6 +43,19 @@ std::string_view EntityRecordTypeToMetricsString(
 
 std::string_view EntityPromptTypeToMetricsString(
     AutofillClient::AutofillAiImportPromptType prompt_type);
+
+// This function encodes the integer value of a `FieldType` and the
+// boolean value of `auth_succeeded` into a 14 bit integer.
+// The lower 2 bits are used to encode the reauth result and the higher 12
+// bits are used to encode the field type. This integer is used to determine
+// which bucket of "Autofill.Ai.ReauthToFill.ResultPerFieldType" should be
+// emitted.
+int GetBucketForAutofillAiReauthResultByFieldType(FieldType field_type,
+                                                  bool auth_succeeded);
+
+// Logs the result of the reauthentication flow per field type.
+void LogReauthToFillResultPerFieldType(const FieldTypeSet& ai_field_types,
+                                       bool auth_succeeded);
 
 }  // namespace autofill
 
