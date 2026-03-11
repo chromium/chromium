@@ -2161,6 +2161,7 @@ if (is_android) {
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
       "//third_party/federated_compute:confidential_compute",
+      "//third_party/federated_compute:confidential_compute_crypto_test_util",
     ]
 
     deps += [
@@ -4273,6 +4274,7 @@ if (!is_android) {
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
       "//components/sync_bookmarks",
       "//third_party/federated_compute:confidential_compute",
+      "//third_party/federated_compute:confidential_compute_crypto_test_util",
     ]
 
     # SODA doesn't support Windows on Arm64.

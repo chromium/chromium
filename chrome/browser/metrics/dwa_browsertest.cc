@@ -21,7 +21,9 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
 #include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/crypto_test_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -35,6 +37,21 @@
 #endif
 
 namespace metrics::dwa {
+
+namespace {
+
+std::string CreatePublicKeyForTesting() {
+  auto public_key =
+      fcp::confidential_compute::GenerateHpkeKeyPair("key-id").first;
+  auto decoded = fcp::confidential_compute::OkpCwt::Decode(public_key);
+
+  // DWA validates the existence of the algorithm field, set it to 0 for tests.
+  decoded->algorithm = 0;
+
+  return decoded->Encode().value();
+}
+
+}  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
 typedef Browser* PlatformBrowser;
@@ -124,11 +141,8 @@ class DwaBrowserTest : public SyncTest {
   }
 
   void SetupDwaService() {
-    fcp::confidential_compute::MessageDecryptor decryptor;
-    auto recipient_public_key =
-        decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
-    GetDwaService()->SetEncryptionPublicKeyForTesting(
-        recipient_public_key.value());
+    auto public_key = CreatePublicKeyForTesting();
+    GetDwaService()->SetEncryptionPublicKeyForTesting(public_key);
     GetDwaService()->SetEncryptionPublicKeyVerifierForTesting(
         base::BindRepeating([](const fcp::confidential_compute::OkpCwt&)
                                 -> bool { return true; }));

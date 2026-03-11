@@ -13,4 +13,16 @@ Description:
 Libraries for executing federated programs and computations.
 
 Local Modifications:
-None
+
+- fcp/confidentialcompute/cose.cc
+  fcp/confidentialcompute/cose_test.cc
+
+  These files wire up //components/cbor (which Chromium uses) instead of
+  libcppbor.
+
+- fcp/confidentialcompute/crypto_test_util.cc
+
+  A utility file useful for testing.  Abseil checks used in this file conflict
+  with Chromium, so an implementation using Chromium's checks is provided.
+  This can be removed in case we stop using it in Chromium, or upstream switches
+  to absl_check.

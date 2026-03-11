@@ -20,9 +20,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/federated_compute/src/fcp/confidentialcompute/cose.h"
 #include "third_party/federated_compute/src/fcp/confidentialcompute/crypto.h"
+#include "third_party/federated_compute/src/fcp/confidentialcompute/crypto_test_util.h"
 
 namespace metrics::dwa {
 namespace {
+
+std::string CreatePublicKeyForTesting() {
+  auto public_key =
+      fcp::confidential_compute::GenerateHpkeKeyPair("key-id").first;
+  auto decoded = fcp::confidential_compute::OkpCwt::Decode(public_key);
+
+  // DWA validates the existence of the algorithm field, set it to 0 for tests.
+  decoded->algorithm = 0;
+
+  return decoded->Encode().value();
+}
 
 const char kDwaInitSequenceHistogramName[] = "DWA.InitSequence";
 
@@ -46,10 +58,8 @@ class DwaServiceTest : public testing::Test {
   void TearDown() override { DwaRecorder::Get()->Purge(); }
 
   void SetEncryptionPublicKeyForTesting(DwaService* dwa_service) {
-    fcp::confidential_compute::MessageDecryptor decryptor;
-    auto recipient_public_key =
-        decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
-    dwa_service->SetEncryptionPublicKeyForTesting(recipient_public_key.value());
+    auto public_key = CreatePublicKeyForTesting();
+    dwa_service->SetEncryptionPublicKeyForTesting(public_key);
     dwa_service->SetEncryptionPublicKeyVerifierForTesting(base::BindRepeating(
         [](const fcp::confidential_compute::OkpCwt&) -> bool { return true; }));
   }
@@ -308,12 +318,9 @@ TEST_F(DwaServiceTest, BuildsKAnonymityBuckets) {
 }
 
 TEST_F(DwaServiceTest, ValidateEncryptionPublicKey) {
-  fcp::confidential_compute::MessageDecryptor decryptor;
-  auto recipient_public_key =
-      decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
-  ASSERT_TRUE(recipient_public_key.ok());
+  auto public_key = CreatePublicKeyForTesting();
 
-  auto cwt = fcp::confidential_compute::OkpCwt::Decode(*recipient_public_key);
+  auto cwt = fcp::confidential_compute::OkpCwt::Decode(public_key);
   ASSERT_TRUE(cwt.ok());
 
   // Validate DwaService::ValidateEncryptionPublicKey() returns false when key
@@ -337,11 +344,9 @@ TEST_F(DwaServiceTest, EncryptPrivateMetricReport) {
   TestingPrefServiceSimple pref_service;
   DwaService::RegisterPrefs(pref_service.registry());
 
-  fcp::confidential_compute::MessageDecryptor decryptor;
-  auto recipient_public_key =
-      decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
+  auto public_key = CreatePublicKeyForTesting();
   auto decoded_public_key =
-      fcp::confidential_compute::OkpCwt::Decode(*recipient_public_key);
+      fcp::confidential_compute::OkpCwt::Decode(public_key);
   decoded_public_key->public_key.value().key_id = "key-id";
 
   ::private_metrics::PrivateMetricReport report;
@@ -350,7 +355,7 @@ TEST_F(DwaServiceTest, EncryptPrivateMetricReport) {
   report.set_epoch_id(epoch_id);
 
   auto encrypted_report = DwaService::EncryptPrivateMetricReport(
-      report, *recipient_public_key, *decoded_public_key);
+      report, public_key, *decoded_public_key);
   ASSERT_TRUE(encrypted_report.has_value());
 
   EXPECT_TRUE(encrypted_report->has_encrypted_report());
@@ -363,11 +368,9 @@ TEST_F(DwaServiceTest, BuildPrivateMetricEndpointPayloadFromEncryptedReport) {
   TestingPrefServiceSimple pref_service;
   DwaService::RegisterPrefs(pref_service.registry());
 
-  fcp::confidential_compute::MessageDecryptor decryptor;
-  auto recipient_public_key =
-      decryptor.GetPublicKey([](absl::string_view) { return ""; }, 0);
+  auto public_key = CreatePublicKeyForTesting();
   auto decoded_public_key =
-      fcp::confidential_compute::OkpCwt::Decode(*recipient_public_key);
+      fcp::confidential_compute::OkpCwt::Decode(public_key);
   decoded_public_key->public_key.value().key_id = "key-id";
 
   ::private_metrics::PrivateMetricReport report;
@@ -376,7 +379,7 @@ TEST_F(DwaServiceTest, BuildPrivateMetricEndpointPayloadFromEncryptedReport) {
   report.set_epoch_id(epoch_id);
 
   auto encrypted_report = DwaService::EncryptPrivateMetricReport(
-      report, *recipient_public_key, *decoded_public_key);
+      report, public_key, *decoded_public_key);
   ASSERT_TRUE(encrypted_report.has_value());
 
   auto payload =

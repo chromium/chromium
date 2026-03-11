@@ -132,6 +132,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/federated_compute:confidential_compute",
+    "//third_party/federated_compute:confidential_compute_crypto_test_util",
     "//third_party/federated_compute:confidential_compute_proto",
     "//third_party/metrics_proto",
     "//third_party/oak:oak_proto",
