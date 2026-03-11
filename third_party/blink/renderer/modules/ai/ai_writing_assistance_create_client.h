@@ -187,7 +187,7 @@ class AIWritingAssistanceCreateClient
     auto availability = ConvertModelAvailabilityCheckResult(result);
     if (availability == Availability::kUnavailable) {
       this->GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kNotAllowedError,
+          DOMExceptionCode::kNotSupportedError,
           ConvertModelAvailabilityCheckResultToDebugString(result));
       return;
     }

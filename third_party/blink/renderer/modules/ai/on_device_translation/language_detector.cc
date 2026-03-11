@@ -150,7 +150,7 @@ class LanguageDetectorCreateTask
           kSupportedLanguages, options_->expectedInputLanguages());
       if (!expected_input_languages.has_value()) {
         GetResolver()->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kUnknownError, "Language not available"));
+            DOMExceptionCode::kNotSupportedError, "Language not available"));
         return;
       }
     }
@@ -159,7 +159,7 @@ class LanguageDetectorCreateTask
       switch (maybe_model.error()) {
         case DetectLanguageError::kUnavailable:
           GetResolver()->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kUnknownError, "Model not available"));
+              DOMExceptionCode::kNotSupportedError, "Model not available"));
           break;
       }
       return;
@@ -529,7 +529,8 @@ void LanguageDetector::OnDetectComplete(
   } else {
     switch (result.error()) {
       case DetectLanguageError::kUnavailable:
-        resolver->Reject("Model not available");
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError, "Model not available"));
     }
   }
 }

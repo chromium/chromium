@@ -5,13 +5,12 @@
 
 'use strict';
 
-promise_test(async (t) => {
+promise_test(async t => {
   const availability = await Classifier.availability();
   if (availability === 'unavailable') {
-    // TODO(crbug.com/487291285): Update NotAllowedError to NotSupportedError.
     await promise_rejects_dom(
       t,
-      'NotAllowedError',
+      'NotSupportedError',
       Classifier.create()
     );
   } else {

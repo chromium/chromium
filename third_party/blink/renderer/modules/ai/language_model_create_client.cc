@@ -270,7 +270,7 @@ void LanguageModelCreateClient::Create(
   Availability availability = ConvertModelAvailabilityCheckResult(result);
   if (availability == Availability::kUnavailable) {
     GetResolver()->RejectWithDOMException(
-        DOMExceptionCode::kNotAllowedError,
+        DOMExceptionCode::kNotSupportedError,
         ConvertModelAvailabilityCheckResultToDebugString(result));
     return;
   }
