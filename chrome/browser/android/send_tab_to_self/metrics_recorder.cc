@@ -32,6 +32,25 @@ static void JNI_MetricsRecorder_RecordNotificationTimedOut(JNIEnv* env) {
   RecordNotificationTimedOut();
 }
 
+static void JNI_MetricsRecorder_RecordScrollPositionGenerationOutcome(
+    JNIEnv* env,
+    jint outcome) {
+  RecordScrollPositionGenerationOutcome(
+      static_cast<ScrollPositionGenerationOutcome>(outcome));
+}
+
+static void JNI_MetricsRecorder_RecordScrollPositionGenerationTime(
+    JNIEnv* env,
+    jlong duration_ms) {
+  RecordScrollPositionGenerationTime(base::Milliseconds(duration_ms));
+}
+
+static void JNI_MetricsRecorder_RecordScrollPositionSelectorLength(
+    JNIEnv* env,
+    jint length) {
+  RecordScrollPositionSelectorLength(static_cast<size_t>(length));
+}
+
 }  // namespace send_tab_to_self
 
 DEFINE_JNI(MetricsRecorder)

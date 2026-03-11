@@ -85,6 +85,7 @@ public class DevicePickerBottomSheetContentTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private TextFragmentReceiver.Proxy mTextFragmentReceiver;
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
+    @Mock private MetricsRecorder.Natives mMockMetricsRecorder;
     @Mock private IdentityManager mIdentityManager;
     private CoreAccountInfo mCoreAccountInfo;
     private AccountInfo mAccountInfo;
@@ -114,6 +115,7 @@ public class DevicePickerBottomSheetContentTest {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
+        MetricsRecorderJni.setInstanceForTesting(mMockMetricsRecorder);
 
         mPageContext = new PageContext(new byte[] {1});
         mPageContextWithScrollPosition = new PageContext(new byte[] {2});
@@ -185,6 +187,11 @@ public class DevicePickerBottomSheetContentTest {
                         eq(mPageContextWithScrollPosition));
         verify(mBottomSheetController).hideContent(content, true);
 
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(ScrollPositionGenerationOutcome.SUCCESS);
+        verify(mMockMetricsRecorder).recordScrollPositionGenerationTime(any(Long.class));
+        verify(mMockMetricsRecorder).recordScrollPositionSelectorLength(eq("selector".length()));
+
         // Verify the observer unregistered itself.
         Assert.assertNull(((ObservableMockWebContents) mWebContents).observer);
     }
@@ -215,6 +222,10 @@ public class DevicePickerBottomSheetContentTest {
                         eq("guid"),
                         eq(mPageContext));
         verify(mBottomSheetController).hideContent(content, true);
+
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(
+                        ScrollPositionGenerationOutcome.EMPTY_SELECTOR);
 
         // Verify the observer unregistered itself.
         Assert.assertNull(((ObservableMockWebContents) mWebContents).observer);
@@ -262,6 +273,9 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(
+                        ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
     }
 
     @Test
@@ -308,6 +322,9 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(
+                        ScrollPositionGenerationOutcome.BROWSER_TIMEOUT);
     }
 
     @Test
@@ -334,6 +351,9 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(
+                        ScrollPositionGenerationOutcome.MAIN_FRAME_CHANGED);
     }
 
     @Test
@@ -360,6 +380,9 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
+        verify(mMockMetricsRecorder)
+                .recordScrollPositionGenerationOutcome(
+                        ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
     }
 
     @Test

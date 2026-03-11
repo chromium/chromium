@@ -35,6 +35,19 @@ class MetricsRecorder {
         MetricsRecorderJni.get().recordNotificationTimedOut();
     }
 
+    public static void recordScrollPositionGenerationOutcome(
+            @ScrollPositionGenerationOutcome int outcome) {
+        MetricsRecorderJni.get().recordScrollPositionGenerationOutcome(outcome);
+    }
+
+    public static void recordScrollPositionGenerationTime(long durationMs) {
+        MetricsRecorderJni.get().recordScrollPositionGenerationTime(durationMs);
+    }
+
+    public static void recordScrollPositionSelectorLength(int length) {
+        MetricsRecorderJni.get().recordScrollPositionSelectorLength(length);
+    }
+
     @NativeMethods
     interface Natives {
         void recordNotificationShown();
@@ -44,5 +57,11 @@ class MetricsRecorder {
         void recordNotificationDismissed();
 
         void recordNotificationTimedOut();
+
+        void recordScrollPositionGenerationOutcome(@ScrollPositionGenerationOutcome int outcome);
+
+        void recordScrollPositionGenerationTime(long durationMs);
+
+        void recordScrollPositionSelectorLength(int length);
     }
 }

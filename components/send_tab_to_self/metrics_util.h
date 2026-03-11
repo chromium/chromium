@@ -41,6 +41,8 @@ void RecordNotificationThrottled();
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.share.send_tab_to_self)
 // LINT.IfChange(ScrollPositionGenerationOutcome)
 enum class ScrollPositionGenerationOutcome {
   kSuccess = 0,

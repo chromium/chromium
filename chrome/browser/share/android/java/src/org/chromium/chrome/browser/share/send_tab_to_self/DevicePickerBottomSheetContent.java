@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,6 +54,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     private final String mTitle;
     private @Nullable PageContext mPageContext;
     private final Supplier<@Nullable Tab> mTabProvider;
+    private long mScrollPositionGenerationStartTime = -1;
 
     private enum CaptureState {
         IDLE,
@@ -195,7 +197,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         }
 
         Tab tab = mTabProvider.get();
-        if (tab == null || tab.getWebContents() == null) {
+        if (tab == null) {
             return null;
         }
 
@@ -209,19 +211,32 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     private void captureScrollPositionAndSendEntry(Tab tab, TargetDeviceInfo targetDeviceInfo) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null) {
+            MetricsRecorder.recordScrollPositionGenerationOutcome(
+                    ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
             sendEntry(targetDeviceInfo);
             return;
         }
+
+        mScrollPositionGenerationStartTime = SystemClock.elapsedRealtime();
+
         WebContentsObserver observer =
                 new WebContentsObserver(webContents) {
                     @Override
                     public void primaryPageChanged(Page page) {
-                        selectorGeneratedForRequest(targetDeviceInfo, "", this);
+                        selectorGeneratedForRequest(
+                                targetDeviceInfo,
+                                "",
+                                this,
+                                ScrollPositionGenerationOutcome.MAIN_FRAME_CHANGED);
                     }
 
                     @Override
                     public void webContentsDestroyed() {
-                        selectorGeneratedForRequest(targetDeviceInfo, "", this);
+                        selectorGeneratedForRequest(
+                                targetDeviceInfo,
+                                "",
+                                this,
+                                ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
                     }
                 };
 
@@ -230,25 +245,51 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
         // the tab is sent without the scroll position information.
         PostTask.postDelayedTask(
                 TaskTraits.UI_DEFAULT,
-                () -> selectorGeneratedForRequest(targetDeviceInfo, "", observer),
+                () -> {
+                    selectorGeneratedForRequest(
+                            targetDeviceInfo,
+                            "",
+                            observer,
+                            ScrollPositionGenerationOutcome.BROWSER_TIMEOUT);
+                },
                 SCROLL_POSITION_TIMEOUT_MS);
 
         LinkToTextHelper.requestSelectorForViewportCenter(
                 webContents,
-                (selector) -> selectorGeneratedForRequest(targetDeviceInfo, selector, observer));
+                (selector) -> {
+                    selectorGeneratedForRequest(
+                            targetDeviceInfo,
+                            selector,
+                            observer,
+                            ScrollPositionGenerationOutcome.SUCCESS);
+                });
     }
 
     private void selectorGeneratedForRequest(
-            TargetDeviceInfo targetDeviceInfo, String selector, WebContentsObserver observer) {
+            TargetDeviceInfo targetDeviceInfo,
+            String selector,
+            WebContentsObserver observer,
+            @ScrollPositionGenerationOutcome int outcome) {
         if (mCaptureState == CaptureState.FINISHED) return;
 
         observer.observe(null);
 
-        if (!TextUtils.isEmpty(selector)) {
-            mPageContext =
-                    SendTabToSelfAndroidBridge.addScrollPositionToPageContext(
-                            mPageContext, selector);
+        if (outcome == ScrollPositionGenerationOutcome.SUCCESS) {
+            if (TextUtils.isEmpty(selector)) {
+                outcome = ScrollPositionGenerationOutcome.EMPTY_SELECTOR;
+            } else {
+                mPageContext =
+                        SendTabToSelfAndroidBridge.addScrollPositionToPageContext(
+                                mPageContext, selector);
+                MetricsRecorder.recordScrollPositionSelectorLength(selector.length());
+            }
         }
+
+        MetricsRecorder.recordScrollPositionGenerationOutcome(outcome);
+        assert mScrollPositionGenerationStartTime > 0;
+        MetricsRecorder.recordScrollPositionGenerationTime(
+                SystemClock.elapsedRealtime() - mScrollPositionGenerationStartTime);
+
         sendEntry(targetDeviceInfo);
     }
 
