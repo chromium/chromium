@@ -1,0 +1,49 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("security_events") {
+  public = [
+    "security_event_recorder.h",
+    "security_event_recorder_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/sync/model",
+  ]
+  sources = [
+    "security_event_recorder_factory.cc",
+    "security_event_recorder_impl.cc",
+    "security_event_recorder_impl.h",
+    "security_event_sync_bridge.h",
+    "security_event_sync_bridge_impl.cc",
+    "security_event_sync_bridge_impl.h",
+  ]
+
+  deps = [
+    "//chrome/browser/sync",
+    "//chrome/common:channel_info",
+    "//components/sync/base",
+  ]
+
+  # TODO(crbug.com/353332589): Remove circular dependency
+  allow_circular_includes_from = [ "//chrome/browser/sync" ]
+
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "security_event_recorder_impl_unittest.cc" ]
+
+  deps = [
+    ":security_events",
+    "//base",
+    "//components/sync/protocol",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
