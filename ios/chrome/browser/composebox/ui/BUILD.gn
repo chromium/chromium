@@ -25,6 +25,8 @@ source_set("ui") {
     "composebox_navigation_consumer.h",
     "composebox_present_animator.h",
     "composebox_present_animator.mm",
+    "composebox_server_strings.h",
+    "composebox_server_strings.mm",
     "composebox_snackbar_presenter.h",
     "composebox_snackbar_presenter.mm",
     "composebox_tab_picker_consumer.h",

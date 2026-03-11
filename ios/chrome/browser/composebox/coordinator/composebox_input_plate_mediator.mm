@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_server_strings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -79,14 +80,95 @@
 #import "mojo/public/cpp/base/big_buffer.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
+#import "third_party/omnibox_proto/model_config.pb.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
+#import "third_party/omnibox_proto/tool_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
 namespace {
+
+// Returns the model option required by the given model mode.
+ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
+  using enum ComposeboxModelOption;
+  switch (model_mode) {
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
+      return ComposeboxModelOption::kAuto;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
+      return ComposeboxModelOption::kThinking;
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
+    default:
+      return ComposeboxModelOption::kNone;
+  }
+}
+
+// Returns the input plate control for the given tool mode.
+ComposeboxInputPlateControls InputPlateControlForToolMode(
+    omnibox::ToolMode tool_mode) {
+  switch (tool_mode) {
+    case omnibox::ToolMode::TOOL_MODE_CANVAS:
+      return ComposeboxInputPlateControls::kCanvas;
+    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+      return ComposeboxInputPlateControls::kDeepSearch;
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
+      return ComposeboxInputPlateControls::kCreateImage;
+    case omnibox::ToolMode::TOOL_MODE_UNSPECIFIED:
+    default:
+      return ComposeboxInputPlateControls::kNone;
+  }
+}
+
+// Returns the server strings object from a given input state.
+ComposeboxServerStrings* ServerStringsFromInputState(
+    const contextual_search::InputState& input_state) {
+  std::unordered_map<ComposeboxInputPlateControls,
+                     ComposeboxServerStringBundle*>
+      tool_mapping;
+  for (const omnibox::ToolConfig& tool_config : input_state.tool_configs) {
+    NSString* menuLabel = base::SysUTF8ToNSString(tool_config.menu_label());
+    NSString* chipLabel = base::SysUTF8ToNSString(tool_config.chip_label());
+    NSString* hintText = base::SysUTF8ToNSString(tool_config.hint_text());
+    tool_mapping[InputPlateControlForToolMode(tool_config.tool())] =
+        [[ComposeboxServerStringBundle alloc] initWithMenuLabel:menuLabel
+                                                      chipLabel:chipLabel
+                                                       hintText:hintText];
+  }
+
+  std::unordered_map<ComposeboxModelOption, ComposeboxServerStringBundle*>
+      model_mapping;
+  for (const omnibox::ModelConfig& model_config : input_state.model_configs) {
+    NSString* menuLabel = base::SysUTF8ToNSString(model_config.menu_label());
+    NSString* hintText = base::SysUTF8ToNSString(model_config.hint_text());
+    model_mapping[ModelOptionForModelMode(model_config.model())] =
+        [[ComposeboxServerStringBundle alloc] initWithMenuLabel:menuLabel
+                                                      chipLabel:nil
+                                                       hintText:hintText];
+  }
+
+  NSString* modelSectionHeader = @"";
+  NSString* toolsSectionHeader = @"";
+
+  if (input_state.model_section_config) {
+    modelSectionHeader =
+        base::SysUTF8ToNSString(input_state.model_section_config->header());
+  }
+
+  if (input_state.tools_section_config) {
+    toolsSectionHeader =
+        base::SysUTF8ToNSString(input_state.tools_section_config->header());
+  }
+
+  return
+      [[ComposeboxServerStrings alloc] initWithToolMapping:tool_mapping
+                                              modelMapping:model_mapping
+                                        modelSectionHeader:modelSectionHeader
+                                        toolsSectionHeader:toolsSectionHeader];
+}
 
 // Reads data from a file URL. Runs on a background thread.
 NSData* ReadDataFromURL(GURL url) {
@@ -598,21 +680,6 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   [self commitUIUpdates];
-}
-
-// Returns the model option required by the given input state.
-- (ComposeboxModelOption)requiredModelOptionForInputState:
-    (const contextual_search::InputState&)inputState {
-  using enum ComposeboxModelOption;
-  switch (inputState.active_model) {
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
-      return ComposeboxModelOption::kAuto;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
-      return ComposeboxModelOption::kThinking;
-    case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
-    default:
-      return ComposeboxModelOption::kNone;
-  }
 }
 
 - (void)changeModeForInputState:
@@ -2236,8 +2303,15 @@ CreateInputDataFromAnnotatedPageContent(
 // Called when the input state is updated.
 - (void)didUpdateInputState:(contextual_search::InputState)inputState {
   _inputState = inputState;
+
+  if (EnableComposeboxServerSideState()) {
+    ComposeboxServerStrings* serverStrings =
+        ServerStringsFromInputState(inputState);
+    [self.consumer setServerStrings:serverStrings];
+  }
+
   ComposeboxModelOption requiredModel =
-      [self requiredModelOptionForInputState:inputState];
+      ModelOptionForModelMode(inputState.active_model);
   [self setModelOption:requiredModel];
   [self changeModeForInputState:inputState];
 

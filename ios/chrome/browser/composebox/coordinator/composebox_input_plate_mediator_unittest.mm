@@ -114,6 +114,8 @@
 }
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
 }
+- (void)setServerStrings:(ComposeboxServerStrings*)serverStrings {
+}
 - (void)setModelOption:(ComposeboxModelOption)modelOption {
 }
 - (void)updateVisibleControls:(ComposeboxInputPlateControls)visibleControls {
