@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/function_ref.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -161,10 +162,6 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
 #endif
   }
 
- private:
-  static constexpr base::FilePath::StringViewType kBaseName =
-      FILE_PATH_LITERAL("perftest");
-
   void ReportMeasurment(std::string operation_name,
                         int iteration_count,
                         base::TimeDelta elapsed_time,
@@ -181,6 +178,10 @@ class PersistentCachePerftest : public testing::TestWithParam<CacheOption> {
         static_cast<size_t>(elapsed_thread_time.InMicroseconds() /
                             iteration_count));
   }
+
+ private:
+  static constexpr base::FilePath::StringViewType kBaseName =
+      FILE_PATH_LITERAL("perftest");
 
   base::ScopedTempDir temp_dir_;
   std::optional<BackendStorage> backend_storage_;
@@ -274,6 +275,77 @@ TEST_P(PersistentCachePerftest, Find) {
         });
   });
   ASSERT_EQ(success_count, kIterationCount);
+}
+
+TEST_P(PersistentCachePerftest, WALPerformance) {
+  if (GetParam() != CacheOption::kJournalModeWal) {
+    GTEST_SKIP();
+  }
+
+  static constexpr int kTotalCount = 2048;
+  static constexpr int kHalfCount = kTotalCount / 2;
+  std::unique_ptr<PersistentCache> cache = MakeCache();
+  auto* backend =
+      static_cast<SqliteBackendImpl*>(cache->GetBackendForTesting());
+
+  // Disable automatic checkpointing.
+  ASSERT_OK(backend->ExecuteStatementForTesting("PRAGMA wal_autocheckpoint=0"));
+
+  std::vector<std::string> keys = GenerateKeys(kTotalCount);
+  base::HeapArray<uint8_t> value = MakeValue();
+
+  // 1. Insert first half of the data (goes to WAL).
+  for (int i = 0; i < kHalfCount; ++i) {
+    ASSERT_OK(cache->Insert(base::as_byte_span(keys[i]), value));
+  }
+
+  // 2. Perform a truncating checkpoint to move data from WAL to database.
+  ASSERT_OK(
+      backend->ExecuteStatementForTesting("PRAGMA wal_checkpoint(TRUNCATE)"));
+
+  // 3. Insert second half of the data (goes to WAL).
+  for (int i = kHalfCount; i < kTotalCount; ++i) {
+    ASSERT_OK(cache->Insert(base::as_byte_span(keys[i]), value));
+  }
+
+  // Shuffle keys for random access.
+  base::RandomShuffle(keys.begin(), keys.end());
+
+  // 4. Measure performance with mixed WAL and DB data.
+  base::ElapsedTimer mixed_timer;
+  base::ElapsedThreadTimer mixed_thread_timer;
+  for (const auto& key : keys) {
+    auto result = cache->Find(base::as_byte_span(key), [&value](size_t size) {
+      return value.as_span();
+    });
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value().has_value());
+  }
+  base::TimeDelta mixed_elapsed = mixed_timer.Elapsed();
+  base::TimeDelta mixed_thread_elapsed = mixed_thread_timer.Elapsed();
+
+  // 5. Perform final truncating checkpoint.
+  ASSERT_OK(
+      backend->ExecuteStatementForTesting("PRAGMA wal_checkpoint(TRUNCATE)"));
+
+  // 6. Measure performance with all data in DB.
+  base::ElapsedTimer db_timer;
+  base::ElapsedThreadTimer db_thread_timer;
+  for (const auto& key : keys) {
+    auto result = cache->Find(base::as_byte_span(key), [&value](size_t size) {
+      return value.as_span();
+    });
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result.value().has_value());
+  }
+  base::TimeDelta db_elapsed = db_timer.Elapsed();
+  base::TimeDelta db_thread_elapsed = db_thread_timer.Elapsed();
+
+  // 7. Report the difference (Mixed - DB = Overhead).
+  ReportMeasurment(
+      "WALOverhead", kTotalCount,
+      std::max(base::TimeDelta(), mixed_elapsed - db_elapsed),
+      std::max(base::TimeDelta(), mixed_thread_elapsed - db_thread_elapsed));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
