@@ -924,12 +924,6 @@ inline constexpr char kAutofillEnableNewFopDisplayAndroidDescription[] =
     "When enabled, updates payment method Autofill suggestions and settings "
     "UI.";
 
-inline constexpr char kAutofillEnableNonAffiliatedLoyaltyCardsFillingName[] =
-    "Enable filling on non-affiliated loyalty cards";
-inline constexpr char
-    kAutofillEnableNonAffiliatedLoyaltyCardsFillingDescription[] =
-        "When enabled, Autofill will help users fill in non-affiliated loyalty "
-        "cards on loyalty card only fields";
 
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
