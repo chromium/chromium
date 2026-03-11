@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -193,12 +194,24 @@ bool ShouldSplitOutContactInfo(
     base::span<const FieldGlobalId> trigger_fields,
     const AutofillManager& autofill_manager,
     LogManager* log_manager) {
+  // TODO(crbug.com/491031514): Consider moving metric record to
+  // ActorFormFillingServiceImpl, in order to ensure it is only recorded once
+  // per `GetSuggestions` call.
+  auto record_outcome_metric = [](ShouldSplitOutContactInfoResult status) {
+    base::UmaHistogramEnumeration(
+        "Autofill.Actor.ContactInfoSplitting.ShouldSplitContactInfo", status);
+  };
+
   if (!base::FeatureList::IsEnabled(
           features::kAutofillActorFormFillingSplitOutContactInfo)) {
+    record_outcome_metric(
+        ShouldSplitOutContactInfoResult::kShouldNotSplitFeatureDisabled);
     return false;
   }
 
   if (trigger_fields.empty()) {
+    record_outcome_metric(
+        ShouldSplitOutContactInfoResult::kShouldNotSplitNoTriggerFields);
     return false;
   }
 
@@ -209,6 +222,8 @@ bool ShouldSplitOutContactInfo(
     LOG_AF(log_manager)
         << LoggingScope::kAutofillActor
         << "Could not find form structure for first trigger field.";
+    record_outcome_metric(
+        ShouldSplitOutContactInfoResult::kShouldNotSplitFormNotFound);
     return false;
   }
 
@@ -231,11 +246,17 @@ bool ShouldSplitOutContactInfo(
     if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
       // We have either seen a contact info field already, and so should split,
       // or the address field is first and so we should not split.
+      record_outcome_metric(seen_contact_info
+                                ? ShouldSplitOutContactInfoResult::kShouldSplit
+                                : ShouldSplitOutContactInfoResult::
+                                      kShouldNotSplitAddressBeforeContactInfo);
       return seen_contact_info;
     }
   }
 
   // We never saw an address field, so we shouldn't split.
+  record_outcome_metric(
+      ShouldSplitOutContactInfoResult::kShouldNotSplitNoAddressField);
   return false;
 }
 
