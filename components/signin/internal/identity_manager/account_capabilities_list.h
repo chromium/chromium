@@ -150,6 +150,14 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    "accountcapabilities/guydolldmfya")
 
 #if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(
+    kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
+    CAN_CONTEXTUALLY_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
+    "accountcapabilities/giztknjnmnqxa",
+    switches::kReadContextualAccountCapabilities)
+#endif
+
+#if BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY_F(kCanContextuallyUseModelExecutionFeaturesName,
                      CAN_CONTEXTUALLY_USE_MODEL_EXECUTION_FEATURES_NAME,
                      "accountcapabilities/giztinznmnqxa",

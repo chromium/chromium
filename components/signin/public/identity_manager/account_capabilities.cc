@@ -119,6 +119,22 @@ signin::Tribool AccountCapabilities::can_run_chrome_privacy_sandbox_trials()
 
 signin::Tribool AccountCapabilities::
     can_show_history_sync_opt_ins_without_minor_mode_restrictions() const {
+#if BUILDFLAG(IS_IOS)
+  // If the flag is enabled, read the contextual capability. If the contextual
+  // capability is unknown, fall back to the non-contextual capability - this
+  // is because when the flag is first enabled the new capability may not yet
+  // have been fetched.
+  // TODO(crbug.com/481654422): Remove the unknown fallback once contextual
+  // capabilities are fully rolled out.
+  if (base::FeatureList::IsEnabled(
+          switches::kReadContextualAccountCapabilities) &&
+      GetCapabilityByName(
+          kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) !=
+          signin::Tribool::kUnknown) {
+    return GetCapabilityByName(
+        kCanContextuallyShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
+  }
+#endif
   return GetCapabilityByName(
       kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName);
 }
