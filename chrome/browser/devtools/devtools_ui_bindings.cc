@@ -794,10 +794,12 @@ bool IsAnyAidaPoweredFeatureEnabled() {
              ::features::kDevToolsAiAssistanceNetworkAgent) ||
          base::FeatureList::IsEnabled(
              ::features::kDevToolsAiAssistancePerformanceAgent) ||
-         base::FeatureList::IsEnabled(
-             ::features::kDevToolsAiCodeCompletion) ||
+         base::FeatureList::IsEnabled(::features::kDevToolsAiCodeCompletion) ||
          base::FeatureList::IsEnabled(::features::kDevToolsAiCodeGeneration) ||
-         base::FeatureList::IsEnabled(::features::kDevToolsAiCodeCompletionStyles);
+         base::FeatureList::IsEnabled(
+             ::features::kDevToolsAiCodeCompletionStyles) ||
+         base::FeatureList::IsEnabled(
+             ::features::kDevToolsAiAssistanceAccessibilityAgent);
 }
 }  // namespace
 
@@ -1849,6 +1851,16 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
   }
 
   if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsAiAssistanceAccessibilityAgent)) {
+    base::DictValue accessibility_agent_dict;
+    accessibility_agent_dict.Set(
+        "enabled", base::FeatureList::IsEnabled(
+                       ::features::kDevToolsAiAssistanceAccessibilityAgent));
+    response_dict.Set("devToolsAiAssistanceAccessibilityAgent",
+                      std::move(accessibility_agent_dict));
+  }
+
+  if (base::FeatureList::IsEnabled(
           ::features::kDevToolsAiAssistancePerformanceAgent)) {
     base::DictValue ai_assistance_performance_agent_dict;
     ai_assistance_performance_agent_dict.Set(
@@ -1905,9 +1917,8 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
     ai_code_completion_dict.Set(
         "temperature", features::kDevToolsAiCodeCompletionTemperature.Get());
     ai_code_completion_dict.Set(
-        "userTier",
-        features::kDevToolsAiCodeCompletionUserTier.GetName(
-            features::kDevToolsAiCodeCompletionUserTier.Get()));
+        "userTier", features::kDevToolsAiCodeCompletionUserTier.GetName(
+                        features::kDevToolsAiCodeCompletionUserTier.Get()));
     response_dict.Set("devToolsAiCodeCompletion",
                       std::move(ai_code_completion_dict));
   }
@@ -1922,14 +1933,14 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
     ai_code_generation_dict.Set(
         "temperature", features::kDevToolsAiCodeGenerationTemperature.Get());
     ai_code_generation_dict.Set(
-        "userTier",
-        features::kDevToolsAiCodeGenerationUserTier.GetName(
-            features::kDevToolsAiCodeGenerationUserTier.Get()));
+        "userTier", features::kDevToolsAiCodeGenerationUserTier.GetName(
+                        features::kDevToolsAiCodeGenerationUserTier.Get()));
     response_dict.Set("devToolsAiCodeGeneration",
                       std::move(ai_code_generation_dict));
   }
 
-  if (base::FeatureList::IsEnabled(::features::kDevToolsAiCodeCompletionStyles)) {
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsAiCodeCompletionStyles)) {
     base::DictValue ai_code_completion_styles_dict;
     ai_code_completion_styles_dict.Set(
         "enabled", base::FeatureList::IsEnabled(
@@ -1937,7 +1948,8 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
     ai_code_completion_styles_dict.Set(
         "modelId", features::kDevToolsAiCodeCompletionStylesModelId.Get());
     ai_code_completion_styles_dict.Set(
-        "temperature", features::kDevToolsAiCodeCompletionStylesTemperature.Get());
+        "temperature",
+        features::kDevToolsAiCodeCompletionStylesTemperature.Get());
     ai_code_completion_styles_dict.Set(
         "userTier",
         features::kDevToolsAiCodeCompletionStylesUserTier.GetName(
