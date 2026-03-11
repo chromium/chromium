@@ -40,6 +40,7 @@ export interface ComposeboxFile {
   tabId: number|null;
   isDeletable: boolean;
   iconName: string|null;
+  supportsUnimodal: boolean;
 }
 
 export interface FileUpload {
