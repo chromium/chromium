@@ -8190,7 +8190,7 @@
   {
     "name": "pwm-show-suggestions-on-autofocus",
     "owners": [ "kenrb@chromium.org", "derinel@google.com" ],
-    "expiry_milestone": 148
+    "expiry_milestone": 151
   },
   {
     "name": "quick-answers-material-next-ui",
@@ -10022,7 +10022,7 @@
       "derinel@google.com",
       "kenrb@chromium.org"
     ],
-    "expiry_milestone": 148
+    "expiry_milestone": 151
   },
   {
     "name": "web-authentication-permit-enterprise-attestation",
