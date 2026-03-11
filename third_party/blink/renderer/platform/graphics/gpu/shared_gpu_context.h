@@ -70,7 +70,8 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   static bool WebGLImageChromiumEnabled();
 
-  // Forces WebGLImageChromiumEnabled() to return the passed-in value.
+  // Forces MaySupportWebGLImageChromium() and WebGLImageChromiumEnabled() to
+  // return the passed-in value.
   // Cleared on the next invocation of Reset() of the global context.
   static void SetWebGLImageChromiumEnabledForTesting(bool enable);
 

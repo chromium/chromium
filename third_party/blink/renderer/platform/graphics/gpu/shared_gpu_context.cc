@@ -357,6 +357,9 @@ bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
 
 #if BUILDFLAG(IS_ANDROID)
 bool SharedGpuContext::MaySupportWebGLImageChromium() {
+  if (g_webgl_image_chromium_enabled_for_testing) {
+    return g_webgl_image_chromium_enabled_for_testing.value();
+  }
   return ::features::IsAndroidSurfaceControlEnabled();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
