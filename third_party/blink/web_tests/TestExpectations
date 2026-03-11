@@ -9596,8 +9596,8 @@ crbug.com/469128832 virtual/permission-element/external/wpt/html/semantics/permi
 crbug.com/470189922 external/wpt/bluetooth/bidi/characteristic/notifications/characteristic-is-removed.https.window.html [ Failure Pass Timeout ]
 
 # Ongoing digital credential flakiness
-crbug.com/457974554 external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Timeout ]
-crbug.com/457974554 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass ]
+crbug.com/415274795 external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Timeout ]
+crbug.com/415274795 external/wpt/digital-credentials/allow-attribute-with-create.https.html [ Failure Pass Timeout ]
 
 # Gardener 2025-12-23
 crbug.com/448800278 [ Mac ] external/wpt/notifications/registration-association.https.window.html [ Failure Pass ]
