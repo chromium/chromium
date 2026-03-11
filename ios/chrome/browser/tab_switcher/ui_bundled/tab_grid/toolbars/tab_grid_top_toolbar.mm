@@ -336,11 +336,10 @@ CGFloat HorizontalMargin() {
     }
   }
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
   __weak TabGridTopToolbar* weakSelf = self;
   [weakSelf
-      registerForTraitChanges:traits
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                   withHandler:^(id<UITraitEnvironment> traitEnvironment,
                                 UITraitCollection* previousCollection) {
                     [weakSelf

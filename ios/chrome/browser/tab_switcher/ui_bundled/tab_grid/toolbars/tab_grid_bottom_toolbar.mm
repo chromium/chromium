@@ -99,9 +99,10 @@ CGFloat CompactButtonHorizontalPadding() {
     }
   }
 
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]);
-  [self registerForTraitChanges:traits withAction:@selector(updateLayout)];
+  [self
+      registerForTraitChanges:
+          @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
+                   withAction:@selector(updateLayout)];
   [super didMoveToSuperview];
 }
 
