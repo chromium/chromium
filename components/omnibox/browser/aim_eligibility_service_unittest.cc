@@ -475,13 +475,15 @@ TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureEnabled) {
 
 TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      omnibox::kAimFuseboxEligibilityCheckEnabled);
+  feature_list.InitWithFeatures({},
+                                {omnibox::kAimFuseboxEligibilityCheckEnabled,
+                                 omnibox::kAimServerEligibilityEnabled});
 
   omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
   response.set_is_fusebox_eligible(false);
   aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
 
   // Should be true regardless of response if feature is disabled.
-  EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
+  EXPECT_EQ(true, aim_eligibility_service_->IsFuseboxEligible());
 }
