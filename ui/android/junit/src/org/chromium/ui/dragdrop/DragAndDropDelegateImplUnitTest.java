@@ -341,6 +341,26 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    public void testStartDragAndDrop_NoImageProvider() {
+        ShadowContentResolver.registerProviderInternal(
+                DropDataProviderImpl.FULL_AUTH_URI.getAuthority(), null);
+        final DropDataAndroid imageDropData =
+                DropDataAndroid.create(null, null, new byte[] {1, 2, 3, 4}, "png", IMAGE_FILENAME);
+
+        Assert.assertFalse(
+                "Drag and drop should not start.",
+                mDragAndDropDelegateImpl.startDragAndDrop(
+                        mContainerView,
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
+                        imageDropData,
+                        mContainerView.getContext(),
+                        /* cursorOffsetX= */ 0,
+                        /* cursorOffsetY= */ 0,
+                        /* dragObjRectWidth= */ 100,
+                        /* dragObjRectHeight= */ 200));
+    }
+
+    @Test
     public void testStartDragAndDrop_WithDragShadowBuilder() {
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
         DragShadowBuilder mockBuilder = mock(DragShadowBuilder.class);
