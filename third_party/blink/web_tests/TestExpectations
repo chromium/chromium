@@ -1328,6 +1328,7 @@ crbug.com/488137634 external/wpt/css/css-highlight-api/painting/custom-highlight
 # ====== Style team owned tests to here ======
 
 # Tests only passing with RunSnapshotPostLayoutStateSteps enabled
+crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-timeline-snapshotting.html [ Pass ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/updating-the-finished-state.html [ Pass Timeout ]
 crbug.com/384523570 virtual/run-snapshot-post-layout/fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Pass ]
@@ -2935,7 +2936,6 @@ crbug.com/483173722 external/wpt/webdriver/tests/classic/take_element_screenshot
 crbug.com/483173722 [ Android ] external/wpt/webdriver/tests/classic/take_screenshot/screenshot.py [ Failure Timeout ]
 crbug.com/483370597 [ Win ] external/wpt/webrtc-stats/RTCDataChannel-stats.html [ Pass Timeout ]
 crbug.com/483370597 [ Mac ] external/wpt/webrtc-stats/RTCDataChannel-stats.html [ Skip Timeout ]
-crbug.com/483370598 virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
 crbug.com/479873900 [ Win ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Pass Timeout ]
 crbug.com/479872440 external/wpt/webdriver/tests/classic/execute_async_script/promise.py [ Failure ]
 crbug.com/479872440 external/wpt/webdriver/tests/classic/execute_script/promise.py [ Failure ]
@@ -2988,7 +2988,6 @@ crbug.com/469481625 external/wpt/webrtc/RTCPeerConnection-remote-track-propertie
 crbug.com/467728926 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_timezone_override/contexts.py [ Failure ]
 crbug.com/467435140 [ Win ] external/wpt/html/browsers/origin/api/origin-from-messageevent.window.html [ Crash Pass ]
 crbug.com/467185802 external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]
-crbug.com/467185802 virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/grid-position-area-basic.html [ Failure ]
 crbug.com/467079017 external/wpt/css/css-content/quotes-035.html [ Failure ]
 crbug.com/467095511 [ Win ] external/wpt/css/css-text/hyphens/lang-tag-case-insensitive.html [ Failure ]
 crbug.com/467094968 [ Android ] external/wpt/webdriver/tests/bidi/script/realm_created/window_open.py [ Failure ]
@@ -9678,9 +9677,6 @@ crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https
 
 # Temporary to unblock crrev.com/c/7639450 landing.
 crbug.com/490314415 http/tests/devtools/elements/elements-img-tooltip.js [ Failure Pass ]
-
-# Gardener 2026-02-27: Flaky on several Linux bots
-crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure Pass ]
 
 # Gardener 2026-02-27: Flaky on headless_shell_wpt_tests Mac bot
 crbug.com/488351815 [ Mac ] external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure Pass ]
