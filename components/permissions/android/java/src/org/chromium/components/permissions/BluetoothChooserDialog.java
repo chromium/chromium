@@ -27,6 +27,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -537,7 +538,10 @@ public class BluetoothChooserDialog
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        void onDialogFinished(long nativeBluetoothChooserAndroid, int eventType, String deviceId);
+        void onDialogFinished(
+                long nativeBluetoothChooserAndroid,
+                @JniType("content::BluetoothChooserEvent") int eventType,
+                String deviceId);
 
         void restartSearch(long nativeBluetoothChooserAndroid);
 

@@ -141,23 +141,20 @@ void BluetoothChooserAndroid::AddOrUpdateDevice(
 
 void BluetoothChooserAndroid::OnDialogFinished(
     JNIEnv* env,
-    int32_t event_type,
+    content::BluetoothChooserEvent event,
     const JavaRef<jstring>& device_id) {
-  // Values are defined in BluetoothChooserDialog as DIALOG_FINISHED constants.
-  switch (event_type) {
-    case 0:
-      event_handler_.Run(content::BluetoothChooserEvent::DENIED_PERMISSION, "");
+  switch (event) {
+    case content::BluetoothChooserEvent::DENIED_PERMISSION:
+    case content::BluetoothChooserEvent::CANCELLED:
+      event_handler_.Run(event, "");
       return;
-    case 1:
-      event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, "");
-      return;
-    case 2:
+    case content::BluetoothChooserEvent::SELECTED:
       event_handler_.Run(
-          content::BluetoothChooserEvent::SELECTED,
-          base::android::ConvertJavaStringToUTF8(env, device_id));
+          event, base::android::ConvertJavaStringToUTF8(env, device_id));
       return;
+    default:
+      NOTREACHED();
   }
-  NOTREACHED();
 }
 
 void BluetoothChooserAndroid::RestartSearch() {

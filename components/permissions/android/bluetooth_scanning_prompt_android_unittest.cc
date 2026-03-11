@@ -44,11 +44,9 @@ TEST_F(BluetoothScanningPromptAndroidTest, FrameTree) {
           content::RenderFrameHostTester::For(main_rfh())
               ->AppendChild("subframe"));
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(main_rfh());
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
       ui::WindowAndroid::CreateForTesting();
-  window.get()->get()->AddChild(web_contents->GetNativeView());
+  window->get()->AddChild(web_contents()->GetNativeView());
 
   base::MockCallback<BluetoothScanningPromptAndroid::CreateJavaDialogCallback>
       mock_callback;

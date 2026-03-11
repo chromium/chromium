@@ -55,7 +55,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
 
   // Report the dialog's result.
   void OnDialogFinished(JNIEnv* env,
-                        int32_t event_type,
+                        content::BluetoothChooserEvent event,
                         const base::android::JavaRef<jstring>& device_id);
 
   // Notify bluetooth stack that the search needs to be re-issued.

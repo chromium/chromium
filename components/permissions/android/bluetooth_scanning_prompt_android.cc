@@ -93,19 +93,14 @@ void BluetoothScanningPromptAndroid::AddOrUpdateDevice(
       env, java_dialog_, java_device_id, java_device_name);
 }
 
-void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
-                                                      int32_t event_type) {
-  // Values are defined in BluetoothScanningPromptDialog as DIALOG_FINISHED
-  // constants.
-  switch (event_type) {
-    case 0:
-      event_handler_.Run(content::BluetoothScanningPrompt::Event::kAllow);
-      return;
-    case 1:
-      event_handler_.Run(content::BluetoothScanningPrompt::Event::kBlock);
-      return;
-    case 2:
-      event_handler_.Run(content::BluetoothScanningPrompt::Event::kCanceled);
+void BluetoothScanningPromptAndroid::OnDialogFinished(
+    JNIEnv* env,
+    content::BluetoothScanningPrompt::Event event) {
+  switch (event) {
+    case content::BluetoothScanningPrompt::Event::kAllow:
+    case content::BluetoothScanningPrompt::Event::kBlock:
+    case content::BluetoothScanningPrompt::Event::kCanceled:
+      event_handler_.Run(event);
       return;
   }
   NOTREACHED();
