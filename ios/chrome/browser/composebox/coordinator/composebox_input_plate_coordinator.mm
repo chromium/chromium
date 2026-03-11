@@ -18,6 +18,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_cobrowse_omnibox_client.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
@@ -209,10 +210,18 @@ const CGFloat kSnackbarBottomMargin = 10;
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
-  auto omniboxClient = std::make_unique<ComposeboxOmniboxClient>(
-      _locationBar.get(), self.browser,
-      feature_engagement::TrackerFactory::GetForProfile(self.profile),
-      _mediator);
+  std::unique_ptr<OmniboxClient> omniboxClient;
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse) {
+    omniboxClient = std::make_unique<ComposeboxCobrowseOmniboxClient>(
+        self.browser,
+        feature_engagement::TrackerFactory::GetForProfile(self.profile),
+        _mediator);
+  } else {
+    omniboxClient = std::make_unique<ComposeboxOmniboxClient>(
+        _locationBar.get(), self.browser,
+        feature_engagement::TrackerFactory::GetForProfile(self.profile),
+        _mediator);
+  }
 
   _omniboxCoordinator = [[OmniboxCoordinator alloc]
       initWithBaseViewController:nil

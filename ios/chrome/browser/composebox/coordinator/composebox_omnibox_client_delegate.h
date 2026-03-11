@@ -12,8 +12,15 @@
 struct UrlLoadParams;
 enum class WindowOpenDisposition;
 
+namespace web {
+class WebState;
+}  // namespace web
+
 /// Delegate for ComposeboxOmniboxClient.
 @protocol ComposeboxOmniboxClientDelegate
+
+/// Returns the current web state.
+- (web::WebState*)webState;
 
 /// Returns the current input state of the composebox.
 - (contextual_search::InputState)inputState;

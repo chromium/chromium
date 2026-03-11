@@ -1932,6 +1932,10 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxOmniboxClientDelegate
 
+- (web::WebState*)webState {
+  return _webStateList->GetActiveWebState();
+}
+
 - (contextual_search::InputState)inputState {
   return _inputState;
 }

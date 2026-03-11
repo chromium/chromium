@@ -61,6 +61,8 @@ source_set("entrypoint") {
 
 source_set("input_plate") {
   sources = [
+    "composebox_cobrowse_omnibox_client.h",
+    "composebox_cobrowse_omnibox_client.mm",
     "composebox_input_plate_coordinator.h",
     "composebox_input_plate_coordinator.mm",
     "composebox_input_plate_mediator.h",
@@ -99,6 +101,7 @@ source_set("input_plate") {
     "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/prefs",
+    "//components/security_state/ios",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
