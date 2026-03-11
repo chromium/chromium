@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/background/glic",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
+    "//chrome/browser/engagement",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",
     "//chrome/browser/gpu",

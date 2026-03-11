@@ -299,6 +299,7 @@ static_library("ui") {
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/data_sharing",
     "//chrome/browser/devtools",
+    "//chrome/browser/engagement",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/favicon",
     "//chrome/browser/feedback:feedback_impl",
