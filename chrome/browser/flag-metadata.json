@@ -6050,7 +6050,7 @@
   {
     "name": "ios-segmentation-ephemeral-card-ranker",
     "owners": [ "thegreenfrog@google.com", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 144
+    "expiry_milestone": 155
   },
   {
     "name": "ios-shop-card",
