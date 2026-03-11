@@ -307,7 +307,7 @@
   {
     "name": "android-desktop-zoom-scaling",
     "owners": [ "mschillaci@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 154
   },
   {
     "name": "android-elegant-text-height",
