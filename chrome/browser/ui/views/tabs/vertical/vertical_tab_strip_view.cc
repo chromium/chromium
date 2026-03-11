@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
@@ -27,6 +28,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -375,8 +377,8 @@ void VerticalTabStripView::SetScrollViewProperties(
   scroll_view->SetVerticalScrollBar(std::make_unique<VerticalTabStripScrollBar>(
       collection_node_->GetController()->GetStateController()));
   callback_subscriptions_.emplace_back(scroll_view->AddContentsScrolledCallback(
-      base::BindRepeating(&VerticalTabStripView::HideHoverCardOnScroll,
-                          base::Unretained(this))));
+      base::BindRepeating(&VerticalTabStripView::OnContentsScrolled,
+                          base::Unretained(this), scroll_view)));
 }
 
 void VerticalTabStripView::ResetCollectionNode() {
@@ -435,16 +437,29 @@ bool VerticalTabStripView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
-void VerticalTabStripView::HideHoverCardOnScroll() {
+void VerticalTabStripView::OnContentsScrolled(views::ScrollView* scroll_view) {
   if (!collection_node_) {
     return;
   }
 
+  // Hide the hover card when the user scrolls the tab strip.
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController();
       hover_card_controller && hover_card_controller->IsHoverCardVisible()) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kAnimating);
+  }
+
+  // If the scroll event was from the unpinned container, also close any group
+  // editor bubble.
+  if (scroll_view == unpinned_tabs_scroll_view_) {
+    auto* const bubble_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId,
+            views::ElementTrackerViews::GetContextForView(this));
+    if (bubble_view) {
+      bubble_view->GetWidget()->Close();
+    }
   }
 }
 

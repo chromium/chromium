@@ -77,7 +77,7 @@ class VerticalTabStripView final : public views::View,
 
   bool IsFrameActive() const;
 
-  void HideHoverCardOnScroll();
+  void OnContentsScrolled(views::ScrollView* scroll_view);
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
