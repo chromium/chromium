@@ -723,11 +723,6 @@ void RequestService::RegisterIdP(const GURL& idp,
     return;
   }
 
-  if (!render_frame_host().HasTransientUserActivation()) {
-    std::move(callback).Run(RegisterIdpStatus::kErrorNoTransientActivation);
-    return;
-  }
-
   if (!network_manager_) {
     network_manager_ = CreateNetworkManager();
   }
@@ -750,25 +745,8 @@ void RequestService::OnIdpRegistrationConfigFetched(
     return;
   }
 
-  if (!request_dialog_controller_) {
-    request_dialog_controller_ = CreateDialogController();
-  }
-
-  request_dialog_controller_->RequestIdPRegistrationPermision(
-      origin(),
-      base::BindOnce(&RequestService::OnRegisterIdPPermissionResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), idp));
-}
-
-void RequestService::OnRegisterIdPPermissionResponse(
-    RegisterIdPCallback callback,
-    const GURL& idp,
-    bool accepted) {
-  if (accepted) {
-    permission_delegate_->RegisterIdP(idp);
-  }
-  std::move(callback).Run(accepted ? RegisterIdpStatus::kSuccess
-                                   : RegisterIdpStatus::kErrorDeclined);
+  permission_delegate_->RegisterIdP(idp);
+  std::move(callback).Run(RegisterIdpStatus::kSuccess);
 }
 
 void RequestService::UnregisterIdP(const GURL& idp,

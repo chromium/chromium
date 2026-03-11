@@ -502,9 +502,6 @@ class CONTENT_EXPORT RequestService
       RegisterIdPCallback callback,
       const GURL& idp,
       std::vector<ConfigFetcher::FetchResult> fetch_results);
-  void OnRegisterIdPPermissionResponse(RegisterIdPCallback callback,
-                                       const GURL& idp,
-                                       bool accepted);
   std::unique_ptr<Metrics> CreateFedCmMetrics();
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);

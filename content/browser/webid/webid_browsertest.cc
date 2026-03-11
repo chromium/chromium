@@ -637,21 +637,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegisterIdP) {
   GURL configURL = GURL(BaseIdpUrl());
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
-
   // We navigate to the IdP's configURL so that we can run
   // the script below with the IdP's origin as the top level
   // first party context.
@@ -666,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegisterIdP) {
         }) ()
     )";
 
-  EXPECT_EQ(true, EvalJs(shell(), script));
+  EXPECT_EQ(true, EvalJs(shell(), script, EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_EQ(std::vector<GURL>{configURL},
             sharing_context()->GetRegisteredIdPs());
@@ -694,21 +679,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
   GURL configURL = GURL(BaseIdpUrl());
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
-
   // We navigate to the IdP's configURL so that we can run
   // the script below with the IdP's origin as the top level
   // first party context.
@@ -735,21 +705,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UnregisterIdP) {
 IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, UseRegistry) {
   GURL configURL = GURL(BaseIdpUrl());
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
 
   NavigateToIdpToRegisterAndSetLoginStatus(configURL);
 
@@ -786,20 +741,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeNoMatch) {
   auto details = BuildValidConfigDetails();
   details.types = {"idp_type"};
   idp_server()->SetConfigResponseDetails(details);
-
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
 
   // We navigate to the IdP's configURL so that we can run
   // the script below with the IdP's origin as the top level
@@ -861,20 +802,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeMatch) {
   details.types = {"type_no_match", "idp_type"};
   idp_server()->SetConfigResponseDetails(details);
 
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
-
   NavigateToIdpToRegisterAndSetLoginStatus(configURL);
 
   // Navigate to the RP.
@@ -909,34 +836,8 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
   GURL configURL = GURL(BaseIdpUrl());
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillRepeatedly(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
-
   // Register the first IdP and push accounts.
   NavigateToIdpToRegisterAndSetLoginStatus(configURL);
-
-  // Register the second IdP.
-  mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  controller = static_cast<MockIdentityRequestDialogController*>(
-      test_browser_client_->GetIdentityRequestDialogControllerForTests());
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
 
   GURL otherConfigURL = https_server().GetURL(kOtherIdpHostname, "/fedcm.json");
   NavigateToIdpToRegisterAndSetLoginStatus(otherConfigURL);
@@ -972,21 +873,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
 IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryNoPushedAccounts) {
   GURL configURL = GURL(BaseIdpUrl());
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
-
-  MockIdentityRequestDialogController* controller =
-      static_cast<MockIdentityRequestDialogController*>(
-          test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  // Expects the account chooser to be opened. Selects the first account.
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
 
   // We navigate to the IdP's configURL so that we can run
   // the script below with the IdP's origin as the top level
@@ -1046,10 +932,6 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest,
   // Set this as empty so that the login URL is invalid.
   details.login_url = "";
   idp_server()->SetConfigResponseDetails(details);
-
-  auto mock = std::make_unique<
-      ::testing::NiceMock<MockIdentityRequestDialogController>>();
-  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
   // We navigate to the IdP's configURL so that we can run
   // the script below with the IdP's origin as the top level

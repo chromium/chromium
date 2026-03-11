@@ -205,7 +205,7 @@ void FakeIdentityRequestDialogController::RequestIdPRegistrationPermision(
     const url::Origin& origin,
     base::OnceCallback<void(bool accepted)> callback) {
   if (!is_interception_enabled_) {
-    PostTask(FROM_HERE, base::BindOnce(std::move(callback), false));
+    PostTask(FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 }
 

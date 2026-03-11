@@ -143,19 +143,6 @@ class RequestServiceRegistryTest : public RenderViewHostImplTestHarness {
 TEST_F(RequestServiceRegistryTest, RegistersIdPSuccessfully) {
   GURL configURL = GURL(kIdpUrl);
 
-  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
-
-  auto controller =
-      std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-
-  EXPECT_CALL(*controller, RequestIdPRegistrationPermision(_, _))
-      .WillOnce(::testing::WithArg<1>(
-          [](base::OnceCallback<void(bool accepted)> callback) {
-            std::move(callback).Run(true);
-          }));
-
-  federated_auth_request_impl_->SetDialogControllerForTests(
-      std::move(controller));
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
@@ -171,33 +158,10 @@ TEST_F(RequestServiceRegistryTest, RegistersIdPSuccessfully) {
   loop.Run();
 }
 
-// Test Registering denied without user activation.
-TEST_F(RequestServiceRegistryTest, RegistersIdPDeniedWithoutUserActivation) {
-  GURL configURL = GURL(kIdpUrl);
-
-  auto controller =
-      std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-
-  federated_auth_request_impl_->SetDialogControllerForTests(
-      std::move(controller));
-
-  feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
-
-  base::RunLoop loop;
-  request_remote_->RegisterIdP(
-      std::move(configURL),
-      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
-        EXPECT_EQ(RegisterIdpStatus::kErrorNoTransientActivation, result);
-        loop.Quit();
-      }));
-  loop.Run();
-}
-
 // Test Registering an IdP without the feature enabled.
 TEST_F(RequestServiceRegistryTest, RegistersWithoutFeature) {
   GURL configURL = GURL(kIdpUrl);
 
-  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
   base::RunLoop loop;
   request_remote_->RegisterIdP(
@@ -213,7 +177,6 @@ TEST_F(RequestServiceRegistryTest, RegistersWithoutFeature) {
 TEST_F(RequestServiceRegistryTest, RegistersCrossOriginNotAllowed) {
   GURL configURL = GURL("https://another.example");
 
-  static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
