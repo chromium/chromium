@@ -76,8 +76,9 @@ class AppBannerManagerDesktop
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
   void OnMlInstallPrediction(std::string result_label) override;
-  void ShowBannerUi(WebappInstallSource install_source,
-                    const InstallBannerConfig& config) override;
+  AppBannerManager::ShowBannerUiResult ShowBannerUi(
+      WebappInstallSource install_source,
+      const InstallBannerConfig& config) override;
 
   // Called when the web app install initiated by a banner has completed.
   void DidFinishCreatingWebApp(

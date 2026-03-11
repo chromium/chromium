@@ -179,8 +179,9 @@ class AppBannerManagerAndroid
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   void MaybeShowAmbientBadge(const InstallBannerConfig& config) override;
-  void ShowBannerUi(WebappInstallSource install_source,
-                    const InstallBannerConfig& config) override;
+  AppBannerManager::ShowBannerUiResult ShowBannerUi(
+      WebappInstallSource install_source,
+      const InstallBannerConfig& config) override;
   void InvalidateWeakPtrsForThisNavigation() override;
   void ResetCurrentPageData() override;
   void InstallableWebAppStatusUpdate() override;
