@@ -14,10 +14,13 @@
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/outgoing_tab_form_field_extractor.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/received_tab_forms_filler.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -113,6 +116,20 @@ void FillWebContents(content::WebContents* web_contents,
     ReceivedTabFormsFiller::Start(*autofill_client, origin,
                                   page_context.form_field_info);
   }
+}
+
+std::optional<std::string> GetScrollPositionAsTextFragment(
+    const SendTabToSelfEntry* entry) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) ||
+      !entry || entry->GetPageContext().scroll_position.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  shared_highlighting::TextFragment tf =
+      entry->GetPageContext()
+          .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
+  return tf.ToEscapedString(shared_highlighting::TextFragment::
+                                EscapedStringFormat::kWithoutTextDirective);
 }
 
 }  // namespace send_tab_to_self

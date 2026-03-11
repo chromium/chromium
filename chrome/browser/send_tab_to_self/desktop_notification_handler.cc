@@ -12,6 +12,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -115,17 +116,19 @@ void DesktopNotificationHandler::OnClick(
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
 
-    if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) &&
-        entry && !entry->GetPageContext().scroll_position.IsEmpty()) {
-      shared_highlighting::TextFragment tf =
-          entry->GetPageContext()
-              .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
-      params.internal_scroll_to_text_fragment =
-          tf.ToEscapedString(shared_highlighting::TextFragment::
-                                 EscapedStringFormat::kWithoutTextDirective);
+    std::optional<std::string> scroll_to_text_fragment =
+        GetScrollPositionAsTextFragment(entry);
+    if (scroll_to_text_fragment) {
+      params.internal_scroll_to_text_fragment = *scroll_to_text_fragment;
     }
 
     Navigate(&params);
+
+    if (params.navigated_or_inserted_contents) {
+      SendTabToSelfScrollObserver::CreateForWebContents(
+          params.navigated_or_inserted_contents,
+          /*restoration_attempted=*/scroll_to_text_fragment.has_value());
+    }
 
     if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
       if (entry) {

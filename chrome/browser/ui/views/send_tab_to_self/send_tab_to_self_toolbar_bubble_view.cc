@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -143,8 +144,15 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   NavigateParams params(browser_->GetProfile(), url_, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
+
   base::WeakPtr<content::NavigationHandle> handle =
       std::move(navigate_callback_).Run(&params);
+
+  if (params.navigated_or_inserted_contents) {
+    SendTabToSelfScrollObserver::CreateForWebContents(
+        params.navigated_or_inserted_contents,
+        /*restoration_attempted=*/false);
+  }
 
   if (handle &&
       base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {

@@ -411,6 +411,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.Scroll.Volume{RestorationState}"
+    units="pixels" expires_after="2027-03-05">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the total vertical scroll volume (sum of absolute deltas) by the
+    user after a Send Tab To Self tab is opened. The volume is recorded when the
+    tab is closed or navigated away. {RestorationState} Recorded for desktop.
+    The programmatic scrolling itself (from scroll restoration) is not included
+    in the count.
+  </summary>
+  <token key="RestorationState">
+    <variant name=".WithoutRestoration"
+        summary="Recorded when scroll restoration was NOT attempted."/>
+    <variant name=".WithRestoration"
+        summary="Recorded when scroll restoration was attempted."/>
+  </token>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome"
     enum="SendTabToSelfScrollPositionGenerationOutcome"
     expires_after="2026-10-01">

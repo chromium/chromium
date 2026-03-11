@@ -72,6 +72,10 @@ void RecordHasScrollPositionOnOpened(bool has_scroll_position);
 // truncation.
 void RecordPageContextSize(size_t size);
 
+// Records the volume of scroll interaction after an STTS tab is opened.
+// `with_restoration` is true if scroll restoration was attempted.
+void RecordScrollVolume(float volume, bool with_restoration);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_
