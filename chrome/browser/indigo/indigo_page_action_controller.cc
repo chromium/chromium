@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
+#include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +36,7 @@ namespace indigo {
 
 namespace {
 const char kForceIndigoSwitch[] = "force-indigo";
+const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
 }  // namespace
 
 DEFINE_USER_DATA(IndigoPageActionController);
@@ -81,6 +83,21 @@ void IndigoPageActionController::InvokeAction() {
 
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
+    return;
+  }
+
+  // For now, onboarding is only triggered when forced, and the URL is specified
+  // in the command line switch. In the future, this will typically be triggered
+  // automatically based on the user's enrolment status, and the URL will be
+  // determined by a feature param.
+  std::string onboarding_url =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kForceIndigoOnboardingSwitch);
+  if (!onboarding_url.empty()) {
+    onboarding_dialog_ = IndigoOnboardingDialog::Show(
+        tab(), GURL(onboarding_url),
+        base::BindOnce(&IndigoPageActionController::OnOnboardingDialogClosed,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -176,6 +193,10 @@ void IndigoPageActionController::UpdateEntryPointsState() {
     page_action_controller_->Hide(kActionIndigo);
   }
   is_shown_ = should_show;
+}
+
+void IndigoPageActionController::OnOnboardingDialogClosed() {
+  onboarding_dialog_.reset();
 }
 
 void IndigoPageActionController::OnOptimizationGuideDecision(

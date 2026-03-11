@@ -31,6 +31,8 @@ class TabInterface;
 
 namespace indigo {
 
+class IndigoOnboardingDialog;
+
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
@@ -62,6 +64,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
 
+  // Called when the onboarding dialog is closed.
+  void OnOnboardingDialogClosed();
+
   // Called when optimization guide has decided whether this feature should be
   // enabled for the page.
   void OnOptimizationGuideDecision(
@@ -92,6 +97,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // If true, the Indigo page action is currently shown.
   bool is_shown_ = false;
+
+  // The onboarding dialog, if shown.
+  std::unique_ptr<IndigoOnboardingDialog> onboarding_dialog_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
