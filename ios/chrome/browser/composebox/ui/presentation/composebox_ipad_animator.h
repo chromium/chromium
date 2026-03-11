@@ -8,6 +8,15 @@
 #import <UIKit/UIKit.h>
 
 @class LayoutGuideCenter;
+enum class ComposeboxMode;
+
+// Delegate for animation changes to the composebox.
+@protocol ComposeboxiPadAnimatorDelegate
+
+// Indicates to the delegate to update the Composebox `mode`.
+- (void)setComposeboxMode:(ComposeboxMode)mode;
+
+@end
 
 // Animator for the composebox presentation on iPad.
 @interface ComposeboxiPadAnimator
@@ -22,6 +31,13 @@
 // YES if the animator should position its container according to a larger
 // layout.
 @property(nonatomic, assign) BOOL shouldUseLargeLayout;
+
+// YES if AI mode should be immediately turned on during the presentation
+// animation.
+@property(nonatomic, assign) BOOL showAIMode;
+
+// Delegate for this animator.
+@property(nonatomic, weak) id<ComposeboxiPadAnimatorDelegate> delegate;
 
 @end
 

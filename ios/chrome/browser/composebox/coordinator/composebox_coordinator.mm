@@ -47,7 +47,8 @@
                                      ComposeboxNavigationMediatorDelegate,
                                      ComposeboxAnimationContext,
                                      ComposeboxDebuggerCoordinatorDelegate,
-                                     UIViewControllerTransitioningDelegate>
+                                     UIViewControllerTransitioningDelegate,
+                                     ComposeboxiPadAnimatorDelegate>
 
 @end
 
@@ -211,6 +212,8 @@
     animator.presenting = YES;
     animator.shouldUseLargeLayout =
         IsRegularXRegularSizeClass(self.baseViewController.traitCollection);
+    animator.showAIMode = _entrypoint == ComposeboxEntrypoint::kNTPAIMButton;
+    animator.delegate = self;
     return animator;
   }
   ComposeboxPresentAnimator* animator =
