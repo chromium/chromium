@@ -30,6 +30,12 @@ class PageContextWrapperConfig {
   // True to extract actionable information alongside rich extraction.
   bool use_rich_extraction_with_actionable() const;
 
+  // True to extract paid content from the page context.
+  bool extract_paid_content() const;
+
+  // True to attempt to fix malformed paid content JSON.
+  bool attempt_paid_content_json_fixing() const;
+
  private:
   friend class PageContextWrapperConfigBuilder;
 
@@ -37,7 +43,9 @@ class PageContextWrapperConfig {
   explicit PageContextWrapperConfig(bool use_refactored_extractor,
                                     bool graft_cross_origin_frame_content,
                                     bool use_rich_extraction,
-                                    bool use_rich_extraction_with_actionable);
+                                    bool use_rich_extraction_with_actionable,
+                                    bool extract_paid_content,
+                                    bool attempt_paid_content_json_fixing);
 
   // Bit to use the refactored PageContextExtractor.
   bool use_refactored_extractor_;
@@ -50,6 +58,12 @@ class PageContextWrapperConfig {
 
   // Bit to use the TreeWalker (Rich Extraction) with actionable Mode.
   bool use_rich_extraction_with_actionable_;
+
+  // Bit to extract paid content.
+  bool extract_paid_content_;
+
+  // Bit to attempt to fix malformed paid content JSON.
+  bool attempt_paid_content_json_fixing_;
 };
 
 // Builder for PageContextWrapperConfig.
@@ -74,6 +88,14 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetUseRichExtractionWithActionable(
       bool use_rich_extraction_with_actionable);
 
+  // Sets whether to extract paid content.
+  PageContextWrapperConfigBuilder& SetExtractPaidContent(
+      bool extract_paid_content);
+
+  // Sets whether to attempt to fix malformed paid content JSON.
+  PageContextWrapperConfigBuilder& SetAttemptPaidContentJsonFixing(
+      bool attempt_paid_content_json_fixing);
+
   // Returns the PageContextWrapperConfig.
   PageContextWrapperConfig Build() const;
 
@@ -82,6 +104,8 @@ class PageContextWrapperConfigBuilder {
   bool graft_cross_origin_frame_content_;
   bool use_rich_extraction_;
   bool use_rich_extraction_with_actionable_;
+  bool extract_paid_content_;
+  bool attempt_paid_content_json_fixing_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_WRAPPER_CONFIG_H_

@@ -140,8 +140,10 @@ const constructInnerTextTree =
 // frames, but only for the current run. Early returns if the PageContext should
 // be detached, or the frame is not the top-most same-origin frame.
 function extractPageContext(
-  nonce: string, keepCrossOriginFrameData: boolean,
-  useRichExtraction: boolean, actionableMode: boolean): ExtractionResult {
+    nonce: string, keepCrossOriginFrameData: boolean,
+    useRichExtraction: boolean, actionableMode: boolean,
+    extractPaidContent: boolean,
+    attemptPaidContentJsonFixing: boolean): ExtractionResult {
   // If the PageContext should be detached, early return.
   if (shouldDetachPageContext()) {
     return { shouldDetachPageContext: true } as DetachData;
@@ -161,7 +163,8 @@ function extractPageContext(
     // structure parsed by `ValueResultFromWKResult` on the native side.
     const maxDepth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH;
     return extractAnnotatedPageContent(
-      document, nonce, 0, maxDepth, actionableMode);
+        document, nonce, 0, maxDepth, actionableMode, extractPaidContent,
+        attemptPaidContentJsonFixing);
   }
 
   // Recursively constructs the tree from the root node.

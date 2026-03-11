@@ -130,6 +130,19 @@ const TEXT_MASKING_CHAR_SQUARE = '\u25A0';  // ■
 // The constant length of the masked text.
 const MASKED_TEXT_LENGTH = 7;
 
+// Metadata schema constants.
+const SCHEMA_ORG_IDENTIFIER = 'schema.org';
+const SCHEMA_IS_ACCESSIBLE_FOR_FREE_KEY = 'isAccessibleForFree';
+const SCHEMA_PART_TYPE_KEY = '@type';
+const SCHEMA_PART_CSS_SELECTOR_KEY = 'cssSelector';
+const SCHEMA_PART_WEB_PAGE_ELEMENT_TYPE = 'WebPageElement';
+const SCHEMA_CONTEXT_KEY = '@context';
+const SCHEMA_HAS_PART_KEY = 'hasPart';
+
+// Regex used to sanitize JSON payloads before parsing.
+const TRAILING_COMMA_REGEX = /,\s*([\]}])/g;
+const NEWLINE_REGEX = /\n/g;
+
 // Form control types.
 const PASSWORD_TYPE = 'password';
 const BUTTON_TYPE = 'button';
@@ -852,21 +865,223 @@ function extractFrameInteractionInfo(document: Document):
   return frameInteractionInfo;
 }
 
+// Context for paid content extraction.
+interface PaidContentExtractionContext {
+  /** Whether the paid content extraction is enabled. */
+  extractPaidContent: boolean;
+  /** Whether to attempt to fix malformed paid content JSON. */
+  attemptPaidContentJsonFixing: boolean;
+  /** Whether the page contains paid content. */
+  containsPaidContent: boolean;
+  /** The set of DOM nodes verified as paid content. */
+  paidNodes: Set<Node>;
+}
+
+/**
+ * Parses the `hasPart` field of a schema.org object and populates the
+ * `paidNodes` set with elements matching the `cssSelector` of `WebPageElement`s
+ * that are not accessible for free.
+ *
+ * @param document The document to query.
+ * @param hasPart The `hasPart` value from the JSON-LD object.
+ * @param paidNodes The set to populate with paid content nodes.
+ */
+function extractPaidNodesFromHasPart(
+    document: Document, hasPart: unknown, paidNodes: Set<Node>) {
+  if (!hasPart) {
+    return;
+  }
+  const hasPartsArray = Array.isArray(hasPart) ? hasPart : [hasPart];
+  for (const part of hasPartsArray) {
+    if (typeof part !== 'object' || part === null) {
+      continue;
+    }
+
+    const partRecord = part as Record<string, unknown>;
+    if (partRecord[SCHEMA_PART_TYPE_KEY] !==
+        SCHEMA_PART_WEB_PAGE_ELEMENT_TYPE) {
+      continue;
+    }
+
+    const partIsFree = partRecord[SCHEMA_IS_ACCESSIBLE_FOR_FREE_KEY];
+    // Blink's ObjectValuePresentAndFalse explicitly checks boolean false,
+    // or strings "false" and "False". We mirror that exact behavior here
+    // rather than fully normalizing to lowercase.
+    if (partIsFree !== false && partIsFree !== 'false' &&
+        partIsFree !== 'False') {
+      continue;
+    }
+
+    const selector = partRecord[SCHEMA_PART_CSS_SELECTOR_KEY];
+    if (typeof selector !== 'string') {
+      continue;
+    }
+
+    try {
+      // document.querySelectorAll throws a DOMException if the selector is
+      // invalid. We catch it to avoid crashing the extraction process.
+      const elements = document.querySelectorAll(selector);
+      for (const el of Array.from(elements)) {
+        paidNodes.add(el);
+      }
+    } catch (e) {
+      // Ignore invalid css selectors.
+    }
+  }
+}
+
+/**
+ * Helper function to parse JSON, with fallbacks for common syntax errors.
+ * Mirrors Blink's ParsePaidContentJSON logic.
+ *
+ * @param jsonString The raw JSON string.
+ * @param attemptPaidContentJsonFixing Whether to attempt fixing malformed JSON.
+ * @return The parsed JSON object or null if parsing completely fails.
+ */
+function parsePaidContentJson(
+    jsonString: string, attemptPaidContentJsonFixing: boolean): any|null {
+  try {
+    // Fast path: Try parsing the standard JSON first.
+    // This handles well-formed JSON without regex performance hits or string
+    // corruption.
+    return JSON.parse(jsonString);
+  } catch (e) {
+    // Ignore error, proceed to slow path if enabled.
+  }
+
+  if (!attemptPaidContentJsonFixing) {
+    return null;
+  }
+
+  // Slow path: Fallback for malformed JSON seen in the wild.
+  // The JSON provided by some websites has unescaped newlines or trailing
+  // commas. This regex is a best-effort recovery.
+  let sanitizedText = jsonString.replace(NEWLINE_REGEX, ' ');
+  sanitizedText = sanitizedText.replace(TRAILING_COMMA_REGEX, '$1');
+  try {
+    return JSON.parse(sanitizedText);
+  } catch (fallbackError) {
+    // Both fast path and slow path failed.
+    return null;
+  }
+}
+
+/**
+ * Checks if the document contains paid content by inspecting ld+json metadata
+ * or microdata fallbacks and builds a set of exact matched DOM nodes.
+ *
+ * @param document The document to check.
+ * @return An object containing the global boolean flag and a Set of specific
+ *         DOM nodes annotated as paid content.
+ */
+function extractContainsPaidContent(
+    document: Document, extractPaidContent: boolean,
+    attemptPaidContentJsonFixing: boolean): PaidContentExtractionContext {
+  const extractionContext: PaidContentExtractionContext = {
+    extractPaidContent,
+    attemptPaidContentJsonFixing,
+    containsPaidContent: false,
+    paidNodes: new Set<Node>(),
+  };
+
+  if (!extractPaidContent) {
+    // Return an unfilled context if paid content extraction is not enabled,
+    // meaning paid content will not be taken into account.
+    return extractionContext;
+  }
+
+  const head = document.head;
+  if (!head) {
+    return extractionContext;
+  }
+
+  const scripts = head.querySelectorAll('script[type="application/ld+json"]');
+  for (const script of Array.from(scripts)) {
+    if (!script.textContent) {
+      continue;
+    }
+
+    const obj =
+        parsePaidContentJson(script.textContent, attemptPaidContentJsonFixing);
+
+    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) {
+      // Skip any JSON value that isn't a dictionary object.
+      continue;
+    }
+
+    // Check for "schema.org" in "@context".
+    const jsonContext = obj[SCHEMA_CONTEXT_KEY];
+    if (typeof jsonContext !== 'string' ||
+        !jsonContext.includes(SCHEMA_ORG_IDENTIFIER)) {
+      continue;
+    }
+
+    // Check for isAccessibleForFree=false or "false" or "False".
+    const isAccessibleForFree = obj[SCHEMA_IS_ACCESSIBLE_FOR_FREE_KEY];
+    // Blink's ObjectValuePresentAndFalse explicitly checks boolean false,
+    // or strings "false" and "False". We mirror that exact behavior here
+    // rather than fully normalizing to lowercase.
+    if (isAccessibleForFree !== false && isAccessibleForFree !== 'false' &&
+        isAccessibleForFree !== 'False') {
+      continue;
+    }
+
+    extractionContext.containsPaidContent = true;
+
+    // Check for hasPart with cssSelector.
+    extractPaidNodesFromHasPart(
+        document, obj[SCHEMA_HAS_PART_KEY], extractionContext.paidNodes);
+
+    if (extractionContext.paidNodes.size > 0) {
+      // Nodes mapped explicitly via cssSelector, no need to fallback.
+      return extractionContext;
+    }
+
+    // We successfully parsed the JSON but found no specific CSS
+    // selectors. By Blink's rules, we exit tracking as true but
+    // fallthrough the inner loop to potentially trigger microdata
+    // fallback for node linking.
+    break;
+  }
+
+  // Fallback: If no valid cssSelector mappings were found, query the document
+  // for <meta itemprop="isAccessibleForFree" content="false"> metadata.
+  if (extractionContext.paidNodes.size === 0) {
+    const paidMetaTags = document.querySelectorAll(`meta[itemprop="${
+        SCHEMA_IS_ACCESSIBLE_FOR_FREE_KEY}"][content="false" i]`);
+    if (paidMetaTags.length > 0) {
+      extractionContext.containsPaidContent = true;
+      for (const meta of Array.from(paidMetaTags)) {
+        if (meta.parentElement) {
+          extractionContext.paidNodes.add(meta.parentElement);
+        }
+      }
+    }
+  }
+
+  return extractionContext;
+}
+
 // TODO(crbug.com/468854910): Add missing fields for PageContentFrameData:
-// HTML metaData, containsPaidContent, and popup (if possible).
+// popup (if possible).
 /**
  * Extracts data about the frame/document.
  *
  * @param document The document to extract data from.
+ * @param paidContentResult The pre-extracted paid content data.
  * @return The populated PageContentFrameData.
  */
-function extractFrameData(document: Document): PageContentFrameData {
+function extractFrameData(
+    document: Document,
+    paidContentContext: PaidContentExtractionContext): PageContentFrameData {
   const frameData: PageContentFrameData = {
     frameInteractionInfo: {},
     metaData: [],
     title: document.title || '',
     sourceUrl: document.URL,
   };
+
+  frameData.containsPaidContent = paidContentContext.containsPaidContent;
 
   frameData.frameInteractionInfo = extractFrameInteractionInfo(document);
   frameData.mediaData = extractMediaData(document);
@@ -1027,7 +1242,8 @@ function getAttributesForTextNode(domNode: Node): PageContentAttributes|null {
  */
 function getContentForIframeNode(
     iframeElement: HTMLIFrameElement, nonce: string, depth: number,
-    maxDepth: number, actionableMode: boolean): PageContentNode|null {
+    maxDepth: number, actionableMode: boolean,
+    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
   const attributes: PageContentAttributes = {
     attributeType: PageContentAttributeType.IFRAME,
     annotatedRoles: [],
@@ -1049,7 +1265,8 @@ function getContentForIframeNode(
       // through iframe content.
       const pageContent = extractAnnotatedPageContent(
           contentDoc, nonce, depth + APC_NODE_DEPTH_COST, maxDepth,
-          actionableMode);
+          actionableMode, paidContentContext.extractPaidContent,
+          paidContentContext.attemptPaidContentJsonFixing);
       if (pageContent) {
         childTree = pageContent.rootNode;
         localFrameData = pageContent.frameData;
@@ -1212,14 +1429,16 @@ function getFormControlData(
  */
 function getBasicContentForNonGenericElement(
     domNode: HTMLElement, nonce: string, depth: number, maxDepth: number,
-    actionableMode: boolean): PageContentNode|null {
+    actionableMode: boolean,
+    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
   const tagName = domNode.tagName;
 
   switch (tagName) {
     // 1. Complex Elements.
     case TAG_IFRAME:
       return getContentForIframeNode(
-          domNode as HTMLIFrameElement, nonce, depth, maxDepth, actionableMode);
+          domNode as HTMLIFrameElement, nonce, depth, maxDepth, actionableMode,
+          paidContentContext);
     case TAG_IMG:
       return {
         childrenNodes: [],
@@ -1419,13 +1638,13 @@ function getContentForElementNode(
     domNode: HTMLElement, nonce: string, depth: number, maxDepth: number,
     annotatedRoles: PageContentAnnotatedRole[],
     interactionInfo: PageContentNodeInteractionInfo|undefined,
-    actionableMode: boolean,
-    interactiveNodeIds: InteractiveNodeIds): PageContentNode|null {
+    actionableMode: boolean, interactiveNodeIds: InteractiveNodeIds,
+    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
   let contentNode: PageContentNode|null = null;
 
   // 1. Try to get basic content for non-generic elements.
   contentNode = getBasicContentForNonGenericElement(
-      domNode, nonce, depth, maxDepth, actionableMode);
+      domNode, nonce, depth, maxDepth, actionableMode, paidContentContext);
 
   // 2. Fallback: Generic Container.
   if (!contentNode &&
@@ -1440,7 +1659,9 @@ function getContentForElementNode(
     };
   }
 
-  // TODO(crbug.com/468852704): Populate the rest of the `contentAttributes`.
+  // TODO(crbug.com/468852704): Populate the rest of the attributes on top of
+  // `basicAttributes`.
+
   if (contentNode) {
     if (annotatedRoles.length > 0) {
       contentNode.contentAttributes.annotatedRoles = annotatedRoles;
@@ -1453,6 +1674,31 @@ function getContentForElementNode(
   return contentNode;
 }
 
+/**
+ * Appends the annotated roles for the tag, including paid content roles.
+ *
+ * @param element The element to check.
+ * @param attributesToPopulate The attributes object to populate.
+ * @param paidNodesSet The set of DOM nodes verified as paid content.
+ */
+function addAnnotatedRoles(
+    domNode: HTMLElement, attributesToPopulate: PageContentAttributes,
+    paidContentContext: PaidContentExtractionContext) {
+  const role = getAnnotatedRoleForTag(domNode.tagName);
+  const roles: PageContentAnnotatedRole[] = [];
+  if (role !== null) {
+    roles.push(role);
+  }
+
+  if (paidContentContext.paidNodes.has(domNode)) {
+    roles.push(PageContentAnnotatedRole.PAID_CONTENT);
+  }
+
+  if (roles.length > 0) {
+    attributesToPopulate.annotatedRoles = roles;
+  }
+}
+
 // TODO(crbug.com/476341187): Carry status information when the max depth is
 // reached.
 /**
@@ -1462,9 +1708,8 @@ function getContentForElementNode(
  *
  * @param domNode The DOM node to process (Element or Text).
  * @param nonce Unique identifier for the extraction run.
- * @param depth Current recursion depth.
- * @param maxDepth Maximal depth for json objects beyond which content is
- *     truncated.
+ * @param interactiveNodeIds Specific node IDs verified as interactive.
+ * @param paidNodesSet Set of DOM nodes verified as paid content.
  * @param interactiveNodeIds A map of interactive node IDs to their
  *     interaction info.
  * @param actionableMode Whether to extract actionable interaction info.
@@ -1472,8 +1717,8 @@ function getContentForElementNode(
  */
 function maybeGenerateContentNode(
     domNode: Node, nonce: string, depth: number, maxDepth: number,
-    interactiveNodeIds: InteractiveNodeIds,
-    actionableMode: boolean): PageContentNode|null {
+    interactiveNodeIds: InteractiveNodeIds, actionableMode: boolean,
+    paidContentContext: PaidContentExtractionContext): PageContentNode|null {
   let contentAttributes: PageContentAttributes|null = null;
   if (domNode.nodeType === Node.TEXT_NODE) {
     contentAttributes = getAttributesForTextNode(domNode);
@@ -1495,12 +1740,14 @@ function maybeGenerateContentNode(
 
     const contentNode = getContentForElementNode(
         element, nonce, depth, maxDepth, annotatedRoles, interactionInfo,
-        actionableMode, interactiveNodeIds);
+        actionableMode, interactiveNodeIds, paidContentContext);
     if (contentNode) {
       const domNodeId = getOrCreateNodeId(domNode);
       if (domNodeId !== null) {
         contentNode.contentAttributes.domNodeId = domNodeId;
       }
+      addAnnotatedRoles(
+          element, contentNode.contentAttributes, paidContentContext);
       return contentNode;
     }
   }
@@ -1579,11 +1826,13 @@ interface AncestorStackItem {
  * @param maxDepth The maximum recursion depth.
  * @param ancestorStack The stack of ancestors that provides the parent node and
  *     where the new node is pushed as the next closest parent.
+ * @param interactiveNodeIds Specific node IDs verified as interactive.
+ * @param paidNodesSet Set of DOM nodes verified as paid content.
  */
 function generateAndPushContentNode(
-    node: Node, nonce: string, maxDepth: number, actionableMode: boolean,
-    ancestorStack: AncestorStackItem[],
-    interactiveNodeIds: InteractiveNodeIds) {
+    node: Node, nonce: string, maxDepth: number,
+    ancestorStack: AncestorStackItem[], interactiveNodeIds: InteractiveNodeIds,
+    actionableMode: boolean, paidContentContext: PaidContentExtractionContext) {
   const parentStackItem = ancestorStack[ancestorStack.length - 1]!;
 
   // 2. Generate Content Node. Skip nodes that are too deep while keep
@@ -1595,7 +1844,8 @@ function generateAndPushContentNode(
   }
 
   const newApcNode = maybeGenerateContentNode(
-      node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode);
+      node, nonce, currentDepth, maxDepth, interactiveNodeIds, actionableMode,
+      paidContentContext);
   if (!newApcNode) {
     // Ignore the node if it can't be parsed. That node cannot be a parent
     // either where another node in the ancestor stack will be picked as the
@@ -1698,7 +1948,8 @@ function getInteractiveNodeIds(document: Document): InteractiveNodeIds {
  */
 export function extractAnnotatedPageContent(
     document: Document, nonce: string, depth: number = 0, maxDepth: number,
-    actionableMode: boolean): PageContent|null {
+    actionableMode: boolean, extractPaidContent: boolean,
+    attemptPaidContentJsonFixing: boolean): PageContent|null {
   if (depth > maxDepth) {
     return null;
   }
@@ -1720,6 +1971,10 @@ export function extractAnnotatedPageContent(
     return null;
   }
   root.setAttribute(NONCE_ATTR, nonce);
+
+  // Perform pre-walk extraction of paid content globals and specific nodes.
+  const paidContentContext = extractContainsPaidContent(
+      document, extractPaidContent, attemptPaidContentJsonFixing);
 
   const domNodeId = getOrCreateNodeId(root);
   if (domNodeId === null) {
@@ -1800,8 +2055,8 @@ export function extractAnnotatedPageContent(
     // 2. Generate Content Node. Skip nodes that are too deep while keep
     // walking the tree since future nodes might be shallow enough.
     generateAndPushContentNode(
-        currentNode, nonce, maxDepth, actionableMode, ancestorStack,
-        interactiveNodeIds);
+        currentNode, nonce, maxDepth, ancestorStack, interactiveNodeIds,
+        actionableMode, paidContentContext);
 
     currentNode = walker.nextNode();
   }
@@ -1834,7 +2089,7 @@ export function extractAnnotatedPageContent(
   return {
     rootNode,
     pageInteractionInfo,
-    frameData: extractFrameData(document),
+    frameData: extractFrameData(document, paidContentContext),
     viewportGeometry,
     visibleBoundingBoxesForPasswordRedaction: [],
   };

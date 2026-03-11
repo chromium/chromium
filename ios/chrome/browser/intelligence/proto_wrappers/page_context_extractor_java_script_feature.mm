@@ -66,6 +66,8 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     bool include_cross_origin_frame_content,
     bool use_rich_extraction,
     bool use_rich_extraction_with_actionable,
+    bool extract_paid_content,
+    bool attempt_paid_content_json_fixing,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(const base::Value*)> callback) {
@@ -76,6 +78,8 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
   parameters.Append(include_cross_origin_frame_content);
   parameters.Append(use_rich_extraction);
   parameters.Append(use_rich_extraction_with_actionable);
+  parameters.Append(extract_paid_content);
+  parameters.Append(attempt_paid_content_json_fixing);
   CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
                          parameters, std::move(callback), timeout);
 }
