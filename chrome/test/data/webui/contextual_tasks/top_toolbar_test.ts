@@ -236,7 +236,7 @@ suite('TopToolbarTest', () => {
     });
 
     test('handles open in new tab click', async () => {
-      topToolbar.isAiPage = true;
+      topToolbar.enableOpenInNewTabButton = true;
       await microtasksFinished();
 
       const moreButton =
@@ -252,7 +252,7 @@ suite('TopToolbarTest', () => {
       openInNewTabButton.click();
       await proxy.handler.whenCalled('moveTaskUiToNewTab');
 
-      topToolbar.isAiPage = false;
+      topToolbar.enableOpenInNewTabButton = false;
       await microtasksFinished();
       assertTrue(openInNewTabButton.disabled);
       proxy.handler.reset();

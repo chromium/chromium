@@ -17,6 +17,7 @@ export function getHtml(this: ContextualTasksAppElement) {
           .title="${this.threadTitle_}"
           .darkMode="${this.darkMode_}"
           .isAiPage="${this.isAiPage_}"
+          .enableOpenInNewTabButton="${this.isAiPage_ && !this.isErrorPageVisible_}"
           @new-thread-click="${this.onNewThreadClick_}">
       </top-toolbar>
     </div>
