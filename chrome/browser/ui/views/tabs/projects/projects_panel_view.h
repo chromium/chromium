@@ -216,6 +216,10 @@ class ProjectsPanelView : public views::View,
   // OnProjectsPanelStateChanged is called twice with the same visibility value.
   bool observing_focus_manager_ = false;
 
+  // Records the last time the panel was opened. Used for recording how long the
+  // panel was open.
+  base::TimeTicks last_opened_time_;
+
   base::ScopedObservation<ProjectsPanelController,
                           ProjectsPanelController::Observer>
       panel_controller_observer_{this};

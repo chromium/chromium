@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -415,9 +416,13 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
 
     // TODO(crbug.com/477602874): Have the panel view observe the controller and
     // pipe updates to the list.
-    tab_groups_view_->SetTabGroups(panel_controller_->GetTabGroups());
+    auto tab_groups = panel_controller_->GetTabGroups();
+    tab_groups_view_->SetTabGroups(tab_groups);
+    int num_threads_visible = 0;
     if (threads_view_) {
       const auto threads = panel_controller_->GetThreads();
+      num_threads_visible =
+          std::min(threads.size(), projects_panel::kMaxNumberOfRecentThreads);
       threads_view_->SetThreads(threads);
 
       // Hide the threads section when empty.
@@ -425,12 +430,31 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
       threads_container_->SetVisible(show_threads);
       separator_->SetVisible(show_threads);
     }
+
+    base::UmaHistogramCounts100(
+        "Projects.ProjectsPanel.TabGroups.CountOnPanelOpen", tab_groups.size());
+    if (threads_view_) {
+      base::UmaHistogramCustomCounts(
+          "Projects.ProjectsPanel.Threads.CountOnPanelOpen",
+          num_threads_visible, 1, projects_panel::kMaxNumberOfRecentThreads,
+          50);
+    }
+
+    base::UmaHistogramBoolean("Projects.ProjectsPanel.OpenedToEmptyState",
+                              tab_groups.empty() && num_threads_visible == 0);
+
+    last_opened_time_ = base::TimeTicks::Now();
   } else {
     if (observing_focus_manager_ && GetFocusManager()) {
       GetFocusManager()->RemoveFocusChangeListener(this);
       observing_focus_manager_ = false;
     }
     event_monitor_.reset();
+
+    base::TimeDelta open_duration = base::TimeTicks::Now() - last_opened_time_;
+    base::UmaHistogramCustomCounts("Projects.ProjectsPanel.TimeOpen",
+                                   open_duration.InSeconds(), 1,
+                                   base::Minutes(5).InSeconds(), 50);
   }
 
   if (disable_animations_for_testing_) {

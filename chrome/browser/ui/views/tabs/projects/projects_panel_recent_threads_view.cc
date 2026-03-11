@@ -24,10 +24,15 @@ void ProjectsPanelRecentThreadsView::SetThreads(
     const std::vector<contextual_tasks::Thread>& threads) {
   item_views_.clear();
   RemoveAllChildViews();
+
+  size_t count = 0;
   for (const auto& thread : threads) {
     item_views_.push_back(
         AddChildView(std::make_unique<ProjectsPanelThreadItemView>(
             thread, thread_button_callback_)));
+    if (++count >= projects_panel::kMaxNumberOfRecentThreads) {
+      return;
+    }
   }
 }
 
