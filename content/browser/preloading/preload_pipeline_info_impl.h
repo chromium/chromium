@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOAD_PIPELINE_INFO_IMPL_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOAD_PIPELINE_INFO_IMPL_H_
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
@@ -12,6 +13,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
@@ -50,10 +52,9 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   }
   void SetPrefetchStatus(PrefetchStatus prefetch_status);
 
-  bool is_prerender_matched_with_prefetch() const {
-    return is_prerender_matched_with_prefetch_;
-  }
-  void MarkPrerenderMatchedWithPrefetch();
+  bool IsPrerenderMatchedWithPrefetch(
+      const PrerenderHostId& prerender_host_id) const;
+  void MarkPrerenderMatchedWithPrefetch(PrerenderHostId prerender_host_id);
 
  private:
   friend class base::RefCounted<PreloadPipelineInfo>;
@@ -70,9 +71,9 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
       PreloadingEligibility::kUnspecified;
   std::optional<PrefetchStatus> prefetch_status_ = std::nullopt;
 
-  // Set to true when the prerender in this pipeline matches a prefetch.
-  // Note that the prefetch may not be the prefetch in this pipeline.
-  bool is_prerender_matched_with_prefetch_ = false;
+  // Records `PrerenderHostId` that matched to a prefetch. Note that the
+  // prefetch may not be the prefetch in this pipeline.
+  base::flat_set<PrerenderHostId> prerender_ids_matched_with_prefetch_;
 };
 
 }  // namespace content

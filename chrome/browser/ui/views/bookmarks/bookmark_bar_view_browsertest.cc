@@ -553,6 +553,7 @@ class PreloadBookmarkBarNavigationTestBase
 
 // Following definitions are equal to content::PrerenderFinalStatus.
 constexpr int kFinalStatusActivated = 0;
+constexpr int kTriggerDestroyed = 16;
 constexpr int kPrerenderFailedDuringPrefetch = 86;
 
 // Following definitions are equal to content::PrefetchStatus.
@@ -972,6 +973,90 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kPrerenderFailedDuringPrefetch, 1);
+}
+
+// Prefetch and prerender triggered, prerender cancelled, and then prerender
+// triggered.
+//
+// Scenario:
+//
+// - mouseenter to a bookmark button.
+// - mousedown
+//   - Prefetch A and prerender A' are triggered.
+//   - A' matched to A.
+// - mouseleave
+//   - Prerender is cancelled.
+// - mouseup outside the button.
+// - mouseenter
+// - mousedown
+//   - Prerender B' is triggered.
+//   - B' matched to A.
+// - mouseup
+//   - Navigate with B' activation.
+IN_PROC_BROWSER_TEST_F(
+    PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest,
+    PreloadsTriggered_PrerenderCancelled_PrerenderTriggered) {
+  StartServers();
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+
+  GURL preload_url = https_test_server()->GetURL("/empty.html?preload");
+
+  CreateBookmarkButton(preload_url);
+  views::LabelButton* button = GetBookmarkButton(0);
+
+  gfx::Point center(10, 10);
+
+  // Trigger prefetch and prerender.
+  button->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseEntered, center,
+                                        center, ui::EventTimeForNow(),
+                                        /*flags=*/ui::EF_NONE,
+                                        /*changed_button_flags=*/ui::EF_NONE));
+  button->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), preload_url);
+  // Cancel prerender.
+  button->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseExited, center,
+                                       center, ui::EventTimeForNow(),
+                                       /*flags=*/ui::EF_NONE,
+                                       /*changed_button_flags=*/ui::EF_NONE));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      kTriggerDestroyed, 1);
+  // mouseup outside button
+
+  // Trigger prerender again.
+  button->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseEntered, center,
+                                        center, ui::EventTimeForNow(),
+                                        /*flags=*/ui::EF_NONE,
+                                        /*changed_button_flags=*/ui::EF_NONE));
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), preload_url);
+  button->OnMousePressed(ui::MouseEvent(
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  // Navigate.
+  button->OnMouseReleased(ui::MouseEvent(
+      ui::EventType::kMouseReleased, center, center, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  prerender_observer.WaitForActivation();
+
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(preload_url));
+  histogram_tester.ExpectUniqueSample("Preloading.Prefetch.PrefetchStatus",
+                                      kPrefetchResponseUsed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      2);
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      kTriggerDestroyed, 1);
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
+      kFinalStatusActivated, 1);
 }
 
 namespace {

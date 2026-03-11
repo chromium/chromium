@@ -1817,7 +1817,8 @@ bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
 
   // Use a prefetch (in many cases, aheaf of prerender) if it is about to be
   // used.
-  if (attributes_.preload_pipeline_info->is_prerender_matched_with_prefetch()) {
+  if (attributes_.preload_pipeline_info->IsPrerenderMatchedWithPrefetch(
+          prerender_host_id())) {
     return false;
   }
 
