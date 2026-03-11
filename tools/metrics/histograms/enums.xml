@@ -20942,6 +20942,18 @@ from previous Chrome versions.
   <int value="13" label="SamlLockScreenReauthPolicy">
     Admin policy required re-auth on lock screen for SAML users.
   </int>
+  <int value="14" label="ForgotPassword">
+    User clicked on forgot password button after entering their password
+    incorrectly.
+  </int>
+  <int value="15" label="CryptohomeRecovery">
+    Invalid, expired or empty reauth proof token during Cryptohome Recovery.
+  </int>
+  <int value="16" label="ForcedByLocalAuthFactorsPolicy">
+    Local auth factors policy disallowed all local factors and the user has only
+    local auth factors set up, which requires the user to go through a re-auth
+    on login screen.
+  </int>
 </enum>
 
 <enum name="LoginSessionExitType">

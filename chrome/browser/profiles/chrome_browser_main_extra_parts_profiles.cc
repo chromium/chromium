@@ -415,6 +415,7 @@
 #include "chrome/browser/ash/keyed_service/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller_factory.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/scanner/scanner_keyed_service_factory.h"
@@ -1039,6 +1040,11 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_ANDROID)
   LevelDBPersistedTabDataStorageAndroidFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::features::IsManagedLocalPinAndPasswordEnabled()) {
+    ash::LocalAuthFactorsPolicyControllerFactory::GetInstance();
+  }
 #endif
   LocalOrSyncableBookmarkSyncServiceFactory::GetInstance();
   login_detection::LoginDetectionKeyedServiceFactory::GetInstance();

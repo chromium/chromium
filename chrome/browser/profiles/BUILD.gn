@@ -465,6 +465,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ash/keyed_service",
       "//chrome/browser/ash/language_packs",
       "//chrome/browser/ash/lobster",
+      "//chrome/browser/ash/login/auth_factors_policy",
       "//chrome/browser/ash/policy/dlp",
       "//chrome/browser/ash/policy/skyvault",
       "//chrome/browser/ash/scanner",

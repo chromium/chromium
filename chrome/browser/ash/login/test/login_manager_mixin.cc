@@ -77,6 +77,10 @@ AccountId LoginManagerMixin::CreateConsumerAccountId(int unique_number) {
   return CreateAccountId(unique_number, kGmailDomain);
 }
 
+AccountId LoginManagerMixin::CreateEnterpriseAccountId(int unique_number) {
+  return CreateAccountId(unique_number, kManagedDomain);
+}
+
 // static
 UserContext LoginManagerMixin::CreateDefaultUserContext(
     const TestUserInfo& user_info) {

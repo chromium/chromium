@@ -70,6 +70,11 @@ enum class ReauthReason {
   // Invalid, expired or empty reauth proof token during Cryptohome recovery.
   kCryptohomeRecovery = 15,
 
+  // Local auth factors policy disallows all auth factors and user has local
+  // auth factors setup, which requires the user to go through a re-auth on
+  // login screen.
+  kForcedByLocalAuthFactorsPolicy = 16,
+
   // Must be the last value in this list.
   kNumReauthFlowReasons,
 };

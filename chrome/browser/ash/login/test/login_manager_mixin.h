@@ -82,8 +82,11 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   // result can be used with Login* methods below.
   static UserContext CreateDefaultUserContext(const TestUserInfo& account_id);
 
-  // Convenience method for creating several test accounts.
+  // Convenience method for creating consumer test accounts.
   static AccountId CreateConsumerAccountId(int unique_number);
+
+  // Convenience method for creating enterprise test accounts.
+  static AccountId CreateEnterpriseAccountId(int unique_number);
 
   // Should be called before any InProcessBrowserTestMixin functions.
   void AppendRegularUsers(int n);

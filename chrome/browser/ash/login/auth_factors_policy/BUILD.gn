@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("auth_factors_policy") {
+  public = [
+    "local_auth_factors_policy_controller.h",
+    "local_auth_factors_policy_controller_factory.h",
+  ]
+
+  sources = [
+    "local_auth_factors_policy_controller.cc",
+    "local_auth_factors_policy_controller_factory.cc",
+  ]
+
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/osauth/public",
+  ]
+  deps = [
+    "//chrome/browser/ash/login",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/services/auth_factor_config",
+    "//components/session_manager/core",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "local_auth_factors_policy_controller_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":auth_factors_policy",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/signin",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+  ]
+}

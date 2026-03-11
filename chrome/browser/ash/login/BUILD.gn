@@ -424,6 +424,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/login/auth",
+    "//chrome/browser/ash/login/auth_factors_policy",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/demo_mode:test_support",
     "//chrome/browser/ash/login/enrollment",
@@ -531,6 +532,7 @@ source_set("browser_tests") {
 
     # Tests from subdirectories:
     "app_mode:browser_tests",
+    "auth_factors_policy:browser_tests",
     "demo_mode:browser_tests",
     "enrollment:browser_tests",
     "extensions:browser_tests",
