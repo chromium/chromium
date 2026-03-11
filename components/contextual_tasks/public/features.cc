@@ -168,9 +168,9 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 1.1: Client is capable of native suggestions.
 // Version 1.2: Client is capable of composebox camouflage.
 // Version 1.3: Bug fix for privacy notice on composebox camouflage.
+// Version 2.0: M146 respin launch candidate.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix",
-    "Cobrowsing/1.3"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.0"};
 
 const base::FeatureParam<bool> kEnableSteadyComposeboxVoiceSearch(
     &kContextualTasks,
