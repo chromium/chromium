@@ -13149,6 +13149,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminderWave1,
                                     kMobilePromoOnDesktopVariationsWave1,
                                     "MobilePromoOnDesktopWithReminderWave1")},
+    {"autofill-enable-omnibox-autofill",
+     flag_descriptions::kAutofillEnableOmniboxAutofillName,
+     flag_descriptions::kAutofillEnableOmniboxAutofillDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOmniboxAutofill)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

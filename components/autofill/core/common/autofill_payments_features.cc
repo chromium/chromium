@@ -205,6 +205,10 @@ BASE_FEATURE(kAutofillEnableNewFopDisplayAndroid,
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, an "Autofill payments" omnibox chip will appear for relevant
+// payment checkout forms.
+BASE_FEATURE(kAutofillEnableOmniboxAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will use the Pay Now Pay Later tabs UI for payments
 // autofill when buy now pay later options are available for the merchant
 // webpage.

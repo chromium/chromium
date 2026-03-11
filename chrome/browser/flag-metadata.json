@@ -898,6 +898,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-omnibox-autofill",
+    "owners": [ "osaul@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "autofill-enable-pay-now-pay-later-tabs",
     "owners": [ "wilsonlow@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 160
