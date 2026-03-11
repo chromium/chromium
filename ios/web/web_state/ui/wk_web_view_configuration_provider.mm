@@ -21,6 +21,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "ios/public/provider/web/cobalt_api.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
@@ -201,7 +202,8 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   UpdateScripts();
 
   if (web::features::IsCobaltEnabled()) {
-    // TODO(crbug.com/475806371): Update configuration for Cobalt.
+    web::provider::InitializeCobaltInWKWebViewConfiguration(configuration_,
+                                                            browser_state_);
   }
 
   if (!scheme_handler_) {

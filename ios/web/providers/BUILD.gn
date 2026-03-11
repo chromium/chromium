@@ -3,11 +3,19 @@
 # found in the LICENSE file.
 
 group("providers") {
-  deps = [ ":navigation" ]
+  deps = [
+    ":cobalt",
+    ":navigation",
+  ]
 }
 
 source_set("navigation") {
   sources = [ "web_navigation.mm" ]
   deps = [ "//ios/public/provider/web:navigation" ]
   frameworks = [ "WebKit.framework" ]
+}
+
+source_set("cobalt") {
+  sources = [ "web_cobalt.mm" ]
+  deps = [ "//ios/public/provider/web:cobalt" ]
 }

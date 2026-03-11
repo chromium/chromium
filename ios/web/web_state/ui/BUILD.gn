@@ -153,6 +153,7 @@ source_set("wk_web_view_configuration_provider") {
     "//base",
     "//components/safe_browsing/core/common",
     "//ios/components/security_interstitials/https_only_mode:feature",
+    "//ios/public/provider/web:cobalt",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_features/window_error",
