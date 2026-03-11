@@ -234,6 +234,21 @@ void MigrateUserToEnhancedSecurityBundleIfNeeded(
   // LINT.ThenChange(//chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
 
   SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
+
+  // TODO(crbug.com/491533053): Fix the circular dependency for generated
+  // preferences.
+  if (site_protection::CanEnableBlockingJavascriptOptimizersForUnfamiliarSites(
+          profile.get()) &&
+      site_protection::ComputeDefaultJavascriptOptimizerSetting(
+          profile.get()) ==
+          content_settings::JavascriptOptimizerSetting::kAllowed) {
+    HostContentSettingsMapFactory::GetForProfile(profile.get())
+        ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                   CONTENT_SETTING_ALLOW);
+    prefs->SetBoolean(prefs::kJavascriptOptimizerBlockedForUnfamiliarSites,
+                      true);
+  }
+
   prefs->SetInteger(
       prefs::kSecuritySettingsBundleMigrationToastState,
       static_cast<int>(SecuritySettingsBundleToastState::kPending));
