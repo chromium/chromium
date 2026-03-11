@@ -308,15 +308,10 @@ class AnimationTest : public testing::Test {
   }
 
   void IsAllSameColor(SkColor color, const SkBitmap& bitmap) const {
-    if (bitmap.colorType() == kBGRA_8888_SkColorType) {
-      const SkColor* pixels = reinterpret_cast<SkColor*>(bitmap.getPixels());
-      const int num_pixels = bitmap.width() * bitmap.height();
-      for (int i = 0; i < num_pixels; i++)
-        UNSAFE_TODO(EXPECT_EQ(pixels[i], color));
-    } else {
-      for (int x = 0; x < bitmap.width(); x++)
-        for (int y = 0; y < bitmap.height(); y++)
-          EXPECT_EQ(bitmap.getColor(x, y), color);
+    for (int x = 0; x < bitmap.width(); x++) {
+      for (int y = 0; y < bitmap.height(); y++) {
+        EXPECT_EQ(bitmap.getColor(x, y), color);
+      }
     }
   }
 
