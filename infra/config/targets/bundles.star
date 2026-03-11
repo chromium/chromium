@@ -336,6 +336,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_16_webview_64_cts_tests",
+    targets = [
+        targets.bundle(
+            targets = "webview_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_FULL_CTS_TESTS",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "android_ar_gtests",
     targets = [
         "chrome_public_test_ar_apk",

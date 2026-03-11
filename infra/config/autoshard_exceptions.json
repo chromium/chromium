@@ -12,7 +12,7 @@
                 "try_builder": "android-x64-rel"
             }
         },
-        "android-15-x64-rel": {
+        "android-16-x64-rel": {
             "android_browsertests": {
                 "shards": 10,
                 "try_builder": "android-x64-rel"

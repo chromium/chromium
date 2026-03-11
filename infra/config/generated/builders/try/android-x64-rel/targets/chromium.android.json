@@ -59,15 +59,15 @@
       }
     ]
   },
-  "android-15-x64-rel": {
+  "android-16-x64-rel": {
     "gtest_tests": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -84,7 +84,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -96,13 +95,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -112,12 +111,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gtest_filter=-All/SharedStorageChromeBrowserTest.CrossOriginWorklet_SelectURL_Success/*",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -134,7 +132,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -146,13 +143,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -164,12 +161,12 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -186,7 +183,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -198,13 +194,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -216,11 +212,11 @@
       {
         "args": [
           "--test-launcher-batch-limit=1",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -237,7 +233,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -249,13 +244,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -266,11 +261,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -287,7 +282,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -299,13 +293,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -316,9 +310,9 @@
       {
         "args": [
           "-v",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -329,7 +323,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -341,13 +334,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -358,12 +351,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -380,7 +373,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -392,13 +384,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -408,12 +400,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -430,7 +422,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -442,13 +433,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -458,11 +449,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -479,7 +470,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -491,13 +481,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -507,11 +497,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -528,7 +518,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -540,13 +529,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -557,11 +546,11 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -583,7 +572,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -595,13 +583,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -611,11 +599,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -632,7 +620,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -644,13 +631,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -661,11 +648,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -682,7 +669,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -694,13 +680,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -710,11 +696,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -731,7 +717,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -743,13 +728,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -760,11 +745,11 @@
       {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -781,7 +766,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -793,13 +777,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -809,11 +793,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -830,7 +814,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -842,13 +825,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -858,11 +841,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -879,7 +862,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -891,13 +873,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -907,12 +889,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -930,7 +912,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -942,13 +923,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -958,11 +939,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -979,7 +960,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -991,13 +971,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1008,13 +988,12 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1036,7 +1015,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1048,13 +1026,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1066,11 +1044,11 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1092,7 +1070,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1104,13 +1081,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1121,11 +1098,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1142,7 +1119,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1154,13 +1130,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1171,11 +1147,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1192,7 +1168,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1204,13 +1179,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1221,13 +1196,13 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.content_browsertests.filter",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1244,7 +1219,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1256,13 +1230,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1273,13 +1247,13 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.content_shell_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1296,7 +1270,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1308,13 +1281,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1325,12 +1298,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1347,7 +1320,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1359,13 +1331,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1376,12 +1348,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1398,7 +1370,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1410,13 +1381,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1426,11 +1397,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1447,7 +1418,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1459,13 +1429,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1475,11 +1445,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1496,7 +1466,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1508,13 +1477,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1524,11 +1493,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1545,7 +1514,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1557,13 +1525,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1573,12 +1541,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1595,7 +1563,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1607,13 +1574,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1623,11 +1590,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1644,7 +1611,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1656,13 +1622,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1672,11 +1638,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1693,7 +1659,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1705,13 +1670,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1721,11 +1686,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1742,7 +1707,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1754,13 +1718,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1770,11 +1734,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1791,7 +1755,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1803,13 +1766,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1819,11 +1782,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1840,7 +1803,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1852,13 +1814,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1869,12 +1831,12 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1891,7 +1853,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1903,13 +1864,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1919,11 +1880,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1940,7 +1901,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -1952,13 +1912,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1968,11 +1928,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1989,7 +1949,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2001,13 +1960,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2017,11 +1976,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2038,7 +1997,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2050,13 +2008,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2066,12 +2024,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2088,7 +2046,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2100,13 +2057,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2116,11 +2073,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2137,7 +2094,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2149,13 +2105,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2165,11 +2121,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2186,7 +2142,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2198,13 +2153,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2214,11 +2169,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2235,7 +2190,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2247,13 +2201,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2265,11 +2219,11 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/layer_list_mode.cc_unittests.filter",
           "--enable-features=UseLayerListsByDefault",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2286,7 +2240,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2298,13 +2251,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2314,12 +2267,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2336,7 +2289,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2348,13 +2300,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2364,11 +2316,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2385,7 +2337,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2397,13 +2348,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2413,11 +2364,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2434,7 +2385,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2446,13 +2396,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2462,12 +2412,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2484,7 +2434,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2496,13 +2445,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2512,11 +2461,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2533,7 +2482,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2545,13 +2493,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2561,11 +2509,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2582,7 +2530,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2594,13 +2541,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2610,11 +2557,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2631,7 +2578,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2643,13 +2589,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2659,11 +2605,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2680,7 +2626,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2692,13 +2637,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2708,11 +2653,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2729,7 +2674,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2741,13 +2685,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2758,12 +2702,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2780,7 +2724,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2792,13 +2735,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2808,11 +2751,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2829,7 +2772,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2841,13 +2783,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2857,11 +2799,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2878,7 +2820,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2890,13 +2831,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2907,11 +2848,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2928,7 +2869,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2940,13 +2880,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2956,11 +2896,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2977,7 +2917,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -2989,13 +2928,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3005,11 +2944,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3026,7 +2965,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3038,13 +2976,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3054,11 +2992,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3075,7 +3013,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3087,13 +3024,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3103,11 +3040,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3124,7 +3061,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3136,13 +3072,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3155,11 +3091,11 @@
           "--enable-features=TreesInViz",
           "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
           "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3181,7 +3117,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3193,13 +3128,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3211,11 +3146,11 @@
         "args": [
           "--enable-features=TreesInViz",
           "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3232,7 +3167,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3244,13 +3178,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3260,11 +3194,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3281,7 +3215,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3293,13 +3226,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3309,11 +3242,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3330,7 +3263,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3342,13 +3274,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3358,11 +3290,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3379,7 +3311,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3391,13 +3322,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3407,11 +3338,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3428,7 +3359,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3440,13 +3370,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3456,12 +3386,12 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3478,7 +3408,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3490,13 +3419,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3507,11 +3436,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3528,7 +3457,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3540,13 +3468,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3556,11 +3484,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3577,7 +3505,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3589,13 +3516,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3605,11 +3532,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3626,7 +3553,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3638,13 +3564,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3654,193 +3580,12 @@
       },
       {
         "args": [
-          "--store-tombstones",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "description": "Run with android_35_google_apis_x64",
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_64_cts_tests full_mode"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//android_webview/test:webview_64_cts_tests",
-        "module_scheme": "junit",
-        "name": "webview_64_cts_tests full_mode",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "retry_only_failed_tests": true,
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "oW6-jyOPGwPJeLlaldYwrxZoYqzXpjO1OZUdyF3Qq7sC"
-            }
-          ],
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_35_google_apis_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_64_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/",
-        "variant_id": "full_mode"
-      },
-      {
-        "args": [
-          "--store-tombstones",
-          "--exclude-annotation",
-          "AppModeFull",
-          "--test-apk-as-instant",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "description": "Run with android_35_google_apis_x64",
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_64_cts_tests instant_mode"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//android_webview/test:webview_64_cts_tests",
-        "module_scheme": "junit",
-        "name": "webview_64_cts_tests instant_mode",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "retry_only_failed_tests": true,
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "oW6-jyOPGwPJeLlaldYwrxZoYqzXpjO1OZUdyF3Qq7sC"
-            }
-          ],
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_35_google_apis_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_64_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/",
-        "variant_id": "instant_mode"
-      },
-      {
-        "args": [
-          "--disable-field-trial-config",
-          "--store-tombstones",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "webview_64_cts_tests_no_field_trial"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//android_webview/test:webview_64_cts_tests",
-        "module_scheme": "junit",
-        "name": "webview_64_cts_tests_no_field_trial",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "retry_only_failed_tests": true,
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "chromium/android_webview/tools/cts_archive",
-              "location": "android_webview/tools/cts_archive/cipd",
-              "revision": "oW6-jyOPGwPJeLlaldYwrxZoYqzXpjO1OZUdyF3Qq7sC"
-            }
-          ],
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_35_google_apis_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "webview_64_cts_tests",
-        "test_id_prefix": "ninja://android_webview/test:webview_64_cts_tests/"
-      },
-      {
-        "args": [
           "--webview-process-mode=multiple",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3857,7 +3602,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3869,13 +3613,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3886,11 +3630,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3907,7 +3651,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3919,13 +3662,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3936,12 +3679,12 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3958,7 +3701,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -3970,13 +3712,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3986,11 +3728,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -4007,7 +3749,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4019,13 +3760,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -4035,11 +3776,11 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -4056,7 +3797,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4068,13 +3808,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -4093,9 +3833,9 @@
           "reftest",
           "crashtest",
           "print-reftest",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "args": [
             "--verbose"
@@ -4110,7 +3850,6 @@
           "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4122,13 +3861,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -4143,10 +3882,10 @@
           "always",
           "--test-type",
           "wdspec",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "experiment_percentage": 20,
         "merge": {
           "args": [
@@ -4162,7 +3901,6 @@
           "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4174,13 +3912,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -4193,10 +3931,10 @@
         "args": [
           "--skipped",
           "always",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
         "ci_only": true,
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -4212,7 +3950,6 @@
           "has_native_resultdb_integration": true
         },
         "results_handler": "layout tests",
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4224,13 +3961,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -4241,9 +3978,9 @@
       },
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
         ],
-        "description": "Run with android_35_google_apis_x64",
+        "description": "Run with android_36_google_apis_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4254,7 +3991,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "cores": "8",
@@ -4266,13 +4002,13 @@
           },
           "named_caches": [
             {
-              "name": "android_35_google_apis_x64",
-              "path": ".android_emulator/android_35_google_apis_x64"
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_35_google_apis_x64"
+              "caches": "android_36_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"

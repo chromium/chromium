@@ -4029,6 +4029,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "android_16_emulator_gtests",
+            "android_16_webview_64_cts_tests",
         ],
         mixins = [
             "16-x64-emulator",
