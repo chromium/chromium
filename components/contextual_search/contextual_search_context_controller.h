@@ -75,10 +75,10 @@ class ContextualSearchContextController {
   // Observer interface for the Page Handler to get updates on file upload
   class FileUploadStatusObserver : public base::CheckedObserver {
    public:
-    virtual void OnFileUploadStatusChanged(
-        const base::UnguessableToken& file_token,
+    virtual void OnContextUploadStatusChanged(
+        const base::UnguessableToken& context_token,
         lens::MimeType mime_type,
-        ContextUploadStatus file_upload_status,
+        ContextUploadStatus context_upload_status,
         const std::optional<ContextUploadErrorType>& error_type) = 0;
 
    protected:

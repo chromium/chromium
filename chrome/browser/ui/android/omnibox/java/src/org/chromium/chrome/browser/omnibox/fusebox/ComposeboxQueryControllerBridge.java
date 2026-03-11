@@ -42,7 +42,7 @@ public class ComposeboxQueryControllerBridge {
          * @param token Unique string identifier for the file.
          * @param status The status of the file's upload.
          */
-        void onFileUploadStatusChanged(String token, @ContextUploadStatus int status);
+        void onContextUploadStatusChanged(String token, @ContextUploadStatus int status);
     }
 
     private long mNativeInstance;
@@ -81,6 +81,13 @@ public class ComposeboxQueryControllerBridge {
      */
     void setFileUploadObserver(@Nullable FileUploadObserver observer) {
         mFileUploadObserver = observer;
+    }
+
+    @CalledByNative
+    void onContextUploadStatusChanged(String token, @ContextUploadStatus int contextUploadStatus) {
+        if (mFileUploadObserver != null) {
+            mFileUploadObserver.onContextUploadStatusChanged(token, contextUploadStatus);
+        }
     }
 
     /** Start a new Composebox session. An active session is required to upload files. */
@@ -188,12 +195,6 @@ public class ComposeboxQueryControllerBridge {
         sInstanceForTesting = null;
     }
 
-    @CalledByNative
-    void onFileUploadStatusChanged(String token, @ContextUploadStatus int fileUploadStatus) {
-        if (mFileUploadObserver != null) {
-            mFileUploadObserver.onFileUploadStatusChanged(token, fileUploadStatus);
-        }
-    }
 
     @CalledByNative
     private void onInputStateChanged(InputState inputState) {

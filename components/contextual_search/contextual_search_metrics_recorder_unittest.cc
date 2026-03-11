@@ -377,12 +377,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {
   // Simulate file upload.
   lens::MimeType file_mime_type = lens::MimeType::kPdf;
   ContextUploadStatus upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   // Finally simulate upload success.
   upload_status = ContextUploadStatus::kUploadSuccessful;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
 
   DestructMetricsRecorder();
   histogram_tester().ExpectTotalCount(kContextualSearchFileUploadAttemptPdf, 1);
@@ -396,12 +396,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileUploadError) {
   // Simulate file upload.
   lens::MimeType file_mime_type = lens::MimeType::kPdf;
   ContextUploadStatus upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   // Next simulate file upload failure.
   upload_status = ContextUploadStatus::kUploadFailed;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      ContextUploadErrorType::kServerError);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         ContextUploadErrorType::kServerError);
 
   DestructMetricsRecorder();
   histogram_tester().ExpectTotalCount(kContextualSearchFileUploadAttemptPdf, 1);
@@ -413,17 +413,17 @@ TEST_F(ContextualSearchMetricsRecorderTest, AggregatedUploadMetrics) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
 
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kPdf, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(lens::MimeType::kPdf,
-                                      ContextUploadStatus::kUploadSuccessful,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(lens::MimeType::kPdf,
+                                         ContextUploadStatus::kUploadSuccessful,
+                                         std::nullopt);
 
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kImage, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(lens::MimeType::kImage,
-                                      ContextUploadStatus::kUploadFailed,
-                                      ContextUploadErrorType::kServerError);
+  metrics().OnContextUploadStatusChanged(lens::MimeType::kImage,
+                                         ContextUploadStatus::kUploadFailed,
+                                         ContextUploadErrorType::kServerError);
 
   DestructMetricsRecorder();
 
@@ -448,18 +448,18 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileValidationError) {
   uint64_t file_size = 1000000;
   metrics().RecordFileSizeMetric(file_mime_type, file_size);
   ContextUploadStatus upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   // Next simulate file validation error.
   upload_status = ContextUploadStatus::kValidationFailed;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status, error);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status, error);
 
   // Simulate another file validation error.
   upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   upload_status = ContextUploadStatus::kValidationFailed;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status, error);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status, error);
 
   DestructMetricsRecorder();
   histogram_tester().ExpectBucketCount(kContextualSearchFileUploadAttemptPdf, 2,
@@ -476,14 +476,14 @@ TEST_F(ContextualSearchMetricsRecorderTest, AggregatedFileValidationError) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
 
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kPdf, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kPdf, ContextUploadStatus::kValidationFailed, error);
 
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kImage, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kImage, ContextUploadStatus::kValidationFailed, error);
   std::string error_string = metrics().FileErrorToString(error);
   DestructMetricsRecorder();
@@ -516,19 +516,19 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiFileUpload) {
   // Simulate unsuccessful file upload.
   lens::MimeType file_mime_type = lens::MimeType::kPdf;
   ContextUploadStatus upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   upload_status = ContextUploadStatus::kUploadFailed;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      ContextUploadErrorType::kServerError);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         ContextUploadErrorType::kServerError);
 
   // Simulate successful file upload.
   upload_status = ContextUploadStatus::kProcessing;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
   upload_status = ContextUploadStatus::kUploadSuccessful;
-  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(file_mime_type, upload_status,
+                                         std::nullopt);
 
   DestructMetricsRecorder();
   histogram_tester().ExpectBucketCount(kContextualSearchFileUploadAttemptPdf, 2,
@@ -546,7 +546,7 @@ class MetricsRecorderFileTest
   void SetUp() override {
     ContextualSearchMetricsRecorderTest::SetUp();
     metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-    metrics().OnFileUploadStatusChanged(
+    metrics().OnContextUploadStatusChanged(
         mime_type_param(), ContextUploadStatus::kProcessing, std::nullopt);
     mime_type_string_ = metrics().MimeTypeToString(mime_type_param());
   }
@@ -580,8 +580,8 @@ class MetricsRecorderFileTest
 };
 
 TEST_P(MetricsRecorderFileTest, FileUploadStatusChanged) {
-  metrics().OnFileUploadStatusChanged(mime_type_param(), status_param(),
-                                      std::nullopt);
+  metrics().OnContextUploadStatusChanged(mime_type_param(), status_param(),
+                                         std::nullopt);
   DestructMetricsRecorder();
   switch (status_param()) {
     case ContextUploadStatus::kUploadSuccessful:
@@ -613,7 +613,7 @@ class MetricsRecorderFileValidationTest
   void SetUp() override {
     ContextualSearchMetricsRecorderTest::SetUp();
     metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
-    metrics().OnFileUploadStatusChanged(
+    metrics().OnContextUploadStatusChanged(
         mime_type_param(), ContextUploadStatus::kProcessing, std::nullopt);
     mime_type_string_ = metrics().MimeTypeToString(mime_type_param());
     error_type_string_ = metrics().FileErrorToString(error_param());
@@ -639,7 +639,7 @@ class MetricsRecorderFileValidationTest
 };
 
 TEST_P(MetricsRecorderFileValidationTest, ValidationError) {
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       mime_type_param(), ContextUploadStatus::kValidationFailed, error_param());
   DestructMetricsRecorder();
   TestValidationFailedMetrics();
@@ -718,16 +718,16 @@ TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
   metrics().ActivateMetricsFunnel("DeepSearch");
 
   // Simulate file uploads.
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kPdf, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(lens::MimeType::kPdf,
-                                      ContextUploadStatus::kUploadSuccessful,
-                                      std::nullopt);
-  metrics().OnFileUploadStatusChanged(
+  metrics().OnContextUploadStatusChanged(lens::MimeType::kPdf,
+                                         ContextUploadStatus::kUploadSuccessful,
+                                         std::nullopt);
+  metrics().OnContextUploadStatusChanged(
       lens::MimeType::kImage, ContextUploadStatus::kProcessing, std::nullopt);
-  metrics().OnFileUploadStatusChanged(lens::MimeType::kImage,
-                                      ContextUploadStatus::kUploadFailed,
-                                      ContextUploadErrorType::kServerError);
+  metrics().OnContextUploadStatusChanged(lens::MimeType::kImage,
+                                         ContextUploadStatus::kUploadFailed,
+                                         ContextUploadErrorType::kServerError);
 
   // Simulate query submission.
   metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,

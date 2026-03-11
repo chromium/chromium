@@ -17,14 +17,14 @@ ComposeboxFileUploadObserverBridge::ComposeboxFileUploadObserverBridge(
 ComposeboxFileUploadObserverBridge::~ComposeboxFileUploadObserverBridge() =
     default;
 
-void ComposeboxFileUploadObserverBridge::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void ComposeboxFileUploadObserverBridge::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
-  [observer_ onFileUploadStatusChanged:file_token
-                              mimeType:mime_type
-                      fileUploadStatus:file_upload_status
-                             errorType:error_type];
+  [observer_ onContextUploadStatusChanged:context_token
+                                 mimeType:mime_type
+                      contextUploadStatus:context_upload_status
+                                errorType:error_type];
 }

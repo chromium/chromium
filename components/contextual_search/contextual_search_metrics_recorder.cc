@@ -105,11 +105,11 @@ void ContextualSearchMetricsRecorder::NotifySessionStateChanged(
   }
 }
 
-void ContextualSearchMetricsRecorder::OnFileUploadStatusChanged(
+void ContextualSearchMetricsRecorder::OnContextUploadStatusChanged(
     lens::MimeType file_mime_type,
-    ContextUploadStatus file_upload_status,
+    ContextUploadStatus context_upload_status,
     const std::optional<ContextUploadErrorType>& error_type) {
-  switch (file_upload_status) {
+  switch (context_upload_status) {
     case ContextUploadStatus::kProcessing:
       session_metrics_->file_upload_attempt_count_per_type[file_mime_type]++;
       break;

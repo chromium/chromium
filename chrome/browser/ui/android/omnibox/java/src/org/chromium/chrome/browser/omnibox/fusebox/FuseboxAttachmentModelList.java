@@ -364,7 +364,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     }
 
     @Override
-    public void onFileUploadStatusChanged(String token, @ContextUploadStatus int status) {
+    public void onContextUploadStatusChanged(String token, @ContextUploadStatus int status) {
         if (TextUtils.isEmpty(token)) return;
         FuseboxAttachment pendingAttachment = findAttachmentWithToken(token);
         if (pendingAttachment == null) return;

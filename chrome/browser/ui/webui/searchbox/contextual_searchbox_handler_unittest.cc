@@ -1687,7 +1687,7 @@ class ContextualSearchboxHandlerFileUploadStatusTest
           composebox_query::mojom::ContextUploadStatus> {};
 
 TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
-       OnFileUploadStatusChanged) {
+       OnContextUploadStatusChanged) {
   contextual_search::ContextUploadStatus status;
   EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
       .Times(1)
@@ -1706,8 +1706,8 @@ TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
                                 contextual_search::ContextUploadStatus>::
                    FromMojom(expected_status, &status_cpp)));
   base::UnguessableToken token = base::UnguessableToken::Create();
-  handler().OnFileUploadStatusChanged(token, lens::MimeType::kPdf, status_cpp,
-                                      std::nullopt);
+  handler().OnContextUploadStatusChanged(token, lens::MimeType::kPdf,
+                                         status_cpp, std::nullopt);
   mock_searchbox_page_.FlushForTesting();
 
   EXPECT_EQ(status_cpp, status);

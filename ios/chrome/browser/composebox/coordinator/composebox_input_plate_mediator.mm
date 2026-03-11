@@ -1043,21 +1043,21 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - ComposeboxFileUploadObserver
 
-- (void)onFileUploadStatusChanged:(const base::UnguessableToken&)fileToken
-                         mimeType:(lens::MimeType)mimeType
-                 fileUploadStatus:
-                     (contextual_search::ContextUploadStatus)fileUploadStatus
-                        errorType:
-                            (const std::optional<
-                                contextual_search::ContextUploadErrorType>&)
-                                errorType {
+- (void)onContextUploadStatusChanged:(const base::UnguessableToken&)contextToken
+                            mimeType:(lens::MimeType)mimeType
+                 contextUploadStatus:
+                     (contextual_search::ContextUploadStatus)contextUploadStatus
+                           errorType:
+                               (const std::optional<
+                                   contextual_search::ContextUploadErrorType>&)
+                                   errorType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [_items itemForServerToken:fileToken];
+  ComposeboxInputItem* item = [_items itemForServerToken:contextToken];
   if (!item) {
     return;
   }
 
-  switch (fileUploadStatus) {
+  switch (contextUploadStatus) {
     case contextual_search::ContextUploadStatus::kUploadSuccessful:
       [self setState:ComposeboxInputItemState::kLoaded onItem:item];
       break;
@@ -1450,11 +1450,12 @@ CreateInputDataFromAnnotatedPageContent(
     // Using the identifier as the server token for simulation.
     item.serverToken = identifier;
     task = base::BindOnce(^{
-      [weakSelf onFileUploadStatusChanged:identifier
-                                 mimeType:lens::MimeType::kImage
-                         fileUploadStatus:contextual_search::
-                                              ContextUploadStatus::kUploadFailed
-                                errorType:std::nullopt];
+      [weakSelf
+          onContextUploadStatusChanged:identifier
+                              mimeType:lens::MimeType::kImage
+                   contextUploadStatus:contextual_search::ContextUploadStatus::
+                                           kUploadFailed
+                             errorType:std::nullopt];
     });
   } else {
     task = base::BindOnce(^{

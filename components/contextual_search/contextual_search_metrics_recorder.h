@@ -107,9 +107,9 @@ class ContextualSearchMetricsRecorder {
   // Activates a funnel for metrics logging.
   virtual void ActivateMetricsFunnel(const std::string& funnel_name);
 
-  virtual void OnFileUploadStatusChanged(
+  virtual void OnContextUploadStatusChanged(
       lens::MimeType file_mime_type,
-      ContextUploadStatus file_upload_status,
+      ContextUploadStatus context_upload_status,
       const std::optional<ContextUploadErrorType>& error_type);
 
   // Maps file errors to its string version for histogram naming.

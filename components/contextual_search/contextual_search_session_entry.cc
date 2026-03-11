@@ -45,15 +45,15 @@ ContextualSearchSessionEntry::ContextualSearchSessionEntry(
 
 ContextualSearchSessionEntry::~ContextualSearchSessionEntry() = default;
 
-void ContextualSearchSessionEntry::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void ContextualSearchSessionEntry::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   if (metrics_recorder_) {
-    metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
-                                                 error_type);
+    metrics_recorder_->OnContextUploadStatusChanged(
+        mime_type, context_upload_status, error_type);
   }
 }
 

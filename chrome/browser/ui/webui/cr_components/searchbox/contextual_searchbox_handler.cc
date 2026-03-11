@@ -796,14 +796,14 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                          /*additional_params=*/{});
 }
 
-void ContextualSearchboxHandler::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void ContextualSearchboxHandler::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   if (IsRemoteBound()) {
-    page_->OnContextualInputStatusChanged(file_token, file_upload_status,
+    page_->OnContextualInputStatusChanged(context_token, context_upload_status,
                                           error_type);
   }
 

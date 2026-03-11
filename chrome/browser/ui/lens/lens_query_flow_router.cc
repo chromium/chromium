@@ -376,14 +376,14 @@ LensQueryFlowRouter::GetTabContextualizationController() const {
   return TabContextualizationController::From(tab_interface());
 }
 
-void LensQueryFlowRouter::OnFileUploadStatusChangedForTesting(
-    const base::UnguessableToken& file_token,
+void LensQueryFlowRouter::OnContextUploadStatusChangedForTesting(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
-  OnFileUploadStatusChanged(file_token, mime_type, file_upload_status,
-                            error_type);
+  OnContextUploadStatusChanged(context_token, mime_type, context_upload_status,
+                               error_type);
 }
 
 void LensQueryFlowRouter::HandleInteractionResponse(
@@ -416,10 +416,10 @@ void LensQueryFlowRouter::RemoveContextualSearchContextIfNecessary(
   }
 }
 
-void LensQueryFlowRouter::OnFileUploadStatusChanged(
-    const base::UnguessableToken& file_token,
+void LensQueryFlowRouter::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
     lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus file_upload_status,
+    contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
   const auto& suggest_inputs = GetSuggestInputs();
@@ -432,12 +432,13 @@ void LensQueryFlowRouter::OnFileUploadStatusChanged(
 
   auto* session_handle = GetContextualSearchSessionHandle();
   if (session_handle && overlay_tab_context_file_token_.has_value() &&
-      file_token == overlay_tab_context_file_token_.value() &&
-      file_upload_status ==
+      context_token == overlay_tab_context_file_token_.value() &&
+      context_upload_status ==
           contextual_search::ContextUploadStatus::kUploadSuccessful) {
     // Pass any text that was returned as part of the file upload response to
     // to the overlay.
-    auto* file_info = session_handle->GetController()->GetFileInfo(file_token);
+    auto* file_info =
+        session_handle->GetController()->GetFileInfo(context_token);
     std::vector<lens::mojom::OverlayObjectPtr> objects;
     lens::mojom::TextPtr text = nullptr;
     if (file_info) {

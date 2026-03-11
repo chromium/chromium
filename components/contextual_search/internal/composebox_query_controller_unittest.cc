@@ -410,13 +410,13 @@ class ComposeboxQueryControllerTest
   }
 
   // ComposeboxQueryController::FileUploadStatusObserver:
-  void OnFileUploadStatusChanged(
-      const base::UnguessableToken& file_token,
+  void OnContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
-      ContextUploadStatus file_upload_status,
+      ContextUploadStatus context_upload_status,
       const std::optional<ContextUploadErrorType>& error_type) override {
-    file_upload_status_future_.AddValue(file_token, mime_type,
-                                        file_upload_status, error_type);
+    file_upload_status_future_.AddValue(context_token, mime_type,
+                                        context_upload_status, error_type);
   }
 
 #if !BUILDFLAG(IS_IOS)

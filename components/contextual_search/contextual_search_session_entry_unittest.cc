@@ -34,8 +34,8 @@ class TestContextualSearchContextController
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) {
     for (auto& observer : observers_) {
-      observer.OnFileUploadStatusChanged(file_token, mime_type,
-                                         file_upload_status, error_type);
+      observer.OnContextUploadStatusChanged(file_token, mime_type,
+                                            file_upload_status, error_type);
     }
   }
 
@@ -58,7 +58,7 @@ class MockContextualSearchMetricsRecorder
   ~MockContextualSearchMetricsRecorder() override = default;
 
   MOCK_METHOD(void,
-              OnFileUploadStatusChanged,
+              OnContextUploadStatusChanged,
               (lens::MimeType,
                contextual_search::ContextUploadStatus,
                const std::optional<contextual_search::ContextUploadErrorType>&),
@@ -102,7 +102,7 @@ TEST_F(ContextualSearchSessionEntryTest, ForwardsFileUploadStatusChanged) {
       std::nullopt;
 
   EXPECT_CALL(*metrics_recorder_ptr_,
-              OnFileUploadStatusChanged(mime_type, status, error_type))
+              OnContextUploadStatusChanged(mime_type, status, error_type))
       .Times(1);
 
   controller_ptr_->TriggerFileUploadStatusChanged(file_token, mime_type, status,
