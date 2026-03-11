@@ -21,7 +21,7 @@ bool WebviewSchedulerStateMachine::ShouldActivateSyncTreeBeforeDraw() const {
   return false;
 }
 
-bool WebviewSchedulerStateMachine::ShouldBeginMainFrameWhenIdle() const {
+bool WebviewSchedulerStateMachine::ShouldBlockBeginMainFrameWhenIdle() const {
   // It's okay to send BeginMainFrame for the synchronous compositor
   // because the main thread is always high latency in that case.
   return false;

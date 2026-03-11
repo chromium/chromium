@@ -520,7 +520,7 @@ bool SchedulerStateMachine::CouldSendBeginMainFrame() const {
   return true;
 }
 
-bool SchedulerStateMachine::ShouldBeginMainFrameWhenIdle() const {
+bool SchedulerStateMachine::ShouldBlockBeginMainFrameWhenIdle() const {
   return (!settings_.using_synchronous_renderer_compositor &&
           begin_impl_frame_state_ == BeginImplFrameState::IDLE);
 }
@@ -577,7 +577,7 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   // might have new user input arriving soon.
   // TODO(brianderson): Allow sending BeginMainFrame while idle when the main
   // thread isn't consuming user input for non-synchronous compositor.
-  if (ShouldBeginMainFrameWhenIdle()) {
+  if (ShouldBlockBeginMainFrameWhenIdle()) {
     return false;
   }
 

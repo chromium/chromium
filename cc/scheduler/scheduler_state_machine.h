@@ -420,7 +420,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldActivateSyncTree() const;
   virtual bool ShouldActivateSyncTreeBeforeDraw() const;
   bool ShouldSendBeginMainFrame() const;
-  virtual bool ShouldBeginMainFrameWhenIdle() const;
+  virtual bool ShouldBlockBeginMainFrameWhenIdle() const;
   bool ShouldCommit() const;
   bool ShouldRunPostCommit() const;
   virtual bool ShouldPrepareTiles() const;

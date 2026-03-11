@@ -17,7 +17,7 @@ class CC_EXPORT WebviewSchedulerStateMachine : public SchedulerStateMachine {
   ~WebviewSchedulerStateMachine() override;
 
   bool ShouldActivateSyncTreeBeforeDraw() const override;
-  bool ShouldBeginMainFrameWhenIdle() const override;
+  bool ShouldBlockBeginMainFrameWhenIdle() const override;
   bool ShouldInvalidateLayerTreeFrameSink() const override;
   BeginImplFrameDeadlineMode CurrentBeginImplFrameDeadlineMode() const override;
 };
