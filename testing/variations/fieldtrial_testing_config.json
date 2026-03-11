@@ -17110,22 +17110,6 @@
             ]
         }
     ],
-    "OfferPinToTaskbarInfoBar": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "MostlyLaunched",
-                    "enable_features": [
-                        "OfferPinToTaskbarInfoBar"
-                    ]
-                }
-            ]
-        }
-    ],
     "OfferPinToTaskbarWhenSettingDefault": [
         {
             "platforms": [
@@ -22154,6 +22138,161 @@
                     ],
                     "disable_features": [
                         "SensitiveContentWhileSwitchingTabs"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SeparateDefaultAndPinPrompt": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "PinFlow_AggressiveLimits_Message1_Arm",
+                    "params": {
+                        "message_version": "1",
+                        "pin_cooldown_days": "7",
+                        "pin_max_count": "10",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "DefaultBrowserFlow_Arm",
+                    "params": {
+                        "random_seed": "2"
+                    },
+                    "enable_features": [
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "ModeratePinLimits_Arm",
+                    "params": {
+                        "pin_cooldown_days": "14",
+                        "pin_max_count": "5",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "LenientPinLimits_Arm",
+                    "params": {
+                        "pin_cooldown_days": "30",
+                        "pin_max_count": "3",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion2_Arm",
+                    "params": {
+                        "message_version": "2",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion3_Arm",
+                    "params": {
+                        "message_version": "3",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion4_Arm",
+                    "params": {
+                        "message_version": "4",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion5_Arm",
+                    "params": {
+                        "message_version": "5",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion6_Arm",
+                    "params": {
+                        "message_version": "6",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion7_Arm",
+                    "params": {
+                        "message_version": "7",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion8_Arm",
+                    "params": {
+                        "message_version": "8",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion9_Arm",
+                    "params": {
+                        "message_version": "9",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
+                    ]
+                },
+                {
+                    "name": "MessageVersion10_Arm",
+                    "params": {
+                        "message_version": "10",
+                        "random_seed": "3"
+                    },
+                    "enable_features": [
+                        "OfferPinToTaskbarInfoBar",
+                        "SeparateDefaultAndPinPrompt"
                     ]
                 }
             ]
