@@ -1133,7 +1133,11 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
 class ExecutionEngineOriginGatingParamBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<
+          /*prompt_user_for_sensitive_navigations_enabled=*/bool,
+          /*confirm_navigation_to_new_origins_enabled=*/bool,
+          /*prompt_user_for_navigation_to_new_origins_enabled=*/bool,
+          /*allow_implicit_tool_origin_grants=*/bool>> {
  public:
   ExecutionEngineOriginGatingParamBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -1151,6 +1155,8 @@ class ExecutionEngineOriginGatingParamBrowserTest
                   prompt_user_for_navigation_to_new_origins_enabled()
                       ? "true"
                       : "false"},
+                 {"allow_implicit_tool_origin_grants",
+                  allow_implicit_tool_origin_grants() ? "true" : "false"},
              }}},
         },
         /*disabled_features=*/{});
@@ -1166,6 +1172,7 @@ class ExecutionEngineOriginGatingParamBrowserTest
   bool prompt_user_for_navigation_to_new_origins_enabled() {
     return std::get<2>(GetParam());
   }
+  bool allow_implicit_tool_origin_grants() { return std::get<3>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1310,27 +1317,112 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
       prompt_user_for_sensitive_navigations_enabled() ? 1 : 0);
 }
 
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
+                       ImplicitToolOriginGrants) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
+
+  // Start on foo.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Navigate to bar.com.
+  std::unique_ptr<ToolRequest> navigate_x_origin =
+      MakeNavigateRequest(*active_tab(), cross_origin_url.spec());
+  // Navigate to foo.com page with a link to bar.com.
+  std::unique_ptr<ToolRequest> navigate_to_link_page =
+      MakeNavigateRequest(*active_tab(), link_page_url.spec());
+  // Clicks on full-page link to bar.com.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result;
+  actor_task().Act(
+      ToRequestList(navigate_x_origin, navigate_to_link_page, click_link),
+      result.GetCallback());
+  if (allow_implicit_tool_origin_grants()) {
+    ExpectOkResult(result);
+  } else {
+    ExpectErrorResult(result,
+                      mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
+                       ImplicitToolOriginGrantWithTaskMetadata) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  const GURL cross_origin_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+  const GURL link_page_url = embedded_https_test_server().GetURL(
+      "foo.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(cross_origin_url.spec())}));
+
+  // Start on foo.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  // Navigate to bar.com.
+  std::unique_ptr<ToolRequest> navigate_x_origin =
+      MakeNavigateRequest(*active_tab(), cross_origin_url.spec());
+  // Navigate to foo.com page with a link to bar.com.
+  std::unique_ptr<ToolRequest> navigate_to_link_page =
+      MakeNavigateRequest(*active_tab(), link_page_url.spec());
+  // Clicks on full-page link to bar.com.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(),
+      ToRequestList(navigate_x_origin, navigate_to_link_page, click_link),
+      ActorTaskMetadata::WithAddedWritableMainframeOriginsForTesting(
+          {url::Origin::Create(start_url),
+           url::Origin::Create(cross_origin_url)}),
+      result.GetCallback());
+  ExpectOkResult(result);
+}
+
 // Tuple values are:
 // (prompt_user_for_sensitive_navigations,
 //  confirm_navigation_to_new_origins,
-//  prompt_user_for_navigation_to_new_origins).
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineOriginGatingParamBrowserTest,
-                         testing::Values(std::make_tuple(false, true, false),
-                                         std::make_tuple(true, false, false),
-                                         std::make_tuple(true, true, true)),
-                         [](auto& info) {
-                           if (!std::get<0>(info.param)) {
-                             return "UserConfirmDisabled";
-                           }
-                           if (!std::get<1>(info.param)) {
-                             return "NavigationConfirmDisabled";
-                           }
-                           if (std::get<2>(info.param)) {
-                             return "PromptToConfirmNavigation";
-                           }
-                           NOTREACHED();
-                         });
+//  prompt_user_for_navigation_to_new_origins,
+//  allow_implicit_tool_origin_grants).
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExecutionEngineOriginGatingParamBrowserTest,
+    testing::Values(std::make_tuple(false, true, false, true),
+                    std::make_tuple(true, false, false, true),
+                    std::make_tuple(true, true, true, true),
+                    std::make_tuple(true, true, false, false)),
+    [](auto& info) {
+      if (!std::get<0>(info.param)) {
+        return "UserConfirmDisabled";
+      }
+      if (!std::get<1>(info.param)) {
+        return "NavigationConfirmDisabled";
+      }
+      if (std::get<2>(info.param)) {
+        return "PromptToConfirmNavigation";
+      }
+      if (!std::get<3>(info.param)) {
+        return "ImplicitToolOriginGrantsDisabled";
+      }
+      NOTREACHED();
+    });
 
 class ExecutionEngineOriginGatingSafetyDisabledBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase {
