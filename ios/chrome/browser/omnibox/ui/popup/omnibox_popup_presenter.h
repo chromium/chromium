@@ -40,6 +40,11 @@
 /// Alert the delegate that the popup closed.
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter;
 
+@optional
+
+/// Alert the delegate that the `presenter` has been initialized.
+- (void)popupDidInitializePresenter:(OmniboxPopupPresenter*)presenter;
+
 @end
 
 /// The  presenter for the omnibox popup (UI with autocomplete suggestions).
