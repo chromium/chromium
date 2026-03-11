@@ -9445,6 +9445,21 @@
             ]
         }
     ],
+    "EnableADPFWorkloadIncreaseOnPageLoad": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableADPFWorkloadIncreaseOnPageLoad"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFWorkloadReset": [
         {
             "platforms": [
