@@ -33,7 +33,7 @@ static_library("arc") {
   deps = [
     "//ash/public/cpp",
     "//ash/public/cpp/app_list/vector_icons",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//base",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list",

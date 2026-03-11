@@ -73,7 +73,7 @@ static_library("app_list") {
     "//ash",
     "//ash/app_list",
     "//ash/resources/vector_icons",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//ash/webui/mall:app_id",
     "//ash/webui/projector_app/public/cpp",
     "//build:branding_buildflags",

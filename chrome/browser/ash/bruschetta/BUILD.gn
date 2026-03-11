@@ -57,7 +57,7 @@ static_library("bruschetta") {
 
   deps = [
     "//ash/constants",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os/public",

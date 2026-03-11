@@ -34,7 +34,7 @@ static_library("app_service") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser/apps/app_service/app_icon",

@@ -241,7 +241,7 @@ static_library("login") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
-    "//ash/strings:strings_grit",
+    "//ash/strings",
     "//ash/webui/common:trusted_types_util",
     "//base:i18n",
     "//base/version_info",
