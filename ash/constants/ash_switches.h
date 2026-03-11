@@ -375,6 +375,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowDefaultShelfPinLayoutIgnoringSync[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceRefreshRateThrottle[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppModeAuthCode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppModeOAuth2Token[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMonitoringDestinationID[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSystemLogUploadFrequency[];
 
 ////////////////////////////////////////////////////////////////////////////////
 

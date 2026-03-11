@@ -2083,14 +2083,14 @@ void UserSessionManager::ProcessAppModeSwitches() {
 
   // Are we in kiosk app mode?
   if (in_app_mode) {
-    if (command_line->HasSwitch(::switches::kAppModeOAuth2Token)) {
-      user_context_.SetRefreshToken(
-          command_line->GetSwitchValueASCII(::switches::kAppModeOAuth2Token));
+    if (command_line->HasSwitch(ash::switches::kAppModeOAuth2Token)) {
+      user_context_.SetRefreshToken(command_line->GetSwitchValueASCII(
+          ash::switches::kAppModeOAuth2Token));
     }
 
-    if (command_line->HasSwitch(::switches::kAppModeAuthCode)) {
+    if (command_line->HasSwitch(ash::switches::kAppModeAuthCode)) {
       user_context_.SetAuthCode(
-          command_line->GetSwitchValueASCII(::switches::kAppModeAuthCode));
+          command_line->GetSwitchValueASCII(ash::switches::kAppModeAuthCode));
     }
 
     DCHECK(!has_auth_cookies_);

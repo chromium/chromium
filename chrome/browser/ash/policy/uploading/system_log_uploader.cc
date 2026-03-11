@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -259,10 +259,10 @@ base::TimeDelta GetUploadFrequency() {
   base::TimeDelta upload_frequency(
       base::Milliseconds(SystemLogUploader::kDefaultUploadDelayMs));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemLogUploadFrequency)) {
+          ash::switches::kSystemLogUploadFrequency)) {
     std::string string_value =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kSystemLogUploadFrequency);
+            ash::switches::kSystemLogUploadFrequency);
     int frequency;
     if (base::StringToInt(string_value, &frequency)) {
       upload_frequency = base::Milliseconds(frequency);
