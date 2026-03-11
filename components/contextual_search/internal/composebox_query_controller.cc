@@ -1636,6 +1636,7 @@ void ComposeboxQueryController::AddLensUsageIntentToUploadRequestAndContinue(
     std::optional<contextual_search::FileUploadErrorType> error_type) {
   if (!error_type.has_value()) {
     request.set_has_lens_intent(has_lens_usage_intent);
+    request.set_process_image_for_aim(has_lens_usage_intent);
   }
 
   std::move(callback).Run(std::move(request), error_type);
