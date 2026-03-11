@@ -101,7 +101,9 @@ NSString* GetSubtitleString() {
 
 // Configures the animation with semantic and custom colors.
 - (void)configureAnimationColors {
-  ConfigureAnimationSemanticColors(self.animationViewWrapper);
+  ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                  kTertiaryBackgroundColor,
+                                  kTertiaryBackgroundColor);
 }
 
 @end

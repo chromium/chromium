@@ -207,11 +207,28 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 // Configures the animation with semantic and custom colors.
 - (void)configureAnimationColors {
-  ConfigureAnimationSemanticColors(self.animationViewWrapper);
-
   // Custom dynamic colors for kDefaultBrowserAnimationIpad.
   if ([[self animationAssetName]
           isEqualToString:kDefaultBrowserAnimationIpad]) {
+    // Configure shape layers.
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kSeparatorColor,
+                                    kSeparatorColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kBlueColor,
+                                    kBlueColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kGrey200Color,
+                                    kGrey200Color);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper, kBackgroundColor,
+                                    kBackgroundColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                    kGroupedPrimaryBackgroundColor,
+                                    kGroupedPrimaryBackgroundColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                    kGroupedSecondaryBackgroundColor,
+                                    kGroupedSecondaryBackgroundColor);
+    ConfigureAnimationSemanticColor(self.animationViewWrapper,
+                                    kSecondaryBackgroundColor,
+                                    kSecondaryBackgroundColor);
+    // Configure text layers.
     ConfigureAnimationSemanticColor(self.animationViewWrapper, kChromeKeypath,
                                     kTextPrimaryColor);
     ConfigureAnimationSemanticColor(self.animationViewWrapper,
@@ -222,9 +239,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                                     kTextPrimaryColor);
     ConfigureAnimationSemanticColor(self.animationViewWrapper, kSettingsKeypath,
                                     kTextPrimaryColor);
-    ConfigureAnimationCustomColor(
-        self.animationViewWrapper, @"ipad-dbp-background",
-        UIColorFromRGB(0xF2F2F7), UIColorFromRGB(0x1C1C1E));
   }
 }
 
