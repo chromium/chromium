@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
@@ -842,7 +841,10 @@ void GridLayoutAlgorithm::BuildSizingCollection(
     GridTrackSizingDirection track_direction,
     const GridLineResolver& line_resolver,
     GridItems& grid_items,
-    GridLayoutData& layout_data) const {
+    GridLayoutData& layout_data,
+    SizingConstraint sizing_constraint,
+    bool needs_intrinsic_track_size,
+    GridItems* opt_virtual_items) const {
   wtf_size_t start_offset = 0;
   if (Node().HasCachedPlacementData()) {
     start_offset = Node().CachedPlacementData().StartOffset(track_direction);

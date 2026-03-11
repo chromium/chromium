@@ -50,10 +50,12 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.GridLanesTrackSizingDirection());
 
+    wtf_size_t start_offset = 0;
     for (const auto& grid_lanes_item : algorithm.BuildVirtualGridLanesItems(
              line_resolver, grid_lanes_items, needs_intrinsic_track_size,
              SizingConstraint::kLayout,
-             line_resolver.AutoRepetitions(grid_axis_direction))) {
+             line_resolver.AutoRepetitions(grid_axis_direction),
+             start_offset)) {
       GridLanesItemCachedData item_data;
 
       item_data.resolved_span =

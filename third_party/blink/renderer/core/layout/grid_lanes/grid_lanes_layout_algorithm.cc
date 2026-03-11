@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/stacking_baseline_accumulator.h"
@@ -448,13 +447,15 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       container_space.GetWritingDirection();
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
+  const wtf_size_t grid_axis_start_offset =
+      Node().CachedPlacementData().StartOffset(grid_axis_direction);
 
   for (auto& grid_lanes_item : grid_lanes_items) {
     // Get the starting offset of where we want the item placed in the stacking
     // axis.
     LayoutUnit start_offset_in_stacking_axis =
         running_positions.FinalizeItemSpanAndGetMaxPosition(
-            grid_axis_start_offset_, grid_lanes_item, track_collection);
+            grid_axis_start_offset, grid_lanes_item, track_collection);
 
     // During track sizing, we may force a specific inline size on an item
     // if the available space in that direction is indefinite, particularly for
@@ -536,7 +537,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
-              grid_axis_start_offset_,
+              grid_axis_start_offset,
               /*item_stacking_axis_contribution=*/
               fragment_stacking_axis_contribution,
               /*auto_placement_stacking_axis_offset=*/
@@ -742,7 +743,8 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const GridItems& grid_lanes_items,
     const bool needs_intrinsic_track_size,
     SizingConstraint sizing_constraint,
-    const wtf_size_t auto_repetition_count) {
+    const wtf_size_t auto_repetition_count,
+    wtf_size_t& start_offset) const {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
@@ -765,9 +767,9 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
 
   wtf_size_t unplaced_item_span_count = 0;
 
-  for (const auto& [group_items, group_properties] : Node().CollectItemGroups(
-           line_resolver, grid_lanes_items, max_end_line,
-           grid_axis_start_offset_, unplaced_item_span_count)) {
+  for (const auto& [group_items, group_properties] :
+       Node().CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,
+                                start_offset, unplaced_item_span_count)) {
     auto* virtual_item = MakeGarbageCollected<GridItemData>();
 
     GridSpan span = group_properties.Span();
@@ -1188,18 +1190,20 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
     bool& needs_intrinsic_track_size) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
+  wtf_size_t start_offset = 0;
   GridItems virtual_items = BuildVirtualGridLanesItems(
       line_resolver, grid_lanes_items, needs_intrinsic_track_size,
-      sizing_constraint, line_resolver.AutoRepetitions(grid_axis_direction));
+      sizing_constraint, line_resolver.AutoRepetitions(grid_axis_direction),
+      start_offset);
 
   // Cache placement data. This is used for DevTools inspector highlighting and
   // also to access the computed auto repetitions in
   // GetIntrinsicRepeaterTrackSizes.
   GridPlacementData placement_data(line_resolver);
   if (grid_axis_direction == kForColumns) {
-    placement_data.column_start_offset = grid_axis_start_offset_;
+    placement_data.column_start_offset = start_offset;
   } else {
-    placement_data.row_start_offset = grid_axis_start_offset_;
+    placement_data.row_start_offset = start_offset;
   }
   To<LayoutGridLanes>(Node().GetLayoutBox())
       ->SetCachedPlacementData(std::move(placement_data));
@@ -1207,8 +1211,7 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
         style, grid_axis_direction,
-        line_resolver.AutoRepetitions(grid_axis_direction),
-        grid_axis_start_offset_);
+        line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
 
     for (auto& virtual_item : virtual_items) {
       auto& range_indices = virtual_item.RangeIndices(grid_axis_direction);
@@ -1390,6 +1393,61 @@ wtf_size_t GridLanesLayoutAlgorithm::ComputeAutomaticRepetitions(
       is_for_columns ? grid_lanes_max_available_size_.inline_size
                      : grid_lanes_max_available_size_.block_size,
       intrinsic_repeat_track_sizes);
+}
+
+void GridLanesLayoutAlgorithm::BuildSizingCollection(
+    GridTrackSizingDirection track_direction,
+    const GridLineResolver& line_resolver,
+    GridItems& grid_items,
+    GridLayoutData& layout_data,
+    SizingConstraint sizing_constraint,
+    bool needs_intrinsic_track_size,
+    GridItems* opt_virtual_items) const {
+  const auto& style = Style();
+  const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
+
+  // Grid-lanes only has tracks in the grid axis; the stacking axis is a no-op.
+  if (track_direction != grid_axis_direction) {
+    return;
+  }
+
+  wtf_size_t start_offset = 0;
+  *opt_virtual_items = BuildVirtualGridLanesItems(
+      line_resolver, grid_items, needs_intrinsic_track_size, sizing_constraint,
+      line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
+
+  // Cache placement data. This is used for DevTools inspector highlighting and
+  // also to access the computed auto repetitions in
+  // `CalculateIntrinsicTrackSizes`.
+  GridPlacementData placement_data(line_resolver);
+  if (grid_axis_direction == kForColumns) {
+    placement_data.column_start_offset = start_offset;
+  } else {
+    placement_data.row_start_offset = start_offset;
+  }
+  To<LayoutGridLanes>(Node().GetLayoutBox())
+      ->SetCachedPlacementData(std::move(placement_data));
+
+  auto BuildRanges = [&]() {
+    GridRangeBuilder range_builder(
+        style, grid_axis_direction,
+        line_resolver.AutoRepetitions(grid_axis_direction), start_offset);
+
+    for (auto& virtual_item : *opt_virtual_items) {
+      auto& range_indices = virtual_item.RangeIndices(grid_axis_direction);
+      const auto& span = virtual_item.Span(grid_axis_direction);
+
+      range_builder.EnsureTrackCoverage(span.StartLine(), span.IntegerSpan(),
+                                        &range_indices.begin,
+                                        &range_indices.end);
+    }
+    return range_builder.FinalizeRanges(needs_intrinsic_track_size);
+  };
+
+  layout_data.SetTrackCollection(std::make_unique<GridSizingTrackCollection>(
+      BuildRanges(), grid_axis_direction,
+      /*must_create_baselines=*/has_baseline_aligned_items_,
+      /*should_store_collapsed_track_indexes=*/true));
 }
 
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(

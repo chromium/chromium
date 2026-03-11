@@ -10,13 +10,13 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_node.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 enum class GridItemContributionType;
-enum class SizingConstraint;
 class ConstraintSpace;
 struct GridItemPlacementData;
 
@@ -54,11 +54,17 @@ class CORE_EXPORT GridLayoutAlgorithm
       const GridLineResolver* opt_parent_line_resolver = nullptr) const;
 
   // Builds a sizing track collection for `track_direction` and sets it on
-  // `layout_data`.
-  void BuildSizingCollection(GridTrackSizingDirection track_direction,
-                             const GridLineResolver& line_resolver,
-                             GridItems& grid_items,
-                             GridLayoutData& layout_data) const;
+  // `layout_data`. `sizing_constraint`, `needs_intrinsic_track_size`, and
+  // `opt_virtual_items` are not used in Grid. However, they are needed to
+  // maintain the same method signature as grid lanes for common use.
+  void BuildSizingCollection(
+      GridTrackSizingDirection track_direction,
+      const GridLineResolver& line_resolver,
+      GridItems& grid_items,
+      GridLayoutData& layout_data,
+      SizingConstraint sizing_constraint = SizingConstraint::kLayout,
+      bool needs_intrinsic_track_size = false,
+      GridItems* opt_virtual_items = nullptr) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.

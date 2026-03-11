@@ -671,8 +671,10 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
                             HeapVector<Member<LayoutBox>>* opt_oof_children,
                             const SubgriddedItemData& opt_subgrid_data,
                             const GridLineResolver* opt_parent_line_resolver,
+                            SizingConstraint sizing_constraint,
                             bool must_invalidate_placement_cache,
-                            bool must_ignore_children) {
+                            bool must_ignore_children,
+                            bool needs_intrinsic_track_size) {
   DCHECK(sizing_tree);
 
   const auto& node = algorithm.Node();
@@ -700,11 +702,13 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
 
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
-                                    layout_data);
+                                    layout_data, sizing_constraint,
+                                    needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
-                                    layout_data);
+                                    layout_data, sizing_constraint,
+                                    needs_intrinsic_track_size);
   }
 
   if (!has_nested_subgrid) {
@@ -767,7 +771,8 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
         subgrid_algorithm, subgrid_line_resolver, sizing_tree,
         /*opt_oof_children=*/nullptr,
         SubgriddedItemData(grid_item, layout_data, writing_mode),
-        &line_resolver, must_invalidate_placement_cache);
+        &line_resolver, SizingConstraint::kLayout,
+        must_invalidate_placement_cache);
 
     // After we accommodate subgridded items in their respective sizing track
     // collections, their placement indices might be incorrect, so we want to
@@ -783,11 +788,13 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   // repetitions, so we do this process twice to avoid a cyclic dependency.
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
-                                    layout_data);
+                                    layout_data, sizing_constraint,
+                                    needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
-                                    layout_data);
+                                    layout_data, sizing_constraint,
+                                    needs_intrinsic_track_size);
   }
 
   sizing_tree->SetSizingNodeData(node, std::move(grid_items),
@@ -801,6 +808,8 @@ template void BuildGridSizingSubtree(const GridLayoutAlgorithm&,
                                      HeapVector<Member<LayoutBox>>*,
                                      const SubgriddedItemData&,
                                      const GridLineResolver*,
+                                     SizingConstraint,
+                                     bool,
                                      bool,
                                      bool);
 
@@ -808,12 +817,18 @@ template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTree(
     const LayoutAlgorithmType& algorithm,
     const GridLineResolver& line_resolver,
-    HeapVector<Member<LayoutBox>>* opt_oof_children) {
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    SizingConstraint sizing_constraint,
+    bool needs_intrinsic_track_size) {
   DCHECK(!algorithm.GetConstraintSpace().GetGridLayoutSubtree());
 
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree<LayoutAlgorithmType>(algorithm, line_resolver,
-                                              &sizing_tree, opt_oof_children);
+  BuildGridSizingSubtree<LayoutAlgorithmType>(
+      algorithm, line_resolver, &sizing_tree, opt_oof_children,
+      /*opt_subgrid_data=*/kNoSubgriddedItemData,
+      /*opt_parent_line_resolver=*/nullptr, sizing_constraint,
+      /*must_invalidate_placement_cache=*/false, /*must_ignore_children=*/false,
+      needs_intrinsic_track_size);
   return sizing_tree;
 }
 
@@ -821,28 +836,35 @@ GridSizingTree BuildGridSizingTree(
 template CORE_EXPORT GridSizingTree
 BuildGridSizingTree(const GridLayoutAlgorithm&,
                     const GridLineResolver&,
-                    HeapVector<Member<LayoutBox>>*);
+                    HeapVector<Member<LayoutBox>>*,
+                    SizingConstraint,
+                    bool);
 
 template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTreeIgnoringChildren(
     const LayoutAlgorithmType& algorithm,
-    const GridLineResolver& line_resolver) {
+    const GridLineResolver& line_resolver,
+    SizingConstraint sizing_constraint,
+    bool needs_intrinsic_track_size) {
   DCHECK(!algorithm.GetConstraintSpace().GetGridLayoutSubtree());
 
   GridSizingTree sizing_tree;
   BuildGridSizingSubtree<LayoutAlgorithmType>(
-      algorithm, line_resolver, &sizing_tree, /*opt_oof_children=*/nullptr,
+      algorithm, line_resolver, &sizing_tree,
+      /*opt_oof_children=*/nullptr,
       /*opt_subgrid_data=*/kNoSubgriddedItemData,
-      /*opt_parent_line_resolver=*/nullptr,
+      /*opt_parent_line_resolver=*/nullptr, sizing_constraint,
       /*must_invalidate_placement_cache=*/false,
-      /*must_ignore_children=*/true);
+      /*must_ignore_children=*/true, needs_intrinsic_track_size);
   return sizing_tree;
 }
 
 // TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
 template GridSizingTree BuildGridSizingTreeIgnoringChildren(
     const GridLayoutAlgorithm&,
-    const GridLineResolver&);
+    const GridLineResolver&,
+    SizingConstraint,
+    bool);
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     const GridItemData& subgrid_data,

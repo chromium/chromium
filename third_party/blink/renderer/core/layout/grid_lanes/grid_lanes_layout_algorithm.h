@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
@@ -20,7 +21,6 @@ class GridLineResolver;
 class GridSizingTrackCollection;
 class GridLanesRunningPositions;
 enum class GridItemContributionType;
-enum class SizingConstraint;
 struct BoxStrut;
 struct GridItemData;
 struct GridPlacementData;
@@ -51,6 +51,21 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
 
+  // Builds the sizing collection for the given `track_direction`. For the
+  // stacking axis this is a no-op. For the grid axis, this builds virtual items
+  // and creates a track collection from virtual item contributions, setting the
+  // track collection on `layout_data`. If `needs_intrinsic_track_size` is true,
+  // that means that we are in the first track size pass required to compute
+  // intrinsic track sizes within a repeat definition.
+  void BuildSizingCollection(
+      GridTrackSizingDirection track_direction,
+      const GridLineResolver& line_resolver,
+      GridItems& grid_items,
+      GridLayoutData& layout_data,
+      SizingConstraint sizing_constraint = SizingConstraint::kLayout,
+      bool needs_intrinsic_track_size = false,
+      GridItems* opt_virtual_items = nullptr) const;
+
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
   ConstraintSpace CreateConstraintSpaceForLayout(
@@ -77,7 +92,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
 
   // This places all the items stored in `grid_lanes_items` and adjusts
   // `intrinsic_block_size_` based on the placement of the items. Each item's
-  // resolved position is translated based on `grid_axis_start_offset_`.
+  // resolved position is translated based on the cached start offset.
   // Placement of the items is finalized within this method. `running_positions`
   // is an output parameter that can be used to find the intrinsic inline size
   // when the stacking axis is the inline axis.
@@ -176,7 +191,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                                        const GridItems& grid_lanes_items,
                                        const bool needs_intrinsic_track_size,
                                        SizingConstraint sizing_constraint,
-                                       const wtf_size_t auto_repetition_count);
+                                       const wtf_size_t auto_repetition_count,
+                                       wtf_size_t& start_offset) const;
 
   LayoutUnit ComputeGridLanesItemBlockContribution(
       GridTrackSizingDirection track_direction,
@@ -221,11 +237,10 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // When true, there is at least one item that is baseline aligned, indicating
   // that a two-pass placement is needed to compute track baselines and final
   // item placement.
-  bool has_baseline_aligned_items_ = false;
-
-  // The start offset for the grid axis, computed by
-  // `BuildVirtualGridLanesItems`.
-  wtf_size_t grid_axis_start_offset_ = 0;
+  //
+  // TODO(almaher): Marking this as mutable is a temporary workaround - I plan
+  // to remove this member altogether in a follow up CL.
+  mutable bool has_baseline_aligned_items_ = false;
 };
 
 }  // namespace blink

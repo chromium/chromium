@@ -183,19 +183,25 @@ void BuildGridSizingSubtree(
     HeapVector<Member<LayoutBox>>* opt_oof_children,
     const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
     const GridLineResolver* opt_parent_line_resolver = nullptr,
+    SizingConstraint sizing_constraint = SizingConstraint::kLayout,
     bool must_invalidate_placement_cache = false,
-    bool must_ignore_children = false);
+    bool must_ignore_children = false,
+    bool needs_intrinsic_track_size = false);
 
 template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTree(
     const LayoutAlgorithmType& algorithm,
     const GridLineResolver& line_resolver,
-    HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+    HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
+    SizingConstraint sizing_constraint = SizingConstraint::kLayout,
+    bool needs_intrinsic_track_size = false);
 
 template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTreeIgnoringChildren(
     const LayoutAlgorithmType& algorithm,
-    const GridLineResolver& line_resolver);
+    const GridLineResolver& line_resolver,
+    SizingConstraint sizing_constraint = SizingConstraint::kLayout,
+    bool needs_intrinsic_track_size = false);
 
 // Calculate the initial fragment geometry for a subgrid item.
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
