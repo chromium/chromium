@@ -48,6 +48,7 @@ public class RecordingTabCreator implements TabCreator {
     private final List<TabCreationData> mNewTabCreationData = new ArrayList<>();
     private @Nullable TabCreator mDelegate;
     private int mTabCount;
+    private boolean mIsRecording = true;
 
     @Override
     public @Nullable Tab createNewTab(
@@ -83,7 +84,7 @@ public class RecordingTabCreator implements TabCreator {
     @Override
     public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         assertInitialized();
-        if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
+        if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
             String urlSpec = state.url != null ? state.url.getSpec() : null;
             mFrozenTabCreationData.add(new TabCreationData(id, urlSpec, state.timestampMillis));
@@ -147,13 +148,18 @@ public class RecordingTabCreator implements TabCreator {
         mDelegate = delegate;
     }
 
+    /** Stops the tab creator from recording any more data. */
+    public void stopRecording() {
+        mIsRecording = false;
+    }
+
     @EnsuresNonNull({"mDelegate"})
     private void assertInitialized() {
         assert mDelegate != null;
     }
 
     private void recordNewTab(@Nullable String urlSpec) {
-        if (TabStateStorageFlagHelper.isTabStorageEnabled()) {
+        if (mIsRecording && TabStateStorageFlagHelper.isTabStorageEnabled()) {
             mTabCount++;
             mNewTabCreationData.add(
                     new TabCreationData(Tab.INVALID_TAB_ID, urlSpec, /* timestampMillis= */ 0));

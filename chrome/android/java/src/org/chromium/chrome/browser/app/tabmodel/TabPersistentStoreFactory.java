@@ -137,6 +137,7 @@ public class TabPersistentStoreFactory {
                 windowTag,
                 cipherFactory,
                 regularShadowTabCreator,
+                incognitoShadowTabCreator,
                 orchestratorTag);
     }
 
@@ -186,6 +187,7 @@ public class TabPersistentStoreFactory {
                 windowTag,
                 /* cipherFactory= */ null,
                 regularShadowTabCreator,
+                /* incognitoShadowTabCreator= */ null,
                 orchestratorTag);
     }
 
@@ -198,9 +200,14 @@ public class TabPersistentStoreFactory {
             String windowTag,
             @Nullable CipherFactory cipherFactory,
             AccumulatingTabCreator regularShadowTabCreator,
+            @Nullable AccumulatingTabCreator incognitoShadowTabCreator,
             String orchestratorTag) {
         if (migrationManager == null) {
             migrationManager = new DefaultPersistentStoreMigrationManager(windowTag);
+        }
+
+        if (incognitoShadowTabCreator != null) {
+            incognitoShadowTabCreator.stopRecording();
         }
 
         @StoreType int shadowStoreType = migrationManager.getShadowStoreType();

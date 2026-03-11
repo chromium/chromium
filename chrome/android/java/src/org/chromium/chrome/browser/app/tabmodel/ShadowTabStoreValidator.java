@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -73,6 +74,10 @@ public class ShadowTabStoreValidator {
 
         // Retrieve shadow store catch up state prior to any clearing operation.
         mShadowStoreCaughtUp = mPersistentStoreMigrationManager.isShadowStoreCaughtUp();
+
+        if (!isTabStateStoreShadowing()) {
+            shadowTabCreator.stopRecording();
+        }
     }
 
     private void onStateLoaded() {
@@ -98,7 +103,7 @@ public class ShadowTabStoreValidator {
     }
 
     private void recordDiffMetrics() {
-        if (!mShadowStoreCaughtUp) return;
+        if (!mShadowStoreCaughtUp || !isTabStateStoreShadowing()) return;
 
         int tabCountDelta =
                 mTabModel.getCount() - mShadowTabCreator.createFrozenTabArgumentsList.size();
@@ -129,6 +134,11 @@ public class ShadowTabStoreValidator {
                 }
             }
         }
+    }
+
+    private boolean isTabStateStoreShadowing() {
+        return mAuthoritativeStore.getStoreType() == StoreType.LEGACY
+                && mShadowStore.getStoreType() == StoreType.TAB_STATE_STORE;
     }
 
     private void recordCountHistogram(String histogramStr, int tabCountDelta) {

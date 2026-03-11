@@ -207,6 +207,26 @@ public class RecordingTabCreatorUnitTest {
     }
 
     @Test
+    public void testStopRecording() {
+        mRecordingTabCreator.stopRecording();
+
+        mRecordingTabCreator.createNewTab(mLoadUrlParams, TabLaunchType.FROM_LINK, mTab);
+        verify(mDelegate).createNewTab(mLoadUrlParams, TabLaunchType.FROM_LINK, mTab);
+
+        assertEquals(0, mRecordingTabCreator.getTabCount());
+        List<TabCreationData> data = mRecordingTabCreator.getNewTabCreationData();
+        assertEquals(0, data.size());
+
+        mTabState.timestampMillis = 12345L;
+        mRecordingTabCreator.createFrozenTab(mTabState, 5, TabModel.INVALID_TAB_INDEX);
+        verify(mDelegate).createFrozenTab(mTabState, 5, TabModel.INVALID_TAB_INDEX);
+
+        assertEquals(0, mRecordingTabCreator.getTabCount());
+        List<TabCreationData> frozenData = mRecordingTabCreator.getFrozenTabCreationData();
+        assertEquals(0, frozenData.size());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
     public void testCreateNewTab_FeatureDisabled() {
         mRecordingTabCreator.createNewTab(mLoadUrlParams, TabLaunchType.FROM_LINK, mTab);
