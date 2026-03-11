@@ -110,8 +110,8 @@ class SaasUsageReportSchedulerTest : public ::testing::Test {
     report_uploader_ = report_uploader.get();
 
     scheduler_ = std::make_unique<SaasUsageReportScheduler>(
-        &pref_service_, std::move(report_factory), std::move(report_uploader),
-        std::move(delegate));
+        "browser", &pref_service_, std::move(report_factory),
+        std::move(report_uploader), std::move(delegate));
   }
 
   void RecordNavigation() {

@@ -546,7 +546,7 @@ void ChromeBrowserCloudManagementController::InitializeReporting() {
             delegate_->GetSaasUsageReportingDelegateFactory()) {
       saas_usage_report_scheduler_ =
           enterprise_reporting::SaasUsageReportScheduler::Create(
-              saas_usage_reporting_delegate_factory.get());
+              "browser", saas_usage_reporting_delegate_factory.get());
     }
   }
 

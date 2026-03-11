@@ -6,6 +6,8 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_SAAS_USAGE_SAAS_USAGE_REPORT_SCHEDULER_H_
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -43,9 +45,11 @@ class SaasUsageReportScheduler {
   };
 
   static std::unique_ptr<SaasUsageReportScheduler> Create(
+      std::string_view debug_name,
       const SaasUsageReportingDelegateFactory* delegate_factory);
 
   explicit SaasUsageReportScheduler(
+      std::string_view debug_name,
       PrefService* pref_service,
       std::unique_ptr<SaasUsageReportFactory> report_factory,
       std::unique_ptr<SaasUsageReportUploader> report_uploader,
@@ -63,6 +67,7 @@ class SaasUsageReportScheduler {
   void OnReportUploaded(bool success);
 
   base::WallClockTimer timer_;
+  const std::string debug_name_;
   raw_ref<PrefService> pref_service_;
   std::unique_ptr<SaasUsageReportFactory> report_factory_;
   std::unique_ptr<SaasUsageReportUploader> report_uploader_;
