@@ -383,6 +383,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                 /* isDefaultSystem= */ true,
                 browserCount,
                 /* systemCount= */ 0,
-                /* isChromePreStableInstalled */ false);
+                /* isChromePreStableInstalled= */ false,
+                /* defaultBrowserResolveInfo= */ null);
     }
 }

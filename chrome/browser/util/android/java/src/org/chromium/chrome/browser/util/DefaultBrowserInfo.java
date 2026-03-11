@@ -80,6 +80,12 @@ public final class DefaultBrowserInfo {
 
         public final boolean isChromePreStableInstalled;
 
+        /**
+         * The ResolveInfo for the default web browser, or null if no default browser is set or an
+         * error occurred.
+         */
+        public final @Nullable ResolveInfo defaultBrowserResolveInfo;
+
         /** Creates an instance of the {@link DefaultInfo} class. */
         public DefaultInfo(
                 @DefaultBrowserState int defaultBrowserState,
@@ -87,13 +93,15 @@ public final class DefaultBrowserInfo {
                 boolean isDefaultSystem,
                 int browserCount,
                 int systemCount,
-                boolean isChromePreStableInstalled) {
+                boolean isChromePreStableInstalled,
+                @Nullable ResolveInfo defaultBrowserResolveInfo) {
             this.defaultBrowserState = defaultBrowserState;
             this.isChromeSystem = isChromeSystem;
             this.isDefaultSystem = isDefaultSystem;
             this.browserCount = browserCount;
             this.systemCount = systemCount;
             this.isChromePreStableInstalled = isChromePreStableInstalled;
+            this.defaultBrowserResolveInfo = defaultBrowserResolveInfo;
         }
     }
 
@@ -134,6 +142,28 @@ public final class DefaultBrowserInfo {
             return null;
         }
         return infoTask.getDefaultInfo();
+    }
+
+    /**
+     * Returns the ResolveInfo for the default web browser
+     *
+     * <p>This method first attempts to retrieve cached information from a previously completed
+     * DefaultInfoTask. If the cache is available and contains the default browser ResolveInfo, it
+     * returns the cached value. Otherwise, it queries the system directly via PackageManagerUtils.
+     *
+     * <p>Note: defaultBrowserResolveInfo may be null if an exception occurred during the initial
+     * call to PackageManagerUtils.resolveDefaultWebBrowserActivity(). In this case, this method
+     * will retry the call to PackageManagerUtils.resolveDefaultWebBrowserActivity().
+     *
+     * @return A ResolveInfo representing the default web browser, or null if no default browser is
+     *     set.
+     */
+    public static @Nullable ResolveInfo getDefaultWebBrowserInfo() {
+        DefaultInfo defaultBrowserInfoCacheResult = getDefaultBrowserInfoCacheResult();
+        return defaultBrowserInfoCacheResult != null
+                        && defaultBrowserInfoCacheResult.defaultBrowserResolveInfo != null
+                ? defaultBrowserInfoCacheResult.defaultBrowserResolveInfo
+                : PackageManagerUtils.resolveDefaultWebBrowserActivity();
     }
 
     public static void setDefaultInfoForTests(DefaultInfo info) {
@@ -251,7 +281,8 @@ public final class DefaultBrowserInfo {
                     isDefaultSystem,
                     browserCount,
                     systemCount,
-                    isChromePreStableInstalled);
+                    isChromePreStableInstalled,
+                    defaultRi);
         }
 
         @Override

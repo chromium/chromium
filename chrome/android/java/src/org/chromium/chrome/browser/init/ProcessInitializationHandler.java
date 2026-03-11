@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.BrowserExitReasonTracker;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeStrictMode;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.FileProviderHelper;
@@ -638,8 +637,6 @@ public class ProcessInitializationHandler {
                     initAsyncDiskTask();
 
                     StorageSystem.recordStorageType();
-
-                    DefaultBrowserInfo.initBrowserFetcher();
 
                     AfterStartupTaskUtils.setStartupComplete();
 

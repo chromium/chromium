@@ -439,7 +439,8 @@ public class DefaultBrowserPromoUtilsTest {
                         /* isDefaultSystem= */ false,
                         /* browserCount= */ 1,
                         /* systemCount= */ 0,
-                        /* isChromePreStableInstalled= */ false);
+                        /* isChromePreStableInstalled= */ false,
+                        /* defaultBrowserResolveInfo= */ null);
 
         reCreateUtilsWithTestInfo(info);
 
@@ -481,7 +482,8 @@ public class DefaultBrowserPromoUtilsTest {
                         /* isDefaultSystem= */ true,
                         /* browserCount= */ 0,
                         /* systemCount= */ 1,
-                        /* isChromePreStableInstalled= */ false);
+                        /* isChromePreStableInstalled= */ false,
+                        /* defaultBrowserResolveInfo= */ null);
 
         reCreateUtilsWithTestInfo(info);
 
@@ -510,7 +512,8 @@ public class DefaultBrowserPromoUtilsTest {
                         /* isDefaultSystem= */ false,
                         /* browserCount= */ 1,
                         /* systemCount= */ 0,
-                        /* isChromePreStableInstalled= */ false);
+                        /* isChromePreStableInstalled= */ false,
+                        /* defaultBrowserResolveInfo= */ null);
 
         reCreateUtilsWithTestInfo(info);
 
@@ -548,7 +551,8 @@ public class DefaultBrowserPromoUtilsTest {
                         /* isDefaultSystem= */ false,
                         /* browserCount= */ 1,
                         /* systemCount= */ 0,
-                        /* isChromePreStableInstalled= */ false);
+                        /* isChromePreStableInstalled= */ false,
+                        /* defaultBrowserResolveInfo= */ null);
 
         reCreateUtilsWithTestInfo(info);
 

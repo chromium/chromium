@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -352,7 +353,7 @@ public class CustomTabActivityNavigationController
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
-        ResolveInfo resolveInfo = PackageManagerUtils.resolveDefaultWebBrowserActivity();
+        ResolveInfo resolveInfo = DefaultBrowserInfo.getDefaultWebBrowserInfo();
         if (resolveInfo != null) {
             intent.setPackage(resolveInfo.activityInfo.packageName);
             // crbug.com/1265223

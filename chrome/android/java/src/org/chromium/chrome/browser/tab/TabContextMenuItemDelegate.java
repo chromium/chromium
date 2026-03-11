@@ -23,7 +23,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -538,13 +537,6 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_EXTERNAL_APP);
         }
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
-    }
-
-    /**
-     * @return title of the context menu to open a page in external apps.
-     */
-    public String getTitleForOpenTabInExternalApp() {
-        return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
     }
 
     @Override

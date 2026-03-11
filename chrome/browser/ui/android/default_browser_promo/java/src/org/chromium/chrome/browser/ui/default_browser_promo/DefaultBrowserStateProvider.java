@@ -108,6 +108,6 @@ public class DefaultBrowserStateProvider {
     }
 
     @Nullable ResolveInfo getDefaultWebBrowserActivityResolveInfo() {
-        return PackageManagerUtils.resolveDefaultWebBrowserActivity();
+        return DefaultBrowserInfo.getDefaultWebBrowserInfo();
     }
 }

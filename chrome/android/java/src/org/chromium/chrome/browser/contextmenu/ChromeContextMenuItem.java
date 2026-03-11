@@ -17,7 +17,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
+import org.chromium.chrome.browser.DefaultBrowserMenuUtils;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -269,7 +269,7 @@ class ChromeContextMenuItem {
             Context context, Profile profile, @Item int item, boolean showInProductHelp) {
         switch (item) {
             case Item.OPEN_IN_BROWSER_ID:
-                return DefaultBrowserInfo.getTitleOpenInDefaultBrowser(false);
+                return DefaultBrowserMenuUtils.getTitleOpenInDefaultBrowser(false);
             case Item.SEARCH_BY_IMAGE:
                 TemplateUrl templateUrl =
                         TemplateUrlServiceFactory.getForProfile(profile)
