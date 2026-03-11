@@ -1,13 +1,3 @@
-dictionary MulticastMembership {
-  required DOMString groupAddress;
-  DOMString sourceAddress;
-};
-
-dictionary MulticastGroupOptions {
-  [RuntimeEnabled=SourceSpecificMulticastInDirectSockets]
-  DOMString sourceAddress;
-};
-
 [
     Exposed(
       Window DirectSockets,
@@ -20,14 +10,10 @@ dictionary MulticastGroupOptions {
 ]
 interface MulticastController {
   [CallWith=ScriptState, RaisesException, MeasureAs=MulticastControllerJoinGroupFunction]
-  Promise<undefined> joinGroup(
-      DOMString ipAddress,
-      optional MulticastGroupOptions options = {});
+  Promise<undefined> joinGroup(DOMString ipAddress);
   [CallWith=ScriptState, RaisesException, MeasureAs=MulticastControllerLeaveGroupFunction]
-  Promise<undefined> leaveGroup(
-      DOMString ipAddress,
-      optional MulticastGroupOptions options = {});
+  Promise<undefined> leaveGroup(DOMString ipAddress);
 
   [MeasureAs=MulticastControllerJoinedGroupsAttribute]
-  readonly attribute FrozenArray<(DOMString or MulticastMembership)> joinedGroups;
+  readonly attribute FrozenArray<DOMString> joinedGroups;
 };

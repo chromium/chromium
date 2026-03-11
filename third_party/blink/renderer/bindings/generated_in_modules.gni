@@ -3440,10 +3440,6 @@ if (!is_ios) {
 # we need to compile in the same way as would happen when current_os="android".
 if (!target_os_is_android) {
   generated_dictionary_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_group_options.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_group_options.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_membership.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_membership.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_open_info.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_options.cc",
@@ -3472,10 +3468,6 @@ if (!target_os_is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_controller.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_controller.h",
-  ]
-  generated_union_sources_in_modules += [
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_multicastmembership_string.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_union_multicastmembership_string.h",
   ]
   generated_enumeration_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.cc",

@@ -1876,13 +1876,12 @@ void NetworkContext::CreateRestrictedUDPSocket(
     mojo::PendingReceiver<mojom::RestrictedUDPSocket> receiver,
     mojo::PendingRemote<mojom::UDPSocketListener> listener,
     bool allow_multicast,
-    bool allow_source_specific_multicast,
     CreateRestrictedUDPSocketCallback callback) {
   // SimpleHostResolver is transitively owned by |this|.
   socket_factory_->CreateRestrictedUDPSocket(
       addr, mode, traffic_annotation, std::move(params), std::move(receiver),
       std::move(listener), SimpleHostResolver::Create(this), allow_multicast,
-      allow_source_specific_multicast, std::move(callback));
+      std::move(callback));
 }
 
 void NetworkContext::CreateTCPServerSocket(

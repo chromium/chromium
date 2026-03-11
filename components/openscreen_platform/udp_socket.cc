@@ -131,7 +131,7 @@ void UdpSocket::SetMulticastOutboundInterface(
 void UdpSocket::JoinMulticastGroup(const IPAddress& address,
                                    openscreen::NetworkInterfaceIndex ifindex) {
   const auto join_address = openscreen_platform::ToNetAddress(address);
-  udp_socket_->JoinGroup(join_address, std::nullopt,
+  udp_socket_->JoinGroup(join_address,
                          base::BindOnce(&UdpSocket::JoinGroupCallback,
                                         weak_ptr_factory_.GetWeakPtr()));
 }

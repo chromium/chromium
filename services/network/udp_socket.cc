@@ -92,18 +92,10 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
     return socket_.SetReceiveBufferSize(
         ClampUDPBufferSize(receive_buffer_size));
   }
-  int JoinGroup(const net::IPAddress& group_address,
-                const std::optional<net::IPAddress>& source_address) override {
-    if (source_address.has_value()) {
-      return socket_.JoinSourceGroup(group_address, *source_address);
-    }
+  int JoinGroup(const net::IPAddress& group_address) override {
     return socket_.JoinGroup(group_address);
   }
-  int LeaveGroup(const net::IPAddress& group_address,
-                 const std::optional<net::IPAddress>& source_address) override {
-    if (source_address.has_value()) {
-      return socket_.LeaveSourceGroup(group_address, *source_address);
-    }
+  int LeaveGroup(const net::IPAddress& group_address) override {
     return socket_.LeaveGroup(group_address);
   }
   int Write(
@@ -133,8 +125,7 @@ class SocketWrapperImpl : public UDPSocket::SocketWrapper {
       result = socket_.SetBroadcast(true);
     if (result == net::OK && options->multicast_interface != 0)
       result = socket_.SetMulticastInterface(options->multicast_interface);
-    // Always set multicast loopback mode to the requested value.
-    if (result == net::OK) {
+    if (result == net::OK && !options->multicast_loopback_mode) {
       result =
           socket_.SetMulticastLoopbackMode(options->multicast_loopback_mode);
     }
@@ -247,24 +238,22 @@ void UDPSocket::SetReceiveBufferSize(int32_t receive_buffer_size,
 }
 
 void UDPSocket::JoinGroup(const net::IPAddress& group_address,
-                          const std::optional<net::IPAddress>& source_address,
                           JoinGroupCallback callback) {
   if (!is_bound_) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
-  int net_result = wrapped_socket_->JoinGroup(group_address, source_address);
+  int net_result = wrapped_socket_->JoinGroup(group_address);
   std::move(callback).Run(net_result);
 }
 
 void UDPSocket::LeaveGroup(const net::IPAddress& group_address,
-                           const std::optional<net::IPAddress>& source_address,
                            LeaveGroupCallback callback) {
   if (!is_bound_) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
-  int net_result = wrapped_socket_->LeaveGroup(group_address, source_address);
+  int net_result = wrapped_socket_->LeaveGroup(group_address);
   std::move(callback).Run(net_result);
 }
 

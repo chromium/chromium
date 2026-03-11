@@ -1326,9 +1326,7 @@ interface NetworkContext {
       RestrictedUDPSocketParams? params,
       pending_receiver<RestrictedUDPSocket> receiver,
       pending_remote<UDPSocketListener>? listener,
-      bool allow_multicast,
-      bool allow_source_specific_multicast)
-      => (int32 result, IPEndPoint? local_addr_out);
+      bool allow_multicast) => (int32 result, IPEndPoint? local_addr_out);
 
   // Creates a TCP server socket that listens on |local_addr|. The socket
   // created can only be used for the purpose specified in |traffic_annotation|,

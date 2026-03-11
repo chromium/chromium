@@ -859,10 +859,7 @@ void DirectSocketsServiceImpl::CreateRestrictedUDPSocketImpl(
       /*traffic_annotation=*/
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(options), std::move(socket), std::move(listener),
-      IsMulticastAllowed(context_),
-      base::FeatureList::IsEnabled(
-          blink::features::kSourceSpecificMulticastInDirectSockets),
-      std::move(callback));
+      IsMulticastAllowed(context_), std::move(callback));
 }
 
 }  // namespace content

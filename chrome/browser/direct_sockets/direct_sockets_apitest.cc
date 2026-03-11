@@ -758,16 +758,7 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
   }
 };
 
-class IsolatedWebAppMulticastApiTest : public IsolatedWebAppApiTest {
- public:
-  IsolatedWebAppMulticastApiTest() {
-    features_.InitWithFeatures(
-        {blink::features::kSourceSpecificMulticastInDirectSockets}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
+using IsolatedWebAppMulticastApiTest = IsolatedWebAppApiTest;
 
 class IsolatedWebAppSharedWorkerApiTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
@@ -1200,74 +1191,6 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
                             script, net::IPAddress::IPv4AllZeros().ToString(),
                             kMulticastAddress)),
       IsOk());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastJoinLeaveGroupSSM) {
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
-
-  constexpr std::string_view kMulticastJoinLeaveGroupSSM = R"(
-    (async () => {
-      const socket = new UDPSocket({ localAddress: $1 });
-      const { multicastController } = await socket.opened;
-
-      await multicastController.joinGroup($2, {sourceAddress: $3});
-      await multicastController.leaveGroup($2, {sourceAddress: $3});
-    })();
-  )";
-
-  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
-                                    kMulticastJoinLeaveGroupSSM,
-                                    net::IPAddress::IPv4AllZeros().ToString(),
-                                    "232.1.1.1", "192.0.2.1")),
-              IsOk());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastJoinGroupSSMSameGroupDifferentSources) {
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
-
-  constexpr std::string_view kJoinGroupSSMDifferentSources = R"(
-    (async () => {
-      const socket = new UDPSocket({ localAddress: $1 });
-      const { multicastController } = await socket.opened;
-
-      await multicastController.joinGroup($2, {sourceAddress: $3});
-      await multicastController.joinGroup($2, {sourceAddress: $4});
-      await multicastController.leaveGroup($2, {sourceAddress: $3});
-      await multicastController.leaveGroup($2, {sourceAddress: $4});
-    })();
-  )";
-
-  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
-                                    kJoinGroupSSMDifferentSources,
-                                    net::IPAddress::IPv4AllZeros().ToString(),
-                                    "232.1.1.1", "192.0.2.1", "192.0.2.2")),
-              IsOk());
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppMulticastTest,
-                       MulticastCannotMixASMAndSSM) {
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenIsolatedWebApp(/*with_pna=*/true, /*with_multicast=*/true);
-
-  constexpr std::string_view kCannotMixASMAndSSM = R"(
-    (async () => {
-      const socket = new UDPSocket({ localAddress: $1 });
-      const { multicastController } = await socket.opened;
-
-      await multicastController.joinGroup($2);
-      await multicastController.joinGroup($2, {sourceAddress: $3});
-    })();
-  )";
-
-  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(
-                                    kCannotMixASMAndSSM,
-                                    net::IPAddress::IPv4AllZeros().ToString(),
-                                    "232.1.1.1", "192.0.2.1")),
-              ErrorIs(testing::HasSubstr("Cannot join SSM group")));
 }
 
 // TODO(crbug.com/443716695): Fails on mac-rel bots.

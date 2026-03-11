@@ -329,7 +329,7 @@ void UDPSocket::JoinGroup(const std::string& address,
   }
 
   socket_->JoinGroup(
-      ip, std::nullopt,
+      ip,
       base::BindOnce(&UDPSocket::OnJoinGroupCompleted, base::Unretained(this),
                      std::move(callback), normalized_address));
 }
@@ -349,7 +349,7 @@ void UDPSocket::LeaveGroup(const std::string& address,
   }
 
   socket_->LeaveGroup(
-      ip, std::nullopt,
+      ip,
       base::BindOnce(&UDPSocket::OnLeaveGroupCompleted, base::Unretained(this),
                      std::move(callback), normalized_address));
 }

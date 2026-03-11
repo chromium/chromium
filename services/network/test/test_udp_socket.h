@@ -40,10 +40,8 @@ class TestUDPSocket : public mojom::UDPSocket {
   void SetReceiveBufferSize(int32_t receive_buffer_size,
                             SetSendBufferSizeCallback callback) override;
   void JoinGroup(const net::IPAddress& group_address,
-                 const std::optional<net::IPAddress>& source_address,
                  JoinGroupCallback callback) override;
   void LeaveGroup(const net::IPAddress& group_address,
-                  const std::optional<net::IPAddress>& source_address,
                   LeaveGroupCallback callback) override;
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,

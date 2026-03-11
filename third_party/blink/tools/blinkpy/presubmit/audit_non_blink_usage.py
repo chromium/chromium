@@ -2422,12 +2422,8 @@ _CONFIG = [
             'third_party/blink/renderer/modules/direct_sockets/',
         ],
         'allowed': [
-            'base::FastHash',
-            'base::HashInts32',
-            'base::HashInts64',
             'net::DefineNetworkTrafficAnnotation',
             'net::Error',
-            'net::IPAddress',
             'net::MutableNetworkTrafficAnnotationTag',
             'net::NetworkTrafficAnnotationTag',
         ]

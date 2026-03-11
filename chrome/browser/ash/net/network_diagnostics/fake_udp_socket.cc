@@ -52,17 +52,13 @@ void FakeUdpSocket::SetReceiveBufferSize(int32_t receive_buffer_size,
   NOTREACHED();
 }
 
-void FakeUdpSocket::JoinGroup(
-    const net::IPAddress& group_address,
-    const std::optional<net::IPAddress>& source_address,
-    JoinGroupCallback callback) {
+void FakeUdpSocket::JoinGroup(const net::IPAddress& group_address,
+                              JoinGroupCallback callback) {
   NOTREACHED();
 }
 
-void FakeUdpSocket::LeaveGroup(
-    const net::IPAddress& group_address,
-    const std::optional<net::IPAddress>& source_address,
-    LeaveGroupCallback callback) {
+void FakeUdpSocket::LeaveGroup(const net::IPAddress& group_address,
+                               LeaveGroupCallback callback) {
   NOTREACHED();
 }
 
