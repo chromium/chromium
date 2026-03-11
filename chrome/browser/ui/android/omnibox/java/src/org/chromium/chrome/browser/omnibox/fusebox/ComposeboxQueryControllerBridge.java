@@ -140,6 +140,11 @@ public class ComposeboxQueryControllerBridge {
         ComposeboxQueryControllerBridgeJni.get().removeAttachment(mNativeInstance, token);
     }
 
+    /** Returns whether client is Fusebox eligible. */
+    boolean isFuseboxEligible() {
+        return ComposeboxQueryControllerBridgeJni.get().isFuseboxEligible(mNativeInstance);
+    }
+
     /** Returns whether the user is eligible for PDF uploads. */
     boolean isPdfUploadEligible() {
         return ComposeboxQueryControllerBridgeJni.get().isPdfUploadEligible(mNativeInstance);
@@ -231,6 +236,8 @@ public class ComposeboxQueryControllerBridge {
 
         void removeAttachment(
                 long nativeComposeboxQueryControllerBridge, @JniType("std::string") String token);
+
+        boolean isFuseboxEligible(long nativeComposeboxQueryControllerBridge);
 
         boolean isPdfUploadEligible(long nativeComposeboxQueryControllerBridge);
 
