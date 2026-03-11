@@ -9,12 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
@@ -41,12 +36,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
-import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
-import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -75,13 +67,11 @@ public class TabbedRootUiCoordinatorTest {
     private WebPageStation mPage;
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
-    @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJni;
     @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
 
     @Before
     public void setUp() {
-        PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
         BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJni);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -95,29 +85,6 @@ public class TabbedRootUiCoordinatorTest {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
-    }
-
-    // TODO(crbug.com/40112282): Enable for tablets once we support them.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)
-    @Restriction({DeviceFormFactor.PHONE})
-    public void testRecordPrivacySandboxActivityTypeIncrementsRecordWhenFlagIsEnabled() {
-        verify(mPrivacySandboxBridgeJni)
-                .recordActivityType(
-                        any(),
-                        eq(
-                                ActivityTypeMapper.toPrivacySandboxStorageActivityType(
-                                        ActivityType.TABBED)));
-    }
-
-    // TODO(crbug.com/40112282): Enable for tablets once we support them.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)
-    @Restriction({DeviceFormFactor.PHONE})
-    public void testRecordPrivacySandboxActivityTypeDoesNotIncrementRecordWhenFlagIsDisabled() {
-        verify(mPrivacySandboxBridgeJni, never()).recordActivityType(any(), anyInt());
     }
 
     @Test

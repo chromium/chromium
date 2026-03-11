@@ -34,7 +34,6 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
-import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -79,8 +78,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.open_in_app.CustomTabOpenInAppEntryPoint;
 import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.pdf.PdfPageIphController;
-import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -990,11 +987,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         (profile) -> {
                             Profile regularProfile = profile.getOriginalProfile();
                             boolean didShowPrompt =
-                                        RequestDesktopUtils
-                                                .maybeShowDefaultEnableGlobalSettingMessage(
-                                                        regularProfile,
-                                                        mMessageDispatcher,
-                                                        mActivity);
+                                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                                            regularProfile, mMessageDispatcher, mActivity);
 
                             if (!didShowPrompt && mAppMenuCoordinator != null) {
                                 mDesktopSiteSettingsIphController =
@@ -1016,24 +1010,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 /* isBrowserApp= */ false);
                             }
                         }));
-        SupplierUtils.waitForAll(
-                () -> maybeRecordPrivacySandboxActivityType(),
-                mIntentDataProvider,
-                mProfileSupplier);
-    }
-
-    private void maybeRecordPrivacySandboxActivityType() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)) {
-            return;
-        }
-
-        int privacySandboxStorageActivityType =
-                ActivityTypeMapper.toPrivacySandboxStorageActivityType(
-                        mActivityType, mIntentDataProvider.get());
-
-        PrivacySandboxBridge privacySandboxBridge =
-                new PrivacySandboxBridge(mProfileSupplier.get());
-        privacySandboxBridge.recordActivityType(privacySandboxStorageActivityType);
     }
 
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {

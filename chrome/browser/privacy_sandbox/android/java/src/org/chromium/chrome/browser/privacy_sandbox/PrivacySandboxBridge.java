@@ -122,10 +122,6 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().setAllPrivacySandboxAllowedForTesting(mProfile); // IN-TEST
     }
 
-    public void recordActivityType(@PrivacySandboxStorageActivityType int activityType) {
-        PrivacySandboxBridgeJni.get().recordActivityType(mProfile, activityType);
-    }
-
     public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
         return PrivacySandboxBridgeJni.get()
                 .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
@@ -184,8 +180,6 @@ public class PrivacySandboxBridge {
         void topicsToggleChanged(Profile profile, boolean newValue);
 
         void setAllPrivacySandboxAllowedForTesting(Profile profile); // IN-TEST
-
-        void recordActivityType(Profile profile, int activityType);
 
         boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
 
