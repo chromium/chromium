@@ -1631,6 +1631,18 @@ TEST(HttpUtilTest, IsValidHeaderValue) {
   EXPECT_TRUE(HttpUtil::IsValidHeaderValue(allowed));
 }
 
+TEST(HttpUtilTest, IsTokenChar) {
+  for (int i = 0; i < 256; ++i) {
+    char c = static_cast<char>(i);
+    bool expected =
+        !(i >= 0x7F || i <= 0x20 || i == '(' || i == ')' || i == '<' ||
+          i == '>' || i == '@' || i == ',' || i == ';' || i == ':' ||
+          i == '\\' || i == '"' || i == '/' || i == '[' || i == ']' ||
+          i == '?' || i == '=' || i == '{' || i == '}');
+    EXPECT_EQ(expected, HttpUtil::IsTokenChar(c)) << "Failed for i=" << i;
+  }
+}
+
 TEST(HttpUtilTest, IsToken) {
   EXPECT_TRUE(HttpUtil::IsToken("valid"));
   EXPECT_TRUE(HttpUtil::IsToken("!"));
