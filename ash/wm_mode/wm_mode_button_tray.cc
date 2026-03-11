@@ -4,23 +4,22 @@
 
 #include "ash/wm_mode/wm_mode_button_tray.h"
 
+#include <string>
+
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/image_view.h"
 
 namespace ash {
 
@@ -33,20 +32,15 @@ bool ShouldButtonBeVisible() {
 }  // namespace
 
 WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kWmMode),
-      image_view_(tray_container()->AddChildView(
-          std::make_unique<views::ImageView>())) {
+    : ImagedTrayIcon(shelf,
+                     ui::ImageModel(),
+                     u"WM Mode",
+                     TrayBackgroundViewCatalogName::kWmMode) {
   SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
   // TODO(crbug.com/252558235): Localize once approved.
   GetViewAccessibility().SetName(u"WM Mode");
-  image_view_->SetTooltipText(u"WM Mode");
-
-  image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
-  image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
-
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -58,7 +52,7 @@ void WmModeButtonTray::UpdateButtonVisuals(bool is_wm_mode_active) {
   const ui::ColorId color_id =
       is_wm_mode_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                         : cros_tokens::kCrosSysOnSurface;
-  image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       is_wm_mode_active ? kWmModeOnIcon : kWmModeOffIcon, color_id));
   SetIsActive(is_wm_mode_active);
 }
