@@ -1789,7 +1789,7 @@ std::unique_ptr<views::MenuButton> BookmarkBarView::CreateMenuButtonForFolder(
 }
 
 void BookmarkBarView::RemoveBookmarkButton(size_t index) {
-  CHECK_LE(index, bookmark_buttons_.size());
+  CHECK_LT(index, bookmark_buttons_.size());
   views::LabelButton* button = bookmark_buttons_[index].first;
   bookmark_buttons_.erase(bookmark_buttons_.cbegin() + index);
   button->SetVisible(false);
