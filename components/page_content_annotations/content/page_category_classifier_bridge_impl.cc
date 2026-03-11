@@ -4,7 +4,10 @@
 
 #include "components/page_content_annotations/content/page_category_classifier_bridge_impl.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "content/public/browser/page.h"
 
 namespace page_content_annotations {
@@ -32,8 +35,31 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
   for (const auto& embedding : embeddings) {
     if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
       category_classifier_->OnPageEmbeddingAvailable(
-          page.GetMainDocument().GetLastCommittedURL(), embedding.embedding);
+          page.GetMainDocument().GetLastCommittedURL(), embedding.embedding,
+          base::BindOnce(
+              &PageCategoryClassifierBridgeImpl::OnCategoryClassifiersCompleted,
+              weak_ptr_factory_.GetWeakPtr()));
       return;
+    }
+  }
+}
+
+void PageCategoryClassifierBridgeImpl::OnCategoryClassifiersCompleted(
+    const std::vector<Category>& outputs) {
+  for (const Category& category : outputs) {
+    switch (category.category_type) {
+      case CategoryType::kEducation:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "EducationScore",
+            base::ClampRound(category.score * 100));
+        break;
+      case CategoryType::kShopping:
+        base::UmaHistogramPercentage(
+            "OptimizationGuide.PageContentAnnotations.CategoryClassifier."
+            "ShoppingScore",
+            base::ClampRound(category.score * 100));
+        break;
     }
   }
 }

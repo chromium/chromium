@@ -37,9 +37,10 @@ std::string AnnotationTypeToString(AnnotationType type);
 
 enum class CategoryType {
   kEducation = 0,
+  kShopping = 1,
 
   // Add new types above this line.
-  kMaxValue = kEducation,
+  kMaxValue = kShopping,
 };
 
 struct Category {
