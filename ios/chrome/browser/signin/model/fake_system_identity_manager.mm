@@ -482,7 +482,18 @@ void FakeSystemIdentityManager::BuildExternalPrivacyContext(
     UIViewController* view_controller,
     BuildExternalPrivacyContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Do nothing.
+  if (on_build_external_privacy_context_callback_) {
+    on_build_external_privacy_context_callback_.Run(identity, view_controller,
+                                                    std::move(callback));
+  } else {
+    // By default, just run the callback.
+    std::move(callback).Run(nil);
+  }
+}
+
+void FakeSystemIdentityManager::SetBuildExternalPrivacyContextCallback(
+    OnBuildExternalPrivacyContextCallback callback) {
+  on_build_external_privacy_context_callback_ = std::move(callback);
 }
 
 bool FakeSystemIdentityManager::HandleMDMNotification(

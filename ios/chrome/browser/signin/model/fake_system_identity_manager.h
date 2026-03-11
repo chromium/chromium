@@ -136,6 +136,15 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       id<SystemIdentity> identity,
       HandleMDMNotificationCallback callback);
 
+  // Sets a callback that executes whenever BuildExternalPrivacyContext is
+  // triggered.
+  using OnBuildExternalPrivacyContextCallback =
+      base::RepeatingCallback<void(id<SystemIdentity>,
+                                   UIViewController*,
+                                   BuildExternalPrivacyContextCallback)>;
+  void SetBuildExternalPrivacyContextCallback(
+      OnBuildExternalPrivacyContextCallback callback);
+
   // SystemIdentityManager implementation.
   bool IsSigninSupported() final;
   bool HandleSessionOpenURLContexts(
@@ -242,6 +251,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   base::RepeatingCallback<id<SystemIdentityInteractionManager>()>
       interaction_manager_factory_;
+
+  OnBuildExternalPrivacyContextCallback
+      on_build_external_privacy_context_callback_;
 
   base::WeakPtrFactory<FakeSystemIdentityManager> weak_ptr_factory_{this};
 };

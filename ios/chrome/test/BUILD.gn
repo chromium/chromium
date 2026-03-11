@@ -530,6 +530,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/sharing/ui_bundled/qr_generator:unit_tests",
     "//ios/chrome/browser/sharing_message/model:unit_tests",
     "//ios/chrome/browser/side_swipe/ui_bundled:unit_tests",
+    "//ios/chrome/browser/signin/coordinator:unit_tests",
     "//ios/chrome/browser/signin/model:signin_util_internal_unit_tests",
     "//ios/chrome/browser/signin/model:unit_tests",
     "//ios/chrome/browser/signin/model/avatar:unit_tests",
