@@ -143,6 +143,7 @@ source_set("common") {
     "input/synthetic_touchscreen_pinch_gesture.cc",
     "input/synthetic_touchscreen_pinch_gesture.h",
     "media/cdm_info.cc",
+    "memory_coordinator/constants.h",
     "memory_coordinator/memory_consumer_group_controller.h",
     "memory_coordinator/memory_consumer_group_host.h",
     "memory_coordinator/memory_consumer_registry.cc",

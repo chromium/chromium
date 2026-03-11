@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "content/common/memory_coordinator/constants.h"
 
 namespace content {
 
@@ -91,10 +92,14 @@ void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_name,
     std::optional<base::MemoryConsumerTraits> traits,
     base::RegisteredMemoryConsumer consumer) {
+  CHECK_LE(consumer_name.size(), kMaxMemoryConsumerNameLength);
+
   auto [it, inserted] = consumer_groups_.try_emplace(consumer_id);
   std::unique_ptr<ConsumerGroup>& consumer_group = it->second;
 
   if (inserted) {
+    CHECK_LE(consumer_groups_.size(), kMaxMemoryConsumersPerProcess);
+
     // First time seeing a consumer with this ID.
     consumer_group = std::make_unique<ConsumerGroup>(traits, consumer_name);
 

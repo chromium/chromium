@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "content/common/buildflags.h"
+#include "content/common/memory_coordinator/constants.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -136,15 +137,29 @@ void ChildMemoryConsumerRegistryHost::Register(
     return;
   }
 
-  auto [_, inserted] = consumers_.insert(consumer_id);
-  if (!inserted) {
-    mojo::ReportBadMessage("Register called for an existing consumer_id");
+  // Ensure a child process cannot flood the browser with too many memory
+  // consumers.
+  if (consumers_.size() >= kMaxMemoryConsumersPerProcess) {
+    mojo::ReportBadMessage("Too many memory consumers registered");
+    return;
+  }
+
+  // Ensure a child process cannot send overly large strings to the browser
+  // process.
+  if (consumer_name.length() > kMaxMemoryConsumerNameLength) {
+    mojo::ReportBadMessage("Memory consumer name is too long");
     return;
   }
 
   if (consumer_id != base::PersistentHash(consumer_name)) {
     mojo::ReportBadMessage(
         "consumer_id does not match the hash of consumer_name");
+    return;
+  }
+
+  auto [_, inserted] = consumers_.insert(consumer_id);
+  if (!inserted) {
+    mojo::ReportBadMessage("Register called for an existing consumer_id");
     return;
   }
 
@@ -176,6 +191,14 @@ void ChildMemoryConsumerRegistryHost::OnMemoryLimitChanged(
     mojo::ReportBadMessage("OnMemoryLimitChanged: out of range");
     return;
   }
+
+  // Ensure a child process can only report diagnostics for registered
+  // consumers.
+  if (consumers_.find(consumer_id) == consumers_.end()) {
+    mojo::ReportBadMessage("OnMemoryLimitChanged: unknown consumer_id");
+    return;
+  }
+
   controller_->OnMemoryLimitChanged(consumer_id, child_process_id_,
                                     memory_limit);
 }

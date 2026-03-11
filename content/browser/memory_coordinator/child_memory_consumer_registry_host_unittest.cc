@@ -15,8 +15,10 @@
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/common/buildflags.h"
+#include "content/common/memory_coordinator/constants.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/public/common/child_process_id.h"
@@ -26,14 +28,11 @@
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-#if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
-#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
-#endif
 
 namespace content {
 
@@ -244,6 +243,88 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, RenderProcessExited) {
   task_environment_.RunUntilQuit();
 }
 
+TEST_F(ChildMemoryConsumerRegistryHostTest, Register_TooManyConsumers) {
+  const ChildProcessId kChildId(1);
+
+  EXPECT_CALL(controller_, AddMemoryConsumerGroupHost(kChildId, _));
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_UTILITY, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+
+  EXPECT_CALL(controller_, OnConsumerGroupAdded(_, _, _, _, _))
+      .Times(kMaxMemoryConsumersPerProcess);
+
+  for (size_t i = 0; i < kMaxMemoryConsumersPerProcess; ++i) {
+    std::string name = "consumer" + base::NumberToString(i);
+    remote_host->Register(base::PersistentHash(name), name, {});
+  }
+  remote_host.FlushForTesting();
+
+  // The next registration should fail.
+  mojo::test::BadMessageObserver bad_message_observer;
+  std::string name = "extra";
+  remote_host->Register(base::PersistentHash(name), name, {});
+  EXPECT_EQ("Too many memory consumers registered",
+            bad_message_observer.WaitForBadMessage());
+
+  EXPECT_CALL(controller_, OnConsumerGroupRemoved(_, _))
+      .Times(kMaxMemoryConsumersPerProcess);
+  EXPECT_CALL(controller_, RemoveMemoryConsumerGroupHost(kChildId));
+  hosts_.clear();
+}
+
+TEST_F(ChildMemoryConsumerRegistryHostTest, Register_NameTooLong) {
+  const ChildProcessId kChildId(1);
+
+  EXPECT_CALL(controller_, AddMemoryConsumerGroupHost(kChildId, _));
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_UTILITY, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  std::string long_name(kMaxMemoryConsumerNameLength + 1, 'a');
+  remote_host->Register(base::PersistentHash(long_name), long_name, {});
+  EXPECT_EQ("Memory consumer name is too long",
+            bad_message_observer.WaitForBadMessage());
+
+  EXPECT_CALL(controller_, RemoveMemoryConsumerGroupHost(kChildId));
+  hosts_.clear();
+}
+
+TEST_F(ChildMemoryConsumerRegistryHostTest, Register_InvalidConsumerId) {
+  const ChildProcessId kChildId(1);
+
+  EXPECT_CALL(controller_, AddMemoryConsumerGroupHost(kChildId, _));
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_UTILITY, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kInvalidConsumerId = base::PersistentHash(kConsumerName) + 1;
+  remote_host->Register(kInvalidConsumerId, kConsumerName, {});
+  EXPECT_EQ("consumer_id does not match the hash of consumer_name",
+            bad_message_observer.WaitForBadMessage());
+
+  EXPECT_CALL(controller_, RemoveMemoryConsumerGroupHost(kChildId));
+  hosts_.clear();
+}
+
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 TEST_F(ChildMemoryConsumerRegistryHostTest, EnableReporting_BeforeBind) {
   const ChildProcessId kChildId(1);
@@ -292,7 +373,7 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, EnableReporting_AfterBind) {
   remote_host.FlushForTesting();
 }
 
-TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged) {
+TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_Valid) {
   const ChildProcessId kChildId(1);
   mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
   BindHost(PROCESS_TYPE_UTILITY, kChildId,
@@ -301,10 +382,17 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged) {
   auto it = hosts_.find(kChildId);
   ChildMemoryConsumerRegistryHost* host_impl = it->second.get();
 
-  mojo::test::BadMessageObserver bad_message_observer;
-
   static constexpr char kConsumerName[] = "consumer";
   const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Register the consumer first.
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+  EXPECT_CALL(controller_, OnConsumerGroupAdded(kConsumerId, _, _, _, _));
+  remote_host->Register(kConsumerId, kConsumerName, {});
+  remote_host.FlushForTesting();
 
   // Valid percentage (positive) should be forwarded.
   EXPECT_CALL(controller_, OnMemoryLimitChanged(kConsumerId, kChildId, 100));
@@ -312,14 +400,57 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged) {
     mojo::FakeMessageDispatchContext context;
     host_impl->OnMemoryLimitChanged(kConsumerId, 100);
   }
-  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(ChildMemoryConsumerRegistryHostTest, OnMemoryLimitChanged_InvalidRange) {
+  const ChildProcessId kChildId(1);
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_UTILITY, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  auto it = hosts_.find(kChildId);
+  ChildMemoryConsumerRegistryHost* host_impl = it->second.get();
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Register the consumer first.
+  MockChildMemoryCoordinator mock_coordinator;
+  mojo::Receiver<mojom::ChildMemoryCoordinator> coordinator_receiver(
+      &mock_coordinator);
+  remote_host->BindCoordinator(coordinator_receiver.BindNewPipeAndPassRemote());
+  EXPECT_CALL(controller_, OnConsumerGroupAdded(kConsumerId, _, _, _, _));
+  remote_host->Register(kConsumerId, kConsumerName, {});
+  remote_host.FlushForTesting();
 
   // Invalid percentage (negative) should trigger a bad message.
   EXPECT_CALL(controller_, OnMemoryLimitChanged(_, _, _)).Times(0);
   {
+    mojo::test::BadMessageObserver bad_message_observer;
     mojo::FakeMessageDispatchContext context;
     host_impl->OnMemoryLimitChanged(kConsumerId, -1);
     EXPECT_EQ("OnMemoryLimitChanged: out of range",
+              bad_message_observer.WaitForBadMessage());
+  }
+}
+
+TEST_F(ChildMemoryConsumerRegistryHostTest,
+       OnMemoryLimitChanged_UnknownConsumerId) {
+  const ChildProcessId kChildId(1);
+  mojo::Remote<mojom::ChildMemoryConsumerRegistryHost> remote_host;
+  BindHost(PROCESS_TYPE_UTILITY, kChildId,
+           remote_host.BindNewPipeAndPassReceiver());
+
+  auto it = hosts_.find(kChildId);
+  ChildMemoryConsumerRegistryHost* host_impl = it->second.get();
+
+  // Unknown consumer_id should trigger a bad message.
+  const uint32_t kUnknownConsumerId = 12345;
+  {
+    mojo::test::BadMessageObserver bad_message_observer;
+    mojo::FakeMessageDispatchContext context;
+    host_impl->OnMemoryLimitChanged(kUnknownConsumerId, 100);
+    EXPECT_EQ("OnMemoryLimitChanged: unknown consumer_id",
               bad_message_observer.WaitForBadMessage());
   }
 }
