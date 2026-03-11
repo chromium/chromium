@@ -14,11 +14,11 @@
 namespace base::android {
 
 BASE_EXPORT void RegisterFileDescriptors(
-    std::vector<std::optional<std::string>>& keys,
-    std::vector<int>& ids,
-    std::vector<int>& fds,
-    std::vector<int64_t>& offsets,
-    std::vector<int64_t>& sizes);
+    const std::vector<std::optional<std::string>>& keys,
+    const std::vector<int32_t>& ids,
+    const std::vector<int32_t>& fds,
+    const std::vector<int64_t>& offsets,
+    const std::vector<int64_t>& sizes);
 BASE_EXPORT void DumpProcessStack();
 BASE_EXPORT void OnSelfFreeze();
 

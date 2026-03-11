@@ -111,10 +111,10 @@ ApplicationState ApplicationStatusListener::GetState() {
       Java_ApplicationStatus_getStateForApplication(AttachCurrentThread()));
 }
 
-static void JNI_ApplicationStatus_OnApplicationStateChange(JNIEnv* env,
-                                                           int32_t new_state) {
-  ApplicationState application_state = static_cast<ApplicationState>(new_state);
-  ApplicationStatusListener::NotifyApplicationStateChange(application_state);
+static void JNI_ApplicationStatus_OnApplicationStateChange(
+    JNIEnv* env,
+    ApplicationState new_state) {
+  ApplicationStatusListener::NotifyApplicationStateChange(new_state);
 }
 
 // static

@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AndroidInfo;
@@ -452,7 +453,12 @@ public class ChildProcessService {
          * FileDescriptorStore. This includes the IPC channel, the crash dump signals and resource
          * related files.
          */
-        void registerFileDescriptors(String[] keys, int[] id, int[] fd, long[] offset, long[] size);
+        void registerFileDescriptors(
+                @JniType("std::vector<std::optional<std::string>>") String[] keys,
+                @JniType("std::vector<int32_t>") int[] id,
+                @JniType("std::vector<int32_t>") int[] fd,
+                @JniType("std::vector<int64_t>") long[] offset,
+                @JniType("std::vector<int64_t>") long[] size);
 
         /** Force the child process to exit. */
         void exitChildProcess();

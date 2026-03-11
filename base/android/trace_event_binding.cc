@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing_buildflags.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"  // no-presubmit-check nogncheck
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
 
@@ -110,26 +111,24 @@ static void JNI_TraceEvent_InitViewHierarchyDump(
       });
 }
 
-static int64_t JNI_TraceEvent_StartActivityDump(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& name,
-    int64_t dump_proto_ptr) {
+static int64_t JNI_TraceEvent_StartActivityDump(JNIEnv* env,
+                                                const std::string& name,
+                                                int64_t dump_proto_ptr) {
   auto* dump = reinterpret_cast<perfetto::protos::pbzero::AndroidViewDump*>(
       dump_proto_ptr);
   auto* activity = dump->add_activity();
-  activity->set_name(ConvertJavaStringToUTF8(env, name));
+  activity->set_name(name);
   return reinterpret_cast<int64_t>(activity);
 }
 
-static void JNI_TraceEvent_AddViewDump(
-    JNIEnv* env,
-    int32_t id,
-    int32_t parent_id,
-    bool is_shown,
-    bool is_dirty,
-    const base::android::JavaRef<jstring>& class_name,
-    const base::android::JavaRef<jstring>& resource_name,
-    int64_t activity_proto_ptr) {
+static void JNI_TraceEvent_AddViewDump(JNIEnv* env,
+                                       int32_t id,
+                                       int32_t parent_id,
+                                       bool is_shown,
+                                       bool is_dirty,
+                                       const std::string& class_name,
+                                       const std::string& resource_name,
+                                       int64_t activity_proto_ptr) {
   auto* activity = reinterpret_cast<perfetto::protos::pbzero::AndroidActivity*>(
       activity_proto_ptr);
   auto* view = activity->add_view();
@@ -137,8 +136,8 @@ static void JNI_TraceEvent_AddViewDump(
   view->set_parent_id(parent_id);
   view->set_is_shown(is_shown);
   view->set_is_dirty(is_dirty);
-  view->set_class_name(ConvertJavaStringToUTF8(env, class_name));
-  view->set_resource_name(ConvertJavaStringToUTF8(env, resource_name));
+  view->set_class_name(class_name);
+  view->set_resource_name(resource_name);
 }
 
 namespace {

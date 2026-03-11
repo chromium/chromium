@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
@@ -675,15 +676,15 @@ public class TraceEvent implements AutoCloseable {
 
         void initViewHierarchyDump(long id, Object list);
 
-        long startActivityDump(String name, long dumpProtoPtr);
+        long startActivityDump(@JniType("std::string") String name, long dumpProtoPtr);
 
         void addViewDump(
                 int id,
                 int parentId,
                 boolean isShown,
                 boolean isDirty,
-                String className,
-                String resourceName,
+                @JniType("std::string") String className,
+                @JniType("std::string") String resourceName,
                 long activityProtoPtr);
 
         void instantAndroidIPC(String name, long durMs);

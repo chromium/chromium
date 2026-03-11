@@ -185,6 +185,7 @@ import java.util.Map;
 
         int getHistogramTotalCountForTesting(@JniType("std::string") String name, long snapshotPtr);
 
+        @JniType("std::vector<int64_t>")
         long[] getHistogramSamplesForTesting(@JniType("std::string") String name);
 
         long createHistogramSnapshotForTesting();

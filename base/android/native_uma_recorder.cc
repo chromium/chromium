@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/metrics_jni/NativeUmaRecorder_jni.h"
@@ -266,15 +267,15 @@ static int32_t JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
 
 // Returns an array with 3 entries for each bucket, representing (min, max,
 // count).
-static ScopedJavaLocalRef<jlongArray>
-JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
-                                                    const std::string& name) {
+static std::vector<int64_t> JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(
+    JNIEnv* env,
+    const std::string& name) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   std::vector<int64_t> buckets;
 
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram.
-    return base::android::ToJavaLongArray(env, buckets);
+    return buckets;
   }
 
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
@@ -289,7 +290,7 @@ JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
     buckets.push_back(count);
   }
 
-  return base::android::ToJavaLongArray(env, buckets);
+  return buckets;
 }
 
 static int64_t JNI_NativeUmaRecorder_CreateHistogramSnapshotForTesting(

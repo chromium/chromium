@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -34,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -842,6 +842,6 @@ public class ApplicationStatus {
     interface Natives {
         // Called to notify the native side of state changes.
         // IMPORTANT: This is always called on the main thread!
-        void onApplicationStateChange(@ApplicationState int newState);
+        void onApplicationStateChange(@JniType("ApplicationState") @ApplicationState int newState);
     }
 }
