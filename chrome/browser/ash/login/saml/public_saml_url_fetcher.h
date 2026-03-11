@@ -9,13 +9,20 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace policy {
+class BrowserPolicyConnectorAsh;
 struct DMServerJobResult;
-}
+}  // namespace policy
 
 namespace ash {
 
@@ -23,7 +30,12 @@ namespace ash {
 // server, waits for the response and retrieves the redirect URL from it.
 class PublicSamlUrlFetcher {
  public:
-  explicit PublicSamlUrlFetcher(AccountId account_id);
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  PublicSamlUrlFetcher(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      AccountId account_id);
 
   PublicSamlUrlFetcher(const PublicSamlUrlFetcher&) = delete;
   PublicSamlUrlFetcher& operator=(const PublicSamlUrlFetcher&) = delete;
@@ -40,6 +52,11 @@ class PublicSamlUrlFetcher {
   // Response from DM server. Calls the stored FetchCallback or initiates the
   // SAML flow.
   void OnPublicSamlUrlReceived(policy::DMServerJobResult result);
+
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Account ID, added to the DM server request.
   std::string account_id_;

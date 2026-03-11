@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
@@ -416,13 +417,18 @@ void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
     : BaseScreenHandler(kScreenId),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       network_state_informer_(network_state_informer),
       error_screen_(error_screen),
       histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
           ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
+  CHECK(shared_url_loader_factory_);
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   HttpAuthDialog::AddObserver(this);
@@ -448,8 +454,9 @@ void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
 
     if (user && user->using_saml() &&
         user->GetType() == user_manager::UserType::kPublicAccount) {
-      public_saml_url_fetcher_ =
-          std::make_unique<PublicSamlUrlFetcher>(account_id);
+      public_saml_url_fetcher_ = std::make_unique<PublicSamlUrlFetcher>(
+          &browser_policy_connector_ash_.get(), shared_url_loader_factory_,
+          account_id);
       public_saml_url_fetcher_->Fetch(std::move(partition_call));
       return;
     }

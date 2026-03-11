@@ -38,7 +38,12 @@ class ElapsedTimer;
 
 namespace network {
 class NSSTempCertsCacheChromeOS;
+class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -136,7 +141,11 @@ class GaiaScreenHandler final
     FRAME_STATE_BLOCKED
   };
 
+  // `browser_policy_connector_ash` must be non-null and must outlvie `this`.
+  // `shared_url_loader_factory` must be non-null.
   GaiaScreenHandler(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
 
@@ -366,6 +375,11 @@ class GaiaScreenHandler final
   // Assigns new SamlChallengeKeyHandler object or an object for testing to
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
+
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
