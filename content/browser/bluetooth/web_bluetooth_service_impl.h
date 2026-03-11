@@ -166,6 +166,10 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            TwoWatchAdvertisementsReqFail);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            SecWatchAdvertisementsReqAfterFirstSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           WatchAdvertisementsFastPathChecksPermission);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTestNewPermissionsBackend,
+                           WatchAdvertisementsFastPathChecksPermission);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTestWithBaseAdapter,
                            EmulatedAdapterRemovalRestoresOriginalAdapter);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
@@ -329,6 +333,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
           blink::mojom::WebBluetoothAdvertisementClient> client_remote,
       WatchAdvertisementsForDeviceCallback callback,
       scoped_refptr<device::BluetoothAdapter> adapter);
+  // Returns true if the device identified by |device_id| has permission to be
+  // watched for advertisements. Checks either the new permissions backend
+  // (BluetoothDelegate) or the legacy allowed_devices list.
+  bool HasWatchAdvertisementsPermission(
+      const blink::WebBluetoothDeviceId& device_id);
   void OnStartDiscoverySessionForWatchAdvertisements(
       std::unique_ptr<device::BluetoothDiscoverySession> session);
   void OnDiscoverySessionErrorForWatchAdvertisements();

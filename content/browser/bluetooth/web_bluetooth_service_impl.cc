@@ -1701,6 +1701,18 @@ void WebBluetoothServiceImpl::GetDevicesImpl(
   std::move(callback).Run(std::move(web_bluetooth_devices));
 }
 
+bool WebBluetoothServiceImpl::HasWatchAdvertisementsPermission(
+    const blink::WebBluetoothDeviceId& device_id) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebBluetoothNewPermissionsBackend)) {
+    BluetoothDelegate* delegate =
+        GetContentClient()->browser()->GetBluetoothDelegate();
+    return delegate &&
+           delegate->HasDevicePermission(&render_frame_host(), device_id);
+  }
+  return allowed_devices().IsAllowedToGATTConnect(device_id);
+}
+
 void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
     const blink::WebBluetoothDeviceId& device_id,
     mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothAdvertisementClient>
@@ -1719,6 +1731,11 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
       /*service=*/this, std::move(client_remote), std::move(device_id),
       std::move(callback));
   if (watch_advertisements_discovery_session_) {
+    if (!HasWatchAdvertisementsPermission(pending_client->device_id())) {
+      pending_client->RunCallback(
+          blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
+      return;
+    }
     pending_client->RunCallback(blink::mojom::WebBluetoothResult::SUCCESS);
     watch_advertisements_clients_.push_back(std::move(pending_client));
     return;
@@ -1753,9 +1770,6 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForWatchAdvertisements(
   DCHECK(!watch_advertisements_discovery_session_);
   watch_advertisements_discovery_session_ = std::move(session);
 
-  BluetoothDelegate* delegate =
-      GetContentClient()->browser()->GetBluetoothDelegate();
-
   for (auto& pending_client : watch_advertisements_pending_clients_) {
     // Check if |pending_client| is still alive.
     if (!pending_client->is_connected()) {
@@ -1764,29 +1778,12 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForWatchAdvertisements(
       continue;
     }
 
-    // If the new permissions backend is enabled, verify the permission using
-    // the delegate.
-    if (base::FeatureList::IsEnabled(
-            features::kWebBluetoothNewPermissionsBackend) &&
-        (!delegate || !delegate->HasDevicePermission(
-                          &render_frame_host(), pending_client->device_id()))) {
+    if (!HasWatchAdvertisementsPermission(pending_client->device_id())) {
       pending_client->RunCallback(
           blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
       continue;
     }
 
-    // Otherwise verify it via |allowed_devices|.
-    if (!base::FeatureList::IsEnabled(
-            features::kWebBluetoothNewPermissionsBackend) &&
-        !allowed_devices().IsAllowedToGATTConnect(
-            pending_client->device_id())) {
-      pending_client->RunCallback(
-          blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
-      continue;
-    }
-
-    // Here we already make sure that pending_client is still alive and have
-    // permissions. Add it to |watch_advertisements_clients_|.
     pending_client->RunCallback(blink::mojom::WebBluetoothResult::SUCCESS);
     watch_advertisements_clients_.push_back(std::move(pending_client));
   }
