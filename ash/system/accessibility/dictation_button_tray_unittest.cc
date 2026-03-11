@@ -122,7 +122,7 @@ class DictationButtonTrayTest : public AshTestBase {
 
  protected:
   views::ImageView* GetImageView(DictationButtonTray* tray) {
-    return tray->image_view();
+    return tray->icon_;
   }
   void CheckDictationStatusAndUpdateIcon(DictationButtonTray* tray) {
     tray->CheckDictationStatusAndUpdateIcon();
@@ -301,9 +301,9 @@ class DictationButtonTraySodaTest : public DictationButtonTrayTest {
   }
 
   bool IsImageVisible() {
-    DCHECK(GetImageView(GetTray()));
+    DCHECK(GetTray()->icon_);
 
-    ui::Layer* const layer = GetImageView(GetTray())->layer();
+    ui::Layer* const layer = GetTray()->icon_->layer();
     if (!layer)
       return true;
 

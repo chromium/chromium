@@ -11,7 +11,7 @@
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
-#include "ash/system/tray/imaged_tray_icon.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ime/input_method.h"
@@ -23,6 +23,10 @@ namespace ui {
 class Event;
 }  // namespace ui
 
+namespace views {
+class ImageView;
+}  // namespace views
+
 namespace ash {
 
 class ProgressIndicator;
@@ -31,12 +35,12 @@ class ProgressIndicator;
 // users to have their speech transcribed into a text area. This tray will
 // only be visible after Dictation is enabled in settings. This tray does not
 // provide any bubble view windows.
-class ASH_EXPORT DictationButtonTray : public ImagedTrayIcon,
+class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
                                        public ShellObserver,
                                        public AccessibilityObserver,
                                        public SessionObserver,
                                        public ui::InputMethodObserver {
-  METADATA_HEADER(DictationButtonTray, ImagedTrayIcon)
+  METADATA_HEADER(DictationButtonTray, TrayBackgroundView)
 
  public:
   DictationButtonTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
@@ -54,12 +58,15 @@ class ASH_EXPORT DictationButtonTray : public ImagedTrayIcon,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  // ImagedTrayIcon:
+  // TrayBackgroundView:
   void Initialize() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   void HandleLocaleChange() override;
+  void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
   void Layout(PassKey) override;
+  void HideBubble(const TrayBubbleView* bubble_view) override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}
@@ -97,6 +104,9 @@ class ASH_EXPORT DictationButtonTray : public ImagedTrayIcon,
   // Called when text input state changes to determine whether Dictation
   // should still be enabled and update the icon.
   void TextInputChanged(const ui::TextInputClient* client);
+
+  // Weak pointer, will be parented by TrayContainer for its lifetime.
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // SODA download progress. A value of 0 < X < 100 indicates that download is
   // in-progress.
