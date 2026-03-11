@@ -9,6 +9,14 @@
 
 namespace fake_ml {
 
+// Fake tool call values returned by the fake ChromeML API.
+inline constexpr char kFakeToolCallId[] = "fake_call_1";
+inline constexpr char kFakeToolName[] = "fake_tool";
+
+// Format prefixes used by PieceToString for tool-related input pieces.
+inline constexpr char kToolDeclPrefix[] = "[ToolDecl:";
+inline constexpr char kToolRespPrefix[] = "[ToolResp:";
+
 const ChromeMLAPI* GetFakeMlApi();
 
 }  // namespace fake_ml

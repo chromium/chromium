@@ -15,6 +15,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/native_library.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
@@ -22,6 +23,7 @@
 #include "services/on_device_model/backend_model.h"
 #include "services/on_device_model/backend_session.h"
 #include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/chrome_ml_api.h"
 #include "services/on_device_model/ml/constraint_factory.h"
 #include "services/on_device_model/ml/session_accessor.h"
 #include "services/on_device_model/ml/ts_model.h"
@@ -111,6 +113,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
   std::optional<uint32_t> adaptation_id_;
   std::optional<std::string> model_response_prefix_;
+  // Whether tool declarations have been seen in input.
+  bool has_tool_declarations_ = false;
+  // Whether tool calls have been emitted and tool responses are expected.
+  bool awaiting_tool_responses_ = false;
 };
 
 // Uses the ChromeML API to create a model based on the params passed to

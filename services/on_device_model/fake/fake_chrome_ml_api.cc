@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +21,8 @@ constexpr std::string_view kEos = "<eos>";
 
 ChromeMLConstraintFns g_constraint_fns;
 
+// TODO(crbug.com/422803232): Rewrite with std::visit() to avoid spelling out
+// each type twice and to reveal uncovered branches.
 std::string PieceToString(const ml::InputPiece& piece) {
   if (std::holds_alternative<std::string>(piece)) {
     return std::get<std::string>(piece);
@@ -44,6 +47,19 @@ std::string PieceToString(const ml::InputPiece& piece) {
     const SkBitmap& bitmap = std::get<SkBitmap>(piece);
     return base::StringPrintf("[Bitmap of size %dx%d]", bitmap.width(),
                               bitmap.height());
+  }
+  if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
+    const auto& decl = std::get<ml::ToolDeclaration>(piece);
+    return base::StrCat({
+        kToolDeclPrefix,
+        decl.name,
+        "]",
+    });
+  }
+  if (std::holds_alternative<ml::ToolResponse>(piece)) {
+    const auto& resp = std::get<ml::ToolResponse>(piece);
+    return base::StrCat(
+        {kToolRespPrefix, resp.name, "=", resp.result_json, "]"});
   }
   NOTREACHED();
 }
@@ -161,6 +177,10 @@ struct FakeSessionInstance {
   bool enable_audio_input;
   uint32_t top_k;
   float temperature;
+  // Whether tool declarations have been appended in a system prompt.
+  bool has_tool_declarations = false;
+  // Whether tool calls have been emitted and tool responses are expected.
+  bool awaiting_tool_responses = false;
 };
 
 struct FakeTsModelInstance {
@@ -230,6 +250,8 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
       .enable_audio_input = instance->enable_audio_input,
       .top_k = instance->top_k,
       .temperature = instance->temperature,
+      .has_tool_declarations = instance->has_tool_declarations,
+      .awaiting_tool_responses = instance->awaiting_tool_responses,
   });
 }
 
@@ -238,11 +260,13 @@ void DestroySession(ChromeMLSession session) {
   delete instance;
 }
 
+// TODO(crbug.com/422803232): Rewrite input piece handling with std::visit().
 bool SessionAppend(ChromeMLSession session,
                    const ChromeMLAppendOptions* options,
                    ChromeMLCancel cancel) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
   std::string text;
+  bool in_system_prompt = false;
   for (size_t i = 0; i < options->input_size; i++) {
     // SAFETY: `options->input_size` describes how big `options->input` is.
     const ml::InputPiece& piece = UNSAFE_BUFFERS(options->input[i]);
@@ -250,6 +274,28 @@ bool SessionAppend(ChromeMLSession session,
           instance->enable_image_input);
     CHECK(!std::holds_alternative<ml::AudioBuffer>(piece) ||
           instance->enable_audio_input);
+    // Tool declarations are only recognized within a system prompt.
+    if (std::holds_alternative<ml::Token>(piece)) {
+      ml::Token token = std::get<ml::Token>(piece);
+      if (token == ml::Token::kSystem) {
+        in_system_prompt = true;
+      } else if (token == ml::Token::kUser || token == ml::Token::kModel ||
+                 token == ml::Token::kEnd) {
+        in_system_prompt = false;
+      }
+    }
+    // Detect tool declarations directly from struct variants.
+    if (std::holds_alternative<ml::ToolDeclaration>(piece)) {
+      if (in_system_prompt) {
+        instance->has_tool_declarations = true;
+      } else {
+        LOG(WARNING) << "Tool declaration ignored outside system prompt.";
+      }
+    }
+    // Track tool responses to clear awaiting state.
+    if (std::holds_alternative<ml::ToolResponse>(piece)) {
+      instance->awaiting_tool_responses = false;
+    }
     text += PieceToString(piece);
   }
   if (options->max_tokens < text.size()) {
@@ -315,6 +361,24 @@ bool SessionGenerate(ChromeMLSession session,
     OutputChunk(GenerateConstraintString(options->constraint));
     g_constraint_fns.Delete(options->constraint);
   }
+
+  // Simulate tool calls when tool declarations were appended.
+  if (instance->has_tool_declarations) {
+    instance->awaiting_tool_responses = true;
+    ChromeMLToolCall fake_call = {
+        .call_id = kFakeToolCallId,
+        .name = kFakeToolName,
+        .arguments_json = R"({"arg":"value"})",
+    };
+    ChromeMLExecutionOutput tool_output = {};
+    tool_output.status = ChromeMLExecutionStatus::kInProgress;
+    tool_output.tool_calls = &fake_call;
+    tool_output.tool_calls_size = 1;
+    (*options->output_fn)(&tool_output);
+    OutputChunk("");
+    return true;
+  }
+
   OutputChunk("");
   return true;
 }

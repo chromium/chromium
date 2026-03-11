@@ -5,6 +5,7 @@
 #include "services/on_device_model/on_device_model_service.h"
 
 #include "base/files/scoped_temp_file.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,6 +30,16 @@ namespace on_device_model {
 namespace {
 
 using ::testing::ElementsAre;
+
+// Creates a test tool declaration matching the fake's tool call name.
+ml::ToolDeclaration MakeToolDeclaration() {
+  ml::ToolDeclaration decl;
+  decl.name = fake_ml::kFakeToolName;
+  decl.description = "A test tool";
+  decl.input_schema_json =
+      R"({"type":"object","properties":{"input":{"type":"string"}}})";
+  return decl;
+}
 
 class ContextClientWaiter : public mojom::ContextClient {
  public:
@@ -164,6 +175,15 @@ class OnDeviceModelServiceTest : public testing::Test {
     session->Append(MakeInput(input), client->BindRemote());
     session.FlushForTesting();
     return client;
+  }
+
+  // Creates a session with tool declarations in the system prompt.
+  void SetupToolSession(mojom::OnDeviceModel& model,
+                        mojo::Remote<mojom::Session>& session) {
+    model.StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+    session->Append(MakeInput({ml::Token::kSystem, MakeToolDeclaration(),
+                               "Tools could be used.", ml::Token::kEnd}),
+                    {});
   }
 
   size_t GetNumModels() { return service_impl_.NumModelsForTesting(); }
@@ -927,6 +947,162 @@ TEST_F(OnDeviceModelServiceTest, SetPriorityCloneInherits) {
   EXPECT_FALSE(clone_waiter->IsComplete());
 
   clone_waiter->WaitForCompletion();
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolCallsNotGeneratedWithoutDeclarations) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  // Append without tool declarations hint.
+  session->Append(MakeInput("some input"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  // Should complete normally without tool calls.
+  EXPECT_FALSE(response.has_tool_calls());
+  EXPECT_TRUE(response.complete());
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolDeclarationAndCallGeneration) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  SetupToolSession(*model, session);
+  session->Append(MakeInput({ml::Token::kUser, "What is the weather?"}), {});
+
+  TestResponseHolder response;
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_TRUE(response.complete());
+  // Verify the fake echoed back tool declarations from the system prompt.
+  EXPECT_THAT(response.responses(),
+              testing::Contains(testing::HasSubstr(base::StrCat(
+                  {fake_ml::kToolDeclPrefix, fake_ml::kFakeToolName, "]"}))));
+  ASSERT_TRUE(response.has_tool_calls());
+  ASSERT_EQ(response.tool_calls().size(), 1u);
+  EXPECT_EQ(response.tool_calls()[0]->call_id, fake_ml::kFakeToolCallId);
+  EXPECT_EQ(response.tool_calls()[0]->name, fake_ml::kFakeToolName);
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolResponseProcessing) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  SetupToolSession(*model, session);
+  session->Append(MakeInput({ml::Token::kUser, "Please use the test tool"}),
+                  {});
+
+  // First generation triggers tool calls and completes.
+  TestResponseHolder response;
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_TRUE(response.complete());
+  ASSERT_TRUE(response.has_tool_calls());
+
+  // Send tool responses back via Append.
+  ml::ToolResponse tool_resp;
+  tool_resp.call_id = fake_ml::kFakeToolCallId;
+  tool_resp.name = fake_ml::kFakeToolName;
+  tool_resp.result_json = R"({"output":"42"})";
+  session->Append(MakeInput({ml::Token::kToolResponse, std::move(tool_resp),
+                             ml::Token::kEnd}),
+                  {});
+
+  // Second generation incorporates tool response context.
+  TestResponseHolder response2;
+  session->Generate(mojom::GenerateOptions::New(), response2.BindRemote());
+  response2.WaitForCompletion();
+
+  EXPECT_TRUE(response2.complete());
+  EXPECT_THAT(response2.responses(),
+              testing::Contains(testing::HasSubstr(base::StrCat(
+                  {fake_ml::kToolRespPrefix, fake_ml::kFakeToolName, "="}))));
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolDeclarationsIgnoredOutsideSystemPrompt) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  // Tool declarations outside the system prompt.
+  session->Append(MakeInput({ml::Token::kUser, "Please help me. ",
+                             MakeToolDeclaration(), ml::Token::kEnd}),
+                  {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_FALSE(response.has_tool_calls());
+  EXPECT_TRUE(response.complete());
+}
+
+TEST_F(OnDeviceModelServiceTest, ToolCallsWithClonedSession) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  SetupToolSession(*model, session);
+
+  // Clone the session.
+  mojo::Remote<mojom::Session> cloned;
+  session->Clone(cloned.BindNewPipeAndPassReceiver());
+
+  // Generate on the cloned session.
+  TestResponseHolder response;
+  cloned->Append(MakeInput({ml::Token::kUser, "Calculate 2+2"}), {});
+  cloned->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  // Cloned session should still generate tool calls.
+  EXPECT_TRUE(response.complete());
+  ASSERT_TRUE(response.has_tool_calls());
+  ASSERT_EQ(response.tool_calls().size(), 1u);
+  EXPECT_EQ(response.tool_calls()[0]->call_id, fake_ml::kFakeToolCallId);
+  EXPECT_EQ(response.tool_calls()[0]->name, fake_ml::kFakeToolName);
+}
+
+TEST_F(OnDeviceModelServiceTest, GenerateRejectedWhileAwaitingToolResponses) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  SetupToolSession(*model, session);
+  session->Append(MakeInput({ml::Token::kUser, "Please use the test tool"}),
+                  {});
+
+  // First generation triggers tool calls.
+  TestResponseHolder response1;
+  session->Generate(mojom::GenerateOptions::New(), response1.BindRemote());
+  response1.WaitForCompletion();
+  EXPECT_TRUE(response1.complete());
+  ASSERT_TRUE(response1.has_tool_calls());
+
+  // Second generation without tool response should be rejected by closing
+  // the responder pipe.
+  TestResponseHolder response2;
+  session->Generate(mojom::GenerateOptions::New(), response2.BindRemote());
+  response2.WaitForCompletion();
+  EXPECT_TRUE(response2.disconnected());
+  EXPECT_FALSE(response2.complete());
+
+  // After providing tool responses, generation should succeed again.
+  ml::ToolResponse tool_resp;
+  tool_resp.call_id = fake_ml::kFakeToolCallId;
+  tool_resp.name = fake_ml::kFakeToolName;
+  tool_resp.result_json = R"({"output":"42"})";
+  session->Append(MakeInput({ml::Token::kToolResponse, std::move(tool_resp),
+                             ml::Token::kEnd}),
+                  {});
+
+  TestResponseHolder response3;
+  session->Generate(mojom::GenerateOptions::New(), response3.BindRemote());
+  response3.WaitForCompletion();
+  EXPECT_TRUE(response3.complete());
+  EXPECT_THAT(response3.responses(),
+              testing::Contains(testing::HasSubstr(base::StrCat(
+                  {fake_ml::kToolRespPrefix, fake_ml::kFakeToolName, "="}))));
 }
 
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)

@@ -5,7 +5,6 @@
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 
 namespace on_device_model {
 
@@ -28,7 +27,7 @@ void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
 
 void TestResponseHolder::OnToolCalls(
     std::vector<mojom::ToolCallPtr> tool_calls) {
-  NOTIMPLEMENTED();
+  tool_calls_ = std::move(tool_calls);
 }
 
 void TestResponseHolder::DisconnectOnMessage() {
