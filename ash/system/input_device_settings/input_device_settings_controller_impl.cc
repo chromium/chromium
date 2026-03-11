@@ -748,13 +748,11 @@ void InputDeviceSettingsControllerImpl::Init() {
     duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
   }
 
-  if (base::FeatureList::IsEnabled(features::kPeripheralNotification)) {
-    notification_controller_ =
-        std::make_unique<InputDeviceSettingsNotificationController>(
-            message_center::MessageCenter::Get());
-  }
+  notification_controller_ =
+      std::make_unique<InputDeviceSettingsNotificationController>(
+          message_center::MessageCenter::Get());
 
-    metadata_manager_ = std::make_unique<InputDeviceSettingsMetadataManager>();
+  metadata_manager_ = std::make_unique<InputDeviceSettingsMetadataManager>();
 
   keyboard_notifier_ = std::make_unique<
       InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
