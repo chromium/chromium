@@ -277,6 +277,10 @@ String SerializeConfiguration(
       // "require" is the default and not serialized.
       break;
   }
+  // Serialize alwaysNegotiateDataChannels.
+  json->SetBoolean("alwaysNegotiateDataChannels",
+                   config.always_negotiate_data_channels);
+
   // Serialize (non-standard and obsolete) encodedInsertableStreams.
   if (usesInsertableStreams) {
     json->SetBoolean("encodedInsertableStreams", true);

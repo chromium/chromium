@@ -1232,6 +1232,8 @@ webrtc::RTCErrorType RTCPeerConnectionHandler::SetConfiguration(
   new_configuration.certificates = blink_config.certificates;
   new_configuration.ice_candidate_pool_size =
       blink_config.ice_candidate_pool_size;
+  new_configuration.always_negotiate_data_channels =
+      blink_config.always_negotiate_data_channels;
 
   if (peer_connection_tracker_)
     peer_connection_tracker_->TrackSetConfiguration(this, new_configuration);

@@ -43,4 +43,6 @@ dictionary RTCConfiguration {
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
     [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;
     boolean encodedInsertableStreams = false;
+    // https://w3c.github.io/webrtc-extensions/#always-negotiating-datachannels
+    [RuntimeEnabled=RtcAlwaysNegotiateDataChannels] boolean alwaysNegotiateDataChannels = false;
 };

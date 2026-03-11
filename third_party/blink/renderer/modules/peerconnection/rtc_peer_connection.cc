@@ -406,6 +406,11 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
         static_cast<int>(configuration->rtcAudioJitterBufferMinDelayMs());
   }
 
+  if (configuration->hasAlwaysNegotiateDataChannels()) {
+    web_configuration.always_negotiate_data_channels =
+        configuration->alwaysNegotiateDataChannels();
+  }
+
   return web_configuration;
 }
 
@@ -1297,6 +1302,8 @@ RTCConfiguration* RTCPeerConnection::getConfiguration(
   }
   result->setEncodedInsertableStreams(
       peer_handler_->encoded_insertable_streams());
+  result->setAlwaysNegotiateDataChannels(
+      webrtc_configuration.always_negotiate_data_channels);
 
   return result;
 }

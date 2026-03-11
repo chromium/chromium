@@ -4670,6 +4670,10 @@
       status: "experimental",
     },
     {
+      name: "RtcAlwaysNegotiateDataChannels",
+      status: "stable",
+    },
+    {
       name: "RtcAudioJitterBufferMaxPackets",
       origin_trial_feature_name: "RtcAudioJitterBufferMaxPackets",
       status: "experimental",
