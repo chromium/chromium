@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -148,14 +149,14 @@ TEST(RandUtilTest, BitsToOpenEndedUnitIntervalF) {
 
 TEST(RandUtilTest, RandBytes) {
   const size_t buffer_size = 50;
-  uint8_t buffer[buffer_size];
-  UNSAFE_TODO(memset(buffer, 0, buffer_size));
+  std::array<uint8_t, buffer_size> buffer = {};
   RandBytes(buffer);
-  std::sort(buffer, UNSAFE_TODO(buffer + buffer_size));
+  std::ranges::sort(buffer);
+  const auto [unique_end, _] = std::ranges::unique(buffer);
+  const size_t unique_count = std::distance(buffer.begin(), unique_end);
   // Probability of occurrence of less than 25 unique bytes in 50 random bytes
   // is below 10^-25.
-  UNSAFE_TODO(
-      EXPECT_GT(std::unique(buffer, buffer + buffer_size) - buffer, 25));
+  EXPECT_GT(unique_count, 25);
 }
 
 // Verify that calling RandBytes with an empty buffer doesn't fail.
