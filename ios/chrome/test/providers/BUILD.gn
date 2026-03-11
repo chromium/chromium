@@ -14,6 +14,7 @@ group("providers") {
     "//ios/chrome/test/providers/application_mode_fetcher",
     "//ios/chrome/test/providers/branded_images",
     "//ios/chrome/test/providers/bwg",
+    "//ios/chrome/test/providers/cobalt",
     "//ios/chrome/test/providers/content_notification",
     "//ios/chrome/test/providers/context_menu",
     "//ios/chrome/test/providers/discover_feed",
