@@ -9,6 +9,7 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/features/actor_login.proto";
 import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/annotation_reducer_one_p_resolver.proto";
+import "components/optimization_guide/proto/features/annotation_reducer_query_classifier.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
@@ -121,6 +122,9 @@ message LogAiDataRequest {
 
     AnnotationReducerOnePResolverLoggingData annotation_reducer_one_p_resolver =
         38;
+
+    AnnotationReducerQueryClassifierLoggingData
+        annotation_reducer_query_classifier = 39;
 
     DefaultLoggingData default = 1000;
   }
