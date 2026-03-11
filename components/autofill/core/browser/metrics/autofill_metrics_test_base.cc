@@ -117,9 +117,7 @@ void TestBrowserAutofillManager::Reset() {
 
 AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
   scoped_features_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling,
-       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
-      {});
+      {features::kAutofillEnableLoyaltyCardsFilling}, {});
 }
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;

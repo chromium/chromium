@@ -679,9 +679,7 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
 
     // TODO(crbug.com/416664590): Convert to PredictionPrecedenceException and
     // add it to `kPreferredHeuristicTypesOverHtmlTypes` after launch.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
-        heuristic_type_local == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+    if (heuristic_type_local == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
         html_type_local == HtmlFieldType::kEmail) {
       return {MakeAutofillType(EMAIL_OR_LOYALTY_MEMBERSHIP_ID),
               AutofillPredictionSource::kHeuristics};
@@ -734,9 +732,7 @@ AutofillField::PredictionResult AutofillField::GetComputedPredictionResult()
 
   // TODO(crbug.com/416664590): Convert to PredictionPrecedenceException after
   // launch.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
-      heuristic_type_local == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
+  if (heuristic_type_local == EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
       server_type_local == EMAIL_ADDRESS) {
     return {MakeAutofillType(EMAIL_OR_LOYALTY_MEMBERSHIP_ID),
             AutofillPredictionSource::kHeuristics};

@@ -179,8 +179,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(int,
                            kAutofillEnableCacheForRegexMatchingCacheSizeParam);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableExpirationDateImprovements);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(

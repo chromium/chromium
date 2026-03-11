@@ -348,10 +348,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableEmailOrLoyaltyCardsFilling)) {
-    permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
-  }
+  permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
 
   struct WipedField {
     FieldGlobalId field_id;

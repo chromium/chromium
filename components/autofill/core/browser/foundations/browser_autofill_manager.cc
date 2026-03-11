@@ -3474,10 +3474,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
             form, *form_structure, field, *autofill_field,
             std::move(plus_address_email_override), trigger_source);
       }
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
-          autofill_field->Type().GetLoyaltyCardType() ==
-              EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
+      if (autofill_field->Type().GetLoyaltyCardType() ==
+          EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
         if (ValuablesDataManager* valuables_manager =
                 client().GetValuablesDataManager()) {
           if (suggestions.empty()) {

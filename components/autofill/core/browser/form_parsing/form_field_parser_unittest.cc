@@ -259,9 +259,7 @@ TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
 TEST_F(FormFieldParserTest, ParseStandaloneLoyaltyCardFields) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling,
-       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
-      {});
+      {features::kAutofillEnableLoyaltyCardsFilling}, {});
 
   // Parse single field loyalty card.
   AddTextFormFieldData("", "frequent-flyer", LOYALTY_MEMBERSHIP_ID);
@@ -281,9 +279,7 @@ TEST_F(FormFieldParserTest, ParseStandaloneLoyaltyCardFields) {
 TEST_F(FormFieldParserTest, ParseFormFieldsFieldsEmailOrLoyaltyCard) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling,
-       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
-      {});
+      {features::kAutofillEnableLoyaltyCardsFilling}, {});
   AddTextFormFieldData("", "Email Or Loyalty Card",
                        EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
   AddTextFormFieldData("", "Password", UNKNOWN_TYPE);

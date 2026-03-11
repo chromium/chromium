@@ -17,9 +17,7 @@ class EmailFieldParserTest : public FormFieldParserTestBase,
  public:
   EmailFieldParserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableLoyaltyCardsFilling,
-                              features::
-                                  kAutofillEnableEmailOrLoyaltyCardsFilling},
+        /*enabled_features=*/{features::kAutofillEnableLoyaltyCardsFilling},
         /*disabled_features=*/{});
   }
   EmailFieldParserTest(const EmailFieldParserTest&) = delete;

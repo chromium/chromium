@@ -800,9 +800,7 @@ void MaybeMergeServerPredictions(
         return ToSafeFieldType(pred.type(), UNKNOWN_TYPE);
       });
 
-  if (server_types.contains_all({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID}) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableEmailOrLoyaltyCardsFilling)) {
+  if (server_types.contains_all({EMAIL_ADDRESS, LOYALTY_MEMBERSHIP_ID})) {
     // Remove email and loyalty card predictions.
     std::erase_if(server_predictions, [](const FieldPrediction& x) {
       return x.type() == EMAIL_ADDRESS || x.type() == LOYALTY_MEMBERSHIP_ID;

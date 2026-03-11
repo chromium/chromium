@@ -512,12 +512,6 @@ BASE_FEATURE_PARAM(int,
                    "cache_size",
                    1000);
 
-// When enabled, Autofill will display joined email and loyalty card Autofill
-// suggestions.
-// TODO(crbug.com/416664590): Remove once launched.
-BASE_FEATURE(kAutofillEnableEmailOrLoyaltyCardsFilling,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
 //   like MM/YY from placeholders and labels in mind.

@@ -1317,9 +1317,7 @@ class DetermineAvailableFieldTypesTest : public ::testing::Test {
   DetermineAvailableFieldTypesTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillEnableLoyaltyCardsFilling,
-                              features::
-                                  kAutofillEnableEmailOrLoyaltyCardsFilling},
+                              features::kAutofillEnableLoyaltyCardsFilling},
         /*disabled_features=*/{});
   }
 

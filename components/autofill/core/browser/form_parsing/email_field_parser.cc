@@ -28,8 +28,6 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
     // Try parsing the same field as a loyalty card field.
     scanner.Restore(saved_cursor);
     const bool parsed_loyalty_card =
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
         ParseField(context, scanner, "LOYALTY_MEMBERSHIP_ID", &match);
     if (parsed_loyalty_card) {
       return std::make_unique<EmailFieldParser>(std::move(*match),

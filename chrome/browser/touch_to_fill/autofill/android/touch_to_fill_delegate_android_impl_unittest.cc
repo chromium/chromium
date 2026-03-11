@@ -244,7 +244,6 @@ class TouchToFillDelegateAndroidImplUnitTest
   TouchToFillDelegateAndroidImplUnitTest() {
     features_.InitWithFeatures(
         {features::kAutofillEnableLoyaltyCardsFilling,
-         features::kAutofillEnableEmailOrLoyaltyCardsFilling,
          features::kAutofillEnableBuyNowPayLaterSyncing},
         {});
     // Some date after in the 2000s because Autofill doesn't allow expiration

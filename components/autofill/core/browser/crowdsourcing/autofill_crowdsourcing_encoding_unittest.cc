@@ -2595,8 +2595,6 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // Tests that a joined prediction for email or loyalty card fields is generated
 // when the server returns separate predictions for each type.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillEnableEmailOrLoyaltyCardsFilling};
   FormData form_data = test::GetFormData(
       {.fields =
            {// Field accepting the user email of loyalty card.
@@ -2636,8 +2634,6 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
 // Tests that a server joined prediction is not generated for email or loyalty
 // card fields if the server does not return separate predictions for each type.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
-  base::test::ScopedFeatureList features{
-      features::kAutofillEnableEmailOrLoyaltyCardsFilling};
   FormData form_data = test::GetFormData(
       {.fields =
            {// Field accepting the user email of loyalty card.
