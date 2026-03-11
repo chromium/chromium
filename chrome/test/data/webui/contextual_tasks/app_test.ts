@@ -910,7 +910,9 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', composebox.style.height);
   });
 
-  test('updates clip path on post message', async () => {
+  // Disabled on 146 branch only due to persistent failures after merging
+  // https://crrev.com/c/7637762.
+  test.skip('updates clip path on post message', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 

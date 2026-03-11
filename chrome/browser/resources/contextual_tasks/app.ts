@@ -508,7 +508,11 @@ export class ContextualTasksAppElement extends CrLitElement {
           });
           // Update the height of the forced composebox bounds if it is set.
           if (this.forcedComposeboxBounds_) {
-            this.forcedComposeboxBounds_.height = e.detail.height;
+            this.forcedComposeboxBounds_ = {
+              ...this.forcedComposeboxBounds_,
+              height: e.detail.height,
+              top: this.forcedComposeboxBounds_.bottom - e.detail.height,
+            };
           } else {
             this.requestUpdate();
           }
@@ -673,8 +677,14 @@ export class ContextualTasksAppElement extends CrLitElement {
           height: currentHeight,
         });
       }
-      this.forcedComposeboxBounds_ = inputRect;
-      this.forcedComposeboxBounds_.height = currentHeight;
+      // Since the height is controlled client side and the composebox grows
+      // updwards, set the top of the rect to match the current height to avoid
+      // miscalculations in the clip path.
+      this.forcedComposeboxBounds_ = {
+        ...inputRect,
+        height: currentHeight,
+        top: inputRect.bottom - currentHeight,
+      };
     }
     if (occluders !== undefined) {
       this.occluders_ = occluders;
