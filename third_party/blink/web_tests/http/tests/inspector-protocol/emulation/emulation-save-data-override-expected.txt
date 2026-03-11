@@ -1,0 +1,8 @@
+Tests that Emulation.setDataSaverOverride affects both navigator.connection.saveData and Save-Data request header.
+saveData after enable: true
+Save-Data header after enable: Save-Data: on
+saveData after disable: false
+Save-Data header after disable: <missing>
+saveData after reset: false
+Save-Data header after reset: <missing>
+

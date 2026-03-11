@@ -232,8 +232,11 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   // Save-Data was previously included in hints for workers, thus we cannot
   // remove it for the time being. If you're reading this, consider building
   // permissions policies for workers and/or deprecating this inclusion.
-  if (save_data_enabled_)
+  bool save_data_enabled = save_data_enabled_;
+  probe::ApplyDataSaverOverride(Probe(), save_data_enabled);
+  if (save_data_enabled) {
     request.SetHttpHeaderField(http_names::kSaveData, AtomicString("on"));
+  }
 }
 
 void WorkerFetchContext::AddResourceTiming(

@@ -820,9 +820,11 @@ void FrameFetchContext::AddClientHintsIfNecessary(
     }
   }
 
+  bool save_data_enabled = GetNetworkStateNotifier().SaveDataEnabled();
+  probe::ApplyDataSaverOverride(Probe(), save_data_enabled);
   if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
                            WebClientHintsType::kSaveData, hints_preferences) &&
-      GetNetworkStateNotifier().SaveDataEnabled()) {
+      save_data_enabled) {
     request.SetHttpHeaderField(http_names::kSaveData, http_names::kOn);
   }
 
