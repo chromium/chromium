@@ -655,10 +655,10 @@ void PasswordImporter::ExecuteImport(ImportResultsCallback results_callback,
   // Run `results_callback` when both `AddCredentials` and
   // `UpdatePasswordForms` have finished running.
   auto barrier_done_callback = base::BarrierClosure(
-      2, base::BindOnce(base::BindOnce(
-             &PasswordImporter::ImportFinished, weak_ptr_factory_.GetWeakPtr(),
-             std::move(results_callback), std::move(results), start_time,
-             conflicts_count)));
+      2, base::BindOnce(&PasswordImporter::ImportFinished,
+                        weak_ptr_factory_.GetWeakPtr(),
+                        std::move(results_callback), std::move(results),
+                        start_time, conflicts_count));
 
   presenter_->AddCredentials(incoming_passwords.add_credentials,
                              password_manager::PasswordForm::Type::kImported,
