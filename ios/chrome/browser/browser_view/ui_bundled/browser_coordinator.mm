@@ -4180,22 +4180,13 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - WebContentCommands
 
 - (void)showAppStoreWithParameters:(NSDictionary*)productParameters {
-  // TODO (crbug.com/486139801): Start the StoreKitCoordinator with
-  // clearPresentedState regardless of whether the ComposeBox feature is
-  // enabled. This was originally restricted to the feature flag to ensure a
-  // safer cherry-pick.
-  if (IsComposeboxIOSEnabled()) {
-    __weak __typeof(self) weakSelf = self;
-
-    // Properly start the StoreKitCoordinator in a clean presented state.
-    [self
-        clearPresentedStateWithCompletion:^{
-          [weakSelf startStoreKitCoordinatorWithParameters:productParameters];
-        }
-                           dismissOmnibox:YES];
-  } else {
-    [self startStoreKitCoordinatorWithParameters:productParameters];
-  }
+  __weak __typeof(self) weakSelf = self;
+  // Properly start the StoreKitCoordinator in a clean presented state.
+  [self
+      clearPresentedStateWithCompletion:^{
+        [weakSelf startStoreKitCoordinatorWithParameters:productParameters];
+      }
+                         dismissOmnibox:YES];
 }
 
 - (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes {
