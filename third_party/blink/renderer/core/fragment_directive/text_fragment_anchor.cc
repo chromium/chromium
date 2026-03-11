@@ -181,10 +181,12 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
                       WebFeature::kInvalidFragmentDirective);
   }
 
+  bool has_internal_scroll_to_text_fragment = false;
   if (frame.Loader().GetDocumentLoader()) {
     std::optional<String> internal_scroll_to_text_fragment =
         frame.Loader().GetDocumentLoader()->TakeInternalScrollToTextFragment();
     if (internal_scroll_to_text_fragment) {
+      has_internal_scroll_to_text_fragment = true;
       if (TextDirective* text_directive =
               TextDirective::Create(*internal_scroll_to_text_fragment,
                                     TextDirective::Behavior::kScrollOnly)) {
@@ -218,14 +220,17 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
     }
   }
 
-  return MakeGarbageCollected<TextFragmentAnchor>(text_directives, frame,
-                                                  should_scroll);
+  auto* anchor = MakeGarbageCollected<TextFragmentAnchor>(
+      text_directives, frame, should_scroll,
+      has_internal_scroll_to_text_fragment);
+  return anchor;
 }
 
 TextFragmentAnchor::TextFragmentAnchor(
     HeapVector<Member<TextDirective>>& text_directives,
     LocalFrame& frame,
-    bool should_scroll)
+    bool should_scroll,
+    bool is_send_tab_to_self)
     : SelectorFragmentAnchor(frame, should_scroll),
       post_load_timer_(frame.GetTaskRunner(TaskType::kInternalFindInPage),
                        this,
@@ -240,13 +245,21 @@ TextFragmentAnchor::TextFragmentAnchor(
   DCHECK(!text_directives.empty());
   DCHECK(frame_->View());
 
-  int highlight_directive_count = 0;
-  for (const auto& directive : text_directives) {
-    if (!directive->IsScrollOnly()) {
-      highlight_directive_count++;
-    }
+  // We count all directives, including kScrollOnly (silent) directives used by
+  // internal features like Send Tab To Self, so we can track their success
+  // rate in metrics.
+  metrics_->DidCreateAnchor(text_directives.size());
+
+  if (is_send_tab_to_self) {
+    metrics_->SetLinkOpenSource(
+        TextFragmentAnchorMetrics::TextFragmentLinkOpenSource::kSendTabToSelf);
+  } else if (HasSearchEngineSource()) {
+    metrics_->SetLinkOpenSource(
+        TextFragmentAnchorMetrics::TextFragmentLinkOpenSource::kSearchEngine);
+  } else {
+    metrics_->SetLinkOpenSource(
+        TextFragmentAnchorMetrics::TextFragmentLinkOpenSource::kUnknown);
   }
-  metrics_->DidCreateAnchor(highlight_directive_count);
 
   AnnotationAgentContainerImpl* annotation_container =
       AnnotationAgentContainerImpl::CreateIfNeeded(*frame_->GetDocument());
@@ -414,17 +427,12 @@ void TextFragmentAnchor::UpdateCurrentState() {
     }
 
     if (matched_annotations_.insert(annotation).is_new_entry) {
-      if (!annotation->IsScrollOnly()) {
-        // Internal "silent" scrolls are not counted in the standard
-        // SharedHighlight metrics.
-        metrics_->DidFindMatch();
-        const AnnotationSelector* selector = annotation->GetSelector();
-        // Selector must be a TextAnnotationSelector since this is the
-        // *Text*FragmentAnchor.
-        if (selector &&
-            !To<TextAnnotationSelector>(selector)->WasMatchUnique()) {
-          metrics_->DidFindAmbiguousMatch();
-        }
+      metrics_->DidFindMatch();
+      const AnnotationSelector* selector = annotation->GetSelector();
+      // Selector must be a TextAnnotationSelector since this is the
+      // *Text*FragmentAnchor.
+      if (selector && !To<TextAnnotationSelector>(selector)->WasMatchUnique()) {
+        metrics_->DidFindAmbiguousMatch();
       }
     }
   }
@@ -508,7 +516,6 @@ void TextFragmentAnchor::DidFinishSearch() {
   CHECK(container);
   container->RemoveObserver(this);
 
-  metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
 
   bool did_find_any_matches = first_match_ != nullptr;

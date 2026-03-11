@@ -118,7 +118,8 @@ class CORE_EXPORT TextFragmentAnchor final
 
   TextFragmentAnchor(HeapVector<Member<TextDirective>>& text_directives,
                      LocalFrame& frame,
-                     bool should_scroll);
+                     bool should_scroll,
+                     bool is_send_tab_to_self);
   TextFragmentAnchor(const TextFragmentAnchor&) = delete;
   TextFragmentAnchor& operator=(const TextFragmentAnchor&) = delete;
   ~TextFragmentAnchor() override = default;

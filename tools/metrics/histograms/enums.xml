@@ -26612,6 +26612,7 @@ Called by update_net_error_codes.py.-->
 <enum name="TextFragmentLinkOpenSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="SearchEngine"/>
+  <int value="2" label="SendTabToSelf"/>
 </enum>
 
 <enum name="TimeZoneRequestEvent">

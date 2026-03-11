@@ -23702,7 +23702,7 @@ be describing additional metrics about the same event.
     <summary>
       Record the type of source for the current navigation, which has text
       fragments. At the moment, this maps to identifying whether the source is a
-      known search engine or not.
+      known search engine, Send Tab To Self, or unknown.
     </summary>
   </metric>
   <metric name="Success" enum="Boolean">

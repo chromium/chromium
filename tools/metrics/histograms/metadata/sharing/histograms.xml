@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 <!-- Should be synced with TextFragmentLinkOpenSource in enums.xml. -->
 
   <variant name=".SearchEngine" summary="the default search engine."/>
+  <variant name=".SendTabToSelf"
+      summary="Send Tab To Self cross-device sharing"/>
   <variant name=".Unknown" summary="unknown but not the default search engine"/>
 </variants>
 
@@ -582,10 +584,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor.LinkOpenSource"
-    enum="TextFragmentLinkOpenSource" expires_after="2024-09-29">
+    enum="TextFragmentLinkOpenSource" expires_after="2027-03-07">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
+    Warning: This histogram was expired from 2024-09-29 to 2026-03-11; data may
+    be missing or incomplete for this period.
+
     Recorded for every navigation to a link with a valid text fragment selector
     (e.g. #:=:text=SELECTOR). Indicates source type that navigation originated
     from. It only know about search engines that come from the pre-populated
@@ -602,10 +607,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.AmbiguousMatch"
-    enum="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2027-03-07">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
+    Warning: This histogram was expired from 2024-06-30 to 2026-03-11; data may
+    be missing or incomplete for this period.
+
     Whether we found multiple matches for a selector. Recorded when
     TextFragmentAnchor finishes searching once the page is loaded.
 
@@ -615,10 +623,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.MatchRate" units="%"
-    expires_after="2024-06-30">
+    expires_after="2027-03-07">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
+    Warning: This histogram was expired from 2024-06-30 to 2026-03-11; data may
+    be missing or incomplete for this period.
+
     The percentage of selectors for which a match was found in the document.
     Recorded when TextFragmentAnchor finishes searching once the page is loaded.
 
@@ -628,10 +639,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TimeToScrollIntoView"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2027-03-07">
   <owner>bokan@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
+    Warning: This histogram was expired from 2024-06-30 to 2026-03-11; data may
+    be missing or incomplete for this period.
+
     The time between creating the TextFragmentAnchor (i.e. when it is parsed)
     and scrolling the target into view. Only recorded if there is a match and we
     tried to scroll it into view (it may already have been in view). Recorded
