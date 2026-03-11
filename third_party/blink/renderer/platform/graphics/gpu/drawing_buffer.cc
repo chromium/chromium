@@ -91,6 +91,10 @@ namespace {
 BASE_FEATURE(kUseNonEmptySyncTokenForLowLatencyCanvas,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether offscreen canvases are allowed to be placed into overlays.
+BASE_FEATURE(kAllowOverlaysForOffscreenCanvas,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -2004,10 +2008,13 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
     // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
     // of the code, we use the code path of non-WebGLImageChromium for
-    // OffscreenCanvas.  See detailed discussion in crbug.com/649668.
-    // TODO(crbug.com/488937356): Eliminate this workaround, which should no
-    // longer be needed post-SharedImage.
-    if (SharedGpuContext::IsGpuCompositingEnabled() && !is_offscreen_canvas_) {
+    // OffscreenCanvas. See detailed discussion in crbug.com/649668.
+    // TODO(crbug.com/488937356): Eliminate this workaround post-rollout of the
+    // killswitch; the workaround should no longer be necessary
+    // post-SharedImage.
+    if (SharedGpuContext::IsGpuCompositingEnabled() &&
+        (!is_offscreen_canvas_ ||
+         base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
       should_use_chromium_image =
           SharedGpuContext::MaySupportWebGLImageChromium() &&
           (SharedGpuContext::WebGLImageChromiumEnabled() ||
