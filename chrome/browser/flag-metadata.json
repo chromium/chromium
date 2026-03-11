@@ -936,7 +936,7 @@
   {
     "name": "autofill-enable-support-for-name-and-email-profile",
     "owners": ["sygiet@google.com", "fleimgruber@google.com"],
-    "expiry_milestone": 147
+    "expiry_milestone": 149
   },
   { "name": "autofill-enable-touch-to-fill-reshow-for-bnpl",
     "owners": [ "ferny@google.com", "payments-autofill-team@google.com"],
