@@ -124,7 +124,7 @@ def unset_bad_systemd_env_vars():
                     env_vars_to_unset)
 
 
-def user_main(out_dir):
+def user_main(out_dir, keep_sessions=False):
     try:
         run_command(["systemctl", "is-active", "--quiet", "gdm3"])
     except subprocess.CalledProcessError:
@@ -152,13 +152,16 @@ def user_main(out_dir):
     script_path = os.path.abspath(__file__)
     home_dir = os.path.expanduser("~")
 
-    run_command([
+    cmd = [
         "sudo", sys.executable, script_path, "--elevated", out_dir,
         "--user-home", home_dir
-    ])
+    ]
+    if keep_sessions:
+        cmd.append("--keep-sessions")
+    run_command(cmd)
 
 
-def root_main(out_dir, user_home):
+def root_main(out_dir, user_home, keep_sessions=False):
     abs_out_dir = os.path.abspath(out_dir)
     host_config_path = "/etc/chrome-remote-desktop/host.json"
 
@@ -263,7 +266,8 @@ NoDisplay=true
     signal.signal(signal.SIGINT, handle_signal)
     signal.signal(signal.SIGHUP, handle_signal)
 
-    atexit.register(terminate_remote_sessions)
+    if not keep_sessions:
+        atexit.register(terminate_remote_sessions)
     try:
         # Use subprocess.run to block and stream output
         subprocess.run(daemon_command, check=True)
@@ -283,7 +287,21 @@ def main():
         description="Run dev CRD multi-process host.")
 
     parser.add_argument("out_dir",
+                        nargs="?",
                         help="Build output directory (e.g., out/debug)")
+
+    parser.add_argument(
+        "--keep-sessions",
+        action="store_true",
+        help=
+        "Skip terminating remote sessions on exit. Graphical sessions created "
+        "by CRD will be kept even after the host has exited. This allows for "
+        "testing session recovery behavior. Run this script as root with the "
+        "--terminate-sessions flag to terminate these sessions.")
+    parser.add_argument("--terminate-sessions",
+                        action="store_true",
+                        help="Only terminate remote sessions and exit. "
+                        "Must be run with sudo.")
 
     # These should be set by the script itself.
     parser.add_argument("--elevated",
@@ -292,6 +310,16 @@ def main():
     parser.add_argument("--user-home", help=argparse.SUPPRESS)
 
     args = parser.parse_args()
+
+    if args.terminate_sessions:
+        if os.geteuid() != 0:
+            print("Error: --terminate-sessions must be run with sudo.")
+            sys.exit(1)
+        terminate_remote_sessions()
+        sys.exit(0)
+
+    if not args.out_dir:
+        parser.error("out_dir is required when not using --terminate-sessions")
 
     if not os.path.isdir(args.out_dir):
         print(f"Error: Output directory not found: {args.out_dir}")
@@ -304,13 +332,13 @@ def main():
         if not args.user_home:
             print("Error: --user-home is required in elevated mode.")
             sys.exit(1)
-        root_main(args.out_dir, args.user_home)
+        root_main(args.out_dir, args.user_home, args.keep_sessions)
     else:
         if os.geteuid() == 0:
             print("Error: Do not run this script directly with sudo. "
                   "It will re-invoke itself.")
             sys.exit(1)
-        user_main(args.out_dir)
+        user_main(args.out_dir, args.keep_sessions)
 
 
 if __name__ == "__main__":
