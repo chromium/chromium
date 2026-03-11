@@ -1097,6 +1097,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
       ChromeExtensionFunctionDetails(function.get()), window_id, &error);
   ASSERT_TRUE(new_controller);
   EXPECT_TRUE(error.empty());
+  ui_test_utils::WaitForBrowserSetLastActive(new_controller->GetBrowser());
   EXPECT_TRUE(new_controller->GetBrowser()->window()->IsFullscreen());
 
   // Let the message loop run so that |fake_fullscreen| finishes transition.
