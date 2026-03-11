@@ -33,6 +33,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.ui.actions.DisplayButtonData;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;

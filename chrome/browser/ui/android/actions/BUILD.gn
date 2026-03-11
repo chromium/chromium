@@ -1,0 +1,46 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/actions/DelegateButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/DisplayButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/DrawableButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/FullButtonData.java",
+    "java/src/org/chromium/chrome/browser/ui/actions/ResourceButtonData.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.ui.actions"
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/actions/DelegateButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/DrawableButtonDataUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/actions/ResourceButtonDataUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

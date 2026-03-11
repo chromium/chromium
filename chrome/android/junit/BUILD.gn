@@ -189,6 +189,7 @@ if (is_android) {
       "//chrome/browser/tabmodel/internal:java",
       "//chrome/browser/tabwindow:java",
       "//chrome/browser/thumbnail:java",
+      "//chrome/browser/ui/android/actions:java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
       "//chrome/browser/ui/android/desktop_windowing:java",

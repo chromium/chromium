@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.actions.FullButtonData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link HubActionButtonMediator}. */

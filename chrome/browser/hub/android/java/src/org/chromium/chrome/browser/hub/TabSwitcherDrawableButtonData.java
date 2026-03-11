@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.actions.DrawableButtonData;
 
 import java.util.Objects;
 

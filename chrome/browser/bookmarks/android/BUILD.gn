@@ -131,6 +131,7 @@ android_library("java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:ui_java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/native_page:java",

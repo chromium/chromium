@@ -20,6 +20,7 @@ import androidx.core.widget.TextViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.actions.FullButtonData;
 
 /** Helper class for Hub action button operations. */
 @NullMarked
