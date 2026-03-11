@@ -41,6 +41,7 @@ struct MemoryConsumerTraits {
   uint8 execution_type;
   uint8 release_gc_references;
   uint8 garbage_collects_v8_heap;
+  uint8 is_stateful;
 };
 
 // The interface for communicating with the MemoryConsumerRegistry that lives in

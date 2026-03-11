@@ -62,6 +62,9 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
       const base::MemoryConsumerTraits& input) {
     return std::to_underlying(input.garbage_collects_v8_heap);
   }
+  static uint8_t is_stateful(const base::MemoryConsumerTraits& input) {
+    return std::to_underlying(input.is_stateful);
+  }
 
   static bool Read(content::mojom::MemoryConsumerTraitsDataView input,
                    base::MemoryConsumerTraits* output) {
@@ -82,7 +85,8 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
            ConvertToEnum(input.release_gc_references(),
                          &output->release_gc_references) &&
            ConvertToEnum(input.garbage_collects_v8_heap(),
-                         &output->garbage_collects_v8_heap);
+                         &output->garbage_collects_v8_heap) &&
+           ConvertToEnum(input.is_stateful(), &output->is_stateful);
   }
 };
 

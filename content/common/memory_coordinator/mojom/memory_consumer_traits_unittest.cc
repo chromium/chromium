@@ -25,6 +25,7 @@ using MemoryReleaseBehavior = base::MemoryConsumerTraits::MemoryReleaseBehavior;
 using ExecutionType = base::MemoryConsumerTraits::ExecutionType;
 using ReleaseGCReferences = base::MemoryConsumerTraits::ReleaseGCReferences;
 using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
+using IsStateful = base::MemoryConsumerTraits::IsStateful;
 
 class MemoryConsumerTraitsTest : public testing::Test,
                                  public mojom::MemoryConsumerTraitsTest {
@@ -65,6 +66,7 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
           .execution_type = ExecutionType::kSynchronous,
           .release_gc_references = ReleaseGCReferences::kYes,
           .garbage_collects_v8_heap = GarbageCollectsV8Heap::kYes,
+          .is_stateful = IsStateful::kNo,
       },
       {
           .supports_memory_limit = SupportsMemoryLimit::kYes,
@@ -77,10 +79,12 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
           .execution_type = ExecutionType::kAsynchronous,
           .release_gc_references = ReleaseGCReferences::kNo,
           .garbage_collects_v8_heap = GarbageCollectsV8Heap::kNo,
+          .is_stateful = IsStateful::kYes,
       },
       {
           .estimated_memory_usage = EstimatedMemoryUsage::kLarge,
           .recreate_memory_cost = RecreateMemoryCost::kExpensive,
+          .is_stateful = IsStateful::kNo,
       },
   };
 
