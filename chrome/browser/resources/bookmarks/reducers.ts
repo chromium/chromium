@@ -15,7 +15,7 @@ import type {Action} from 'chrome://resources/js/store.js';
 import type {ChangeFolderOpenAction, CreateBookmarkAction, EditBookmarkAction, FinishSearchAction, MoveBookmarkAction, RefreshNodesAction, RemoveBookmarkAction, ReorderChildrenAction, SelectFolderAction, SelectItemsAction, SetPrefAction, StartSearchAction, UpdateAnchorAction} from './actions.js';
 import {ACCOUNT_HEADING_NODE_ID, LOCAL_HEADING_NODE_ID, ROOT_NODE_ID} from './constants.js';
 import type {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, PreferencesState, SearchState, SelectionState} from './types.js';
-import {removeIdsFromMap, removeIdsFromObject, removeIdsFromSet} from './util.js';
+import {getDefaultSelectedFolder, removeIdsFromMap, removeIdsFromObject, removeIdsFromSet} from './util.js';
 
 function selectItems(
     selectionState: SelectionState, action: SelectItemsAction): SelectionState {
@@ -345,6 +345,14 @@ function updateSelectedFolder(
     case 'remove-bookmark':
       return getSelectedFolderAfterBookmarkRemove(
           selectedFolder, (action as RemoveBookmarkAction), nodes);
+    case 'refresh-nodes': {
+      const refreshedNodes = (action as RefreshNodesAction).nodes;
+      if (!selectedFolder || !refreshedNodes[selectedFolder]) {
+        // If the selected folder was removed, select the default folder.
+        return getDefaultSelectedFolder(refreshedNodes);
+      }
+      return selectedFolder;
+    }
     default:
       return selectedFolder;
   }

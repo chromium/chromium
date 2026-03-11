@@ -40,6 +40,7 @@ export function createFolder(
         children: children,
         title: '',
         syncing: config?.syncing ?? true,
+        folderType: config?.folderType,
       },
       config || {});
 

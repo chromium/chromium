@@ -32,7 +32,10 @@ suite('<bookmarks-app>', function() {
                 '1',
                 [
                   createFolder('11', []),
-                ]),
+                ],
+                {
+                  folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+                }),
           ]),
     ]);
   }

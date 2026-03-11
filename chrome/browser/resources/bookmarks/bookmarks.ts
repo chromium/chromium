@@ -6,7 +6,7 @@ import './app.js';
 
 export {CrRouter} from '//resources/js/cr_router.js';
 export type {SelectFolderAction, SelectItemsAction, StartSearchAction} from './actions.js';
-export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, removeBookmark, reorderChildren, selectFolder, selectItem, setSearchResults, setSearchTerm, updateAnchor} from './actions.js';
+export {changeFolderOpen, clearSearch, createBookmark, deselectItems, editBookmark, moveBookmark, refreshNodes, removeBookmark, reorderChildren, selectFolder, selectItem, setSearchResults, setSearchTerm, updateAnchor} from './actions.js';
 export {setDebouncerForTesting} from './api_listener.js';
 export {BookmarksAppElement, HIDE_FOCUS_RING_ATTRIBUTE} from './app.js';
 export type {BookmarkManagerApiProxy, OpenInNewTabParams} from './bookmark_manager_api_proxy.js';
@@ -30,4 +30,4 @@ export {StoreClientMixinLit} from './store_client_mixin_lit.js';
 export {BookmarksToolbarElement} from './toolbar.js';
 export type {BookmarkNode, BookmarksPageState, FolderOpenState, NodeMap, SelectionState} from './types.js';
 export {BookmarkElement} from './types.js';
-export {canEditNode, canReorderChildren, createEmptyState, getDescendants, getDisplayedList, isRootNode, isRootOrChildOfRoot, isShowingSearch, normalizeNode, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';
+export {canEditNode, canReorderChildren, createEmptyState, getDefaultSelectedFolder, getDescendants, getDisplayedList, isRootNode, isRootOrChildOfRoot, isShowingSearch, normalizeNode, normalizeNodes, removeIdsFromObject, removeIdsFromSet} from './util.js';

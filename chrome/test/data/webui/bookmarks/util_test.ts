@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ACCOUNT_HEADING_NODE_ID, canEditNode, canReorderChildren, getDescendants, isRootNode, isRootOrChildOfRoot, LOCAL_HEADING_NODE_ID, removeIdsFromObject, removeIdsFromSet, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, canEditNode, canReorderChildren, getDefaultSelectedFolder, getDescendants, isRootNode, isRootOrChildOfRoot, LOCAL_HEADING_NODE_ID, removeIdsFromObject, removeIdsFromSet, ROOT_NODE_ID} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestStore} from './test_store.js';
@@ -242,5 +242,35 @@ suite('util', function() {
     // Non-existent nodes return false.
     assertFalse(isRootNode('123456'));
     assertFalse(isRootOrChildOfRoot(store.data, '123456'));
+  });
+
+  test('getDefaultSelectedFolder', function() {
+    const nodes = testTree(
+        createFolder('1', [], {
+          syncing: true,
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+        }),
+        createFolder(
+            '2', [],
+            {syncing: false, folderType: chrome.bookmarks.FolderType.OTHER}),
+        createFolder('11', [], {
+          syncing: false,
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+        }));
+
+    // Test that the syncing bookmarks bar is favored when both are present.
+    assertEquals('1', getDefaultSelectedFolder(nodes));
+
+    const nodesNoAccount = testTree(
+        createFolder(
+            '2', [],
+            {syncing: false, folderType: chrome.bookmarks.FolderType.OTHER}),
+        createFolder('11', [], {
+          syncing: false,
+          folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+        }));
+
+    // Test that the local bookmarks bar is picked if account bar is missing.
+    assertEquals('11', getDefaultSelectedFolder(nodesNoAccount));
   });
 });

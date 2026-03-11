@@ -174,7 +174,10 @@ suite('URL preload', function() {
                 '1',
                 [
                   createFolder('11', []),
-                ]),
+                ],
+                {
+                  folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR,
+                }),
             createFolder(
                 '2',
                 [

@@ -76,8 +76,8 @@ export class BookmarksRouter implements StoreObserver<BookmarksPageState> {
     this.selectedId_ = state.selectedFolder;
     this.searchTerm_ = state.search.term;
     // Default to the first child of root, which could be
-    // ACCOUNT_HEADING_NODE_ID, BOOKMARKS_BAR_ID (local), or the id of the
-    // account bookmark bar.
+    // ACCOUNT_HEADING_NODE_ID, the local bookmark bar, or the account bookmark
+    // bar.
     this.defaultId_ = state.nodes[ROOT_NODE_ID]!.children![0]!;
     if (this.updateStateTimeout_) {
       clearTimeout(this.updateStateTimeout_);

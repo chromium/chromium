@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksPageState, FolderOpenState, NodeMap, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, reduceAction, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, reduceAction, refreshNodes, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
 import type {Action} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -263,6 +263,41 @@ suite('selected folder', function() {
 
     assertEquals('1', state.selectedFolder);
   });
+
+  test('preserves selected folder on refresh if it still exists', function() {
+    action = selectFolder('3')!;
+    state = reduceAction(state, action);
+
+    const refreshedNodes = testTree(createFolder('1', [
+      createFolder(
+          '2',
+          [
+            createFolder('3', []),
+          ]),
+    ]));
+    action = refreshNodes(refreshedNodes);
+    state = reduceAction(state, action);
+
+    assertEquals('3', state.selectedFolder);
+  });
+
+  test(
+      'selects default folder on refresh if selected folder is missing',
+      function() {
+        action = selectFolder('3')!;
+        state = reduceAction(state, action);
+
+        const refreshedNodes = testTree(createFolder(
+            '1',
+            [
+              createFolder('2', []),
+            ],
+            {folderType: chrome.bookmarks.FolderType.BOOKMARKS_BAR}));
+        action = refreshNodes(refreshedNodes);
+        state = reduceAction(state, action);
+
+        assertEquals('1', state.selectedFolder);
+      });
 });
 
 
