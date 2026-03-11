@@ -261,7 +261,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         // They should reorder silently since the user can't see them anyway.
         for (Integer type : new ArrayList<>(modulesAwaitingCompletionAnimation)) {
             if (type != mItem1Type && type != mItem2Type) {
-                SetupListManager.getInstance().onCompletionAnimationFinished(type);
+                SetupListModuleUtils.finishCompletionAnimation(type);
             }
         }
 
