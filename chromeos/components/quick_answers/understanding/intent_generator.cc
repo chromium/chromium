@@ -322,8 +322,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     const QuickAnswersRequest& request) {
   DCHECK(complete_callback_);
 
-  if (!QuickAnswersState::IsIntentEligible(Intent::kTranslation) ||
-      chromeos::features::IsQuickAnswersV2TranslationDisabled()) {
+  if (!QuickAnswersState::IsIntentEligible(Intent::kTranslation)) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;

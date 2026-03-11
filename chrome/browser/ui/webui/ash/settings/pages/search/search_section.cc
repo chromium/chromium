@@ -233,9 +233,6 @@ void AddQuickAnswersStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean(
-      "quickAnswersTranslationDisabled",
-      chromeos::features::IsQuickAnswersV2TranslationDisabled());
-  html_source->AddBoolean(
       "quickAnswersSubToggleEnabled",
       chromeos::features::IsQuickAnswersV2SettingsSubToggleEnabled());
 }

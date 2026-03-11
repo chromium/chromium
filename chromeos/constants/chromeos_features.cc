@@ -50,10 +50,6 @@ BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
 // Enables data migration.
 BASE_FEATURE(kDataMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables translation services of the Quick Answers V2.
-BASE_FEATURE(kDisableQuickAnswersV2Translation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables Essential Search in Omnibox for both launcher and browser.
 BASE_FEATURE(kEssentialSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -404,10 +400,6 @@ bool ShouldDisableChromeComposeOnChromeOS() {
 
 bool IsQuickAnswersMaterialNextUIEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersMaterialNextUI);
-}
-
-bool IsQuickAnswersV2TranslationDisabled() {
-  return base::FeatureList::IsEnabled(kDisableQuickAnswersV2Translation);
 }
 
 bool IsQuickAnswersRichCardEnabled() {

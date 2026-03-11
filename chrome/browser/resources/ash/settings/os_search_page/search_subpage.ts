@@ -48,13 +48,6 @@ export class SettingsSearchSubpageElement extends
 
   static get properties() {
     return {
-      quickAnswersTranslationDisabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('quickAnswersTranslationDisabled');
-        },
-      },
-
       quickAnswersSubToggleEnabled_: {
         type: Boolean,
         value() {
@@ -83,7 +76,6 @@ export class SettingsSearchSubpageElement extends
 
   private quickAnswersSubLabel_: string;
   private quickAnswersSubToggleEnabled_: boolean;
-  private quickAnswersTranslationDisabled_: boolean;
   private translationSubLabel_: string;
 
   constructor() {

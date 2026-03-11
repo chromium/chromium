@@ -2400,11 +2400,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "disable-quick-answers-v2-translation",
-    "owners": [ "croissant-eng@chromium.org" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "disable-u18-feedback-desktop",
     "owners": [ "chrome-signin-team@google.com" ],
     "expiry_milestone": 160
