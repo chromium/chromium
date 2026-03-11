@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -272,7 +273,8 @@ void UnusedSitePermissionsManager::RevokeUnusedPermissions(
   // Set this to true to prevent
   // `UnusedSitePermissionsManager::OnContentSettingChanged` from removing
   // revoked setting values during auto-revocation.
-  is_unused_site_revocation_running_ = true;
+  base::AutoReset<bool> is_unused_site_revocation_running(
+      &is_unused_site_revocation_running_, true);
 
   auto* interim_result = static_cast<RevokedPermissionsResult*>(result.get());
   recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
@@ -371,9 +373,6 @@ void UnusedSitePermissionsManager::RevokeUnusedPermissions(
       itr++;
     }
   }
-  // Set this back to false, so that `OnContentSettingChanged` can cleanup
-  // revoked settings if necessary.
-  is_unused_site_revocation_running_ = false;
 }
 
 bool UnusedSitePermissionsManager::IsRevocationRunning() {
@@ -422,7 +421,8 @@ void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
   CHECK(permission_type_list);
   // Set this to true to prevent `OnContentSettingChanged` from removing
   // revoked setting values, since this is set with specific values below.
-  is_unused_site_revocation_running_ = true;
+  base::AutoReset<bool> is_unused_site_revocation_running(
+      &is_unused_site_revocation_running_, true);
 
   for (auto& permission_type : *permission_type_list) {
     // Look up ContentSettingsRegistry to see if type is content setting
@@ -455,10 +455,6 @@ void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
     }
   }
 
-  // Set this back to false, so that `OnContentSettingChanged` can cleanup
-  // revoked settings if necessary.
-  is_unused_site_revocation_running_ = false;
-
   // Ignore origin from future auto-revocations.
   IgnoreOriginForAutoRevocation(origin);
 
@@ -490,7 +486,8 @@ void UnusedSitePermissionsManager::UndoRegrantPermissionsForOrigin(
 
   // Set this to true to prevent `OnContentSettingChanged` from removing
   // revoked setting values, since this is set with specific values below.
-  is_unused_site_revocation_running_ = true;
+  base::AutoReset<bool> is_unused_site_revocation_running(
+      &is_unused_site_revocation_running_, true);
   for (const auto& permission : unused_site_permission_types) {
     if (IsContentSetting(permission)) {
       hcsm()->SetContentSettingCustomScope(
@@ -506,9 +503,6 @@ void UnusedSitePermissionsManager::UndoRegrantPermissionsForOrigin(
                    << ConvertContentSettingsTypeToKey(permission);
     }
   }
-  // Set this back to false, so that `OnContentSettingChanged` can cleanup
-  // revoked settings if necessary.
-  is_unused_site_revocation_running_ = false;
 
   StorePermissionInUnusedSitePermissionSetting(
       unused_site_permission_types, permissions_data.chooser_permissions_data,
