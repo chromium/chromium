@@ -1,11 +1,11 @@
 {
   "name": "Top-level extension 2 with context menu",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [
     "contextMenus"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   }
 }

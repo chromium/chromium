@@ -67,7 +67,6 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContents;
-using ContextType = extensions::browser_test_util::ContextType;
 using ui::MenuModel;
 
 namespace extensions {
@@ -121,9 +120,7 @@ std::unique_ptr<PlatformContextMenu> CreateContextMenu(
 
 class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
  public:
-  explicit ExtensionContextMenuBrowserTest(
-      ContextType context_type = ContextType::kNone)
-      : ExtensionBrowserTest(context_type) {}
+  ExtensionContextMenuBrowserTest() = default;
   ~ExtensionContextMenuBrowserTest() override = default;
   ExtensionContextMenuBrowserTest(const ExtensionContextMenuBrowserTest&) =
       delete;
@@ -282,12 +279,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
   }
 };
 
-class ExtensionContextMenuLazyTest
-    : public ExtensionContextMenuBrowserTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionContextMenuLazyTest : public ExtensionContextMenuBrowserTest {
  public:
-  ExtensionContextMenuLazyTest()
-      : ExtensionContextMenuBrowserTest(GetParam()) {}
+  ExtensionContextMenuLazyTest() = default;
   ~ExtensionContextMenuLazyTest() override = default;
   ExtensionContextMenuLazyTest(const ExtensionContextMenuLazyTest&) = delete;
   ExtensionContextMenuLazyTest& operator=(const ExtensionContextMenuLazyTest&) =
@@ -357,19 +351,8 @@ class ExtensionContextMenuLazyTest
   }
 };
 
-class ExtensionContextMenuPersistentTest
-    : public ExtensionContextMenuBrowserTest {
- public:
-  // Helper to load an extension from context_menus/|subdirectory| in the
-  // extensions test data dir.
-  const Extension* LoadContextMenuExtension(std::string_view subdirectory) {
-    base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtension(extension_dir);
-  }
-};
-
 // Tests adding a simple context menu item.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Simple) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, Simple) {
   ExtensionTestMessageListener listener1("created item");
   ExtensionTestMessageListener listener2("onclick fired");
   ASSERT_TRUE(LoadContextMenuExtension("simple"));
@@ -394,7 +377,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Simple) {
 
 // Tests that context menus for event page and Service Worker-based
 // extensions are stored properly.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, PRE_Persistent) {
   StateStoreTestObserver observer(profile());
   ResultCatcher catcher;
   const Extension* extension = LoadContextMenuExtension("persistent");
@@ -408,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
   observer.WaitForExtensionAndKey(extension->id(), "context_menus");
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Persistent) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, Persistent) {
   MenuManagerTestObserver observer(menu_manager());
   ResultCatcher catcher;
 
@@ -420,57 +403,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Persistent) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Tests that previous onclick is not fired after updating the menu's onclick,
-// and whether setting onclick to null removes the handler.
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, UpdateOnclick) {
-  ExtensionTestMessageListener listener_error1("onclick1-unexpected");
-  ExtensionTestMessageListener listener_error2("onclick2-unexpected");
-  ExtensionTestMessageListener listener_update1("update1",
-                                                ReplyBehavior::kWillReply);
-  ExtensionTestMessageListener listener_update2("update2");
-  ExtensionTestMessageListener listener_done("onclick2");
-
-  const Extension* extension = LoadContextMenuExtension("onclick_null");
-  ASSERT_TRUE(extension);
-
-  // Wait till item has been created and updated.
-  ASSERT_TRUE(listener_update1.WaitUntilSatisfied());
-
-  GURL page_url("http://www.google.com");
-
-  // Create and build our test context menu.
-  std::unique_ptr<PlatformContextMenu> menu =
-      CreateContextMenu(GetActiveWebContents(), page_url);
-
-  // Look for the extension item in the menu, and execute it.
-  MenuItem::Id id(false, MenuItem::ExtensionKey(extension->id()));
-  id.string_uid = "id1";
-  int command_id = -1;
-  ASSERT_TRUE(FindCommandId(menu.get(), id, &command_id));
-  menu->ExecuteCommand(command_id, 0);
-
-  // Let the test proceed.
-  listener_update1.Reply("");
-
-  // Wait until the second context menu has been set up.
-  ASSERT_TRUE(listener_update2.WaitUntilSatisfied());
-
-  // Rebuild the context menu and click on the second extension item.
-  menu = CreateContextMenu(GetActiveWebContents(), page_url);
-  id.string_uid = "id2";
-  ASSERT_TRUE(FindCommandId(menu.get(), id, &command_id));
-  menu->ExecuteCommand(command_id, 0);
-  ASSERT_TRUE(listener_done.WaitUntilSatisfied());
-
-  // Upon completion, the replaced onclick callbacks should not have fired.
-  ASSERT_FALSE(listener_error1.was_satisfied());
-  ASSERT_FALSE(listener_error2.was_satisfied());
-}
-
 // Tests that updating the first radio item in a radio list from checked to
 // unchecked should not work. The radio button should remain checked because
 // context menu radio lists should always have one item selected.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest,
                        UpdateCheckedStateOfFirstRadioItem) {
   ExtensionTestMessageListener listener_created_radio1("created radio1 item");
   ExtensionTestMessageListener listener_created_radio2("created radio2 item");
@@ -515,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
 // Tests that updating a checked radio button (that is not the first item) to be
 // unchecked should not work. The radio button should remain checked because
 // context menu radio lists should always have one item selected.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest,
                        UpdateCheckedStateOfNonfirstRadioItem) {
   ExtensionTestMessageListener listener_created_radio1("created radio1 item");
   ExtensionTestMessageListener listener_created_radio2("created radio2 item");
@@ -568,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
 
 // Tests that setting "documentUrlPatterns" for an item properly restricts
 // those items to matching pages.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Patterns) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, Patterns) {
   ExtensionTestMessageListener listener("created items");
 
   ASSERT_TRUE(LoadContextMenuExtension("patterns"));
@@ -593,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Patterns) {
 
 // Tests registering an item with a very long title that should get truncated in
 // the actual menu displayed.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, LongTitle) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, LongTitle) {
   ExtensionTestMessageListener listener("created");
 
   // Load the extension and wait until it's created a menu item.
@@ -621,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, LongTitle) {
 // Checks that Context Menus are ordered alphabetically by their name when
 // extensions have only one single Context Menu item and by the extension name
 // when multiples Context Menu items are created.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, TopLevel) {
   // We expect to see the following items in the menu:
   //   An Extension with multiple Context Menus
   //     Context Menu #1
@@ -729,7 +665,7 @@ static void VerifyMenuForSeparatorsTest(const MenuModel& menu) {
 }
 
 // Tests a number of cases for auto-generated and explicitly added separators.
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, Separators) {
   // Load the extension.
   ASSERT_TRUE(LoadContextMenuExtension("separators"));
   const Extension* extension = GetExtensionNamed("Separators Test");
@@ -785,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
 
 // Tests that targetUrlPattern keeps items from appearing when there is no
 // target url.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TargetURLs) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, TargetURLs) {
   ExtensionTestMessageListener listener("created items");
   ASSERT_TRUE(LoadContextMenuExtension("target_urls"));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -806,16 +742,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TargetURLs) {
                                     std::string("item1")));
 }
 
-// TODO(http://crbug.com/1035062): This test is flaky only with the event
-// page-based version. Remove this once that's fixed.
-using ExtensionContextMenuSWTest = ExtensionContextMenuLazyTest;
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContextMenuSWTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 // Tests adding of context menus in incognito mode.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuSWTest, IncognitoSplit) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, IncognitoSplit) {
   ExtensionTestMessageListener created("created item regular");
   ExtensionTestMessageListener created_incognito("created item incognito");
 
@@ -866,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuSWTest, IncognitoSplit) {
 
 // Tests that items with a context of frames only appear when the menu is
 // invoked in a frame.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Frames) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, Frames) {
   ExtensionTestMessageListener listener("created items");
   ASSERT_TRUE(LoadContextMenuExtension("frames"));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -885,7 +813,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, Frames) {
 }
 
 // Tests that info.frameId is correctly set when the context menu is invoked.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, ClickInFrame) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, ClickInFrame) {
   ExtensionTestMessageListener listener("created items");
   ASSERT_TRUE(LoadContextMenuExtension("frames"));
   GURL url_with_frame("data:text/html,<iframe name='child'>");
@@ -911,23 +839,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, ClickInFrame) {
 
 // Tests enabling and disabling a context menu item. The item starts
 // enabled.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, StartEnabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, StartEnabled) {
   TestEnabledContextMenu(true);
 }
 
 // Tests enabling and disabling a context menu item. The item starts
 // disabled.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, StartDisabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, StartDisabled) {
   TestEnabledContextMenu(false);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 // Not relevant on Android, which only supports service worker.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
-  // This test is event page-specific.
-  if (GetParam() == ContextType::kServiceWorker) {
-    return;
-  }
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, EventPage) {
   GURL about_blank("about:blank");
   ExtensionHostTestHelper host_helper(profile());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
@@ -972,12 +896,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
 #else
 #define MAYBE_IncognitoSplitContextMenuCount IncognitoSplitContextMenuCount
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest,
                        MAYBE_IncognitoSplitContextMenuCount) {
-  // TODO(crbug.com/40617251): Not yet implemented.
-  if (GetParam() == ContextType::kServiceWorker) {
-    return;
-  }
   ExtensionTestMessageListener created("created item regular");
   ExtensionTestMessageListener created_incognito("created item incognito");
 
@@ -985,7 +905,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
   Profile* incognito =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ASSERT_TRUE(incognito);
-  ASSERT_TRUE(LoadContextMenuExtensionWithIncognitoFlags("incognito"));
+  ASSERT_TRUE(
+      LoadContextMenuExtensionWithIncognitoFlags("incognito_event_page"));
 
   // Wait for the extension's processes to tell us they've created an item.
   ASSERT_TRUE(created.WaitUntilSatisfied());
@@ -998,7 +919,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests updating checkboxes' checked state to true and false.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
   ExtensionTestMessageListener listener_context_menu_created("Menu created");
   const Extension* extension = LoadContextMenuExtension("checkboxes");
   ASSERT_TRUE(extension);
@@ -1075,14 +996,5 @@ INSTANTIATE_TEST_SUITE_P(ExtensionContextMenuLockedFullscreenTests,
                              /*IsLockedForOnTask=*/::testing::Bool()));
 #endif
 
-// Android only supports service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionContextMenuLazyTest,
-                         ::testing::Values(ContextType::kEventPage));
-#endif
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContextMenuLazyTest,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions

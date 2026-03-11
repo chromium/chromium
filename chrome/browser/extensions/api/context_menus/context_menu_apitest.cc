@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/buildflags/buildflags.h"
@@ -42,68 +43,26 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-using ContextType = extensions::browser_test_util::ContextType;
-
 class ExtensionContextMenuApiTest : public ExtensionApiTest {
  public:
-  explicit ExtensionContextMenuApiTest(
-      ContextType context_type = ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
+  ExtensionContextMenuApiTest() = default;
   ~ExtensionContextMenuApiTest() override = default;
   ExtensionContextMenuApiTest(const ExtensionContextMenuApiTest&) = delete;
   ExtensionContextMenuApiTest& operator=(const ExtensionContextMenuApiTest&) =
       delete;
 };
 
-class ExtensionContextMenuApiTestWithContextType
-    : public ExtensionContextMenuApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionContextMenuApiTestWithContextType()
-      : ExtensionContextMenuApiTest(GetParam()) {}
-  ~ExtensionContextMenuApiTestWithContextType() override = default;
-  ExtensionContextMenuApiTestWithContextType(
-      const ExtensionContextMenuApiTestWithContextType&) = delete;
-  ExtensionContextMenuApiTestWithContextType& operator=(
-      const ExtensionContextMenuApiTestWithContextType&) = delete;
-};
-
-// Android only supports service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionContextMenuApiTestWithContextType,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContextMenuApiTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-// These tests are run from lazy extension contexts, namely event-page or
-// service worker extensions.
-using ExtensionContextMenuApiLazyTest =
-    ExtensionContextMenuApiTestWithContextType;
-
-// Android only supports service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionContextMenuApiLazyTest,
-                         ::testing::Values(ContextType::kEventPage));
-#endif
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionContextMenuApiLazyTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiLazyTest, ContextMenus) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenus) {
   ASSERT_TRUE(RunExtensionTest("context_menus/event_page")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType, Count) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, Count) {
   ASSERT_TRUE(RunExtensionTest("context_menus/count")) << message_;
 }
 
 // crbug.com/51436 -- creating context menus from multiple script contexts
 // should work.
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest,
                        ContextMenusFromMultipleContexts) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("context_menus/add_from_multiple_contexts"))
@@ -128,18 +87,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
-                       ContextMenusBasics) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusBasics) {
   ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
-                       ContextMenusNoPerms) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusNoPerms) {
   ASSERT_TRUE(RunExtensionTest("context_menus/no_perms")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
-                       ContextMenusMultipleIds) {
+IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusMultipleIds) {
   ASSERT_TRUE(RunExtensionTest("context_menus/item_ids")) << message_;
 }
 
@@ -210,8 +166,15 @@ class ExtensionContextMenuVisibilityApiTest
   void CallAPI(const std::string& script) { CallAPI(extension_, script); }
 
   void CallAPI(const Extension* extension, const std::string& script) {
-    content::WebContents* background_page = GetBackgroundPage(extension->id());
-    ASSERT_EQ(false, content::EvalJs(background_page, script));
+    std::string expr = script;
+    if (!expr.empty() && expr.back() == ';') {
+      expr.pop_back();
+    }
+    std::string wrapped_script = expr + ".then(chrome.test.sendScriptResult);";
+    ASSERT_EQ(base::Value(false),
+              BackgroundScriptExecutor::ExecuteScript(
+                  profile(), extension->id(), wrapped_script,
+                  BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
   }
 
   // Verifies that the UI menu model has the given number of extension menu
@@ -263,14 +226,6 @@ class ExtensionContextMenuVisibilityApiTest
   raw_ptr<ui::MenuModel> top_level_model_ = nullptr;
 
  private:
-  content::WebContents* GetBackgroundPage(const ExtensionId& extension_id) {
-    return process_manager()
-        ->GetBackgroundHostForExtension(extension_id)
-        ->host_contents();
-  }
-
-  ProcessManager* process_manager() { return ProcessManager::Get(profile()); }
-
   raw_ptr<const Extension> extension_ = nullptr;
 #if BUILDFLAG(IS_ANDROID)
   // Contains only the extension menu items.

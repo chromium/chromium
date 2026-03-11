@@ -5,15 +5,13 @@
 var inIncognitoContext = chrome.extension.inIncognitoContext;
 var incognitoStr = inIncognitoContext ? 'incognito' : 'regular';
 
-chrome.runtime.onInstalled.addListener(function(details) {
-  chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    chrome.test.sendMessage('onclick fired ' + incognitoStr);
-  });
-
-  chrome.contextMenus.create(
-      {title: 'item ' + incognitoStr, id: 'id_' + incognitoStr},
-      function() {
-        chrome.test.assertNoLastError();
-        chrome.test.sendMessage('created item ' + incognitoStr);
-      })
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
+  chrome.test.sendMessage('onclick fired ' + incognitoStr);
 });
+
+chrome.contextMenus.create(
+    {title: 'item ' + incognitoStr, id: 'id_' + incognitoStr},
+    function() {
+      chrome.test.assertNoLastError();
+      chrome.test.sendMessage('created item ' + incognitoStr);
+    });

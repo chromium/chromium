@@ -1,11 +1,12 @@
 {
-  "name" : "Context Menus Test Extension",
+  "name": "Context Menus Test Extension",
   "description": "Tests context menu checkbox update",
-  "version" : "0.1",
-  "manifest_version": 2,
-  "permissions": [ "contextMenus"],
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": [
+    "contextMenus"
+  ],
   "background": {
-    "persistent": false,
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   }
 }

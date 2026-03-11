@@ -1,9 +1,12 @@
 {
-  "name" : "Context Menus Test Extension",
-  "version" : "0.1",
-  "manifest_version": 2,
-  "permissions": [ "contextMenus", "tabs" ],
+  "name": "Context Menus Test Extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": [
+    "contextMenus",
+    "tabs"
+  ],
   "background": {
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   }
 }
