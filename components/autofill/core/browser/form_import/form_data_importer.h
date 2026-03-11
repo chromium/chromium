@@ -94,22 +94,6 @@ class FormDataImporter : public history::HistoryServiceObserver {
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled);
 
-  // Returns an existing server card based on the following criteria:
-  // - If `candidate` compares with a full server card, this function returns
-  //   the existing full server card which has the same full card number as
-  //   `candidate`, if one exists.
-  // - If `candidate` compares with a masked server card, this function returns
-  //   an existing masked server card which has the same last four digits and
-  //   the same expiration date as `candidate`, if one exists.
-  // additionally, set `credit_card_import_type_` set to `kServerCard`.
-  // Or returns the `candidate`:
-  // - If there is no matching existing server card.
-  // or returns nullopt:
-  // - If there is a server card which has the same number as `candidate`, but
-  //   the `candidate` does not have expiration date.
-  std::optional<CreditCard> TryMatchingExistingServerCard(
-      const CreditCard& candidate);
-
   PaymentsDataManager& payments_data_manager();
 
   // The associated autofill client.

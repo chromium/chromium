@@ -288,8 +288,7 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
 
   // Return `candidate` if no server card is matched but the card in the form is
   // a valid card.
-  return client_->GetFormDataImporter()->TryMatchingExistingServerCard(
-      candidate);
+  return TryMatchingExistingServerCard(candidate);
 }
 
 bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
@@ -392,6 +391,75 @@ Iban PaymentsFormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
     }
   }
   return candidate_iban;
+}
+
+std::optional<CreditCard>
+PaymentsFormDataImporter::TryMatchingExistingServerCard(
+    const CreditCard& candidate) {
+  // Used for logging purposes later if we found a matching masked server card
+  // with the same last four digits, but different expiration date as
+  // `candidate`, and we treat it as a new card.
+  bool same_last_four_but_different_expiration_date = false;
+
+  for (const CreditCard* server_card :
+       payments_data_manager().GetServerCreditCards()) {
+    if (!server_card->HasSameNumberAs(candidate)) {
+      continue;
+    }
+
+    // Cards with invalid expiration dates can be uploaded due to the existence
+    // of the expiration date fix flow, however, since a server card with same
+    // number is found, the imported card is treated as invalid card, abort
+    // importing.
+    if (!candidate.HasValidExpirationDate()) {
+      return std::nullopt;
+    }
+
+    // Only return the masked server card if both the last four digits and
+    // expiration date match.
+    if (server_card->HasSameExpirationDateAs(candidate)) {
+      AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
+          AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED);
+
+      // Return that we found a masked server card with matching last four
+      // digits and copy over the user entered CVC so that future processing
+      // logic check if CVC upload save should be offered.
+      CreditCard server_card_with_cvc = *server_card;
+      server_card_with_cvc.set_cvc(candidate.cvc());
+
+      // If `credit_card_import_type_` was local card, then a local card was
+      // extracted from the form. If a server card is now also extracted from
+      // the form, the duplicate local and server card case is detected.
+      if (credit_card_import_type_ == payments::PaymentsFormDataImporter::
+                                          CreditCardImportType::kLocalCard) {
+        credit_card_import_type_ = payments::PaymentsFormDataImporter::
+            CreditCardImportType::kDuplicateLocalServerCard;
+      } else {
+        credit_card_import_type_ = payments::PaymentsFormDataImporter::
+            CreditCardImportType::kServerCard;
+      }
+      return server_card_with_cvc;
+    } else {
+      // Keep track of the fact that we found a server card with matching
+      // last four digits as `candidate`, but with a different expiration
+      // date. If we do not end up finding a masked server card with
+      // matching last four digits and the same expiration date as
+      // `candidate`, we will later use
+      // `same_last_four_but_different_expiration_date` for logging
+      // purposes.
+      same_last_four_but_different_expiration_date = true;
+    }
+  }
+
+  // The only case that this is true is that we found a masked server card has
+  // the same number as `candidate`, but with different expiration dates. Thus
+  // we want to log this information once.
+  if (same_last_four_but_different_expiration_date) {
+    AutofillMetrics::LogSubmittedServerCardExpirationStatusMetric(
+        AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH);
+  }
+
+  return candidate;
 }
 
 PaymentsDataManager& PaymentsFormDataImporter::payments_data_manager() {
