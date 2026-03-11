@@ -9714,3 +9714,7 @@ crbug.com/490316323 [ Mac12 ] external/wpt/css/css-pseudo/first-letter-insert-te
 crbug.com/490316323 [ Mac12-arm64 ] external/wpt/css/css-pseudo/first-letter-insert-text-node-dynamic.html [ Failure Pass ]
 
 crbug.com/487985494 [ Linux ] webaudio/ScriptProcessor/scriptprocessor-offlineaudiocontext.html [ Pass Timeout ]
+
+# Gardener 2026-03-11
+crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.optional.html [ Pass Timeout ]
+crbug.com/478186112 [ Linux ] external/wpt/pointerevents/pointerevent_attributes.html [ Pass Timeout ]
