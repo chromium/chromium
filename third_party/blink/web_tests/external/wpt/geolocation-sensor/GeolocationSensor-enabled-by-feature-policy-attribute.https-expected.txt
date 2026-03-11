@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] GeolocationSensor: Feature-Policy allow='geolocation' attribute allows same-origin iframe
-  assert_implements: GeolocationSensor is not supported. undefined
-[FAIL] GeolocationSensor: Feature-Policy allow='geolocation' attribute allows cross-origin iframe
-  assert_implements: GeolocationSensor is not supported. undefined
-Harness: the test ran to completion.
-
