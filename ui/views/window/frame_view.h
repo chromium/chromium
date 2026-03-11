@@ -5,6 +5,9 @@
 #ifndef UI_VIEWS_WINDOW_FRAME_VIEW_H_
 #define UI_VIEWS_WINDOW_FRAME_VIEW_H_
 
+#include <optional>
+#include <utility>
+
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -31,6 +34,12 @@ class VIEWS_EXPORT FrameView : public View, public ViewTargeterDelegate {
   METADATA_HEADER(FrameView, View)
 
  public:
+  // Allows to compose additional non-client hit test rules. `std::nullopt`
+  // should be returned to tell the caller to do further processing to determine
+  // where in the non-client area the tested point is (if present at all).
+  using HitTestCallback =
+      base::RepeatingCallback<std::optional<int>(const gfx::Point& point)>;
+
   FrameView();
   FrameView(const FrameView&) = delete;
   FrameView& operator=(const FrameView&) = delete;
@@ -107,10 +116,16 @@ class VIEWS_EXPORT FrameView : public View, public ViewTargeterDelegate {
   void Layout(PassKey) override;
   Views GetChildrenInZOrder() override;
 
+  void set_non_client_hit_test_callback(HitTestCallback callback) {
+    non_client_hit_test_callback_ = std::move(callback);
+  }
+
  protected:
   // Used to determine if the frame should be painted as active. Convenience
   // method; equivalent to GetWidget()->ShouldPaintAsActive().
   bool ShouldPaintAsActive() const;
+
+  HitTestCallback non_client_hit_test_callback_;
 
  private:
 #if BUILDFLAG(IS_WIN)

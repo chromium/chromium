@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_WEBUI_BUBBLE_DIALOG_VIEW_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -96,7 +98,7 @@ class WebUIBubbleDialogView : public views::WidgetObserver,
 
  private:
   // Additional hit test handling to support webui bubble draggable regions.
-  int NonClientHitTest(const gfx::Point& point) const;
+  std::optional<int> NonClientHitTest(const gfx::Point& point) const;
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -180,9 +182,8 @@ std::unique_ptr<views::FrameView> WebUIBubbleDialogView::CreateFrameView(
   // TODO(tluk): Improve the current pattern used to compose functionality on
   // bubble frames and eliminate the need for static cast.
   auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
-  static_cast<views::BubbleFrameView*>(frame.get())
-      ->set_non_client_hit_test_cb(base::BindRepeating(
-          &WebUIBubbleDialogView::NonClientHitTest, base::Unretained(this)));
+  frame->set_non_client_hit_test_callback(base::BindRepeating(
+      &WebUIBubbleDialogView::NonClientHitTest, base::Unretained(this)));
   return frame;
 }
 
@@ -225,7 +226,7 @@ bool WebUIBubbleDialogView::ShouldDescendIntoChildForEventHandling(
     gfx::NativeView child,
     const gfx::Point& location) {
   // The bubble should claim events that fall within the draggable region.
-  return !draggable_region_.has_value() ||
+  return !draggable_region_ ||
          !draggable_region_->contains(location.x(), location.y());
 }
 
@@ -236,15 +237,17 @@ gfx::Rect WebUIBubbleDialogView::GetAnchorRect() const {
   return BubbleDialogDelegateView::GetAnchorRect();
 }
 
-int WebUIBubbleDialogView::NonClientHitTest(const gfx::Point& point) const {
+std::optional<int> WebUIBubbleDialogView::NonClientHitTest(
+    const gfx::Point& point) const {
   // Convert the point to the WebView's coordinates.
   gfx::Point point_in_webview =
       views::View::ConvertPointToTarget(this, web_view_, point);
-  return draggable_region_.has_value() &&
-                 draggable_region_->contains(point_in_webview.x(),
-                                             point_in_webview.y())
-             ? HTCAPTION
-             : HTNOWHERE;
+  if (draggable_region_ &&
+      draggable_region_->contains(point_in_webview.x(), point_in_webview.y())) {
+    return HTCAPTION;
+  }
+
+  return std::nullopt;
 }
 
 BEGIN_METADATA(WebUIBubbleDialogView)

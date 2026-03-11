@@ -5,6 +5,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/check.h"
 #include "build/build_config.h"
@@ -290,10 +291,9 @@ int BubbleFrameView::NonClientHitTest(const gfx::Point& point) {
     }
   }
 
-  if (!non_client_hit_test_cb_.is_null()) {
-    const int result = non_client_hit_test_cb_.Run(point);
-    if (result != HTNOWHERE) {
-      return result;
+  if (!non_client_hit_test_callback_.is_null()) {
+    if (auto result = non_client_hit_test_callback_.Run(point); result) {
+      return result.value();
     }
   }
 
