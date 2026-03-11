@@ -38,6 +38,9 @@ extern const char kAIMNTPEntrypointTabletDescription[];
 extern const char kAimCobrowseName[];
 extern const char kAimCobrowseDescription[];
 
+extern const char kAimUrlNavigationFetchEnabledName[];
+extern const char kAimUrlNavigationFetchEnabledDescription[];
+
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 

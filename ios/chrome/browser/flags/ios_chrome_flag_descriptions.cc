@@ -36,6 +36,10 @@ const char kAIMNTPEntrypointTabletDescription[] =
 const char kAimCobrowseName[] = "AimCobrowse";
 const char kAimCobrowseDescription[] = "Enables the AimCobrowse feature.";
 
+const char kAimUrlNavigationFetchEnabledName[] = "AimUrlNavigationFetchEnabled";
+const char kAimUrlNavigationFetchEnabledDescription[] =
+    "Enables the AimUrlNavigationFetchEnabled feature.";
+
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =
