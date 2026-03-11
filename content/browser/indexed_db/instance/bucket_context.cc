@@ -1216,13 +1216,16 @@ BucketContext::InitBackingStore(bool create_if_missing) {
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
     Status status, first_try_status;
+    const bool skip_create_on_data_loss =
+        sqlite_rollout_stage_ == SqliteRolloutStage::kUseLevelDbAsControl ||
+        sqlite_rollout_stage_ == SqliteRolloutStage::kUseSqliteForNewStores;
     constexpr static const int kNumOpenTries = 2;
     for (int i = 0; i < kNumOpenTries; ++i) {
       const bool is_first_attempt = i == 0;
       std::tie(backing_store, status, data_loss_info, disk_full) =
           level_db::BackingStore::OpenAndVerify(
               *this, data_path_, database_path, blob_path, lock_manager.get(),
-              is_first_attempt, create_if_missing);
+              is_first_attempt, create_if_missing, skip_create_on_data_loss);
       CHECK_EQ(status.ok(), !!backing_store);
       if (is_first_attempt) [[likely]] {
         first_try_status = status;
@@ -1231,8 +1234,19 @@ BucketContext::InitBackingStore(bool create_if_missing) {
         break;
       }
       CHECK(!backing_store);
-      if (status.IsNotFound() && !create_if_missing) {
-        return {status, DatabaseError(), data_loss_info};
+      if (status.IsNotFound()) {
+        if (!create_if_missing) {
+          return {status, DatabaseError(), data_loss_info};
+        }
+        if (skip_create_on_data_loss &&
+            data_loss_info.status == blink::mojom::IDBDataLoss::Total) {
+          CHECK(!in_memory());
+          // Delete leftover files if any and re-init.
+          if (base::DeletePathRecursively(database_path)) {
+            auto [s, error, _] = InitBackingStore(/*create_if_missing=*/true);
+            return {s, error, data_loss_info};
+          }
+        }
       }
       // If the disk is full, always exit immediately.
       if (disk_full) {

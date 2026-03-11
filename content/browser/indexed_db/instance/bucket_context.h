@@ -64,10 +64,9 @@ enum class SqliteRolloutStage {
   // On-disk stores created during this stage emit metrics to the "Experimental"
   // variant and previously existing stores emit to the "OnDisk" variant.
   kUseLevelDbAsControl,
-  // Use SQLite for new stores only.
+  // Use SQLite for new stores and corrupted LevelDB stores.
   // On-disk SQLite stores emit metrics to the "Experimental" variant and
   // on-disk LevelDB stores emit to the "OnDisk" variant.
-  // TODO(crbug.com/484257587): Also use SQLite for corrupted LevelDB stores.
   kUseSqliteForNewStores,
   // Use SQLite exclusively; delete LevelDB stores if found.
   // All on-disk stores emit metrics to the "OnDisk" variant.

@@ -3184,15 +3184,15 @@ TEST_P(IndexedDBTestForSqliteMigration, UseLevelDbAsControl) {
        {StoreType::kEmptyLevelDbDirectory,
         {StoreInitResult::kCreated, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing,
         {StoreInitResult::kOpened, kIsLevelDb}},
        {StoreType::kLevelDbFilesMissing,
         {StoreInitResult::kFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+        {StoreInitResult::kDataLoss, kIsLevelDb, kExperimentalSuffix}}});
   // The experimental suffix should persist across opens.
   CloseAllBackingStores();
   ValidateExpectationsForStage(
@@ -3205,15 +3205,15 @@ TEST_P(IndexedDBTestForSqliteMigration, UseLevelDbAsControl) {
        {StoreType::kEmptyLevelDbDirectory,
         {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kOpened, kIsLevelDb}},
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing,
         {StoreInitResult::kOpened, kIsLevelDb}},
        {StoreType::kLevelDbFilesMissing,
         {StoreInitResult::kFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb}},
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb}}});
+        {StoreInitResult::kOpened, kIsLevelDb, kExperimentalSuffix}}});
 }
 
 TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
@@ -3227,15 +3227,15 @@ TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
        {StoreType::kEmptyLevelDbDirectory,
         {StoreInitResult::kCreated, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing,
         {StoreInitResult::kOpened, kIsLevelDb}},
        {StoreType::kLevelDbFilesMissing,
         {StoreInitResult::kFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}},
+        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kDataLoss, kIsLevelDb}}});
+        {StoreInitResult::kDataLoss, kIsSqlite, kExperimentalSuffix}}});
   // SQLite should persist across opens.
   CloseAllBackingStores();
   ValidateExpectationsForStage(
@@ -3248,15 +3248,15 @@ TEST_P(IndexedDBTestForSqliteMigration, UseSqliteForNewStores) {
        {StoreType::kEmptyLevelDbDirectory,
         {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbWithCorruptionInfo,
-        {StoreInitResult::kOpened, kIsLevelDb}},
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbCurrentMissing,
         {StoreInitResult::kOpened, kIsLevelDb}},
        {StoreType::kLevelDbFilesMissing,
         {StoreInitResult::kFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb}},
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}},
        {StoreType::kLevelDbBackingStoreCorruption,
-        {StoreInitResult::kOpened, kIsLevelDb}}});
+        {StoreInitResult::kOpened, kIsSqlite, kExperimentalSuffix}}});
 }
 
 TEST_P(IndexedDBTestForSqliteMigration, UseSqliteOnly) {

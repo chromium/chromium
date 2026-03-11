@@ -537,7 +537,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 base::FilePath blob_path,
                 PartitionedLockManager* lock_manager,
                 bool is_first_attempt,
-                bool create_if_missing);
+                bool create_if_missing,
+                bool skip_create_on_data_loss);
 
   static uint64_t ReadSizeFromDisk(const base::FilePath& database_path,
                                    const base::FilePath& blob_path);
@@ -575,7 +576,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                   base::FilePath blob_path,
                   PartitionedLockManager* lock_manager,
                   bool is_first_attempt,
-                  bool create_if_missing);
+                  bool create_if_missing,
+                  bool skip_create_on_data_loss);
 
   // Fills in metadata for the database specified by `metadata->name` by reading
   // from disk. If no database is found, `metadata->id` will remain null.

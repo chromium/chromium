@@ -1496,7 +1496,8 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
                               base::FilePath blob_path,
                               PartitionedLockManager* lock_manager,
                               bool is_first_attempt,
-                              bool create_if_missing) {
+                              bool create_if_missing,
+                              bool skip_create_on_data_loss) {
   CHECK_EQ(database_path.empty(), data_directory.empty());
   CHECK_EQ(blob_path.empty(), data_directory.empty());
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify");
@@ -1507,7 +1508,7 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
   bool in_memory = data_directory.empty();
   Status status;
   IndexedDBDataLossInfo data_loss_info;
-  if (!in_memory) {
+  if (!in_memory && create_if_missing) {
     // Check for previous corruption, and if found then try to delete the
     // database.
     std::string corruption_message =
@@ -1522,6 +1523,10 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
       data_loss_info.status = blink::mojom::IDBDataLoss::Total;
       data_loss_info.message = base::StrCat(
           {"IndexedDB (database was corrupt): ", corruption_message});
+      if (skip_create_on_data_loss) {
+        return {nullptr, Status::NotFound("Skipped creation due to data loss"),
+                std::move(data_loss_info), /*is_disk_full=*/false};
+      }
       // This is a special case where we want to make sure the database is
       // deleted, so we try to delete again.
       status = DestroyDatabase(database_path);
@@ -1633,10 +1638,11 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
                             base::FilePath blob_path,
                             PartitionedLockManager* lock_manager,
                             bool is_first_attempt,
-                            bool create_if_missing) {
-  auto return_values =
-      DoOpenAndVerify(bucket_context, data_directory, database_path, blob_path,
-                      lock_manager, is_first_attempt, create_if_missing);
+                            bool create_if_missing,
+                            bool skip_create_on_data_loss) {
+  auto return_values = DoOpenAndVerify(
+      bucket_context, data_directory, database_path, blob_path, lock_manager,
+      is_first_attempt, create_if_missing, skip_create_on_data_loss);
 
   Status& status = std::get<Status>(return_values);
   if (status.IsCorruption()) {
