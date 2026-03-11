@@ -170,6 +170,9 @@ class AimEligibilityService
   // Checks if the user is eligible for Co-Browse in AIM features.
   virtual bool IsCobrowseEligible() const;
 
+  // Checks if the user is eligible for AIM Fuseboxes.
+  virtual bool IsFuseboxEligible() const;
+
   // Determining whether the provided URL is an AI page based on server-provided
   // params.
   virtual bool HasAimUrlParams(const GURL& url) const;

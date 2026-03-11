@@ -452,3 +452,32 @@ TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
 
   EXPECT_FALSE(request2.headers.HasHeader("User-Agent"));
 }
+
+TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimFuseboxEligibilityCheckEnabled);
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_fusebox_eligible(true);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+  EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
+
+  omnibox::AimEligibilityResponse response2;
+  response2.set_is_fusebox_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response2));
+  EXPECT_FALSE(aim_eligibility_service_->IsFuseboxEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, IsFuseboxEligible_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimFuseboxEligibilityCheckEnabled);
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_fusebox_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+
+  // Should be true regardless of response if feature is disabled.
+  EXPECT_TRUE(aim_eligibility_service_->IsFuseboxEligible());
+}
