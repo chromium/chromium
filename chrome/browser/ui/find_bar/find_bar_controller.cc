@@ -384,7 +384,6 @@ std::u16string FindBarController::GetSelectedText() {
 }
 
 void FindBarController::UpdatePageAction() {
-  CHECK(IsPageActionMigrated(PageActionIconType::kFind));
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   // On ChromeOS it's possible that the active tab's contents are discarded.

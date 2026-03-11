@@ -747,22 +747,12 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowFindIcon) {
   SetUpWebApp();
 
-  const bool find_page_action_migrated =
-      IsPageActionMigrated(PageActionIconType::kFind);
-  IconLabelBubbleView* find_icon = GetPageActionView(PageActionIconType::kFind);
-
-  if (find_page_action_migrated) {
-    EXPECT_FALSE(find_icon);
-  } else {
-    EXPECT_TRUE(find_icon);
-    EXPECT_FALSE(find_icon->GetVisible());
-  }
+  IconLabelBubbleView* find_icon = GetPageActionView(kActionFind);
+  ASSERT_TRUE(find_icon);
+  EXPECT_FALSE(find_icon->GetVisible());
 
   chrome::Find(app_browser_);
-
-  if (!find_page_action_migrated) {
-    ASSERT_TRUE(WaitForVisible(true, find_icon));
-  }
+  EXPECT_TRUE(find_icon->GetVisible());
 }
 
 // TODO(crbug.com/420040505): Fix failures on the Linux Chromium OS ASan LSan

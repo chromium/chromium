@@ -342,12 +342,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationFind,
-                   &kPageActionsMigration,
-                   "find",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationCollaborationMessaging,
                    &kPageActionsMigration,
                    "collaboration_messaging",

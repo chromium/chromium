@@ -1406,11 +1406,7 @@ void Browser::FullscreenTopUIStateChanged() {
 }
 
 void Browser::OnFindBarVisibilityChanged() {
-  if (!IsPageActionMigrated(PageActionIconType::kFind)) {
-    window()->UpdatePageActionIcon(PageActionIconType::kFind);
-  } else {
-    GetFeatures().GetFindBarController()->UpdatePageAction();
-  }
+  GetFeatures().GetFindBarController()->UpdatePageAction();
 
   GetCommandController()->FindBarVisibilityChanged();
 }

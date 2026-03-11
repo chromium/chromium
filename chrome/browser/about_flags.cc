@@ -1124,7 +1124,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"collaboration_messaging", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},
-    {"find", "true"},
     {"intent_picker", "true"},
     {"lens_overlay_homework", "true"},
     {"manage_passwords", "true"},

@@ -517,7 +517,6 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     }
     params.types_enabled.push_back(PageActionIconType::kPwaInstall);
-    params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
     params.types_enabled.push_back(PageActionIconType::kFileSystemAccess);

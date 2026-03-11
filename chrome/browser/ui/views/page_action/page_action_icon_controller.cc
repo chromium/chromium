@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
@@ -125,12 +124,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kFind:
-        add_page_action_icon(
-            type, std::make_unique<FindBarIcon>(
-                      params.browser, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
       case PageActionIconType::kIntentPicker:
         add_page_action_icon(
             type, std::make_unique<IntentPickerView>(
@@ -222,8 +215,10 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kFind:
       case PageActionIconType::kFederation:
-        // Do nothing as these actions were added after the migration.
+        // Do nothing as these actions were added after the migration, or
+        // have launched the migration.
         break;
       default:
         NOTREACHED();
