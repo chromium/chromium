@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator+Testing.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -89,4 +90,20 @@ TEST_F(HomeCustomizationCoordinatorUnitTest, TestPresentMenuPage) {
   EXPECT_EQ(nil, coordinator_.mainViewController);
   EXPECT_EQ(nil, coordinator_.magicStackViewController);
   EXPECT_EQ(nil, coordinator_.mediator);
+}
+
+// Tests that scheduling the 'photo not synced across devices' snackbar
+// correctly updates the property.
+TEST_F(HomeCustomizationCoordinatorUnitTest,
+       TestSchedulePhotoNotSyncedSnackbar) {
+  // The property should default to NO.
+  EXPECT_FALSE(coordinator_.shouldShowPhotoNotSyncedSnackbarOnDismiss);
+
+  // Call the delegate method to schedule the snackbar.
+  id<HomeCustomizationBackgroundPickerPresentationDelegate> delegate =
+      (id<HomeCustomizationBackgroundPickerPresentationDelegate>)coordinator_;
+  [delegate schedulePhotoNotSyncedSnackbarOnDismiss];
+
+  // The property should now be YES.
+  EXPECT_TRUE(coordinator_.shouldShowPhotoNotSyncedSnackbarOnDismiss);
 }

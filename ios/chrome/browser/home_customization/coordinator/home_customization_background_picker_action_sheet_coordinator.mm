@@ -204,6 +204,8 @@ CGFloat const kSheetCornerRadius = 30;
   if (_backgroundConfigurationMediator.themeHasChanged) {
     _backgroundConfigurationMediator.backgroundSelectionOutcome =
         BackgroundSelectionOutcome::kApplied;
+
+    [self.presentationDelegate schedulePhotoNotSyncedSnackbarOnDismiss];
   }
 
   [self.presentationDelegate dismissBackgroundPicker];

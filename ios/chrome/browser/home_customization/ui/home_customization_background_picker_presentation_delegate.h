@@ -20,6 +20,10 @@
 // menu.
 - (void)cancelBackgroundPicker;
 
+// Alerts the delegate to show a snackbar informing the user that their custom
+// photo won't be synced across devices, to be shown upon dismissal.
+- (void)schedulePhotoNotSyncedSnackbarOnDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_HOME_CUSTOMIZATION_BACKGROUND_PICKER_PRESENTATION_DELEGATE_H_

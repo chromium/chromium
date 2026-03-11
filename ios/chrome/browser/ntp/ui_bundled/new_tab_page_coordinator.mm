@@ -1854,8 +1854,21 @@
   if (!_customizationCoordinator) {
     return;
   }
+
+  BOOL shouldShowPhotoNotSyncedSnackbar =
+      _customizationCoordinator.shouldShowPhotoNotSyncedSnackbarOnDismiss;
+
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
+
+  if (shouldShowPhotoNotSyncedSnackbar) {
+    id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SnackbarCommands);
+    NSString* title = l10n_util::GetNSString(
+        IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_USER_UPLOAD_NOT_SYNCED_SNACKBAR);
+    SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+    [snackbarHandler showSnackbarMessageOverBrowserToolbar:message];
+  }
 }
 
 #pragma mark - NewTabPageShortcutsHandler

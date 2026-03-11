@@ -501,6 +501,10 @@ CGFloat const kSheetCornerRadius = 30;
   [self dismissBackgroundPickerActionSheet];
 }
 
+- (void)schedulePhotoNotSyncedSnackbarOnDismiss {
+  _shouldShowPhotoNotSyncedSnackbarOnDismiss = YES;
+}
+
 #pragma mark - HomeCustomizationSearchEngineLogoMediator
 
 - (SearchEngineLogoMediator*)provideSearchEngineLogoMediatorForKey:

@@ -3295,6 +3295,9 @@
       <message name="IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH" desc="In-product help that points at the entrypoint for the Home Customization menu in the new tab page when background customization is added.">
         Pick a theme, color, or more for your background
       </message>
+      <message name="IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_USER_UPLOAD_NOT_SYNCED_SNACKBAR" desc="The snackbar displayed at the bottom of the screen informing the user that their uploaded background image will not be synced to other devices.">
+        Photos from Camera Roll won’t sync across your devices
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
         Customize your home screen
       </message>

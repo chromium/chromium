@@ -30,6 +30,10 @@
 // promo.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosManagerUIHandler;
 
+// Whether to display a snackbar upon dismissal informing the user that their
+// uploaded photo will not sync across devices.
+@property(nonatomic, readonly) BOOL shouldShowPhotoNotSyncedSnackbarOnDismiss;
+
 // Updates the data for all existing menu pages.
 - (void)updateMenuData;
 
