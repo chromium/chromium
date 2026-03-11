@@ -428,7 +428,13 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_Post) {
   PostFormWithPage("post.html", false);
 }
 
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, Post) {
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491665404): This test is flaky.
+#define MAYBE_Post DISABLED_Post
+#else
+#define MAYBE_Post Post
+#endif
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, MAYBE_Post) {
   CheckFormRestored(true, false);
 }
 
@@ -436,7 +442,13 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PRE_PostWithPassword) {
   PostFormWithPage("post_with_password.html", true);
 }
 
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PostWithPassword) {
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491665404): This test is flaky.
+#define MAYBE_PostWithPassword DISABLED_PostWithPassword
+#else
+#define MAYBE_PostWithPassword PostWithPassword
+#endif
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, MAYBE_PostWithPassword) {
   CheckReloadedPageRestored();
   // The form data contained passwords, so it's removed completely.
   CheckFormRestored(false, false);
@@ -452,7 +464,13 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, SessionCookiesBrowserClose) {
   CheckReloadedPageRestored(new_browser);
 }
 
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PostBrowserClose) {
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491665404): This test is flaky.
+#define MAYBE_PostBrowserClose DISABLED_PostBrowserClose
+#else
+#define MAYBE_PostBrowserClose PostBrowserClose
+#endif
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, MAYBE_PostBrowserClose) {
   PostFormWithPage("post.html", false);
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
   CheckFormRestored(new_browser, true, false);
@@ -494,8 +512,15 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, PostCloseAllBrowsers) {
 }
 
 // Check that form data with a password field is cleared after wrench menu quit.
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491665404): This test is flaky.
+#define MAYBE_PostWithPasswordCloseAllBrowsers \
+  DISABLED_PostWithPasswordCloseAllBrowsers
+#else
+#define MAYBE_PostWithPasswordCloseAllBrowsers PostWithPasswordCloseAllBrowsers
+#endif
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
-                       PostWithPasswordCloseAllBrowsers) {
+                       MAYBE_PostWithPasswordCloseAllBrowsers) {
   PostFormWithPage("post_with_password.html", true);
   Browser* new_browser = QuitBrowserAndRestore(browser(), true);
   CheckReloadedPageRestored(new_browser);
