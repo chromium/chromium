@@ -50,11 +50,6 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
 
   TabStrip* tab_strip() { return tab_strip_region_view()->tab_strip(); }
 
-  TabSearchContainer* tab_search_container() {
-    return BrowserElementsViews::From(browser())->GetViewAs<TabSearchContainer>(
-        kTabSearchContainerElementId);
-  }
-
   TabSearchButton* tab_search_button() {
     return BrowserElementsViews::From(browser())->GetViewAs<TabSearchButton>(
         kTabSearchButtonElementId);
@@ -249,25 +244,25 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestBeginEndFocu
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
-                       DefaultTestSearchContainerIsEndAligned) {
+                       DefaultTabSearchButtonIsEndAligned) {
   if (tabs::GetTabSearchPosition(browser()) ==
       tabs::TabSearchPosition::kLeadingHorizontalTabstrip) {
-    // The TabSearchContainer is calculated as controls padding away from the
+    // The TabSearchButton is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
-    const int tab_search_container_expected_end =
+    const int tab_search_button_expected_end =
         tab_strip_region_view()->tab_strip()->x() +
         TabStyle::Get()->GetBottomCornerRadius() -
         GetLayoutConstant(LayoutConstant::kTabStripPadding);
 
-    EXPECT_EQ(tab_search_container()->bounds().right(),
-              tab_search_container_expected_end);
+    EXPECT_EQ(tab_search_button()->bounds().right(),
+              tab_search_button_expected_end);
   } else if (tabs::GetTabSearchPosition(browser()) !=
              tabs::TabSearchPosition::kToolbarButton) {
-    const int tab_search_container_expected_end =
+    const int tab_search_button_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
         GetLayoutConstant(LayoutConstant::kTabStripPadding);
-    EXPECT_EQ(tab_search_container()->bounds().right(),
-              tab_search_container_expected_end);
+    EXPECT_EQ(tab_search_button()->bounds().right(),
+              tab_search_button_expected_end);
   }
 }
 

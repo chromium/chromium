@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
-#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -30,6 +29,12 @@ class TabStripGlicActorTaskIcon;
 }
 class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
+
+enum class LockedExpansionMode {
+  kNone = 0,
+  kWillShow,
+  kWillHide,
+};
 
 class TabStripActionContainer : public views::View,
                                 public views::AnimationDelegateViews,

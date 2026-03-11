@@ -9,7 +9,6 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,7 +30,6 @@ class TabStrip;
 class TabStripScrollContainer;
 class TabSearchPositionMetricsLogger;
 class TabStripControlButton;
-class TabStripFlatEdgeButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -85,7 +83,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   TabStrip* tab_strip() { return tab_strip_; }
 
-  TabStripFlatEdgeButton* GetTabSearchButton();
+  views::Button* GetTabSearchButton();
   TabStripComboButton* GetComboButton() { return combo_button_; }
 
   views::LabelButton* GetGlicButton();
@@ -128,12 +126,12 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
  private:
   // Updates the border padding for `new_tab_button_` and
-  // `tab_search_container_`, if present.  This should be called whenever any
+  // `tab_search_button_`, if present.  This should be called whenever any
   // input of the computation of the border's sizing changes.
   void UpdateButtonBorders();
 
   // Updates the left and right margins for the tab strip. This should be
-  // called whenever `tab_search_container_` changes size, if
+  // called whenever `tab_search_button_` changes size, if
   // `render_tab_search_before_tab_strip_` is true.
   void UpdateTabStripMargin();
 
@@ -151,7 +149,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
   raw_ptr<TabStripComboButton> combo_button_ = nullptr;
   raw_ptr<views::Button> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
   raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
