@@ -20,28 +20,13 @@ public interface MediaCapturePickerDelegate {
      *
      * @param context The context.
      * @param params The picker parameters.
-     * @return The intent to launch, or null if not supported.
-     */
-    @Deprecated
-    default @Nullable Intent createScreenCaptureIntent(
-            Context context, MediaCapturePickerManager.Params params) {
-        return null;
-    }
-
-    /**
-     * Creates an intent to launch the screen capture picker with app content sharing.
-     *
-     * @param context The context.
-     * @param params The picker parameters.
      * @param delegate The delegate to filter tabs to show on the picker.
      * @return The intent to launch, or null if not supported.
      */
-    default @Nullable Intent createScreenCaptureIntent(
+    @Nullable Intent createScreenCaptureIntent(
             Context context,
             MediaCapturePickerManager.Params params,
-            MediaCapturePickerManager.Delegate delegate) {
-        return createScreenCaptureIntent(context, params);
-    }
+            MediaCapturePickerManager.Delegate delegate);
 
     /**
      * Returns the tab that was picked by the user, if any. This should be called after the picker

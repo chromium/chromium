@@ -192,7 +192,11 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                     TAG,
                     "PickerDialog: No PickerDelegate, start AndroidCapturePrompt with null Intent");
         }
-        Intent intent = impl == null ? null : impl.createScreenCaptureIntent(mContext, mParams);
+        Intent intent =
+                impl == null
+                        ? null
+                        : impl.createScreenCaptureIntent(
+                                mContext, mParams, assumeNonNull(mDelegate));
 
         Activity activity = ContextUtils.activityFromContext(mContext);
         // We should always get a non-null ChromeActivity which is a FragmentActivity.

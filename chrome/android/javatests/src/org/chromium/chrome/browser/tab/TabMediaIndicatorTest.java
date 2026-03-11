@@ -119,7 +119,9 @@ public class TabMediaIndicatorTest {
 
         @Override
         public Intent createScreenCaptureIntent(
-                Context context, MediaCapturePickerManager.Params params) {
+                Context context,
+                MediaCapturePickerManager.Params params,
+                MediaCapturePickerManager.Delegate delegate) {
             mCreateScreenCaptureIntentCalled = true;
             return mScreenCaptureIntent != null
                     ? mScreenCaptureIntent
