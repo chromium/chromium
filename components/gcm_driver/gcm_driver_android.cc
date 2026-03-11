@@ -15,14 +15,11 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/jni_zero/default_conversions.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/gcm_driver/android/jni_headers/GCMDriver_jni.h"
 
-using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaByteArrayToString;
 using base::android::JavaRef;
 
 namespace gcm {
@@ -40,13 +37,10 @@ GCMDriverAndroid::~GCMDriverAndroid() {
   Java_GCMDriver_destroy(env, java_ref_);
 }
 
-void GCMDriverAndroid::OnRegisterFinished(
-    JNIEnv* env,
-    const JavaRef<jstring>& j_app_id,
-    const JavaRef<jstring>& j_registration_id,
-    bool success) {
-  std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
-  std::string registration_id = ConvertJavaStringToUTF8(env, j_registration_id);
+void GCMDriverAndroid::OnRegisterFinished(JNIEnv* env,
+                                          const std::string& app_id,
+                                          const std::string& registration_id,
+                                          bool success) {
   GCMClient::Result result =
       success ? GCMClient::SUCCESS : GCMClient::UNKNOWN_ERROR;
 
@@ -56,9 +50,8 @@ void GCMDriverAndroid::OnRegisterFinished(
 }
 
 void GCMDriverAndroid::OnUnregisterFinished(JNIEnv* env,
-                                            const JavaRef<jstring>& j_app_id,
+                                            const std::string& app_id,
                                             bool success) {
-  std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
   GCMClient::Result result =
       success ? GCMClient::SUCCESS : GCMClient::UNKNOWN_ERROR;
 
@@ -69,36 +62,33 @@ void GCMDriverAndroid::OnUnregisterFinished(JNIEnv* env,
 
 void GCMDriverAndroid::OnMessageReceived(
     JNIEnv* env,
-    const JavaRef<jstring>& j_app_id,
-    const JavaRef<jstring>& j_sender_id,
-    const JavaRef<jstring>& j_message_id,
-    const JavaRef<jstring>& j_collapse_key,
-    const JavaRef<jbyteArray>& j_raw_data,
-    const JavaRef<jobjectArray>& j_data_keys_and_values) {
-  std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
-
+    const std::string& app_id,
+    const std::string& sender_id,
+    const std::optional<std::string>& message_id,
+    const std::optional<std::string>& collapse_key,
+    const std::vector<uint8_t>& raw_data,
+    const std::vector<std::string>& data_keys_and_values) {
   int message_byte_size = 0;
 
   IncomingMessage message;
-  message.sender_id = ConvertJavaStringToUTF8(env, j_sender_id);
+  message.sender_id = sender_id;
 
-  if (!j_message_id.is_null())
-    message.message_id = ConvertJavaStringToUTF8(env, j_message_id);
-  if (!j_collapse_key.is_null())
-    message.collapse_key = ConvertJavaStringToUTF8(env, j_collapse_key);
+  if (message_id) {
+    message.message_id = *message_id;
+  }
+  if (collapse_key) {
+    message.collapse_key = *collapse_key;
+  }
 
-  // Expand j_data_keys_and_values from array to map.
-  std::vector<std::string> data_keys_and_values;
-  AppendJavaStringArrayToStringVector(env, j_data_keys_and_values,
-                                      &data_keys_and_values);
+  // Expand data_keys_and_values from array to map.
   for (size_t i = 0; i + 1 < data_keys_and_values.size(); i += 2) {
     message.data[data_keys_and_values[i]] = data_keys_and_values[i + 1];
     message_byte_size += data_keys_and_values[i + 1].size();
   }
-  // Convert j_raw_data from byte[] to binary std::string.
-  if (j_raw_data) {
-    JavaByteArrayToString(env, j_raw_data, &message.raw_data);
 
+  // Convert raw_data from std::vector<uint8_t> to binary std::string.
+  if (!raw_data.empty()) {
+    message.raw_data.assign(raw_data.begin(), raw_data.end());
     message_byte_size += message.raw_data.size();
   }
 
@@ -124,8 +114,7 @@ void GCMDriverAndroid::AddAppHandler(const std::string& app_id,
   JNIEnv* env = AttachCurrentThread();
   // TODO(melandory, mamir): check if messages were persisted
   // and only then go to java.
-  Java_GCMDriver_replayPersistedMessages(env, java_ref_,
-                                         ConvertUTF8ToJavaString(env, app_id));
+  Java_GCMDriver_replayPersistedMessages(env, java_ref_, app_id);
 }
 
 void GCMDriverAndroid::AddConnectionObserver(GCMConnectionObserver* observer) {}
@@ -236,8 +225,7 @@ void GCMDriverAndroid::RegisterImpl(
 
   recorder_.RecordRegistrationSent(app_id);
 
-  Java_GCMDriver_register(env, java_ref_, ConvertUTF8ToJavaString(env, app_id),
-                          ConvertUTF8ToJavaString(env, sender_ids[0]));
+  Java_GCMDriver_register(env, java_ref_, app_id, sender_ids[0]);
 }
 
 void GCMDriverAndroid::UnregisterImpl(const std::string& app_id) {
@@ -251,9 +239,7 @@ void GCMDriverAndroid::UnregisterWithSenderIdImpl(
 
   recorder_.RecordUnregistrationSent(app_id);
 
-  Java_GCMDriver_unregister(env, java_ref_,
-                            ConvertUTF8ToJavaString(env, app_id),
-                            ConvertUTF8ToJavaString(env, sender_id));
+  Java_GCMDriver_unregister(env, java_ref_, app_id, sender_id);
 }
 
 void GCMDriverAndroid::SendImpl(const std::string& app_id,

@@ -6,6 +6,7 @@ package org.chromium.components.segmentation_platform;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -90,22 +91,23 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     interface Natives {
         void getSelectedSegment(
                 long nativeSegmentationPlatformServiceAndroid,
-                String segmentationKey,
+                @JniType("std::string") String segmentationKey,
                 Callback<SegmentSelectionResult> callback);
 
         void getClassificationResult(
                 long nativeSegmentationPlatformServiceAndroid,
-                String segmentationKey,
+                @JniType("std::string") String segmentationKey,
                 PredictionOptions predictionOptions,
                 @Nullable InputContext inputContext,
                 Callback<ClassificationResult> callback);
 
         SegmentSelectionResult getCachedSegmentResult(
-                long nativeSegmentationPlatformServiceAndroid, String segmentationKey);
+                long nativeSegmentationPlatformServiceAndroid,
+                @JniType("std::string") String segmentationKey);
 
         void getInputKeysForModel(
                 long nativeSegmentationPlatformServiceAndroid,
-                String segmentationKey,
+                @JniType("std::string") String segmentationKey,
                 Callback<String[]> callback);
 
         void collectTrainingData(

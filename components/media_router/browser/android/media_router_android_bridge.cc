@@ -10,13 +10,12 @@
 #include "components/media_router/browser/android/media_router_android.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_controller.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/media_router/browser/android/jni_headers/BrowserMediaRouter_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -46,21 +45,14 @@ void MediaRouterAndroidBridge::CreateRoute(const MediaSource::Id& source_id,
                                            content::WebContents* web_contents,
                                            int route_request_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jsource_id =
-      ConvertUTF8ToJavaString(env, source_id);
-  ScopedJavaLocalRef<jstring> jsink_id = ConvertUTF8ToJavaString(env, sink_id);
-  ScopedJavaLocalRef<jstring> jpresentation_id =
-      ConvertUTF8ToJavaString(env, presentation_id);
-  ScopedJavaLocalRef<jstring> jorigin =
-      ConvertUTF8ToJavaString(env, origin.GetURL().spec());
   base::android::ScopedJavaLocalRef<jobject> java_web_contents;
   if (web_contents) {
     java_web_contents = web_contents->GetJavaWebContents();
   }
 
-  Java_BrowserMediaRouter_createRoute(env, java_media_router_, jsource_id,
-                                      jsink_id, jpresentation_id, jorigin,
-                                      java_web_contents, route_request_id);
+  Java_BrowserMediaRouter_createRoute(
+      env, java_media_router_, source_id, sink_id, presentation_id,
+      origin.GetURL().spec(), java_web_contents, route_request_id);
 }
 
 void MediaRouterAndroidBridge::JoinRoute(const MediaSource::Id& source_id,
@@ -69,75 +61,56 @@ void MediaRouterAndroidBridge::JoinRoute(const MediaSource::Id& source_id,
                                          content::WebContents* web_contents,
                                          int route_request_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jsource_id =
-      ConvertUTF8ToJavaString(env, source_id);
-  ScopedJavaLocalRef<jstring> jpresentation_id =
-      ConvertUTF8ToJavaString(env, presentation_id);
-  ScopedJavaLocalRef<jstring> jorigin =
-      ConvertUTF8ToJavaString(env, origin.GetURL().spec());
   base::android::ScopedJavaLocalRef<jobject> java_web_contents;
   if (web_contents) {
     java_web_contents = web_contents->GetJavaWebContents();
   }
 
-  Java_BrowserMediaRouter_joinRoute(env, java_media_router_, jsource_id,
-                                    jpresentation_id, jorigin,
+  Java_BrowserMediaRouter_joinRoute(env, java_media_router_, source_id,
+                                    presentation_id, origin.GetURL().spec(),
                                     java_web_contents, route_request_id);
 }
 
 void MediaRouterAndroidBridge::TerminateRoute(const MediaRoute::Id& route_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jroute_id =
-      ConvertUTF8ToJavaString(env, route_id);
-  Java_BrowserMediaRouter_closeRoute(env, java_media_router_, jroute_id);
+  Java_BrowserMediaRouter_closeRoute(env, java_media_router_, route_id);
 }
 
 void MediaRouterAndroidBridge::SendRouteMessage(const MediaRoute::Id& route_id,
                                                 const std::string& message) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jroute_id =
-      ConvertUTF8ToJavaString(env, route_id);
-  ScopedJavaLocalRef<jstring> jmessage = ConvertUTF8ToJavaString(env, message);
-  Java_BrowserMediaRouter_sendStringMessage(env, java_media_router_, jroute_id,
-                                            jmessage);
+  Java_BrowserMediaRouter_sendStringMessage(env, java_media_router_, route_id,
+                                            message);
 }
 
 void MediaRouterAndroidBridge::DetachRoute(const MediaRoute::Id& route_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jroute_id =
-      ConvertUTF8ToJavaString(env, route_id);
-  Java_BrowserMediaRouter_detachRoute(env, java_media_router_, jroute_id);
+  Java_BrowserMediaRouter_detachRoute(env, java_media_router_, route_id);
 }
 
 bool MediaRouterAndroidBridge::StartObservingMediaSinks(
     const MediaSource::Id& source_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jsource_id =
-      ConvertUTF8ToJavaString(env, source_id);
   return Java_BrowserMediaRouter_startObservingMediaSinks(
-      env, java_media_router_, jsource_id);
+      env, java_media_router_, source_id);
 }
 
 void MediaRouterAndroidBridge::StopObservingMediaSinks(
     const MediaSource::Id& source_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jsource_id =
-      ConvertUTF8ToJavaString(env, source_id);
   Java_BrowserMediaRouter_stopObservingMediaSinks(env, java_media_router_,
-                                                  jsource_id);
+                                                  source_id);
 }
 
 std::unique_ptr<media::FlingingController>
 MediaRouterAndroidBridge::GetFlingingController(
     const MediaRoute::Id& route_id) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jroute_id =
-      ConvertUTF8ToJavaString(env, route_id);
 
   ScopedJavaGlobalRef<jobject> flinging_controller;
 
   flinging_controller.Reset(Java_BrowserMediaRouter_getFlingingControllerBridge(
-      env, java_media_router_, jroute_id));
+      env, java_media_router_, route_id));
 
   if (flinging_controller.is_null()) {
     return nullptr;
@@ -146,87 +119,70 @@ MediaRouterAndroidBridge::GetFlingingController(
   return std::make_unique<FlingingControllerBridge>(flinging_controller);
 }
 
-void MediaRouterAndroidBridge::OnSinksReceived(
-    JNIEnv* env,
-    const JavaRef<jstring>& jsource_urn,
-    int32_t jcount) {
+void MediaRouterAndroidBridge::OnSinksReceived(JNIEnv* env,
+                                               const std::string& source_urn,
+                                               int32_t count) {
   std::vector<MediaSink> sinks_converted;
-  sinks_converted.reserve(jcount);
-  for (int i = 0; i < jcount; ++i) {
-    ScopedJavaLocalRef<jstring> jsink_urn = Java_BrowserMediaRouter_getSinkUrn(
-        env, java_media_router_, jsource_urn, i);
-    ScopedJavaLocalRef<jstring> jsink_name =
-        Java_BrowserMediaRouter_getSinkName(env, java_media_router_,
-                                            jsource_urn, i);
+  sinks_converted.reserve(count);
+  for (int i = 0; i < count; ++i) {
     sinks_converted.push_back(MediaSink(
-        ConvertJavaStringToUTF8(env, jsink_urn.obj()),
-        ConvertJavaStringToUTF8(env, jsink_name.obj()), SinkIconType::GENERIC,
-        mojom::MediaRouteProviderId::ANDROID_CAF));
+        Java_BrowserMediaRouter_getSinkUrn(env, java_media_router_, source_urn,
+                                           i),
+        Java_BrowserMediaRouter_getSinkName(env, java_media_router_, source_urn,
+                                            i),
+        SinkIconType::GENERIC, mojom::MediaRouteProviderId::ANDROID_CAF));
   }
-  native_media_router_->OnSinksReceived(
-      ConvertJavaStringToUTF8(env, jsource_urn), sinks_converted);
+  native_media_router_->OnSinksReceived(source_urn, sinks_converted);
 }
 
-void MediaRouterAndroidBridge::OnRouteCreated(
-    JNIEnv* env,
-    const JavaRef<jstring>& jmedia_route_id,
-    const JavaRef<jstring>& jsink_id,
-    int32_t jroute_request_id,
-    bool jis_local) {
-  native_media_router_->OnRouteCreated(
-      ConvertJavaStringToUTF8(env, jmedia_route_id),
-      ConvertJavaStringToUTF8(env, jsink_id), jroute_request_id, jis_local);
+void MediaRouterAndroidBridge::OnRouteCreated(JNIEnv* env,
+                                              const std::string& media_route_id,
+                                              const std::string& sink_id,
+                                              int32_t route_request_id,
+                                              bool is_local) {
+  native_media_router_->OnRouteCreated(media_route_id, sink_id,
+                                       route_request_id, is_local);
 }
 
 void MediaRouterAndroidBridge::OnRouteMediaSourceUpdated(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& jmedia_route_id,
-    const base::android::JavaRef<jstring>& jmedia_source_id) {
-  native_media_router_->OnRouteMediaSourceUpdated(
-      ConvertJavaStringToUTF8(env, jmedia_route_id),
-      ConvertJavaStringToUTF8(env, jmedia_source_id));
+    const std::string& media_route_id,
+    const std::string& media_source_id) {
+  native_media_router_->OnRouteMediaSourceUpdated(media_route_id,
+                                                  media_source_id);
 }
 
 void MediaRouterAndroidBridge::OnCreateRouteRequestError(
     JNIEnv* env,
-    const JavaRef<jstring>& jerror_text,
-    int32_t jroute_request_id) {
-  native_media_router_->OnCreateRouteRequestError(
-      ConvertJavaStringToUTF8(jerror_text), jroute_request_id);
+    const std::string& error_text,
+    int32_t route_request_id) {
+  native_media_router_->OnCreateRouteRequestError(error_text, route_request_id);
 }
 
 void MediaRouterAndroidBridge::OnJoinRouteRequestError(
     JNIEnv* env,
-    const JavaRef<jstring>& jerror_text,
-    int32_t jroute_request_id) {
-  native_media_router_->OnJoinRouteRequestError(
-      ConvertJavaStringToUTF8(jerror_text), jroute_request_id);
+    const std::string& error_text,
+    int32_t route_request_id) {
+  native_media_router_->OnJoinRouteRequestError(error_text, route_request_id);
 }
 
 void MediaRouterAndroidBridge::OnRouteTerminated(
     JNIEnv* env,
-    const JavaRef<jstring>& jmedia_route_id) {
-  native_media_router_->OnRouteTerminated(
-      ConvertJavaStringToUTF8(env, jmedia_route_id));
+    const std::string& media_route_id) {
+  native_media_router_->OnRouteTerminated(media_route_id);
 }
 
 void MediaRouterAndroidBridge::OnRouteClosed(
     JNIEnv* env,
-    const JavaRef<jstring>& jmedia_route_id,
-    const JavaRef<jstring>& jerror) {
-  native_media_router_->OnRouteClosed(
-      ConvertJavaStringToUTF8(env, jmedia_route_id),
-      jerror.is_null()
-          ? std::nullopt
-          : std::make_optional(ConvertJavaStringToUTF8(env, jerror)));
+    const std::string& media_route_id,
+    const std::optional<std::string>& error) {
+  native_media_router_->OnRouteClosed(media_route_id, error);
 }
 
-void MediaRouterAndroidBridge::OnMessage(
-    JNIEnv* env,
-    const JavaRef<jstring>& jmedia_route_id,
-    const JavaRef<jstring>& jmessage) {
-  native_media_router_->OnMessage(ConvertJavaStringToUTF8(env, jmedia_route_id),
-                                  ConvertJavaStringToUTF8(env, jmessage));
+void MediaRouterAndroidBridge::OnMessage(JNIEnv* env,
+                                         const std::string& media_route_id,
+                                         const std::string& message) {
+  native_media_router_->OnMessage(media_route_id, message);
 }
 
 }  // namespace media_router

@@ -6,6 +6,7 @@ package org.chromium.components.gcm_driver;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -71,7 +72,7 @@ public class GCMDriver {
     }
 
     @CalledByNative
-    private void replayPersistedMessages(final String appId) {
+    private void replayPersistedMessages(@JniType("std::string") final String appId) {
         Set<String> subscriptionsWithPersistedMessagesForAppId =
                 LazySubscriptionsManager.getSubscriptionIdsWithPersistedMessages(appId);
         if (subscriptionsWithPersistedMessagesForAppId.isEmpty()) {
@@ -88,7 +89,9 @@ public class GCMDriver {
     }
 
     @CalledByNative
-    private void register(final String appId, final String senderId) {
+    private void register(
+            @JniType("std::string") final String appId,
+            @JniType("std::string") final String senderId) {
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
@@ -115,7 +118,9 @@ public class GCMDriver {
     }
 
     @CalledByNative
-    private void unregister(final String appId, final String senderId) {
+    private void unregister(
+            @JniType("std::string") final String appId,
+            @JniType("std::string") final String senderId) {
         new AsyncTask<Boolean>() {
             @Override
             protected Boolean doInBackground() {
@@ -164,17 +169,21 @@ public class GCMDriver {
     @NativeMethods
     interface Natives {
         void onRegisterFinished(
-                long nativeGCMDriverAndroid, String appId, String registrationId, boolean success);
+                long nativeGCMDriverAndroid,
+                @JniType("std::string") String appId,
+                @JniType("std::string") String registrationId,
+                boolean success);
 
-        void onUnregisterFinished(long nativeGCMDriverAndroid, String appId, boolean success);
+        void onUnregisterFinished(
+                long nativeGCMDriverAndroid, @JniType("std::string") String appId, boolean success);
 
         void onMessageReceived(
                 long nativeGCMDriverAndroid,
-                @Nullable String appId,
-                @Nullable String senderId,
-                @Nullable String messageId,
-                @Nullable String collapseKey,
-                byte @Nullable [] rawData,
-                String @Nullable [] dataKeysAndValues);
+                @JniType("std::string") @Nullable String appId,
+                @JniType("std::string") @Nullable String senderId,
+                @JniType("std::optional<std::string>") @Nullable String messageId,
+                @JniType("std::optional<std::string>") @Nullable String collapseKey,
+                @JniType("std::vector<uint8_t>") byte @Nullable [] rawData,
+                @JniType("std::vector<std::string>") String @Nullable [] dataKeysAndValues);
     }
 }

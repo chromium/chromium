@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -29,21 +31,21 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
   ~SegmentationPlatformServiceAndroid() override;
 
   void GetSelectedSegment(JNIEnv* env,
-                          const JavaRef<jstring>& j_segmentation_key,
+                          const std::string& segmentation_key,
                           const JavaRef<jobject>& j_callback);
 
   void GetClassificationResult(JNIEnv* env,
-                               const JavaRef<jstring>& j_segmentation_key,
+                               const std::string& segmentation_key,
                                const JavaRef<jobject>& j_prediction_options,
                                const JavaRef<jobject>& j_input_context,
                                const JavaRef<jobject>& j_callback);
 
   ScopedJavaLocalRef<jobject> GetCachedSegmentResult(
       JNIEnv* env,
-      const JavaRef<jstring>& j_segmentation_key);
+      const std::string& segmentation_key);
 
   void GetInputKeysForModel(JNIEnv* env,
-                            const JavaRef<jstring>& j_segmentation_key,
+                            const std::string& segmentation_key,
                             const JavaRef<jobject>& j_callback);
 
   void CollectTrainingData(JNIEnv* env,

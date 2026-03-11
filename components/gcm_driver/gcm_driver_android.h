@@ -7,6 +7,10 @@
 
 #include <jni.h>
 
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -35,22 +39,20 @@ class GCMDriverAndroid : public GCMDriver,
   ~GCMDriverAndroid() override;
 
   // Methods called from Java via JNI:
-  void OnRegisterFinished(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& app_id,
-      const base::android::JavaRef<jstring>& registration_id,
-      bool success);
+  void OnRegisterFinished(JNIEnv* env,
+                          const std::string& app_id,
+                          const std::string& registration_id,
+                          bool success);
   void OnUnregisterFinished(JNIEnv* env,
-                            const base::android::JavaRef<jstring>& app_id,
+                            const std::string& app_id,
                             bool success);
-  void OnMessageReceived(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& app_id,
-      const base::android::JavaRef<jstring>& sender_id,
-      const base::android::JavaRef<jstring>& j_message_id,
-      const base::android::JavaRef<jstring>& collapse_key,
-      const base::android::JavaRef<jbyteArray>& raw_data,
-      const base::android::JavaRef<jobjectArray>& data_keys_and_values);
+  void OnMessageReceived(JNIEnv* env,
+                         const std::string& app_id,
+                         const std::string& sender_id,
+                         const std::optional<std::string>& message_id,
+                         const std::optional<std::string>& collapse_key,
+                         const std::vector<uint8_t>& raw_data,
+                         const std::vector<std::string>& data_keys_and_values);
 
   // GCMDriver implementation:
   void ValidateRegistration(const std::string& app_id,

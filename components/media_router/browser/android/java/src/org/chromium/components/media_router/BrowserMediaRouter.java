@@ -14,6 +14,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -219,13 +220,14 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Starts background monitoring for available media sinks compatible with the given
-     * |sourceUrn| if the device is in a state that allows it.
+     * Starts background monitoring for available media sinks compatible with the given |sourceUrn|
+     * if the device is in a state that allows it.
+     *
      * @param sourceId a URL to use for filtering of the available media sinks
      * @return whether the monitoring started (ie. was allowed).
      */
     @CalledByNative
-    public boolean startObservingMediaSinks(String sourceId) {
+    public boolean startObservingMediaSinks(@JniType("std::string") String sourceId) {
         Log.d(TAG, "startObservingMediaSinks: " + sourceId);
         if (SysUtils.isLowEndDevice()) return false;
 
@@ -237,12 +239,12 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Stops background monitoring for available media sinks compatible with the given
-     * |sourceUrn|
+     * Stops background monitoring for available media sinks compatible with the given |sourceUrn|
+     *
      * @param sourceId a URL passed to {@link #startObservingMediaSinks(String)} before.
      */
     @CalledByNative
-    public void stopObservingMediaSinks(String sourceId) {
+    public void stopObservingMediaSinks(@JniType("std::string") String sourceId) {
         Log.d(TAG, "stopObservingMediaSinks: " + sourceId);
         for (MediaRouteProvider provider : mRouteProviders) {
             provider.stopObservingMediaSinks(sourceId);
@@ -252,34 +254,37 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Returns the URN of the media sink corresponding to the given source URN
-     * and an index. Essentially a way to access the corresponding {@link MediaSink}'s
-     * list via JNI.
+     * Returns the URN of the media sink corresponding to the given source URN and an index.
+     * Essentially a way to access the corresponding {@link MediaSink}'s list via JNI.
+     *
      * @param sourceUrn The URN to get the sink for.
      * @param index The index of the sink in the current sink array.
      * @return the corresponding sink URN if found or null.
      */
     @CalledByNative
-    public String getSinkUrn(String sourceUrn, int index) {
+    public @JniType("std::string") String getSinkUrn(
+            @JniType("std::string") String sourceUrn, int index) {
         return getSink(sourceUrn, index).getUrn();
     }
 
     /**
-     * Returns the name of the media sink corresponding to the given source URN
-     * and an index. Essentially a way to access the corresponding {@link MediaSink}'s
-     * list via JNI.
+     * Returns the name of the media sink corresponding to the given source URN and an index.
+     * Essentially a way to access the corresponding {@link MediaSink}'s list via JNI.
+     *
      * @param sourceUrn The URN to get the sink for.
      * @param index The index of the sink in the current sink array.
      * @return the corresponding sink name if found or null.
      */
     @CalledByNative
-    public String getSinkName(String sourceUrn, int index) {
+    public @JniType("std::string") String getSinkName(
+            @JniType("std::string") String sourceUrn, int index) {
         return getSink(sourceUrn, index).getName();
     }
 
     /**
-     * Initiates route creation with the given parameters. Notifies the native client of success
-     * and failure.
+     * Initiates route creation with the given parameters. Notifies the native client of success and
+     * failure.
+     *
      * @param sourceId the id of the {@link MediaSource} to route to the sink.
      * @param sinkId the id of the {@link MediaSink} to route the source to.
      * @param presentationId the id of the presentation to be used by the page.
@@ -289,10 +294,10 @@ public class BrowserMediaRouter implements MediaRouteManager {
      */
     @CalledByNative
     public void createRoute(
-            String sourceId,
-            String sinkId,
-            String presentationId,
-            String origin,
+            @JniType("std::string") String sourceId,
+            @JniType("std::string") String sinkId,
+            @JniType("std::string") String presentationId,
+            @JniType("std::string") String origin,
             WebContents webContents,
             int requestId) {
         MediaRouteProvider provider = getProviderForSource(sourceId);
@@ -318,8 +323,9 @@ public class BrowserMediaRouter implements MediaRouteManager {
     }
 
     /**
-     * Initiates route joining with the given parameters. Notifies the native client of success
-     * or failure.
+     * Initiates route joining with the given parameters. Notifies the native client of success or
+     * failure.
+     *
      * @param sourceId the id of the {@link MediaSource} to route to the sink.
      * @param sinkId the id of the {@link MediaSink} to route the source to.
      * @param presentationId the id of the presentation to be used by the page.
@@ -329,9 +335,9 @@ public class BrowserMediaRouter implements MediaRouteManager {
      */
     @CalledByNative
     public void joinRoute(
-            String sourceId,
-            String presentationId,
-            String origin,
+            @JniType("std::string") String sourceId,
+            @JniType("std::string") String presentationId,
+            @JniType("std::string") String origin,
             WebContents webContents,
             int requestId) {
         MediaRouteProvider provider = getProviderForSource(sourceId);
@@ -351,10 +357,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     /**
      * Closes the route specified by the id.
+     *
      * @param routeId the id of the route to close.
      */
     @CalledByNative
-    public void closeRoute(String routeId) {
+    public void closeRoute(@JniType("std::string") String routeId) {
         MediaRouteProvider provider = mRouteIdsToProviders.get(routeId);
         if (provider == null) return;
 
@@ -363,10 +370,11 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     /**
      * Notifies the specified route that it's not attached to the web page anymore.
+     *
      * @param routeId the id of the route that was detached.
      */
     @CalledByNative
-    public void detachRoute(String routeId) {
+    public void detachRoute(@JniType("std::string") String routeId) {
         MediaRouteProvider provider = mRouteIdsToProviders.get(routeId);
         if (provider == null) return;
 
@@ -376,11 +384,13 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     /**
      * Sends a string message to the specified route.
+     *
      * @param routeId The id of the route to send the message to.
      * @param message The message to send.
      */
     @CalledByNative
-    public void sendStringMessage(String routeId, String message) {
+    public void sendStringMessage(
+            @JniType("std::string") String routeId, @JniType("std::string") String message) {
         MediaRouteProvider provider = mRouteIdsToProviders.get(routeId);
         if (provider == null) {
             return;
@@ -391,11 +401,13 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     /**
      * Gets a media controller to be used by native.
+     *
      * @param routeId The route ID tied to the CastSession for which we want a media controller.
      * @return A MediaControllerBridge if it can be obtained from |routeId|, null otherwise.
      */
     @CalledByNative
-    public @Nullable FlingingControllerBridge getFlingingControllerBridge(String routeId) {
+    public @Nullable FlingingControllerBridge getFlingingControllerBridge(
+            @JniType("std::string") String routeId) {
         MediaRouteProvider provider = mRouteIdsToProviders.get(routeId);
         if (provider == null) return null;
 
@@ -431,29 +443,44 @@ public class BrowserMediaRouter implements MediaRouteManager {
 
     @NativeMethods
     interface Natives {
-        void onSinksReceived(long nativeMediaRouterAndroidBridge, String sourceUrn, int count);
+        void onSinksReceived(
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String sourceUrn,
+                int count);
 
         void onRouteCreated(
                 long nativeMediaRouterAndroidBridge,
-                String mediaRouteId,
-                String mediaSinkId,
+                @JniType("std::string") String mediaRouteId,
+                @JniType("std::string") String mediaSinkId,
                 int createRouteRequestId,
                 boolean wasLaunched);
 
         void onCreateRouteRequestError(
-                long nativeMediaRouterAndroidBridge, String errorText, int requestId);
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String errorText,
+                int requestId);
 
         void onJoinRouteRequestError(
-                long nativeMediaRouterAndroidBridge, String errorText, int requestId);
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String errorText,
+                int requestId);
 
-        void onRouteTerminated(long nativeMediaRouterAndroidBridge, String mediaRouteId);
+        void onRouteTerminated(
+                long nativeMediaRouterAndroidBridge, @JniType("std::string") String mediaRouteId);
 
         void onRouteClosed(
-                long nativeMediaRouterAndroidBridge, String mediaRouteId, @Nullable String message);
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String mediaRouteId,
+                @JniType("std::optional<std::string>") @Nullable String message);
 
-        void onMessage(long nativeMediaRouterAndroidBridge, String mediaRouteId, String message);
+        void onMessage(
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String mediaRouteId,
+                @JniType("std::string") String message);
 
         void onRouteMediaSourceUpdated(
-                long nativeMediaRouterAndroidBridge, String mediaRouteId, String mediaSourceId);
+                long nativeMediaRouterAndroidBridge,
+                @JniType("std::string") String mediaRouteId,
+                @JniType("std::string") String mediaSourceId);
     }
 }
