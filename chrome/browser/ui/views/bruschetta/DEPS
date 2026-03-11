@@ -1,4 +1,6 @@
 include_rules = [
+  "+ash/strings",
+
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
   "-chrome",
@@ -16,6 +18,5 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/test",
-  "+chrome/grit",
   "+chrome/test",
 ]

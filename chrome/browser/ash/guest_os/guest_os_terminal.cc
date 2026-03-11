@@ -8,6 +8,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strings/grit/components_strings.h"

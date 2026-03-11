@@ -61,6 +61,7 @@ static_library("guest_os") {
     ":guest_os_diagnostics_mojom",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings:strings_grit",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
     "//chrome/app/vector_icons",

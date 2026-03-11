@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
