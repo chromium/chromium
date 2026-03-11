@@ -15,6 +15,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -36,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,6 +47,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -97,6 +100,10 @@ public class AccountManagerFacadeImplTest {
     @Mock ExternalAuthUtils mExternalAuthUtilsMock;
 
     @Mock private ChildAccountStatusListener mChildAccountStatusListenerMock;
+
+    @Mock private Callback<Boolean> mMockCallback;
+
+    @Mock private AccountsChangeObserver mObserverMock;
 
     private final Context mContext = RuntimeEnvironment.application;
     private ShadowUserManager mShadowUserManager;
@@ -871,6 +878,38 @@ public class AccountManagerFacadeImplTest {
         CoreAccountInfo accountInfo = addTestAccount("test@gmail.com");
 
         assertEquals(List.of(accountInfo), mFacade.getAccounts().getResult());
+    }
+
+    @Test
+    @Features.EnableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testUpdateCredentialsWaitForRefreshToken_migrateAccountManagerDelegateEnabled() {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        delegate.addAccount(TestAccounts.ACCOUNT1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mFacade.addObserver(mObserverMock);
+        mFacade.updateCredentials(TestAccounts.ACCOUNT1, null, mMockCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        InOrder inOrder = inOrder(mObserverMock, mMockCallback);
+        inOrder.verify(mObserverMock).onCoreAccountInfosChanged();
+        inOrder.verify(mMockCallback).onResult(any());
+    }
+
+    @Test
+    @Features.DisableFeatures(SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE)
+    public void testUpdateCredentialsWaitForRefreshToken() {
+        FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
+        delegate.addAccount(TestAccounts.ACCOUNT1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mFacade.addObserver(mObserverMock);
+        mFacade.updateCredentials(TestAccounts.ACCOUNT1, null, mMockCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        InOrder inOrder = inOrder(mObserverMock, mMockCallback);
+        inOrder.verify(mObserverMock).onCoreAccountInfosChanged();
+        inOrder.verify(mMockCallback).onResult(any());
     }
 
     private void setAccountRestrictionPatterns(String... patterns) {

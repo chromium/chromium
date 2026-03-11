@@ -189,7 +189,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     public void updateCredentials(
             Account account, Activity activity, final Callback<Boolean> callback) {
         if (callback != null) {
-            ThreadUtils.postOnUiThread(callback.bind(true));
+            ThreadUtils.postOnUiThread(() -> callback.onResult(true));
         }
     }
 

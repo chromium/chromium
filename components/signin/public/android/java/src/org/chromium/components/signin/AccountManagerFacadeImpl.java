@@ -101,11 +101,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate = delegate;
 
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
-            mDelegate.attachAccountsChangeObserver(this::onPlatformAccountsUpdated);
-            onPlatformAccountsUpdated();
+            mDelegate.attachAccountsChangeObserver(() -> onPlatformAccountsUpdated(null));
+            onPlatformAccountsUpdated(null);
         } else {
-            mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
-            onAccountsUpdated();
+            mDelegate.attachAccountsChangeObserver(() -> onAccountsUpdated(null));
+            onAccountsUpdated(null);
         }
         new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
@@ -477,7 +477,21 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
 
         mDelegate.updateCredentials(
-                CoreAccountInfo.getAndroidAccountFrom(accountInfo), activity, callback);
+                CoreAccountInfo.getAndroidAccountFrom(accountInfo),
+                activity,
+                (success) -> {
+                    if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+                        onPlatformAccountsUpdated(
+                                () -> {
+                                    if (callback != null) callback.onResult(success);
+                                });
+                    } else {
+                        onAccountsUpdated(
+                                () -> {
+                                    if (callback != null) callback.onResult(success);
+                                });
+                    }
+                });
     }
 
     @Override
@@ -508,7 +522,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     /** Fetches gaia ids, creates account objects and updates {@link #mAccountsPromise}. */
     @MainThread
-    private void fetchGaiaIdsAndUpdateCoreAccountInfos() {
+    private void fetchGaiaIdsAndUpdateCoreAccountInfos(@Nullable Runnable callback) {
         assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         ThreadUtils.assertOnUiThread();
         if (mFetchGaiaIdsTask != null) {
@@ -517,11 +531,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             mFetchGaiaIdsTask = null;
         }
 
-        mFetchGaiaIdsTask = new GetAccountAsyncTask(getFilteredAccountEmails());
+        mFetchGaiaIdsTask = new GetAccountAsyncTask(getFilteredAccountEmails(), callback);
         mFetchGaiaIdsTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private void onAccountsUpdated() {
+    @VisibleForTesting
+    void onAccountsUpdated(@Nullable Runnable callback) {
         assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         ThreadUtils.assertOnUiThread();
         new AsyncTask<@Nullable List<Account>>() {
@@ -546,7 +561,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         PostTask.postDelayedTask(
                                 TaskTraits.UI_USER_VISIBLE,
                                 () -> {
-                                    onAccountsUpdated();
+                                    onAccountsUpdated(callback);
                                 },
                                 GET_ACCOUNTS_BACKOFF_DELAY);
                         return;
@@ -569,12 +584,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 }
                 mNumberOfRetries = 0;
                 mAllAccounts.set(allAccounts);
-                updateAccounts();
+                updateAccounts(callback);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private void onPlatformAccountsUpdated() {
+    @VisibleForTesting
+    void onPlatformAccountsUpdated(@Nullable Runnable callback) {
         assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         ThreadUtils.assertOnUiThread();
         new AsyncTask<@Nullable List<PlatformAccount>>() {
@@ -598,7 +614,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         PostTask.postDelayedTask(
                                 TaskTraits.UI_USER_VISIBLE,
                                 () -> {
-                                    onPlatformAccountsUpdated();
+                                    onPlatformAccountsUpdated(callback);
                                 },
                                 GET_ACCOUNTS_BACKOFF_DELAY);
                         return;
@@ -624,7 +640,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 }
                 mNumberOfRetries = 0;
                 mAllPlatformAccounts.set(allAccounts);
-                updateAccountInfos();
+                updateAccountInfos(callback);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
@@ -640,23 +656,23 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
         mAccountRestrictionPatterns.set(patternMatchers);
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
-            updateAccountInfos();
+            updateAccountInfos(null);
             return;
         }
-        updateAccounts();
+        updateAccounts(null);
     }
 
     @MainThread
-    private void updateAccounts() {
+    private void updateAccounts(@Nullable Runnable callback) {
         assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
         if (mAllAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
             return;
         }
-        fetchGaiaIdsAndUpdateCoreAccountInfos();
+        fetchGaiaIdsAndUpdateCoreAccountInfos(callback);
     }
 
     @MainThread
-    private void updateAccountInfos() {
+    private void updateAccountInfos(@Nullable Runnable callback) {
         assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
 
         if (mAllPlatformAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
@@ -676,6 +692,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         for (AccountsChangeObserver observer : mObservers) {
             observer.onCoreAccountInfosChanged();
+        }
+
+        if (callback != null) {
+            callback.run();
         }
     }
 
@@ -736,10 +756,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mAccountsPromise = new Promise<>();
         mAllAccounts.set(null);
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
-            updateAccountInfos();
+            updateAccountInfos(null);
             return;
         }
-        updateAccounts();
+        updateAccounts(null);
     }
 
     @Override
@@ -750,10 +770,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
     private class GetAccountAsyncTask extends AsyncTask<@Nullable List<GaiaId>> {
         private final List<String> mEmails;
+        private final @Nullable Runnable mCallback;
 
-        GetAccountAsyncTask(List<String> emails) {
+        GetAccountAsyncTask(List<String> emails, @Nullable Runnable callback) {
             assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
             mEmails = emails;
+            mCallback = callback;
         }
 
         @Override
@@ -782,7 +804,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         public void onPostExecute(@Nullable List<GaiaId> gaiaIds) {
             mFetchGaiaIdsTask = null;
             if (gaiaIds == null) {
-                fetchGaiaIdsAndUpdateCoreAccountInfos();
+                fetchGaiaIdsAndUpdateCoreAccountInfos(mCallback);
                 return;
             }
             List<AccountInfo> accounts = new ArrayList<>();
@@ -798,6 +820,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
             for (AccountsChangeObserver observer : mObservers) {
                 observer.onCoreAccountInfosChanged();
+            }
+            if (mCallback != null) {
+                mCallback.run();
             }
         }
     }
