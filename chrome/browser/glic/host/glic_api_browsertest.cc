@@ -1123,8 +1123,24 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testRequestHeader) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTab) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // Add a tab after the active tab to ensure we're not just appending.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  tab_strip_model->ActivateTabAt(0);
+
+  tab_strip_model->AddToNewGroup({0});
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_strip_model->GetTabGroupForTab(0);
+  ASSERT_TRUE(group_id.has_value());
+
   ExecuteJsTest();
-  RunTestSequence(CheckTabCount(2));
+  RunTestSequence(CheckTabCount(3));
+
+  // The new tab should be at index 1 (next to the active tab) and inherit the
+  // tab group.
+  EXPECT_EQ(1, tab_strip_model->active_index());
+  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
@@ -1138,23 +1154,37 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabInBackground) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
 
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // Add a tab after the active tab to ensure we're not just appending.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  tab_strip_model->ActivateTabAt(0);
+
+  tab_strip_model->AddToNewGroup({0});
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_strip_model->GetTabGroupForTab(0);
+  ASSERT_TRUE(group_id.has_value());
+
   // Creating a new tab via the glic API in the foreground should change the
   // active tab.
   ExecuteJsTest();
-  RunTestSequence(CheckTabCount(2));
-  tabs::TabInterface* active_tab =
-      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  RunTestSequence(CheckTabCount(3));
+  tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
   ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
               testing::EndsWith("#foreground"));
+
+  EXPECT_EQ(1, tab_strip_model->active_index());
+  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
 
   // Creating a new tab via the glic API in the background should not change the
   // active tab.
   ContinueJsTest();
-  RunTestSequence(CheckTabCount(3));
-  active_tab =
-      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  RunTestSequence(CheckTabCount(4));
+  active_tab = tab_strip_model->GetActiveTab();
   ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
               testing::EndsWith("#foreground"));
+
+  EXPECT_EQ(1, tab_strip_model->active_index());
+  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(2));
 }
 
 // Tests that the response to a user confirmation dialog is correctly ordered
@@ -1213,17 +1243,32 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
                   CheckTabCount(1));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  // Add a tab after the active tab to ensure we're not just appending.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  tab_strip_model->ActivateTabAt(0);
+
+  tab_strip_model->AddToNewGroup({0});
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_strip_model->GetTabGroupForTab(0);
+  ASSERT_TRUE(group_id.has_value());
+
   // Have the test track this tab's glic instance.
   TrackGlicInstanceWithId(GetGlicInstance()->id());
   content::RenderFrameHost* guest_frame = FindGlicGuestMainFrame();
   ASSERT_TRUE(guest_frame);
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return InProcessBrowserTest::browser()->tab_strip_model()->count() == 2;
+    return tab_strip_model->count() == 3;
   })) << "Timed out waiting for tab count to increase. Tab count = "
-      << InProcessBrowserTest::browser()->tab_strip_model()->count();
+      << tab_strip_model->count();
   // The guest frame shouldn't change.
   ASSERT_EQ(guest_frame, FindGlicGuestMainFrame());
+
+  // Link click opens next to opener and inherits group.
+  EXPECT_EQ(1, tab_strip_model->active_index());
+  EXPECT_EQ(group_id, tab_strip_model->GetTabGroupForTab(1));
 
   // This test is a regression test for b/416464184.
   // Audio ducking should still work after clicking a link.

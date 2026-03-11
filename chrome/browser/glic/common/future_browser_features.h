@@ -74,15 +74,18 @@ inline base::WeakPtr<content::NavigationHandle> DoNavigate(
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   return Navigate(params);
 #else
-  BrowserWindowInterface* last_active_browser = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (browser->GetProfile() == params->initiating_profile) {
-          last_active_browser = browser;
-        }
-        return false;  // stop iterating
-      });
-  params->browser = last_active_browser;
+  if (!params->browser) {
+    BrowserWindowInterface* last_active_browser = nullptr;
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* browser) {
+          if (browser->GetProfile() == params->initiating_profile) {
+            last_active_browser = browser;
+            return false;  // stop iterating once found
+          }
+          return true;  // keep iterating
+        });
+    params->browser = last_active_browser;
+  }
   return Navigate(params);
 #endif
 }

@@ -56,8 +56,11 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
@@ -632,12 +635,40 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
     std::move(callback).Run(nullptr);
     return nullptr;
   }
-  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = open_in_background
-                           ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                           : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  std::optional<NavigateParams> params;
+  BrowserWindowInterface* last_active_bwi = nullptr;
+
+  if (base::FeatureList::IsEnabled(features::kGlicCreateTabAdjacent)) {
+    // Find the most recently active browser window for this profile.
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&](BrowserWindowInterface* browser) {
+          if (browser->GetProfile() == profile_) {
+            last_active_bwi = browser;
+            return false;
+          }
+          return true;
+        });
+
+    if (last_active_bwi) {
+      // By setting the `source_contents` and using `PAGE_TRANSITION_LINK`, the
+      // new tab will be opened adjacent to the currently active tab and inherit
+      // its tab group.
+      params.emplace(last_active_bwi, url, ui::PAGE_TRANSITION_LINK);
+      params->source_contents = TabListInterface::From(last_active_bwi)
+                                    ->GetActiveTab()
+                                    ->GetContents();
+    } else {
+      params.emplace(profile_, url, ui::PAGE_TRANSITION_LINK);
+    }
+  } else {
+    params.emplace(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  }
+
+  params->disposition = open_in_background
+                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
-      DoNavigate(&params);
+      DoNavigate(&params.value());
   if (!navigation_handle.get()) {
     std::move(callback).Run(nullptr);
     return nullptr;
@@ -829,7 +860,6 @@ void GlicKeyedService::TryPreloadAfterDelay() {
   }
 }
 
-
 void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
   if (fre_controller_->IsShowingDialog()) {
     if (auto* fre_contents = fre_controller_->GetWebContents()) {
@@ -884,7 +914,6 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
     window_controller().Preload();
   }
 }
-
 
 bool GlicKeyedService::IsProcessHostForGlic(
     content::RenderProcessHost* process_host) {

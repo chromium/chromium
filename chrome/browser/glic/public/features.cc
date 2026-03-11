@@ -26,4 +26,6 @@ BASE_FEATURE(kAutoOpenGlicForPdf, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicCreateTabAdjacent, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

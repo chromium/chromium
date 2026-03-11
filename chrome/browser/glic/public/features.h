@@ -22,6 +22,8 @@ BASE_DECLARE_FEATURE(kGlicInvoke);
 
 BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
 
+BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
