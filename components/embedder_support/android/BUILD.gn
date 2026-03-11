@@ -179,6 +179,7 @@ if (current_toolchain == default_toolchain) {
       "java/src/org/chromium/components/embedder_support/util/EmbedderSupportFeatures.java",
       "java/src/org/chromium/components/embedder_support/util/ExtensionUrlUtil.java",
       "java/src/org/chromium/components/embedder_support/util/InputStreamUtil.java",
+      "java/src/org/chromium/components/embedder_support/util/LegacyPasswordEchoSettingDelegateImpl.java",
       "java/src/org/chromium/components/embedder_support/util/Origin.java",
       "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingObserver.java",
       "java/src/org/chromium/components/embedder_support/util/PasswordEchoSettingState.java",

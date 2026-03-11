@@ -1156,7 +1156,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
     "src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsFragmentTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//base:flagged_apis_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.prefs") {

@@ -13,12 +13,12 @@ import androidx.test.uiautomator.UiDevice;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PasswordEchoSettingDelegate;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -40,22 +40,51 @@ public class PasswordEchoSplitSettingHandlerTest {
     private static class SettingType {
         public final String key;
         public final String pref;
-        public final int defaultVal;
 
-        private SettingType(String key, String pref, int defaultVal) {
+        private SettingType(String key, String pref) {
             this.key = key;
             this.pref = pref;
-            this.defaultVal = defaultVal;
         }
 
         private static final SettingType PHYSICAL =
                 new SettingType(
-                        "show_password_physical", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL, 0);
+                        "show_password_physical", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_PHYSICAL);
         private static final SettingType TOUCH =
-                new SettingType("show_password_touch", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH, 1);
+                new SettingType("show_password_touch", Pref.WEB_KIT_PASSWORD_ECHO_ENABLED_TOUCH);
 
         public static SettingType[] values() {
             return new SettingType[] {PHYSICAL, TOUCH};
+        }
+    }
+
+    private static class TestPasswordEchoSettingDelegate implements PasswordEchoSettingDelegate {
+        private Runnable mCallback;
+
+        @Override
+        public void registerCallback(Runnable callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public boolean isPhysicalSettingEnabled() {
+            return Settings.Secure.getInt(
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            "show_password_physical",
+                            0)
+                    == 1;
+        }
+
+        @Override
+        public boolean isTouchSettingEnabled() {
+            return Settings.Secure.getInt(
+                            ContextUtils.getApplicationContext().getContentResolver(),
+                            "show_password_touch",
+                            1)
+                    == 1;
+        }
+
+        public void runCallback() {
+            if (mCallback != null) mCallback.run();
         }
     }
 
@@ -65,23 +94,16 @@ public class PasswordEchoSplitSettingHandlerTest {
     private PasswordEchoSettingHandler mPasswordEchoSettingHandler;
     private UiDevice mDevice;
     private final Map<SettingType, String> mInitialShowPasswordValue = new HashMap<>();
-
-    @BeforeClass
-    public static void setUpClass() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // Enable setting split feature.
-                    PasswordEchoSettingState.setInstanceForTests(true);
-                });
-    }
+    private TestPasswordEchoSettingDelegate mTestDelegate;
 
     @Before
     public void setUp() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mTestDelegate = new TestPasswordEchoSettingDelegate();
+                    PasswordEchoSettingState.setInstanceForTests(mTestDelegate);
                     mProfile = ProfileManager.getLastUsedRegularProfile();
-                    mPasswordEchoSettingHandler =
-                            PasswordEchoSettingHandlerFactory.getForProfile(mProfile);
+                    mPasswordEchoSettingHandler = new PasswordEchoSettingHandler(mProfile);
                 });
 
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -95,6 +117,7 @@ public class PasswordEchoSplitSettingHandlerTest {
 
     @After
     public void tearDown() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(() -> mPasswordEchoSettingHandler.destroy());
         for (SettingType type : SettingType.values()) {
             final String initialValue = mInitialShowPasswordValue.getOrDefault(type, "null");
             final String shellCommand;
@@ -114,21 +137,16 @@ public class PasswordEchoSplitSettingHandlerTest {
     }
 
     private boolean isPasswordEchoEnabledInSystemSettings(SettingType type) {
-        return Settings.Secure.getInt(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        type.key,
-                        type.defaultVal)
-                == 1;
+        return type == SettingType.PHYSICAL
+                ? mTestDelegate.isPhysicalSettingEnabled()
+                : mTestDelegate.isTouchSettingEnabled();
     }
 
     @Test
     @SmallTest
     public void testInvokingUpdateMethodSyncsInitialState() throws ExecutionException {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PasswordEchoSettingHandlerFactory.getForProfile(mProfile)
-                            .updatePasswordEchoState();
-                });
+                () -> mPasswordEchoSettingHandler.updatePasswordEchoState());
 
         for (SettingType type : SettingType.values()) {
             Assert.assertEquals(
@@ -142,12 +160,7 @@ public class PasswordEchoSplitSettingHandlerTest {
         final String shellCommand =
                 String.format("settings put secure %s %s", type.key, enabled ? "1" : "0");
         mDevice.executeShellCommand(shellCommand);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PasswordEchoSettingState.getInstance()
-                            .getSettingObserver()
-                            .onChange(true, Settings.Secure.getUriFor(type.key));
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mTestDelegate.runCallback());
         Assert.assertEquals(
                 isPasswordEchoEnabledInPrefService(type),
                 isPasswordEchoEnabledInSystemSettings(type));
@@ -160,33 +173,6 @@ public class PasswordEchoSplitSettingHandlerTest {
             setSystemPasswordEchoAndAssertState(type, false);
             setSystemPasswordEchoAndAssertState(type, true);
             setSystemPasswordEchoAndAssertState(type, false);
-        }
-    }
-
-    // If the setting was never set by the user, the system should have the appropriate default
-    // value according to the setting type.
-    // The default for the touch setting is 'enabled'.
-    // The default for the physical setting is 'disabled'.
-    @Test
-    @SmallTest
-    public void testDefaultStateIfNeverSet() throws ExecutionException, IOException {
-        for (SettingType type : SettingType.values()) {
-            // Clear the setting from the device to test default behavior.
-            final String initialValue = mInitialShowPasswordValue.getOrDefault(type, "null");
-            if (!initialValue.equals("null")) {
-                final String shellCommand = String.format("settings delete secure %s", type.key);
-                mDevice.executeShellCommand(shellCommand);
-            }
-
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        PasswordEchoSettingState.getInstance()
-                                .getSettingObserver()
-                                .onChange(true, Settings.Secure.getUriFor(type.key));
-                    });
-
-            Assert.assertEquals(type.defaultVal == 1, isPasswordEchoEnabledInPrefService(type));
-            Assert.assertEquals(type.defaultVal == 1, isPasswordEchoEnabledInSystemSettings(type));
         }
     }
 }
