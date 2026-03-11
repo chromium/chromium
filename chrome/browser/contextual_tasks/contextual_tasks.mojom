@@ -205,23 +205,30 @@ interface Page {
 
   // Called by the browser process (C++) when the AIM server sends an
   // InjectInput command to inject an input into the compose box and specifies
-  // a thumbnail source.
+  // a thumbnail source. `file_token` is an identifier for the input generated
+  // by ContextualSearchSessionHandle. `supports_unimodal` specifies whether the
+  // input may be submitted as a query without any accompanying text query.
   InjectInput(
     string title,
     string thumbnail,
-    mojo_base.mojom.UnguessableToken file_token);
+    mojo_base.mojom.UnguessableToken file_token,
+    bool supports_unimodal);
 
   // Called by the browser process (C++) when the AIM server sends an
   // InjectInput command to inject an input into the compose box and specifies
-  // an icon type.
+  // an icon type. `file_token` is an identifier for the input generated
+  // by ContextualSearchSessionHandle. `supports_unimodal` specifies whether the
+  // input may be submitted as a query without any accompanying text query.
   InjectInputWithIcon(
     string title,
     IconType icon_id,
-    mojo_base.mojom.UnguessableToken file_token);
+    mojo_base.mojom.UnguessableToken file_token,
+    bool supports_unimodal);
 
   // Called by the browser process (C++) when the AIM server sends a
   // RemoveInjectedInput command to remove an injected input from the compose
-  // box.
+  // box. `file_token` is the identifier passed when the input was originally
+  // injected.
   RemoveInjectedInput(mojo_base.mojom.UnguessableToken file_token);
 
   // Communicates to WebUI that the AIM page that is loaded is the zero state.

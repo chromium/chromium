@@ -133,13 +133,18 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     this.methodCalled('setShowReopenTabs', show);
   }
 
-  injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
-    this.methodCalled('injectInput', title, thumbnail, fileToken);
+  injectInput(
+      title: string, thumbnail: string, fileToken: UnguessableToken,
+      supportsUnimodal: boolean) {
+    this.methodCalled(
+        'injectInput', title, thumbnail, fileToken, supportsUnimodal);
   }
 
   injectInputWithIcon(
-      title: string, iconId: IconType, fileToken: UnguessableToken) {
-    this.methodCalled('injectInputWithIcon', title, iconId, fileToken);
+      title: string, iconId: IconType, fileToken: UnguessableToken,
+      supportsUnimodal: boolean) {
+    this.methodCalled(
+        'injectInputWithIcon', title, iconId, fileToken, supportsUnimodal);
   }
 
   removeInjectedInput(fileToken: UnguessableToken) {
