@@ -237,6 +237,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // to resolve
   bool IsDeviceManagementErrorUserActionable() const;
 
+  // Returns the details for a device management error. The returned reference
+  // is valid as long as the GoogleServiceAuthError object is alive.
+  // Should only be used when the error state is DEVICE_MANAGEMENT_ERROR.
+  const DeviceManagementErrorDetails& GetDeviceManagementErrorDetails() const;
+
 #if BUILDFLAG(IS_ANDROID)
   static GoogleServiceAuthError FromJavaObject(
       JNIEnv* env,
