@@ -30,6 +30,8 @@ class ActionTrackerForMetrics {
 
   void OnFinishedAct(const mojom::ActionResult& result);
 
+  void OnAutofillAttentionDialogPresented();
+
  private:
   // Caches the last tool name found in the current sequence. This is only
   // committed to the persistent state if the sequence succeeded.
@@ -44,6 +46,9 @@ class ActionTrackerForMetrics {
   // A map from the name of a tool request to the number of times a wait action
   // was executed immediately after it within this task's lifetime.
   std::map<std::string, int> subsequent_waits_per_tool_name_;
+
+  // The number of autofill attention dialogs presented during the task.
+  int autofill_attention_dialog_count_ = 0;
 };
 
 }  // namespace actor

@@ -222,6 +222,10 @@ class ActorTask : public base::SupportsUserData {
 
   Profile* GetProfile() const;
 
+  ActionTrackerForMetrics& action_tracker_for_metrics() const {
+    return *action_tracker_for_metrics_;
+  }
+
   ActorKeyedService& actor_keyed_service() const { return service_.get(); }
 
   // These observations will be added to the final ActionsResult returned by the

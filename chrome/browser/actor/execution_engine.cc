@@ -27,6 +27,7 @@
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/action_tracker_for_metrics.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
@@ -1179,6 +1180,7 @@ void ExecutionEngine::RequestToShowAutofillSuggestions(
   task_->delegate()->RequestToShowAutofillSuggestionsDialog(
       task_->id(), std::move(requests), std::move(event_handler),
       std::move(callback));
+  task_->action_tracker_for_metrics().OnAutofillAttentionDialogPresented();
 }
 
 void ExecutionEngine::InterruptFromTool() {
