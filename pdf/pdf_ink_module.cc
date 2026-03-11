@@ -452,7 +452,7 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
     current_tool_state_.emplace<TextHighlightState>();
     text_highlight_state().initiated_by_keyboard = true;
     std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
-        undo_redo_model_.StartDraw();
+        undo_redo_model_.StartAdd();
     CHECK(discards.has_value());
     ApplyUndoRedoDiscards(discards.value());
   }
@@ -783,7 +783,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
   std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
-      undo_redo_model_.StartDraw();
+      undo_redo_model_.StartAdd();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
@@ -906,7 +906,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
       invalidate_envelope.Add(stroke.GetShape().Bounds());
       strokes_[state.page_index].push_back(
           FinishedStrokeState(std::move(stroke), id));
-      bool undo_redo_success = undo_redo_model_.Draw(id);
+      bool undo_redo_success = undo_redo_model_.Add(id);
       CHECK(undo_redo_success);
     }
 
@@ -918,7 +918,7 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   client_->StrokeFinished(/*modified=*/true);
   GenerateAndSendInkThumbnailInternal(state.page_index);
 
-  bool undo_redo_success = undo_redo_model_.FinishDraw();
+  bool undo_redo_success = undo_redo_model_.FinishAdd();
   CHECK(undo_redo_success);
 
   ReportDrawStroke(state.brush_type, GetDrawingBrush().ink_brush(), tool_type);
@@ -1141,7 +1141,7 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
   }
 
   std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
-      undo_redo_model_.StartDraw();
+      undo_redo_model_.StartAdd();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
 
@@ -1194,7 +1194,7 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
         client_->StrokeAdded(page_index, id, stroke);
         strokes_[page_index].push_back(
             FinishedStrokeState(std::move(stroke), id));
-        bool undo_redo_success = undo_redo_model_.Draw(id);
+        bool undo_redo_success = undo_redo_model_.Add(id);
         CHECK(undo_redo_success);
       }
 
@@ -1212,7 +1212,7 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
       // Invalidation is already handled by the client during text selection.
     }
 
-    bool undo_redo_success = undo_redo_model_.FinishDraw();
+    bool undo_redo_success = undo_redo_model_.FinishAdd();
     CHECK(undo_redo_success);
 
     client_->ClearSelection();

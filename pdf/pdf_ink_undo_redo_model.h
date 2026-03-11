@@ -20,9 +20,8 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace chrome_pdf {
 
-// Models draw and erase commands. Based on the recorded commands,
-// processes undo / redo requests and calculates what commands need to be
-// applied.
+// Models add and erase commands. Based on the recorded commands, processes
+// undo / redo requests and calculates what commands need to be applied.
 class PdfInkUndoRedoModel {
  public:
   enum class CommandsType {
@@ -31,7 +30,7 @@ class PdfInkUndoRedoModel {
     kErase,
   };
 
-  // Set of IDs to draw/erase. There are multiple types of IDs:
+  // Set of IDs to add/erase. There are multiple types of IDs:
   // - `InkStrokeId` is for strokes that are first drawn, and maybe erased
   //   later.
   // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
@@ -53,7 +52,7 @@ class PdfInkUndoRedoModel {
   PdfInkUndoRedoModel& operator=(const PdfInkUndoRedoModel&) = delete;
   ~PdfInkUndoRedoModel();
 
-  // For all Draw / Erase methods:
+  // For all Add / Erase methods:
   // - The expected usage is: 1 StartOp call, any number of Op(Variant) calls,
   //   1 FinishOp call.
   // - StartOp returns a non-null, but possible empty value on success. Returns
@@ -63,27 +62,27 @@ class PdfInkUndoRedoModel {
   // - Must not return false in production code. Returning false is only allowed
   //   in tests to check failure modes without resorting to death tests.
 
-  // Starts recording draw commands. If the current commands stack position is
+  // Starts recording add commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
-  // Must be called before Draw().
-  // Must not be called while another draw/erase has been started.
-  [[nodiscard]] std::optional<DiscardedDrawCommands> StartDraw();
-  // Records drawing a stroke identified by `id`.
-  // Must be called between StartDraw() and FinishDraw().
+  // Must be called before Add().
+  // Must not be called while another add/erase has been started.
+  [[nodiscard]] std::optional<DiscardedDrawCommands> StartAdd();
+  // Records adding a stroke identified by `id`.
+  // Must be called between StartAdd() and FinishAdd().
   // `id` must not be on the commands stack.
-  [[nodiscard]] bool Draw(InkStrokeId id);
-  // Finishes recording draw commands and pushes a new element onto the stack.
-  // Must be called after StartDraw().
-  [[nodiscard]] bool FinishDraw();
+  [[nodiscard]] bool Add(InkStrokeId id);
+  // Finishes recording add commands and pushes a new element onto the stack.
+  // Must be called after StartAdd().
+  [[nodiscard]] bool FinishAdd();
 
   // Starts recording erase commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
   // Must be called before Erase().
-  // Must not be called while another draw/erase has been started.
+  // Must not be called while another add/erase has been started.
   [[nodiscard]] std::optional<DiscardedDrawCommands> StartErase();
   // Records erasing an annotation identified by `id`.
   // Must be called between StartErase() and FinishErase().

@@ -37,15 +37,15 @@ PdfInkUndoRedoModel::PdfInkUndoRedoModel() = default;
 PdfInkUndoRedoModel::~PdfInkUndoRedoModel() = default;
 
 std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands>
-PdfInkUndoRedoModel::StartDraw() {
+PdfInkUndoRedoModel::StartAdd() {
   return StartImpl<DrawCommands>();
 }
 
-bool PdfInkUndoRedoModel::Draw(InkStrokeId id) {
+bool PdfInkUndoRedoModel::Add(InkStrokeId id) {
   CHECK(!commands_stack_.empty());
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kDraw)) {
-    // Can only draw at top of the stack, and the entry there must be for
+    // Can only add at top of the stack, and the entry there must be for
     // drawing.
     return false;
   }
@@ -59,11 +59,11 @@ bool PdfInkUndoRedoModel::Draw(InkStrokeId id) {
   return true;
 }
 
-bool PdfInkUndoRedoModel::FinishDraw() {
+bool PdfInkUndoRedoModel::FinishAdd() {
   CHECK(!commands_stack_.empty());
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kDraw)) {
-    // Can only draw at top of the stack, and the entry there must be for
+    // Can only add at top of the stack, and the entry there must be for
     // drawing.
     return false;
   }
@@ -217,7 +217,7 @@ PdfInkUndoRedoModel::StartImpl() {
   const bool has_commands = GetCommandsType(commands) != CommandsType::kNone;
   if (stack_position_ == commands_stack_.size() - 1) {
     if (has_commands) {
-      // Cannot start when drawing/erasing already started.
+      // Cannot start when adding/erasing already started.
       return std::nullopt;
     }
   } else {
