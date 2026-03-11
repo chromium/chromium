@@ -1499,11 +1499,6 @@
       status: "experimental",
     },
     {
-      // Consistent cursor size validation. https://crbug.com/326091489
-      name: "CSSCursorSizeCheckFix",
-      status: "stable",
-    },
-    {
       name: "CSSCustomMedia",
       status: "test",
     },
