@@ -169,6 +169,10 @@ void BrowserFrameView::OnBrowserViewInitViewsComplete() {
 
 void BrowserFrameView::OnFullscreenStateChanged() {}
 
+void BrowserFrameView::OnTabStripStateChanged() {
+  InvalidateLayout();
+}
+
 bool BrowserFrameView::CaptionButtonsOnLeadingEdge() const {
   return false;
 }

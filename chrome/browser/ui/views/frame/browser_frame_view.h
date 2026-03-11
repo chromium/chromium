@@ -75,6 +75,9 @@ class BrowserFrameView : public views::FrameView {
   // Called when the browser window's fullscreen state changes.
   virtual void OnFullscreenStateChanged();
 
+  // Called when the browser window's tab strip state changes.
+  virtual void OnTabStripStateChanged();
+
   // Returns whether there are caption buttons at the leading edge of the
   // browser frame (i.e. on the left for LtR languages, such as on macOS).
   //
