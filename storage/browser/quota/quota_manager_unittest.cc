@@ -42,6 +42,7 @@
 #include "sql/test/test_helpers.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -649,6 +650,21 @@ class QuotaManagerImplTest : public testing::Test {
   int mock_time_counter_;
 
   base::WeakPtrFactory<QuotaManagerImplTest> weak_factory_{this};
+};
+
+struct ReportedQuotaParams {
+  bool is_incognito;
+  bool report_static_storage_quota;
+  bool incognito_flag_enabled;
+  int64_t expected_quota;
+  std::string test_name;
+};
+
+class QuotaManagerImplParamTest
+    : public QuotaManagerImplTest,
+      public ::testing::WithParamInterface<ReportedQuotaParams> {
+ public:
+  void SetUp() override { QuotaManagerImplTest::SetUp(); }
 };
 
 TEST_F(QuotaManagerImplTest, QuotaDatabaseBootstrap) {
@@ -3271,41 +3287,64 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket_BucketNotFound) {
 
 // Tests that the quota is correctly reported with a static or dynamic value for
 // the combinations of override settings and incognito mode.
-TEST_F(QuotaManagerImplTest, ReportedQuotaConfigurability) {
-  for (bool is_incognito : {true, false}) {
-    for (bool report_static_storage_quota : {true, false}) {
-      ResetQuotaManagerImpl(
-          /*is_incognito=*/is_incognito,
-          /*report_static_storage_quota=*/report_static_storage_quota);
+TEST_P(QuotaManagerImplParamTest, ReportedQuotaConfigurability) {
+  const auto& params = GetParam();
 
-      static const ClientBucketData kData[] = {
-          {"http://foo.com/", kDefaultBucketName, 80},
-      };
-      MockQuotaClient* fs_client =
-          CreateAndRegisterClient(QuotaClientType::kFileSystem);
-      RegisterClientBucketData(fs_client, kData);
-
-      const int64_t kPoolSize =
-          QuotaManagerImpl::kGBytes - 1;  // Just under 1 GiB.
-      const int64_t kPerStorageKeyQuota = kPoolSize / 5;
-      SetQuotaSettings(kPoolSize, kPerStorageKeyQuota,
-                       kMustRemainAvailableForSystem);
-
-      auto result =
-          GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"));
-      EXPECT_EQ(result.status, QuotaStatusCode::kOk);
-      EXPECT_EQ(result.usage, 80);
-
-      const int64_t kExpectedStaticQuota = QuotaManagerImpl::kGBytes + 80;
-      const int64_t kExpectedDynamicQuota = kPerStorageKeyQuota;
-
-      if (report_static_storage_quota) {
-        EXPECT_EQ(result.quota, kExpectedStaticQuota);
-      } else {
-        EXPECT_EQ(result.quota, kExpectedDynamicQuota);
-      }
-    }
+  base::test::ScopedFeatureList feature_list;
+  if (params.incognito_flag_enabled) {
+    feature_list.InitAndEnableFeature(features::kIncognitoStaticStorageQuota);
+  } else {
+    feature_list.InitAndDisableFeature(features::kIncognitoStaticStorageQuota);
   }
+  ResetQuotaManagerImpl(params.is_incognito,
+                        params.report_static_storage_quota);
+
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, 80},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem);
+  RegisterClientBucketData(fs_client, kData);
+
+  const int64_t kPoolSize = QuotaManagerImpl::kGBytes - 1;  // Just under 1 GiB.
+  const int64_t kPerStorageKeyQuota = kPoolSize / 5;
+  SetQuotaSettings(kPoolSize, kPerStorageKeyQuota,
+                   kMustRemainAvailableForSystem);
+
+  auto result = GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"));
+  EXPECT_EQ(result.status, QuotaStatusCode::kOk);
+  EXPECT_EQ(result.usage, 80);
+  EXPECT_EQ(result.quota, params.expected_quota);
 }
+
+const int64_t kStaticQuota = QuotaManagerImpl::kGBytes + 80;
+const int64_t kIncognitoStaticQuota = QuotaManagerImpl::kGBytes * 10 + 80;
+const int64_t kDynamicQuota = (QuotaManagerImpl::kGBytes - 1) / 5;
+
+INSTANTIATE_TEST_SUITE_P(
+    QuotaConfigs,
+    QuotaManagerImplParamTest,
+    ::testing::Values(
+        // report_static_storage_quota = true
+        ReportedQuotaParams{true, true, true, kIncognitoStaticQuota,
+                            "Incognito_Static_FlagEnabled"},
+        ReportedQuotaParams{true, true, false, kStaticQuota,
+                            "Incognito_Static_FlagDisabled"},
+        ReportedQuotaParams{false, true, true, kStaticQuota,
+                            "NotIncognito_Static_FlagEnabled"},
+        ReportedQuotaParams{false, true, false, kStaticQuota,
+                            "NotIncognito_Static_FlagDisabled"},
+
+        // report_static_storage_quota = false (Dynamic Quota)
+        ReportedQuotaParams{true, false, true, kDynamicQuota,
+                            "Incognito_Dynamic_FlagEnabled"},
+        ReportedQuotaParams{true, false, false, kDynamicQuota,
+                            "Incognito_Dynamic_FlagDisabled"},
+        ReportedQuotaParams{false, false, true, kDynamicQuota,
+                            "NotIncognito_Dynamic_FlagEnabled"},
+        ReportedQuotaParams{false, false, false, kDynamicQuota,
+                            "NotIncognito_Dynamic_FlagDisabled"}),
+    [](const ::testing::TestParamInfo<QuotaManagerImplParamTest::ParamType>&
+           info) { return info.param.test_name; });
 
 }  // namespace storage

@@ -37,5 +37,9 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
 // A kill switch for the new reported quota being a static value.
 BASE_FEATURE(kStaticStorageQuota, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Incognito mode will always report a maximal quota value to avoid
+// fingerprinting and incognito detection.
+BASE_FEATURE(kIncognitoStaticStorageQuota, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace storage

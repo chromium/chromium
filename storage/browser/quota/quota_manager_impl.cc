@@ -18,6 +18,7 @@
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -132,10 +133,19 @@ base::FilePath CreateMediaLicenseBucketPath(const base::FilePath& profile_path,
   return bucket_directory.Append(kMediaLicenseDirectory);
 }
 
-int64_t CalculateReportedQuota(int64_t total_space_bytes, int64_t usage_bytes) {
+int64_t CalculateReportedQuota(int64_t total_space_bytes,
+                               int64_t usage_bytes,
+                               bool is_incognito) {
   base::ClampedNumeric<int64_t> clamped_total_space_bytes(total_space_bytes);
   base::ClampedNumeric<int64_t> clamped_usage_bytes(usage_bytes);
-  if (clamped_total_space_bytes >= 10 * QuotaManagerImpl::kGBytes) {
+
+  // The flag kIncognitoStaticStorageQuota fixes the return value in incognito
+  // to 10 GiB + usage, as in regular mode.
+  bool enforce_static_quota_for_incognito =
+      (is_incognito &&
+       base::FeatureList::IsEnabled(features::kIncognitoStaticStorageQuota));
+  if ((clamped_total_space_bytes >= 10 * QuotaManagerImpl::kGBytes) ||
+      enforce_static_quota_for_incognito) {
     return clamped_usage_bytes + 10 * QuotaManagerImpl::kGBytes;
   }
 
@@ -1196,16 +1206,17 @@ void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
               weak_this->GetDiskAvailabilityAndTempPoolSize(base::BindOnce(
                   [](UsageAndQuotaWithBreakdownCallback callback,
                      blink::mojom::QuotaStatusCode status, int64_t usage,
+                     bool is_incognito,
                      blink::mojom::UsageBreakdownPtr usage_breakdown,
                      int64_t total_space, int64_t available_space,
                      int64_t temp_pool_size) {
-                    int64_t reported_quota =
-                        CalculateReportedQuota(total_space, usage);
+                    int64_t reported_quota = CalculateReportedQuota(
+                        total_space, usage, is_incognito);
 
                     std::move(callback).Run(status, usage, reported_quota,
                                             std::move(usage_breakdown));
                   },
-                  std::move(callback), status, usage,
+                  std::move(callback), status, usage, weak_this->is_incognito_,
                   std::move(usage_breakdown)));
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -1322,17 +1333,18 @@ void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
                             base::BindOnce(
                                 [](UsageAndQuotaCallback callback,
                                    blink::mojom::QuotaStatusCode status,
-                                   int64_t usage, int64_t total_space,
-                                   int64_t available_space,
+                                   int64_t usage, bool is_incognito,
+                                   int64_t total_space, int64_t available_space,
                                    int64_t temp_pool_size) {
                                   int64_t reported_quota =
-                                      CalculateReportedQuota(total_space,
-                                                             usage);
+                                      CalculateReportedQuota(total_space, usage,
+                                                             is_incognito);
 
                                   std::move(callback).Run(status, usage,
                                                           reported_quota);
                                 },
-                                std::move(callback), status, usage));
+                                std::move(callback), status, usage,
+                                weak_this->is_incognito_));
                       },
                       weak_this, std::move(callback), bucket,
                       is_storage_unlimited));

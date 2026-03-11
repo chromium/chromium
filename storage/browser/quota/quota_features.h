@@ -22,6 +22,8 @@ extern const base::FeatureParam<double> kShouldRemainAvailableBytes;
 extern const base::FeatureParam<double> kShouldRemainAvailableRatio;
 
 COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStaticStorageQuota);
+COMPONENT_EXPORT(STORAGE_BROWSER)
+BASE_DECLARE_FEATURE(kIncognitoStaticStorageQuota);
 
 }  // namespace features
 

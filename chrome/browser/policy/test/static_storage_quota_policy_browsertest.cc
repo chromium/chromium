@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
+
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,6 +27,9 @@ namespace {
 const int64_t kGBytes = 1024 * 1024 * 1024;
 
 const int64_t kDynamicQuotaForTestBrowser = 5 * 1024 * 1024;  // 5 MB
+
+const int64_t kMinBucketStaticQuota = 1 * kGBytes;       // 1 GB
+const int64_t kDefaultBucketStaticQuota = 10 * kGBytes;  // 10 GB
 }  // namespace
 
 class StaticStorageQuotaPolicyTest : public PolicyTest {
@@ -57,69 +62,75 @@ class StaticStorageQuotaPolicyTest : public PolicyTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class StaticStorageQuotaPolicyFeatureEnabledTest
+class StaticStorageQuotaFeatureEnabledTest
     : public StaticStorageQuotaPolicyTest {
  public:
-  StaticStorageQuotaPolicyFeatureEnabledTest() {
+  StaticStorageQuotaFeatureEnabledTest() {
     feature_list_.InitAndEnableFeature(storage::features::kStaticStorageQuota);
   }
 };
 
-class StaticStorageQuotaPolicyFeatureDisabledTest
+class StaticStorageQuotaFeatureDisabledTest
     : public StaticStorageQuotaPolicyTest {
  public:
-  StaticStorageQuotaPolicyFeatureDisabledTest() {
+  StaticStorageQuotaFeatureDisabledTest() {
     feature_list_.InitAndDisableFeature(storage::features::kStaticStorageQuota);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(StaticStorageQuotaPolicyFeatureDisabledTest,
-                       StaticStorageQuotaEnabled) {
-  // Verify dynamic quota behavior before the policy is set.
+// Tests for kIncognitoStaticStorageQuota feature which ensures consistent
+// quota reporting in Incognito mode to prevent Incognito detection.
+// This flag is expected to be merged into kStaticStorageQuota once it reaches
+// 100% stable (see b/491017282).
+class IncognitoStaticStorageQuotaEnabledTest
+    : public StaticStorageQuotaPolicyTest {
+ public:
+  IncognitoStaticStorageQuotaEnabledTest() {
+    feature_list_.InitWithFeatureStates(
+        {{storage::features::kIncognitoStaticStorageQuota, true},
+         {storage::features::kStaticStorageQuota, true}});
+  }
+};
+
+class IncognitoStaticStorageQuotaDisabledTest
+    : public StaticStorageQuotaPolicyTest {
+ public:
+  IncognitoStaticStorageQuotaDisabledTest() {
+    feature_list_.InitWithFeatureStates(
+        {{storage::features::kIncognitoStaticStorageQuota, false},
+         {storage::features::kStaticStorageQuota, true}});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureEnabledTest, RegularSession) {
   NavigateToEmptyPage(browser());
-  int64_t quota = GetEstimatedQuota(browser());
-  EXPECT_EQ(quota, kDynamicQuotaForTestBrowser);
-
-  // Set the policy to enable static storage quota.
-  PolicyMap policies;
-  SetPolicy(&policies, key::kStaticStorageQuotaEnabled, base::Value(true));
-  UpdateProviderPolicy(policies);
-
-  // StaticStorageQuotaEnabled doesn't support dynamic refresh, so we use an
-  // incognito mode browser to test the policy.
-  Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
-
-  NavigateToEmptyPage(incognito_browser);
-  quota = GetEstimatedQuota(incognito_browser);
-  // Expect reported quota to be exactly 1 GiB since usage is 0 and the
-  // peculiarities of the test incognito_browser triggers the <1 GiB disk space
-  // logic.
-  EXPECT_EQ(quota, 1 * kGBytes);
+  // Expect reported quota to be exactly 10 GiB.
+  EXPECT_EQ(GetEstimatedQuota(browser()), kDefaultBucketStaticQuota);
 }
 
-IN_PROC_BROWSER_TEST_F(StaticStorageQuotaPolicyFeatureEnabledTest,
-                       StaticStorageQuotaDisabled) {
-  // Verify static quota behavior before the policy is set.
+IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureDisabledTest, RegularSession) {
   NavigateToEmptyPage(browser());
-  int64_t quota = GetEstimatedQuota(browser());
-  // Expect reported quota to be exactly 10 GiB since usage is 0.
-  EXPECT_EQ(quota, 10 * kGBytes);
+  EXPECT_EQ(GetEstimatedQuota(browser()), kDynamicQuotaForTestBrowser);
+}
 
-  // Set the policy to disable static storage quota.
-  PolicyMap policies;
-  SetPolicy(&policies, key::kStaticStorageQuotaEnabled, base::Value(false));
-  UpdateProviderPolicy(policies);
-
-  // StaticStorageQuotaEnabled doesn't support dynamic refresh, so we use an
-  // incognito mode browser to test the policy.
+IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
+                       IncognitoSession) {
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
-
   NavigateToEmptyPage(incognito_browser);
-  quota = GetEstimatedQuota(incognito_browser);
-  // Expect dynamic quota since the feature is disabled.
-  EXPECT_EQ(quota, kDynamicQuotaForTestBrowser);
+  // Expect reported quota to be exactly 10 GiB in Incognito mode with the
+  // kIncognitoStaticStorageQuota feature enabled.
+  EXPECT_EQ(GetEstimatedQuota(incognito_browser), kDefaultBucketStaticQuota);
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaDisabledTest,
+                       IncognitoSession) {
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  NavigateToEmptyPage(incognito_browser);
+  // Expect quota in Incognito to be trimmed to 1 GiB, minimal value for the
+  // static quota enabled.
+  EXPECT_EQ(GetEstimatedQuota(incognito_browser), kMinBucketStaticQuota);
 }
 
 }  // namespace policy
