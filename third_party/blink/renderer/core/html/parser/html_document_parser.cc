@@ -382,7 +382,12 @@ HTMLDocumentParser::HTMLDocumentParser(
   tokenizer_.SetState(TokenizerStateForContextElement(context_element,
                                                       report_errors, options_));
 
-  // No script_runner_ in fragment parser.
+  if (parser_content_policy == kAllowScriptingContentAndMarkAsParserInserted) {
+    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    script_runner_ = HTMLParserScriptRunner::Create(
+        ReentryPermit(), &fragment_target->GetDocument(), this);
+  }
+
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
       this, fragment_target, context_element, parser_content_policy, options_,
       include_shadow_roots, registry, sanitizer);

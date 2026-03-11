@@ -1054,7 +1054,9 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
       // elements since scripts can never see those flags or effects thereof.
       .SetCreatedByParser(should_be_parser_inserted,
                           should_be_parser_inserted ? document_ : nullptr)
-      .SetAlreadyStarted(is_parsing_fragment_ && flags.IsCreatedByParser());
+      .SetAlreadyStarted(is_parsing_fragment_ && flags.IsCreatedByParser() &&
+                         parser_content_policy_ !=
+                             kAllowScriptingContentAndMarkAsParserInserted);
   HTMLScriptElement* element = nullptr;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(

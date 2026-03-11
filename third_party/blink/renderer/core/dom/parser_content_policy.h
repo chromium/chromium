@@ -32,13 +32,15 @@ enum ParserContentPolicy {
   kDisallowScriptingAndPluginContent,
   kAllowScriptingContent,
   kAllowScriptingContentAndDoNotMarkAlreadyStarted,
+  kAllowScriptingContentAndMarkAsParserInserted,
 };
 
 static inline bool ScriptingContentIsAllowed(
     ParserContentPolicy parser_content_policy) {
   return parser_content_policy == kAllowScriptingContent ||
          parser_content_policy ==
-             kAllowScriptingContentAndDoNotMarkAlreadyStarted;
+             kAllowScriptingContentAndDoNotMarkAlreadyStarted ||
+         parser_content_policy == kAllowScriptingContentAndMarkAsParserInserted;
 }
 
 static inline bool PluginContentIsAllowed(

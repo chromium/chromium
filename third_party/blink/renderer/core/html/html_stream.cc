@@ -44,7 +44,7 @@ class HTMLSink : public UnderlyingSinkBase {
             new_options.run_scripts() ==
                     FragmentParserOptions::RunScripts::kRunScripts
                 ? ParserContentPolicy::
-                      kAllowScriptingContentAndDoNotMarkAlreadyStarted
+                      kAllowScriptingContentAndMarkAsParserInserted
                 : ParserContentPolicy::kAllowScriptingContent) {
     CHECK(target->IsElementNode() || target->IsShadowRoot());
   }
