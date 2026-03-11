@@ -621,7 +621,7 @@ TEST_F(DrawingBufferTest, packedDepthStencilSupported) {
         std::move(provider), context_info, nullptr, gfx::Size(10, 10),
         premultiplied_alpha, want_alpha_channel, want_depth_buffer,
         want_stencil_buffer, want_antialiasing, desynchronized, preserve,
-        Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+        Platform::kWebGL1ContextType, /*is_offscreen_canvas=*/false,
         PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
 
     // When we request a depth or a stencil buffer, we will get both.
@@ -704,7 +704,7 @@ TEST_F(DrawingBufferTest,
       nullptr, context_info, nullptr, too_big_size, false, false, false, false,
       false,
       /*desynchronized=*/false, DrawingBuffer::kDiscard,
-      Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+      Platform::kWebGL1ContextType, /*is_offscreen_canvas=*/false,
       PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
   EXPECT_EQ(too_big_drawing_buffer, nullptr);
   drawing_buffer_->BeginDestruction();

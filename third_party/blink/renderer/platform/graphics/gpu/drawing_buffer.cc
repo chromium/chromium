@@ -178,7 +178,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     bool desynchronized,
     PreserveDrawingBuffer preserve,
     Platform::WebGLContextType webgl_version,
-    ChromiumImageUsage chromium_image_usage,
+    bool is_offscreen_canvas,
     PredefinedColorSpace color_space,
     gl::GpuPreference gpu_preference) {
   if (g_should_fail_drawing_buffer_creation_for_testing) {
@@ -236,7 +236,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
           std::move(extensions_util), client, discard_framebuffer_supported,
           texture_storage_enabled, want_alpha_channel, premultiplied_alpha,
           preserve, webgl_version, want_depth_buffer, want_stencil_buffer,
-          chromium_image_usage, color_space, gpu_preference));
+          is_offscreen_canvas, color_space, gpu_preference));
   if (!drawing_buffer->Initialize(size, multisample_supported)) {
     drawing_buffer->BeginDestruction();
     return scoped_refptr<DrawingBuffer>();
@@ -258,7 +258,7 @@ DrawingBuffer::DrawingBuffer(
     Platform::WebGLContextType webgl_version,
     bool want_depth,
     bool want_stencil,
-    ChromiumImageUsage chromium_image_usage,
+    bool is_offscreen_canvas,
     PredefinedColorSpace color_space,
     gl::GpuPreference gpu_preference)
     : client_(client),
@@ -285,7 +285,7 @@ DrawingBuffer::DrawingBuffer(
       want_depth_(want_depth),
       want_stencil_(want_stencil),
       color_space_(PredefinedColorSpaceToGfxColorSpace(color_space)),
-      chromium_image_usage_(chromium_image_usage),
+      is_offscreen_canvas_(is_offscreen_canvas),
       opengl_flip_y_extension_(
           ContextProvider()->GetCapabilities().mesa_framebuffer_flip_y),
       initial_gpu_(gpu_preference),
@@ -1997,8 +1997,17 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
     bool should_use_chromium_image = false;
-    if (SharedGpuContext::IsGpuCompositingEnabled() &&
-        chromium_image_usage_ == kAllowChromiumImage) {
+
+    // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+    // this allows WebGL-rendered canvases to be composited by the OS rather
+    // than Chrome.  IOSurfaces are only compatible with the
+    // GL_TEXTURE_RECTANGLE_ARB binding target. So to avoid the knowledge of
+    // GL_TEXTURE_RECTANGLE_ARB type textures being introduced into more areas
+    // of the code, we use the code path of non-WebGLImageChromium for
+    // OffscreenCanvas.  See detailed discussion in crbug.com/649668.
+    // TODO(crbug.com/488937356): Eliminate this workaround, which should no
+    // longer be needed post-SharedImage.
+    if (SharedGpuContext::IsGpuCompositingEnabled() && !is_offscreen_canvas_) {
       should_use_chromium_image =
           SharedGpuContext::MaySupportWebGLImageChromium() &&
           (SharedGpuContext::WebGLImageChromiumEnabled() ||

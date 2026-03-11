@@ -126,11 +126,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     kDiscard,
   };
 
-  enum ChromiumImageUsage {
-    kAllowChromiumImage,
-    kDisallowChromiumImage,
-  };
-
   static scoped_refptr<DrawingBuffer> Create(
       std::unique_ptr<WebGraphicsContext3DProvider>,
       const Platform::WebGLContextInfo&,
@@ -144,7 +139,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       bool desynchronized,
       PreserveDrawingBuffer,
       Platform::WebGLContextType,
-      ChromiumImageUsage,
+      bool is_offscreen_canvas,
       PredefinedColorSpace,
       gl::GpuPreference);
 
@@ -341,7 +336,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 Platform::WebGLContextType,
                 bool wants_depth,
                 bool wants_stencil,
-                ChromiumImageUsage,
+                bool is_offscreen_canvas,
                 PredefinedColorSpace,
                 gl::GpuPreference);
 
@@ -701,9 +696,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   Deque<scoped_refptr<ColorBuffer>> recycled_color_buffer_queue_;
   base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
-  // Allows the client to override the WebGLImageChromiumEnabled() codepath
-  // being taken.
-  ChromiumImageUsage chromium_image_usage_;
+  // Whether it's an offscreen canvas.
+  bool is_offscreen_canvas_;
 
   bool opengl_flip_y_extension_;
 
