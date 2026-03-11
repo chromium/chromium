@@ -1430,11 +1430,6 @@ void NewTabPageUI::OnLoad() {
 }
 
 void NewTabPageUI::MaybeEnableEnterpriseShortcutsVisibility() {
-  // If enterprise shortcuts feature or mixing is disabled, do nothing.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
-      !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
-    return;
-  }
   // If enterprise shortcuts are available by policy and the user
   // has not previously set the visibility preference, then enable enterprise
   // shortcuts by default.

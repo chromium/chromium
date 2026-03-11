@@ -57,7 +57,7 @@ bool ShouldCreateCustomLinksManager() {
 bool ShouldCreateEnterpriseShortcutsManager() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
-  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
+  return true;
 #else
   return false;
 #endif

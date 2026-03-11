@@ -12,9 +12,7 @@ import type {ShortcutsElement} from 'chrome://customize-chrome-side-panel.top-ch
 import {TileType} from 'chrome://customize-chrome-side-panel.top-chrome/tile_type.mojom-webui.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -73,11 +71,6 @@ suite('ShortcutsTest', () => {
   function getTopSitesContainer(): HTMLElement {
     return customizeShortcutsElement.shadowRoot.querySelector(
         '#topSitesContainer')!;
-  }
-
-  function getEnterpriseShortcutsContainer(): HTMLElement {
-    return customizeShortcutsElement.shadowRoot.querySelector(
-        '#enterpriseShortcutsContainer')!;
   }
 
   async function setInitialSettings(
@@ -299,110 +292,6 @@ suite('ShortcutsTest', () => {
     assertTrue(shortcutsVisible);
   });
 
-  test(
-      'clicking enterprise shortcuts label updates MV settings when mixing is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: false,
-        });
-        await setInitialSettings(
-            /* shortcutsTypes= */[TileType.kCustomLinks],
-            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
-            /* disabledShortcuts= */[]);
-        assertCustomLinksEnabled();
-
-        getEnterpriseShortcutsContainer().click();
-        await microtasksFinished();
-
-        assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes, shortcutsVisible] =
-            handler.getArgs('setMostVisitedSettings')[0];
-        assertEquals(
-            JSON.stringify([TileType.kEnterpriseShortcuts]),
-            JSON.stringify(shortcutsTypes));
-        assertTrue(shortcutsVisible);
-      });
-
-  test(
-      'clicking enterprise shortcuts button updates MV settings when mixing is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: false,
-        });
-        await setInitialSettings(
-            /* shortcutsTypes= */[TileType.kCustomLinks],
-            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
-            /* disabledShortcuts= */[]);
-        assertCustomLinksEnabled();
-
-        getEnterpriseShortcutsButton().click();
-
-        assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes, shortcutsVisible] =
-            handler.getArgs('setMostVisitedSettings')[0];
-        assertEquals(
-            JSON.stringify([TileType.kEnterpriseShortcuts]),
-            JSON.stringify(shortcutsTypes));
-        assertTrue(shortcutsVisible);
-      });
-
-  test(
-      'keydown on radio options updates MV settings when mixing is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: false,
-        });
-        await setInitialSettings(
-            /* shortcutsTypes= */[TileType.kTopSites],
-            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
-            /* disabledShortcuts= */[]);
-        assertUseMostVisited();
-
-        keyDownOn(getTopSitesButton(), 0, [], 'ArrowUp');
-        await microtasksFinished();
-
-        assertEquals(1, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes, shortcutsVisible] =
-            handler.getArgs('setMostVisitedSettings')[0];
-        assertEquals(
-            JSON.stringify([TileType.kCustomLinks]),
-            JSON.stringify(shortcutsTypes));
-        assertTrue(shortcutsVisible);
-
-        keyDownOn(getCustomLinksButton(), 0, [], 'ArrowUp');
-        await microtasksFinished();
-
-        assertEquals(2, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes2, shortcutsVisible2] =
-            handler.getArgs('setMostVisitedSettings')[1];
-        assertEquals(
-            JSON.stringify([TileType.kEnterpriseShortcuts]),
-            JSON.stringify(shortcutsTypes2));
-        assertTrue(shortcutsVisible2);
-
-        keyDownOn(getEnterpriseShortcutsButton(), 0, [], 'ArrowDown');
-        await microtasksFinished();
-
-        assertEquals(3, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes3, shortcutsVisible3] =
-            handler.getArgs('setMostVisitedSettings')[2];
-        assertEquals(
-            JSON.stringify([TileType.kCustomLinks]),
-            JSON.stringify(shortcutsTypes3));
-        assertTrue(shortcutsVisible3);
-
-        keyDownOn(getCustomLinksButton(), 0, [], 'ArrowDown');
-        await microtasksFinished();
-
-        assertEquals(4, handler.getCallCount('setMostVisitedSettings'));
-        const [shortcutsTypes4, shortcutsVisible4] =
-            handler.getArgs('setMostVisitedSettings')[3];
-        assertEquals(
-            JSON.stringify([TileType.kTopSites]),
-            JSON.stringify(shortcutsTypes4));
-        assertTrue(shortcutsVisible4);
-      });
-
   test('no radio option selected if shortcuts type is invalid', async () => {
     await setInitialSettings(
         /* shortcutsTypes= */[100 as TileType],
@@ -443,11 +332,7 @@ suite('ShortcutsTest', () => {
   });
 
   test(
-      'toggling enterprise shortcuts updates MV settings when mixing enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: true,
-        });
+      'toggling enterprise shortcuts updates MV settings', async () => {
         await setInitialSettings(
             /* shortcutsTypes= */
             [TileType.kCustomLinks, TileType.kEnterpriseShortcuts],
@@ -469,11 +354,7 @@ suite('ShortcutsTest', () => {
       });
 
   test(
-      'toggling personal shortcuts updates MV settings when mixing enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: true,
-        });
+      'toggling personal shortcuts updates MV settings', async () => {
         await setInitialSettings(
             /* shortcutsTypes= */
             [TileType.kCustomLinks, TileType.kEnterpriseShortcuts],
@@ -496,11 +377,7 @@ suite('ShortcutsTest', () => {
       });
 
   test(
-      'radio options enabled when personal shortcuts on and mixing enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: true,
-        });
+      'radio options enabled when personal shortcuts on', async () => {
         await setInitialSettings(
             /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
             /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
@@ -511,11 +388,7 @@ suite('ShortcutsTest', () => {
       });
 
   test(
-      'radio options disabled when personal shortcuts off and mixing enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: true,
-        });
+      'radio options disabled when personal shortcuts off', async () => {
         await setInitialSettings(
             /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
             /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ false,
@@ -526,11 +399,7 @@ suite('ShortcutsTest', () => {
       });
 
   test(
-      'enterprise and personal shortcut containers visible when mixing enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: true,
-        });
+      'enterprise and personal shortcut containers visible', async () => {
         await setInitialSettings(
             /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
             /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
@@ -548,30 +417,6 @@ suite('ShortcutsTest', () => {
                 '#personalShortcutsContainer');
         assertTrue(!!personalShortcutsContainer);
         assertFalse(personalShortcutsContainer.hidden);
-      });
-
-  test(
-      'enterprise and personal shortcut containers not visible when mixing disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          ntpEnterpriseShortcutsMixingAllowed: false,
-        });
-        await setInitialSettings(
-            /* shortcutsTypes= */[TileType.kEnterpriseShortcuts],
-            /* shortcutsVisible= */ true, /* shortcutsPersonalVisible= */ true,
-            /* disabledShortcuts= */[]);
-
-        const enterpriseShortcutsMixedContainer =
-            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
-                '#enterpriseShortcutsMixedContainer');
-        assertTrue(!!enterpriseShortcutsMixedContainer);
-        assertTrue(enterpriseShortcutsMixedContainer.hidden);
-
-        const personalShortcutsContainer =
-            customizeShortcutsElement.shadowRoot.querySelector<HTMLElement>(
-                '#personalShortcutsContainer');
-        assertTrue(!!personalShortcutsContainer);
-        assertTrue(personalShortcutsContainer.hidden);
       });
 
   suite('Metrics', () => {

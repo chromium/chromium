@@ -7,11 +7,9 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_store.h"
-#include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -26,17 +24,6 @@ using ntp_tiles::EnterpriseShortcutsStore;
 namespace policy {
 
 namespace {
-
-bool IsNTPEnterpriseShortcutsEnabled() {
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initialized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
-}
 
 // Converts a shortcuts policy entry `policy_dict` into a dictionary to be
 // saved to prefs, with fields corresponding to `EnterpriseShortcut`. `CHECK`s
@@ -125,7 +112,7 @@ bool NTPShortcutsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
   ignored_urls_.clear();
 
-  if (!IsNTPEnterpriseShortcutsEnabled() || !policies.Get(policy_name())) {
+  if (!policies.Get(policy_name())) {
     return true;
   }
 
@@ -222,13 +209,6 @@ bool NTPShortcutsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
 void NTPShortcutsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
-  // If policy handler is disabled, the pref should be cleared to prevent old
-  // shortcuts from appearing.
-  if (!IsNTPEnterpriseShortcutsEnabled()) {
-    prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    return;
-  }
-
   const base::Value* policy_value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
   if (!policy_value) {

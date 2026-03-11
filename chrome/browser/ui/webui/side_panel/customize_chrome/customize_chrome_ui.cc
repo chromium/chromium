@@ -317,10 +317,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
-  source->AddBoolean(
-      "ntpEnterpriseShortcutsMixingAllowed",
-      base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
-          ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get());
 
   webui::SetupWebUIDataSource(
       source, kSidePanelCustomizeChromeResources,

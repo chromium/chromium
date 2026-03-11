@@ -492,10 +492,8 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 
   if (current_tile_types.contains(ntp_tiles::TileType::kEnterpriseShortcuts) !=
       types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts)) {
-    // If enterprise shortcuts are disabled or the policy is not set, skip this
-    // update.
-    if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
-        !IsEnterpriseShortcutsEmpty()) {
+    // If the policy is not set, skip this update.
+    if (!IsEnterpriseShortcutsEmpty()) {
       UpdatePrefAndLogEvent(
           ntp_prefs::kNtpEnterpriseShortcutsVisible,
           types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts),
@@ -517,11 +515,9 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   std::vector<ntp_tiles::TileType> disabled_shortcuts;
-  // If feature is not enabled or no enterprise shortcuts are set by policy,
-  // hide the enterprise shortcuts option, but leave
-  // the preference as is.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
-      IsEnterpriseShortcutsEmpty()) {
+  // If no enterprise shortcuts are set by policy, hide the enterprise shortcuts
+  // option, but leave the preference as is.
+  if (IsEnterpriseShortcutsEmpty()) {
     disabled_shortcuts.push_back(ntp_tiles::TileType::kEnterpriseShortcuts);
   }
   auto tile_types = GetTileTypes();
@@ -728,12 +724,6 @@ std::set<ntp_tiles::TileType> CustomizeChromePageHandler::GetTileTypes() const {
   std::set<ntp_tiles::TileType> tile_types;
   if (IsEnterpriseShortcutsVisible()) {
     tile_types.insert(ntp_tiles::TileType::kEnterpriseShortcuts);
-    // Skip adding personal shortcuts if enterprise shortcuts mixing is not
-    // allowed.
-    if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
-        !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
-      return tile_types;
-    }
   }
   if (IsPersonalShortcutsVisible()) {
     tile_types.insert(
@@ -749,12 +739,8 @@ bool CustomizeChromePageHandler::IsShortcutsVisible() const {
 }
 
 bool CustomizeChromePageHandler::IsPersonalShortcutsVisible() const {
-  // Always return true if enterprise shortcuts feature is disabled,
-  // enterprise shortcuts mixing is disabled, or no enterprise shortcuts are set
-  // by policy.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
-      !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get() ||
-      IsEnterpriseShortcutsEmpty()) {
+  // Always return true if no enterprise shortcuts are set by policy.
+  if (IsEnterpriseShortcutsEmpty()) {
     return true;
   }
   return profile_->GetPrefs()->GetBoolean(

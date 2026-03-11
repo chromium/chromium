@@ -255,27 +255,13 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, HandlesTabModelChanges) {
   tab_strip_model->AppendWebContents(std::move(extracted_contents), true);
 }
 
-class WebUiNtpEnterpriseShortcutsBrowserTest
-    : public WebUiNtpBrowserTest,
-      public testing::WithParamInterface<bool> {
+class WebUiNtpEnterpriseShortcutsBrowserTest : public WebUiNtpBrowserTest {
  public:
-  WebUiNtpEnterpriseShortcutsBrowserTest() {
-    // Enable/disable the enterprise shortcuts feature.
-    if (IsEnterpriseShortcutsEnabled()) {
-      feature_list_.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
-    } else {
-      feature_list_.InitAndDisableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
-    }
-  }
-
-  bool IsEnterpriseShortcutsEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+  WebUiNtpEnterpriseShortcutsBrowserTest() = default;
 };
 
 // TODO(crbug.com/442038064): Re-enable once flakiness is addressed.
-IN_PROC_BROWSER_TEST_P(WebUiNtpEnterpriseShortcutsBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebUiNtpEnterpriseShortcutsBrowserTest,
                        DISABLED_EnterpriseShortcuts) {
   // 1. Set the user preference to use enterprise shortcuts.
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -290,9 +276,8 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpEnterpriseShortcutsBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // 3. Verify through JavaScript that the page is configured correctly.
-  // - If feature enabled, enterprise shorctus are displayed.
-  // - If feature disabled, custom links are displayed.
-  const std::string js_check = base::StringPrintf(
+  // - Enterprise shortcuts are displayed.
+  const std::string js_check =
       R"((() => {
           const mostVisited = document.querySelector('ntp-app')?.shadowRoot
                                     ?.querySelector('cr-most-visited');
@@ -303,15 +288,9 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpEnterpriseShortcutsBrowserTest,
               mostVisited.hasAttribute('enterprise-shortcuts-enabled_');
           const hasCustom =
               mostVisited.hasAttribute('custom-links-enabled_');
-          return hasEnterprise === %s && hasCustom === %s;
-        })())",
-      IsEnterpriseShortcutsEnabled() ? "true" : "false",
-      !IsEnterpriseShortcutsEnabled() ? "true" : "false");
+          return hasEnterprise === true && hasCustom === false;
+        })())";
 
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return content::EvalJs(web_contents, js_check).ExtractBool(); }));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebUiNtpEnterpriseShortcutsBrowserTest,
-                         testing::Bool());

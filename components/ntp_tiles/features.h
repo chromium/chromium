@@ -22,16 +22,6 @@ BASE_DECLARE_FEATURE(kPopularSitesBakedInContentFeature);
 // Likely tiles on the New Tab Page.
 BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 
-// Feature to allow shortcuts for the New Tab Page to be defined by the
-// `NTPShortcuts` policy.
-BASE_DECLARE_FEATURE(kNtpEnterpriseShortcuts);
-
-// Parameter determining whether the to use fake data for manual testing.
-extern const base::FeatureParam<bool> kNtpEnterpriseShortcutsUseFakeDataParam;
-
-// Parameter determining whether allow mixing for enterprise shortcuts.
-extern const base::FeatureParam<bool> kNtpEnterpriseShortcutsAllowMixingParam;
-
 }  // namespace ntp_tiles
 
 #endif  // COMPONENTS_NTP_TILES_FEATURES_H_

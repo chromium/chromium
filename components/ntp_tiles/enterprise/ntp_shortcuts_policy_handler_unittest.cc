@@ -9,9 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/ntp_tiles/enterprise/enterprise_shortcuts_store.h"
-#include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/field_validation_test_utils.h"
@@ -161,12 +159,7 @@ class NTPShortcutsPolicyHandlerTest : public testing::Test {
  public:
   NTPShortcutsPolicyHandlerTest() = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
-  }
-
  protected:
-  base::test::ScopedFeatureList feature_list_;
   NTPShortcutsPolicyHandler handler_{
       Schema::Wrap(policy::GetChromeSchemaData())};
   policy::PolicyMap policies_;
@@ -175,27 +168,6 @@ class NTPShortcutsPolicyHandlerTest : public testing::Test {
 };
 
 TEST_F(NTPShortcutsPolicyHandlerTest, PolicyNotSet) {
-  ASSERT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
-  EXPECT_TRUE(errors_.empty());
-
-  handler_.ApplyPolicySettings(policies_, &prefs_);
-  EXPECT_FALSE(prefs_.GetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
-                               nullptr));
-}
-
-TEST_F(NTPShortcutsPolicyHandlerTest, ValidNTPShortcuts_FeatureDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
-
-  base::ListValue policy_value;
-  for (const auto& test_case : kValidTestShortcuts) {
-    policy_value.Append(GenerateNTPShortcutPolicyEntry(test_case));
-  }
-
-  policies_.Set(key::kNTPShortcuts, policy::POLICY_LEVEL_MANDATORY,
-                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                base::Value(std::move(policy_value)), nullptr);
-
   ASSERT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
   EXPECT_TRUE(errors_.empty());
 

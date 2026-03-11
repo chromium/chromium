@@ -1861,12 +1861,6 @@ inline constexpr char kDownloadNotificationServiceUnifiedAPIDescription[] =
     "Migrate download notification service to use new unified API based on "
     "offline item and native persistence";
 
-inline constexpr char kEnableNtpEnterpriseShortcutsName[] =
-    "Enables enterprise shortcuts for the New Tab Page";
-inline constexpr char kEnableNtpEnterpriseShortcutsDescription[] =
-    "Enables enterprise shortcuts for the New Tab Page set by the NTPShortcuts "
-    "policy.";
-
 inline constexpr char kEnablePerfettoSystemTracingName[] =
     "Enable Perfetto system tracing";
 inline constexpr char kEnablePerfettoSystemTracingDescription[] =

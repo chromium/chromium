@@ -277,14 +277,7 @@ bool IsTopSitesEnabled(Profile* profile) {
 }
 
 bool IsCustomLinksEnabled(Profile* profile) {
-  // If the enterprise shortcuts feature is disabled, but the preference is set
-  // to enterprise shortcuts visible, treat MostVisitedSites as if enterpise
-  // shortcuts is disabled and custom links is enabled. This may occur if the
-  // user is moved in and out of the experiment.
-  return profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
-         (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
-          profile->GetPrefs()->GetBoolean(
-              ntp_prefs::kNtpEnterpriseShortcutsVisible));
+  return profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible);
 }
 
 bool IsEnterpriseShortcutsEmpty(Profile* profile) {
@@ -294,27 +287,18 @@ bool IsEnterpriseShortcutsEmpty(Profile* profile) {
 }
 
 bool IsEnterpriseShortcutsEnabled(Profile* profile) {
-  // Enable enterprise shortcuts if the feature is enabled, enterprise shortcuts
-  // policy is set, and user has enabled visibility.
-  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
-         !IsEnterpriseShortcutsEmpty(profile) &&
+  // Enable enterprise shortcuts if the enterprise shortcuts policy is set, and
+  // user has enabled visibility.
+  return !IsEnterpriseShortcutsEmpty(profile) &&
          profile->GetPrefs()->GetBoolean(
              ntp_prefs::kNtpEnterpriseShortcutsVisible);
 }
 
 bool IsPersonalShortcutsVisible(Profile* profile) {
-  // Always return true if enterprise shortcuts feature is disabled or no
-  // enterprise shortcuts are set by policy. Rely on `IsTopSitesEnabled()` and
-  // `IsCustomLinksEnabled()` only.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
-      IsEnterpriseShortcutsEmpty(profile)) {
+  // Always return true if no enterprise shortcuts are set by policy. Rely on
+  // `IsTopSitesEnabled()` and `IsCustomLinksEnabled()` only.
+  if (IsEnterpriseShortcutsEmpty(profile)) {
     return true;
-  }
-  // If enterprise shortcuts mixing is disabled, return the opposite of
-  // `IsEnterpriseShortcutsEnabled()` since only enterprise OR personal
-  // shortcuts should be visible.
-  if (!ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
-    return !IsEnterpriseShortcutsEnabled(profile);
   }
   return profile->GetPrefs()->GetBoolean(
       ntp_prefs::kNtpPersonalShortcutsVisible);
