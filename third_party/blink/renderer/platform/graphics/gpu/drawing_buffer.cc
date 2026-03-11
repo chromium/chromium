@@ -2019,10 +2019,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
       low_latency_usage_supported =
           low_latency_enabled() &&
-          SharedGpuContext::MaySupportWebGLImageChromium() &&
-          (SharedGpuContext::WebGLImageChromiumEnabled() ||
-           base::FeatureList::IsEnabled(
-               features::kLowLatencyWebGLImageChromium));
+          SharedGpuContext::LowLatencyUsageSupportedForWebGL();
     }
     if (use_as_overlay || low_latency_usage_supported) {
 #if !BUILDFLAG(IS_ANDROID)

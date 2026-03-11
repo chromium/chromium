@@ -95,6 +95,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // CONCURRENT_READ_WRITE).
   static bool LowLatencyUsageSupportedForCanvas2D(RasterMode raster_mode);
 
+  // Whether SharedImages used for WebGL content may be given usage optimized
+  // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
+  static bool LowLatencyUsageSupportedForWebGL();
+
   // Forces LowLatencyUsageSupportedForCanvas2D() to return the
   // passed-in value. Cleared on the next invocation of Reset() of the global
   // context.
