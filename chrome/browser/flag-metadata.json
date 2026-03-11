@@ -242,6 +242,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-bottom-bar",
+    "owners": [ "polardz@google.com", "ckitagawa@chromium.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
       "name": "android-bottom-toolbar-v2",
       "owners": [ "pnoland@chromium.org", "ender@google.com" ],
       "expiry_milestone": 155
