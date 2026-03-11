@@ -154,6 +154,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.ExtensionEvalTarget"
+    enum="DevToolsExtensionEvalTarget" expires_after="2026-09-11">
+  <owner>danilsomsikov@google.com</owner>
+  <owner>devtools-dev@chromium.org</owner>
+  <summary>
+    Tracks the target page type of chrome.devtools.inspectedWindow.eval calls.
+    Used to measure cross-extension debugging frequency for crbug.com/375959766.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Freestyler.EvalResponseSize" units="count"
     expires_after="2026-11-11">
   <owner>ergunsh@google.com</owner>

@@ -998,6 +998,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="111" label="jpegXL"/>
 </enum>
 
+<enum name="DevToolsExtensionEvalTarget">
+  <int value="0" label="Web Page"/>
+  <int value="1" label="Same Extension"/>
+  <int value="2" label="Other Extension"/>
+</enum>
+
 <enum name="DevToolsIssueCreated">
   <int value="0" label="MixedContentIssue"/>
   <int value="1" label="ContentSecurityPolicyIssue::kInlineViolation"/>
