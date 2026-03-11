@@ -150,8 +150,18 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
-void ConnectJob::set_done_closure(base::OnceClosure done_closure) {
-  done_closure_ = base::ScopedClosureRunner(std::move(done_closure));
+void ConnectJob::set_done_closure(OnConnectJobCompleteCallback done_closure) {
+  // Note that we're passing in a base::Unretained(this) to access `net_error_`.
+  // This is OK because `this` is guaranteed to outlive the closure, since the
+  // closure is called on `this`'s destructor.
+  done_closure_ = base::ScopedClosureRunner(base::BindOnce(
+      [](ConnectJob* job, OnConnectJobCompleteCallback closure) {
+        // If we didn't set the `net_error_`, then the `ConnectJob` was aborted
+        // before it completed.
+        int error = job->net_error_.value_or(ERR_ABORTED);
+        std::move(closure).Run(error);
+      },
+      base::Unretained(this), std::move(done_closure)));
 }
 
 std::optional<HostResolverEndpointResult>
@@ -210,6 +220,7 @@ void ConnectJob::StopTimerAndLogConnectCompletion(int net_error) {
   // generally deleted immediately, anyways, but best to be safe.
   timer_.Stop();
 
+  net_error_ = net_error;
   connect_timing_.connect_end = base::TimeTicks::Now();
   net_log().EndEventWithNetErrorCode(net_log_connect_event_type_, net_error);
 }

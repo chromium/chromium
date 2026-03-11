@@ -972,8 +972,12 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     if (using_quic_) {
       return result;
     }
-    DCHECK_EQ(OK, result);
-    return OK;
+    // When the feature is enabled, the result of preconnect may not be OK.
+    if (!base::FeatureList::IsEnabled(
+            net::features::kEnableErrorCodePropagationForPreconnect)) {
+      DCHECK_EQ(OK, result);
+    }
+    return result;
   }
 
   resolve_error_info_ = connection_->resolve_error_info();

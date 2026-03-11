@@ -6868,6 +6868,7 @@
                     },
                     "enable_features": [
                         "ConnectionKeepAliveForHttp2",
+                        "EnableErrorCodePropagationForPreconnect",
                         "RebindPreconnectReceivers"
                     ]
                 }

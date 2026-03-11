@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/barrier_closure.h"
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
@@ -270,9 +270,9 @@ int TransportClientSocketPool::RequestSocket(
 
   request->net_log().BeginEvent(NetLogEventType::SOCKET_POOL);
 
-  int rv =
-      RequestSocketInternal(group_id, *request,
-                            /*preconnect_done_closure=*/base::OnceClosure());
+  int rv = RequestSocketInternal(
+      group_id, *request,
+      /*preconnect_done_closure=*/OnConnectJobCompleteCallback());
   if (rv != ERR_IO_PENDING) {
     if (rv == OK) {
       request->handle()->socket()->ApplySocketTag(request->socket_tag());
@@ -333,17 +333,26 @@ int TransportClientSocketPool::RequestSockets(
 
   int rv = OK;
 
-  base::RepeatingClosure preconnect_done_closure = base::BarrierClosure(
-      num_sockets,
-      base::BindOnce(
-          [](PreconnectCompletionCallback callback) {
-            // TODO(crbug.com/453308537): Current implementation always returns
-            // true to be consistent with the previous implementation. Update
-            // to return false when preconnect fails.
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), true));
-          },
-          std::move(callback)));
+  base::RepeatingCallback<void(int)> preconnect_done_closure =
+      base::BarrierCallback<int>(
+          num_sockets,
+          base::BindOnce(
+              [](PreconnectCompletionCallback callback,
+                 std::vector<int> results) {
+                int result = OK;
+                if (base::FeatureList::IsEnabled(
+                        net::features::
+                            kEnableErrorCodePropagationForPreconnect)) {
+                  CHECK(!results.empty());
+                  // TODO(crbug.com/453308537): Consider more sophisticated
+                  // error code propagation logic.
+                  result = *std::max_element(results.begin(), results.end());
+                }
+                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(std::move(callback), result == OK));
+              },
+              std::move(callback)));
   int pending_connect_job_count = 0;
   for (int num_iterations_left = num_sockets;
        group->NumActiveSocketSlots() < num_sockets && num_iterations_left > 0;
@@ -379,7 +388,7 @@ int TransportClientSocketPool::RequestSockets(
   if (pending_connect_job_count == 0)
     return OK;
   for (size_t i = 0; i < num_sockets - pending_connect_job_count; ++i) {
-    preconnect_done_closure.Run();
+    preconnect_done_closure.Run(rv);
   }
 
   return ERR_IO_PENDING;
@@ -388,7 +397,7 @@ int TransportClientSocketPool::RequestSockets(
 int TransportClientSocketPool::RequestSocketInternal(
     const GroupId& group_id,
     const Request& request,
-    base::OnceClosure preconnect_done_closure) {
+    OnConnectJobCompleteCallback preconnect_done_closure) {
 #if DCHECK_IS_ON()
   DCHECK(!request_in_process_);
   base::AutoReset<bool> auto_reset(&request_in_process_, true);
@@ -1191,9 +1200,9 @@ void TransportClientSocketPool::ProcessPendingRequest(const GroupId& group_id,
     return;
   }
 
-  int rv =
-      RequestSocketInternal(group_id, *next_request,
-                            /*preconnect_done_closure=*/base::OnceClosure());
+  int rv = RequestSocketInternal(
+      group_id, *next_request,
+      /*preconnect_done_closure=*/OnConnectJobCompleteCallback());
   if (rv != ERR_IO_PENDING) {
     std::unique_ptr<Request> request = group->PopNextUnboundRequest();
     DCHECK(request);

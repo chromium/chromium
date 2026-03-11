@@ -813,6 +813,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSQLitePersistentCookieStoreEarlyInit);
 NET_EXPORT extern const base::FeatureParam<bool>
     kSQLitePersistentCookieStoreEarlyInitCheckDisk;
 
+// If enabled, the error code will be propagated for preconnect attempts.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableErrorCodePropagationForPreconnect);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

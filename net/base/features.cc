@@ -784,4 +784,6 @@ BASE_FEATURE(kSQLitePersistentCookieStoreEarlyInit,
 const base::FeatureParam<bool> kSQLitePersistentCookieStoreEarlyInitCheckDisk{
     &kSQLitePersistentCookieStoreEarlyInit, "check_disk", true};
 
+BASE_FEATURE(kEnableErrorCodePropagationForPreconnect,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace net::features

@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
@@ -2284,6 +2285,85 @@ TEST_P(TransportClientSocketPoolTest,
       }),
       base::BindLambdaForTesting([&]() { return pool.SocketsInUse(); }));
   ReleaseAllConnections(ClientSocketPoolTest::NO_KEEP_ALIVE);
+}
+
+TEST_P(TransportClientSocketPoolTest,
+       ErrorCodePropagationForPreconnect_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableErrorCodePropagationForPreconnect);
+
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kPendingFailing);
+
+  base::test::TestFuture<bool> result;
+
+  int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 1,
+                                 result.GetCallback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_FALSE(result.Get());
+}
+
+TEST_P(TransportClientSocketPoolTest,
+       ErrorCodePropagationForPreconnect_Enabled_MultipleFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableErrorCodePropagationForPreconnect);
+
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kPendingFailing);
+
+  base::test::TestFuture<bool> result;
+
+  int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
+                                 result.GetCallback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_FALSE(result.Get());
+}
+
+TEST_P(TransportClientSocketPoolTest,
+       ErrorCodePropagationForPreconnect_Enabled_MultipleSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableErrorCodePropagationForPreconnect);
+
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kPending);
+
+  base::test::TestFuture<bool> result;
+
+  int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
+                                 result.GetCallback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_TRUE(result.Get());
+}
+
+TEST_P(TransportClientSocketPoolTest,
+       ErrorCodePropagationForPreconnect_Enabled_MixedResult) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableErrorCodePropagationForPreconnect);
+
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // First socket fails.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPendingFailing),
+      // Second socket succeeds.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPending),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  base::test::TestFuture<bool> result;
+
+  int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
+                                 result.GetCallback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_TRUE(result.Get());
 }
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to

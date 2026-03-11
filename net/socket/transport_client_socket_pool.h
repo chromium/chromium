@@ -694,9 +694,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   // reached the limit or the created connect job didn't finish synchronously.
   // In such a case, the Request with a ClientSocketHandle must be registered to
   // |group_map_| to receive the completion callback.
-  int RequestSocketInternal(const GroupId& group_id,
-                            const Request& request,
-                            base::OnceClosure preconnect_done_closure);
+  int RequestSocketInternal(
+      const GroupId& group_id,
+      const Request& request,
+      OnConnectJobCompleteCallback preconnect_done_closure);
 
   // Assigns an idle socket for the group to the request.
   // Returns |true| if an idle socket is available, false otherwise.
