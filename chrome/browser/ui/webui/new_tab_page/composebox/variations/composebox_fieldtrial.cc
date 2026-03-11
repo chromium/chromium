@@ -331,7 +331,7 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
   }
 
   return base::FeatureList::IsEnabled(kNtpRealboxNext) &&
-         aim_eligibility_service->IsAimEligible();
+         aim_eligibility_service->IsFuseboxEligible();
 }
 
 BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
