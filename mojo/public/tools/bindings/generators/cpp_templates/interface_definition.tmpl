@@ -270,8 +270,8 @@ bool {{proxy_name}}::{{method.name}}(
                                  trace_event_type='_BEGIN')}}
 #else
 {#- Output a minimal trace event if MOJO_TRACE_ENABLED is false. #}
-{%-     set event_name = "%s::%s" % (class_name, method.name) %}
-  {{interface_macros.trace_event(method_name=event_name)}}
+{%-     set short_event_name = "%s::%s" % (class_name, method.name) %}
+  {{interface_macros.trace_event(method_name=short_event_name)}}
 #endif
   {{check_feature_for_method(method)|indent(2)}}
   const bool kExpectsResponse = true;

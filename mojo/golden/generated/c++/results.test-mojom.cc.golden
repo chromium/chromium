@@ -482,7 +482,7 @@ base::expected<
   ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT_END1(
-    "mojom", "ResultInterface::SyncMethod", "sync_response_parameters",
+    "mojom", "Call golden::ResultInterface::SyncMethod (sync)", "sync_response_parameters",
     [&](perfetto::TracedValue context){
       auto dict = std::move(context).WriteDictionary();
       perfetto::WriteIntoTracedValueWithFallback(
