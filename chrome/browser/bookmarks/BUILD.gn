@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
 source_set("bookmarks") {
   public = [
     "bookmark_expanded_state_tracker.h",
@@ -73,4 +75,89 @@ source_set("impl") {
     "//content/public/browser",
     "//ui/gfx",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "bookmark_test_helpers.cc",
+    "bookmark_test_helpers.h",
+    "bookmark_test_utils.cc",
+    "bookmark_test_utils.h",
+  ]
+
+  public_deps = [
+    ":bookmarks",
+    "//components/bookmarks/test",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//base",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/sync_preferences:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "managed_bookmark_service_unittest.cc" ]
+
+  if (!is_android) {
+    sources += [
+      # Bookmark export/import are handled via the BookmarkColumns
+      # ContentProvider.
+      "bookmark_html_writer_unittest.cc",
+      "bookmark_merged_surface_ordering_storage_unittest.cc",
+      "bookmark_merged_surface_service_unittest.cc",
+      "bookmark_parent_folder_children_unittest.cc",
+      "bookmark_parent_folder_unittest.cc",
+      "permanent_folder_ordering_tracker_unittest.cc",
+    ]
+  }
+
+  if (toolkit_views) {
+    sources += [ "bookmark_expanded_state_tracker_unittest.cc" ]
+  }
+
+  deps = [
+    ":bookmarks",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/bookmarks/test",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/favicon",
+      "//chrome/browser/history",
+      "//chrome/common:constants",
+      "//components/favicon/core",
+      "//components/favicon_base",
+      "//components/history/core/browser",
+      "//components/user_data_importer/content",
+      "//components/user_data_importer/content:test_support",
+      "//skia",
+      "//ui/gfx/codec",
+    ]
+  }
 }

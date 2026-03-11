@@ -151,6 +151,7 @@ source_set("unit_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:ui_features",

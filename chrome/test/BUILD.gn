@@ -163,6 +163,7 @@ static_library("test_support") {
     "//chrome/browser:global_features",
     "//chrome/browser/background",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:test_support",
     "//chrome/browser/omnibox",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles/keep_alive",
@@ -349,17 +350,6 @@ static_library("test_support") {
       "base/android/android_ui_test_utils.cc",
       "base/android/android_ui_test_utils.h",
     ]
-  }
-
-  if (!is_android) {
-    sources += [
-      "../browser/bookmarks/bookmark_test_helpers.cc",
-      "../browser/bookmarks/bookmark_test_helpers.h",
-      "../browser/bookmarks/bookmark_test_utils.cc",
-      "../browser/bookmarks/bookmark_test_utils.h",
-    ]
-
-    deps += [ "//components/bookmarks/managed" ]
   }
 
   if (enable_extensions_core) {
@@ -2574,6 +2564,7 @@ if (!is_android) {
       "//chrome/browser/bluetooth:browser_tests",
       "//chrome/browser/bluetooth:test_support",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/bookmarks:test_support",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/browsing_topics:browser_tests",
@@ -6603,7 +6594,6 @@ test("unit_tests") {
     "../browser/apps/user_type_filter_unittest.cc",
     "../browser/autofill/automated_tests/cache_replayer_unittest.cc",
     "../browser/battery/battery_saver_unittest.cc",
-    "../browser/bookmarks/managed_bookmark_service_unittest.cc",
     "../browser/browser_about_handler_unittest.cc",
     "../browser/browsing_data/browsing_data_history_observer_service_unittest.cc",
     "../browser/browsing_data/browsing_data_lifetime_policy_handler_unittest.cc",
@@ -6961,11 +6951,6 @@ test("unit_tests") {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
   }
 
-  if (toolkit_views) {
-    sources +=
-        [ "../browser/bookmarks/bookmark_expanded_state_tracker_unittest.cc" ]
-  }
-
   if (enable_webui_tab_strip) {
     sources += [
       "../browser/ui/webui/tab_strip/tab_strip_page_handler_unittest.cc",
@@ -7100,6 +7085,8 @@ test("unit_tests") {
     "//chrome/browser/bitmap_fetcher:unit_tests",
     "//chrome/browser/bluetooth:unit_tests",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:test_support",
+    "//chrome/browser/bookmarks:unit_tests",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/breadcrumbs:unit_tests",
     "//chrome/browser/browsing_data:constants",
@@ -8289,11 +8276,6 @@ test("unit_tests") {
     sources += [
       "../browser/apps/intent_helper/intent_chip_display_prefs_unittest.cc",
       "../browser/autofill/ui/autofill_image_fetcher_impl_unittest.cc",
-      "../browser/bookmarks/bookmark_merged_surface_ordering_storage_unittest.cc",
-      "../browser/bookmarks/bookmark_merged_surface_service_unittest.cc",
-      "../browser/bookmarks/bookmark_parent_folder_children_unittest.cc",
-      "../browser/bookmarks/bookmark_parent_folder_unittest.cc",
-      "../browser/bookmarks/permanent_folder_ordering_tracker_unittest.cc",
       "../browser/browser_commands_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
       "../browser/component_updater/actor_safety_lists_component_installer_policy_unittest.cc",
@@ -8737,12 +8719,6 @@ test("unit_tests") {
         "//chrome/updater:browser_sources",
       ]
     }
-
-    sources += [
-      # Bookmark export/import are handled via the BookmarkColumns
-      # ContentProvider.
-      "../browser/bookmarks/bookmark_html_writer_unittest.cc",
-    ]
 
     sources += [
       # Media remoting is not supported on Android for now.
@@ -11669,6 +11645,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/autofill:interactive_ui_tests",
       "//chrome/browser/autofill:test_support_ui",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/bookmarks:test_support",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:interactive_ui_tests",
