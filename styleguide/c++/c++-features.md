@@ -43,6 +43,7 @@ The current status of existing standards and Abseil features is:
     Abseil:_
       * absl::linked_hash_set & map: Initially added to third_party Dec 30, 2025
       * absl::optional_ref: Initially added to third_party Feb 25, 2026
+      * absl::SourceLocation: Initially added to third_party Mar 11, 2026
 
 ## Banned features and third-party code
 
@@ -2828,3 +2829,30 @@ It is similar to C++26's `std::optional<T&>`, but with slight enhancements.
 
 **Documentation:**
 *   [optional_ref.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/types/optional_ref.h)
+
+
+### absl::SourceLocation <sup>[tbd]</sup>
+
+```c++
+   void TracedAdd(int i, SourceLocation loc = SourceLocation::current()) {
+     std::cout << loc.file_name() << ":" << loc.line() << " added " << i;
+     ...
+   }
+
+   void UserCode() {
+     TracedAdd(1);
+     TracedAdd(2);
+   }
+```
+
+**Description:** provides source-code location info.
+It is similar to C++20's `std::source_location`. Unlike std::source_location,
+it is not permanently valid and must not outlive its source.
+
+**Documentation:**
+*   [source_location.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/types/source_location.h)
+
+**Notes:**
+*** promo
+Overlaps with `base::Location`.
+***
