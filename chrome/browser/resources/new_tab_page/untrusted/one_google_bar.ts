@@ -190,7 +190,7 @@ const overlayUpdater = (() => {
 
 window.addEventListener('message', ({data}) => {
   if (data.type === 'updateAppearance') {
-    oneGoogleBarApi.setForegroundLight(data.applyLightTheme);
+    oneGoogleBarApi.setDarkMode(data.applyLightTheme);
   }
 });
 
@@ -215,7 +215,6 @@ window.addEventListener('click', () => {
 function postOneGoogleBarLoaded() {
   postMessage('loaded');
   overlayUpdater.track();
-  oneGoogleBarApi.trackDarkModeChanges();
 }
 
 document.addEventListener('DOMContentLoaded', () => {

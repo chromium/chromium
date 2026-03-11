@@ -593,6 +593,13 @@ export class AppElement extends AppElementBase {
     this.eventTracker_.add(document, 'scroll', () => {
       this.scrolledToTop_ = document.documentElement.scrollTop <= 0;
     });
+    this.eventTracker_.add(
+        WindowProxy.getInstance().matchMedia('(prefers-color-scheme: dark)'),
+        'change', (e: MediaQueryListEvent) => {
+          if (e.matches) {
+            this.updateOneGoogleBarAppearance_();
+          }
+        });
     if (loadTimeData.getString('backgroundImageUrl')) {
       this.backgroundManager_.getBackgroundImageLoadTime().then(
           time => {
