@@ -33,9 +33,9 @@ namespace blink {
 
 WebGLObject::WebGLObject(WebGLContextObjectSupport* context)
     : context_(context),
-      cached_number_of_context_losses_(std::numeric_limits<uint32_t>::max()) {
+      context_generation_at_creation_(std::numeric_limits<uint64_t>::max()) {
   if (context_) {
-    cached_number_of_context_losses_ = context->NumberOfContextLosses();
+    context_generation_at_creation_ = context->GetContextGeneration();
   }
 }
 
@@ -46,7 +46,7 @@ bool WebGLObject::Validate(const WebGLContextObjectSupport* context) const {
   // the objects they ever created, so there's no way to invalidate them
   // eagerly during context loss. The invalidation is discovered lazily.
   return (context == context_ && context_ != nullptr &&
-          cached_number_of_context_losses_ == context->NumberOfContextLosses());
+          context_generation_at_creation_ == context->GetContextGeneration());
 }
 
 void WebGLObject::SetObject(GLuint object) {
@@ -71,7 +71,7 @@ void WebGLObject::DeleteObject(gpu::gles2::GLES2Interface* gl) {
     return;
   }
 
-  if (context_->NumberOfContextLosses() != cached_number_of_context_losses_) {
+  if (context_->GetContextGeneration() != context_generation_at_creation_) {
     // This object has been invalidated.
     return;
   }
