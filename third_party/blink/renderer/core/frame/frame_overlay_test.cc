@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::Property;
 
@@ -140,9 +141,9 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
   auto& paint_artifact = paint_controller.CommitNewDisplayItems();
   EXPECT_THAT(
       paint_artifact.GetDisplayItemList(),
-      ElementsAre(IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay)));
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
-            UNSAFE_TODO(paint_artifact.GetDisplayItemList()[0]).VisualRect());
+      ElementsAre(AllOf(
+          IsSameId(frame_overlay->Id(), DisplayItem::kFrameOverlay),
+          Property(&DisplayItem::VisualRect, gfx::Rect(0, 0, 800, 600)))));
   EXPECT_THAT(
       paint_artifact.GetPaintChunks(),
       ElementsAre(IsPaintChunk(
