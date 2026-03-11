@@ -88,6 +88,7 @@ fuzzer_test("signed_exchange_envelope_fuzzer") {
   deps = [
     "//base:i18n",
     "//content/test:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "//content/test/data/sxg/"
 }
@@ -113,7 +114,10 @@ fuzzer_test("signed_exchange_certificate_chain_fuzzer") {
   sources = [
     "../../browser/web_package/signed_exchange_certificate_chain_fuzzer.cc",
   ]
-  deps = [ "//content/test:test_support" ]
+  deps = [
+    "//content/test:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
   seed_corpus = "//content/test/data/fuzzer_corpus/signed_exchange_certificate_chain_data/"
 }
 

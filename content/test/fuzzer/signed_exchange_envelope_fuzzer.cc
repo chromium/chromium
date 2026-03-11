@@ -4,11 +4,14 @@
 
 #include "content/browser/web_package/signed_exchange_envelope.h"  // nogncheck
 
+#include <string>
+#include <vector>
+
 #include "base/at_exit.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
 #include "content/browser/web_package/signed_exchange_prologue.h"  // nogncheck
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace content {
 
@@ -24,52 +27,49 @@ IcuEnvironment* env = new IcuEnvironment();
 
 std::vector<uint8_t> CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
     base::span<const uint8_t> data) {
-  return std::vector<uint8_t>(data.begin(), data.end());
+  return std::vector<uint8_t>(std::from_range, data);
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < BeforeFallbackUrl::kEncodedSizeInBytes)
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  if (data.size() < BeforeFallbackUrl::kEncodedSizeInBytes) {
     return 0;
-  auto before_fallback_url_bytes =
-      CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(UNSAFE_TODO(
-          base::span(data, BeforeFallbackUrl::kEncodedSizeInBytes)));
-  auto before_fallback_url = BeforeFallbackUrl::Parse(
-      base::span(before_fallback_url_bytes), nullptr /* devtools_proxy */);
-
-  UNSAFE_TODO(data += BeforeFallbackUrl::kEncodedSizeInBytes);
-  size -= BeforeFallbackUrl::kEncodedSizeInBytes;
+  }
+  const auto before_fallback_url_bytes =
+      CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
+          data.take_first(BeforeFallbackUrl::kEncodedSizeInBytes));
+  const auto before_fallback_url = BeforeFallbackUrl::Parse(
+      before_fallback_url_bytes, /*devtools_proxy=*/nullptr);
 
   size_t fallback_url_and_after_length =
       before_fallback_url.ComputeFallbackUrlAndAfterLength();
-  if (size < fallback_url_and_after_length)
+  if (data.size() < fallback_url_and_after_length) {
     return 0;
+  }
 
-  auto fallback_url_and_after_bytes =
+  const auto fallback_url_and_after_bytes =
       CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(
-          UNSAFE_TODO(base::span(data, fallback_url_and_after_length)));
-  auto fallback_url_and_after = FallbackUrlAndAfter::Parse(
-      base::span(fallback_url_and_after_bytes), before_fallback_url,
-      nullptr /* devtools_proxy */);
-  if (!fallback_url_and_after.is_valid())
+          data.take_first(fallback_url_and_after_length));
+  const auto fallback_url_and_after = FallbackUrlAndAfter::Parse(
+      fallback_url_and_after_bytes, before_fallback_url,
+      /*devtools_proxy=*/nullptr);
+  if (!fallback_url_and_after.is_valid()) {
     return 0;
+  }
 
-  UNSAFE_TODO(data += fallback_url_and_after_length);
-  size -= fallback_url_and_after_length;
+  const std::string signature_header_field(
+      std::from_range,
+      data.take_first(
+          std::min(data.size(),
+                   fallback_url_and_after.signature_header_field_length())));
 
-  std::string signature_header_field(
-      reinterpret_cast<const char*>(data),
-      std::min(size, fallback_url_and_after.signature_header_field_length()));
-  UNSAFE_TODO(data += signature_header_field.size());
-  size -= signature_header_field.size();
-
-  auto cbor_header =
-      CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(UNSAFE_TODO(base::span(
-          data, std::min(size, fallback_url_and_after.cbor_header_length()))));
+  const auto cbor_header =
+      CopyIntoSeparateBufferToSurfaceOutOfBoundAccess(data.take_first(
+          std::min(data.size(), fallback_url_and_after.cbor_header_length())));
 
   SignedExchangeEnvelope::Parse(SignedExchangeVersion::kB3,
                                 fallback_url_and_after.fallback_url(),
-                                signature_header_field, base::span(cbor_header),
-                                nullptr /* devtools_proxy */);
+                                signature_header_field, cbor_header,
+                                /*devtools_proxy=*/nullptr);
   return 0;
 }
 
