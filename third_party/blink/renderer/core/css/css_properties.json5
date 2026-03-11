@@ -7617,6 +7617,7 @@
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-transform-origin-y",
@@ -7628,6 +7629,7 @@
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-transform-origin-z",
@@ -7639,6 +7641,7 @@
       affected_by_all: false,
       // Overlaps with transform-origin.
       legacy_overlapping: true,
+      percentages_depend_on_used_value: true,
     },
     {
       name: "-webkit-user-drag",
