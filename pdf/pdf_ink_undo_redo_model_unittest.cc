@@ -86,40 +86,40 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishAdd) {
   ASSERT_FALSE(undo_redo.FinishAdd());
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionEraseWhileAdding) {
+TEST(PdfInkUndoRedoModelTest, BadActionRemoveWhileAdding) {
   PdfInkUndoRedoModel undo_redo;
   std::optional<DiscardedDrawCommands> discards = undo_redo.StartAdd();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
   ASSERT_TRUE(undo_redo.Add(InkStrokeId(1)));
 
-  ASSERT_FALSE(undo_redo.StartErase());
-  ASSERT_FALSE(undo_redo.Erase(InkStrokeId(1)));
-  ASSERT_FALSE(undo_redo.FinishErase());
+  ASSERT_FALSE(undo_redo.StartRemove());
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_FALSE(undo_redo.FinishRemove());
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionDoubleStartErase) {
+TEST(PdfInkUndoRedoModelTest, BadActionDoubleStartRemove) {
   PdfInkUndoRedoModel undo_redo;
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_FALSE(undo_redo.StartErase());
+  ASSERT_FALSE(undo_redo.StartRemove());
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionSpuriousErase) {
+TEST(PdfInkUndoRedoModelTest, BadActionSpuriousRemove) {
   PdfInkUndoRedoModel undo_redo;
-  ASSERT_FALSE(undo_redo.Erase(InkStrokeId(1)));
-  ASSERT_FALSE(undo_redo.Erase(InkModeledShapeId(2)));
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_FALSE(undo_redo.Remove(InkModeledShapeId(2)));
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishErase) {
+TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishRemove) {
   PdfInkUndoRedoModel undo_redo;
-  ASSERT_FALSE(undo_redo.FinishErase());
+  ASSERT_FALSE(undo_redo.FinishRemove());
 }
 
 TEST(PdfInkUndoRedoModelTest, BadActionAddWhileErasing) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
 
   ASSERT_FALSE(undo_redo.StartAdd());
@@ -151,7 +151,7 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishAddAfterUndo) {
   ASSERT_FALSE(undo_redo.FinishAdd());
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionSpuriousEraseAfterUndo) {
+TEST(PdfInkUndoRedoModelTest, BadActionSpuriousRemoveAfterUndo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
@@ -160,11 +160,11 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousEraseAfterUndo) {
   EXPECT_THAT(PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
               ElementsAreArray({InkStrokeId(4)}));
 
-  ASSERT_FALSE(undo_redo.Erase(InkStrokeId(4)));
-  ASSERT_FALSE(undo_redo.Erase(InkModeledShapeId(9)));
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(4)));
+  ASSERT_FALSE(undo_redo.Remove(InkModeledShapeId(9)));
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishEraseAfterUndo) {
+TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishRemoveAfterUndo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
@@ -173,28 +173,28 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishEraseAfterUndo) {
   EXPECT_THAT(PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
               ElementsAreArray({InkStrokeId(4)}));
 
-  ASSERT_FALSE(undo_redo.FinishErase());
+  ASSERT_FALSE(undo_redo.FinishRemove());
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionEraseUnknownId) {
+TEST(PdfInkUndoRedoModelTest, BadActionRemoveUnknownId) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_FALSE(undo_redo.Erase(InkStrokeId(3)));
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(3)));
 }
 
-TEST(PdfInkUndoRedoModelTest, BadActionEraseTwice) {
+TEST(PdfInkUndoRedoModelTest, BadActionRemoveTwice) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(0)});
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_TRUE(undo_redo.Erase(InkStrokeId(0)));
-  ASSERT_FALSE(undo_redo.Erase(InkStrokeId(0)));
-  ASSERT_TRUE(undo_redo.Erase(InkModeledShapeId(0)));
-  ASSERT_FALSE(undo_redo.Erase(InkModeledShapeId(0)));
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(0)));
+  ASSERT_FALSE(undo_redo.Remove(InkStrokeId(0)));
+  ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(0)));
+  ASSERT_FALSE(undo_redo.Remove(InkModeledShapeId(0)));
 }
 
 TEST(PdfInkUndoRedoModelTest, Empty) {
@@ -223,11 +223,11 @@ TEST(PdfInkUndoRedoModelTest, EmptyAdd) {
   EXPECT_EQ(kNone, PdfInkUndoRedoModel::GetCommandsType(commands));
 }
 
-TEST(PdfInkUndoRedoModelTest, EmptyErase) {
+TEST(PdfInkUndoRedoModelTest, EmptyRemove) {
   PdfInkUndoRedoModel undo_redo;
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_TRUE(undo_redo.FinishErase());
+  ASSERT_TRUE(undo_redo.FinishRemove());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
   EXPECT_EQ(kNone, PdfInkUndoRedoModel::GetCommandsType(commands));
@@ -306,17 +306,17 @@ TEST(PdfInkUndoRedoModelTest, AddUndoRedo) {
   EXPECT_EQ(kNone, PdfInkUndoRedoModel::GetCommandsType(commands));
 }
 
-TEST(PdfInkUndoRedoModelTest, AddAddEraseUndoRedo) {
+TEST(PdfInkUndoRedoModelTest, AddAddRemoveUndoRedo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo,
                      {InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)});
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4)});
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_TRUE(undo_redo.Erase(InkStrokeId(1)));
-  ASSERT_TRUE(undo_redo.Erase(InkStrokeId(4)));
-  ASSERT_TRUE(undo_redo.FinishErase());
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(4)));
+  ASSERT_TRUE(undo_redo.FinishRemove());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
   ASSERT_EQ(kDraw, PdfInkUndoRedoModel::GetCommandsType(commands));
@@ -361,7 +361,7 @@ TEST(PdfInkUndoRedoModelTest, AddAddEraseUndoRedo) {
               ElementsAreArray({InkStrokeId(1), InkStrokeId(4)}));
 }
 
-TEST(PdfInkUndoRedoModelTest, AddAddUndoEraseUndo) {
+TEST(PdfInkUndoRedoModelTest, AddAddUndoRemoveUndo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(5)});
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4), InkStrokeId(8)});
@@ -371,11 +371,11 @@ TEST(PdfInkUndoRedoModelTest, AddAddUndoEraseUndo) {
   EXPECT_THAT(PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
               ElementsAreArray({InkStrokeId(4), InkStrokeId(8)}));
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards,
               Optional(ElementsAreArray({InkStrokeId(4), InkStrokeId(8)})));
-  ASSERT_TRUE(undo_redo.Erase(InkStrokeId(5)));
-  ASSERT_TRUE(undo_redo.FinishErase());
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(5)));
+  ASSERT_TRUE(undo_redo.FinishRemove());
 
   commands = undo_redo.Undo();
   ASSERT_EQ(kDraw, PdfInkUndoRedoModel::GetCommandsType(commands));
@@ -383,13 +383,13 @@ TEST(PdfInkUndoRedoModelTest, AddAddUndoEraseUndo) {
               ElementsAreArray({InkStrokeId(5)}));
 }
 
-TEST(PdfInkUndoRedoModelTest, EraseShapesUndoRedo) {
+TEST(PdfInkUndoRedoModelTest, RemoveShapesUndoRedo) {
   PdfInkUndoRedoModel undo_redo;
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_TRUE(undo_redo.Erase(InkModeledShapeId(0)));
-  ASSERT_TRUE(undo_redo.Erase(InkModeledShapeId(1)));
-  ASSERT_TRUE(undo_redo.FinishErase());
+  ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(0)));
+  ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(1)));
+  ASSERT_TRUE(undo_redo.FinishRemove());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
   ASSERT_EQ(kDraw, PdfInkUndoRedoModel::GetCommandsType(commands));
@@ -402,17 +402,17 @@ TEST(PdfInkUndoRedoModelTest, EraseShapesUndoRedo) {
               ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1)));
 }
 
-TEST(PdfInkUndoRedoModelTest, AddAddEraseStrokesAndShapesUndoRedo) {
+TEST(PdfInkUndoRedoModelTest, AddAddRemoveStrokesAndShapesUndoRedo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(5)});
   DoAddCommandsCycle(undo_redo, {InkStrokeId(4), InkStrokeId(8)});
 
-  std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+  std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-  ASSERT_TRUE(undo_redo.Erase(InkModeledShapeId(0)));
-  ASSERT_TRUE(undo_redo.Erase(InkStrokeId(4)));
-  ASSERT_TRUE(undo_redo.Erase(InkModeledShapeId(1)));
-  ASSERT_TRUE(undo_redo.FinishErase());
+  ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(0)));
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(4)));
+  ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(1)));
+  ASSERT_TRUE(undo_redo.FinishRemove());
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
   ASSERT_EQ(kDraw, PdfInkUndoRedoModel::GetCommandsType(commands));
@@ -447,11 +447,11 @@ TEST(PdfInkUndoRedoModelTest, Stress) {
 
   ASSERT_EQ(InkStrokeId(2 * kCycles), id);
   for (size_t i = 0; i < kCycles; ++i) {
-    std::optional<DiscardedDrawCommands> discards = undo_redo.StartErase();
+    std::optional<DiscardedDrawCommands> discards = undo_redo.StartRemove();
     ASSERT_THAT(discards, Optional(DiscardedDrawCommands()));
-    ASSERT_TRUE(undo_redo.Erase(--id));
-    ASSERT_TRUE(undo_redo.Erase(--id));
-    ASSERT_TRUE(undo_redo.FinishErase());
+    ASSERT_TRUE(undo_redo.Remove(--id));
+    ASSERT_TRUE(undo_redo.Remove(--id));
+    ASSERT_TRUE(undo_redo.FinishRemove());
   }
 
   ASSERT_EQ(InkStrokeId(0), id);
