@@ -15,6 +15,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace base {
 
@@ -62,6 +63,12 @@ class BASE_EXPORT Uuid {
   // this will be a non-trivial converter. See the TODO above `lowercase_` for
   // more context.
   const std::string& AsLowercaseString() const LIFETIME_BOUND;
+
+  // Returns the Uuid as a 128-bit integer, or 0 if the Uuid is invalid.
+  // Note: The memory layout is platform-dependent. On little-endian systems, it
+  // matches neither the RFC 4122 byte sequence nor the Microsoft GUID layout.
+  // Do not interpret or store the returned integer as a byte array.
+  absl::uint128 AsInteger() const;
 
   // Invalid Uuids are equal.
   friend bool operator==(const Uuid&, const Uuid&) = default;

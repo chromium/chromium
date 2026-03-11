@@ -10,14 +10,17 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace base {
 
@@ -145,6 +148,25 @@ Uuid& Uuid::operator=(Uuid&& other) = default;
 
 const std::string& Uuid::AsLowercaseString() const {
   return lowercase_;
+}
+
+absl::uint128 Uuid::AsInteger() const {
+  if (!is_valid()) {
+    return 0;
+  }
+  // Valid Uuids have the form xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, where x is
+  // a hexadecimal digit.
+  // Convert each dash-separated part into an integer and combine the results.
+  std::string_view uuid = lowercase_;
+  uint64_t p0, p1, p2, p3, p4;
+  CHECK(base::HexStringToUInt64(uuid.substr(0, 8), &p0));
+  CHECK(base::HexStringToUInt64(uuid.substr(9, 4), &p1));
+  CHECK(base::HexStringToUInt64(uuid.substr(14, 4), &p2));
+  CHECK(base::HexStringToUInt64(uuid.substr(19, 4), &p3));
+  CHECK(base::HexStringToUInt64(uuid.substr(24, 12), &p4));
+  uint64_t most_significant_bits = (p0 << 32) | (p1 << 16) | p2;
+  uint64_t least_significant_bits = (p3 << 48) | p4;
+  return absl::MakeUint128(most_significant_bits, least_significant_bits);
 }
 
 std::ostream& operator<<(std::ostream& out, const Uuid& uuid) {

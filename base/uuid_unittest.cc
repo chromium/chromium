@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace base {
 
@@ -187,6 +188,20 @@ TEST(UuidTest, Compare) {
   EXPECT_TRUE(guid_invalid <= guid);
   EXPECT_FALSE(guid_invalid > guid);
   EXPECT_FALSE(guid_invalid >= guid);
+}
+
+TEST(UuidTest, AsIntegerValid) {
+  const Uuid uuid =
+      Uuid::ParseCaseInsensitive("01234567-89ab-cdef-fedc-ba9876543210");
+  ASSERT_TRUE(uuid.is_valid());
+  EXPECT_EQ(uuid.AsInteger(),
+            absl::MakeUint128(0x01234567'89ab'cdef, 0xfedc'ba9876543210));
+}
+
+TEST(UuidTest, AsIntegerInvalid) {
+  const Uuid uuid = Uuid::ParseCaseInsensitive("invalid");
+  ASSERT_FALSE(uuid.is_valid());
+  EXPECT_EQ(uuid.AsInteger(), 0);
 }
 
 }  // namespace base
