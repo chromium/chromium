@@ -152,7 +152,9 @@ public class GeolocationHeaderUnitTest {
     public void testGetGeoHeaderOld() {
         checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE);
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ false);
-        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION_COARSE);
+        // Even if the app-level permission is coarse, the site has precise location so the X-Geo
+        // header will report a fine location permission.
+        checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION_PRECISE);
     }
 
     @Test
@@ -204,11 +206,13 @@ public class GeolocationHeaderUnitTest {
         assertEquals(
                 OmniboxFeatures.sGeolocationRequestPriority.getValue(),
                 actualRequest.getPriority());
-        assertEquals(Granularity.GRANULARITY_FINE, actualRequest.getGranularity());
+        assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
 
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
-        assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ true));
+        assertEquals(
+                mockLocation,
+                GeolocationHeader.getLastKnownLocation(/* hasFineSitePermission= */ true));
         assertEquals(0, mRefreshLastKnownLocationCount);
 
         GeolocationHeader.stopListeningForLocationUpdates();
@@ -236,11 +240,13 @@ public class GeolocationHeaderUnitTest {
                         eq(null));
 
         LocationRequest actualRequest = mLocationRequestCaptor.getValue();
-        assertEquals(Granularity.GRANULARITY_FINE, actualRequest.getGranularity());
+        assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
 
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
-        assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ true));
+        assertEquals(
+                mockLocation,
+                GeolocationHeader.getLastKnownLocation(/* hasFineSitePermission= */ true));
         assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
@@ -264,7 +270,9 @@ public class GeolocationHeaderUnitTest {
 
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
-        assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ false));
+        assertEquals(
+                mockLocation,
+                GeolocationHeader.getLastKnownLocation(/* hasFineSitePermission= */ false));
         assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
@@ -302,12 +310,14 @@ public class GeolocationHeaderUnitTest {
 
         // The request should be coarse because the app permission is the most restrictive.
         LocationRequest actualRequest = mLocationRequestCaptor.getValue();
-        assertEquals(Granularity.GRANULARITY_COARSE, actualRequest.getGranularity());
+        assertEquals(Granularity.GRANULARITY_PERMISSION_LEVEL, actualRequest.getGranularity());
 
         // Verify that the location is treated as not fine.
         Location mockLocation = generateMockLocation("network", LOCATION_TIME);
         mLocationListenerCaptor.getValue().onLocationChanged(mockLocation);
-        assertEquals(mockLocation, GeolocationHeader.getLastKnownLocation(/* useFine= */ false));
+        assertEquals(
+                mockLocation,
+                GeolocationHeader.getLastKnownLocation(/* hasFineSitePermission= */ false));
         assertEquals(0, mRefreshLastKnownLocationCount);
     }
 
