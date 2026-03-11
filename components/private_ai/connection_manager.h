@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/private_ai/error_code.h"
@@ -34,9 +35,32 @@ class ConnectionManager {
  private:
   void OnConnectionDisconnected(ErrorCode error_code);
 
+  // Destroy a connection that is pending destruction.
+  //
+  // Must be called from a scheduled task.
+  void DestroyConnectionPendingDestruction(Connection* connection);
+
   const raw_ptr<PrivateAiLogger> logger_;
-  std::unique_ptr<Connection> connection_;
   std::unique_ptr<ConnectionFactory> connection_factory_;
+
+  std::unique_ptr<Connection> connection_;
+  // When `connection_` is disconnected, a two-step destruction process is used
+  // to propagate an error code through all connection layers, resolve pending
+  // callbacks, and avoid side effects on the connection state (i.e. connection
+  // destruction) during connection code execution given that the connection
+  // code be executed after `on_disconnect` callback.
+  //
+  // On the first step, the connection is added to pending destructions map and
+  // a task is scheduled to destroy that connection.
+  //
+  // On the second step, the connection destruction is triggered by either a
+  // posted task or the connection manager's destructor.
+  //
+  // This way we ensure that the connection never outlives the connection
+  // manager and new requests will be immediately redirected to the new
+  // connection.
+  base::flat_map<Connection*, std::unique_ptr<Connection>>
+      connections_pending_destruction_;
 
   base::WeakPtrFactory<ConnectionManager> weak_factory_{this};
 };

@@ -47,19 +47,23 @@ void ConnectionManager::OnConnectionDisconnected(ErrorCode error_code) {
       FROM_HERE, "Connection disconnected. Destroying connection with error: " +
                      base::ToString(error_code));
 
-  // Remove the reference to this Connection object to ensure that any
-  // attempt at sending new requests from response handlers will create
-  // a new Connection.
-  auto connection = std::move(connection_);
-  connection->OnDestroy(error_code);
+  // Move the active connection to the pending destruction list and call
+  // `OnDestroy()` to ensure error_code is propagated to all pending callbacks.
+  Connection* connection_ptr = connection_.get();
+  connection_ptr->OnDestroy(error_code);
+  connections_pending_destruction_.emplace(connection_ptr,
+                                           std::move(connection_));
 
+  // Schedule destruction of the connection.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](std::unique_ptr<Connection> connection) {
-                       // Release the connection asynchronously to avoid
-                       // use-after-free inside this callback.
-                     },
-                     std::move(connection)));
+      FROM_HERE,
+      base::BindOnce(&ConnectionManager::DestroyConnectionPendingDestruction,
+                     weak_factory_.GetWeakPtr(), connection_ptr));
+}
+
+void ConnectionManager::DestroyConnectionPendingDestruction(
+    Connection* connection) {
+  connections_pending_destruction_.erase(connection);
 }
 
 }  // namespace private_ai

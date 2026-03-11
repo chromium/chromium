@@ -32,10 +32,27 @@ class FakeConnectionFactory : public ConnectionFactory {
 
   std::unique_ptr<Connection> Create(
       base::OnceCallback<void(ErrorCode)> on_disconnect) override {
+    total_connections_created_++;
     auto connection = std::make_unique<FakeConnection>(
-        std::move(on_disconnect), std::move(on_destruction_));
+        std::move(on_disconnect),
+        base::BindOnce(&FakeConnectionFactory::on_destruction,
+                       base::Unretained(this), std::move(on_destruction_),
+                       total_connections_created_));
     last_connection_ = connection.get();
     return connection;
+  }
+
+  void on_destruction(base::OnceClosure callback, int connection_number) {
+    // If `on_destruction()` was called from the last connection that was
+    // created, `last_connection_` must be reset to avoid a dangling pointer
+    // error.
+    if (connection_number == total_connections_created_) {
+      CHECK(last_connection_);
+      last_connection_ = nullptr;
+    }
+    if (callback) {
+      std::move(callback).Run();
+    }
   }
 
   FakeConnection* last_connection() {
@@ -47,18 +64,8 @@ class FakeConnectionFactory : public ConnectionFactory {
     on_destruction_ = std::move(on_destruction);
   }
 
-  void SimulateDisconnectAndDestroyConnection() {
-    CHECK(last_connection_);
-
-    // Use a raw pointer to avoid dangling pointer checks.
-    // We must reset `last_connection_` before calling `SimulateDisconnect()`
-    // because it will trigger the destruction of the FakeConnection.
-    FakeConnection* fake_connection = last_connection_;
-    last_connection_ = nullptr;
-    fake_connection->SimulateDisconnect();
-  }
-
  private:
+  int total_connections_created_ = 0;
   raw_ptr<FakeConnection> last_connection_;
   base::OnceClosure on_destruction_;
 };
@@ -148,7 +155,7 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
   // Simulate disconnect.
   auto* first_connection = factory_->last_connection();
   ASSERT_TRUE(first_connection);
-  factory_->SimulateDisconnectAndDestroyConnection();
+  first_connection->SimulateDisconnect();
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
@@ -237,11 +244,10 @@ TEST_F(ClientImplTest, AsyncDisconnect) {
   client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_UNSPECIFIED,
                            "some text", future.GetCallback(), /*options=*/{});
 
+  // Simulate disconnect.
   auto* connection = factory_->last_connection();
   ASSERT_TRUE(connection);
-
-  // Simulate disconnect.
-  factory_->SimulateDisconnectAndDestroyConnection();
+  connection->SimulateDisconnect();
 
   // The connection should not be destroyed immediately.
   EXPECT_FALSE(destroyed_future.IsReady());
