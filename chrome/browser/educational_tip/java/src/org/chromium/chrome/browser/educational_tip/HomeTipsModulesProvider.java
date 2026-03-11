@@ -40,7 +40,7 @@ public class HomeTipsModulesProvider {
         Collection<Integer> modulesToRegister =
                 getModuleTypesToRegister(isSetupListActive, showTwoCell);
         for (@ModuleType int moduleType : modulesToRegister) {
-            if (showTwoCell && moduleType != ModuleType.SETUP_LIST_CELEBRATORY_PROMO) {
+            if (moduleType == ModuleType.SETUP_LIST_TWO_CELL_CONTAINER) {
                 moduleRegistry.registerModule(
                         moduleType,
                         new EducationalTipModuleTwoCellBuilder(moduleType, actionDelegate));
