@@ -82,7 +82,8 @@ class UserActivityBrowserAgent
   // userActivity.
   BOOL ContinueUserActivityURL(NSURL* webpage_url,
                                BOOL application_is_active,
-                               BOOL open_existing_tab);
+                               BOOL open_existing_tab,
+                               BOOL opened_via_siri_shortcut);
 
   // Opens multiple tabs.
   void OpenMultipleTabs();

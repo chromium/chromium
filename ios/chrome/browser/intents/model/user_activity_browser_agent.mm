@@ -374,6 +374,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     RecordMetricsForSiriShortcut(IntentType::kPlayDinoGame);
     webpage_url =
         [NSURL URLWithString:base::SysUTF8ToNSString(kChromeDinoGameURL)];
+    return ContinueUserActivityURL(webpage_url, application_is_active, NO, YES);
   } else if ([user_activity.activityType
                  isEqualToString:kSiriSetChromeDefaultBrowser]) {
     RecordMetricsForSiriShortcut(IntentType::kSetDefaultBrowser);
@@ -449,7 +450,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     // Do nothing for unknown activity type.
     return NO;
   }
-  return ContinueUserActivityURL(webpage_url, application_is_active, NO);
+  return ContinueUserActivityURL(webpage_url, application_is_active, NO, NO);
 }
 
 // LINT.IfChange
@@ -680,7 +681,8 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
 BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
     NSURL* webpage_url,
     BOOL application_is_active,
-    BOOL open_existing_tab) {
+    BOOL open_existing_tab,
+    BOOL opened_via_siri_shortcut) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!webpage_url) {
     return NO;
@@ -714,6 +716,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
              applicationMode:ApplicationModeForTabOpening::NORMAL
         forceApplicationMode:NO];
     startup_params.openExistingTab = open_existing_tab;
+    startup_params.openedViaSiriShortcut = opened_via_siri_shortcut;
     [connection_information_ setStartupParameters:startup_params];
   }
   return YES;
@@ -766,7 +769,7 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
         forceApplicationMode:NO];
     connection_information_.startupParameters = startup_params;
   }
-  ContinueUserActivityURL(webpage_url, is_active, open_existing_tab);
+  ContinueUserActivityURL(webpage_url, is_active, open_existing_tab, NO);
 }
 
 void UserActivityBrowserAgent::ClearStartupParameters() {
@@ -808,10 +811,11 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
 
   // App scheme URLs are not generally allowed to be opened in new tabs.
   // However, allow `chrome://dino` to be opened if the request originated
-  // from a widget in order to support the Dino Game widget. Setting the
-  // `transition_type` to `PAGE_TRANSITION_AUTO_BOOKMARK` instead of
+  // from a widget or a siri shortcut in order to support the Dino Game.
+  // Setting the `transition_type` to `PAGE_TRANSITION_AUTO_BOOKMARK` instead of
   // `PAGE_TRANSITION_LINK` allows this load to complete successfully.
-  if (connection_information_.startupParameters.openedViaWidgetScheme &&
+  if ((connection_information_.startupParameters.openedViaWidgetScheme ||
+       connection_information_.startupParameters.openedViaSiriShortcut) &&
       url.GetScheme() == kChromeUIScheme &&
       url.GetHost() == kChromeUIDinoHost) {
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;

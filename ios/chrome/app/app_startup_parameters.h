@@ -119,6 +119,8 @@ class GURL;
 @property(nonatomic, readwrite, assign) BOOL openedWithURL;
 // Boolean to track whether the app was opened via share extension.
 @property(nonatomic, readwrite, assign) BOOL openedViaShareExtensionScheme;
+// Boolean to track whether the app was opened via Siri shortcut.
+@property(nonatomic, readwrite, assign) BOOL openedViaSiriShortcut;
 
 - (instancetype)init NS_UNAVAILABLE;
 
