@@ -828,9 +828,6 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 
-extern const char kPasswordFormClientsideClassifierName[];
-extern const char kPasswordFormClientsideClassifierDescription[];
-
 extern const char kPasswordRemovalFromDeleteBrowsingDataName[];
 extern const char kPasswordRemovalFromDeleteBrowsingDataDescription[];
 

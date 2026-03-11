@@ -1345,11 +1345,6 @@ const char kPageContentAnnotationsRemotePageMetadataName[] =
 const char kPageContentAnnotationsRemotePageMetadataDescription[] =
     "Enables fetching of page load metadata to be persisted on-device.";
 
-const char kPasswordFormClientsideClassifierName[] =
-    "Clientside password form classifier.";
-const char kPasswordFormClientsideClassifierDescription[] =
-    "Enable usage of new password form classifier on the client.";
-
 const char kPasswordRemovalFromDeleteBrowsingDataName[] =
     "Removal of Passwords from Quick Delete Browsing Data";
 const char kPasswordRemovalFromDeleteBrowsingDataDescription[] =

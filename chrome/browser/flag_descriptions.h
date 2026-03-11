@@ -3499,11 +3499,6 @@ inline constexpr char kPasskeyUnlockManagerDescription[] =
     "Enables the Passkey Unlock Manager, which tracks the state of passkeys "
     "and publishes the corresponding metrics.";
 
-inline constexpr char kPasswordFormClientsideClassifierName[] =
-    "Clientside password form classifier.";
-inline constexpr char kPasswordFormClientsideClassifierDescription[] =
-    "Enable usage of new password form classifier on the client.";
-
 inline constexpr char kPasswordFormGroupedAffiliationsName[] =
     "Grouped affiliation password suggestions";
 inline constexpr char kPasswordFormGroupedAffiliationsDescription[] =

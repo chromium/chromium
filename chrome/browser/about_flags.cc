@@ -10716,12 +10716,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormGroupedAffiliations)},
 
-    {"password-form-clientside-classifier",
-     flag_descriptions::kPasswordFormClientsideClassifierName,
-     flag_descriptions::kPasswordFormClientsideClassifierDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordFormClientsideClassifier)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {"contextual-cueing", flag_descriptions::kContextualCueingName,
