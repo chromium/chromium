@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
@@ -22,7 +23,7 @@ SidePanelRegistry* GetSidePanelRegistryFromWebContents(
   if (!tab || !tab->GetTabFeatures()) {
     return nullptr;
   }
-  return tab->GetTabFeatures()->side_panel_registry();
+  return SidePanelRegistry::From(tab);
 }
 
 SidePanelRegistry* GetSidePanelRegistryFromTabHandle(tabs::TabHandle handle) {
@@ -30,7 +31,7 @@ SidePanelRegistry* GetSidePanelRegistryFromTabHandle(tabs::TabHandle handle) {
   if (!tab || !tab->GetTabFeatures()) {
     return nullptr;
   }
-  return tab->GetTabFeatures()->side_panel_registry();
+  return SidePanelRegistry::From(tab);
 }
 
 }  // namespace
@@ -162,9 +163,8 @@ SidePanelRegistry* SidePanelUIBase::GetActiveContextualRegistry() const {
   if (browser_->tab_strip_model()->empty()) {
     return nullptr;
   }
-  return browser_->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->side_panel_registry();
+
+  return SidePanelRegistry::From(browser_->GetActiveTabInterface());
 }
 
 SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(

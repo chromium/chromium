@@ -146,12 +146,9 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
             },
             browser()->profile()),
         /*default_content_width_callback=*/base::NullCallback());
-    browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->side_panel_registry()
-        ->Register(std::move(entry));
+    auto* registry =
+        SidePanelRegistry::From(browser()->GetActiveTabInterface());
+    registry->Register(std::move(entry));
   }
 };
 

@@ -98,10 +98,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
   }
 
   SidePanelRegistry* registry() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->side_panel_registry();
+    return SidePanelRegistry::From(browser()->GetActiveTabInterface());
   }
 
   GlicSidePanelCoordinatorImpl& coordinator() {

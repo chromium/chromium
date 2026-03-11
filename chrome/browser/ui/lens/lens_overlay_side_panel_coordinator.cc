@@ -786,9 +786,9 @@ LensOverlaySidePanelCoordinator::SidePanelInitializationData::
     ~SidePanelInitializationData() = default;
 
 void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
-  auto* registry = lens_search_controller_->GetTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
+  auto* tab_interface = lens_search_controller_->GetTabInterface();
+  auto* registry = SidePanelRegistry::From(tab_interface);
+
   CHECK(registry);
 
   // Remove the side panel entry observer if it is present.
@@ -1127,9 +1127,9 @@ void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
-  auto* registry = lens_search_controller_->GetTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
+  auto* tab_interface = lens_search_controller_->GetTabInterface();
+  auto* registry = SidePanelRegistry::From(tab_interface);
+
   CHECK(registry);
 
   // If the entry is already registered, don't register it again.

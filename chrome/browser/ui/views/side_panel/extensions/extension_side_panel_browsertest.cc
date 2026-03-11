@@ -1317,10 +1317,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelPWABrowserTest, OpenInChrome) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-    ExtensionSidePanelRegistryWaiter waiter(browser->GetActiveTabInterface()
-                                                ->GetTabFeatures()
-                                                ->side_panel_registry(),
-                                            extension->id());
+    auto* registry = SidePanelRegistry::From(browser->GetActiveTabInterface());
+    ExtensionSidePanelRegistryWaiter waiter(registry, extension->id());
     RunSetOptions(*extension, tab_id, "panel_1.html",
                   /*enabled=*/true);
     waiter.WaitForRegistration();

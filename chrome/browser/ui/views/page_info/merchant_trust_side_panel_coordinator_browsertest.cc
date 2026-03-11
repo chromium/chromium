@@ -101,10 +101,7 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
   }
 
   SidePanelEntry* GetMerchantTrustEntryForActiveTab() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->side_panel_registry()
+    return SidePanelRegistry::From(browser()->GetActiveTabInterface())
         ->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
   }

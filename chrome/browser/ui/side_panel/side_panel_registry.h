@@ -36,8 +36,8 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   ~SidePanelRegistry() override;
 
   // The tab-scoped registry should be obtained from the tab, e.g.
-  // tab->GetTabFeatures()->side_panel_registry(). This is the fallback for old
-  // code that is conceptually tab-scoped but does not use TabInterface.
+  // SidePanelRegistry::From(tab). This is the fallback for old code that is
+  // conceptually tab-scoped but does not use TabInterface.
   //
   // Gets the contextual registry for the tab associated with |web_contents|.
   // Can return null for non-tab contents.
@@ -45,6 +45,8 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
 
   static SidePanelRegistry* From(
       BrowserWindowInterface* browser_window_interface);
+
+  static SidePanelRegistry* From(tabs::TabInterface* tab_interface);
 
   SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
   void ResetActiveEntryFor(SidePanelEntry::PanelType type);

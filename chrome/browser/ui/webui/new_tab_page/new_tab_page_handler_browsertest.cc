@@ -102,11 +102,8 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
   void CloseSidePanel() {
     BrowserWindowInterface* const browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents());
-    SidePanelRegistry* const side_panel_registry =
-        browser_window_interface->GetTabStripModel()
-            ->GetActiveTab()
-            ->GetTabFeatures()
-            ->side_panel_registry();
+    SidePanelRegistry* const side_panel_registry = SidePanelRegistry::From(
+        browser_window_interface->GetActiveTabInterface());
     SidePanelEntry::PanelType panel_type =
         side_panel_registry
             ->GetEntryForKey(

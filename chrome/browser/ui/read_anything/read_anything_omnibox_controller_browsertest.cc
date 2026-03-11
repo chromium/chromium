@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -147,10 +148,7 @@ class ReadAnythingOmniboxControllerTestBase
   }
 
   SidePanelEntry* read_anything_entry() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->side_panel_registry()
+    return SidePanelRegistry::From(browser()->GetActiveTabInterface())
         ->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }

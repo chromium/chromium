@@ -364,7 +364,8 @@ void SidePanelCoordinator::ClearCachedEntryViews(
   SidePanelRegistry::From(browser())->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
   for (tabs::TabInterface* tab : *model) {
-    tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews(type);
+    auto* registry = SidePanelRegistry::From(tab);
+    registry->ClearCachedEntryViews(type);
   }
 }
 

@@ -74,10 +74,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
   }
 
   SidePanelEntry* GetAboutThisSiteEntryForActiveTab() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->side_panel_registry()
+    return SidePanelRegistry::From(browser()->GetActiveTabInterface())
         ->GetEntryForKey(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
   }
 

@@ -147,7 +147,7 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
 
   tabs::TabInterface* active_tab = browser_window->GetActiveTabInterface();
   SidePanelRegistry* active_contextual_registry =
-      active_tab->GetTabFeatures()->side_panel_registry();
+      SidePanelRegistry::From(active_tab);
 
   // If the global side panel entry for this extension is active, close it.
   if (active_contextual_registry &&
@@ -182,8 +182,7 @@ void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
 
   // Get the registry for the specific tab (whether active or inactive).
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
-  SidePanelRegistry* contextual_registry =
-      tab->GetTabFeatures()->side_panel_registry();
+  SidePanelRegistry* contextual_registry = SidePanelRegistry::From(tab);
 
   // Check if this extension is specifically active in this tab's registry.
   if (!IsKeyActiveInRegistry(contextual_registry, extension_key)) {

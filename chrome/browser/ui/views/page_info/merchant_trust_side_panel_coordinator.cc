@@ -227,7 +227,7 @@ void MerchantTrustSidePanelCoordinator::OnMerchantTrustDataFetched(
       tabs::TabInterface* const tab_interface =
           tabs::TabInterface::GetFromContents(web_contents());
       SidePanelRegistry* const registry =
-          tab_interface->GetTabFeatures()->side_panel_registry();
+          SidePanelRegistry::From(tab_interface);
       SidePanelEntry* const side_panel_entry =
           registry->GetEntryForKey(entry_key);
       CHECK(side_panel_entry);

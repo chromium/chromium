@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,7 +19,7 @@ ui::UserDataFactory::ScopedOverride MockCommerceUiTabHelper::ReplaceFactory() {
   return tabs::TabFeatures::GetUserDataFactoryForTesting()
       .AddOverrideForTesting(base::BindRepeating([](tabs::TabInterface& tab) {
         return std::make_unique<MockCommerceUiTabHelper>(
-            tab, tab.GetTabFeatures()->side_panel_registry());
+            tab, SidePanelRegistry::From(&tab));
       }));
 }
 

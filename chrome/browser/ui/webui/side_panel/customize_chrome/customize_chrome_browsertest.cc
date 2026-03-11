@@ -147,10 +147,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   auto* customize_chrome_side_panel_controller =
       GetSidePanelController(browser());
   customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
-  auto* registry = browser()
-                       ->GetActiveTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
+  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
   EXPECT_EQ(registry
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
@@ -165,10 +162,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   // in the registry.
   auto* customize_chrome_side_panel_controller =
       GetSidePanelController(browser());
-  auto* registry = browser()
-                       ->GetActiveTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
+  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
 
   customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
   EXPECT_EQ(registry
@@ -189,10 +183,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   // one entry should be added to the registry.
   auto* customize_chrome_side_panel_controller =
       GetSidePanelController(browser());
-  auto* registry = browser()
-                       ->GetActiveTabInterface()
-                       ->GetTabFeatures()
-                       ->side_panel_registry();
+  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
 
   customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
   EXPECT_EQ(registry

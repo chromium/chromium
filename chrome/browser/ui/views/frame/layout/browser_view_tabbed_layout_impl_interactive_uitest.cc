@@ -89,10 +89,8 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
         Do([this, type]() {
           // Note: there is a registry at browser level and one per tab; we want
           // the tab-specific one.
-          auto* const registry = browser()
-                                     ->GetActiveTabInterface()
-                                     ->GetTabFeatures()
-                                     ->side_panel_registry();
+          auto* const registry =
+              SidePanelRegistry::From(browser()->GetActiveTabInterface());
           const auto key =
               SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome);
           CHECK(!registry->GetEntryForKey(key) || registry->Deregister(key));

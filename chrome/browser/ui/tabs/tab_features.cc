@@ -178,7 +178,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   // TODO(crbug.com/346148554): Do not create a SidePanelRegistry or
   // dependencies for non-normal browsers.
-  side_panel_registry_ = std::make_unique<SidePanelRegistry>(&tab);
+  side_panel_registry_ =
+      GetUserDataFactory().CreateInstance<SidePanelRegistry>(tab, &tab);
 
   // This block instantiate the page action controllers. They do not require any
   // pre-condition. Because some feature need them during their instantiation,

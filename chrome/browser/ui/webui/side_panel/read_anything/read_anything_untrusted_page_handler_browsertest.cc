@@ -346,10 +346,7 @@ class ReadAnythingUntrustedPageHandlerTest
   }
 
   SidePanelEntry* read_anything_entry() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->side_panel_registry()
+    return SidePanelRegistry::From(browser()->GetActiveTabInterface())
         ->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }

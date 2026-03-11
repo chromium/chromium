@@ -119,10 +119,7 @@ class ReadAnythingSidePanelControllerTest
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        RegisterReadAnythingEntry) {
   // The tab should have a read anything entry in its side panel.
-  EXPECT_EQ(browser()
-                ->GetActiveTabInterface()
-                ->GetTabFeatures()
-                ->side_panel_registry()
+  EXPECT_EQ(SidePanelRegistry::From(browser()->GetActiveTabInterface())
                 ->GetEntryForKey(
                     SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))
                 ->key()
@@ -133,12 +130,10 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryShown_ActivateObservers) {
   AddObserver(&read_anything_observer_);
-  SidePanelEntry* entry = browser()
-                              ->GetActiveTabInterface()
-                              ->GetTabFeatures()
-                              ->side_panel_registry()
-                              ->GetEntryForKey(SidePanelEntry::Key(
-                                  SidePanelEntry::Id::kReadAnything));
+  SidePanelEntry* entry =
+      SidePanelRegistry::From(browser()->GetActiveTabInterface())
+          ->GetEntryForKey(
+              SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   entry->set_last_open_trigger(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
   EXPECT_CALL(read_anything_observer_,
@@ -151,12 +146,10 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
 IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
                        OnEntryHidden_ActivateObservers) {
   AddObserver(&read_anything_observer_);
-  SidePanelEntry* entry = browser()
-                              ->GetActiveTabInterface()
-                              ->GetTabFeatures()
-                              ->side_panel_registry()
-                              ->GetEntryForKey(SidePanelEntry::Key(
-                                  SidePanelEntry::Id::kReadAnything));
+  SidePanelEntry* entry =
+      SidePanelRegistry::From(browser()->GetActiveTabInterface())
+          ->GetEntryForKey(
+              SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   EXPECT_CALL(read_anything_observer_, Activate(false, empty_trigger()))
       .Times(1);
