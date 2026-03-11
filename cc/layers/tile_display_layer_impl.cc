@@ -203,7 +203,7 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     AppendQuadsCustomSharedData* custom_data) {
   bool has_draw_quad = false;
   auto* tile = *iter;
-  if (tile) {
+  if (tile && tile->IsReadyToDraw()) {
     if (auto resource = tile->resource()) {
       const gfx::RectF texture_rect = iter.texture_rect();
       AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
