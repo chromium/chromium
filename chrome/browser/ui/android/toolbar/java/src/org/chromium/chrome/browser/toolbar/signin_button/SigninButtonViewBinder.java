@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.signin_button;
 
 import android.view.View;
 
+import androidx.core.widget.ImageViewCompat;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -25,6 +27,11 @@ final class SigninButtonViewBinder {
             ChromeImageButton avatarButton = view.getAvatarButton();
             avatarButton.setVisibility(
                     model.get(SigninButtonProperties.SHOW_AVATAR) ? View.VISIBLE : View.GONE);
+        } else if (SigninButtonProperties.AVATAR_TINT.equals(propertyKey)) {
+            ImageViewCompat.setImageTintList(
+                    view.getAvatarButton(), model.get(SigninButtonProperties.AVATAR_TINT));
+        } else if (SigninButtonProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
+            view.setContentDescription(model.get(SigninButtonProperties.CONTENT_DESCRIPTION));
         }
     }
 }

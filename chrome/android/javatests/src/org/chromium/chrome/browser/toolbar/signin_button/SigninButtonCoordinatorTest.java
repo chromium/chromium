@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.signin_button;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
@@ -36,6 +37,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -56,17 +58,105 @@ public class SigninButtonCoordinatorTest {
 
     private RegularNewTabPageStation mPage;
 
+    private String mContentDescriptionWithNameAndEmail;
+
     @Before
     public void setUp() {
         mPage = mActivityTestRule.startOnNtp();
         NewTabPageTestUtils.waitForNtpLoaded(mPage.getTab());
+        mContentDescriptionWithNameAndEmail =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
     }
 
     @Test
     @MediumTest
     public void testSigninButtonVisibleOnNtp() {
-        // Sign-in button should be visible on NTP.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.signin_button), isDisplayed()));
+        // Sign-in button should be visible on NTP with signed-out description.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    @Test
+    @MediumTest
+    public void testSignIn_ShowsPersonalizedIdentityDisc() {
+        // Initially shows signed-out avatar.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Avatar should update to a personalized disc with a name and email in its description.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+    }
+
+    @Test
+    @MediumTest
+    public void testSignIn_ShowsPersonalizedIdentityDiscNonDisplayableEmail() {
+        // Initially shows signed-out avatar.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        mSigninTestRule.waitForSignin(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+
+        // Avatar should update to a personalized disc with a name in its description.
+        // TODO(crbug.com/489655527): Also add a test for cases in which an account has no name.
+        String expectedDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.accessibility_toolbar_btn_identity_disc_with_name,
+                                TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL.getFullName());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(expectedDescription)));
+    }
+
+    @Test
+    @MediumTest
+    public void testSignOut_ShowsSignedOutIdentityDisc() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Initially shows the user's avatar with a personalized description.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+
+        mSigninTestRule.signOut();
+
+        // Avatar should update back to the signed-out identity disc.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
     }
 
     @Test
