@@ -6813,11 +6813,6 @@ inline constexpr char kComponentUpdaterTestRequestDescription[] =
     " Overrides any other component updater check request parameters that may "
     "have been specified.";
 
-inline constexpr char kEnableServiceWorkersForChromeUntrustedName[] =
-    "Enable chrome-untrusted:// Service Workers";
-inline constexpr char kEnableServiceWorkersForChromeUntrustedDescription[] =
-    "When enabled, allows chrome-untrusted:// WebUIs to use service workers.";
-
 inline constexpr char kEnterpriseReportingUIName[] =
     "Enable chrome://enterprise-reporting";
 inline constexpr char kEnterpriseReportingUIDescription[] =

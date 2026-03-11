@@ -1981,17 +1981,6 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
           .emplace(kChromeUIScheme, CreateWebUIServiceWorkerLoaderFactory(
                                         browser_context(), kChromeUIScheme,
                                         base::flat_set<std::string>()));
-    } else if (base::FeatureList::IsEnabled(
-                   features::kEnableServiceWorkersForChromeUntrusted) &&
-               scope.scheme() == kChromeUIUntrustedScheme) {
-      config->RegisterURLDataSource(browser_context());
-      static_cast<blink::PendingURLLoaderFactoryBundle*>(
-          loader_factory_bundle_info.get())
-          ->pending_scheme_specific_factories()
-          .emplace(kChromeUIUntrustedScheme,
-                   CreateWebUIServiceWorkerLoaderFactory(
-                       browser_context(), kChromeUIUntrustedScheme,
-                       base::flat_set<std::string>()));
     }
   }
 

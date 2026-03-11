@@ -839,12 +839,6 @@ void RenderThreadImpl::RegisterSchemes() {
       WebString::FromASCII(kChromeUIUntrustedScheme));
 
   // chrome-untrusted:
-  // Service workers for chrome-untrusted://
-  if (base::FeatureList::IsEnabled(
-          features::kEnableServiceWorkersForChromeUntrusted)) {
-    WebSecurityPolicy::RegisterURLSchemeAsAllowingServiceWorkers(
-        chrome_untrusted_scheme);
-  }
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       chrome_untrusted_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(

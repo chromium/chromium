@@ -884,59 +884,6 @@ TEST_F(ServiceWorkerContainerHostTest,
   EXPECT_EQ(3u, bad_messages_.size());
 }
 
-class WebUIUntrustedServiceWorkerContainerHostTest
-    : public ServiceWorkerContainerHostTest,
-      public testing::WithParamInterface<bool> {
- public:
-  WebUIUntrustedServiceWorkerContainerHostTest() {
-    if (GetParam()) {
-      features_.InitAndEnableFeature(
-          features::kEnableServiceWorkersForChromeUntrusted);
-    } else {
-      features_.InitAndDisableFeature(
-          features::kEnableServiceWorkersForChromeUntrusted);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-// Test that chrome:// webuis can't register service workers even if the
-// chrome-untrusted:// SW flag is on.
-TEST_P(WebUIUntrustedServiceWorkerContainerHostTest,
-       Register_RegistrationShouldFail) {
-  CommittedServiceWorkerClient service_worker_client =
-      PrepareServiceWorkerContainerHost(GURL("chrome://testwebui/"));
-
-  ASSERT_TRUE(bad_messages_.empty());
-  Register(service_worker_client.host_remote().get(),
-           GURL("chrome://testwebui/"), GURL("chrome://testwebui/sw.js"));
-  EXPECT_EQ(1u, bad_messages_.size());
-}
-
-TEST_P(WebUIUntrustedServiceWorkerContainerHostTest,
-       Register_UntrustedRegistrationShouldFail) {
-  CommittedServiceWorkerClient service_worker_client =
-      PrepareServiceWorkerContainerHost(GURL("chrome-untrusted://testwebui/"));
-
-  ASSERT_TRUE(bad_messages_.empty());
-  Register(service_worker_client.host_remote().get(),
-           GURL("chrome-untrusted://testwebui/"),
-           GURL("chrome-untrusted://testwebui/sw.js"));
-  EXPECT_EQ(1u, bad_messages_.size());
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebUIUntrustedServiceWorkerContainerHostTest,
-                         testing::Bool(),
-                         [](const ::testing::TestParamInfo<bool>& info) {
-                           if (info.param) {
-                             return "ServiceWorkersForChromeUntrustedEnabled";
-                           }
-                           return "ServiceWorkersForChromeUntrustedDisabled";
-                         });
-
 class WebUIServiceWorkerContainerHostTest
     : public ServiceWorkerContainerHostTest,
       public testing::WithParamInterface<bool> {
