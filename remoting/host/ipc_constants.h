@@ -46,6 +46,12 @@ extern const char kLoginSessionReporterMessagePipeId[];
 // Returns the server name for the login session reporter.
 const mojo::NamedPlatformChannel::ServerName&
 GetLoginSessionReporterServerName();
+
+// Message pipe ID used for LoginSessionInfo.
+extern const char kLoginSessionServerMessagePipeId[];
+
+// Returns the server name for LoginSessionServer.
+const mojo::NamedPlatformChannel::ServerName& GetLoginSessionServerName();
 #endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

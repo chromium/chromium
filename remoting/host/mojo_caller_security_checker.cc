@@ -36,6 +36,7 @@ namespace {
 constexpr auto kAllowedCallerProgramNames =
     base::MakeFixedFlatSet<base::FilePath::StringViewType>({
         "remote-open-url",
+        "remote-session-info",
         "remote-webauthn",
         "login-session-reporter",
     });

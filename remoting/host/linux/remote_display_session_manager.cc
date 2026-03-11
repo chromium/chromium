@@ -277,6 +277,7 @@ void RemoteDisplaySessionManager::OnGdmRemoteDisplayManagerStarted(
   }
 
   login_session_reporter_server_.StartServer();
+  login_session_server_.StartServer();
   for (const auto& [display_path, remote_display] :
        remote_display_manager_.remote_displays()) {
     std::string display_name = GetRemoteDisplayName(remote_display.remote_id);
@@ -409,6 +410,21 @@ void RemoteDisplaySessionManager::OnLoginSessionCreated(
   }
   PopulateSessionEnvironment(display_name, *display_info, *session,
                              std::move(session_info));
+}
+
+bool RemoteDisplaySessionManager::IsRunningInCrdSession(
+    const std::string& session_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& [_, d_info] : remote_displays_) {
+    for (auto& [_, s] : d_info.sessions) {
+      if (s.session_info.has_value() &&
+          s.session_info->session_id == session_id) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void RemoteDisplaySessionManager::OnSessionInfoReady(

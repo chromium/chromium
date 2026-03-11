@@ -87,9 +87,19 @@ if (enable_me2me_host) {
     ]
   }
 
+  executable("remote_session_info") {
+    sources = [ "remote_session_info_entry_point.cc" ]
+
+    deps = [
+      ":remote_session_info_main_headers",
+      "//remoting/host:remoting_core",
+    ]
+  }
+
   group("remoting_dev_me2me_host") {
     deps = [
       ":login_session_reporter",
+      ":remote_session_info",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_libremoting_core",
       ":remoting_me2me_host_copy_pipewire_templates",
@@ -140,6 +150,11 @@ source_set("utils") {
 
 source_set("login_session_reporter_main_headers") {
   sources = [ "login_session_reporter_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
+source_set("remote_session_info_main_headers") {
+  sources = [ "remote_session_info_main.h" ]
   deps = [ "//remoting/host:host_main_headers" ]
 }
 
@@ -215,6 +230,8 @@ source_set("platform_impls") {
     "login_session_reporter_main.cc",
     "login_session_reporter_server.cc",
     "login_session_reporter_server.h",
+    "login_session_server.cc",
+    "login_session_server.h",
     "passwd_utils.cc",
     "passwd_utils.h",
     "pipewire_capture_stream.cc",
@@ -243,6 +260,7 @@ source_set("platform_impls") {
     "portal_utils.h",
     "remote_display_session_manager.cc",
     "remote_display_session_manager.h",
+    "remote_session_info_main.cc",
     "scoped_portal_request.cc",
     "scoped_portal_request.h",
     "scoped_portal_session.cc",
@@ -252,6 +270,7 @@ source_set("platform_impls") {
   deps = [
     ":gvariant",
     ":login_session_reporter_main_headers",
+    ":remote_session_info_main_headers",
     ":utils",
     ":x11",
     ":x11_display_utils",

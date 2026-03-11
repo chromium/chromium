@@ -23,6 +23,7 @@
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "remoting/host/linux/login_session_reporter_server.h"
+#include "remoting/host/linux/login_session_server.h"
 #include "remoting/host/linux/passwd_utils.h"
 #include "remoting/host/mojom/login_session.mojom-forward.h"
 
@@ -38,7 +39,8 @@ namespace remoting {
 //
 // This class requires current process to be run as root.
 class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
-                                    public mojom::LoginSessionObserver {
+                                    public mojom::LoginSessionObserver,
+                                    public LoginSessionServer::Delegate {
  public:
   using Callback = base::OnceCallback<void(base::expected<void, Loggable>)>;
 
@@ -176,6 +178,9 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   // mojom::LoginSessionObserver:
   void OnLoginSessionCreated(mojom::LoginSessionInfoPtr session_info) override;
 
+  // LoginSessionServer::Delegate:
+  bool IsRunningInCrdSession(const std::string& session_id) override;
+
   void OnSessionInfoReady(
       const std::string& display_name,
       const gvariant::ObjectPath& display_path,
@@ -202,6 +207,8 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   std::unique_ptr<LoginSessionManager> login_session_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
   LoginSessionReporterServer login_session_reporter_server_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
+  LoginSessionServer login_session_server_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
   RemoteDisplayMap remote_displays_ GUARDED_BY_CONTEXT(sequence_checker_);

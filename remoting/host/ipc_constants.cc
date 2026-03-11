@@ -53,9 +53,13 @@ constexpr char kAgentProcessBrokerIpcName[] =
 #if !defined(NDEBUG)
 constexpr char kLoginSessionReporterIpcName[] =
     "chromoting.login_session_reporter_debug_mojo_ipc";
+constexpr char kLoginSessionServerIpcName[] =
+    "chromoting.login_session_server_debug_mojo_ipc";
 #else
 constexpr char kLoginSessionReporterIpcName[] =
     "chromoting.login_session_reporter_mojo_ipc";
+constexpr char kLoginSessionServerIpcName[] =
+    "chromoting.login_session_server_mojo_ipc";
 #endif
 
 #endif
@@ -136,6 +140,16 @@ GetLoginSessionReporterServerName() {
       server_name(
           named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
               kLoginSessionReporterIpcName));
+  return *server_name;
+}
+
+const char kLoginSessionServerMessagePipeId[] = "login-session-server";
+
+const mojo::NamedPlatformChannel::ServerName& GetLoginSessionServerName() {
+  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
+      server_name(
+          named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
+              kLoginSessionServerIpcName));
   return *server_name;
 }
 
