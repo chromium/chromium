@@ -378,7 +378,7 @@ void ToastService::RegisterToasts(
         ToastId::kAutofillAiSaveToWalletErrorMessage,
         ToastSpecification::Builder(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            vector_icons::kGoogleWalletIcon,
+            vector_icons::kGoogleWalletMonochromeIcon,
 #else
             vector_icons::kPersonTextIcon,
 #endif
