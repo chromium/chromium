@@ -216,8 +216,13 @@ bool IsValidShortcutItem(ShortcutItemType shortcut_item_type) {
 
   id<TabOpening> tabOpener = sceneState.controller;
   __weak id<TabOpening> weakTabOpener = tabOpener;
-  ProceduralBlock completion =
-      [weakTabOpener completionBlockForTriggeringAction:action];
+  ProceduralBlock completion = ^{
+    ProceduralBlock triggerBlock =
+        [weakTabOpener completionBlockForTriggeringAction:action];
+    if (triggerBlock) {
+      triggerBlock();
+    }
+  };
 
   [tabOpener
       dismissModalsAndMaybeOpenSelectedTabInMode:targetMode

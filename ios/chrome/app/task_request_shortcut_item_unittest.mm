@@ -62,6 +62,15 @@ class TaskRequestForShortcutItemTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  // Executes the completion block stored in the fake tab opener. This
+  // simulates the completion of the UI dismissal and triggers the
+  // post-opening action.
+  void ExecuteCompletionBlock() {
+    if (tab_opener_.completionBlock) {
+      tab_opener_.completionBlock();
+    }
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -91,6 +100,7 @@ TEST_F(TaskRequestForShortcutItemTest, TestExecuteSearchShortcut) {
 
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(FOCUS_OMNIBOX, tab_opener_.action);
   EXPECT_FALSE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -121,6 +131,7 @@ TEST_F(TaskRequestForShortcutItemTest, TestExecuteIncognitoSearchShortcut) {
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
             tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(FOCUS_OMNIBOX, tab_opener_.action);
   EXPECT_FALSE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -165,6 +176,7 @@ TEST_F(TaskRequestForShortcutItemTest,
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::INCOGNITO,
             tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(FOCUS_OMNIBOX, tab_opener_.action);
   EXPECT_FALSE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -210,6 +222,7 @@ TEST_F(TaskRequestForShortcutItemTest,
 
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(FOCUS_OMNIBOX, tab_opener_.action);
   EXPECT_FALSE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -238,6 +251,7 @@ TEST_F(TaskRequestForShortcutItemTest, TestExecuteVoiceSearchShortcut) {
 
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(START_VOICE_SEARCH, tab_opener_.action);
   EXPECT_TRUE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -264,6 +278,7 @@ TEST_F(TaskRequestForShortcutItemTest, TestExecuteQRScannerShortcut) {
 
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(START_QR_CODE_SCANNER, tab_opener_.action);
   EXPECT_TRUE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
@@ -290,9 +305,38 @@ TEST_F(TaskRequestForShortcutItemTest, TestExecuteLensShortcut) {
 
   EXPECT_TRUE(tab_opener_.dismissModalsCalled);
   EXPECT_EQ(ApplicationModeForTabOpening::NORMAL, tab_opener_.applicationMode);
+  ExecuteCompletionBlock();
   EXPECT_EQ(START_LENS_FROM_APP_ICON_LONG_PRESS, tab_opener_.action);
   EXPECT_TRUE(tab_opener_.dismissOmnibox);
   EXPECT_TRUE(handler_called);
+}
+
+// Tests that completionBlockForTriggeringAction is called after
+// dismissModalsAndMaybeOpenSelectedTabInMode completion is executed.
+TEST_F(TaskRequestForShortcutItemTest, TestTriggeringActionTiming) {
+  UIApplicationShortcutItem* shortcut =
+      [[UIApplicationShortcutItem alloc] initWithType:kShortcutVoiceSearch
+                                       localizedTitle:@"Voice Search"];
+
+  TaskRequestForShortcutItem* task = [[TaskRequestForShortcutItem alloc]
+      initWithShortcutItem:shortcut
+                sceneState:fake_scene_state_
+                   handler:^(BOOL succeeded) {
+                   }
+               isColdStart:NO];
+
+  [task execute];
+
+  EXPECT_TRUE(tab_opener_.dismissModalsCalled);
+  // The action should NOT be set yet because the completion block hasn't been
+  // executed.
+  EXPECT_EQ(NO_ACTION, tab_opener_.action);
+
+  // Execute the completion block.
+  ExecuteCompletionBlock();
+
+  // Now the action should be set.
+  EXPECT_EQ(START_VOICE_SEARCH, tab_opener_.action);
 }
 
 // Tests that execute fails for an unknown shortcut.
