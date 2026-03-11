@@ -1,0 +1,16 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/manta",
+  "+chrome/browser/profiles",
+  "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/common/pref_names.h",
+  "+chromeos/ash/components/channel/channel_info.h",
+  "+chromeos/ash/components/demo_mode/utils/demo_session_utils.h",
+  "+components/keyed_service/content",
+  "+components/language/core/browser/pref_names.h",
+  "+components/manta",
+  "+components/prefs",
+  "+components/signin/public/identity_manager",
+  "+content/public/browser",
+]

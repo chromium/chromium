@@ -50,6 +50,8 @@ static_library("lobster") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/manta",
+    "//chrome/browser/manta:impl",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/mako:resources",
     "//chrome/browser/signin",

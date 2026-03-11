@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("manta") {
+  public = [ "manta_service_factory.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "manta_service_factory.cc" ]
+
+  deps = [
+    ":manta",
+    "//base",
+    "//base/version_info",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/signin",
+    "//chrome/common:constants",
+    "//components/keyed_service/content",
+    "//components/language/core/browser",
+    "//components/manta",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/channel",
+      "//chromeos/ash/components/demo_mode",
+    ]
+  }
+}
