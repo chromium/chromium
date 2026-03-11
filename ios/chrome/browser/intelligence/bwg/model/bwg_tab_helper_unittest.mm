@@ -394,7 +394,7 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsImageRemixIPH) {
   feature_engagement::test::ScopedIphFeatureList iph_feature_list;
   iph_feature_list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
-       kGeminiImageRemixTool, kZeroStateSuggestions});
+       kGeminiImageRemixTool, kZeroStateSuggestions, kGeminiRefactoredFRE});
 
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
@@ -426,7 +426,7 @@ TEST_F(BwgTabHelperTest,
   feature_engagement::test::ScopedIphFeatureList iph_feature_list;
   iph_feature_list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
-       kGeminiImageRemixTool, kZeroStateSuggestions});
+       kGeminiImageRemixTool, kZeroStateSuggestions, kGeminiRefactoredFRE});
 
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
@@ -737,7 +737,7 @@ TEST_F(BwgTabHelperTest,
   feature_engagement::test::ScopedIphFeatureList iph_feature_list;
   iph_feature_list.InitAndEnableFeatures(
       {feature_engagement::kIPHiOSGeminiImageRemixFeature, kPageActionMenu,
-       kGeminiImageRemixTool, kZeroStateSuggestions});
+       kGeminiImageRemixTool, kZeroStateSuggestions, kGeminiRefactoredFRE});
 
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());

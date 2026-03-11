@@ -378,6 +378,9 @@ bool IsGeminiUpdatedEligibilityEnabled() {
 BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiImageRemixToolEnabled() {
+  if (!IsGeminiRefactoredFREEnabled()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
 }
 
@@ -409,6 +412,16 @@ bool IsGeminiImageRemixToolShowBelowSearchImageEnabled() {
   }
   return base::GetFieldTrialParamByFeatureAsBool(
       kGeminiImageRemixTool, kGeminiImageRemixToolShowBelowSearchImage, false);
+}
+
+const char kGeminiImageRemixToolRemovePageContext[] = "RemovePageContext";
+
+bool IsGeminiImageRemixToolRemovePageContextEnabled() {
+  if (!IsGeminiImageRemixToolEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiImageRemixTool, kGeminiImageRemixToolRemovePageContext, false);
 }
 
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);

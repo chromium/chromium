@@ -1259,13 +1259,18 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam
     kGeminiImageRemixToolShowBelowSearchImageParam[] = {
         {kGeminiImageRemixToolShowBelowSearchImage, "true"}};
+const FeatureEntry::FeatureParam kGeminiImageRemixToolRemovePageContextParam[] =
+    {{kGeminiImageRemixToolRemovePageContext, "true"}};
 
 const FeatureEntry::FeatureVariation kGeminiImageRemixToolVariations[] = {
     {"(Show FRE Row)", kGeminiImageRemixToolShowFRERowParam, nullptr},
     {"(Show Above Search Image)",
      kGeminiImageRemixToolShowAboveSearchImageParam, nullptr},
     {"(Show Below Search Image)",
-     kGeminiImageRemixToolShowBelowSearchImageParam, nullptr}};
+     kGeminiImageRemixToolShowBelowSearchImageParam, nullptr},
+    {"(Disable Page Context)", kGeminiImageRemixToolRemovePageContextParam,
+     nullptr},
+};
 
 const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
     {"AI Hub", kZeroStateSuggestionsPlacementAIHubParam, nullptr},

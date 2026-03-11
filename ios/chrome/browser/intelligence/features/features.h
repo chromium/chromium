@@ -295,6 +295,10 @@ extern const char kGeminiImageRemixToolShowAboveSearchImage[];
 bool IsGeminiImageRemixToolShowBelowSearchImageEnabled();
 extern const char kGeminiImageRemixToolShowBelowSearchImage[];
 
+// Returns true if the image remix tool should remove/disable PageContext.
+bool IsGeminiImageRemixToolRemovePageContextEnabled();
+extern const char kGeminiImageRemixToolRemovePageContext[];
+
 // Feature flag for enabling the Gemini eligibility ablation experiment.
 BASE_DECLARE_FEATURE(kGeminiEligibilityAblation);
 bool IsGeminiEligibilityAblationEnabled();
