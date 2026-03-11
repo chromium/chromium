@@ -159,6 +159,7 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
 
   void OnToolChange();
+  void MaybeRecordToolCount();
 
   HeapHashMap<String, Member<ToolData>> tool_map_;
 
@@ -176,6 +177,10 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   Member<Document> document_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::ScriptToolHost> script_tool_host_remote_;
+
+  // true when there is a pending or completed task to record the number
+  // of registered tools.
+  bool will_record_tool_count_ = false;
 };
 
 }  // namespace blink

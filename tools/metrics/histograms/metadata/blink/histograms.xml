@@ -4365,6 +4365,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ModelContext.DelayedToolCount" units="count"
+    expires_after="2027-03-10">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>agentic-web-platform-team@google.com</owner>
+  <summary>
+    Records the total number of tools registered with navigator.modelContext
+    after some delay after the first registration. This is recorded once per top
+    level document. It provides an approximate number of tool registrations,
+    assuming that declarative tool registrations happen on the main document
+    load, followed by some imperative tool registrations in script.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Network.DataUrlLength{Type}" units="characters"
     expires_after="2026-06-25">
   <owner>nidhijaju@chromium.org</owner>

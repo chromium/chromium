@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1195,6 +1196,66 @@ TEST_F(ModelContextTest, BackingFormElement) {
   EXPECT_EQ("leave-feedback", tools[1]->Name());
   ASSERT_TRUE(tools[1]->BackingFormElement());
   EXPECT_EQ("leave-feedback", tools[1]->BackingFormElement()->GetIdAttribute());
+}
+
+class ModelContextMetricsTest : public SimTest {
+ public:
+  ModelContextMetricsTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  void EvalJsString(std::string_view script) {
+    MainFrame().ExecuteScript(WebScriptSource(WebString::FromUTF8(script)));
+  }
+
+ private:
+  ScopedWebMCPForTest scoped_webmcp_{true};
+};
+
+TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
+  base::HistogramTester histogram_tester;
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <form
+      id=book-table
+      toolname=book-table
+      tooldescription="Book a table">
+    </form>
+    <form
+      id=leave-feedback
+      toolname=leave-feedback
+      tooldescription="leave-feedback">
+    </form>
+  )");
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  ScriptState::Scope script_scope(
+      ToScriptStateForMainWorld(Window().GetFrame()));
+
+  task_environment().FastForwardBy(base::Seconds(2));
+  EvalJsString(R"JS(navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "tool1",
+      description: "Tool1",
+    }))JS");
+
+  task_environment().FastForwardBy(base::Seconds(2));
+  for (int i = 2; i <= 4; i++) {
+    // clang-format off
+    EvalJsString(String::Format(R"JS(navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "tool%d",
+      description: "Tool%d",
+    }))JS", i, i).Utf8());
+    // clang-format on
+  }
+
+  task_environment().FastForwardBy(base::Seconds(8));
+  histogram_tester.ExpectUniqueSample("Blink.ModelContext.DelayedToolCount", 6,
+                                      1);
 }
 
 }  // namespace blink
