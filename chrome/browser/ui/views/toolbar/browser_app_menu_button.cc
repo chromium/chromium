@@ -113,7 +113,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
-  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
     SetAnimateOnStateChange(true);
     SetAnimationDuration(kAnimationDuration);
   }
@@ -202,7 +202,7 @@ void BrowserAppMenuButton::UpdateIcon() {
     ui::ImageModel model =
         ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
 
-    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
+    if (base::FeatureList::IsEnabled(features::kToolbarGlowUp) &&
         animation_value > 0 && GetColorProvider()) {
       if (!lottie_animation_) {
         std::optional<std::vector<uint8_t>> lottie_bytes =

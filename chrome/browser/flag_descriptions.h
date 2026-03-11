@@ -4233,6 +4233,10 @@ inline constexpr char kTopControlsRefactorV2Description[] =
     "Enables the alternative code path in Android for the top controls layout "
     "control, v2, including y-offsets.";
 
+inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
+inline constexpr char kToolbarGlowUpDescription[] =
+    "Enables the Toolbar Glow Up feature.";
+
 inline constexpr char kToolbarPhoneAnimationRefactorName[] =
     "Toolbar Phone Animation Refactor";
 inline constexpr char kToolbarPhoneAnimationRefactorDescription[] =

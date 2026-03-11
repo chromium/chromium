@@ -149,8 +149,10 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
         tab_group->GetTabGroupFeatures()->attention_indicator());
   }
 
-  chip_transition_animation_ = std::make_unique<gfx::SlideAnimation>(this);
-  chip_transition_animation_->SetSlideDuration(kChipAnimationDuration);
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    chip_transition_animation_ = std::make_unique<gfx::SlideAnimation>(this);
+    chip_transition_animation_->SetSlideDuration(kChipAnimationDuration);
+  }
 }
 
 TabGroupHeader::~TabGroupHeader() = default;
@@ -198,7 +200,8 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
 
   UpdateTooltipText();
 
-  if (!tab_slot_controller_->GetGroupTitle(group).empty()) {
+  if (!tab_slot_controller_->GetGroupTitle(group).empty() &&
+      chip_transition_animation_) {
     chip_transition_animation_->Reset(1.0);
   }
 }
@@ -208,8 +211,14 @@ void TabGroupHeader::OnAttentionStateChanged() {
 }
 
 void TabGroupHeader::AnimationProgressed(const gfx::Animation* animation) {
-  if (animation == chip_transition_animation_.get()) {
-    VisualsChanged();
+  if (!chip_transition_animation_ ||
+      animation != chip_transition_animation_.get()) {
+    return;
+  }
+  if (group_title_.empty()) {
+    CreateHeaderWithoutTitle();
+  } else {
+    CreateHeaderWithTitle();
   }
 }
 
@@ -435,7 +444,8 @@ void TabGroupHeader::VisualsChanged() {
   const std::u16string old_title = group_title_;
   group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
 
-  if (old_title.empty() != group_title_.empty()) {
+  if (chip_transition_animation_ &&
+      (old_title.empty() != group_title_.empty())) {
     if (group_title_.empty()) {
       chip_transition_animation_->Hide();
     } else {
@@ -501,6 +511,10 @@ int TabGroupHeader::GetNamedChipHeight() const {
 }
 
 int TabGroupHeader::GetChipHeight() const {
+  if (!chip_transition_animation_) {
+    return group_style_->GetEmptyChipSize();
+  }
+
   const float animation_value = chip_transition_animation_->GetCurrentValue();
   const int empty_height = group_style_->GetEmptyChipSize();
   const int named_height = GetNamedChipHeight();
@@ -510,6 +524,10 @@ int TabGroupHeader::GetChipHeight() const {
 }
 
 int TabGroupHeader::GetChipY() const {
+  if (!chip_transition_animation_) {
+    return group_style_->GetTitleChipOffset(std::nullopt).y();
+  }
+
   const float animation_value = chip_transition_animation_->GetCurrentValue();
   const int named_height = GetNamedChipHeight();
 

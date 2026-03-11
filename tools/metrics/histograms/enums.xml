@@ -12194,6 +12194,7 @@ from previous Chrome versions.
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-770144964"
       label="ExperimentalAccessibilityGoogleTtsHighQualityVoices:enabled"/>
+  <int value="-770134156" label="ToolbarGlowUp:enabled"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
   <int value="-768338958" label="CrosSeparateGeoApiKey:enabled"/>
   <int value="-768240392" label="CertificateTransparency2022Policy:enabled"/>
@@ -17364,6 +17365,7 @@ from previous Chrome versions.
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
   <int value="989062160" label="ModuleScriptsImportMetaUrl:enabled"/>
+  <int value="989693456" label="ToolbarGlowUp:disabled"/>
   <int value="990380525"
       label="AutofillRationalizeStreetAddressAndAddressLine:enabled"/>
   <int value="990640684" label="UIEnableSharedImageCacheForGpu:enabled"/>

@@ -9409,6 +9409,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "toolbar-glow-up",
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name" : "toolbar-phone-animation-refactor",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone" : 150
