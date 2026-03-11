@@ -105,6 +105,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kScamDetection:
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
     case ModelBasedCapabilityKey::kContentAnnotation:
+    case ModelBasedCapabilityKey::kFinds:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
       // Since there can be multiple forms on a single page, multiple parallel

@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Compose" summary="Compose"/>
   <variant name="ContentAnnotation" summary="Content Annotation"/>
   <variant name="EnhancedCalendar" summary="Enhanced Calendar"/>
+  <variant name="Finds" summary="Chrome finds"/>
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsClassifications" summary="Forms Classifications"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>

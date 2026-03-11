@@ -132,6 +132,8 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_CONTENT_ANNOTATION:
       return "ContentAnnotation";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FINDS:
+      return "Finds";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
