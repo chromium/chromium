@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -30,6 +31,8 @@ import org.chromium.chrome.browser.actor.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -57,12 +60,14 @@ public class ActorOverlayViewRenderTest {
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private LayoutManager mLayoutManager;
     private TestBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
     private TabObscuringHandler mTabObscuringHandler;
     private Activity mActivity;
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private FrameLayout mParentView;
 
     @Before
@@ -80,6 +85,10 @@ public class ActorOverlayViewRenderTest {
                     mCurrentTabSupplier = ObservableSuppliers.createNullable();
                     when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
+                    mLayoutManagerSupplier = ObservableSuppliers.createMonotonic();
+                    mLayoutManagerSupplier.set(mLayoutManager);
+                    when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
                     mParentView = new FrameLayout(mActivity);
                     mActivity.setContentView(mParentView);
 
@@ -93,7 +102,8 @@ public class ActorOverlayViewRenderTest {
                                     mTabModelSelector,
                                     mBrowserControlsVisibilityManager,
                                     mTabObscuringHandler,
-                                    mSnackbarManager);
+                                    mSnackbarManager,
+                                    mLayoutManagerSupplier);
                 });
     }
 
@@ -103,6 +113,8 @@ public class ActorOverlayViewRenderTest {
     public void testActorOverlay() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Force CAN_SHOW to true to bypass tab-dependent logic for render test.
+                    mCoordinator.getModelForTesting().set(ActorOverlayProperties.CAN_SHOW, true);
                     mCoordinator.getMediator().setOverlayVisible(true);
                 });
         mRenderTestRule.render(mParentView, "actor_overlay_default");

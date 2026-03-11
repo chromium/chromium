@@ -5,10 +5,14 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -17,7 +21,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Actor Overlay. */
 @NullMarked
-class ActorOverlayMediator implements ActorUiTabController.Observer {
+class ActorOverlayMediator
+        implements ActorUiTabController.Observer, LayoutStateProvider.LayoutStateObserver {
     private final PropertyModel mModel;
     private final TabModelSelector mTabModelSelector;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -25,9 +30,12 @@ class ActorOverlayMediator implements ActorUiTabController.Observer {
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final TabObscuringHandler mTabObscuringHandler;
+    private final MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    private final Callback<LayoutManager> mLayoutManagerAvailableCallback;
 
     private @Nullable Tab mCurrentTab;
     private @Nullable ActorUiTabController mTabController;
+    private @Nullable LayoutManager mLayoutManager;
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /**
@@ -35,16 +43,19 @@ class ActorOverlayMediator implements ActorUiTabController.Observer {
      * @param tabModelSelector The TabModelSelector to observe.
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
+     * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      */
     public ActorOverlayMediator(
             PropertyModel model,
             TabModelSelector tabModelSelector,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            TabObscuringHandler tabObscuringHandler) {
+            TabObscuringHandler tabObscuringHandler,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier) {
         mModel = model;
         mTabModelSelector = tabModelSelector;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mTabObscuringHandler = tabObscuringHandler;
+        mLayoutManagerSupplier = layoutManagerSupplier;
 
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
@@ -81,6 +92,20 @@ class ActorOverlayMediator implements ActorUiTabController.Observer {
         mModel.set(
                 ActorOverlayProperties.BOTTOM_MARGIN,
                 mBrowserControlsVisibilityManager.getBottomControlsHeight());
+
+        mLayoutManagerAvailableCallback = this::onLayoutManagerAvailable;
+        mLayoutManagerSupplier.addSyncObserverAndCallIfNonNull(mLayoutManagerAvailableCallback);
+    }
+
+    private void onLayoutManagerAvailable(LayoutManager layoutManager) {
+        mLayoutManager = layoutManager;
+        mLayoutManager.addObserver(this);
+        updateCanShowOverlay(mTabModelSelector.getCurrentTabSupplier().get());
+    }
+
+    @Override
+    public void onStartedShowing(int layoutType) {
+        updateCanShowOverlay(mTabModelSelector.getCurrentTabSupplier().get());
     }
 
     @Override
@@ -123,8 +148,15 @@ class ActorOverlayMediator implements ActorUiTabController.Observer {
     private void updateCanShowOverlay(@Nullable Tab tab) {
         // TODO(wenyufu): This is a placeholder. Update this based on whether the overlay can be
         // shown for the tab.
+        boolean isBrowsing =
+                mLayoutManager != null
+                        && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING;
         boolean canShow =
-                tab != null && !tab.isDestroyed() && !tab.isClosing() && !tab.isNativePage();
+                isBrowsing
+                        && tab != null
+                        && !tab.isDestroyed()
+                        && !tab.isClosing()
+                        && !tab.isNativePage();
         setCanShow(canShow);
     }
 
@@ -170,5 +202,9 @@ class ActorOverlayMediator implements ActorUiTabController.Observer {
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
+        mLayoutManagerSupplier.removeObserver(mLayoutManagerAvailableCallback);
+        if (mLayoutManager != null) {
+            mLayoutManager.removeObserver(this);
+        }
     }
 }

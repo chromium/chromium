@@ -979,7 +979,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             assumeNonNull(mTabModelSelectorSupplier.get()),
                             mBrowserControlsManager,
                             mTabObscuringHandlerSupplier.get(),
-                            assumeNonNull(mSnackbarManagerSupplier.get()));
+                            assumeNonNull(mSnackbarManagerSupplier.get()),
+                            mLayoutManagerSupplier);
         }
     }
 

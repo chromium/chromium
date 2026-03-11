@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -40,6 +41,8 @@ import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -57,6 +60,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ActorUiTabController.Natives mTabControllerNatives;
+    @Mock private LayoutManager mLayoutManager;
 
     private ActorOverlayView mView;
     private static final int TAB_ID = 123;
@@ -66,6 +70,7 @@ public class ActorOverlayCoordinatorTest {
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private UserDataHost mUserDataHost;
+    private SettableMonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -89,6 +94,10 @@ public class ActorOverlayCoordinatorTest {
 
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+        mCurrentTabSupplier.set(mTab);
+
+        mLayoutManagerSupplier = ObservableSuppliers.createMonotonic();
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
 
         mCoordinator =
                 new ActorOverlayCoordinator(
@@ -96,7 +105,9 @@ public class ActorOverlayCoordinatorTest {
                         mTabModelSelector,
                         mBrowserControlsVisibilityManager,
                         mTabObscuringHandler,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mLayoutManagerSupplier);
+        mLayoutManagerSupplier.set(mLayoutManager);
     }
 
     @Test
@@ -106,6 +117,31 @@ public class ActorOverlayCoordinatorTest {
         verify(mViewStub).inflate();
         verify(mTabModelSelector).addObserver(any(TabModelSelectorObserver.class));
         verify(mBrowserControlsVisibilityManager).addObserver(any());
+        verify(mLayoutManager).addObserver(any());
+    }
+
+    @Test
+    public void testHideOnLayoutTypeChanged() {
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        verify(mLayoutManager).addObserver(mediator);
+
+        Mockito.clearInvocations(mView);
+
+        mediator.setOverlayVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
+
+        // Change layout type to TAB_SWITCHER.
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.TAB_SWITCHER);
+        mediator.onStartedShowing(LayoutType.BROWSING);
+
+        verify(mView).setVisibility(View.GONE);
+
+        // Change layout type back to BROWSING.
+        Mockito.clearInvocations(mView);
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mediator.onStartedShowing(LayoutType.TAB_SWITCHER);
+
+        verify(mView).setVisibility(View.VISIBLE);
     }
 
     @Test
@@ -169,6 +205,17 @@ public class ActorOverlayCoordinatorTest {
         // sets CAN_SHOW to false for native pages.
         Mockito.when(mTab.isNativePage()).thenReturn(true);
         clearInvocations(mView);
+
+        // Trigger LayoutType change before setting tab to null
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.SIMPLE_ANIMATION);
+        mediator.onStartedShowing(LayoutType.SIMPLE_ANIMATION);
+
+        mCurrentTabSupplier.set(null);
+
+        // Switch back to BROWSING and set the tab
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mediator.onStartedShowing(LayoutType.BROWSING);
+
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);
@@ -195,6 +242,17 @@ public class ActorOverlayCoordinatorTest {
 
         Mockito.when(mTab.isClosing()).thenReturn(true);
         clearInvocations(mView);
+
+        // Trigger LayoutType change before setting tab to null
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.SIMPLE_ANIMATION);
+        mediator.onStartedShowing(LayoutType.SIMPLE_ANIMATION);
+
+        mCurrentTabSupplier.set(null);
+
+        // Switch back to BROWSING and set the tab
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mediator.onStartedShowing(LayoutType.BROWSING);
+
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);
@@ -208,6 +266,17 @@ public class ActorOverlayCoordinatorTest {
 
         Mockito.when(mTab.isDestroyed()).thenReturn(true);
         clearInvocations(mView);
+
+        // Trigger LayoutType change before setting tab to null
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.SIMPLE_ANIMATION);
+        mediator.onStartedShowing(LayoutType.SIMPLE_ANIMATION);
+
+        mCurrentTabSupplier.set(null);
+
+        // Switch back to BROWSING and set the tab
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+        mediator.onStartedShowing(LayoutType.BROWSING);
+
         mCurrentTabSupplier.set(mTab);
 
         verify(mView).setVisibility(View.GONE);

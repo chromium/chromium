@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.actor.ui;
 import android.view.View;
 import android.view.ViewStub;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -33,13 +35,15 @@ public class ActorOverlayCoordinator {
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param snackbarManager The SnackbarManager to show the snackbar.
+     * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      */
     public ActorOverlayCoordinator(
             ViewStub viewStub,
             TabModelSelector tabModelSelector,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TabObscuringHandler tabObscuringHandler,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier) {
         mView = (ActorOverlayView) viewStub.inflate();
         mSnackbarManager = snackbarManager;
 
@@ -59,7 +63,8 @@ public class ActorOverlayCoordinator {
                         mModel,
                         tabModelSelector,
                         browserControlsVisibilityManager,
-                        tabObscuringHandler);
+                        tabObscuringHandler,
+                        layoutManagerSupplier);
     }
 
     private void handleOnClick() {
