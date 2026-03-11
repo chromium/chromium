@@ -387,11 +387,12 @@ bool PictureLayerImpl::AppendQuadForTile(
   uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
 
   bool has_draw_quad = false;
-  if (*iter && iter->draw_info().IsReadyToDraw()) {
-    const TileDrawInfo& draw_info = iter->draw_info();
+  auto* tile = *iter;
+  if (tile && tile->draw_info().IsReadyToDraw()) {
+    const TileDrawInfo& draw_info = tile->draw_info();
     // Mark the tile used for raster. This is used to reclaim old prepaint
     // tiles in TileManager.
-    iter->mark_used();
+    tile->mark_used();
 
     switch (draw_info.mode()) {
       case TileDrawInfo::RESOURCE_MODE: {
