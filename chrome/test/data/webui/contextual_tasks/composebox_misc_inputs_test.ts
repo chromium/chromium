@@ -11,8 +11,9 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
+import type {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -25,7 +26,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_FILE_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, fixtureUrl, installMock, mockInputState} from './test_utils.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, assertStyle, deleteLastFile, fixtureUrl, FAKE_TOKEN_STRING, installMock, mockInputState} from './test_utils.js';
 
 async function dispatchDragAndDropEvent(dropZone: Element, files: File[]) {
   if (!dropZone) {
@@ -211,6 +212,26 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   teardown(() => {
     mockTimer.uninstall();
   });
+
+
+  function getThumbnailForTab(token: string, expectExists: boolean = true):
+      ComposeboxFileThumbnailElement {
+    const allThumbnails =
+        composebox.$.carousel.shadowRoot.querySelectorAll('.file-thumbnail');
+
+    const tabThumbnail: ComposeboxFileThumbnailElement =
+        Array.from(allThumbnails).find((el: any) => {
+          const elementId = el.file?.uuid?.token || el.file?.uuid;
+
+          return elementId === token;
+        }) as any;
+    if (expectExists) {
+      assertTrue(!!tabThumbnail, 'Could not find the tab thumbnail in the DOM');
+    } else {
+      assertFalse(!!tabThumbnail, 'Tab thumbnail should not exist in the DOM');
+    }
+    return tabThumbnail;
+  }
 
   test('sets is-dragging-file attribute on dragenter', async () => {
     // Get composebox div in cr-composebox
@@ -983,4 +1004,311 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             !!composebox.shadowRoot.querySelector('#carousel'),
             'Carousel should be removed from the DOM');
       });
+
+  test('Tab spinner on regular file upload triggers', async () => {
+    // Upload tab.
+    mockSearchboxPageHandler.setResultFor(
+        ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
+    const contextEntrypoint =
+        composebox.shadowRoot.querySelector('#contextEntrypoint');
+    contextEntrypoint.fire('add-tab-context', {
+      id: 0,
+      title: 'test',
+      url: new URL('about:blank'),
+      delayUpload: false,
+    });
+
+    // Mark the tab as `kNotUploaded`.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kNotUploaded,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    // Check that tab spinner does not exist + tab not uploading.
+    let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tab should not be uploading after not uploaded status');
+
+    // Start upload.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kUploadStarted,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tab should be uploading after upload started since processing startts it');
+
+    assertTrue(
+        composebox.fileUploadsComplete,
+        'Tabs should be finished uploading since all uploads are started but not processing');
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertTrue(
+        tabThumbnail.getIsUploadingForTesting(),
+        'Tab thumbnail spinner should trigger for uploadStarted tab');
+
+    // Upload processing state.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kProcessing,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    // Check that spinner exists + uploading tab.
+    assertTrue(
+        tabThumbnail.getIsUploadingForTesting(),
+        'Tab thumbnail spinner should trigger for processing regular tab');
+
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 tab should be uploading after processing started');
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Tabs should not be finished uploading' +
+            ' since one started upload process');
+
+    // Suggestions are ready now, but should still be uploading
+    // (spinner should exist.)
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kProcessingSuggestSignalsReady,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertTrue(
+        tabThumbnail.getIsUploadingForTesting(),
+        'tab thumbnail spinner should trigger' +
+            ' for suggest signals ready processing tab');
+
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 tab should be uploading after suggest signals ready');
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Tabs should not be finished uploading' +
+            ' since one started upload process');
+
+    // Upload completed.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kUploadSuccessful,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    // Spinner should not exist + tab should not be uploading.
+    assertFalse(
+        tabThumbnail.getIsUploadingForTesting(),
+        'tab thumbnail spinner should not trigger for successful upload');
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        'No tabs should be uploading after upload successful');
+    assertTrue(
+        composebox.fileUploadsComplete,
+        'Tabs should be finished uploading since all uploads are successful');
+  });
+
+  test('Tab spinner on autochip does not trigger', async () => {
+    // Upload tab with `delayUpload` = true.
+    mockSearchboxPageHandler.setResultFor(
+        ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
+
+    const contextEntrypoint =
+        composebox.shadowRoot.querySelector('#contextEntrypoint');
+    contextEntrypoint.fire('add-tab-context', {
+      id: 0,
+      title: 'test',
+      url: new URL('about:blank'),
+      delayUpload: false,
+    });
+
+    // Tab is not uploaded yet. Spinner should not trigger
+    // and tab should not be uploading.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kNotUploaded,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertFalse(tabThumbnail.getIsUploadingForTesting());
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tabs should be uploading');
+
+    // `delayUpload` is true, but `kProcessing` means the delay already
+    // happened.
+    //  Spinner should trigger.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kProcessing,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertTrue(
+        tabThumbnail.getIsUploadingForTesting(),
+        'Tab thumbnail spinner should trigger for processing autochip tab');
+
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 tab should be uploading due to processing status');
+
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Tabs should be not finished uploading since processing');
+
+    // Tab has expired and should not trigger spinner or be uploading.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kUploadExpired,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tabs should be uploading due to expired status');
+    assertEquals(
+        0, composebox.getFilesForTesting().length,
+        '0 files should be in the composebox after upload expired');
+  });
+
+  test('Tab spinner on autochip does not trigger upon failure', async () => {
+    // Upload tab with `delayUpload` = true.
+    mockSearchboxPageHandler.setResultFor(
+        ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
+    const contextEntrypoint =
+        composebox.shadowRoot.querySelector('#contextEntrypoint');
+    contextEntrypoint.fire('add-tab-context', {
+      id: 0,
+      title: 'test',
+      url: new URL('about:blank'),
+      delayUpload: false,
+    });
+
+    // `delayUpload` is true, but `kProcessing` means the delay already
+    // happened.
+    //  Spinner should trigger.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kNotUploaded,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+    let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tabs should not be uploading after not uploaded status');
+    assertTrue(
+        composebox.fileUploadsComplete,
+        'Tabs should be finished uploading since not uploaded');
+
+    assertFalse(
+        tabThumbnail.getIsUploadingForTesting(),
+        'not uploading so no tab spinner');
+
+    // Tab is processing, but since `delayUpload` is true, spinner should not
+    // trigger.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kProcessing,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
+
+    assertTrue(
+        tabThumbnail.getIsUploadingForTesting(),
+        'autochip tab thumbnail spinner should be triggered for processing tab');
+
+    assertEquals(
+        1, composebox.getRemainingFilesToUpload().size,
+        '1 tab should be uploading after processing started');
+
+    assertFalse(
+        composebox.fileUploadsComplete,
+        'Tabs should be uploading since started processing');
+
+    // Tab has failed to upload and should not trigger spinner or be uploading.
+    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING,
+        ContextUploadStatus.kUploadFailed,
+        /*error_type=*/ null,
+    );
+
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
+    await composebox.$.carousel.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(
+        0, composebox.getRemainingFilesToUpload().size,
+        '0 tabs should be uploading due to expired status');
+    assertEquals(
+        0, composebox.getFilesForTesting().length,
+        '0 files should be in the composebox after upload failed');
+  });
 });
