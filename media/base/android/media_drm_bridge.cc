@@ -323,13 +323,6 @@ std::string GetSecurityLevelString(
   return "";
 }
 
-int GetFirstApiLevel() {
-  JNIEnv* env = AttachCurrentThread();
-  int first_api_level = Java_MediaDrmBridge_getFirstApiLevel(env);
-  base::UmaHistogramSparse("Media.EME.MediaDrm.FirstApiLevel", first_api_level);
-  return first_api_level;
-}
-
 CreateCdmTypedStatus ConvertMediaDrmCreateError(
     MediaDrmBridge::MediaDrmCreateError error,
     MediaDrmBridge::SecurityLevel security_level) {
@@ -389,7 +382,9 @@ bool MediaDrmBridge::IsPerApplicationProvisioningSupported() {
   // If it is non-zero, then it is the API level.
   // Checking FirstApiLevel is known to be expensive (see crbug.com/1366106),
   // and thus is cached.
-  static int first_api_level = GetFirstApiLevel();
+  static int first_api_level;
+  base::StringToInt(base::SysInfo::GetAndroidFirstApiLevel(), &first_api_level);
+  base::UmaHistogramSparse("Media.EME.MediaDrm.FirstApiLevel", first_api_level);
   DVLOG(1) << "first_api_level = " << first_api_level;
   if (first_api_level >= base::android::android_info::SDK_VERSION_OREO) {
     return true;

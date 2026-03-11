@@ -26,7 +26,6 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.media.MediaDrmSessionManager.SessionId;
 import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +74,6 @@ public class MediaDrmBridge {
     private static final String SESSION_SHARING = "sessionSharing";
     private static final String ENABLE = "enable";
     private static final long INVALID_NATIVE_MEDIA_DRM_BRIDGE = 0;
-    private static final String FIRST_API_LEVEL = "ro.product.first_api_level";
 
     // See http://dashif.org/identifiers/content_protection/ for Scheme UUIDs for different Key
     // systems.
@@ -432,30 +430,6 @@ public class MediaDrmBridge {
             Log.e(TAG, "Exception in isCryptoSchemeSupported", e);
             return false;
         }
-    }
-
-    /**
-     * Returns the first API level for this product.
-     *
-     * @return the converted value for FIRST_API_LEVEL if available,
-     * 0 otherwise.
-     */
-    @CalledByNative
-    private static int getFirstApiLevel() {
-        int firstApiLevel = 0;
-        try {
-            final Class<?> systemProperties = Class.forName("android.os.SystemProperties");
-            final Method getInt = systemProperties.getMethod("getInt", String.class, int.class);
-            firstApiLevel = (Integer) getInt.invoke(null, FIRST_API_LEVEL, 0);
-        } catch (Exception e) {
-            Log.e(
-                    TAG,
-                    "Exception while getting system property %s. Using default.",
-                    FIRST_API_LEVEL,
-                    e);
-            firstApiLevel = 0;
-        }
-        return firstApiLevel;
     }
 
     /**

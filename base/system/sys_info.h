@@ -323,6 +323,9 @@ class BASE_EXPORT SysInfo {
   // component Hardware ID, this is at a device level to capture a class of
   // devices with similar hardware components.
   static std::string GetAndroidHardwareClass();
+
+  // Returns the SDK API level that the device initially launched with.
+  static std::string GetAndroidFirstApiLevel();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
