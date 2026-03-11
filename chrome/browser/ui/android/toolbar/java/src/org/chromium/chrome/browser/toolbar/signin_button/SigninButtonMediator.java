@@ -19,13 +19,21 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -37,7 +45,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 final class SigninButtonMediator
         implements ProfileDataCache.Observer,
                 IdentityManager.Observer,
-                SyncService.SyncStateChangedListener {
+                SyncService.SyncStateChangedListener,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private final Context mContext;
     private final PropertyModel mModel;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -50,10 +59,32 @@ final class SigninButtonMediator
     // ProfileDataCache facilitates retrieving the profile picture.
     private @Nullable ProfileDataCache mProfileDataCache;
 
+    /**
+     * @param context The {@link Context} to retrieve resources.
+     * @param windowAndroid The {@link WindowAndroid} for the current window.
+     * @param model The {@link PropertyModel} for the sign-in button.
+     * @param profileSupplier The supplier of the current profile.
+     * @param signinAndHistorySyncActivityLauncher The {@link SigninAndHistorySyncActivityLauncher}
+     *     to launch sign-in and history sync activity.
+     * @param activityResultTracker The {@link ActivityResultTracker} for launching new activities
+     *     and watching for their result.
+     * @param deviceLockActivityLauncher The launcher for the device lock challenge.
+     * @param bottomSheetController The {@link BottomSheetController} to show the sign-in bottom
+     *     sheet.
+     * @param modalDialogManager The {@link ModalDialogManager} to manage the dialog.
+     * @param snackbarManager The {@link SnackbarManager} to show sign-in/sign-out snackbars.
+     */
     public SigninButtonMediator(
             Context context,
+            WindowAndroid windowAndroid,
             PropertyModel model,
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
+            SnackbarManager snackbarManager) {
         mContext = context;
         mModel = model;
         mProfileSupplier = profileSupplier;

@@ -1901,6 +1901,8 @@ public class RootUiCoordinator
                             mOmniboxFocusStateSupplier,
                             mPromoShownOneshotSupplier,
                             mWindowAndroid,
+                            mActivityResultTracker,
+                            mDeviceLockActivityLauncherSupplier.get(),
                             mChromeAndroidTaskSupplier,
                             mIsInOverviewModeSupplier,
                             mModalDialogManagerSupplier,

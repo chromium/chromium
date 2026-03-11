@@ -11,6 +11,13 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -25,10 +32,28 @@ public final class SigninButtonCoordinator {
 
     public SigninButtonCoordinator(
             Context context,
+            WindowAndroid windowAndroid,
             ViewStub viewStub,
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            BottomSheetController bottomSheetController,
+            ModalDialogManager modalDialogManager,
+            SnackbarManager snackbarManager) {
         mModel = new PropertyModel.Builder(SigninButtonProperties.ALL_KEYS).build();
-        mMediator = new SigninButtonMediator(context, mModel, profileSupplier);
+        mMediator =
+                new SigninButtonMediator(
+                        context,
+                        windowAndroid,
+                        mModel,
+                        profileSupplier,
+                        signinAndHistorySyncActivityLauncher,
+                        activityResultTracker,
+                        deviceLockActivityLauncher,
+                        bottomSheetController,
+                        modalDialogManager,
+                        snackbarManager);
 
         // Defers setting the view and binding the model until the button needs to be shown.
         mViewStub = viewStub;

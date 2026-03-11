@@ -130,6 +130,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -203,6 +204,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
@@ -226,6 +228,7 @@ import org.chromium.content_public.browser.back_forward_transition.AnimationStag
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.net.NetError;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -797,6 +800,8 @@ public class ToolbarManager
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             WindowAndroid windowAndroid,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
             OneshotSupplier<ChromeAndroidTask> chromeAndroidTaskSupplier,
             Supplier<Boolean> isInOverviewModeSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -1189,7 +1194,10 @@ public class ToolbarManager
                         historyDelegate,
                         topControlsStacker,
                         mTabStripTopControlLayer,
-                        profileSupplier);
+                        profileSupplier,
+                        activityResultTracker,
+                        deviceLockActivityLauncher,
+                        snackbarManager);
         mActionModeController =
                 new ActionModeController(
                         mActivity,
@@ -1940,7 +1948,10 @@ public class ToolbarManager
             HistoryDelegate historyDelegate,
             TopControlsStacker topControlsStacker,
             TabStripTopControlLayer tabStripTopControlLayer,
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            ActivityResultTracker activityResultTracker,
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            SnackbarManager snackbarManager) {
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
@@ -1978,7 +1989,14 @@ public class ToolbarManager
                         topControlsStacker,
                         mBrowserControlsSizer,
                         () -> MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true),
-                        profileSupplier);
+                        profileSupplier,
+                        SigninAndHistorySyncActivityLauncherImpl.get(),
+                        mWindowAndroid,
+                        activityResultTracker,
+                        deviceLockActivityLauncher,
+                        mBottomSheetController,
+                        mModalDialogManagerSupplier.get(),
+                        snackbarManager);
 
         mHomepageStateListener =
                 () -> {
