@@ -32,6 +32,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
  public:
   explicit GridLanesLayoutAlgorithm(const LayoutAlgorithmParams& params);
 
+  // Expose base class accessors needed by functions in grid_layout_utils.
+  using LayoutAlgorithm::BorderScrollbarPadding;
+  using LayoutAlgorithm::GetConstraintSpace;
+  using LayoutAlgorithm::Node;
+  using LayoutAlgorithm::Style;
+
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&);
   const LayoutResult* Layout();
 
@@ -44,6 +50,22 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const BoxStrut& borders,
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
+
+  // `containing_grid_area` is an optional out parameter that holds the computed
+  // grid area (offset and size) of the specified grid item.
+  ConstraintSpace CreateConstraintSpaceForLayout(
+      const GridItemData& grid_item,
+      const GridLayoutData& layout_data,
+      GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
+      LogicalRect* containing_grid_area = nullptr,
+      LayoutUnit unavailable_block_size = LayoutUnit(),
+      bool min_block_size_should_encompass_intrinsic_size = false,
+      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt,
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
+
+  LogicalSize GetGridAvailableSize() const {
+    return grid_lanes_available_size_;
+  }
 
  private:
   friend class GridLanesLayoutAlgorithmTest;
@@ -175,15 +197,6 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridItemData& grid_lanes_item,
       const GridLayoutTrackCollection& track_collection,
       SizingConstraint sizing_constraint);
-
-  // If `containing_rect` is provided, it will store the available size for the
-  // item and its offset within the container. These values will be used to
-  // adjust the item's final position using its alignment properties.
-  ConstraintSpace CreateConstraintSpaceForLayout(
-      const GridItemData& grid_lanes_item,
-      const GridLayoutTrackCollection& track_collection,
-      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
-      LogicalRect* containing_rect = nullptr) const;
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& grid_lanes_item,

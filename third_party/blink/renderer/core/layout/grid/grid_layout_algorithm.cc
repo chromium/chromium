@@ -1561,7 +1561,8 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     LogicalRect* containing_grid_area,
     LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
-    std::optional<LayoutUnit> opt_child_block_offset) const {
+    std::optional<LayoutUnit> opt_child_block_offset,
+    std::optional<LayoutUnit> opt_fixed_inline_size) const {
   LayoutUnit inline_offset, block_offset;
 
   LogicalSize containing_grid_area_size = {

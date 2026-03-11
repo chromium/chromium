@@ -62,6 +62,8 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
+  // `opt_fixed_inline_size` isn't used here, but is needed to maintain the same
+  // method signature as grid lanes for common use.
   ConstraintSpace CreateConstraintSpaceForLayout(
       const GridItemData& grid_item,
       const GridLayoutData& layout_data,
@@ -69,7 +71,8 @@ class CORE_EXPORT GridLayoutAlgorithm
       LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,
-      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt) const;
+      std::optional<LayoutUnit> opt_child_block_offset = std::nullopt,
+      std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt) const;
 
   LogicalSize GetGridAvailableSize() const { return grid_available_size_; }
 
