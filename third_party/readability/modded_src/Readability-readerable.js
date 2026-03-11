@@ -24,7 +24,12 @@ var REGEXPS = {
   // Readability.js. Please keep both copies in sync.
   unlikelyCandidates:
     /-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote/i,
-  okMaybeItsACandidate: /and|article|body|column|content|main|mathjax|shadow/i,
+  okMaybeItsACandidate: new RegExp(
+    "and|article|body|column|content|main|mathjax|" +
+      "shadow|recipe|ingredients|instructions|" +
+      "directions|steps",
+    "i"
+  ),
 };
 
 function isNodeVisible(node) {

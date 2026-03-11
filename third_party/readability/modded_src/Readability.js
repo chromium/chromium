@@ -139,11 +139,20 @@ Readability.prototype = {
     // Readability-readerable.js. Please keep both copies in sync.
     unlikelyCandidates:
       /-ad-|ai2html|banner|breadcrumbs|combx|comment|community|cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|supplemental|ad-break|agegate|pagination|pager|popup|yom-remote/i,
-    okMaybeItsACandidate:
-      /and|article|body|column|content|main|mathjax|shadow/i,
+    okMaybeItsACandidate: new RegExp(
+      "and|article|body|column|content|main|mathjax|" +
+        "shadow|recipe|ingredients|instructions|" +
+        "directions|steps",
+      "i"
+    ),
 
-    positive:
-      /article|body|content|entry|hentry|h-entry|main|page|pagination|post|text|blog|story/i,
+    positive: new RegExp(
+      "article|body|content|entry|hentry|h-entry|" +
+        "main|page|pagination|post|text|blog|story|" +
+        "recipe|ingredients|instructions|" +
+        "directions|steps",
+      "i"
+    ),
     negative:
       /-ad-|hidden|^hid$| hid$| hid |^hid |banner|combx|comment|com-|contact|footer|gdpr|masthead|media|meta|outbrain|promo|related|scroll|share|shoutbox|sidebar|skyscraper|sponsor|shopping|tags|widget/i,
     extraneous:
@@ -377,6 +386,25 @@ Readability.prototype = {
    */
   _someNode(nodeList, fn) {
     return Array.prototype.some.call(nodeList, fn, this);
+  },
+
+  /**
+   * Check if the provided candidate has any significant siblings.
+   *
+   * @param  Element candidate The candidate element.
+   * @param  Number  threshold The content score threshold.
+   * @return Boolean
+   */
+  _hasSignificantSibling(candidate, threshold) {
+    return this._someNode(candidate.parentNode.children, function (sibling) {
+      if (sibling === candidate) {
+        return false;
+      }
+      if (sibling.readability) {
+        return sibling.readability.contentScore >= threshold;
+      }
+      return sibling.textContent.trim().length > 25;
+    });
   },
 
   /**
@@ -1433,13 +1461,19 @@ Readability.prototype = {
           parentOfTopCandidate = parentOfTopCandidate.parentNode;
         }
 
-        // If the top candidate is the only child, use parent instead. This will help sibling
-        // joining logic when adjacent content is actually located in parent's sibling node.
+        // If the top candidate is the only child (or only child with
+        // significant content), use parent instead. This will help sibling
+        // joining logic when adjacent content is actually located in parent's
+        // sibling node.
         parentOfTopCandidate = topCandidate.parentNode;
-        while (
-          parentOfTopCandidate.tagName != "BODY" &&
-          parentOfTopCandidate.children.length == 1
-        ) {
+        const promotionThreshold = Math.max(
+          10,
+          topCandidate.readability.contentScore * 0.2
+        );
+        while (parentOfTopCandidate.tagName !== "BODY") {
+          if (this._hasSignificantSibling(topCandidate, promotionThreshold)) {
+            break;
+          }
           topCandidate = parentOfTopCandidate;
           parentOfTopCandidate = topCandidate.parentNode;
         }
