@@ -471,15 +471,14 @@ String RemoveUrlWhitespace(const String& input) {
 
 }  // namespace
 
-bool KURL::SetProtocol(const String& protocol) {
+bool KURL::SetProtocol(const StringView& protocol) {
   // We should remove whitespace from |protocol| according to spec, but Firefox
   // and Safari don't do it.
   // - https://url.spec.whatwg.org/#dom-url-protocol
   // - https://github.com/whatwg/url/issues/609
 
   // Firefox and IE remove everything after the first ':'.
-  wtf_size_t separator_position = protocol.find(':');
-  String new_protocol = protocol.substr(0, separator_position);
+  StringView new_protocol = protocol.substr(0, protocol.find(':'));
   StringUtf8Adaptor new_protocol_utf8(new_protocol);
 
   // If KURL is given an invalid scheme, it returns failure without modifying
@@ -493,13 +492,13 @@ bool KURL::SetProtocol(const String& protocol) {
     return false;
   }
 
-  DCHECK_EQ(protocol_component.begin, 0);
-  const wtf_size_t protocol_length =
-      base::checked_cast<wtf_size_t>(protocol_component.len);
-  const String new_protocol_canon =
-      String(base::span(canon_protocol.view()).first(protocol_length));
-
   if (SchemeRegistry::IsSpecialScheme(Protocol())) {
+    DCHECK_EQ(protocol_component.begin, 0);
+    const wtf_size_t protocol_length =
+        base::checked_cast<wtf_size_t>(protocol_component.len);
+    const String new_protocol_canon(
+        base::span(canon_protocol.view()).first(protocol_length));
+
     // https://url.spec.whatwg.org/#scheme-state
     // 2.1.1 If url’s scheme is a special scheme and buffer is not a special
     //       scheme, then return.

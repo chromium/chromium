@@ -198,7 +198,7 @@ class PLATFORM_EXPORT KURL {
   bool IsAboutSrcdocUrl() const;  // Is about:srcdoc, ignoring query/ref
                                   // strings..
 
-  bool SetProtocol(const String&);
+  bool SetProtocol(const StringView&);
   void SetHost(const String&);
 
   void RemovePort();
