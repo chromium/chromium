@@ -185,6 +185,20 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
 
 #pragma mark - Setters
 
+- (void)setContextualPanelEntrypointState:
+    (ContextualPanelEntrypointState)state {
+  UIColor* color;
+  switch (state) {
+    case ContextualPanelEntrypointState::kAvailable:
+      color = [UIColor colorNamed:kBackgroundColor];
+      break;
+    case ContextualPanelEntrypointState::kActive:
+      color = [UIColor colorNamed:kBlue600Color];
+      break;
+  }
+  _badgeBackgroundView.backgroundColor = color;
+}
+
 - (void)setIncognitoBadgeView:(UIView*)incognitoBadgeView {
   if (_incognitoBadgeView) {
     return;

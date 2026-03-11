@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
+  "+ios/chrome/browser/price_insights/model",
   "+ios/chrome/browser/reader_mode/coordinator",
   "+ios/chrome/browser/reader_mode/model/features.h",
   "+ios/chrome/browser/reader_mode/ui",
