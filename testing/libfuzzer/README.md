@@ -8,10 +8,9 @@ methods we have for finding security and stability issues (see
 [go/fuzzing-success](http://go/fuzzing-success)). You can learn more about the
 benefits of fuzzing at [go/why-fuzz](http://go/why-fuzz).
 
-This documentation covers the in-process guided fuzzing approach employed by
+This documentation covers the coverage guided fuzzing approach employed by
 different fuzzing engines, such as [libFuzzer] or [AFL]. To learn more about
-out-of-process fuzzers, please refer to the [Blackbox fuzzing] page in the
-ClusterFuzz documentation.
+[Blackbox fuzzing], please refer to the ClusterFuzz documentation.
 
 [TOC]
 
@@ -63,7 +62,8 @@ Started Guide].
 * [http://go/chrome-fuzzing-dashboard](https://analysis.chromium.org/coverage/p/chromium?platform=fuzz&test_suite_type=any&path=%2F%2F&project=chromium%2Fsrc&path=%2F%2F&host=chromium.googlesource.com&ref=refs%2Fheads%2Fmain&modifier_id=0)
   Code covered by fuzz tests.
 
-[Blackbox fuzzing]: https://google.github.io/clusterfuzz/setting-up-fuzzing/blackbox-fuzzing/
+[AFL]: https://lcamtuf.coredump.cx/afl
+[Blackbox fuzzing]: https://google.github.io/clusterfuzz/reference/coverage-guided-vs-blackbox/#blackbox-fuzzing
 [Bugs found in open-source projects]: http://llvm.org/docs/LibFuzzer.html#trophies
 [Bugs found in PDFium]: https://bugs.chromium.org/p/pdfium/issues/list?can=1&q=libfuzzer&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
 [ClusterFuzz]: https://clusterfuzz.com/
