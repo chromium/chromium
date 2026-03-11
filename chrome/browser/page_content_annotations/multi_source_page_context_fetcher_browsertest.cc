@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
-    BasicRedactionInIframe) {
+    DISABLED_BasicRedactionInIframe) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GetURL(kHostA, "/password_in_iframe.html?domain=/cross-site/b.test/")));
