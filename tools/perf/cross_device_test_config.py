@@ -301,6 +301,7 @@ TARGET_DEVICES = {
         'jetstream3-turbolev_future.crossbench': 6,
         'jetstream_main.crossbench': 6,
         'speedometer2': 20,
+        'speedometer3': 20,
         'speedometer3.crossbench': 20,
         'speedometer_main.crossbench': 10,
         'rendering.desktop.notracing': 20,
