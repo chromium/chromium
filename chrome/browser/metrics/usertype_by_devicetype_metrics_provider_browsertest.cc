@@ -342,7 +342,8 @@ class UserTypeByDeviceTypeMetricsProviderTest
     ash::test::LockDemoDeviceInstallAttributes();
     ash::DemoSession::StartIfInDemoMode(
         g_browser_process->local_state(),
-        g_browser_process->GetFeatures()->application_locale_storage());
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        g_browser_process->platform_part()->component_manager_ash());
 
     // Start the public session, Demo Mode is a special public session.
     StartPublicSession();

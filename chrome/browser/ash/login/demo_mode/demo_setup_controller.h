@@ -227,7 +227,10 @@ class DemoSetupController
   // Converts a step enum to a string e.g. to sent to JavaScript.
   static std::string GetDemoSetupStepString(const DemoSetupStep step_enum);
 
-  DemoSetupController();
+  // `component_manager_ash` must be non-null.
+  explicit DemoSetupController(
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
 
   DemoSetupController(const DemoSetupController&) = delete;
   DemoSetupController& operator=(const DemoSetupController&) = delete;
@@ -305,6 +308,9 @@ class DemoSetupController
 
   // Clears the internal state.
   void Reset();
+
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   // Keeps track of when downloading demo mode resources begins.
   base::TimeTicks download_start_time_;

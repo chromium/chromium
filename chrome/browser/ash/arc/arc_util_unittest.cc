@@ -630,6 +630,10 @@ class ArcOobeTest : public ChromeArcUtilTest,
     }
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     oobe_configuration_ = std::make_unique<ash::OobeConfiguration>();
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeComponentManager();
   }
 
   ArcOobeTest(const ArcOobeTest&) = delete;
@@ -639,6 +643,10 @@ class ArcOobeTest : public ChromeArcUtilTest,
     // Fake display host have to be shut down first, as it may access
     // configuration.
     fake_login_display_host_.reset();
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownComponentManager();
     oobe_configuration_.reset();
     ash::ConciergeClient::Shutdown();
   }

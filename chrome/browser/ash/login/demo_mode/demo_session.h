@@ -32,7 +32,11 @@ class PrefService;
 
 namespace base {
 class OneShotTimer;
-}
+}  // namespace base
+
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
 
 namespace ash {
 
@@ -120,9 +124,12 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive the created DemoSession. (I.e., they must be valid until
   // `ShutDownIfInitialized` is called.)
+  // `component_manager_ash` must be non-null.
   static DemoSession* StartIfInDemoMode(
       PrefService* local_state,
-      const ApplicationLocaleStorage* application_locale_storage);
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
 
   // Deletes the global DemoSession instance if it was previously created.
   static void ShutDownIfInitialized();
@@ -198,8 +205,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
  private:
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `component_manager_ash` must be non-null.
   DemoSession(PrefService* local_state,
-              const ApplicationLocaleStorage* application_locale_storage);
+              const ApplicationLocaleStorage* application_locale_storage,
+              scoped_refptr<component_updater::ComponentManagerAsh>
+                  component_manager_ash);
   ~DemoSession() override;
 
   // DemoModeIdleHandler::Observer:
@@ -229,6 +239,8 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   // Whether demo session has been started.
   bool started_ = false;

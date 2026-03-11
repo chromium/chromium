@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
@@ -912,7 +913,9 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   // TODO(crbug.com/404133029): Avoid using g_browser_process.
   wizard_controller_ = std::make_unique<WizardController>(
       &local_state_.get(), &application_locale_storage_.get(),
-      g_browser_process->shared_url_loader_factory(), GetWizardContext());
+      g_browser_process->shared_url_loader_factory(),
+      g_browser_process->platform_part()->component_manager_ash(),
+      GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_login_impl_);

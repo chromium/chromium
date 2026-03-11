@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/global_features.h"
@@ -207,6 +208,11 @@ class WizardControllerTestBase : public ::testing::Test {
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
+    CHECK(profile_manager_->SetUp());
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeComponentManager();
 
     browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -225,7 +231,6 @@ class WizardControllerTestBase : public ::testing::Test {
     ash::UserDataAuthClient::InitializeFake();
     chrome_keyboard_controller_client_test_helper_ =
         ChromeKeyboardControllerClientTestHelper::InitializeForAsh();
-    CHECK(profile_manager_->SetUp());
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     prefs->SetInitializationCompleted();
@@ -278,6 +283,10 @@ class WizardControllerTestBase : public ::testing::Test {
     // Need to call `StartTearDown` otherwise timezone resolver still registered
     // with prefs when we delete profile manager.
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownComponentManager();
 
     browser_controller_.reset();
     profile_ = nullptr;
@@ -363,6 +372,9 @@ class WizardControllerTest : public WizardControllerTestBase {
             ->GetFeatures()
             ->application_locale_storage(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash(),
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));

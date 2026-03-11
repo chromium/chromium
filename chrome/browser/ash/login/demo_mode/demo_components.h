@@ -10,13 +10,18 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 
 namespace base {
 class Version;
-}
+}  // namespace base
+
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
 
 namespace ash {
 
@@ -48,7 +53,10 @@ class DemoComponents {
   static void OverridePreinstalledResourcesRootPathForTesting(
       const base::FilePath* path);
 
-  explicit DemoComponents(DemoSession::DemoModeConfig config);
+  // `component_manager_ash` must be non-null.
+  DemoComponents(scoped_refptr<component_updater::ComponentManagerAsh>
+                     component_manager_ash,
+                 DemoSession::DemoModeConfig config);
 
   DemoComponents(const DemoComponents&) = delete;
   DemoComponents& operator=(const DemoComponents&) = delete;
@@ -141,6 +149,9 @@ class DemoComponents {
   // Callback for the component or image loader request to load demo resources.
   // `mount_path` is the path at which the resources were loaded.
   void OnDemoResourcesLoaded(std::optional<base::FilePath> mounted_path);
+
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   // Which config to load resources for: online or offline.
   DemoSession::DemoModeConfig config_;

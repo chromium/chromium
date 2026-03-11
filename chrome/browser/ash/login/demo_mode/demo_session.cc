@@ -327,7 +327,9 @@ void DemoSession::ResetDemoConfigForTesting() {
 // static
 DemoSession* DemoSession::StartIfInDemoMode(
     PrefService* local_state,
-    const ApplicationLocaleStorage* application_locale_storage) {
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<component_updater::ComponentManagerAsh>
+        component_manager_ash) {
   if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return nullptr;
   }
@@ -336,7 +338,8 @@ DemoSession* DemoSession::StartIfInDemoMode(
     return g_demo_session;
 
   if (!g_demo_session)
-    g_demo_session = new DemoSession(local_state, application_locale_storage);
+    g_demo_session = new DemoSession(local_state, application_locale_storage,
+                                     std::move(component_manager_ash));
 
   g_demo_session->started_ = true;
   return g_demo_session;
@@ -470,9 +473,10 @@ base::ListValue DemoSession::GetCountryList(
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
-  if (!components_)
-    components_ =
-        std::make_unique<DemoComponents>(GetDemoConfig(local_state_.get()));
+  if (!components_) {
+    components_ = std::make_unique<DemoComponents>(
+        component_manager_ash_, GetDemoConfig(local_state_.get()));
+  }
   components_->LoadResourcesComponent(std::move(load_callback));
 }
 
@@ -505,15 +509,19 @@ void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
 
 DemoSession::DemoSession(
     PrefService* local_state,
-    const ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      component_manager_ash_(std::move(component_manager_ash)),
       ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
       remove_splash_screen_fallback_timer_(
           std::make_unique<base::OneShotTimer>()),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  CHECK(component_manager_ash_);
+
   // SessionManager may be unset in unit tests.
   if (session_manager::SessionManager::Get()) {
     session_manager_observation_.Observe(
@@ -605,8 +613,8 @@ void DemoSession::OnSessionStateChanged() {
 
       // Download/update the Demo app component during session startup
       if (!components_) {
-        components_ =
-            std::make_unique<DemoComponents>(GetDemoConfig(local_state_.get()));
+        components_ = std::make_unique<DemoComponents>(
+            component_manager_ash_, GetDemoConfig(local_state_.get()));
       }
 
       // Create the window closer.

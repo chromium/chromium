@@ -88,6 +88,9 @@ void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
             ->GetFeatures()
             ->application_locale_storage(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash(),
         wizard_context_.get());
 
     fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);

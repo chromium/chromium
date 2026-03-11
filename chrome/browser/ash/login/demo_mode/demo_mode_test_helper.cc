@@ -61,7 +61,10 @@ void DemoModeTestHelper::InitializeSession(DemoSession::DemoModeConfig config) {
       TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
-          ->application_locale_storage()));
+          ->application_locale_storage(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash()));
   FinishLoadingComponent();
 }
 
@@ -75,7 +78,10 @@ void DemoModeTestHelper::InitializeSessionWithPendingComponent(
       TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
-          ->application_locale_storage());
+          ->application_locale_storage(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash());
   DCHECK_EQ(demo_session == nullptr,
             config == DemoSession::DemoModeConfig::kNone);
 }

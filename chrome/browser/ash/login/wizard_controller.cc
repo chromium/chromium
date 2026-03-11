@@ -423,15 +423,18 @@ WizardController::WizardController(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash,
     WizardContext* wizard_context)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      component_manager_ash_(std::move(component_manager_ash)),
       quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>(
               &local_state_.get())),
       screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context) {
+  CHECK(component_manager_ash_);
   const auto has_been_skipped =
       wizard_context_->skip_post_login_screens_for_tests;
   wizard_context_->skip_post_login_screens_for_tests =
@@ -3556,7 +3559,8 @@ bool WizardController::HandleAccelerator(LoginAcceleratorAction action) {
 void WizardController::StartDemoModeSetup() {
   // Start Demo Mode by initiate demo set up controller and showing the first
   // network screen in demo mode setup flow.
-  demo_setup_controller_ = std::make_unique<DemoSetupController>();
+  demo_setup_controller_ =
+      std::make_unique<DemoSetupController>(component_manager_ash_);
   ShowNetworkScreen();
 }
 
@@ -3567,7 +3571,8 @@ void WizardController::CreateChoobeFlowController() {
 void WizardController::SimulateDemoModeSetupForTesting(
     std::optional<DemoSession::DemoModeConfig> demo_config) {
   if (!demo_setup_controller_) {
-    demo_setup_controller_ = std::make_unique<DemoSetupController>();
+    demo_setup_controller_ =
+        std::make_unique<DemoSetupController>(component_manager_ash_);
   }
   if (demo_config.has_value()) {
     demo_setup_controller_->set_demo_config(*demo_config);

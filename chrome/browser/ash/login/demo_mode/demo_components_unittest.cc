@@ -12,9 +12,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +40,7 @@ class DemoComponentsTest : public testing::Test {
  public:
   DemoComponentsTest()
       : browser_process_platform_part_test_api_(
-            g_browser_process->platform_part()) {}
+            TestingBrowserProcess::GetGlobal()->platform_part()) {}
 
   DemoComponentsTest(const DemoComponentsTest&) = delete;
   DemoComponentsTest& operator=(const DemoComponentsTest&) = delete;
@@ -86,7 +86,10 @@ class DemoComponentsTest : public testing::Test {
 };
 
 TEST_F(DemoComponentsTest, GetPaths) {
-  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
+                                     ->platform_part()
+                                     ->component_manager_ash(),
+                                 DemoSession::DemoModeConfig::kOnline);
   demo_components.LoadResourcesComponent(base::DoNothing());
   EXPECT_FALSE(demo_components.resources_component_loaded());
 
@@ -112,7 +115,10 @@ TEST_F(DemoComponentsTest, GetPaths) {
 }
 
 TEST_F(DemoComponentsTest, LoadResourcesComponent) {
-  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
+                                     ->platform_part()
+                                     ->component_manager_ash(),
+                                 DemoSession::DemoModeConfig::kOnline);
   demo_components.LoadResourcesComponent(base::DoNothing());
 
   EXPECT_FALSE(demo_components.resources_component_loaded());
@@ -124,7 +130,10 @@ TEST_F(DemoComponentsTest, LoadResourcesComponent) {
 }
 
 TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
-  DemoComponents demo_components(DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
+                                     ->platform_part()
+                                     ->component_manager_ash(),
+                                 DemoSession::DemoModeConfig::kOnline);
 
   bool first_callback_called = false;
   demo_components.LoadResourcesComponent(
@@ -166,7 +175,10 @@ TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
 }
 
 TEST_F(DemoComponentsTest, LoadAppComponent) {
-  DemoComponents demo_cros_components(DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_cros_components(TestingBrowserProcess::GetGlobal()
+                                          ->platform_part()
+                                          ->component_manager_ash(),
+                                      DemoSession::DemoModeConfig::kOnline);
 
   demo_cros_components.LoadAppComponent(base::DoNothing());
   ASSERT_TRUE(FinishComponentLoad(kAppComponent,

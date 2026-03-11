@@ -2094,6 +2094,10 @@ class ArcSessionOobeOptInNegotiatorTest
   void SetUp() override {
     ArcSessionManagerTest::SetUp();
 
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeComponentManager();
+
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         true);
 
@@ -2138,6 +2142,10 @@ class ArcSessionOobeOptInNegotiatorTest
 
     ArcSessionManager::SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(
         false);
+
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->ShutdownComponentManager();
 
     ArcSessionManagerTest::TearDown();
   }

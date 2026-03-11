@@ -146,6 +146,17 @@ class DemoSessionTest : public testing::Test {
     return profile;
   }
 
+  DemoSession* StartDemoSessionIfInDemoMode() {
+    return DemoSession::StartIfInDemoMode(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
+  }
+
   raw_ptr<FakeComponentManagerAsh> component_manager_ash_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
@@ -165,11 +176,7 @@ class DemoSessionTest : public testing::Test {
 
 TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
   EXPECT_FALSE(DemoSession::Get());
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
   EXPECT_TRUE(demo_session->started());
   EXPECT_EQ(demo_session, DemoSession::Get());
@@ -178,33 +185,21 @@ TEST_F(DemoSessionTest, StartForDeviceInDemoMode) {
 TEST_F(DemoSessionTest, StartForDemoDeviceNotInDemoMode) {
   cros_settings_test_helper_.InstallAttributes()->SetConsumerOwned();
   EXPECT_FALSE(DemoSession::Get());
-  EXPECT_FALSE(DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage()));
+  EXPECT_FALSE(StartDemoSessionIfInDemoMode());
   EXPECT_FALSE(DemoSession::Get());
 
   EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kResourcesComponent));
 }
 
 TEST_F(DemoSessionTest, ShutdownResetsInstance) {
-  ASSERT_TRUE(DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage()));
+  ASSERT_TRUE(StartDemoSessionIfInDemoMode());
   EXPECT_TRUE(DemoSession::Get());
   DemoSession::ShutDownIfInitialized();
   EXPECT_FALSE(DemoSession::Get());
 }
 
 TEST_F(DemoSessionTest, LoginDemoSession) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
   // There should be no user action DemoMode.DemoSessionStarts reported
   // before the user login
@@ -218,21 +213,13 @@ TEST_F(DemoSessionTest, LoginDemoSession) {
 }
 
 TEST_F(DemoSessionTest, CannotLockScreen) {
-  ASSERT_TRUE(DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage()));
+  ASSERT_TRUE(StartDemoSessionIfInDemoMode());
   EXPECT_TRUE(DemoSession::Get());
   EXPECT_FALSE(SessionControllerClientImpl::CanLockScreen());
 }
 
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
 
   std::unique_ptr<base::MockOneShotTimer> timer =
@@ -282,11 +269,7 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
 }
 
 TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
 
   std::unique_ptr<base::MockOneShotTimer> timer =
@@ -339,11 +322,7 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
 using DemoSessionLocaleTest = DemoSessionTest;
 
 TEST_F(DemoSessionLocaleTest, InitializeDefaultLocale) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
 
   TestingProfile* profile = LoginDemoUser();
@@ -362,11 +341,7 @@ TEST_F(DemoSessionLocaleTest, InitializeDefaultLocale) {
 }
 
 TEST_F(DemoSessionLocaleTest, DefaultAndCurrentLocaleDifferent) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
 
   TestingProfile* profile = LoginDemoUser();
@@ -386,11 +361,7 @@ TEST_F(DemoSessionLocaleTest, DefaultAndCurrentLocaleDifferent) {
 }
 
 TEST_F(DemoSessionLocaleTest, DefaultAndCurrentLocaleIdentical) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()
-          ->GetFeatures()
-          ->application_locale_storage());
+  DemoSession* demo_session = StartDemoSessionIfInDemoMode();
   ASSERT_TRUE(demo_session);
 
   TestingProfile* profile = LoginDemoUser();

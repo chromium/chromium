@@ -478,7 +478,11 @@ std::string DemoSetupController::GetDemoSetupStepString(
   NOTREACHED();
 }
 
-DemoSetupController::DemoSetupController() = default;
+DemoSetupController::DemoSetupController(
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
+    : component_manager_ash_(std::move(component_manager_ash)) {
+  CHECK(component_manager_ash_);
+}
 
 DemoSetupController::~DemoSetupController() = default;
 
@@ -524,7 +528,8 @@ void DemoSetupController::LoadDemoComponents() {
   download_start_time_ = base::TimeTicks::Now();
 
   if (!demo_components_)
-    demo_components_ = std::make_unique<DemoComponents>(demo_config_);
+    demo_components_ =
+        std::make_unique<DemoComponents>(component_manager_ash_, demo_config_);
 
   // Simulate loading demo components completed for unit tests.
   if (DBusThreadManager::Get()->IsUsingFakes() &&
