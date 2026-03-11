@@ -27,7 +27,7 @@ class PdfInkUndoRedoModel {
   enum class CommandsType {
     kNone,
     kAdd,
-    kErase,
+    kRemove,
   };
 
   // Set of IDs to add/remove. There are multiple types of IDs:
@@ -37,10 +37,10 @@ class PdfInkUndoRedoModel {
   //   be removed.
   using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
   using AddCommands = base::StrongAlias<class AddCommandsTag, std::set<IdType>>;
-  using EraseCommands =
-      base::StrongAlias<class EraseCommandsTag, std::set<IdType>>;
+  using RemoveCommands =
+      base::StrongAlias<class RemoveCommandsTag, std::set<IdType>>;
 
-  using Commands = std::variant<std::monostate, AddCommands, EraseCommands>;
+  using Commands = std::variant<std::monostate, AddCommands, RemoveCommands>;
 
   // Set of IDs used for drawing to discard. This does not use `IdType`, because
   // model shapes are pre-existing and cannot be discarded.
@@ -85,13 +85,13 @@ class PdfInkUndoRedoModel {
   [[nodiscard]] std::optional<DiscardedAddCommands> StartRemove();
   // Records erasing an annotation identified by `id`.
   // Must be called between StartRemove() and FinishRemove().
-  // `id` must not be in any `EraseCommands` on the commands stack.
+  // `id` must not be in any `RemoveCommands` on the commands stack.
   // If `id` is for a stroke, it must be in a `AddCommands` on the commands
   // stack.
   // If the caller passes in invalid values, `PdfInkUndoRedoModel` will
   // faithfully give them back during undo/redo operations.
   [[nodiscard]] bool Remove(IdType id);
-  // Finishes recording erase commands and pushes a new element onto the stack.
+  // Finishes recording remove commands and pushes a new element onto the stack.
   // Must be called after StartRemove().
   [[nodiscard]] bool FinishRemove();
 
@@ -103,7 +103,7 @@ class PdfInkUndoRedoModel {
 
   static CommandsType GetCommandsType(const Commands& commands);
   static const AddCommands& GetAddCommands(const Commands& commands);
-  static const EraseCommands& GetEraseCommands(const Commands& commands);
+  static const RemoveCommands& GetRemoveCommands(const Commands& commands);
 
  private:
   template <typename T>
@@ -111,17 +111,17 @@ class PdfInkUndoRedoModel {
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
   bool HasIdInAddCommands(IdType id) const;
-  bool HasIdInEraseCommands(IdType id) const;
+  bool HasIdInRemoveCommands(IdType id) const;
 
   // Invariants:
   // (1) Never empty.
   // (2) The last element and only the last element can be `std::monostate`.
   // (3) IDs used in `AddCommands` elements are unique among all `AddCommands`
   //     elements.
-  // (4) IDs added to a `AddCommands` must not exist in any `EraseCommands`.
-  // (5) IDs used in `EraseCommands` elements are unique among all
-  //     `EraseCommands` elements.
-  // (6) IDs added to a `EraseCommands` must exist in some `AddCommands`
+  // (4) IDs added to a `AddCommands` must not exist in any `RemoveCommands`.
+  // (5) IDs used in `RemoveCommands` elements are unique among all
+  //     `RemoveCommands` elements.
+  // (6) IDs added to a `RemoveCommands` must exist in some `AddCommands`
   //     element.
   // (7) `AddCommands` only contains `InkStrokeId` elements here. The reason
   //     `AddCommands` can hold `InkModeledShapeId` is to undo an

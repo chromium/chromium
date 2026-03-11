@@ -1648,9 +1648,9 @@ void PdfInkModule::ApplyUndoRedoCommands(
           /*should_draw=*/true);
       return;
     }
-    case PdfInkUndoRedoModel::CommandsType::kErase: {
+    case PdfInkUndoRedoModel::CommandsType::kRemove: {
       ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetEraseCommands(commands).value(),
+          PdfInkUndoRedoModel::GetRemoveCommands(commands).value(),
           /*should_draw=*/false);
       return;
     }

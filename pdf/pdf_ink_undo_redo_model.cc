@@ -25,9 +25,9 @@ PdfInkUndoRedoModel::AddCommands& GetModifiableAddCommands(
   return std::get<PdfInkUndoRedoModel::AddCommands>(commands);
 }
 
-PdfInkUndoRedoModel::EraseCommands& GetModifiableEraseCommands(
+PdfInkUndoRedoModel::RemoveCommands& GetModifiableRemoveCommands(
     PdfInkUndoRedoModel::Commands& commands) {
-  return std::get<PdfInkUndoRedoModel::EraseCommands>(commands);
+  return std::get<PdfInkUndoRedoModel::RemoveCommands>(commands);
 }
 
 }  // namespace
@@ -53,7 +53,7 @@ bool PdfInkUndoRedoModel::Add(InkStrokeId id) {
   }
 
   // Invariant 4 holds if invariant 6 holds.
-  CHECK(!HasIdInEraseCommands(id));
+  CHECK(!HasIdInRemoveCommands(id));
   GetModifiableAddCommands(commands_stack_.back())->insert(id);
   return true;
 }
@@ -79,19 +79,19 @@ bool PdfInkUndoRedoModel::FinishAdd() {
 
 std::optional<PdfInkUndoRedoModel::DiscardedAddCommands>
 PdfInkUndoRedoModel::StartRemove() {
-  return StartImpl<EraseCommands>();
+  return StartImpl<RemoveCommands>();
 }
 
 bool PdfInkUndoRedoModel::Remove(IdType id) {
   CHECK(!commands_stack_.empty());
 
-  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
+  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kRemove)) {
     // Can only remove at top of the stack, and the entry there must be for
     // erasing.
     return false;
   }
 
-  if (HasIdInEraseCommands(id)) {
+  if (HasIdInRemoveCommands(id)) {
     return false;  // Failed invariant 5.
   }
 
@@ -99,21 +99,21 @@ bool PdfInkUndoRedoModel::Remove(IdType id) {
     return false;  // Failed invariant 6.
   }
 
-  GetModifiableEraseCommands(commands_stack_.back())->insert(id);
+  GetModifiableRemoveCommands(commands_stack_.back())->insert(id);
   return true;
 }
 
 bool PdfInkUndoRedoModel::FinishRemove() {
   CHECK(!commands_stack_.empty());
 
-  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
+  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kRemove)) {
     // Can only remove at top of the stack, and the entry there must be for
     // erasing.
     return false;
   }
 
   auto& commands = commands_stack_.back();
-  if (GetEraseCommands(commands)->empty()) {
+  if (GetRemoveCommands(commands)->empty()) {
     commands = std::monostate();  // Reuse top of stack if empty.
   } else {
     // Otherwise push new item onto the stack.
@@ -139,15 +139,15 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
       NOTREACHED();  // Invariant 2.
     }
     case CommandsType::kAdd: {
-      EraseCommands result;
+      RemoveCommands result;
       auto add_commands = GetAddCommands(commands).value();
       result->insert(add_commands.begin(), add_commands.end());
       return result;
     }
-    case CommandsType::kErase: {
+    case CommandsType::kRemove: {
       AddCommands result;
-      auto erase_commands = GetEraseCommands(commands).value();
-      result->insert(erase_commands.begin(), erase_commands.end());
+      auto remove_commands = GetRemoveCommands(commands).value();
+      result->insert(remove_commands.begin(), remove_commands.end());
       return result;
     }
   }
@@ -172,8 +172,8 @@ PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Redo() {
     case CommandsType::kAdd: {
       return GetAddCommands(commands);
     }
-    case CommandsType::kErase: {
-      return GetEraseCommands(commands);
+    case CommandsType::kRemove: {
+      return GetRemoveCommands(commands);
     }
   }
   NOTREACHED();
@@ -188,8 +188,8 @@ PdfInkUndoRedoModel::CommandsType PdfInkUndoRedoModel::GetCommandsType(
   if (std::holds_alternative<AddCommands>(commands)) {
     return CommandsType::kAdd;
   }
-  CHECK(std::holds_alternative<EraseCommands>(commands));
-  return CommandsType::kErase;
+  CHECK(std::holds_alternative<RemoveCommands>(commands));
+  return CommandsType::kRemove;
 }
 
 // static
@@ -199,9 +199,9 @@ const PdfInkUndoRedoModel::AddCommands& PdfInkUndoRedoModel::GetAddCommands(
 }
 
 // static
-const PdfInkUndoRedoModel::EraseCommands& PdfInkUndoRedoModel::GetEraseCommands(
-    const Commands& commands) {
-  return std::get<EraseCommands>(commands);
+const PdfInkUndoRedoModel::RemoveCommands&
+PdfInkUndoRedoModel::GetRemoveCommands(const Commands& commands) {
+  return std::get<RemoveCommands>(commands);
 }
 
 template <typename T>
@@ -266,10 +266,10 @@ bool PdfInkUndoRedoModel::HasIdInAddCommands(IdType id) const {
   return false;
 }
 
-bool PdfInkUndoRedoModel::HasIdInEraseCommands(IdType id) const {
+bool PdfInkUndoRedoModel::HasIdInRemoveCommands(IdType id) const {
   for (const auto& commands : commands_stack_) {
-    if (GetCommandsType(commands) == CommandsType::kErase &&
-        GetEraseCommands(commands)->contains(id)) {
+    if (GetCommandsType(commands) == CommandsType::kRemove &&
+        GetRemoveCommands(commands)->contains(id)) {
       return true;
     }
   }
