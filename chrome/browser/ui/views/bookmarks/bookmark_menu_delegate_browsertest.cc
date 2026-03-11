@@ -1327,3 +1327,50 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
   EXPECT_TRUE(open_all_item->GetEnabled());
   EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
 }
+// Tests that the "Open all" count is updated correctly when a bookmark is
+// removed from a folder that is currently displayed as a nested submenu
+// (e.g., inside the bookmark bar overflow menu).
+IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateOpenAllTest,
+                       OpenAllCountUpdatedInNestedSubmenu) {
+  // Add an extra URL to F1 so it has 2 items initially.
+  AddExtraUrlToF1();
+  const BookmarkNode* f1 = GetF1();
+
+  NewDelegate();
+  // Set the Bookmark Bar as the active root menu.
+  bookmark_menu_delegate_->SetActiveMenu(
+      BookmarkParentFolder::BookmarkBarFolder(), 0);
+  views::MenuItemView* root_menu = menu();
+  LoadAllMenus(root_menu);
+
+  // Find the F1 submenu item inside the root menu.
+  views::MenuItemView* f1_item = nullptr;
+  for (views::MenuItemView* item : root_menu->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"F1") {
+      f1_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(f1_item, nullptr);
+
+  // Verify that the initial count for "Open all" is 2.
+  views::MenuItemView* open_all_item =
+      GetDirectChildByCommandId(f1_item, IDC_BOOKMARK_BAR_OPEN_ALL);
+  ASSERT_NE(open_all_item, nullptr);
+  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(2));
+
+  // Remove the first child (f1a) from the F1 node.
+  const BookmarkNode* f1a = f1->children()[0].get();
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes_to_remove =
+      {f1a};
+
+  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  model()->Remove(f1a, bookmarks::metrics::BookmarkEditSource::kOther,
+                  FROM_HERE);
+  bookmark_menu_delegate_->DidRemoveBookmarks();
+
+  // Verify that the count for "Open all" updates to 1 after the removal.
+  open_all_item = GetDirectChildByCommandId(f1_item, IDC_BOOKMARK_BAR_OPEN_ALL);
+  ASSERT_NE(open_all_item, nullptr);
+  EXPECT_EQ(open_all_item->title(), GetExpectedOpenAllTitle(1));
+}
