@@ -26,12 +26,8 @@ namespace blink {
 namespace {
 // TODO(bokan): Move this into FragmentDirective after
 // https://crrev.com/c/3216206 lands.
-String RemoveFragmentDirectives(const String& url_fragment) {
-  wtf_size_t directive_delimiter_ix = url_fragment.find(":~:");
-  if (directive_delimiter_ix == kNotFound)
-    return url_fragment;
-
-  return url_fragment.substr(0, directive_delimiter_ix);
+StringView RemoveFragmentDirectives(const StringView& url_fragment) {
+  return url_fragment.substr(0, url_fragment.find(":~:"));
 }
 
 }  // namespace
@@ -51,9 +47,8 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!url.HasFragmentIdentifier() && !doc.CssTarget() && !doc.IsSVGDocument())
     return nullptr;
 
-  String fragment =
-      RemoveFragmentDirectives(url.FragmentIdentifier().ToString());
-  Node* anchor_node = doc.FindAnchor(fragment);
+  StringView fragment = RemoveFragmentDirectives(url.FragmentIdentifier());
+  Node* anchor_node = doc.FindAnchor(fragment.ToString());
 
   // Setting to null will clear the current target.
   auto* target = DynamicTo<Element>(anchor_node);
