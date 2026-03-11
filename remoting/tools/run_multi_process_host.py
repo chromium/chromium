@@ -159,6 +159,7 @@ def user_main(out_dir):
 
 
 def root_main(out_dir, user_home):
+    abs_out_dir = os.path.abspath(out_dir)
     host_config_path = "/etc/chrome-remote-desktop/host.json"
 
     if not os.path.exists(host_config_path):
@@ -179,27 +180,58 @@ def root_main(out_dir, user_home):
     print("Adding _crd_network system user...")
     run_command(["adduser", "--system", "_crd_network"])
 
-    remoting_host_path = os.path.join(out_dir, "remoting_me2me_host")
+    remoting_host_path = os.path.join(abs_out_dir, "remoting_me2me_host")
+    remoting_core_path = os.path.join(abs_out_dir, "libremoting_core.so")
+
+    def check_permissions():
+        try:
+            run_command([
+                "sudo", "-u", "_crd_network", "test", "-x", remoting_host_path
+            ])
+            run_command([
+                "sudo", "-u", "_crd_network", "test", "-r", remoting_core_path
+            ])
+            return True
+        except subprocess.CalledProcessError:
+            return False
 
     # Binaries and various `.so`s need to be readable and executable by
     # `_crd_network` and the `Debian-gdm` group.
     print("Checking permissions...")
-    try:
-        run_command(
-            ["sudo", "-u", "_crd_network", "test", "-x", remoting_host_path])
-        run_command([
-            "sudo", "-u", "_crd_network", "test", "-r",
-            os.path.join(out_dir, "libremoting_core.so")
-        ])
+    if check_permissions():
         print("_crd_network has the right permissions.")
-    except subprocess.CalledProcessError:
+    else:
         print(
             "_crd_network does not have execute permissions. Setting ACLs...")
         run_command([
             "setfacl", "-R", "-m", "u:_crd_network:rx", "-m",
-            "g:Debian-gdm:rx", out_dir
+            "g:Debian-gdm:rx", abs_out_dir
         ])
-        print("ACLs updated.")
+
+        # Accounts also need to be granted read and executable permissions to
+        # all the parent directories.
+        current_dir = abs_out_dir
+        user_home_abs = os.path.abspath(user_home)
+        while not check_permissions():
+            parent_dir = os.path.dirname(current_dir)
+            if parent_dir == current_dir:
+                break
+
+            print(f"Setting ACLs on {parent_dir}...")
+            run_command([
+                "setfacl", "-m", "u:_crd_network:rx", "-m", "g:Debian-gdm:rx",
+                parent_dir
+            ])
+
+            if parent_dir == user_home_abs:
+                break
+            current_dir = parent_dir
+
+        if check_permissions():
+            print("ACLs updated.")
+        else:
+            print("ACLs updated but permissions still failing.",
+                  file=sys.stderr)
 
     # Add an autostart entry for the login session reporter.
     # TODO: crbug.com/488713023 - remove this once we no longer need this for
@@ -208,7 +240,6 @@ def root_main(out_dir, user_home):
         print("GDM version is 49 or higher. Skipping login session reporter "
               "autostart.")
     else:
-        abs_out_dir = os.path.abspath(out_dir)
         login_reporter_desktop_path = "/usr/share/gdm/greeter/autostart/"\
             "crd-login-session-reporter.desktop"
         if not os.path.exists(login_reporter_desktop_path):
@@ -225,8 +256,7 @@ NoDisplay=true
                 f.write(desktop_content)
             print(f"{login_reporter_desktop_path} created.")
 
-    daemon_command = \
-        [os.path.join(abs_out_dir, "remoting_me2me_host"), "--type=daemon"]
+    daemon_command = [remoting_host_path, "--type=daemon"]
     print(f"Starting CRD host daemon: {' '.join(daemon_command)}")
 
     signal.signal(signal.SIGTERM, handle_signal)
