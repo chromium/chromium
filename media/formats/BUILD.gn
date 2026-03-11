@@ -446,6 +446,7 @@ if (proprietary_codecs) {
     deps = [
       "//base",
       "//media",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
       "//ui/gfx/geometry",
     ]
   }

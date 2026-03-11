@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
@@ -13,6 +14,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vp8_picture.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace {
 
@@ -41,12 +43,11 @@ class FakeVP8Accelerator : public media::VP8Decoder::VP8Accelerator {
 
 }  // namespace
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (!size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(
+    const base::span<const uint8_t> data_span) {
+  if (data_span.empty()) {
     return 0;
   }
-  // SAFETY: LibFuzzer guarantees that `data` is valid for `size` bytes.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
 
   media::VP8Decoder decoder(std::make_unique<FakeVP8Accelerator>());
   auto external_memory =

@@ -9,17 +9,17 @@
 #include <tuple>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_reader.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   media::NullMediaLog media_log;
   std::unique_ptr<media::mp4::BoxReader> reader;
-  if (media::mp4::BoxReader::ReadTopLevelBox(
-          UNSAFE_TODO(base::span<const uint8_t>(data, size)), &media_log,
-          &reader) == media::mp4::ParseResult::kOk) {
+  if (media::mp4::BoxReader::ReadTopLevelBox(data, &media_log, &reader) ==
+      media::mp4::ParseResult::kOk) {
     CHECK(reader);
     std::ignore = reader->ScanChildren();
   }

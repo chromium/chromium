@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vp9_picture.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 namespace {
 
@@ -43,16 +44,15 @@ class FakeVP9Accelerator : public media::VP9Decoder::VP9Accelerator {
 
 }  // namespace
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (!size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  if (data.empty()) {
     return 0;
   }
 
   media::VP9Decoder decoder(std::make_unique<FakeVP9Accelerator>(),
                             media::VP9PROFILE_PROFILE0);
   auto external_memory =
-      std::make_unique<media::ExternalMemoryAdapterForTesting>(
-          UNSAFE_TODO(base::span(data, size)));
+      std::make_unique<media::ExternalMemoryAdapterForTesting>(data);
   scoped_refptr<media::DecoderBuffer> decoder_buffer =
       media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   decoder.SetStream(1, decoder_buffer);

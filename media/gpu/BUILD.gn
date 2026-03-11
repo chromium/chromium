@@ -733,6 +733,7 @@ if (enable_hevc_parser_and_hw_decoder) {
       ":gpu",
       "//base",
       "//media:test_support",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 }
@@ -743,6 +744,7 @@ fuzzer_test("media_h264_decoder_fuzzer") {
     ":gpu",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpuses = [ "//media/test/data" ]
 }
@@ -756,6 +758,7 @@ if (use_v4l2_codec || use_vaapi) {
       ":gpu",
       "//base",
       "//media:test_support",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
     seed_corpuses = [ "//media/test/data" ]
   }
@@ -792,6 +795,7 @@ fuzzer_test("media_vp9_decoder_fuzzer") {
     ":gpu",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpuses = [ "//media/test/data" ]
 }
