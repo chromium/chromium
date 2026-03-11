@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -41,6 +42,15 @@ const CGFloat kTabGridAnimationDuration = 0.25;
 // Spacing between tab grid button and the tab grid spotlight view anchor.
 const CGFloat kSpotlightViewHorizontalInset = 12;
 const CGFloat kSpotlightViewVerticalInset = 2;
+
+// The spacing inside the stack view.
+const CGFloat kStackViewSpacing = 4;
+// The horizontal margins of the stack view.
+const CGFloat kStackViewHorizontalMargin = 8;
+
+// The inner padding of the buttons.
+const CGFloat kButtonHorizontalPadding = 4;
+const CGFloat kButtonVerticalPadding = 12;
 
 // Returns the configuration for all the symbols.
 UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
@@ -110,14 +120,19 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.distribution = UIStackViewDistributionFillEqually;
+  stackView.spacing = kStackViewSpacing;
 
   UIView* view = self.view;
   [view addSubview:stackView];
 
   [NSLayoutConstraint activateConstraints:@[
-    [stackView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
+    [stackView.leadingAnchor
+        constraintEqualToAnchor:view.leadingAnchor
+                       constant:kStackViewHorizontalMargin],
     [stackView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [stackView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor],
+    [stackView.trailingAnchor
+        constraintEqualToAnchor:view.trailingAnchor
+                       constant:-kStackViewHorizontalMargin],
     [stackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:view.bottomAnchor],
     [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
@@ -189,8 +204,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Returns a new "Assistant" button.
 - (UIButton*)createAssistantButton {
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI);
+  NSString* title = l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI);
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image = CustomAppBarSymbol(kGeminiBrandedLogoSymbol);
 #else
@@ -207,7 +221,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Returns a new "New Tab" button.
 - (UIButton*)createOpenNewTabButton {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB);
+  NSString* title = l10n_util::GetNSString(IDS_IOS_APP_BAR_NEW);
   UIImage* image = DefaultAppBarSymbol(kPlusInCircleSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.menu = _openNewTabButtonMenu;
@@ -228,7 +242,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   _tabGridSymbolView = tabGridSymbolView;
 
   // Set up button.
-  NSString* title = l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ALL_TABS);
+  NSString* title = l10n_util::GetNSString(IDS_IOS_APP_BAR_ALL_TABS);
   UIImage* image = DefaultAppBarSymbol(kAppSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.menu = _tabGridButtonMenu;
@@ -281,15 +295,43 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 - (UIButton*)buttonWithTitle:(NSString*)title image:(UIImage*)image {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
-  configuration.imagePlacement = NSDirectionalRectEdgeTop;
-  configuration.imagePadding = kButtonImagePadding;
-  configuration.baseForegroundColor = UIColor.whiteColor;
-
-  configuration.image = image;
-  configuration.title = title;
-
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
+  __weak UIButton* weakButton = button;
+
+  configuration = button.configuration;
+
+  configuration.imagePlacement = NSDirectionalRectEdgeTop;
+  configuration.imagePadding = kButtonImagePadding;
+  configuration.image = image;
+
+  configuration.baseForegroundColor = UIColor.whiteColor;
+
+  configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalPadding, kButtonHorizontalPadding, kButtonVerticalPadding,
+      kButtonHorizontalPadding);
+
+  configuration.title = title;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+
+  configuration.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* textAttributes) {
+    NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
+
+    mutableAttributes[NSFontAttributeName] =
+        PreferredFontForTextStyleWithMaxCategory(
+            UIFontTextStyleCaption2,
+            weakButton.traitCollection.preferredContentSizeCategory,
+            UIContentSizeCategoryExtraExtraExtraLarge);
+
+    return mutableAttributes;
+  };
+
+  button.configuration = configuration;
+
+  button.titleLabel.adjustsFontSizeToFitWidth = YES;
+
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   button.layer.shadowColor = [UIColor blackColor].CGColor;

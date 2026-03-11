@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/banner_promo_view.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -218,7 +217,7 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 - (UIFont*)textFont {
   UIContentSizeCategory category = ContentSizeCategoryWithMaxCategory(
       self.traitCollection.preferredContentSizeCategory,
-      LocationBarSteadyViewMaxSizeCategory());
+      UIContentSizeCategoryAccessibilityExtraLarge);
   UITraitCollection* traitCollection = [UITraitCollection
       traitCollectionWithPreferredContentSizeCategory:category];
 

@@ -12,12 +12,12 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -170,7 +170,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (self) {
     [self setUpViews];
     [self setUpLayout];
-    [self setUpTraitChangeHandler];
   }
   [self setUpAccessibility];
   return self;
@@ -204,7 +203,11 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   [_locationLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
-  _locationLabel.font = [self locationLabelFont];
+  _locationLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  _locationLabel.adjustsFontForContentSizeCategory = YES;
+  _locationLabel.maximumContentSizeCategory =
+      IsChromeNextIaEnabled() ? LocationBarSteadyViewMaxSizeCategory()
+                              : LegacyLocationBarSteadyViewMaxSizeCategory();
 
   // Container for location label and icon.
   _locationContainerView = [[UIView alloc] init];
@@ -353,17 +356,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
     [_trailingButtonSpotlightView.heightAnchor
         constraintEqualToAnchor:self.heightAnchor],
   ]];
-}
-
-- (void)setUpTraitChangeHandler {
-  __weak __typeof(self) weakSelf = self;
-  UITraitChangeHandler traitChangeHandler =
-      ^(id<UITraitEnvironment> traitEnvironment,
-        UITraitCollection* previousCollection) {
-        [weakSelf updateFontOnTraitChange:previousCollection];
-      };
-  [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                    withHandler:traitChangeHandler];
 }
 
 - (void)setUpAccessibility {
@@ -651,25 +643,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   if (self.trailingButton && self.trailingButton.enabled) {
     [self.accessibleElements addObject:self.trailingButton];
   }
-}
-
-// Returns the normal font size for the location label.
-- (UIFont*)locationLabelFont {
-  return LocationBarSteadyViewFont(
-      self.traitCollection.preferredContentSizeCategory);
-}
-
-// Updates the `locationLabel`'s font when the device's preferred content size
-// category changes.
-- (void)updateFontOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    self.locationLabel.font = [self locationLabelFont];
-  }
-
-  self.trailingButtonTrailingAnchorConstraint.constant =
-      self.trailingButtonTrailingSpacing;
-  [self layoutIfNeeded];
 }
 
 // Propagates the incognito state to the badges container view.
