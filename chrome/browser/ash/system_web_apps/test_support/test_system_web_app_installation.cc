@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_url_data_source.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -896,7 +898,11 @@ TestSystemWebAppInstallation::CreateSystemWebAppManager(
                          profile);
   }
 
-  auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
+  auto system_web_app_manager =
+      std::make_unique<SystemWebAppManager>(TestingBrowserProcess::GetGlobal()
+                                                ->GetFeatures()
+                                                ->application_locale_storage(),
+                                            profile);
 
   system_web_app_manager->SetSystemAppsForTesting(
       std::move(system_app_delegates_));
@@ -918,7 +924,11 @@ TestSystemWebAppInstallation::CreateSystemWebAppManagerWithNoSystemWebApps(
   // `CreateWebAppProvider` gets called first and assigns `profile_`.
   DCHECK_EQ(profile_, profile);
 
-  auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
+  auto system_web_app_manager =
+      std::make_unique<SystemWebAppManager>(TestingBrowserProcess::GetGlobal()
+                                                ->GetFeatures()
+                                                ->application_locale_storage(),
+                                            profile);
 
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);

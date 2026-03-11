@@ -10,12 +10,16 @@
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -26,7 +30,11 @@ std::unique_ptr<KeyedService> TestSystemWebAppManager::BuildDefault(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  auto test_swa_manager = std::make_unique<TestSystemWebAppManager>(profile);
+  auto test_swa_manager = std::make_unique<TestSystemWebAppManager>(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage(),
+      profile);
 
   // We don't auto-install system web apps in `TestingProfile`. Tests must
   // opt-in to call `ScheduleStart()` or `Start()` when they need.
@@ -42,8 +50,11 @@ TestSystemWebAppManager* TestSystemWebAppManager::Get(Profile* profile) {
   return test_swa_manager;
 }
 
-TestSystemWebAppManager::TestSystemWebAppManager(Profile* profile)
-    : SystemWebAppManager(profile) {
+TestSystemWebAppManager::TestSystemWebAppManager(
+    ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile)
+    : SystemWebAppManager(application_locale_storage, profile),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   SetSystemAppsForTesting(
       base::flat_map<SystemWebAppType,
                      std::unique_ptr<SystemWebAppDelegate>>());
@@ -56,12 +67,12 @@ void TestSystemWebAppManager::SetUpdatePolicy(
   SetUpdatePolicyForTesting(policy);
 }
 
-const base::Version& TestSystemWebAppManager::CurrentVersion() const {
-  return current_version_;
+void TestSystemWebAppManager::SetCurrentLocale(const std::string& locale) {
+  application_locale_storage_->Set(locale);
 }
 
-const std::string& TestSystemWebAppManager::CurrentLocale() const {
-  return current_locale_;
+const base::Version& TestSystemWebAppManager::CurrentVersion() const {
+  return current_version_;
 }
 
 bool TestSystemWebAppManager::PreviousSessionHadBrokenIcons() const {

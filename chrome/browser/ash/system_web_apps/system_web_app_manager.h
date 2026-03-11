@@ -13,6 +13,7 @@
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -38,6 +39,7 @@ namespace web_app {
 class WebAppProvider;
 }  // namespace web_app
 
+class ApplicationLocaleStorage;
 class PrefService;
 class Profile;
 
@@ -77,7 +79,10 @@ class SystemWebAppManager : public KeyedService,
   // Returns whether the given app type is enabled.
   bool IsAppEnabled(SystemWebAppType type) const;
 
-  explicit SystemWebAppManager(Profile* profile);
+  // `application_locale_storage` must be non-null and must outlive `this`.
+  SystemWebAppManager(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
   SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
   ~SystemWebAppManager() override;
@@ -182,7 +187,6 @@ class SystemWebAppManager : public KeyedService,
 
  protected:
   virtual const base::Version& CurrentVersion() const;
-  virtual const std::string& CurrentLocale() const;
   virtual bool PreviousSessionHadBrokenIcons() const;
   void StopBackgroundTasks();
 
@@ -226,6 +230,7 @@ class SystemWebAppManager : public KeyedService,
   void ConnectProviderToSystemWebAppDelegateMap(
       const SystemWebAppDelegateMap* system_web_apps_delegate_map) const;
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<Profile> profile_;
   // SystemWebAppManager KeyedService depends on WebAppProvider KeyedService,
   // therefore this pointer is always valid.

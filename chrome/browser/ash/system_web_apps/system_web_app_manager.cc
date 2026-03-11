@@ -18,6 +18,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -68,7 +69,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_icon_checker.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -85,6 +85,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_background_task_info.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -212,8 +213,11 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
 
 }  // namespace
 
-SystemWebAppManager::SystemWebAppManager(Profile* profile)
-    : profile_(profile),
+SystemWebAppManager::SystemWebAppManager(
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(profile),
       provider_(web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_)),
       on_apps_synchronized_(new base::OneShotEvent()),
       on_tasks_started_(new base::OneShotEvent()),
@@ -621,10 +625,6 @@ const base::Version& SystemWebAppManager::CurrentVersion() const {
   return version_info::GetVersion();
 }
 
-const std::string& SystemWebAppManager::CurrentLocale() const {
-  return g_browser_process->GetApplicationLocale();
-}
-
 bool SystemWebAppManager::PreviousSessionHadBrokenIcons() const {
   return previous_session_had_broken_icons_;
 }
@@ -704,7 +704,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   pref_service_->SetString(prefs::kSystemWebAppLastUpdateVersion,
                            CurrentVersion().GetString());
   pref_service_->SetString(prefs::kSystemWebAppLastInstalledLocale,
-                           CurrentLocale());
+                           application_locale_storage_->Get());
 
   // Report install duration only if the install pipeline actually installs
   // all the apps (e.g. on version upgrade).
@@ -812,7 +812,8 @@ bool SystemWebAppManager::ShouldForceInstallApps() const {
 
   // If system language changes, ensure System Web Apps launcher localization
   // are in sync with current language.
-  const bool localeIsDifferent = current_installed_locale != CurrentLocale();
+  const bool localeIsDifferent =
+      current_installed_locale != application_locale_storage_->Get();
 
   return versionIsDifferent || localeIsDifferent;
 }
@@ -824,9 +825,10 @@ void SystemWebAppManager::UpdateLastAttemptedInfo() {
   const std::string& last_attempted_locale(
       pref_service_->GetString(prefs::kSystemWebAppLastAttemptedLocale));
 
-  const bool is_retry = last_attempted_version.IsValid() &&
-                        last_attempted_version == CurrentVersion() &&
-                        last_attempted_locale == CurrentLocale();
+  const bool is_retry =
+      last_attempted_version.IsValid() &&
+      last_attempted_version == CurrentVersion() &&
+      last_attempted_locale == application_locale_storage_->Get();
 
   if (!is_retry) {
     pref_service_->SetInteger(prefs::kSystemWebAppInstallFailureCount, 0);
@@ -835,7 +837,7 @@ void SystemWebAppManager::UpdateLastAttemptedInfo() {
   pref_service_->SetString(prefs::kSystemWebAppLastAttemptedVersion,
                            CurrentVersion().GetString());
   pref_service_->SetString(prefs::kSystemWebAppLastAttemptedLocale,
-                           CurrentLocale());
+                           application_locale_storage_->Get());
   pref_service_->CommitPendingWrite();
 }
 

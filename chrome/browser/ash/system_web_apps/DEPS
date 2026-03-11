@@ -80,3 +80,13 @@ include_rules = [
   "+chrome/test/base",
   "+chrome/test/interaction",
 ]
+
+specific_include_rules = {
+  "system_web_app_manager_factory\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
+  "system_web_app_manager_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

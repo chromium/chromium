@@ -36,6 +36,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -198,7 +199,11 @@ class ChromeContentBrowserClientTest : public testing::Test {
     // Unit tests need SWAs from production. Creates real SystemWebAppManager
     // instead of `TestSystemWebAppManager::BuildDefault()` for
     // `TestingProfile`.
-    auto swa_manager = std::make_unique<ash::SystemWebAppManager>(profile);
+    auto swa_manager = std::make_unique<ash::SystemWebAppManager>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile);
     return swa_manager;
   }
   // The custom manager creator should be constructed before `TestingProfile`.

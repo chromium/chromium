@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -240,8 +241,11 @@ class WebAppPolicyManagerTestBase : public WebAppTest {
 
     WebAppTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS)
-    test_system_app_manager_ =
-        std::make_unique<ash::TestSystemWebAppManager>(profile());
+    test_system_app_manager_ = std::make_unique<ash::TestSystemWebAppManager>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile());
 #endif
     auto web_app_policy_manager =
         std::make_unique<WebAppPolicyManager>(profile());

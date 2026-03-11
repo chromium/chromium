@@ -7,6 +7,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -49,11 +51,17 @@ SystemWebAppManagerFactory::~SystemWebAppManagerFactory() = default;
 std::unique_ptr<KeyedService>
 SystemWebAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // NOTE: Allow g_browser_process here since this class is lazily created in
+  // base::NoDestructor.
+  const ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(web_app::WebAppProviderFactory::IsServiceCreatedForProfile(profile));
 
   std::unique_ptr<SystemWebAppManager> swa_manager =
-      std::make_unique<SystemWebAppManager>(profile);
+      std::make_unique<SystemWebAppManager>(application_locale_storage,
+                                            profile);
   swa_manager->ScheduleStart();
 
   return swa_manager;

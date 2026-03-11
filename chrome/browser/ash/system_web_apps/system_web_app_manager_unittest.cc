@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -544,13 +545,13 @@ TEST_P(SystemWebAppManagerInstallationTest, UpdateOnLocaleChange) {
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
   // First execution.
-  system_web_app_manager().set_current_locale("en-US");
+  system_web_app_manager().SetCurrentLocale("en-US");
   StartAndWaitForAppsToSynchronize();
   EXPECT_TRUE(IsInstalled(AppUrl1()));
   EXPECT_FALSE(WasReinstalled(AppUrl1()));
 
   // Change locale setting, should trigger reinstall.
-  system_web_app_manager().set_current_locale("ja");
+  system_web_app_manager().SetCurrentLocale("ja");
   StartAndWaitForAppsToSynchronize();
   EXPECT_TRUE(IsInstalled(AppUrl1()));
   EXPECT_TRUE(WasReinstalled(AppUrl1()));
@@ -822,7 +823,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
   system_web_app_manager().set_current_version(base::Version("1.0.0.0"));
-  system_web_app_manager().set_current_locale("en/us");
+  system_web_app_manager().SetCurrentLocale("en/us");
   StartAndWaitForAppsToSynchronize();
   EXPECT_TRUE(IsInstalled(AppUrl1()));
   EXPECT_FALSE(WasReinstalled(AppUrl1()));
@@ -830,7 +831,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
 
   // Bump the version number, and an update will trigger, and force
   // reinstallation of both apps.
-  system_web_app_manager().set_current_locale("en/au");
+  system_web_app_manager().SetCurrentLocale("en/au");
   system_web_app_manager().ResetForTesting();
 
   {
@@ -874,7 +875,7 @@ TEST_P(SystemWebAppManagerInstallationTest, AbandonFailedInstallsLocaleChange) {
 
   // Bump the version, and it works.
   system_web_app_manager().ResetForTesting();
-  system_web_app_manager().set_current_locale("fr/fr");
+  system_web_app_manager().SetCurrentLocale("fr/fr");
   system_web_app_manager().Start();
   AwaitSystemWebAppCommandsCompletePostStartup();
   externally_managed_app_manager().ClearSynchronizeRequestsForTesting();
@@ -1005,7 +1006,11 @@ TEST_P(SystemWebAppManagerInstallationTest, IsSWABeforeSync) {
   EXPECT_TRUE(IsVersionCorrect(base::Version("1.0.0.0")));
 
   auto unsynced_system_web_app_manager =
-      std::make_unique<TestSystemWebAppManager>(profile());
+      std::make_unique<TestSystemWebAppManager>(
+          TestingBrowserProcess::GetGlobal()
+              ->GetFeatures()
+              ->application_locale_storage(),
+          profile());
 
   {
     SystemWebAppDelegateMap system_apps;
@@ -1412,7 +1417,11 @@ TEST_F(SystemWebAppManagerTest,
 
   // Creates a new SystemWebAppManager without the previously installed App.
   auto unsynced_system_web_app_manager =
-      std::make_unique<TestSystemWebAppManager>(profile());
+      std::make_unique<TestSystemWebAppManager>(
+          TestingBrowserProcess::GetGlobal()
+              ->GetFeatures()
+              ->application_locale_storage(),
+          profile());
 
   // Before Apps are synchronized, WebAppRegistry should know about the App.
   const web_app::WebApp* web_app =
