@@ -60,6 +60,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -3285,4 +3286,53 @@ IN_PROC_BROWSER_TEST_F(GuestSessionBrowserTest, CreateGuestSessionBrowser) {
   EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
             Browser::GetCreationStatusForProfile(
                 guest_profile->GetOriginalProfile()));
+}
+
+class MockBookmarkBarController : public BookmarkBarController {
+ public:
+  MockBookmarkBarController(BrowserWindowInterface& browser,
+                            TabStripModel& tab_strip_model)
+      : BookmarkBarController(browser, tab_strip_model), browser_(browser) {}
+  ~MockBookmarkBarController() override {
+    // Trigger a theme change notification via ThemeService by changing a
+    // preference it observes.
+    browser_->GetProfile()->GetPrefs()->SetInteger(
+        prefs::kBrowserColorScheme,
+        static_cast<int>(ThemeService::BrowserColorScheme::kDark));
+  }
+
+ private:
+  const raw_ref<BrowserWindowInterface> browser_;
+};
+
+class BrowserDestructorBrowserTest : public InProcessBrowserTest {
+ public:
+  BrowserDestructorBrowserTest() {
+    // Inject our mock BookmarkBarController.
+    bookmark_bar_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting<MockBookmarkBarController>(
+                base::BindRepeating([](BrowserWindowInterface& browser) {
+                  return std::make_unique<MockBookmarkBarController>(
+                      browser, *browser.GetTabStripModel());
+                }));
+  }
+
+ private:
+  ui::UserDataFactory::ScopedOverride bookmark_bar_override_;
+};
+
+// This test verifies that a reentrant call to OnThemeChanged during Browser
+// destruction does not cause a crash. Before the fix, this would crash because
+// RemoveObserver(this) was called after window_.reset() and features_.reset().
+// See https://www.crbug.com/458008770.
+IN_PROC_BROWSER_TEST_F(BrowserDestructorBrowserTest,
+                       NoCrashOnReentrantThemeChangeDuringDestruction) {
+  // Create a new browser.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(second_browser);
+  // Close the browser. This will trigger the destructor.
+  // The MockBookmarkBarController will be destroyed during features_.reset(),
+  // which will call second_browser->OnThemeChanged().
+  CloseBrowserSynchronously(second_browser);
 }

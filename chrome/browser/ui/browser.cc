@@ -692,17 +692,17 @@ Browser::~Browser() {
     OnWindowClosing();
   }
 
+  // Stop observing notifications and destroy the tab monitor before continuing
+  // with destruction. Profile destruction will unload extensions and reentrant
+  // calls to Browser:: should be avoided while it is being torn down.
+  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
+
   BrowserList::RemoveBrowser(this);
   window_.reset();
 
   // Tear down `BrowserWindowFeatures` to avoid exposing it to Browser in a
   // partially-destroyed state.
   features_.reset();
-
-  // Stop observing notifications and destroy the tab monitor before continuing
-  // with destruction. Profile destruction will unload extensions and reentrant
-  // calls to Browser:: should be avoided while it is being torn down.
-  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 
   // The tab strip should not have any tabs at this point.
   //
