@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
@@ -41,6 +42,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -58,7 +60,8 @@ public class SignInPreference extends Preference
         implements SignInStateObserver,
                 ProfileDataCache.Observer,
                 SyncService.SyncStateChangedListener,
-                AccountsChangeObserver {
+                AccountsChangeObserver,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
     private boolean mIsShowingSigninPromo;
@@ -70,6 +73,8 @@ public class SignInPreference extends Preference
     private AccountManagerFacade mAccountManagerFacade;
     private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
+    // TODO(crbug.com/469772349): Remove @Nullable after activity-less sign-in launch.
+    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     public ProfileDataCache getProfileDataCache() {
         return mProfileDataCache;
@@ -93,10 +98,12 @@ public class SignInPreference extends Preference
     public void initialize(
             Profile profile,
             ProfileDataCache profileDataCache,
-            AccountManagerFacade accountManagerFacade) {
+            AccountManagerFacade accountManagerFacade,
+            @Nullable BottomSheetSigninAndHistorySyncCoordinator signinCoordinator) {
         mProfile = profile;
         mProfileDataCache = profileDataCache;
         mAccountManagerFacade = accountManagerFacade;
+        mSigninCoordinator = signinCoordinator;
         mPrefService = UserPrefs.get(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
@@ -226,16 +233,20 @@ public class SignInPreference extends Preference
                                             getContext().getString(R.string.history_sync_title),
                                             getContext().getString(R.string.history_sync_subtitle))
                                     .build();
-
-                    @Nullable Intent intent =
-                            SigninAndHistorySyncActivityLauncherImpl.get()
-                                    .createBottomSheetSigninIntentOrShowError(
-                                            getContext(),
-                                            mProfile,
-                                            config,
-                                            SigninAccessPoint.SETTINGS);
-                    if (intent != null) {
-                        getContext().startActivity(intent);
+                    if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+                        assert mSigninCoordinator != null;
+                        mSigninCoordinator.startSigninFlow(config);
+                    } else {
+                        @Nullable Intent intent =
+                                SigninAndHistorySyncActivityLauncherImpl.get()
+                                        .createBottomSheetSigninIntentOrShowError(
+                                                getContext(),
+                                                mProfile,
+                                                config,
+                                                SigninAccessPoint.SETTINGS);
+                        if (intent != null) {
+                            getContext().startActivity(intent);
+                        }
                     }
                     return true;
                 };

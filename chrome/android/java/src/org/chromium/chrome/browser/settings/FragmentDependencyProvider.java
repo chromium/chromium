@@ -129,7 +129,13 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
 
         // Settings screen specific attachments.
         if (fragment instanceof MainSettings) {
-            ((MainSettings) fragment).setModalDialogManagerSupplier(mModalDialogManagerSupplier);
+            MainSettings mainSettings = (MainSettings) fragment;
+            mainSettings.setDependencies(
+                    mModalDialogManagerSupplier,
+                    mWindowAndroidSupplier,
+                    mActivityResultTracker,
+                    mBottomSheetControllerSupplier,
+                    mSnackbarManagerSupplier);
         }
         if (fragment instanceof BaseSiteSettingsFragment) {
             BaseSiteSettingsFragment baseSiteSettingsFragment =

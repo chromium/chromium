@@ -29,7 +29,9 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -43,6 +45,7 @@ import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.Auto
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsMediator;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -60,6 +63,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -73,7 +77,9 @@ import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
@@ -84,11 +90,15 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -97,6 +107,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** The main settings screen, shown when the user first opens Settings. */
 @NullMarked
@@ -162,11 +173,31 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     private @Nullable MultiColumnSettings mMultiColumnSettings;
     private @Nullable SelectionDecoration mSelectionDecoration;
+    private Supplier<@Nullable WindowAndroid> mWindowAndroidSupplier;
+    private ActivityResultTracker mActivityResultTracker;
+    private Supplier<@Nullable BottomSheetController> mBottomSheetControllerSupplier;
+    private Supplier<@Nullable SnackbarManager> mSnackbarManagerSupplier;
+    private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
 
     private final List<Observer> mObserverList = new ArrayList<>();
 
     public MainSettings() {
         setHasOptionsMenu(true);
+    }
+
+    /** Sets dependencies required for the activityless sign-in flow. */
+    @Initializer
+    public void setDependencies(
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable WindowAndroid> windowAndroidSupplier,
+            ActivityResultTracker activityResultTracker,
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier) {
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mWindowAndroidSupplier = windowAndroidSupplier;
+        mActivityResultTracker = activityResultTracker;
+        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
+        mSnackbarManagerSupplier = snackbarManagerSupplier;
     }
 
     @Override
@@ -209,6 +240,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         assumeNonNull(signinManager);
         if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
             signinManager.removeSignInStateObserver(this);
+        }
+        if (mSigninCoordinator != null) {
+            mSigninCoordinator.destroy();
+            mSigninCoordinator = null;
         }
     }
 
@@ -307,8 +342,35 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
-        signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            SupplierUtils.waitForAll(
+                    () -> {
+                        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+                        profileSupplier.set(getProfile());
+                        mSigninCoordinator =
+                                SigninAndHistorySyncActivityLauncherImpl.get()
+                                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                                SupplierUtils.asNonNull(mWindowAndroidSupplier)
+                                                        .get(),
+                                                getActivity(),
+                                                mActivityResultTracker,
+                                                signInPreference,
+                                                DeviceLockActivityLauncherImpl.get(),
+                                                profileSupplier,
+                                                SupplierUtils.asNonNull(
+                                                        mBottomSheetControllerSupplier),
+                                                mModalDialogManagerSupplier.asNonNull().get(),
+                                                SupplierUtils.asNonNull(mSnackbarManagerSupplier)
+                                                        .get(),
+                                                SigninAccessPoint.SETTINGS);
+                    },
+                    mWindowAndroidSupplier,
+                    mModalDialogManagerSupplier,
+                    mSnackbarManagerSupplier);
+        }
 
+        signInPreference.initialize(
+                getProfile(), profileDataCache, accountManagerFacade, mSigninCoordinator);
         ChromeBasePreference googleServicePreference = findPreference(PREF_GOOGLE_SERVICES);
         googleServicePreference.setViewId(R.id.account_management_google_services_row);
 
@@ -863,9 +925,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assumeNonNull(syncService);
         SignOutCoordinator.showSnackbar(
-                getContext(),
-                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
-                syncService);
+                getContext(), SupplierUtils.asNonNull(mSnackbarManagerSupplier).get(), syncService);
     }
 
     // SigninManager.SignInStateObserver implementation.
@@ -967,12 +1027,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         || isPreferenceControlledByCustodian(preference);
             }
         };
-    }
-
-    @Initializer
-    public void setModalDialogManagerSupplier(
-            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     @Override

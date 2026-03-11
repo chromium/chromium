@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJn
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -53,6 +54,10 @@ import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@EnableFeatures({
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+})
 public class MultiColumnSettingsTest {
 
     private ActivityScenario<SettingsActivity> mActivityScenario;
