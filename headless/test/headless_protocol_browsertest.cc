@@ -631,6 +631,9 @@ HEADLESS_PROTOCOL_TEST(FullscreenWindowSize, "shared/fullscreen-window-size.js")
 HEADLESS_PROTOCOL_TEST(FullscreenWindowSizeScaled,
                        "shared/fullscreen-window-size-scaled.js")
 
+HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
+                       "shared/set-zoomed-window-bounds.js")
+
 HEADLESS_PROTOCOL_TEST(WindowOpenOnSecondaryScreen,
                        "shared/window-open-on-secondary-screen.js")
 
@@ -747,9 +750,6 @@ HEADLESS_PROTOCOL_TEST(
 
 HEADLESS_PROTOCOL_TEST(WindowWithNewContext,
                        "shared/window-with-new-context.js")
-
-HEADLESS_PROTOCOL_TEST(SetZoomedWindowBounds,
-                       "shared/set-zoomed-window-bounds.js")
 
 HEADLESS_PROTOCOL_TEST(RangeMouseEventAfterNodeRemoval,
                        "shared/range-mouse-event-after-node-removal.js")
