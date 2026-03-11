@@ -6017,7 +6017,7 @@
   {
     "name": "ios-provides-app-notification-settings",
     "owners": ["scottyoder@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 155
   },
   {
     "name": "ios-provisional-notification-alert",
