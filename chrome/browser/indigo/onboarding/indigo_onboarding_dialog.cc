@@ -20,6 +20,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -35,12 +36,23 @@ class OnboardingWebView : public views::WebView {
   using WebView::WebView;
 
   // WebContentsDelegate:
+
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override {
     FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                      params);
   }
+
+  bool HandleKeyboardEvent(
+      content::WebContents* web_contents,
+      const input::NativeWebKeyboardEvent& event) override {
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
+
+ private:
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace
