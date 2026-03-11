@@ -24,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -77,9 +78,9 @@ class GlicNavigationThrottleBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicWebContinuity,
           {{features::kGlicWebContinuityUrl.name,
-            "https://gemini.google.com/glic/continue"},
+            "https://example.com/continuity_test/"},
            {features::kGlicWebContinuityOriginatingHost.name,
-            "https://gemini.google.com/"}}},
+            "https://example.com/"}}},
          {features::kGlic, {}}},
         {});
 
@@ -265,9 +266,9 @@ class GlicNavigationThrottleBrowserTestWithNoFeatures
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicWebContinuity,
           {{features::kGlicWebContinuityUrl.name,
-            "https://gemini.google.com/glic/continue"},
+            "https://example.com/continuity_test/"},
            {features::kGlicWebContinuityOriginatingHost.name,
-            "https://gemini.google.com/"}}}},
+            "https://example.com/"}}}},
         {features::kGlic});
 
     glic_test_environment_.SetForceSigninAndModelExecutionCapability(false);
@@ -297,6 +298,81 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithNoFeatures,
   histogram_tester.ExpectUniqueSample(
       "Glic.NavigationCapture.GlicWebContinuityFeatureDisabled",
       GeminiNavigationCaptureResult::kSuccess, 1);
+}
+
+class GlicNavigationThrottleBrowserTestWithPref : public InProcessBrowserTest {
+ public:
+  GlicNavigationThrottleBrowserTestWithPref() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebContinuity,
+          {{features::kGlicWebContinuityUrl.name,
+            "https://example.com/continuity_test/"}}},
+         {features::kGlic, {}}},
+        {});
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&GlicNavigationThrottleBrowserTestWithPref::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+
+    glic_test_environment_.SetForceSigninAndModelExecutionCapability(false);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kGlicDev);
+  }
+
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    GlicKeyedServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateMockGlicKeyedService));
+  }
+
+ private:
+  GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithPref,
+                       FallbackToPref) {
+  const std::string pref_url = "https://pref.example.com/";
+  g_browser_process->local_state()->SetString(
+      prefs::kGlicWebContinuityOriginatingHostUrlPreset, pref_url);
+
+  MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
+                                                   /*create=*/true));
+  ASSERT_TRUE(mock_service);
+
+  EXPECT_CALL(*mock_service, ShowUiWithConversationID(
+                                 _, mojom::InvocationSource::kNavigationCapture,
+                                 std::string("456")))
+      .Times(1);
+
+  GURL target_url("https://www.google.com/");
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=456&targetUrl=" + target_url.spec());
+
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::NavigationController::LoadURLParams params(continue_url);
+  params.initiator_origin = url::Origin::Create(GURL(pref_url));
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .LoadURLWithParams(params);
+  observer.Wait();
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            target_url);
+
+  // Clear the pref to avoid affecting other tests.
+  g_browser_process->local_state()->ClearPref(
+      prefs::kGlicWebContinuityOriginatingHostUrlPreset);
 }
 
 }  // namespace glic

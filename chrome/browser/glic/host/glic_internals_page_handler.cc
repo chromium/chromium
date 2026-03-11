@@ -117,6 +117,10 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   config->prod_guest_url = GURL(g_browser_process->local_state()->GetString(
       prefs::kGlicGuestUrlPresetProd));
 
+  config->web_continuity_originating_host_url =
+      GURL(g_browser_process->local_state()->GetString(
+          prefs::kGlicWebContinuityOriginatingHostUrlPreset));
+
   payload->config = std::move(config);
 
   std::move(callback).Run(std::move(payload));
@@ -233,6 +237,13 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     static_cast<GlicInstanceCoordinatorImpl&>(service->window_controller())
         .Invoke(tab, std::move(options));
   }
+}
+
+void GlicInternalsPageHandler::SetWebContinuityOriginatingHostUrlPreset(
+    const GURL& web_continuity_originating_host_url) {
+  g_browser_process->local_state()->SetString(
+      prefs::kGlicWebContinuityOriginatingHostUrlPreset,
+      web_continuity_originating_host_url.spec());
 }
 
 }  // namespace glic

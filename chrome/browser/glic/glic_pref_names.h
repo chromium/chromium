@@ -47,6 +47,11 @@ inline constexpr char kGlicGuestUrlPresetPreprod[] =
     "glic.guest_url_preset_preprod";
 inline constexpr char kGlicGuestUrlPresetProd[] = "glic.guest_url_preset_prod";
 
+// String prefs that keep track of the user-configured Glic web continuity
+// originating host URL
+inline constexpr char kGlicWebContinuityOriginatingHostUrlPreset[] =
+    "glic.web_continuity_originating_host_url_preset";
+
 // ************* PROFILE PREFS ***************
 // Prefs below are tied to a user profile.
 

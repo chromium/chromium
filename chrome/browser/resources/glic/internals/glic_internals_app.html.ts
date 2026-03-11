@@ -137,6 +137,23 @@ export function getHtml(this: GlicInternalsAppElement) {
         </div>
       </div>
 
+      <h2>Web Continuity URL Preset</h2>
+      ${this.data_?.config ? html`
+          <div class="web-continuity-container">
+            <label for="webContinuityInput">Web Continuity</label>
+            <input id="webContinuityInput"
+                .value="${this.data_.config.webContinuityOriginatingHostUrl}"
+                @change="${this.onWebContinuityInputChange}">
+            </input>
+            <div id="webContinuityInputErrorMsg" class="hiddenElement">
+                Invalid URL submitted: presets not updated
+            </div>
+            <cr-button @click="${this.onSaveWebContinuityPresetClick_}">
+                Save
+            </cr-button>
+          </div>` :
+          html`<h3 id="loadingMsg">Loading...</h3>`}
+      </div>
   </div>
 <!--_html_template_end_-->`;
   // clang-format on

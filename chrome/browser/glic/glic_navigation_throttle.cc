@@ -11,10 +11,13 @@
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_service.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -61,13 +64,30 @@ GURL GetGlicWebContinuityUrl() {
 // Retrieves the GURL for the Web Continuity Originating Host, defaulting to the
 // Guest URL's origin.
 GURL GetGlicWebContinuityOriginatingHostUrl() {
-  static const base::NoDestructor<GURL> continuity_url([]() {
+  static base::NoDestructor<std::string> last_pref_value("");
+  static base::NoDestructor<GURL> continuity_url;
+
+  std::string current_pref_value = g_browser_process->local_state()->GetString(
+      prefs::kGlicWebContinuityOriginatingHostUrlPreset);
+
+  if (current_pref_value != *last_pref_value || !continuity_url->is_valid()) {
+    *last_pref_value = current_pref_value;
+
     std::string continuity_url_str =
         features::kGlicWebContinuityOriginatingHost.Get();
     if (!continuity_url_str.empty()) {
       GURL url(continuity_url_str);
       if (url.is_valid()) {
-        return url;
+        *continuity_url = url;
+        return *continuity_url;
+      }
+    }
+
+    if (!current_pref_value.empty()) {
+      GURL url(current_pref_value);
+      if (url.is_valid()) {
+        *continuity_url = url;
+        return *continuity_url;
       }
     }
 
@@ -75,11 +95,12 @@ GURL GetGlicWebContinuityOriginatingHostUrl() {
     if (!guest_url_str.empty()) {
       GURL url(guest_url_str);
       if (url.is_valid()) {
-        return url.GetWithEmptyPath();
+        *continuity_url = url.GetWithEmptyPath();
+        return *continuity_url;
       }
     }
-    return GURL();
-  }());
+    *continuity_url = GURL();
+  }
   return *continuity_url;
 }
 

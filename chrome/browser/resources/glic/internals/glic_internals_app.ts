@@ -97,6 +97,27 @@ export class GlicInternalsAppElement extends CrLitElement {
         this.data_!.config.preprodGuestUrl, this.data_!.config.prodGuestUrl);
   }
 
+  protected onWebContinuityInputChange(e: Event) {
+    this.data_!.config.webContinuityOriginatingHostUrl =
+        (e.target as HTMLInputElement).value;
+  }
+
+  protected onSaveWebContinuityPresetClick_() {
+    const errorMsg = this.shadowRoot.querySelector<HTMLDivElement>(
+        '#webContinuityInputErrorMsg');
+    const url = this.data_!.config.webContinuityOriginatingHostUrl;
+
+    // Validate the URL. If we don't validate here, IPC will kill this
+    // renderer on invalid URLs.
+    if (url && URL.parse(url) === null) {
+      console.error('Invalid URL: no-op');
+      errorMsg!.classList.remove('hiddenElement');
+      return;
+    }
+    errorMsg!.classList.add('hiddenElement');
+    this.pageHandler_.setWebContinuityOriginatingHostUrlPreset(url);
+  }
+
   protected getActuationEligibilityString_(eligibility: ActuationEligibility):
       string {
     switch (eligibility) {

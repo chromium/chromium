@@ -43,6 +43,13 @@ td.status-false {
   max-width: 600px;
 }
 
+.web-continuity-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 600px;
+}
+
 cr-button {
   width: fit-content;
 }
