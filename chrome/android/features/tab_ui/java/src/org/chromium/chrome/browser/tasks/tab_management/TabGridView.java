@@ -328,15 +328,18 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
     }
 
     private void setTabActionButtonDrawable() {
+        int accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_YES;
         if (mTabActionButtonType == TabActionButtonType.OVERFLOW) {
             setTabActionButtonOverflowDrawable();
         } else if (mTabActionButtonType == TabActionButtonType.PIN) {
             setTabActionButtonPinDrawable();
+            accessibilityMode = IMPORTANT_FOR_ACCESSIBILITY_NO;
         } else {
             setTabActionButtonCloseDrawable();
         }
 
         applyActionButtonTint();
+        mActionButton.setImportantForAccessibility(accessibilityMode);
     }
 
     private @Nullable View getActorUi(boolean inflateIfMissing) {
