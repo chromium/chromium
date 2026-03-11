@@ -61,12 +61,6 @@ BASE_DECLARE_FEATURE(kGlicRecordNavigationConfirmationRequestMetrics);
 // Warning: Enabling this feature can lead to data loss when navigating.
 BASE_DECLARE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate);
 
-// When enabled, the actor will send a dialog request to the web client to
-// allow the user to select a credential to use for a site. When disabled, the
-// actor will automatically use the first credential.
-// TODO(crbug.com/427815202): Remove this once the front end is wired up.
-BASE_DECLARE_FEATURE(kGlicEnableAutoLoginDialogs);
-
 // Kill switch for selecting previously selected credentials.
 BASE_DECLARE_FEATURE(kGlicEnableAutoLoginPersistedPermissions);
 

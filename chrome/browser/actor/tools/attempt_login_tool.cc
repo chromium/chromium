@@ -243,17 +243,7 @@ void AttemptLoginTool::OnGetCredentials(
     return;
   }
 
-  // Unless the flag is enabled, always auto-select the first credential, which
-  // is the credential that is most likely to be the correct one.
-  if (base::FeatureList::IsEnabled(actor::kGlicEnableAutoLoginDialogs)) {
-    FetchIcons();
-  } else {
-    // The task ID doesn't matter here because the task ID check is already
-    // done at this point.
-    auto response = webui::mojom::SelectCredentialDialogResponse::New();
-    response->selected_credential_id = credentials_[0].id.value();
-    OnCredentialSelected(std::move(response));
-  }
+  FetchIcons();
 }
 
 void AttemptLoginTool::FetchIcons() {

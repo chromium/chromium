@@ -177,8 +177,7 @@ class AttemptLoginToolInteractiveUiTest
   AttemptLoginToolInteractiveUiTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         password_manager::features::kActorLogin,
-        password_manager::features::kActorLoginReauthTaskRefocus,
-        actor::kGlicEnableAutoLoginDialogs};
+        password_manager::features::kActorLoginReauthTaskRefocus};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (multi_instance_enabled()) {
