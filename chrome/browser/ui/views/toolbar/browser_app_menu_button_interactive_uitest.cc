@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -128,4 +130,30 @@ IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest,
       CheckPromoActive(kMenuPromoTestFeature, false),
       CheckAlertStatus(BookmarkSubMenuModel::kShowBookmarkSidePanelItem,
                        false));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest, AnimationDisabled) {
+  RunTestSequence(CheckView(kToolbarAppMenuButtonElementId,
+                            [](BrowserAppMenuButton* button) {
+                              return !button->GetAnimateOnStateChange();
+                            }));
+}
+
+class BrowserAppMenuButtonGlowUpInteractiveTest
+    : public InteractiveBrowserTest {
+ public:
+  BrowserAppMenuButtonGlowUpInteractiveTest() {
+    feature_list_.InitAndEnableFeature(features::kToolbarGlowUp);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonGlowUpInteractiveTest,
+                       AnimationEnabled) {
+  RunTestSequence(CheckView(kToolbarAppMenuButtonElementId,
+                            [](BrowserAppMenuButton* button) {
+                              return button->GetAnimateOnStateChange();
+                            }));
 }
