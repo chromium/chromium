@@ -42,8 +42,9 @@ MemoryConsumerRegistration::MemoryConsumerRegistration(
       registry_(MemoryConsumerRegistry::MaybeGet()) {
   if (!registry_) {
     CHECK_EQ(check_registry_exists, CheckRegistryExists::kDisabled)
-        << ". The MemoryConsumerRegistry did not exist at the time this "
-           "MemoryConsumerRegistration was created.";
+        << ". The MemoryConsumerRegistry did not exist at the time the "
+           "MemoryConsumerRegistration for "
+        << consumer_name << " was created.";
     return;
   }
 
@@ -76,12 +77,14 @@ void MemoryConsumerRegistration::OnBeforeMemoryConsumerRegistryDestroyed() {
       const bool handle_destroyed =
           async_handle_destroyed_flag_->load(std::memory_order_acquire);
       CHECK(handle_destroyed)
-          << ". The AsyncMemoryConsumerRegistration handle must be destroyed "
-             "before the global MemoryConsumerRegistry.";
+          << ". The AsyncMemoryConsumerRegistration handle for "
+          << consumer_name_
+          << " must be destroyed before the global MemoryConsumerRegistry.";
     } else {
       // Synchronous registration case.
-      CHECK(false) << ". The MemoryConsumerRegistration must be destroyed "
-                      "before the global MemoryConsumerRegistry.";
+      CHECK(false)
+          << ". The MemoryConsumerRegistration " << consumer_name_
+          << " must be destroyed before the global MemoryConsumerRegistry.";
     }
   }
 
