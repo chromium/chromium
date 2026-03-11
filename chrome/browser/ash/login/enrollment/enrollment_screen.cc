@@ -301,6 +301,7 @@ void EnrollmentScreen::UpdateFlowType() {
   }
 
   const bool cfm = policy::EnrollmentRequisitionManager::IsMeetDevice();
+  const bool is_squid = policy::EnrollmentRequisitionManager::IsSquidDevice();
   if (cfm) {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
@@ -314,6 +315,10 @@ void EnrollmentScreen::UpdateFlowType() {
         WizardContext::EnrollmentPreference::kKiosk) {
       view_->SetGaiaButtonsType(
           EnrollmentScreenView::GaiaButtonsType::kKioskPreferred);
+    } else if (is_squid) {
+      // Use default Gaia buttons for squid devices to match cfm.
+      view_->SetGaiaButtonsType(
+          EnrollmentScreenView::GaiaButtonsType::kDefault);
     } else {
       view_->SetGaiaButtonsType(
           EnrollmentScreenView::GaiaButtonsType::kEnterprisePreferred);
