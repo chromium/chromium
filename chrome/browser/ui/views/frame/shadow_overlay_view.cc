@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -262,7 +263,8 @@ ShadowOverlayView::~ShadowOverlayView() = default;
 
 void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
   if (starting_from == this) {
-    shadow_box_->SetShadowVisible(visible);
+    shadow_box_->SetShadowVisible(
+        visible && !base::FeatureList::IsEnabled(features::kDetachedTabs));
 
     // Ensure the opacity matches the current animation value in cases where the
     // panel should not animate but is open such as swapping between tabs.
@@ -351,6 +353,10 @@ views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(
 void ShadowOverlayView::OnAnimationSequenceProgressed(
     SidePanelAnimationId animation_id,
     double animation_value) {
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    return;
+  }
+
   CHECK_EQ(kShadowOverlayOpacityAnimation, animation_id);
 
   shadow_box_->SetShadowOpacity(animation_value);
@@ -358,6 +364,10 @@ void ShadowOverlayView::OnAnimationSequenceProgressed(
 
 void ShadowOverlayView::OnAnimationSequenceEnded(
     SidePanelAnimationId animation_id) {
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    return;
+  }
+
   // When the animation ends, set the final opacity based on whether the side
   // panel is closing or opening.
   const double ending_opacity =
