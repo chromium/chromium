@@ -445,10 +445,7 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  static const bool using_delegating_compositing =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          blink::switches::kEnableGpuMemoryBufferCompositorResources);
-  return using_delegating_compositing;
+  return IsDelegatedCompositingEnabled();
 #elif BUILDFLAG(IS_CHROMEOS)
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
