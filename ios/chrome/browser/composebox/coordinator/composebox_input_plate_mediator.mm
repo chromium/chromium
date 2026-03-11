@@ -1684,6 +1684,10 @@ CreateInputDataFromAnnotatedPageContent(
 // If restricted, the tool will persist in the UI with a 'disabled' status,
 // pending a change in state.
 - (BOOL)imageToolDisabled {
+  // Allow deselecting the mode.
+  if (_modeHolder.mode == ComposeboxMode::kImageGeneration) {
+    return NO;
+  }
   BOOL generateImageDisabled =
       [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN] ||
       [self toolDisabledInInputState:omnibox::ToolMode::
@@ -1696,6 +1700,10 @@ CreateInputDataFromAnnotatedPageContent(
 // If restricted, the tool will persist in the UI with a 'disabled' status,
 // pending a change in state.
 - (BOOL)canvasToolDisabled {
+  // Allow deselecting the mode.
+  if (_modeHolder.mode == ComposeboxMode::kCanvas) {
+    return NO;
+  }
   return [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_CANVAS];
 }
 
@@ -1703,6 +1711,10 @@ CreateInputDataFromAnnotatedPageContent(
 // If restricted, the tool will persist in the UI with a 'disabled' status,
 // pending a change in state.
 - (BOOL)deepSearchToolDisabled {
+  // Allow deselecting the mode.
+  if (_modeHolder.mode == ComposeboxMode::kDeepSearch) {
+    return NO;
+  }
   return
       [self toolDisabledInInputState:omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH];
 }
