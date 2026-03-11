@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/skills/public/skill.h"
+#include "components/skills/public/skill.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -29,6 +30,7 @@ class SkillsDialogLauncher
   // Helper that creates the launcher, which manages its own lifetime.
   static void CreateForTab(tabs::TabInterface* tab,
                            Skill skill,
+                           mojom::SkillsDialogType dialog_type,
                            SkillResultCallback callback);
 
   ~SkillsDialogLauncher() override;
@@ -39,11 +41,13 @@ class SkillsDialogLauncher
   // Helper to trigger the launch of the dialog.
   static void TriggerDialog(tabs::TabInterface* tab,
                             Skill skill,
+                            mojom::SkillsDialogType dialog_type,
                             SkillResultCallback callback);
 
   SkillsDialogLauncher(content::WebContents* contents,
                        tabs::TabInterface* tab,
                        Skill skill,
+                       mojom::SkillsDialogType dialog_type,
                        SkillResultCallback callback);
 
   // content::WebContentsObserver:
@@ -56,6 +60,8 @@ class SkillsDialogLauncher
   base::WeakPtr<tabs::TabInterface> tab_;
   // The user skill to be passed to the Skills dialog upon successful load.
   Skill skill_;
+  // The dialog type.
+  mojom::SkillsDialogType dialog_type_;
   // Callback to signal success or failure to the caller.
   SkillResultCallback callback_;
 

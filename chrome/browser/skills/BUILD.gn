@@ -44,6 +44,7 @@ source_set("public") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]
@@ -81,6 +82,7 @@ source_set("ui") {
     "//components/skills:features",
     "//components/skills/proto",
     "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
     "//components/web_modal",
     "//services/service_manager/public/cpp",
     "//ui/base/unowned_user_data",
@@ -108,6 +110,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/public",
+    "//components/skills/public:mojo_bindings",
   ]
 }
 

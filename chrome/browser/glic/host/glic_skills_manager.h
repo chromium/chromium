@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "components/skills/public/skill.mojom-forward.h"
 
 namespace tabs {
 class TabInterface;
@@ -40,6 +41,7 @@ class GlicSkillsManager {
   // attempt to create a new tab/window for the given profile.
   virtual void LaunchSkillsDialog(Profile* profile,
                                   skills::Skill skill,
+                                  skills::mojom::SkillsDialogType dialog_type,
                                   base::OnceCallback<void(bool)> callback) = 0;
 
   // Shows the Manage Skills UI.

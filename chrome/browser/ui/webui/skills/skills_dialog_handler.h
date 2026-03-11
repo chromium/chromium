@@ -33,6 +33,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
       skills::Skill initial_skill,
       SkillsDialogEntryPoint entrypoint,
+      mojom::SkillsDialogType dialog_type,
       base::WeakPtr<SkillsDialogDelegate> delegate);
 
   SkillsDialogHandler(const SkillsDialogHandler&) = delete;
@@ -47,7 +48,7 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   void DeleteSkill(const std::string& skill_id) override;
   void CloseDialog() override;
   void ShowEmojiPicker() override;
-  void GetInitialSkill(GetInitialSkillCallback callback) override;
+  void GetInitialState(GetInitialStateCallback callback) override;
   void RefineSkill(
       const skills::Skill& skill,
       skills::mojom::DialogHandler::RefineSkillCallback callback) override;
@@ -73,6 +74,8 @@ class SkillsDialogHandler : public skills::mojom::DialogHandler {
   // client, management page). This is set at creation time and used for metrics
   // logging.
   SkillsDialogEntryPoint entrypoint_;
+  // The type of dialog to open.
+  mojom::SkillsDialogType dialog_type_;
   base::WeakPtr<SkillsDialogDelegate> delegate_;
 
   // Initialized with the browser_context passed in the constructor.

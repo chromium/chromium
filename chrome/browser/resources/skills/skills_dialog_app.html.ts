@@ -117,7 +117,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
         <div id="saveErrorMessage" class="error-message">$i18n{saveError}</div>
       </div>
       <div class="buttons-group">
-        <cr-button id="deleteButton" ?hidden="${this.isAddDialog_()}"
+        <cr-button id="deleteButton" ?hidden="${this.isAddDialog_}"
             @click="${this.onDeleteSkillClick_}">
           $i18n{delete}
         </cr-button>
