@@ -1924,9 +1924,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   AddTabsAndResetBrowser(browser(), 1);
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   // Create another browser.
   Browser* browser2 = CreateAnotherBrowserAndResize();
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
   Tab* tab = tab_strip->tab_at(0);
@@ -3323,9 +3325,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   AddTabsAndResetBrowser(browser(), 1);
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
 
   // Create another browser.
   Browser* browser2 = CreateAnotherBrowserAndResize();
+  ui_test_utils::WaitForBrowserSetLastActive(browser2);
   TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
 
   browser()->tab_strip_model()->SelectTabAt(0);
@@ -3363,8 +3367,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif  // BUILDFLAG(IS_WIN)
           }));
 
-  ASSERT_FALSE(IsDragSessionActive(new_tab_strip));
-  ASSERT_FALSE(TabDragController::IsActive());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !IsDragSessionActive(new_tab_strip) &&
+           !TabDragController::IsActive();
+  }));
   EXPECT_EQ("100", IDString(browser2->tab_strip_model()));
   EXPECT_EQ("0 1", IDString(new_browser->tab_strip_model()));
   EXPECT_FALSE(GetIsDragged(new_browser));
