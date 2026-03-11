@@ -176,12 +176,6 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
               reinterpret_cast<void*>(this));
 
   unsigned number_of_channels = shared_render_target_->numberOfChannels();
-  Vector<float*> destinations;
-  destinations.ReserveInitialCapacity(number_of_channels);
-  for (unsigned i = 0; i < number_of_channels; ++i) {
-    destinations.push_back(
-        static_cast<float*>(shared_render_target_->channels()[i].Data()));
-  }
 
   // If there is more to process and there is no suspension at the moment,
   // do continue to render quanta. Then calling OfflineAudioContext.resume()
@@ -199,9 +193,14 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
 
     for (unsigned channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
-      const float* source = render_bus_->Channel(channel_index)->Data();
-      UNSAFE_TODO(memcpy(destinations[channel_index] + frames_processed_,
-                         source, sizeof(float) * frames_available_to_copy));
+      shared_render_target_->channels()[channel_index]
+          .ByteSpan()
+          .subspan(frames_processed_ * sizeof(float),
+                   frames_available_to_copy * sizeof(float))
+          .copy_from(base::as_bytes(base::allow_nonunique_obj,
+                                    render_bus_->Channel(channel_index)
+                                        ->Span()
+                                        .first(frames_available_to_copy)));
     }
 
     frames_processed_ += frames_available_to_copy;
