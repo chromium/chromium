@@ -67,8 +67,7 @@ ResizeObserverBoxOptions ResizeObserver::V8EnumToBoxOptions(
 }
 
 void ResizeObserver::observeInternal(Element* target,
-                                     ResizeObserverBoxOptions box_option,
-                                     bool fire_on_every_paint) {
+                                     ResizeObserverBoxOptions box_option) {
   auto& observer_map = target->EnsureResizeObserverData();
 
   if (observer_map.Contains(this)) {
@@ -88,8 +87,8 @@ void ResizeObserver::observeInternal(Element* target,
     observer_map.erase(observation);
   }
 
-  auto* observation = MakeGarbageCollected<ResizeObservation>(
-      target, this, box_option, fire_on_every_paint);
+  auto* observation =
+      MakeGarbageCollected<ResizeObservation>(target, this, box_option);
   observations_.insert(observation);
   observer_map.Set(this, observation);
 
@@ -101,12 +100,11 @@ void ResizeObserver::observe(Element* target,
                              const ResizeObserverOptions* options) {
   ResizeObserverBoxOptions box_option =
       V8EnumToBoxOptions(options->box().AsEnum());
-  bool fire_on_every_paint = options->fireOnEveryPaint();
-  observeInternal(target, box_option, fire_on_every_paint);
+  observeInternal(target, box_option);
 }
 
 void ResizeObserver::observe(Element* target) {
-  observeInternal(target, ResizeObserverBoxOptions::kContentBox, false);
+  observeInternal(target, ResizeObserverBoxOptions::kContentBox);
 }
 
 void ResizeObserver::unobserve(Element* target) {
@@ -141,8 +139,7 @@ size_t ResizeObserver::GatherObservations(size_t deeper_than) {
 
   size_t min_observed_depth = ResizeObserverController::kDepthBottom;
   for (auto& observation : observations_) {
-    if (!observation->ObservationSizeOutOfSync() &&
-        (deeper_than != 0 || !observation->NeedsObservationForRepaint())) {
+    if (!observation->ObservationSizeOutOfSync()) {
       continue;
     }
     auto depth = observation->TargetDepth();

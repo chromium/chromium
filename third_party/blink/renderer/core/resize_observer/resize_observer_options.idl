@@ -12,5 +12,4 @@ enum ResizeObserverBoxOptions {
 
 dictionary ResizeObserverOptions {
     ResizeObserverBoxOptions box = "content-box";
-    [RuntimeEnabled=CanvasDrawElement] boolean fireOnEveryPaint = false;
 };

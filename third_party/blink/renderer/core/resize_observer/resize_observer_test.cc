@@ -78,9 +78,9 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMContentBoxAndSVG) {
   Element* dom_target = GetDocument().getElementById(AtomicString("domTarget"));
   Element* svg_target = GetDocument().getElementById(AtomicString("svgTarget"));
   ResizeObservation* dom_observation = MakeGarbageCollected<ResizeObservation>(
-      dom_target, observer, ResizeObserverBoxOptions::kContentBox, false);
+      dom_target, observer, ResizeObserverBoxOptions::kContentBox);
   ResizeObservation* svg_observation = MakeGarbageCollected<ResizeObservation>(
-      svg_target, observer, ResizeObserverBoxOptions::kContentBox, false);
+      svg_target, observer, ResizeObserverBoxOptions::kContentBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_observation->ObservationSizeOutOfSync());
@@ -123,7 +123,7 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMBorderBox) {
   Element* dom_border_target =
       GetDocument().getElementById(AtomicString("domBorderTarget"));
   auto* dom_border_observation = MakeGarbageCollected<ResizeObservation>(
-      dom_border_target, observer, ResizeObserverBoxOptions::kBorderBox, false);
+      dom_border_target, observer, ResizeObserverBoxOptions::kBorderBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_border_observation->ObservationSizeOutOfSync());
@@ -160,11 +160,10 @@ TEST_F(ResizeObserverUnitTest, ResizeObserverDOMDevicePixelContentBox) {
       GetDocument().getElementById(AtomicString("domDPTarget"));
 
   auto* dom_dp_nested_observation = MakeGarbageCollected<ResizeObservation>(
-      dom_dp_target, observer, ResizeObserverBoxOptions::kDevicePixelContentBox,
-      false);
+      dom_dp_target, observer,
+      ResizeObserverBoxOptions::kDevicePixelContentBox);
   auto* dom_dp_observation = MakeGarbageCollected<ResizeObservation>(
-      dom_target, observer, ResizeObserverBoxOptions::kDevicePixelContentBox,
-      false);
+      dom_target, observer, ResizeObserverBoxOptions::kDevicePixelContentBox);
 
   // Initial observation is out of sync
   ASSERT_TRUE(dom_dp_observation->ObservationSizeOutOfSync());
