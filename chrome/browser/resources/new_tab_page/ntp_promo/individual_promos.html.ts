@@ -10,15 +10,15 @@ export function getHtml(this: IndividualPromosElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="promos">
-  ${this.eligiblePromos_.map(item => html`
-    <button id="promo" @click="${this.onClick_.bind(this, item.id)}"
-        aria-label="${item.buttonText}">
-      <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
+  ${this.promo_ ? html`
+    <button id="promo" @click="${this.onClick_.bind(this, this.promo_.id)}"
+        aria-label="${this.promo_.buttonText}">
+      <cr-icon id="bodyIcon" icon="ntp-promo:${this.promo_.iconName}"></cr-icon>
       <p id="bodyText" class="${this.getBodyTextCssClass_()}">
-        ${item.bodyText}
+        ${this.promo_.bodyText}
       </p>
       <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
-    </button>`)}
+    </button>` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

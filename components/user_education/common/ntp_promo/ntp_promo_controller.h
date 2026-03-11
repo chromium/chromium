@@ -38,21 +38,19 @@ struct NtpShowablePromo {
   std::string action_button_text;
 };
 
-// This struct provides ordered sets of pending and completed promos, intended
-// for use by the New Tab Page.
+// This struct provides a single pending promo, intended for use by the New
+// Tab Page.
 struct NtpShowablePromos {
   NtpShowablePromos();
   ~NtpShowablePromos();
   NtpShowablePromos(NtpShowablePromos&&) noexcept;
   NtpShowablePromos& operator=(NtpShowablePromos&&) noexcept;
 
-  // Returns true if there are no promos to show.
-  bool empty() const { return pending.empty() && completed.empty(); }
+  // Returns true if there is no promo to show.
+  bool empty() const { return !promo.has_value(); }
 
-  // Lists of promos, in descending priority order. Ie, if the UI chooses to
-  // show only one promo from a list, choose the first one.
-  std::vector<NtpShowablePromo> pending;
-  std::vector<NtpShowablePromo> completed;
+  // The single promo to show, if any.
+  std::optional<NtpShowablePromo> promo;
 };
 
 // This struct holds the values of controller-specific feature parameters.
@@ -66,9 +64,6 @@ struct NtpPromoControllerParams {
   // The number of sessions a promo may stay in the top spot before being
   // rotated out.
   int max_top_spot_sessions = 0;
-
-  // How long a promo stays in the "completed" section of the setup list.
-  base::TimeDelta completed_show_duration;
 
   // How long a promo is hidden after being clicked.
   base::TimeDelta clicked_hide_duration;
@@ -95,26 +90,21 @@ class NtpPromoController {
                      UserEducationStorageService& storage_service,
                      const NtpPromoControllerParams& params);
 
-  // Determines if there are any showable promos. This may return false if
+  // Determines if there is a showable promo. This may return false if
   // promos are snoozed or disabled, or if there are no eligible promos to show.
-  virtual bool HasShowablePromos(
-      const user_education::UserEducationContextPtr& context,
-      bool include_completed);
-
-  // Provides ordered lists of eligible and completed promos, intended to be
-  // displayed by the NTP. May update prefs as a side effect.
-  //
-  // If promos are snoozed or disabled, or there are no eligible promos, an
-  // empty list is returned.
-  virtual NtpShowablePromos GenerateShowablePromos(
+  virtual bool HasShowablePromo(
       const user_education::UserEducationContextPtr& context);
 
-  // Called when promos are shown by the NTP promo component.
+  // Provides a showable promo, intended to be displayed by the NTP.
+  // May update prefs as a side effect.
   //
-  // The promos should be ordered in each list from top/first to bottom/last.
-  virtual void OnPromosShown(
-      const std::vector<NtpPromoIdentifier>& eligible_shown,
-      const std::vector<NtpPromoIdentifier>& completed_shown);
+  // If promos are snoozed or disabled, or there are no eligible promos, an
+  // empty struct is returned.
+  virtual NtpShowablePromos GenerateShowablePromo(
+      const user_education::UserEducationContextPtr& context);
+
+  // Called when a promo is shown by the NTP promo component.
+  virtual void OnPromoShown(const NtpPromoIdentifier& eligible_shown);
 
   // Called in response to an NTP promo activation.
   virtual void OnPromoClicked(
@@ -133,12 +123,9 @@ class NtpPromoController {
   // Internal variation of promo list generation, shared between "has promos"
   // and "make promo lists" logic. When only checking if there are promos to
   // show, the (relatively expensive) ordering logic can be skipped.
-  NtpShowablePromos GenerateShowablePromos(
+  NtpShowablePromos GenerateShowablePromo(
       const user_education::UserEducationContextPtr& context,
       bool apply_ordering);
-
-  // Updates the data on the promo shown in the top spot.
-  void OnPromoShownInTopSpot(NtpPromoIdentifier id);
 
   // Checks which promo ID (if any) was most recently shown in the top spot.
   // Returns an empty string if there is no recorded top-spot promo.
@@ -146,11 +133,6 @@ class NtpPromoController {
 
   // Returns whether promos are disabled or snoozed.
   bool ArePromosBlocked() const;
-
-  // Assembles a vector of showable promo objects (ie. the presentation parts
-  // of the promo) to be sent to the NTP.
-  std::vector<NtpShowablePromo> MakeShowablePromos(
-      const std::vector<NtpPromoIdentifier>& ids);
 
   // Determines whether an individual promo should be shown.
   bool ShouldShowPromo(const NtpPromoIdentifier& id,

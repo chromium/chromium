@@ -75,8 +75,8 @@ NtpPromoHandler::~NtpPromoHandler() = default;
 
 void NtpPromoHandler::RequestPromos() {
   CheckBackend(promo_controller_, ue_context_);
-  const auto promos = promo_controller_->GenerateShowablePromos(ue_context_);
-  remote_client_->SetPromos(promos.pending, promos.completed);
+  const auto showable = promo_controller_->GenerateShowablePromo(ue_context_);
+  remote_client_->SetPromo(showable.promo);
 }
 
 void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
@@ -84,28 +84,6 @@ void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {
   promo_controller_->OnPromoClicked(promo_id, ue_context_);
 }
 
-void NtpPromoHandler::OnPromosShown(
-    const std::vector<std::string>& eligible_shown,
-    const std::vector<std::string>& completed_shown) {
-  promo_controller_->OnPromosShown(eligible_shown, completed_shown);
-}
-
-void NtpPromoHandler::SnoozeSetupList() {
-  CheckBackend(promo_controller_, ue_context_);
-  promo_controller_->SetAllPromosSnoozed(true);
-}
-
-void NtpPromoHandler::UnsnoozeSetupList() {
-  CheckBackend(promo_controller_, ue_context_);
-  promo_controller_->SetAllPromosSnoozed(false);
-}
-
-void NtpPromoHandler::DisableSetupList() {
-  CheckBackend(promo_controller_, ue_context_);
-  promo_controller_->SetAllPromosDisabled(true);
-}
-
-void NtpPromoHandler::UndisableSetupList() {
-  CheckBackend(promo_controller_, ue_context_);
-  promo_controller_->SetAllPromosDisabled(false);
+void NtpPromoHandler::OnPromoShown(const std::string& promo_id) {
+  promo_controller_->OnPromoShown(promo_id);
 }

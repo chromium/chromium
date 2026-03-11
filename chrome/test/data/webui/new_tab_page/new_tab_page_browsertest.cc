@@ -173,10 +173,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, IndividualPromosTest) {
   RunTest("new_tab_page/ntp_promo/individual_promos_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, NtpSetupListTest) {
-  RunTest("new_tab_page/ntp_promo/setup_list_test.js", "mocha.run()");
-}
-
 using NewTabPageModulesTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {

@@ -26,12 +26,10 @@ namespace user_education {
 namespace {
 
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Return;
 
 constexpr char kPromoId[] = "TestPromo";
 constexpr char kPromo2Id[] = "TestPromo2";
-constexpr char kPromo3Id[] = "TestPromo3";
 
 constexpr int kSessionNumber = 10;
 
@@ -79,9 +77,9 @@ class NtpPromoControllerTest : public testing::Test {
     }
   }
 
-  int ShowablePendingPromoCount() {
-    const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-    return showable_promos.pending.size();
+  bool ShowsPromo() {
+    const auto showable = controller().GenerateShowablePromo(nullptr);
+    return showable.promo.has_value();
   }
 
   void CreateController(
@@ -102,31 +100,19 @@ class NtpPromoControllerTest : public testing::Test {
   std::unique_ptr<NtpPromoController> controller_;
 };
 
-std::vector<NtpPromoIdentifier> IdsFromShowablePromos(
-    const std::vector<NtpShowablePromo>& promos) {
-  std::vector<NtpPromoIdentifier> ids;
-  ids.reserve(promos.size());
-  std::transform(promos.begin(), promos.end(), std::back_inserter(ids),
-                 [](const NtpShowablePromo& promo) { return promo.id; });
-  return ids;
-}
-
 }  // namespace
 
 TEST_F(NtpPromoControllerTest, IneligiblePromoHidden) {
   CreateController();
   RegisterPromo(kPromoId, kIneligible);
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_TRUE(showable_promos.completed.empty());
+  EXPECT_FALSE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, EligiblePromoShows) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(showable_promos.pending.size(), 1u);
-  EXPECT_TRUE(showable_promos.completed.empty());
+  const auto showable = controller().GenerateShowablePromo(nullptr);
+  EXPECT_EQ(showable.promo->id, kPromoId);
 }
 
 // A promo that reports itself as complete, but was never clicked, should not
@@ -134,12 +120,10 @@ TEST_F(NtpPromoControllerTest, EligiblePromoShows) {
 TEST_F(NtpPromoControllerTest, UnclickedCompletedPromoHidden) {
   CreateController();
   RegisterPromo(kPromoId, kCompleted);
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_TRUE(showable_promos.completed.empty());
+  EXPECT_FALSE(ShowsPromo());
 }
 
-TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
+TEST_F(NtpPromoControllerTest, ClickedCompletedPromoHidden) {
   CreateController();
   RegisterPromo(kPromoId, kCompleted);
   base::HistogramTester histogram_tester;
@@ -150,9 +134,7 @@ TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
   storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
 
   // Generating promos is currently where "completed promo" detection lives.
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_EQ(showable_promos.completed.size(), 1u);
+  EXPECT_FALSE(ShowsPromo());
   auto completion_time = base::Time::Now();
 
   // Ensure the completion is recorded.
@@ -163,15 +145,15 @@ TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
 
   // Generate promos again. Completion data shouldn't change.
   task_environment_.AdvanceClock(base::Days(1));
-  controller().GenerateShowablePromos(nullptr);
+  controller().GenerateShowablePromo(nullptr);
   prefs = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(prefs.value().completed, completion_time);
   histogram_tester.ExpectTotalCount(
       "UserEducation.NtpPromos.Promos.TestPromo.Completed", 1);
 }
 
-// Once a promo has been declared completed, it should continue to show as
-// completed even if the promo reverts to Eligible state (eg. a user signs out).
+// Once a promo has been declared completed, it should continue to not show
+//  even if the promo reverts to Eligible state (eg. a user signs out).
 TEST_F(NtpPromoControllerTest, PreviouslyCompletedPromoShows) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
@@ -179,22 +161,7 @@ TEST_F(NtpPromoControllerTest, PreviouslyCompletedPromoShows) {
   keyed_data.completed = base::Time::Now();
   storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
 
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_EQ(showable_promos.completed.size(), 1u);
-}
-
-TEST_F(NtpPromoControllerTest, OldCompletedPromoHidden) {
-  auto params = GetNtpPromoControllerParams();
-  CreateController(params);
-  RegisterPromo(kPromoId, kEligible);
-  NtpPromoData keyed_data;
-  keyed_data.completed = base::Time::Now() - params.completed_show_duration;
-  storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
-
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_TRUE(showable_promos.completed.empty());
+  EXPECT_FALSE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
@@ -207,9 +174,7 @@ TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
   keyed_data.completed = base::Time::Now() + base::Days(1);
   storage_service_.SaveNtpPromoData(kPromoId, keyed_data);
 
-  const auto showable_promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_TRUE(showable_promos.pending.empty());
-  EXPECT_TRUE(showable_promos.completed.empty());
+  EXPECT_FALSE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, PromoClicked) {
@@ -234,21 +199,13 @@ TEST_F(NtpPromoControllerTest, ClickedPromoHiddenTemporarily) {
   auto params = GetNtpPromoControllerParams();
   CreateController(params);
   RegisterPromo(kPromoId, kEligible);
-  EXPECT_EQ(ShowablePendingPromoCount(), 1);
+  EXPECT_TRUE(ShowsPromo());
 
   controller().OnPromoClicked(kPromoId, nullptr);
-  EXPECT_EQ(ShowablePendingPromoCount(), 0);
+  EXPECT_FALSE(ShowsPromo());
 
   task_environment_.AdvanceClock(params.clicked_hide_duration);
-  EXPECT_EQ(ShowablePendingPromoCount(), 1);
-}
-
-TEST_F(NtpPromoControllerTest, CompletedPromoShown) {
-  CreateController();
-  const auto old_value = storage_service_.ReadNtpPromoData(kPromoId);
-  controller().OnPromosShown({}, {kPromoId});
-  const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
-  EXPECT_EQ(old_value, new_value);
+  EXPECT_TRUE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, TopSpotPromoShownFirstTime) {
@@ -256,7 +213,7 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownFirstTime) {
   RegisterPromo(kPromoId, kEligible);
   const auto old_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(std::nullopt, old_value);
-  controller().OnPromosShown({kPromoId}, {});
+  controller().OnPromoShown(kPromoId);
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(10, new_value->last_top_spot_session);
   EXPECT_EQ(1, new_value->top_spot_session_count);
@@ -271,7 +228,7 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownInSameSession) {
   old_value.last_top_spot_session = kSessionNumber;
   old_value.top_spot_session_count = 2;
   storage_service_.SaveNtpPromoData(kPromoId, old_value);
-  controller().OnPromosShown({kPromoId}, {});
+  controller().OnPromoShown(kPromoId);
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
   EXPECT_EQ(2, new_value->top_spot_session_count);
@@ -286,7 +243,7 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownInNewSession) {
   old_value.last_top_spot_session = kSessionNumber - 1;
   old_value.top_spot_session_count = 2;
   storage_service_.SaveNtpPromoData(kPromoId, old_value);
-  controller().OnPromosShown({kPromoId}, {});
+  controller().OnPromoShown(kPromoId);
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
   EXPECT_EQ(3, new_value->top_spot_session_count);
@@ -310,7 +267,7 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownReclaimsTopSpot) {
   storage_service_.SaveNtpPromoData(kPromoId, old_value);
 
   // Showing Promo should clear its top spot count and restart at 1.
-  controller().OnPromosShown({kPromoId}, {});
+  controller().OnPromoShown(kPromoId);
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(kSessionNumber, new_value->last_top_spot_session);
   EXPECT_EQ(1, new_value->top_spot_session_count);
@@ -319,26 +276,16 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownReclaimsTopSpot) {
 TEST_F(NtpPromoControllerTest, ShownPromos) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kEligible);
   base::HistogramTester histogram_tester;
-  const auto old_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
 
-  controller().OnPromosShown({kPromoId, kPromo2Id}, {});
+  controller().OnPromoShown(kPromoId);
 
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
-  const auto new_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
   EXPECT_EQ(10, new_value->last_top_spot_session);
   EXPECT_EQ(1, new_value->top_spot_session_count);
-  EXPECT_EQ(old_value2, new_value2);
 
   histogram_tester.ExpectUniqueSample(
       "UserEducation.NtpPromos.Promos.TestPromo.Shown", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "UserEducation.NtpPromos.Promos.TestPromo.ShownTopSpot", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "UserEducation.NtpPromos.Promos.TestPromo2.Shown", true, 1);
-  histogram_tester.ExpectTotalCount(
-      "UserEducation.NtpPromos.Promos.TestPromo2.ShownTopSpot", 0);
 }
 
 TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {
@@ -347,36 +294,14 @@ TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {
   RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
                 show_callback.Get(), base::DoNothing());
   EXPECT_CALL(show_callback, Run());
-  controller().OnPromosShown({kPromoId}, {});
+  controller().OnPromoShown(kPromoId);
 }
 
-TEST_F(NtpPromoControllerTest, HasShowablePromosNoCompleted) {
+TEST_F(NtpPromoControllerTest, HasShowablePromo) {
   CreateController();
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, false));
-  RegisterPromo(kPromoId, kCompleted, true);
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, false));
-  RegisterPromo(kPromo2Id, kEligible);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, false));
-}
-
-TEST_F(NtpPromoControllerTest,
-       HasShowablePromosIncludeCompleted_CompletedOnly) {
-  CreateController();
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
-  RegisterPromo(kPromoId, kCompleted, true);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-  RegisterPromo(kPromo2Id, kEligible);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-}
-
-TEST_F(NtpPromoControllerTest,
-       HasShowablePromosIncludeCompleted_EligibleThenCompleted) {
-  CreateController();
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
+  EXPECT_FALSE(controller().HasShowablePromo(nullptr));
   RegisterPromo(kPromoId, kEligible);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-  RegisterPromo(kPromo2Id, kCompleted, true);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
+  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
 }
 
 TEST_F(NtpPromoControllerTest, SetAllPromosSnoozed) {
@@ -428,61 +353,54 @@ TEST_F(NtpPromoControllerTest, SetAllPromosDisabledUndisabled) {
 TEST_F(NtpPromoControllerTest, SnoozeBlocksPromos) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosSnoozed(true);
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
-  const auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(0U, promos.pending.size());
-  EXPECT_EQ(0U, promos.completed.size());
+  EXPECT_FALSE(controller().HasShowablePromo(nullptr));
+  const auto showable = controller().GenerateShowablePromo(nullptr);
+  EXPECT_FALSE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, UnsnoozeRestoresPromos) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosSnoozed(true);
   controller().SetAllPromosSnoozed(false);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-  const auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(1U, promos.pending.size());
-  EXPECT_EQ(1U, promos.completed.size());
+  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
+  const auto showable = controller().GenerateShowablePromo(nullptr);
+  ASSERT_TRUE(ShowsPromo());
+  EXPECT_EQ(showable.promo->id, kPromoId);
 }
 
 TEST_F(NtpPromoControllerTest, SnoozeExpiresRestoresPromos) {
   auto params = GetNtpPromoControllerParams();
   CreateController(params);
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosSnoozed(true);
   task_environment_.FastForwardBy(params.promos_snoozed_hide_duration +
                                   base::Minutes(1));
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-  auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(1U, promos.pending.size());
-  EXPECT_EQ(1U, promos.completed.size());
+  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
+  auto showable = controller().GenerateShowablePromo(nullptr);
+  ASSERT_TRUE(ShowsPromo());
+  EXPECT_EQ(showable.promo->id, kPromoId);
 }
 
 TEST_F(NtpPromoControllerTest, DisableBlocksPromos) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosDisabled(true);
-  EXPECT_FALSE(controller().HasShowablePromos(nullptr, true));
-  const auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(0U, promos.pending.size());
-  EXPECT_EQ(0U, promos.completed.size());
+  EXPECT_FALSE(controller().HasShowablePromo(nullptr));
+  const auto showable = controller().GenerateShowablePromo(nullptr);
+  EXPECT_FALSE(ShowsPromo());
 }
 
 TEST_F(NtpPromoControllerTest, UndisableRestoresPromos) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
-  RegisterPromo(kPromo2Id, kCompleted, /*clicked=*/true);
   controller().SetAllPromosDisabled(true);
   controller().SetAllPromosDisabled(false);
-  EXPECT_TRUE(controller().HasShowablePromos(nullptr, true));
-  const auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_EQ(1U, promos.pending.size());
-  EXPECT_EQ(1U, promos.completed.size());
+  EXPECT_TRUE(controller().HasShowablePromo(nullptr));
+  const auto showable = controller().GenerateShowablePromo(nullptr);
+  ASSERT_TRUE(ShowsPromo());
+  EXPECT_EQ(showable.promo->id, kPromoId);
 }
 
 TEST_F(NtpPromoControllerTest, SuppessedSinglePromo) {
@@ -493,22 +411,24 @@ TEST_F(NtpPromoControllerTest, SuppessedSinglePromo) {
       user_education::features::kEnableNtpBrowserPromos,
       {{"suppress-list", kPromoId}});
   CreateController();
-  auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_THAT(IdsFromShowablePromos(promos.pending), ElementsAre(kPromo2Id));
+  auto showable = controller().GenerateShowablePromo(nullptr);
+  ASSERT_TRUE(ShowsPromo());
+  EXPECT_EQ(showable.promo->id, kPromo2Id);
 }
 
 // This exercises the parsing of a comma-separated list in the feature param.
 TEST_F(NtpPromoControllerTest, SuppessedMultiplePromos) {
   RegisterPromo(kPromoId, kEligible);
   RegisterPromo(kPromo2Id, kEligible);
-  RegisterPromo(kPromo3Id, kEligible);
+  RegisterPromo("TestPromo3", kEligible);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       user_education::features::kEnableNtpBrowserPromos,
       {{"suppress-list", base::StrCat({kPromoId, ",", kPromo2Id})}});
   CreateController();
-  auto promos = controller().GenerateShowablePromos(nullptr);
-  EXPECT_THAT(IdsFromShowablePromos(promos.pending), ElementsAre(kPromo3Id));
+  auto showable = controller().GenerateShowablePromo(nullptr);
+  ASSERT_TRUE(ShowsPromo());
+  EXPECT_EQ(showable.promo->id, "TestPromo3");
 }
 
 }  // namespace user_education

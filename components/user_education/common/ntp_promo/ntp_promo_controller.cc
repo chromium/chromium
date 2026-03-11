@@ -27,7 +27,6 @@ using Eligibility = NtpPromoSpecification::Eligibility;
 constexpr char kPromoMetricPrefix[] = "UserEducation.NtpPromos.Promos.";
 // LINT.IfChange(NtpPromoActions)
 constexpr char kPromoMetricShownSuffix[] = ".Shown";
-constexpr char kPromoMetricShownTopSpotSuffix[] = ".ShownTopSpot";
 constexpr char kPromoMetricClickedSuffix[] = ".Clicked";
 constexpr char kPromoMetricCompletedSuffix[] = ".Completed";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/user_education/histograms.xml:NtpPromoActions)
@@ -39,10 +38,6 @@ void LogPromoMetric(const NtpPromoIdentifier& id, const std::string& suffix) {
 
 void LogPromoShown(const NtpPromoIdentifier& id) {
   LogPromoMetric(id, kPromoMetricShownSuffix);
-}
-
-void LogPromoShownTopSpot(const NtpPromoIdentifier& id) {
-  LogPromoMetric(id, kPromoMetricShownTopSpotSuffix);
 }
 
 void LogPromoClicked(const NtpPromoIdentifier& id) {
@@ -59,8 +54,6 @@ NtpPromoControllerParams GetNtpPromoControllerParams() {
   NtpPromoControllerParams params;
   params.max_top_spot_sessions =
       features::GetNtpBrowserPromoMaxTopSpotSessions();
-  params.completed_show_duration =
-      features::GetNtpBrowserPromoCompletedDuration();
   params.clicked_hide_duration =
       features::GetNtpBrowserPromoClickedHideDuration();
   params.promos_snoozed_hide_duration =
@@ -107,22 +100,21 @@ NtpPromoController::NtpPromoController(
 
 NtpPromoController::~NtpPromoController() = default;
 
-bool NtpPromoController::HasShowablePromos(
-    const user_education::UserEducationContextPtr& context,
-    bool include_completed) {
+bool NtpPromoController::HasShowablePromo(
+    const user_education::UserEducationContextPtr& context) {
   // Generate promo lists here, since the Eligibility callback results are
   // insufficient. Promo callbacks may report Eligible or Completed, but promos
   // may be suppressed for a number of reasons.
-  const auto promos = GenerateShowablePromos(context, /*apply_ordering=*/false);
-  return include_completed ? !promos.empty() : !promos.pending.empty();
+  const auto promos = GenerateShowablePromo(context, /*apply_ordering=*/false);
+  return !promos.empty();
 }
 
-NtpShowablePromos NtpPromoController::GenerateShowablePromos(
+NtpShowablePromos NtpPromoController::GenerateShowablePromo(
     const user_education::UserEducationContextPtr& context) {
-  return GenerateShowablePromos(context, /*apply_ordering=*/true);
+  return GenerateShowablePromo(context, /*apply_ordering=*/true);
 }
 
-NtpShowablePromos NtpPromoController::GenerateShowablePromos(
+NtpShowablePromos NtpPromoController::GenerateShowablePromo(
     const user_education::UserEducationContextPtr& context,
     bool apply_ordering) {
   if (ArePromosBlocked()) {
@@ -130,7 +122,6 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
   }
 
   std::vector<NtpPromoIdentifier> pending_promo_ids;
-  std::vector<NtpPromoIdentifier> completed_promo_ids;
   const auto now = storage_service_->GetCurrentTime();
 
   for (const auto& id : registry_->GetNtpPromoIdentifiers()) {
@@ -149,6 +140,8 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
 
     // Record the first evidence of completion. In the future, promos may
     // explicitly notify of completion, but we'll also use this opportunity.
+    // This was originally used to show promos in a different visual style, but
+    // now it simply logs our inferred completion metric.
     if (eligibility == Eligibility::kCompleted &&
         !prefs.last_clicked.is_null() && prefs.completed.is_null()) {
       prefs.completed = now;
@@ -156,41 +149,53 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(
       LogPromoCompleted(id);
     }
 
-    if (!ShouldShowPromo(id, prefs, eligibility, now)) {
-      continue;
+    if (ShouldShowPromo(id, prefs, eligibility, now)) {
+      pending_promo_ids.push_back(id);
     }
-
-    (prefs.completed.is_null() ? pending_promo_ids : completed_promo_ids)
-        .push_back(id);
   }
 
   if (apply_ordering) {
+    // Even though we only show one promo, the "ordering" is necessary to
+    // determine which promo to show. For example, rotation of the promos is
+    // done via this ordering mechanism.
     pending_promo_ids = order_policy_->OrderPendingPromos(pending_promo_ids);
-    completed_promo_ids =
-        order_policy_->OrderCompletedPromos(completed_promo_ids);
   }
 
+  if (pending_promo_ids.empty()) {
+    return NtpShowablePromos();
+  }
+
+  const auto* spec = registry_->GetNtpPromoSpecification(pending_promo_ids[0]);
   NtpShowablePromos showable_promos;
-  showable_promos.pending = MakeShowablePromos(pending_promo_ids);
-  showable_promos.completed = MakeShowablePromos(completed_promo_ids);
+  showable_promos.promo = NtpShowablePromo(
+      spec->id(), spec->content().icon_name(),
+      l10n_util::GetStringUTF8(spec->content().body_text_string_id()),
+      l10n_util::GetStringUTF8(spec->content().action_button_text_string_id()));
+
   return showable_promos;
 }
 
-void NtpPromoController::OnPromosShown(
-    const std::vector<NtpPromoIdentifier>& eligible_shown,
-    const std::vector<NtpPromoIdentifier>& completed_shown) {
-  // In the current implementation, only the top eligible promo needs to be
-  // updated. However, metrics should be output for every promo shown in this
-  // way.
-  if (!eligible_shown.empty()) {
-    for (const auto& id : eligible_shown) {
-      LogPromoShown(id);
+void NtpPromoController::OnPromoShown(const NtpPromoIdentifier& id) {
+  const auto* spec = registry_->GetNtpPromoSpecification(id);
+  spec->show_callback().Run();
 
-      const auto* spec = registry_->GetNtpPromoSpecification(id);
-      spec->show_callback().Run();
+  LogPromoShown(id);
+
+  // This logic keeps track of when this promo was shown, so that it can be
+  // rotated out after a period of time. The stored data is referred to as
+  // "top spot" because at one point multiple promos could be shown, and the
+  // top position rotated. Now that we only show one promo, it's effectively
+  // the same, with the "top spot" being the only promo shown.
+  const int current_session = storage_service_->GetSessionNumber();
+  auto data = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
+  if (data.last_top_spot_session != current_session) {
+    data.last_top_spot_session = current_session;
+    // If this promo is reclaiming the top spot, start a fresh count.
+    if (id != GetMostRecentTopSpotPromo()) {
+      data.top_spot_session_count = 0;
     }
-
-    OnPromoShownInTopSpot(eligible_shown[0]);
+    data.top_spot_session_count++;
+    storage_service_->SaveNtpPromoData(id, data);
   }
 }
 
@@ -217,36 +222,6 @@ void NtpPromoController::SetAllPromosDisabled(bool disabled) {
   prefs.last_snoozed = base::Time();
   prefs.disabled = disabled;
   storage_service_->SaveNtpPromoPreferences(prefs);
-}
-
-void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
-  const int current_session = storage_service_->GetSessionNumber();
-  // If no data is present, default-construct.
-  auto data = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
-  if (data.last_top_spot_session != current_session) {
-    data.last_top_spot_session = current_session;
-    // If this promo is reclaiming the top spot, start a fresh count.
-    if (id != GetMostRecentTopSpotPromo()) {
-      data.top_spot_session_count = 0;
-    }
-    data.top_spot_session_count++;
-    storage_service_->SaveNtpPromoData(id, data);
-  }
-  LogPromoShownTopSpot(id);
-}
-
-std::vector<NtpShowablePromo> NtpPromoController::MakeShowablePromos(
-    const std::vector<NtpPromoIdentifier>& ids) {
-  std::vector<NtpShowablePromo> promos;
-  for (const auto& id : ids) {
-    const auto* spec = registry_->GetNtpPromoSpecification(id);
-    promos.emplace_back(
-        spec->id(), spec->content().icon_name(),
-        l10n_util::GetStringUTF8(spec->content().body_text_string_id()),
-        l10n_util::GetStringUTF8(
-            spec->content().action_button_text_string_id()));
-  }
-  return promos;
 }
 
 NtpPromoIdentifier NtpPromoController::GetMostRecentTopSpotPromo() {
@@ -285,17 +260,11 @@ bool NtpPromoController::ShouldShowPromo(const NtpPromoIdentifier& id,
     return false;
   }
 
-  // If the promo reports itself as complete, but was never invoked by the
-  // user, don't show it (eg. user is already signed in).
-  if (eligibility == Eligibility::kCompleted && prefs.last_clicked.is_null()) {
-    return false;
-  }
-
-  // If the promo was marked complete sufficiently long ago, don't show it.
-  // Likewise if the completion time is nonsense (in the future).
-  if (!prefs.completed.is_null() &&
-      ((now - prefs.completed >= params_.completed_show_duration) ||
-       (now < prefs.completed))) {
+  // If the promo reports itself as completed, or at some point we detected it
+  // was completed, don't show the promo. For example, if we inferred that
+  // a user signed in as a result of that promo, but signed back out, we don't
+  // re-show the promo.
+  if (eligibility == Eligibility::kCompleted || !prefs.completed.is_null()) {
     return false;
   }
 

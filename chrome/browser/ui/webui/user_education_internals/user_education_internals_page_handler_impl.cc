@@ -990,9 +990,6 @@ void UserEducationInternalsPageHandlerImpl::GetNtpPromoPreferences(
       case user_education::features::NtpBrowserPromoType::kSimple:
         state = "Simple (single promo)";
         break;
-      case user_education::features::NtpBrowserPromoType::kSetupList:
-        state = "Setup List";
-        break;
     }
     data.emplace_back(FormatDemoPageData("NTP promo mode", state));
     data.emplace_back(

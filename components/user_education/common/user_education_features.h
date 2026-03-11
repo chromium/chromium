@@ -103,8 +103,6 @@ enum class NtpBrowserPromoType {
   kNone,
   // Indicates that a simple (single-promo) option is selected.
   kSimple,
-  // Indicates that a full Setup List style is selected.
-  kSetupList,
 };
 
 // The parameter that specifies which promo option to use.
@@ -120,9 +118,6 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kNtpBrowserPromoSuppressList);
 // rotated out.
 BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoMaxTopSpotSessions);
 
-// How long a promo stays in the "completed" section of the setup list.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kNtpBrowserPromoCompletedDuration);
-
 // How long a promo is hidden after being clicked.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kNtpBrowserPromoClickedHideDuration);
@@ -131,21 +126,11 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                            kNtpBrowserPromosSnoozedHideDuration);
 
-// The maximum number of promos to display in setup-list mode.
-BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoSetupListPromoLimit);
-
-// The maximum number of promos to display in individual-promo mode.
-BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoIndividualPromoLimit);
-
 // Accessors for `kEnableNtpBrowserPromos` parameters.
 extern std::vector<std::string> GetNtpBrowserPromoSuppressList();
 extern int GetNtpBrowserPromoMaxTopSpotSessions();
-extern base::TimeDelta GetNtpBrowserPromoCompletedDuration();
 extern base::TimeDelta GetNtpBrowserPromoClickedHideDuration();
 extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
-extern int GetNtpBrowserPromoSetupListPromoLimit();
-extern int GetNtpBrowserPromoSetupListCompletedPromoLimit();
-extern int GetNtpBrowserPromoIndividualPromoLimit();
 
 extern std::ostream& operator<<(std::ostream& os,
                                 NtpBrowserPromoType promo_type);

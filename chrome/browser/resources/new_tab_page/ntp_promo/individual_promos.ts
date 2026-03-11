@@ -38,14 +38,12 @@ export class IndividualPromosElement extends CrLitElement {
 
   static override get properties() {
     return {
-      eligiblePromos_: {type: Array},
-      maxPromos: {type: Number, attribute: true, useDefault: true},
+      promo_: {type: Object},
     };
   }
 
 
-  accessor eligiblePromos_: Promo[] = [];
-  accessor maxPromos: number = 0;
+  accessor promo_: Promo|null = null;
 
   private handler_: NtpPromoHandlerInterface;
   private callbackRouter_: NtpPromoClientCallbackRouter;
@@ -61,8 +59,8 @@ export class IndividualPromosElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.listenerIds_.push(this.callbackRouter_.setPromos.addListener(
-        this.onSetPromos.bind(this)));
+    this.listenerIds_.push(
+        this.callbackRouter_.setPromo.addListener(this.onSetPromo.bind(this)));
     this.handler_.requestPromos();
   }
 
@@ -75,19 +73,17 @@ export class IndividualPromosElement extends CrLitElement {
   }
 
   // Public for testing purposes only.
-  onSetPromos(eligible: Promo[]) {
-    this.eligiblePromos_ =
-        eligible.slice(0, Math.min(this.maxPromos, eligible.length));
+  onSetPromo(promo: Promo|null) {
+    this.promo_ = promo;
 
-    if (this.eligiblePromos_.length > 0) {
+    if (this.promo_) {
       this.style.display = 'block';
     } else {
       this.style.display = 'none';
     }
-    if (!this.notifiedShown_) {
+    if (!this.notifiedShown_ && this.promo_) {
       this.notifiedShown_ = true;
-      const shown = this.eligiblePromos_.map(p => p.id);
-      this.handler_.onPromosShown(shown, []);
+      this.handler_.onPromoShown(this.promo_.id);
     }
   }
 
@@ -97,7 +93,7 @@ export class IndividualPromosElement extends CrLitElement {
   }
 
   protected getBodyTextCssClass_(): string {
-    return this.eligiblePromos_.length > 1 ? 'multiplePromos' : 'singlePromo';
+    return 'singlePromo';
   }
 }
 

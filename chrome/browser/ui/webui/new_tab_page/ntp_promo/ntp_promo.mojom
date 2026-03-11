@@ -17,43 +17,18 @@ enum ShowNtpPromosResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:show_ntp_promos_result_enum)
 
-// These are the promo IDs shown on initial load of the NTP, in show order.
-// Subsequent changes / updates to displayed promos should NOT be reported,
-// so as to avoid over-counting metrics.
-struct PromosShown {
-  array<string> eligible;
-  array<string> completed;
-};
-
 // Browser-side handler for requests from WebUI page.
 interface NtpPromoHandler {
   // Requests a set of promos be sent from the browser. The response is sent
   // asynchronously through a call to `SetPromos()`.
   RequestPromos();
 
-  // Notifies the handler that `eligible_shown` and `completed_shown` promos
-  // have been shown. Only called once, after the initial set of promos are
-  // shown, and not after subsequent updates.
-  //
-  // The promos are ordered in each list from top/first to bottom/last.
-  OnPromosShown(array<string> eligible_shown, array<string> completed_shown);
+  // Notifies the handler that `promo_id` promo has been shown.
+  // Only called once, after the initial promo is shown.
+  OnPromoShown(string promo_id);
 
   // Called when the user clicks an action button for `promo_id`.
   OnPromoClicked(string promo_id);
-
-  // Specifies that the setup list should be snoozed.
-  SnoozeSetupList();
-
-  // Specifies that the setup list should be unsnoozed. (This is a recovery
-  // state after snoozing.)
-  UnsnoozeSetupList();
-
-  // Specifies that the setup list should be permanently disabled.
-  DisableSetupList();
-
-  // Specifies that the setup list should be un-disabled. (This is a recovery
-  // state after disabling.)
-  UndisableSetupList();
 };
 
 struct Promo {
@@ -65,10 +40,8 @@ struct Promo {
 
 // WebUI-side handler for requests from the browser.
 interface NtpPromoClient {
-  // Called by backend to supply a requested set of promos to the Web UI.
-  SetPromos(
-      array<Promo> eligible,
-      array<Promo> completed);
+  // Called by backend to supply a requested promo to the Web UI.
+  SetPromo(Promo? promo);
 };
 
 // Used by the WebUI to bootstrap bidirectional communication.

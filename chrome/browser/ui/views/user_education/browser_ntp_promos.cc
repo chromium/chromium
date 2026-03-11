@@ -111,15 +111,7 @@ void InvokeExtensionsPromo(ContextPtr context) {
   std::string_view utm_source;
   switch (user_education::features::GetNtpBrowserPromoType()) {
     case user_education::features::NtpBrowserPromoType::kSimple:
-      if (user_education::features::GetNtpBrowserPromoIndividualPromoLimit() >
-          1) {
-        utm_source = extension_urls::kNtpPromo2pUtmSource;
-      } else {
-        utm_source = extension_urls::kNtpPromo1pUtmSource;
-      }
-      break;
-    case user_education::features::NtpBrowserPromoType::kSetupList:
-      utm_source = extension_urls::kNtpPromoSlUtmSource;
+      utm_source = extension_urls::kNtpPromo1pUtmSource;
       break;
     default:
       NOTREACHED();

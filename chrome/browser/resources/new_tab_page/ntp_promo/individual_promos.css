@@ -22,7 +22,6 @@
   --ntp-promo-padding: 16px;
   --ntp-promo-text-line-height: 20px;
   --ntp-promo-text-width: 382px;
-  --ntp-promo-text-width-multiple-promos: 256px;
   --ntp-promo-spacing: 8px;
 
   align-items: center;
@@ -91,10 +90,6 @@
   vertical-align: middle;
   width: var(--ntp-promo-text-width);
 
-}
-
-#bodyText.multiplePromos {
-  width: var(--ntp-promo-text-width-multiple-promos);
 }
 
 #actionIcon {

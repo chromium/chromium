@@ -68,15 +68,9 @@ using Eligibility = user_education::NtpPromoSpecification::Eligibility;
 
 inline constexpr char kTestPromoName[] = "test_promo";
 const InteractiveBrowserTestApi::DeepQuery kPathToNtp = {"ntp-app"};
-const InteractiveBrowserTestApi::DeepQuery kPathToIndividualPromos = {
-    "ntp-app", "individual-promos", "#promos"};
-const InteractiveBrowserTestApi::DeepQuery kPathToFirstIndividualPromo =
-    kPathToIndividualPromos + "#promo";
+const InteractiveBrowserTestApi::DeepQuery kPathToPromo = {
+    "ntp-app", "individual-promos", "#promos", "#promo"};
 
-const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
-    "ntp-app", "setup-list-module-wrapper", "setup-list"};
-const InteractiveBrowserTestApi::DeepQuery kPathToSetupListFirstItem =
-    kPathToSetupList + "setup-list-item";
 constexpr char kPromoTextId[] = "#bodyText";
 constexpr char kPromoIconId[] = "#bodyIcon";
 constexpr char kSignInIconName[] = "account_circle";
@@ -99,28 +93,19 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMetricsRecordedEvent);
 // makes it easy to build sets of relevant tests, vs. the brute-force
 // testing::Combine() approach.
 struct NtpPromoUiTestParams {
-  NtpBrowserPromoType promo_type = NtpBrowserPromoType::kNone;
-  std::optional<int> individual_promos = std::nullopt;
   bool long_text = false;
   ui::NativeTheme::PreferredColorScheme color_scheme =
       ui::NativeTheme::PreferredColorScheme::kLight;
-  bool wide_screen = false;
   bool rtl = false;
 
   std::string ToString() const {
     std::ostringstream oss;
-    oss << promo_type;
-    if (individual_promos.has_value()) {
-      oss << "_" << individual_promos.value();
-    }
+    oss << "promo";
     if (long_text) {
       oss << "_long_text";
     }
     if (color_scheme == ui::NativeTheme::PreferredColorScheme::kDark) {
       oss << "_dark";
-    }
-    if (wide_screen) {
-      oss << "_wide";
     }
     if (rtl) {
       oss << "_rtl";
@@ -140,43 +125,14 @@ MATCHER_P(OptionalStringContains, text, "Optional string contains") {
 }  // namespace
 
 class NtpPromoUiTest
-    : public WebUiInteractiveTestMixin<InteractiveBrowserTest>,
-      public testing::WithParamInterface<NtpPromoUiTestParams> {
+    : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   NtpPromoUiTest() {
-    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
+    feature_list_.InitAndEnableFeatureWithParameters(
+        user_education::features::kEnableNtpBrowserPromos,
+        {{user_education::features::kNtpBrowserPromoType.name, "simple"}});
   }
   ~NtpPromoUiTest() override = default;
-
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    base::FieldTrialParams params;
-    params[user_education::features::kNtpBrowserPromoType.name] = [=]() {
-      switch (GetParam().promo_type) {
-        case NtpBrowserPromoType::kSimple:
-          return "simple";
-        case NtpBrowserPromoType::kSetupList:
-          return "setuplist";
-        case NtpBrowserPromoType::kNone:
-          return "none";
-        default:
-          NOTREACHED();
-      }
-    }();
-    if (GetParam().individual_promos.has_value()) {
-      params[user_education::features::kNtpBrowserPromoIndividualPromoLimit
-                 .name] =
-          base::NumberToString(GetParam().individual_promos.value());
-    }
-    return {{user_education::features::kEnableNtpBrowserPromos, params}};
-  }
-
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    // Sanity check that the flag setup actually took; if it didn't, then we
-    // can't accurately perform the test.
-    ASSERT_EQ(user_education::features::GetNtpBrowserPromoType(),
-              GetParam().promo_type);
-  }
 
   void ClearRegisteredPromos() {
     UserEducationService* const service =
@@ -217,18 +173,6 @@ class NtpPromoUiTest
                             base::Unretained(this)),
         {}, user_education::Metadata());
     registry->AddPromo(std::move(spec));
-
-    if (eligibility == Eligibility::kCompleted) {
-      // Need to configure the data so that the completed promo can show.
-      user_education::UserEducationStorageService& storage_service =
-          service->user_education_storage_service();
-      user_education::NtpPromoData data =
-          storage_service.ReadNtpPromoData(id).value_or(
-              user_education::NtpPromoData());
-      data.last_clicked = storage_service.GetCurrentTime();
-      data.completed = storage_service.GetCurrentTime();
-      storage_service.SaveNtpPromoData(id, data);
-    }
   }
 
   void InstallTestPromo(Eligibility eligibility) {
@@ -237,36 +181,10 @@ class NtpPromoUiTest
                       IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
   }
 
-  auto GetFirstPromoPath() const {
-    switch (GetParam().promo_type) {
-      case NtpBrowserPromoType::kSimple:
-        return kPathToFirstIndividualPromo;
-      case NtpBrowserPromoType::kSetupList:
-        return kPathToSetupListFirstItem;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  // Returns the element containing either the individual promos, or the
-  // setup list.
-  auto GetPromosPath() const {
-    switch (GetParam().promo_type) {
-      case NtpBrowserPromoType::kSimple:
-        return kPathToIndividualPromos;
-      case NtpBrowserPromoType::kSetupList:
-        return kPathToSetupList;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  auto GetPromoIconPath() const { return GetFirstPromoPath() + kPromoIconId; }
-
   auto WaitForPromoIcon(
       std::string_view expected_icon,
       const ui::ElementIdentifier& tab_element_id = kNtpElementId) {
-    const auto path = GetPromoIconPath();
+    const auto path = kPathToPromo + kPromoIconId;
     auto steps = Steps(
         WaitForAndScrollToElement(tab_element_id, path),
         // Verify the icon shows the correct image.
@@ -276,36 +194,24 @@ class NtpPromoUiTest
   }
 
   auto WaitForPromoVisible(
-      Eligibility eligibility,
       std::string_view expected_icon,
       const ui::ElementIdentifier& tab_element_id = kNtpElementId) {
-    MultiStep steps;
-    switch (eligibility) {
-      case Eligibility::kEligible:
-        steps += WaitForPromoIcon(
-            std::string("ntp-promo:") + std::string(expected_icon),
-            tab_element_id);
-        break;
-      case Eligibility::kCompleted:
-        steps += WaitForPromoIcon("cr:check", tab_element_id);
-        break;
-      case Eligibility::kIneligible:
-        NOTREACHED();
-    }
+    MultiStep steps = Steps(
+        WaitForPromoIcon(std::string("ntp-promo:") + std::string(expected_icon),
+                         tab_element_id));
     AddDescriptionPrefix(steps, __func__);
     return steps;
   }
 
   auto VerifyTestPromoText() {
     return CheckJsResultAt(
-               kNtpElementId, GetFirstPromoPath() + kPromoTextId,
-               "el => el.innerText",
+               kNtpElementId, kPathToPromo + kPromoTextId, "el => el.innerText",
                l10n_util::GetStringUTF8(IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS))
         .AddDescriptionPrefix(__func__);
   }
 
   auto ClickPromo(const ui::ElementIdentifier& tab_element_id = kNtpElementId) {
-    auto steps = ClickElement(tab_element_id, GetPromoIconPath());
+    auto steps = ClickElement(tab_element_id, kPathToPromo + kPromoIconId);
     AddDescriptionPrefix(steps, __func__);
     return steps;
   }
@@ -343,24 +249,6 @@ class NtpPromoUiTest
     });
   }
 
-  // Returns the expected UTM extension that should be supplied with the web
-  // store URL when invoking the extensions promo.
-  std::string_view ExpectedExtensionUtmSource() {
-    switch (GetParam().promo_type) {
-      case user_education::features::NtpBrowserPromoType::kSimple:
-        if (user_education::features::GetNtpBrowserPromoIndividualPromoLimit() >
-            1) {
-          return extension_urls::kNtpPromo2pUtmSource;
-        } else {
-          return extension_urls::kNtpPromo1pUtmSource;
-        }
-      case user_education::features::NtpBrowserPromoType::kSetupList:
-        return extension_urls::kNtpPromoSlUtmSource;
-      default:
-        NOTREACHED();
-    }
-  }
-
  private:
   void OnTestPromoShown() {
     BrowserElements::From(browser())->NotifyEvent(kBrowserViewElementId,
@@ -381,17 +269,7 @@ class NtpPromoUiTest
   base::HistogramTester histogram_tester_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    NtpPromoUiTest,
-    ValuesIn(std::vector<NtpPromoUiTestParams>{
-        {.promo_type = NtpBrowserPromoType::kSimple},
-        {.promo_type = NtpBrowserPromoType::kSetupList}}),
-    [](const testing::TestParamInfo<NtpPromoUiTestParams>& info) {
-      return info.param.ToString();
-    });
-
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, TestPromoEligible) {
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
@@ -403,8 +281,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
               WaitForEvent(kBrowserViewElementId, kTestPromoShownEvent))),
       // Should already be visible at this point, but confirm it is and that it
       // is in the correct state.
-      WaitForPromoVisible(Eligibility::kEligible, kSignInIconName),
-      VerifyTestPromoText(),
+      WaitForPromoVisible(kSignInIconName), VerifyTestPromoText(),
       // As before, because the click and the event are sent asynchronously,
       // run these in parallel.
       InParallel(RunSubsequence(ClickPromo()),
@@ -412,22 +289,6 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
                                              kTestPromoClickedEvent))),
       // Verify that the correct histogram was recorded.
       CheckShowMetrics(ShowNtpPromosResult::kShown));
-}
-
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
-  InstallTestPromo(Eligibility::kCompleted);
-  RunTestSequence(
-      InstrumentTab(kNtpElementId),
-      NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      If(
-          []() {
-            return GetParam().promo_type == NtpBrowserPromoType::kSetupList;
-          },
-          Then(WaitForPromoVisible(Eligibility::kCompleted, kSignInIconName),
-               VerifyTestPromoText(),
-               CheckShowMetrics(ShowNtpPromosResult::kShown)),
-          Else(EnsureNotPresent(kNtpElementId, GetFirstPromoPath()),
-               CheckShowMetrics(ShowNtpPromosResult::kNotShownNoPromos))));
 }
 
 namespace {
@@ -447,26 +308,16 @@ class NtpPromoWithModuleUiTest : public NtpPromoUiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    NtpPromoWithModuleUiTest,
-    ValuesIn(std::vector<NtpPromoUiTestParams>{
-        {.promo_type = NtpBrowserPromoType::kSimple},
-        {.promo_type = NtpBrowserPromoType::kSetupList}}),
-    [](const testing::TestParamInfo<NtpPromoUiTestParams>& info) {
-      return info.param.ToString();
-    });
-
-IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleEnabled) {
+IN_PROC_BROWSER_TEST_F(NtpPromoWithModuleUiTest, ModuleEnabled) {
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(InstrumentTab(kNtpElementId),
                   NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
                   WaitForAndScrollToElement(kNtpElementId, kPathToModules),
-                  EnsureNotPresent(kNtpElementId, GetFirstPromoPath()),
+                  EnsureNotPresent(kNtpElementId, kPathToPromo),
                   CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
+IN_PROC_BROWSER_TEST_F(NtpPromoWithModuleUiTest, ModuleDisabled) {
   // Disable the Tab Groups module in prefs.
   {
     ScopedListPrefUpdate update(browser()->profile()->GetPrefs(),
@@ -478,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
   InstallTestPromo(Eligibility::kEligible);
   RunTestSequence(InstrumentTab(kNtpElementId),
                   NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-                  WaitForAndScrollToElement(kNtpElementId, GetFirstPromoPath()),
+                  WaitForAndScrollToElement(kNtpElementId, kPathToPromo),
                   EnsureNotVisible(kNtpElementId, kPathToModules),
                   CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
@@ -488,12 +339,12 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
 // or run these tests on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpSignInPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForPromoVisible(Eligibility::kEligible, kSignInIconName),
+      WaitForPromoVisible(kSignInIconName),
 
       // Since bots cannot navigate to actual pages, we can't use
       // WaitForWebContentsNavigation() or the like. Instead, verify that the
@@ -512,12 +363,12 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, SigninPromoAppearsAndIsClickable) {
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpExtensionsPromoId);
   RunTestSequence(
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForPromoVisible(Eligibility::kEligible, kExtensionsIconName),
+      WaitForPromoVisible(kExtensionsIconName),
 
       // Since bots cannot navigate to actual pages, we can't use
       // WaitForWebContentsNavigation() or the like. Instead, verify that the
@@ -527,24 +378,24 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
       // Click the promo button; this should navigate the current page.
       ClickPromo(),
       // Note that the URL here may not match what users see, due to redirects.
-      WaitForState(kLocationBarTextValue,
-                   ::testing::AllOf(OptionalStringContains(u"webstore"),
-                                    OptionalStringContains(base::UTF8ToUTF16(
-                                        ExpectedExtensionUtmSource())))),
+      WaitForState(
+          kLocationBarTextValue,
+          ::testing::AllOf(OptionalStringContains(u"webstore"),
+                           OptionalStringContains(base::UTF8ToUTF16(
+                               extension_urls::kNtpPromo1pUtmSource)))),
       // The NTP tab should navigate, rather than opening a new tab.
       CheckOneTabOpen());
 
   // TODD(https://crbug.com/433607240): Check model, histograms.
 }
 
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
                        CustomizationPromoAppearsAndIsClickable) {
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
-  RunTestSequence(
-      InstrumentTab(kNtpElementId),
-      NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForPromoVisible(Eligibility::kEligible, kCustomizationIconName),
-      ClickPromo(), WaitForShow(kSidePanelElementId));
+  RunTestSequence(InstrumentTab(kNtpElementId),
+                  NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
+                  WaitForPromoVisible(kCustomizationIconName), ClickPromo(),
+                  WaitForShow(kSidePanelElementId));
 
   // TODD(https://crbug.com/433607240): Check model, histograms.
 }
@@ -552,7 +403,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
 // Regression test for crbug.com/485875459. With a second browser window open,
 // ensure that a second-window promo click opens the customization side panel
 // in the correct window. This test fails without the associated fix.
-IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
+IN_PROC_BROWSER_TEST_F(NtpPromoUiTest,
                        CustomizationPromoOpensInCorrectBrowser) {
   ClearRegisteredPromosExcept(kNtpCustomizationPromoId);
 
@@ -563,8 +414,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
       // Set up the first browser.
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForPromoVisible(Eligibility::kEligible, kCustomizationIconName,
-                          kNtpElementId),
+      WaitForPromoVisible(kCustomizationIconName, kNtpElementId),
 
       // Set up the second browser.
       InstrumentTab(kBrowser2NtpElementId, 0, browser2),
@@ -573,8 +423,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
       // Target the interactions to the second browser's context.
       InContext(
           BrowserView::GetBrowserViewForBrowser(browser2)->GetElementContext(),
-          Steps(WaitForPromoVisible(Eligibility::kEligible,
-                                    kCustomizationIconName,
+          Steps(WaitForPromoVisible(kCustomizationIconName,
                                     kBrowser2NtpElementId),
                 ClickPromo(kBrowser2NtpElementId),
                 // Wait for the side panel to show in the second browser.
@@ -596,7 +445,9 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest,
       }));
 }
 
-class NtpPromoVisualUiTest : public NtpPromoUiTest {
+class NtpPromoVisualUiTest
+    : public NtpPromoUiTest,
+      public testing::WithParamInterface<NtpPromoUiTestParams> {
  public:
   NtpPromoVisualUiTest() {
     // TODO(crbug.com/453086432): Fix test to work with Compose enabled.
@@ -619,48 +470,15 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     NtpPromoVisualUiTest,
     ValuesIn(std::vector<NtpPromoUiTestParams>{
+        {},
         {
-            .promo_type = NtpBrowserPromoType::kSimple,
-        },
-        {
-            .promo_type = NtpBrowserPromoType::kSimple,
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
         },
         {
-            .promo_type = NtpBrowserPromoType::kSimple,
             .rtl = true,
         },
         {
-            .promo_type = NtpBrowserPromoType::kSimple,
-            .individual_promos = 2,
-        },
-        {
-            // Tests that the individual promos match in height, despite
-            // lengthy text in one of the promos.
-            .promo_type = NtpBrowserPromoType::kSimple,
-            .individual_promos = 2,
             .long_text = true,
-        },
-        {
-            // Tests that the promos sit side-by-side.
-            .promo_type = NtpBrowserPromoType::kSimple,
-            .individual_promos = 2,
-            .wide_screen = true,
-        },
-        {
-            .promo_type = NtpBrowserPromoType::kSetupList,
-        },
-        {
-            .promo_type = NtpBrowserPromoType::kSetupList,
-            .long_text = true,
-        },
-        {
-            .promo_type = NtpBrowserPromoType::kSetupList,
-            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
-        },
-        {
-            .promo_type = NtpBrowserPromoType::kSetupList,
-            .rtl = true,
         }}),
     [](const testing::TestParamInfo<NtpPromoUiTestParams>& info) {
       return info.param.ToString();
@@ -670,10 +488,6 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
   // Force a consistent window size to exercise promo layout within New Tab
   // Page bounds.
   auto screen_size = gfx::Size(1000, 1200);
-  if (GetParam().wide_screen) {
-    // Grow the screen wide enough that individual promos can sit side-by-side.
-    screen_size = gfx::Size(1500, 1200);
-  }
   BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetSize(
       screen_size);
 
@@ -687,42 +501,39 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
     // Override promo text to very long (and short) strings, to exercise the
     // promos growing to fit (nor not shrinking unexpectedly).
     auto& bundle = ui::ResourceBundle::GetSharedInstance();
-    bundle.OverrideLocaleStringResource(IDS_NTP_CUSTOMIZATION_PROMO,
+    bundle.OverrideLocaleStringResource(IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS,
                                         kLongPromoText);
-    bundle.OverrideLocaleStringResource(IDS_NTP_EXTENSIONS_PROMO,
-                                        kShortPromoText);
   }
 
-  // Use fake promos to exercise pending/completed state and short/long text.
+  // Use fake promos for control over exactly what is shown.
   ClearRegisteredPromos();
   RegisterTestPromo("1", Eligibility::kEligible,
                     IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
-  RegisterTestPromo("2", Eligibility::kEligible, IDS_NTP_CUSTOMIZATION_PROMO);
-  RegisterTestPromo("3", Eligibility::kCompleted, IDS_NTP_EXTENSIONS_PROMO);
 
   RunTestSequence(
       InstrumentTab(kNtpElementId),
       NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
-      WaitForAndScrollToElement(kNtpElementId, GetFirstPromoPath()),
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+      WaitForAndScrollToElement(kNtpElementId, kPathToPromo),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshots not captured on this platform."),
-      ScreenshotWebUi(kNtpElementId, GetPromosPath(),
+      ScreenshotWebUi(kNtpElementId, kPathToPromo,
                       /*screenshot_name=*/std::string(),
                       /*baseline_cl=*/"6998053"));
 }
 
-class NtpPromosDisabledUiTest : public NtpPromoUiTest {};
+class NtpPromoDisabledUiTest : public NtpPromoUiTest {
+ public:
+  NtpPromoDisabledUiTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        user_education::features::kEnableNtpBrowserPromos,
+        {{user_education::features::kNtpBrowserPromoType.name, "none"}});
+  }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    NtpPromosDisabledUiTest,
-    ValuesIn(std::vector<NtpPromoUiTestParams>{
-        {.promo_type = NtpBrowserPromoType::kNone}}),
-    [](const testing::TestParamInfo<NtpPromoUiTestParams>& info) {
-      return info.param.ToString();
-    });
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
-IN_PROC_BROWSER_TEST_P(NtpPromosDisabledUiTest, NotShownMetric) {
+IN_PROC_BROWSER_TEST_F(NtpPromoDisabledUiTest, NotShownMetric) {
   RunTestSequence(InstrumentTab(kNtpElementId),
                   NavigateWebContents(kNtpElementId, GURL(kNtpURL)),
                   CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));

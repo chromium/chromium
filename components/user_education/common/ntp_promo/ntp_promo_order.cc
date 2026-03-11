@@ -44,12 +44,6 @@ struct SortablePendingPromo {
   int top_spot_session_count = 0;
 };
 
-// Helper struct to facilitate sorting pending promos.
-struct SortableCompletedPromo {
-  NtpPromoIdentifier id;
-  base::Time completed;
-};
-
 }  // namespace
 
 NtpPromoOrderPolicy::NtpPromoOrderPolicy(
@@ -143,35 +137,6 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
   ordered_ids.reserve(promos.size());
   std::transform(promos.begin(), promos.end(), std::back_inserter(ordered_ids),
                  [](const SortablePendingPromo& promo) { return promo.id; });
-  return ordered_ids;
-}
-
-std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderCompletedPromos(
-    const std::vector<NtpPromoIdentifier>& ids) {
-  // Construct a sortable list of promo ordering objects.
-  std::vector<SortableCompletedPromo> promos;
-  promos.reserve(ids.size());
-  for (const auto& id : ids) {
-    const auto prefs =
-        storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
-    promos.push_back(SortableCompletedPromo{
-        .id = id,
-        .completed = prefs.completed,
-    });
-  }
-
-  std::stable_sort(
-      promos.begin(), promos.end(),
-      [](const SortableCompletedPromo& a, const SortableCompletedPromo& b) {
-        // Descending time order.
-        return a.completed > b.completed;
-      });
-
-  // Distill and return the ordered list of IDs.
-  std::vector<NtpPromoIdentifier> ordered_ids;
-  ordered_ids.reserve(promos.size());
-  std::transform(promos.begin(), promos.end(), std::back_inserter(ordered_ids),
-                 [](const SortableCompletedPromo& promo) { return promo.id; });
   return ordered_ids;
 }
 

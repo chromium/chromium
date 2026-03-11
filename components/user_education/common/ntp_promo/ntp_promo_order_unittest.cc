@@ -61,11 +61,6 @@ class NtpPromoOrderTest : public testing::Test {
     return order_policy_->OrderPendingPromos(std::move(promos));
   }
 
-  std::vector<NtpPromoIdentifier> Completed() {
-    auto promos = registry_.GetNtpPromoIdentifiers();
-    return order_policy_->OrderCompletedPromos(std::move(promos));
-  }
-
  private:
   NtpPromoRegistry registry_;
   test::TestUserEducationStorageService storage_service_;
@@ -145,19 +140,6 @@ TEST_F(NtpPromoOrderTest, PendingLastTopPromoRotatesWithDependencies) {
   RegisterPromo("c", {"a"}, 0, 0, base::Time());
 
   EXPECT_THAT(Pending(), ElementsAre("b", "a", "c"));
-}
-
-TEST_F(NtpPromoOrderTest, CompletedSinglePromo) {
-  RegisterPromo("a", {}, 0, 0, base::Time());
-
-  EXPECT_THAT(Completed(), ElementsAre("a"));
-}
-
-TEST_F(NtpPromoOrderTest, CompletedPromosShowMostRecentFirst) {
-  RegisterPromo("a", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(2));
-  RegisterPromo("b", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(3));
-  RegisterPromo("c", {}, 0, 0, base::Time::FromSecondsSinceUnixEpoch(1));
-  EXPECT_THAT(Completed(), ElementsAre("b", "a", "c"));
 }
 
 }  // namespace user_education

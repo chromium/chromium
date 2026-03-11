@@ -15,12 +15,8 @@ export class TestNtpPromoHandler extends TestBrowserProxy implements
   constructor() {
     super([
       'requestPromos',
-      'onPromosShown',
+      'onPromoShown',
       'onPromoClicked',
-      'snoozeSetupList',
-      'unsnoozeSetupList',
-      'disableSetupList',
-      'undisableSetupList',
     ]);
   }
 
@@ -28,28 +24,12 @@ export class TestNtpPromoHandler extends TestBrowserProxy implements
     this.methodCalled('requestPromos');
   }
 
-  onPromosShown(eligible: string[], completed: string[]) {
-    this.methodCalled('onPromosShown', eligible, completed);
+  onPromoShown(eligible: string) {
+    this.methodCalled('onPromoShown', eligible);
   }
 
   onPromoClicked(promoId: string) {
     this.methodCalled('onPromoClicked', promoId);
-  }
-
-  snoozeSetupList() {
-    this.methodCalled('snoozeSetupList');
-  }
-
-  unsnoozeSetupList() {
-    this.methodCalled('unsnoozeSetupList');
-  }
-
-  disableSetupList() {
-    this.methodCalled('disableSetupList');
-  }
-
-  undisableSetupList() {
-    this.methodCalled('undisableSetupList');
   }
 }
 

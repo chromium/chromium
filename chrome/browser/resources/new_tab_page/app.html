@@ -139,22 +139,9 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </cr-button>
       </cr-toast>
     ` : ''}
-    ${ this.showBrowserPromo_ ? (() => { switch (this.browserPromoType_) {
-     case "simple":
-      return html`
-        <individual-promos maxPromos="${this.browserPromoLimit_}">
-        </individual-promos>
-
-      `;
-     case "setuplist":
-      return html`
-        <setup-list-module-wrapper maxPromos="${this.browserPromoLimit_}"
-            maxCompletedPromos="${this.browserPromoCompletedLimit_}">
-        </setup-list-module-wrapper>
-      `;
-     default:
-      return '';
-    } })() : '' }
+    ${ this.showBrowserPromo_ && this.browserPromoType_ === 'simple' ? html`
+        <individual-promos></individual-promos>
+    ` : '' }
   ${!this.isFooterVisible_ ? html`
       <a id="backgroundImageAttribution"
           href="${this.backgroundImageAttributionUrl_}"

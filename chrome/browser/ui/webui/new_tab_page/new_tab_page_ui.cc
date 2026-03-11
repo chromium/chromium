@@ -755,14 +755,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   int browser_completed_promo_limit = 0;
   switch (user_education::features::GetNtpBrowserPromoType()) {
     case user_education::features::NtpBrowserPromoType::kSimple:
-      browser_promo_limit =
-          user_education::features::GetNtpBrowserPromoIndividualPromoLimit();
-      break;
-    case user_education::features::NtpBrowserPromoType::kSetupList:
-      browser_promo_limit =
-          user_education::features::GetNtpBrowserPromoSetupListPromoLimit();
-      browser_completed_promo_limit = user_education::features::
-          GetNtpBrowserPromoSetupListCompletedPromoLimit();
+      // Hard code the limit to 1 for now, as we removed the param accessor.
+      browser_promo_limit = 1;
       break;
     case user_education::features::NtpBrowserPromoType::kNone:
       break;
@@ -803,7 +797,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 // that empty means that promos would have been shown, whereas disabled
 // indicates that no promo is allowed for the current page.
 constexpr std::string_view kSimpleBrowserPromo = "simple";
-constexpr std::string_view kSetupListBrowserPromo = "setuplist";
 constexpr std::string_view kEmptyBrowserPromo = "empty";
 constexpr std::string_view kDisabledBrowserPromo = "disabled";
 
@@ -1468,13 +1461,8 @@ std::string_view NewTabPageUI::GetNtpPromoType() {
 
   switch (user_education::features::GetNtpBrowserPromoType()) {
     case user_education::features::NtpBrowserPromoType::kSimple:
-      return controller->HasShowablePromos(context, /*include_completed=*/false)
-                 ? kSimpleBrowserPromo
-                 : kEmptyBrowserPromo;
-    case user_education::features::NtpBrowserPromoType::kSetupList:
-      return controller->HasShowablePromos(context, /*include_completed=*/true)
-                 ? kSetupListBrowserPromo
-                 : kEmptyBrowserPromo;
+      return controller->HasShowablePromo(context) ? kSimpleBrowserPromo
+                                                   : kEmptyBrowserPromo;
     case user_education::features::NtpBrowserPromoType::kNone:
       return kDisabledBrowserPromo;
   }

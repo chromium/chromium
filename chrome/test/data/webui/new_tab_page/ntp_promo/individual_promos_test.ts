@@ -18,16 +18,12 @@ suite('IndividualPromosTest', () => {
   let testProxy: TestNtpPromoProxy;
   let individualPromos: IndividualPromosElement;
 
-  const promos: Promo[] = [];
-  const NUM_TEST_PROMOS = 3;
-  for (let i = 0; i < NUM_TEST_PROMOS; ++i) {
-    promos.push({
-      id: 'promo' + i,
-      iconName: '',
-      bodyText: 'body text ' + i,
-      buttonText: 'button text ' + i,
-    });
-  }
+  const promo: Promo = {
+    id: 'promo0',
+    iconName: '',
+    bodyText: 'body text',
+    buttonText: 'button text',
+  };
 
   /**
    * Waits for the current frame to render, which queues intersection events,
@@ -54,10 +50,6 @@ suite('IndividualPromosTest', () => {
     return getContainer().children[index] as HTMLElement;
   }
 
-  function ids(start: number, length: number): string[] {
-    return promos.slice(start, start + length).map(promo => promo.id);
-  }
-
   setup(() => {
     testProxy = TestNtpPromoProxy.install();
 
@@ -69,7 +61,6 @@ suite('IndividualPromosTest', () => {
 
     individualPromos = document.createElement('individual-promos');
     individualPromos.id = 'individualPromos';
-    individualPromos.maxPromos = 1;
     document.querySelector<HTMLElement>('#container')!.insertBefore(
         individualPromos, document.querySelector<HTMLElement>('#bodyText'));
 
@@ -81,7 +72,7 @@ suite('IndividualPromosTest', () => {
   });
 
   test('set no promos hides promo container', async () => {
-    individualPromos.onSetPromos([]);
+    individualPromos.onSetPromo(null);
     await waitForVisibilityEvents();
     assertFalse(isVisible(individualPromos));
   });
@@ -89,58 +80,32 @@ suite('IndividualPromosTest', () => {
 
   // Check that the default number of showing promos.
   test('show single promo', async () => {
-    assertTrue(individualPromos.maxPromos < promos.length);
-    individualPromos.onSetPromos(promos);
+    individualPromos.onSetPromo(promo);
     await waitForVisibilityEvents();
     assertTrue(
         isVisible(individualPromos), 'promo frame should become visible');
-    assertEquals(1, testProxy.getHandler().getCallCount('onPromosShown'));
+    assertEquals(1, testProxy.getHandler().getCallCount('onPromoShown'));
     assertDeepEquals(
-        [[ids(0, 1), []]], testProxy.getHandler().getArgs('onPromosShown'));
-    assertEquals(1, getPromoCount());
-  });
-
-  // Overriding the number of showable promos should be respected.
-  test('show two promos', async () => {
-    individualPromos.maxPromos = 2;
-    individualPromos.onSetPromos(promos);
-    await waitForVisibilityEvents();
-    assertEquals(1, testProxy.getHandler().getCallCount('onPromosShown'));
-    assertDeepEquals(
-        [[ids(0, 2), []]], testProxy.getHandler().getArgs('onPromosShown'));
-    assertEquals(2, getPromoCount());
-    // Check order.
-    for (let i = 0; i < 2; ++i) {
-      assertEquals(
-          getPromoAt(i).querySelector<HTMLElement>('#bodyText')!.innerText,
-          promos[i]!.bodyText);
-    }
-  });
-
-  test('fewer promos available', async () => {
-    individualPromos.maxPromos = 2;
-    individualPromos.onSetPromos(promos.slice(0, 1));
-    await waitForVisibilityEvents();
+        [promo.id], testProxy.getHandler().getArgs('onPromoShown'));
     assertEquals(1, getPromoCount());
   });
 
   test('promo details', async () => {
-    individualPromos.onSetPromos(promos);
+    individualPromos.onSetPromo(promo);
     await waitForVisibilityEvents();
-    const expected = promos[0]!;
-    const promo = getPromoAt(0);
+    const current = getPromoAt(0);
     assertEquals(
-        promo.querySelector<HTMLElement>('#bodyText')!.innerText,
-        expected.bodyText);
-    assertEquals(promo.ariaLabel, expected.buttonText);
+        current.querySelector<HTMLElement>('#bodyText')!.innerText,
+        promo.bodyText);
+    assertEquals(current.ariaLabel, promo.buttonText);
   });
 
   test('press button', async () => {
-    individualPromos.onSetPromos(promos);
+    individualPromos.onSetPromo(promo);
     await waitForVisibilityEvents();
     getPromoAt(0).click();
     assertEquals(1, testProxy.getHandler().getCallCount('onPromoClicked'));
     assertDeepEquals(
-        [promos[0]!.id], testProxy.getHandler().getArgs('onPromoClicked'));
+        [promo.id], testProxy.getHandler().getArgs('onPromoClicked'));
   });
 });

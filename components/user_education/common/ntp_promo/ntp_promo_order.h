@@ -35,9 +35,6 @@ class NtpPromoOrderPolicy {
   std::vector<NtpPromoIdentifier> OrderPendingPromos(
       const std::vector<NtpPromoIdentifier>& ids);
 
-  std::vector<NtpPromoIdentifier> OrderCompletedPromos(
-      const std::vector<NtpPromoIdentifier>& ids);
-
  private:
   const raw_ref<const NtpPromoRegistry> registry_;
   const raw_ref<const UserEducationStorageService> storage_service_;
