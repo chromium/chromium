@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_
+
+#import <UIKit/UIKit.h>
+
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+
+namespace autofill {
+
+// Returns the default icon for the Autofill AI entity type.
+UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
+                                            CGFloat symbol_point_size);
+
+}  // namespace autofill
+
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_AUTOFILL_AI_PUBLIC_AUTOFILL_AI_UI_UTIL_H_

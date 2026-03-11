@@ -23,10 +23,6 @@ bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile);
 // Returns YES if the Autofill AI action can be performed for the given profile.
 bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);
 
-// Returns the default icon for the Autofill AI entity type.
-UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
-                                            CGFloat symbol_point_size);
-
 // Returns whether Enhanced Autofill is enabled.
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile);
 

@@ -24,7 +24,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"

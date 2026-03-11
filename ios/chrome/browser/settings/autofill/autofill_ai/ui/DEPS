@@ -1,5 +1,3 @@
-specific_include_rules = {
-  "autofill_ai_add_entities_menu_builder.mm": [
-    "+ios/chrome/browser/autofill/model/autofill_ai_util.h",
-  ],
-}
+include_rules = [
+  "+ios/chrome/browser/autofill/autofill_ai/public",
+]

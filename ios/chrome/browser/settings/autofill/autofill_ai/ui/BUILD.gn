@@ -12,6 +12,7 @@ source_set("ui") {
   deps = [
     "//components/autofill/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",

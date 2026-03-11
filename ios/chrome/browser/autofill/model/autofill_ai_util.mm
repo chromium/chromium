@@ -70,43 +70,6 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {
       GeoIpCountryCode(GetCountryCodeFromVariations()), action);
 }
 
-UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
-                                            CGFloat symbol_point_size) {
-  NSString* symbol_name = nil;
-  switch (entity_type_name) {
-    case EntityTypeName::kPassport:
-      return SymbolWithPalette(
-          CustomSymbolWithPointSize(kPassportSymbol, symbol_point_size), @[
-            [UIColor colorNamed:kTextPrimaryColor],
-          ]);
-    case EntityTypeName::kDriversLicense:
-    case EntityTypeName::kNationalIdCard:
-      symbol_name = kPersonTextRectangleSymbol;
-      break;
-    case EntityTypeName::kVehicle:
-      symbol_name = kCarSymbol;
-      break;
-    case EntityTypeName::kKnownTravelerNumber:
-    case EntityTypeName::kRedressNumber:
-      symbol_name = kPersonFillCheckmarkSymbol;
-      break;
-    case EntityTypeName::kFlightReservation:
-      if (@available(iOS 26, *)) {
-        symbol_name = kAirplaneUpRightSymbol;
-      } else {
-        symbol_name = kAirplaneSymbol;
-      }
-      break;
-    default:
-      return nil;
-  }
-
-  return SymbolWithPalette(
-      DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[
-        [UIColor colorNamed:kTextPrimaryColor],
-      ]);
-}
-
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile) {
   ProfileIOS* original_profile = profile->GetOriginalProfile();
   return autofill::GetAutofillAiOptInStatus(
