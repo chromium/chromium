@@ -10,10 +10,12 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/picture_in_picture/public",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/button_stack",
+    "//ui/base",
   ]
   frameworks = [
     "AVFoundation.framework",
