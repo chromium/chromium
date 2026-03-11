@@ -343,9 +343,11 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
   tabs::TabInterface* const tab_interface = tab_handle_.Get();
   if (tab_interface) {
     tab_data_observer_ = std::make_unique<tabs::TabDataObserver>(tab_interface);
+    // base::Unretained(this) is safe because the Tab owns the TabDataObserver
+    // so it is guaranteed to outlive the data observer.
     tab_data_change_subscription_ =
         tab_data_observer_->RegisterTabDataChangedCallback(base::BindRepeating(
-            &Tab::OnTabDataChanged, weak_ptr_factory_.GetWeakPtr()));
+            &Tab::OnTabDataChanged, base::Unretained(this)));
   }
 }
 
