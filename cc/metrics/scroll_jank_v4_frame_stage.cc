@@ -210,8 +210,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
       }
     }
 
-    // We check the type first, as if `is_scroll_start` is true, we need to
-    // include `scroll_update` even if `scroll_update->did_scroll()` is false.
     switch (event_type) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         if (scroll_start_ordering_ts) {
