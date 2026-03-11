@@ -19,6 +19,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout_view.h"
 
 namespace enterprise_connectors {

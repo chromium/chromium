@@ -14,6 +14,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/layout/layout_provider.h"
 
 class BrowserView;
 class Profile;
