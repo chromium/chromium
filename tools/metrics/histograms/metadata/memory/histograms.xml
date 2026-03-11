@@ -1766,7 +1766,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.NetworkService2.Custom{ProcessMemoryAllocatorCustom2}"
-    units="bytes" expires_after="2026-01-10">
+    units="bytes" expires_after="2026-07-19">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1778,12 +1778,15 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms. {ProcessMemoryAllocatorCustom2}
+
+    Warning: this histogram was expired from 2026-01-10 to 2026-03-10; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Memory.Experimental.NetworkService2.Small{ProcessMemoryAllocatorSmall2}"
-    units="KiB" expires_after="2026-01-10">
+    units="KiB" expires_after="2026-07-19">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1795,12 +1798,15 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms. {ProcessMemoryAllocatorSmall2}
+
+    Warning: this histogram was expired from 2026-01-10 to 2026-03-10; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="Memory.Experimental.NetworkService2.Tiny{ProcessMemoryAllocatorTiny2}"
-    units="bytes" expires_after="2025-05-25">
+    units="bytes" expires_after="2026-07-19">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -1812,6 +1818,9 @@ chromium-metrics-reviews@google.com.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
     Android and 30 minutes on other platforms. {ProcessMemoryAllocatorTiny2}
+
+    Warning: this histogram was expired from 2025-05-25 to 2026-03-10; data may
+    be missing.
   </summary>
 </histogram>
 
