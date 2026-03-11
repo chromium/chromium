@@ -233,7 +233,7 @@ void RecordIOSDesktopPromoShownHistogram(PromoType promo_type,
       promo_impression = DesktopIOSPromoImpression::kThirdImpression;
       break;
     default:
-      NOTREACHED();
+      return;
   }
   base::UmaHistogramEnumeration(
       "IOS.Desktop." + promo_histogram_type + ".Shown", promo_impression);
