@@ -17,7 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
-#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
 #include "components/prefs/pref_service.h"
@@ -28,10 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
 
 namespace ash {
 namespace {
@@ -62,7 +59,12 @@ bool IsDictationActive() {
 DictationButtonTray::DictationButtonTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name), download_progress_(0) {
+    : ImagedTrayIcon(shelf,
+                     GetIconImage(/*active=*/false, /*enabled=*/GetEnabled()),
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION),
+                     catalog_name),
+      download_progress_(0) {
   SetCallback(base::BindRepeating(
       &DictationButtonTray::OnDictationButtonPressed, base::Unretained(this)));
 
@@ -77,19 +79,6 @@ DictationButtonTray::DictationButtonTray(
   // dictation is not listening to speech).
   SetEnabled(in_text_input_);
   SetIsActive(false);
-
-  const ui::ImageModel icon_image =
-      GetIconImage(/*active=*/false, /*enabled=*/GetEnabled());
-  const int vertical_padding = (kTrayItemSize - icon_image.Size().height()) / 2;
-  const int horizontal_padding =
-      (kTrayItemSize - icon_image.Size().height()) / 2;
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(icon_image);
-  icon->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  icon->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
-  icon_ = tray_container()->AddChildView(std::move(icon));
 
   shell->AddShellObserver(this);
   shell->accessibility_controller()->AddObserver(this);
@@ -141,8 +130,6 @@ void DictationButtonTray::Initialize() {
   UpdateVisibility();
 }
 
-void DictationButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
-
 void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
   if (progress_indicator_) {
     progress_indicator_->SetColorId(
@@ -152,13 +139,8 @@ void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
 }
 
 void DictationButtonTray::HandleLocaleChange() {
-  icon_->SetTooltipText(
+  image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
-}
-
-void DictationButtonTray::HideBubbleWithView(
-    const TrayBubbleView* bubble_view) {
-  // This class has no bubbles to hide.
 }
 
 void DictationButtonTray::OnThemeChanged() {
@@ -170,10 +152,6 @@ void DictationButtonTray::OnThemeChanged() {
 void DictationButtonTray::Layout(PassKey) {
   LayoutSuperclass<TrayBackgroundView>(this);
   UpdateProgressIndicatorBounds();
-}
-
-void DictationButtonTray::HideBubble(const TrayBubbleView* bubble_view) {
-  // This class has no bubbles to hide.
 }
 
 void DictationButtonTray::OnCaretBoundsChanged(
@@ -195,7 +173,7 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
       download_progress > 0 && download_progress < 100;
   const bool is_dictation_enabled = !download_in_progress && in_text_input_;
   UpdateStateAndIcon(IsDictationActive(), is_dictation_enabled);
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
       download_in_progress
           ? IDS_ASH_ACCESSIBILITY_DICTATION_BUTTON_TOOLTIP_SODA_DOWNLOADING
           : IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
@@ -261,7 +239,8 @@ void DictationButtonTray::UpdateStateAndIcon(bool is_dictation_active,
   SetEnabled(is_dictation_enabled);
 
   if (should_update_icon) {
-    icon_->SetImage(GetIconImage(is_dictation_active, is_dictation_enabled));
+    image_view()->SetImage(
+        GetIconImage(is_dictation_active, is_dictation_enabled));
   }
 }
 
