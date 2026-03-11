@@ -459,6 +459,10 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
 #endif
 }
 
+bool SharedGpuContext::UseOverlaysForWebGL() {
+  return MaySupportWebGLImageChromium() && WebGLImageChromiumEnabled();
+}
+
 void SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(bool enable) {
   g_webgl_image_chromium_enabled_for_testing = enable;
 }

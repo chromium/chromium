@@ -70,6 +70,9 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   static bool WebGLImageChromiumEnabled();
 
+  // Whether WebGL content should be placed into overlays.
+  static bool UseOverlaysForWebGL();
+
   // Forces MaySupportWebGLImageChromium() and WebGLImageChromiumEnabled() to
   // return the passed-in value.
   // Cleared on the next invocation of Reset() of the global context.

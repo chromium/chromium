@@ -2016,8 +2016,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     if (SharedGpuContext::IsGpuCompositingEnabled() &&
         (!is_offscreen_canvas_ ||
          base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-      use_as_overlay = SharedGpuContext::MaySupportWebGLImageChromium() &&
-                       SharedGpuContext::WebGLImageChromiumEnabled();
+      use_as_overlay = SharedGpuContext::UseOverlaysForWebGL();
       low_latency_usage_supported =
           low_latency_enabled() &&
           SharedGpuContext::MaySupportWebGLImageChromium() &&
