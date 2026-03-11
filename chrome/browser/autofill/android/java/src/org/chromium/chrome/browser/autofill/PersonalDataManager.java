@@ -1170,7 +1170,9 @@ public class PersonalDataManager implements Destroyable {
      * @return Whether the user has seen the Amount Extraction AI terms.
      */
     public boolean isAutofillAmountExtractionAiTermsSeenPrefEnabled() {
-        return mPrefService.getBoolean(Pref.AUTOFILL_AMOUNT_EXTRACTION_AI_TERMS_SEEN);
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .isAutofillAmountExtractionAiTermsSeenPrefEnabled(mPersonalDataManagerAndroid);
     }
 
     /** Gets the BNPL issuers to show in the settings page. */
@@ -1292,6 +1294,9 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         boolean shouldShowBnplSettings(long nativePersonalDataManagerAndroid);
+
+        boolean isAutofillAmountExtractionAiTermsSeenPrefEnabled(
+                long nativePersonalDataManagerAndroid);
 
         BnplIssuerForSettings[] getBnplIssuersForSettings(long nativePersonalDataManagerAndroid);
     }

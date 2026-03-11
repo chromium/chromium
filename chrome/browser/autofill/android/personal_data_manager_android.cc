@@ -776,6 +776,12 @@ PersonalDataManagerAndroid::CreateBnplIssuerForSettingsFromNative(
       bnpl_issuer.GetDisplayName());
 }
 
+bool PersonalDataManagerAndroid::
+    IsAutofillAmountExtractionAiTermsSeenPrefEnabled(JNIEnv* env) {
+  return payments_data_manager()
+      .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();
+}
+
 }  // namespace autofill
 
 DEFINE_JNI(PersonalDataManager)

@@ -251,6 +251,9 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetBnplIssuersForSettings(
       JNIEnv* env);
 
+  // Returns whether the user has seen the Amount Extraction AI terms.
+  bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled(JNIEnv* env);
+
  private:
   ~PersonalDataManagerAndroid() override;
 

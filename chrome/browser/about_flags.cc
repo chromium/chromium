@@ -12828,7 +12828,7 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingName,
      flag_descriptions::
          kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTestingDescription,
-     kOsDesktop,
+     kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)},
