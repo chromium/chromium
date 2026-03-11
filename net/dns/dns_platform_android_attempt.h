@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DNS_PLATFORM_DNS_QUERY_EXECUTOR_ANDROID_H_
-#define NET_DNS_PLATFORM_DNS_QUERY_EXECUTOR_ANDROID_H_
+#ifndef NET_DNS_DNS_PLATFORM_ANDROID_ATTEMPT_H_
+#define NET_DNS_DNS_PLATFORM_ANDROID_ATTEMPT_H_
 
 #include <android/multinetwork.h>
 #include <android/versioning.h>
@@ -38,7 +38,7 @@ namespace net {
 // TODO(https://crbug.com/448975408): This class is not production-ready, and is
 // under active development. Once development is complete, this TODO will be
 // removed.
-class NET_EXPORT PlatformDnsQueryExecutorAndroid final
+class NET_EXPORT DnsPlatformAndroidAttempt final
     : public DnsAttempt,
       private base::MessagePumpForIO::FdWatcher {
  public:
@@ -58,7 +58,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
     virtual int Result(int fd, int* rcode, base::span<uint8_t> answer) = 0;
   };
 
-  class DelegateImpl final : public PlatformDnsQueryExecutorAndroid::Delegate {
+  class DelegateImpl final : public DnsPlatformAndroidAttempt::Delegate {
    public:
     DelegateImpl() __INTRODUCED_IN(29);
     ~DelegateImpl() override;
@@ -73,7 +73,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
   // `hostname` must be a valid domain name, and it's the caller's
   // responsibility to check it before calling this constructor.
-  PlatformDnsQueryExecutorAndroid(size_t server_index,
+  DnsPlatformAndroidAttempt(size_t server_index,
                                   base::span<const uint8_t> hostname,
                                   uint16_t dns_query_type,
                                   handles::NetworkHandle target_network,
@@ -81,14 +81,14 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
                                   const NetLogWithSource& net_log)
       __INTRODUCED_IN(29);
 
-  PlatformDnsQueryExecutorAndroid(const PlatformDnsQueryExecutorAndroid&) =
+  DnsPlatformAndroidAttempt(const DnsPlatformAndroidAttempt&) =
       delete;
-  PlatformDnsQueryExecutorAndroid& operator=(
-      const PlatformDnsQueryExecutorAndroid&) = delete;
+  DnsPlatformAndroidAttempt& operator=(
+      const DnsPlatformAndroidAttempt&) = delete;
 
   // Cancels this executor. Any outstanding resolve
   // attempts cannot be cancelled.
-  ~PlatformDnsQueryExecutorAndroid() override;
+  ~DnsPlatformAndroidAttempt() override;
 
   // DnsAttempt methods.
   int Start(CompletionOnceCallback callback) __INTRODUCED_IN(29) override;
@@ -100,7 +100,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
 
  private:
   // Starts the `hostname` resolution. `Start()` can be called only once per
-  // each instance of `PlatformDnsQueryExecutorAndroid`. Calling it multiple
+  // each instance of `DnsPlatformAndroidAttempt`. Calling it multiple
   // times will result in crash. `results_callback` will be invoked
   // asynchronously on the thread that called `Start()` with the results of the
   // resolution. `results_callback` can destroy `this`.
@@ -136,7 +136,7 @@ class NET_EXPORT PlatformDnsQueryExecutorAndroid final
   NetLogWithSource net_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<PlatformDnsQueryExecutorAndroid> weak_factory_{this};
+  base::WeakPtrFactory<DnsPlatformAndroidAttempt> weak_factory_{this};
 };
 
 }  // namespace net

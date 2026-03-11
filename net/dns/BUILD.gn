@@ -151,8 +151,8 @@ source_set("dns") {
     sources += [
       "dns_config_service_android.cc",
       "dns_config_service_android.h",
-      "platform_dns_query_executor_android.cc",
-      "platform_dns_query_executor_android.h",
+      "dns_platform_android_attempt.cc",
+      "dns_platform_android_attempt.h",
     ]
   } else if (is_linux) {
     sources += [
@@ -471,7 +471,7 @@ source_set("tests") {
   if (is_android) {
     sources += [
       "dns_config_service_android_unittest.cc",
-      "platform_dns_query_executor_android_unittest.cc",
+      "dns_platform_android_attempt_unittest.cc",
     ]
   } else if (is_linux) {
     sources += [ "dns_config_service_linux_unittest.cc" ]

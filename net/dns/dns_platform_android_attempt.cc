@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/dns/platform_dns_query_executor_android.h"
+#include "net/dns/dns_platform_android_attempt.h"
 
 #include <android/multinetwork.h>
 #include <android/versioning.h>
@@ -49,10 +49,10 @@ net_handle_t MapNetworkHandle(handles::NetworkHandle network) {
 
 }  // namespace
 
-PlatformDnsQueryExecutorAndroid::DelegateImpl::DelegateImpl() = default;
-PlatformDnsQueryExecutorAndroid::DelegateImpl::~DelegateImpl() = default;
+DnsPlatformAndroidAttempt::DelegateImpl::DelegateImpl() = default;
+DnsPlatformAndroidAttempt::DelegateImpl::~DelegateImpl() = default;
 
-int PlatformDnsQueryExecutorAndroid::DelegateImpl::Query(
+int DnsPlatformAndroidAttempt::DelegateImpl::Query(
     net_handle_t network,
     base::cstring_view hostname,
     uint16_t dns_query_type) {
@@ -61,14 +61,14 @@ int PlatformDnsQueryExecutorAndroid::DelegateImpl::Query(
                             /*flags=*/0);
 }
 
-int PlatformDnsQueryExecutorAndroid::DelegateImpl::Result(
+int DnsPlatformAndroidAttempt::DelegateImpl::Result(
     int fd,
     int* rcode,
     base::span<uint8_t> answer) {
   return android_res_nresult(fd, rcode, answer.data(), answer.size());
 }
 
-PlatformDnsQueryExecutorAndroid::PlatformDnsQueryExecutorAndroid(
+DnsPlatformAndroidAttempt::DnsPlatformAndroidAttempt(
     size_t server_index,
     base::span<const uint8_t> hostname,
     uint16_t dns_query_type,
@@ -89,11 +89,11 @@ PlatformDnsQueryExecutorAndroid::PlatformDnsQueryExecutorAndroid(
   CHECK(delegate_);
 }
 
-PlatformDnsQueryExecutorAndroid::~PlatformDnsQueryExecutorAndroid() {
+DnsPlatformAndroidAttempt::~DnsPlatformAndroidAttempt() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-int PlatformDnsQueryExecutorAndroid::Start(CompletionOnceCallback callback) {
+int DnsPlatformAndroidAttempt::Start(CompletionOnceCallback callback) {
   DCHECK(callback_.is_null());
   callback_ = std::move(callback);
   // StartInternal can currently call the onLookupComplete callback
@@ -101,12 +101,12 @@ int PlatformDnsQueryExecutorAndroid::Start(CompletionOnceCallback callback) {
   // TODO(crbug.com/491090786): Until this is fixed, work around this by posting
   // onto ourselves and always returning ERR_IO_PENDING.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&PlatformDnsQueryExecutorAndroid::StartInternal,
+      FROM_HERE, base::BindOnce(&DnsPlatformAndroidAttempt::StartInternal,
                                 weak_factory_.GetWeakPtr()));
   return ERR_IO_PENDING;
 }
 
-void PlatformDnsQueryExecutorAndroid::StartInternal() {
+void DnsPlatformAndroidAttempt::StartInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int fd = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
@@ -128,7 +128,7 @@ void PlatformDnsQueryExecutorAndroid::StartInternal() {
   }
 }
 
-void PlatformDnsQueryExecutorAndroid::OnFileCanReadWithoutBlocking(int fd) {
+void DnsPlatformAndroidAttempt::OnFileCanReadWithoutBlocking(int fd) {
   // TODO(https://crbug.com/450545129): Investigate why this happens.
   // This line is important to keep to avoid internal `MessagePumpEpoll` crash.
   read_fd_watcher_.StopWatchingFileDescriptor();
@@ -136,7 +136,7 @@ void PlatformDnsQueryExecutorAndroid::OnFileCanReadWithoutBlocking(int fd) {
   ReadResponse(fd);
 }
 
-void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
+void DnsPlatformAndroidAttempt::ReadResponse(int fd) {
   int rcode = -1;
   auto answer_buf = base::MakeRefCounted<GrowableIOBuffer>();
   answer_buf->SetCapacity(kResponseBufferSize);
@@ -164,7 +164,7 @@ void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
   OnLookupComplete(answer_buf);
 }
 
-void PlatformDnsQueryExecutorAndroid::OnLookupComplete(
+void DnsPlatformAndroidAttempt::OnLookupComplete(
     base::expected<scoped_refptr<net::IOBuffer>, int> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActive());
@@ -193,21 +193,21 @@ void PlatformDnsQueryExecutorAndroid::OnLookupComplete(
   std::move(callback_).Run(OK);
 }
 
-void PlatformDnsQueryExecutorAndroid::OnFileCanWriteWithoutBlocking(int fd) {
+void DnsPlatformAndroidAttempt::OnFileCanWriteWithoutBlocking(int fd) {
   NOTREACHED() << "Unexpected write on file descriptor.";
 }
 
-const DnsQuery* PlatformDnsQueryExecutorAndroid::GetQuery() const {
+const DnsQuery* DnsPlatformAndroidAttempt::GetQuery() const {
   NOTREACHED() << "The internal Android API being called takes care of "
                   "constructing the query and does not provide access to it.";
 }
 
-const DnsResponse* PlatformDnsQueryExecutorAndroid::GetResponse() const {
+const DnsResponse* DnsPlatformAndroidAttempt::GetResponse() const {
   const DnsResponse* resp = response_.get();
   return (resp != nullptr && resp->IsValid()) ? resp : nullptr;
 }
 
-base::Value PlatformDnsQueryExecutorAndroid::GetRawResponseBufferForLog()
+base::Value DnsPlatformAndroidAttempt::GetRawResponseBufferForLog()
     const {
   if (!response_) {
     return base::Value();
@@ -216,12 +216,12 @@ base::Value PlatformDnsQueryExecutorAndroid::GetRawResponseBufferForLog()
                            response_->io_buffer_size());
 }
 
-const NetLogWithSource& PlatformDnsQueryExecutorAndroid::GetSocketNetLog()
+const NetLogWithSource& DnsPlatformAndroidAttempt::GetSocketNetLog()
     const {
   return net_log_;
 }
 
-bool PlatformDnsQueryExecutorAndroid::IsPending() const {
+bool DnsPlatformAndroidAttempt::IsPending() const {
   return !callback_.is_null();
 }
 

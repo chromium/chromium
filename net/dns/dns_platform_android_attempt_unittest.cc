@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/dns/platform_dns_query_executor_android.h"
+#include "net/dns/dns_platform_android_attempt.h"
 
 #include <android/multinetwork.h>
 #include <android/versioning.h>
@@ -63,7 +63,7 @@ base::ScopedFD CreateFdWithUnreadData() {
   return read_fd;
 }
 
-class MockDelegate : public PlatformDnsQueryExecutorAndroid::Delegate {
+class MockDelegate : public DnsPlatformAndroidAttempt::Delegate {
  public:
   MockDelegate() = default;
   ~MockDelegate() override = default;
@@ -76,7 +76,7 @@ class MockDelegate : public PlatformDnsQueryExecutorAndroid::Delegate {
   MOCK_METHOD(int, Result, (int, int*, base::span<uint8_t>), (override));
 };
 
-class PlatformDnsQueryExecutorAndroidTest : public TestWithTaskEnvironment {};
+class DnsPlatformAndroidAttemptTest : public TestWithTaskEnvironment {};
 
 // A successful DNS response for www.google.com -> 192.168.1.1
 const std::vector<uint8_t> successful_dns_response = {
@@ -121,7 +121,7 @@ const char kQNameData[] =
     "\x00";
 const base::span<const uint8_t> kQName = base::as_byte_span(kQNameData);
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest, Success) {
+TEST_F(DnsPlatformAndroidAttemptTest, Success) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
 
@@ -138,7 +138,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, Success) {
           return successful_dns_response.size();
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -162,7 +162,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, Success) {
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest,
+TEST_F(DnsPlatformAndroidAttemptTest,
        FailOnAndroidResNqueryNegativeReturnValue) {
   if (__builtin_available(android 29, *)) {
     MockDelegate delegate;
@@ -171,7 +171,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
         .WillOnce(Return(-42));
     EXPECT_CALL(delegate, Result).Times(0);
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -185,7 +185,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest,
+TEST_F(DnsPlatformAndroidAttemptTest,
        FailOnAndroidResNresultNegativeReturnValue) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
@@ -196,7 +196,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(fd.get(), _, _)).WillOnce(Return(-42));
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -210,7 +210,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest,
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnAndroidResNresultErrorRcode) {
+TEST_F(DnsPlatformAndroidAttemptTest, FailOnAndroidResNresultErrorRcode) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
 
@@ -224,7 +224,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnAndroidResNresultErrorRcode) {
           return 5;
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -238,7 +238,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnAndroidResNresultErrorRcode) {
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnMalformedDnsResponse) {
+TEST_F(DnsPlatformAndroidAttemptTest, FailOnMalformedDnsResponse) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
 
@@ -253,7 +253,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnMalformedDnsResponse) {
           return malformed_dns_response.size();
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -267,7 +267,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnMalformedDnsResponse) {
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnResponseFlagsNxdomain) {
+TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseFlagsNxdomain) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
 
@@ -282,7 +282,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnResponseFlagsNxdomain) {
           return nxdomain_dns_response.size();
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
@@ -296,7 +296,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnResponseFlagsNxdomain) {
   }
 }
 
-TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnResponseTCFlag) {
+TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
   if (__builtin_available(android 29, *)) {
     base::ScopedFD fd = CreateFdWithUnreadData();
 
@@ -311,7 +311,7 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnResponseTCFlag) {
           return truncated_dns_response.size();
         });
 
-    PlatformDnsQueryExecutorAndroid executor(
+    DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, kQName, dns_protocol::kTypeA,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
