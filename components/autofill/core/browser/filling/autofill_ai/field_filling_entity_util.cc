@@ -278,7 +278,9 @@ FillingValueAndType GetFillingValueAndTypeForEntity(
         GetOptionForSelect(*attribute, field, app_locale, address_normalizer);
     return FillingValueAndType(
         select_control_option ? std::move(select_control_option->value) : u"",
-        select_control_option ? std::move(select_control_option->text) : u"",
+        select_control_option
+            ? std::optional(std::move(select_control_option->text))
+            : std::nullopt,
         field_type);
   } else {
     std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);

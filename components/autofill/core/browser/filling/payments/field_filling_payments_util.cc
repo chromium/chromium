@@ -507,7 +507,9 @@ FillingValueAndType GetFillingValueAndTypeForCreditCard(
     filling_value_and_type.value =
         select_control_option ? std::move(select_control_option->value) : u"";
     filling_value_and_type.select_text =
-        select_control_option ? std::move(select_control_option->text) : u"";
+        select_control_option
+            ? std::optional(std::move(select_control_option->text))
+            : std::nullopt;
   }
 
   return filling_value_and_type;

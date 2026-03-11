@@ -156,9 +156,10 @@ FillingValueAndType::FillingValueAndType(std::u16string value,
                                          FieldType filling_type)
     : value(std::move(value)), filling_type(filling_type) {}
 
-FillingValueAndType::FillingValueAndType(std::u16string value,
-                                         std::u16string select_text,
-                                         FieldType filling_type)
+FillingValueAndType::FillingValueAndType(
+    std::u16string value,
+    std::optional<std::u16string> select_text,
+    FieldType filling_type)
     : value(std::move(value)),
       select_text(std::move(select_text)),
       filling_type(filling_type) {}
