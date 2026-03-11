@@ -336,10 +336,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   virtual void ScrollEnd(bool should_snap,
                          std::optional<ScrollVector> compensated_scroll_delta);
 
-  void ScrollEnd(bool should_snap = false) {
-    ScrollEnd(should_snap, std::nullopt);
-  }
-
   // Called to notify every time scroll-begin/end is attempted by an input
   // event.
   virtual void RecordScrollBegin(ui::ScrollInputType input_type,

@@ -722,7 +722,7 @@ class MAYBE_LayerTreeHostScrollTestCaseWithChild
             UpdateState(gfx::Point(), scroll_amount_));
         auto* scrolling_node = impl->CurrentlyScrollingNode();
         CHECK(scrolling_node);
-        impl->GetInputHandler().ScrollEnd();
+        impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
         CHECK(!impl->CurrentlyScrollingNode());
 
         // Check the scroll is applied as a delta.
@@ -743,7 +743,7 @@ class MAYBE_LayerTreeHostScrollTestCaseWithChild
         EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
         impl->GetInputHandler().ScrollUpdate(
             UpdateState(gfx::Point(), scroll_amount_));
-        impl->GetInputHandler().ScrollEnd();
+        impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
         // Check the scroll is applied as a delta.
         EXPECT_POINTF_EQ(javascript_scroll_,
@@ -1230,7 +1230,8 @@ class MAYBE_SmoothScrollAnimationEndNotification
             host_impl->mutator_host()->HasImplOnlyScrollAnimatingElement());
       }
     } else if (!scroll_end_requested_) {
-      host_impl->GetInputHandler().ScrollEnd(false);
+      host_impl->GetInputHandler().ScrollEnd(/*should_snap=*/false,
+                                             std::nullopt);
       scroll_end_requested_ = true;
     }
     PostSetNeedsCommitToMainThread();
@@ -1295,7 +1296,7 @@ void DoGestureScroll(LayerTreeHostImpl* host_impl,
   host_impl->GetInputHandler().ScrollUpdate(
       ScrollState(update_scroll_state_data));
 
-  host_impl->GetInputHandler().ScrollEnd(true /* should_snap */);
+  host_impl->GetInputHandler().ScrollEnd(/*should_snap=*/true, std::nullopt);
 }
 
 // This test simulates scrolling on the impl thread such that snapping occurs
@@ -1683,7 +1684,7 @@ class LayerTreeHostScrollTestScrollZeroMaxScrollOffset
         EndTest();
         break;
     }
-    impl->GetInputHandler().ScrollEnd();
+    impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     MainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -1728,7 +1729,7 @@ class LayerTreeHostScrollTestScrollNonDrawnLayer
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
               status.main_thread_hit_test_reasons);
-    impl->GetInputHandler().ScrollEnd();
+    impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 
     status = impl->GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(21, 21), gfx::Vector2dF(0, 1)).get(),
@@ -1796,7 +1797,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
       EXPECT_EQ(impl->CurrentlyScrollingNode(), scroller_scroll_node);
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     // Scroll hitting the viewport layer.
@@ -1812,7 +1813,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(impl->CurrentlyScrollingNode(),
                 impl->OuterViewportScrollNode());
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     EndTest();
@@ -2904,7 +2905,7 @@ class LayerTreeHostScrollTestElasticOverscrollDeferredCleanup
   }
 
   void DoGestureScrollEnd(InputHandler& handler) {
-    handler.ScrollEnd(/*should_snap=*/true);
+    handler.ScrollEnd(/*should_snap=*/true, std::nullopt);
   }
 
  public:
@@ -3252,7 +3253,7 @@ class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
       // new content and not smoothness, since we need to repaint on the main
       // thread for the user to see the scroll.
       EXPECT_EQ(NEW_CONTENT_TAKES_PRIORITY, host_impl->GetTreePriority());
-      input_handler.ScrollEnd();
+      input_handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
       PostSetNeedsCommitToMainThread();
     }
 
@@ -3263,7 +3264,7 @@ class LayerTreeHostRasterPriorityTest : public LayerTreeHostScrollTest {
       // In frame 1, we have cleared the main_thread_scrolling_reasons.
       // Prioritize smoothness.
       EXPECT_EQ(SMOOTHNESS_TAKES_PRIORITY, host_impl->GetTreePriority());
-      input_handler.ScrollEnd();
+      input_handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
       PostSetNeedsCommitToMainThread();
     }
 
@@ -3380,7 +3381,7 @@ class NonScrollingMainThreadScrollHitTestRegion
       EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
       EXPECT_EQ(MainThreadScrollingReason::kMainThreadScrollHitTestRegion,
                 status.main_thread_hit_test_reasons);
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     // The top-right hit should hit the top layer but not the non-fast region
@@ -3393,7 +3394,7 @@ class NonScrollingMainThreadScrollHitTestRegion
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     // The bottom-right should hit the bottom layer's non-fast region.
@@ -3408,7 +3409,7 @@ class NonScrollingMainThreadScrollHitTestRegion
       EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
                 status.main_thread_hit_test_reasons);
       EXPECT_EQ(scroll_node, impl->CurrentlyScrollingNode());
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     EndTest();
@@ -3470,7 +3471,7 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
 
       impl->GetInputHandler().ScrollUpdate(
           UpdateState(gfx::Point(), gfx::Vector2dF(0, 10)));
-      impl->GetInputHandler().ScrollEnd();
+      impl->GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
     }
 
     // All scrolling in non-layer-list mode (i.e. UI compositor) should be
@@ -3651,7 +3652,8 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
 
         // stop scroll to check if recreating tiling happen in active tree
         scroll_check_pending_ = false;
-        host_impl->GetInputHandler().ScrollEnd();
+        host_impl->GetInputHandler().ScrollEnd(/*should_snap=*/false,
+                                               std::nullopt);
         // make sure redraw happen
         host_impl->active_tree()->set_needs_update_draw_properties();
         host_impl->SetNeedsRedraw(/*animation_only=*/false,
@@ -3890,7 +3892,7 @@ class LayerTreeHostScrollTestOverscroll : public LayerTreeHostScrollTest {
     EXPECT_EQ(result.unused_scroll_delta, state_.expected_unused_scroll_delta);
     EXPECT_EQ(result.did_overscroll_root, state_.expected_did_overscroll_root);
 
-    input_handler.ScrollEnd();
+    input_handler.ScrollEnd(/*should_snap=*/false, std::nullopt);
     EndTest();
   }
 

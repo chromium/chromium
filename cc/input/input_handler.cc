@@ -1201,7 +1201,7 @@ void InputHandler::ScrollEndForSnapFling(bool did_finish) {
   if (scroll_node) {
     ClearAnimatingSnapTargetsForElement(scroll_node->element_id);
   }
-  ScrollEnd(true /* should_snap */);
+  ScrollEnd(/*should_snap=*/true, std::nullopt);
 }
 
 void InputHandler::NotifyInputEvent(bool is_fling) {
@@ -1447,7 +1447,7 @@ void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
   // Call scrollEnd with the deferred scroll end state when the scroll animation
   // completes after GSE arrival.
   if (deferred_scroll_ends_.contains(target_element_id)) {
-    ScrollEnd(/*should_snap=*/false);
+    ScrollEnd(/*should_snap=*/false, std::nullopt);
     return;
   }
 }
@@ -1468,7 +1468,7 @@ void InputHandler::ElasticOverscrollAnimationFinished(ElementId finished_id) {
     }
     if (targets_currently_scrolling) {
       if (!IsAnimatingForSnap(current->element_id)) {
-        ScrollEnd(true /* should_snap */);
+        ScrollEnd(/*should_snap=*/true, std::nullopt);
       }
       // If the `finished_id` is the currently scrolling node, and `ScrollEnd`
       // does not need to be immediately called - do not handle this case as the

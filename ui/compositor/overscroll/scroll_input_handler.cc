@@ -74,7 +74,7 @@ bool ScrollInputHandler::OnScrollEvent(const ScrollEvent& event,
 
   input_handler_weak_ptr_->ScrollUpdate(CreateScrollState(event, false),
                                         base::TimeDelta());
-  input_handler_weak_ptr_->ScrollEnd(/*should_snap=*/false);
+  input_handler_weak_ptr_->ScrollEnd(/*should_snap=*/false, std::nullopt);
 
   return true;
 }
