@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "cobrowse_browser_agent.h",
     "cobrowse_browser_agent.mm",
+    "cobrowse_context.h",
+    "cobrowse_context.mm",
     "cobrowse_tab_helper.h",
     "cobrowse_tab_helper.mm",
   ]
