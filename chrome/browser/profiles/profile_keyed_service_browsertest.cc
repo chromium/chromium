@@ -812,6 +812,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ProcessManager",
     "ProcessMap",
     "ProcessesAPI",
+    "ProfileMetricsService",
     "ProfileNetworkContextService",
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     "ProtocolHandlersManager",

@@ -31,6 +31,10 @@ namespace sync_preferences {
 class TestingPrefServiceSyncable;
 }
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace network {
 class TestURLLoaderFactory;
 }
@@ -414,13 +418,15 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   static std::unique_ptr<IdentityManager> BuildIdentityManagerForTests(
       SigninClient* signin_client,
       PrefService* pref_service,
+      metrics::ProfileMetricsService* profile_metrics_service,
       base::FilePath user_data_dir);
 
   static std::unique_ptr<IdentityManager> FinishBuildIdentityManagerForTests(
       std::unique_ptr<AccountTrackerService> account_tracker_service,
       std::unique_ptr<ProfileOAuth2TokenService> token_service,
       SigninClient* signin_client,
-      PrefService* pref_service
+      PrefService* pref_service,
+      metrics::ProfileMetricsService* profile_metrics_service
 #if BUILDFLAG(IS_CHROMEOS)
       ,
       account_manager::AccountManagerFacade* account_manager_facade

@@ -10,6 +10,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -45,7 +47,9 @@ enum class InitializePrefState {
   kMaxValue = kEmptyPrimaryAccountId_ConsentedForSync,
 };
 
-void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
+void LogPrimaryAccountChangeMetrics(
+    PrimaryAccountChangeEvent event_details,
+    metrics::ProfileMetricsService* profile_metrics_service) {
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -59,14 +63,14 @@ void LogPrimaryAccountChangeMetrics(PrimaryAccountChangeEvent event_details) {
       }
 
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
-      base::UmaHistogramEnumeration(
+      profile_metrics_service->UmaHistogramEnumeration(
           "Signin.SignIn.Completed",
           event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
       DCHECK(event_details.GetClearPrimaryAccountSource().has_value());
-      base::UmaHistogramEnumeration(
+      profile_metrics_service->UmaHistogramEnumeration(
           "Signin.SignOut.Completed",
           event_details.GetClearPrimaryAccountSource().value());
       break;
@@ -190,10 +194,12 @@ PrimaryAccountManager::PrimaryAccount::PrimaryAccount(
 PrimaryAccountManager::PrimaryAccountManager(
     SigninClient* client,
     ProfileOAuth2TokenService* token_service,
-    AccountTrackerService* account_tracker_service)
+    AccountTrackerService* account_tracker_service,
+    metrics::ProfileMetricsService* profile_metrics_service)
     : client_(client),
       token_service_(token_service),
-      account_tracker_service_(account_tracker_service) {
+      account_tracker_service_(account_tracker_service),
+      profile_metrics_service_(CHECK_DEREF(profile_metrics_service)) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
   ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
@@ -805,7 +811,8 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
              PrimaryAccountChangeEvent::Type::kNone)
       << "PrimaryAccountChangeEvent with no change: " << event_details;
 
-  LogPrimaryAccountChangeMetrics(event_details);
+  LogPrimaryAccountChangeMetrics(event_details,
+                                 &profile_metrics_service_.get());
 
   SetExplicitBrowserSigninPrefs(event_details, scoped_pref_commit);
 

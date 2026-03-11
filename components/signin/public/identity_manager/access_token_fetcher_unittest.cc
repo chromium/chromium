@@ -12,6 +12,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
@@ -78,7 +79,8 @@ class AccessTokenFetcherTest
 
     account_tracker_->Initialize(&pref_service_, base::FilePath());
     primary_account_manager_ = std::make_unique<PrimaryAccountManager>(
-        &signin_client_, &token_service_, account_tracker_.get());
+        &signin_client_, &token_service_, account_tracker_.get(),
+        &profile_metrics_service_);
     token_service_.AddAccessTokenDiagnosticsObserver(this);
   }
 
@@ -217,6 +219,7 @@ class AccessTokenFetcherTest
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSyncable pref_service_;
   TestSigninClient signin_client_;
+  metrics::ProfileMetricsService profile_metrics_service_;
   FakeProfileOAuth2TokenService token_service_;
   AccessTokenInfo access_token_info_;
   std::unique_ptr<AccountTrackerService> account_tracker_;

@@ -59,9 +59,10 @@ std::unique_ptr<AccountTrackerService> BuildAccountTrackerService(
 std::unique_ptr<PrimaryAccountManager> BuildPrimaryAccountManager(
     SigninClient* client,
     AccountTrackerService* account_tracker_service,
-    ProfileOAuth2TokenService* token_service) {
-  return std::make_unique<PrimaryAccountManager>(client, token_service,
-                                                 account_tracker_service);
+    ProfileOAuth2TokenService* token_service,
+    metrics::ProfileMetricsService* profile_metrics_service) {
+  return std::make_unique<PrimaryAccountManager>(
+      client, token_service, account_tracker_service, profile_metrics_service);
 }
 
 std::unique_ptr<AccountsMutator> BuildAccountsMutator(
@@ -131,10 +132,11 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
       account_tracker_service.get(), token_service.get(),
       params->signin_client);
 
+  CHECK(params->profile_metrics_service);
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
-      BuildPrimaryAccountManager(params->signin_client,
-                                 account_tracker_service.get(),
-                                 token_service.get());
+      BuildPrimaryAccountManager(
+          params->signin_client, account_tracker_service.get(),
+          token_service.get(), params->profile_metrics_service);
 
   IdentityManager::InitParameters init_params;
 

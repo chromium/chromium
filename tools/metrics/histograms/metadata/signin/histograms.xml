@@ -3070,7 +3070,7 @@ OAuth Multilogin call. -->
   </token>
 </histogram>
 
-<histogram name="Signin.SignIn.Completed" enum="SigninAccessPoint"
+<histogram name="Signin.SignIn.Completed{Profile}" enum="SigninAccessPoint"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -3086,7 +3086,10 @@ OAuth Multilogin call. -->
 
     This histogram is of special interest to the chrome-ds@. Do not change its
     semantics or retire it without talking to them first.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndexSignin"/>
 </histogram>
 
 <histogram name="Signin.SignIn.Offered{AccountState}" enum="SigninAccessPoint"
@@ -3405,7 +3408,7 @@ OAuth Multilogin call. -->
   </token>
 </histogram>
 
-<histogram name="Signin.SignOut.Completed" enum="SigninSignoutProfile"
+<histogram name="Signin.SignOut.Completed{Profile}" enum="SigninSignoutProfile"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -3423,7 +3426,10 @@ OAuth Multilogin call. -->
 
     This histogram is of special interest to the chrome-ds@. Do not change its
     semantics or retire it without talking to them first.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndexSignin"/>
 </histogram>
 
 <histogram name="Signin.SignoutAndClearDataFromManagedAccount"

@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/accounts_cookie_mutator_impl.h"
@@ -82,6 +83,7 @@ class IdentityManagerDependenciesOwner {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service();
   TestSigninClient* signin_client();
+  metrics::ProfileMetricsService* profile_metrics_service();
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -96,6 +98,8 @@ class IdentityManagerDependenciesOwner {
       nullptr;
   std::unique_ptr<TestSigninClient> owned_signin_client_;
   raw_ptr<TestSigninClient> raw_signin_client_ = nullptr;
+
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
@@ -142,6 +146,11 @@ TestSigninClient* IdentityManagerDependenciesOwner::signin_client() {
 
   return raw_signin_client_ ? raw_signin_client_.get()
                             : owned_signin_client_.get();
+}
+
+metrics::ProfileMetricsService*
+IdentityManagerDependenciesOwner::profile_metrics_service() {
+  return &profile_metrics_service_;
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(
@@ -203,7 +212,8 @@ IdentityTestEnvironment::IdentityTestEnvironment(
   account_manager::AccountManager::RegisterPrefs(test_pref_service->registry());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   owned_identity_manager_ = BuildIdentityManagerForTests(
-      test_signin_client, test_pref_service, base::FilePath());
+      test_signin_client, test_pref_service,
+      dependencies_owner_->profile_metrics_service(), base::FilePath());
 
   Initialize();
 }
@@ -214,6 +224,7 @@ std::unique_ptr<IdentityManager>
 IdentityTestEnvironment::BuildIdentityManagerForTests(
     SigninClient* signin_client,
     PrefService* pref_service,
+    metrics::ProfileMetricsService* profile_metrics_service,
     base::FilePath user_data_dir) {
   auto account_tracker_service = std::make_unique<AccountTrackerService>();
   account_tracker_service->Initialize(pref_service, user_data_dir);
@@ -265,7 +276,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
 
   return FinishBuildIdentityManagerForTests(
       std::move(account_tracker_service), std::move(token_service),
-      signin_client, pref_service, account_manager_facade);
+      signin_client, pref_service, profile_metrics_service,
+      account_manager_facade);
 }
 #else
 // static
@@ -273,6 +285,7 @@ std::unique_ptr<IdentityManager>
 IdentityTestEnvironment::BuildIdentityManagerForTests(
     SigninClient* signin_client,
     PrefService* pref_service,
+    metrics::ProfileMetricsService* profile_metrics_service,
     base::FilePath user_data_dir) {
 #if BUILDFLAG(IS_ANDROID)
   SetUpFakeAccountManagerFacade();
@@ -281,9 +294,9 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
   account_tracker_service->Initialize(pref_service, user_data_dir);
   auto token_service =
       std::make_unique<FakeProfileOAuth2TokenService>(pref_service);
-  return FinishBuildIdentityManagerForTests(std::move(account_tracker_service),
-                                            std::move(token_service),
-                                            signin_client, pref_service);
+  return FinishBuildIdentityManagerForTests(
+      std::move(account_tracker_service), std::move(token_service),
+      signin_client, pref_service, profile_metrics_service);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -308,7 +321,8 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
     std::unique_ptr<AccountTrackerService> account_tracker_service,
     std::unique_ptr<ProfileOAuth2TokenService> token_service,
     SigninClient* signin_client,
-    PrefService* pref_service
+    PrefService* pref_service,
+    metrics::ProfileMetricsService* profile_metrics_service
 #if BUILDFLAG(IS_CHROMEOS)
     ,
     account_manager::AccountManagerFacade* account_manager_facade
@@ -322,7 +336,8 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
 
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(
-          signin_client, token_service.get(), account_tracker_service.get());
+          signin_client, token_service.get(), account_tracker_service.get(),
+          profile_metrics_service);
 
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =
       std::make_unique<GaiaCookieManagerService>(

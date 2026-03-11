@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -73,6 +74,7 @@ IdentityManagerFactory::IdentityManagerFactory()
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
   signin::SetIdentityManagerProvider(
       base::BindRepeating([](content::BrowserContext* context) {
         return GetForProfile(Profile::FromBrowserContext(context));
@@ -167,6 +169,9 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
       base::BindRepeating(&signin_util::ReauthWithCredentialProviderIfPossible,
                           base::Unretained(profile));
 #endif
+
+  params.profile_metrics_service =
+      ProfileMetricsServiceFactory::GetForProfile(profile);
 
   std::unique_ptr<signin::IdentityManager> identity_manager =
       signin::BuildIdentityManager(&params);

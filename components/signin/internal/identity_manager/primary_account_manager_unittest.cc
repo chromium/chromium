@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -142,18 +143,25 @@ class PrimaryAccountManagerTest : public testing::Test,
         /*sample=*/expected_sample, /*expected_bucket_count=*/1);
   }
 
-  void CreatePrimaryAccountManager() {
-    DCHECK(!manager_);
+  void CreatePrimaryAccountManager(metrics::ProfileMetricsContext context =
+                                       metrics::ProfileMetricsContext()) {
+    CHECK(!manager_);
+    CHECK(!profile_metrics_service_);
+    profile_metrics_service_ =
+        std::make_unique<metrics::ProfileMetricsService>(context);
     manager_ = std::make_unique<PrimaryAccountManager>(
-        &test_signin_client_, token_service_.get(), account_tracker_.get());
+        &test_signin_client_, token_service_.get(), account_tracker_.get(),
+        profile_metrics_service_.get());
     manager_->AddObserver(this);
   }
 
   // Shuts down |manager_|.
   void ShutDownManager() {
-    DCHECK(manager_);
+    CHECK(manager_);
+    CHECK(profile_metrics_service_);
     manager_->RemoveObserver(this);
     manager_.reset();
+    profile_metrics_service_.reset();
   }
 
   void OnPrimaryAccountChanged(
@@ -187,6 +195,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestSigninClient test_signin_client_;
+  std::unique_ptr<metrics::ProfileMetricsService> profile_metrics_service_;
   std::unique_ptr<AccountTrackerService> account_tracker_;
   std::unique_ptr<ProfileOAuth2TokenService> token_service_;
   std::unique_ptr<AccountFetcherService> account_fetcher_;
@@ -1100,6 +1109,64 @@ TEST_F(PrimaryAccountManagerTest,
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrimaryAccountManagerTest, PerProfileMetrics) {
+  // First PrimaryAccountManager with `context1`, records metric for both
+  // `Profile1` and non-profile specific.
+  metrics::ProfileMetricsContext context1(1);
+  CreatePrimaryAccountManager(context1);
+
+  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(
+      AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com"));
+  manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
+                                  AccessPoint::kStartPage);
+
+  histogram_tester_.ExpectUniqueSample("Signin.SignIn.Completed",
+                                       AccessPoint::kStartPage, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SignIn.Completed.Profile1",
+                                       AccessPoint::kStartPage, 1);
+
+  manager_->ClearPrimaryAccount(ProfileSignout::kTest);
+
+  histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed",
+                                       ProfileSignout::kTest, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed.Profile1",
+                                       ProfileSignout::kTest, 1);
+
+  ShutDownManager();
+
+  // Second PrimaryAccountManager with `context2`, records metric for both
+  // `Profile2` and non-profile specific.
+  metrics::ProfileMetricsContext context2(2);
+  CreatePrimaryAccountManager(context2);
+
+  CoreAccountInfo account_info2 = account_tracker()->GetAccountInfo(
+      AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"));
+  manager_->SetPrimaryAccountInfo(account_info2, ConsentLevel::kSignin,
+                                  AccessPoint::kStartPage);
+
+  // Does not impact already recorded `Profie1` metric. Non profile specific
+  // metric accumulates.
+  histogram_tester_.ExpectUniqueSample("Signin.SignIn.Completed",
+                                       AccessPoint::kStartPage, 2);
+  histogram_tester_.ExpectUniqueSample("Signin.SignIn.Completed.Profile1",
+                                       AccessPoint::kStartPage, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SignIn.Completed.Profile2",
+                                       AccessPoint::kStartPage, 1);
+
+  manager_->ClearPrimaryAccount(ProfileSignout::kTest);
+
+  // Does not impact already recorded `Profie1` metric. Non profile specific
+  // metric accumulates.
+  histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed",
+                                       ProfileSignout::kTest, 2);
+  histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed.Profile1",
+                                       ProfileSignout::kTest, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed.Profile2",
+                                       ProfileSignout::kTest, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest

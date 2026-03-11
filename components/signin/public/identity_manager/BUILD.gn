@@ -143,6 +143,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/image_fetcher/core:test_support",
+    "//components/metrics",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/internal/identity_manager",
@@ -207,6 +208,7 @@ source_set("test_support") {
 
   deps = [
     "//components/image_fetcher/core:test_support",
+    "//components/metrics",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:test_support",
     "//components/signin/public/base:test_support",

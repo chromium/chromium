@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
@@ -78,7 +79,7 @@ IdentityTestEnvironmentProfileAdaptor::BuildIdentityManagerForTests(
   Profile* profile = Profile::FromBrowserContext(context);
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       ChromeSigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetPath());
+      ProfileMetricsServiceFactory::GetForProfile(profile), profile->GetPath());
 }
 
 IdentityTestEnvironmentProfileAdaptor::IdentityTestEnvironmentProfileAdaptor(

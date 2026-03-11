@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_fetcher_factory.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
@@ -63,6 +64,10 @@ class IdentityManagerBuilderTest : public testing::Test {
     return &pref_service_;
   }
 
+  metrics::ProfileMetricsService* GetProfileMetricsService() {
+    return &profile_metrics_service_;
+  }
+
  public:
   IdentityManagerBuilderTest(const IdentityManagerBuilderTest&) = delete;
   IdentityManagerBuilderTest& operator=(const IdentityManagerBuilderTest&) =
@@ -73,6 +78,7 @@ class IdentityManagerBuilderTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestSigninClient signin_client_;
+  metrics::ProfileMetricsService profile_metrics_service_;
 };
 
 // Test that IdentityManagerBuilder properly set all required parameters to the
@@ -95,6 +101,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   params.pref_service = GetPrefService();
   params.profile_path = profile_path;
   params.signin_client = GetSigninClient();
+  params.profile_metrics_service = GetProfileMetricsService();
 
 #if BUILDFLAG(IS_IOS)
   params.device_accounts_provider =

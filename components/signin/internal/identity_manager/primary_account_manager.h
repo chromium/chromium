@@ -39,6 +39,10 @@ class AccountTrackerService;
 class PrefRegistrySimple;
 class ProfileOAuth2TokenService;
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 namespace signin_metrics {
 enum class ProfileSignout;
 }  // namespace signin_metrics
@@ -83,9 +87,11 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:PAMInitializePrimaryAccountInfoState)
 
-  PrimaryAccountManager(SigninClient* client,
-                        ProfileOAuth2TokenService* token_service,
-                        AccountTrackerService* account_tracker_service);
+  PrimaryAccountManager(
+      SigninClient* client,
+      ProfileOAuth2TokenService* token_service,
+      AccountTrackerService* account_tracker_service,
+      metrics::ProfileMetricsService* profile_metrics_service);
 
   PrimaryAccountManager(const PrimaryAccountManager&) = delete;
   PrimaryAccountManager& operator=(const PrimaryAccountManager&) = delete;
@@ -236,6 +242,11 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // The AccountTrackerService instance associated with this object. Must
   // outlive this object.
   raw_ptr<AccountTrackerService> account_tracker_service_ = nullptr;
+
+  // Allows per profile metrics to be recorded. Should be used to record metrics
+  // of interest instead of regular `base::Uma*()` methods. Must outlive this
+  // object.
+  raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 
   // The primary account information. The account may or may not be consented
   // for Sync.

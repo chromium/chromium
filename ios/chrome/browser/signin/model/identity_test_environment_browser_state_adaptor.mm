@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 
@@ -14,5 +15,6 @@ IdentityTestEnvironmentBrowserStateAdaptor::BuildIdentityManagerForTests(
     ProfileIOS* profile) {
   return signin::IdentityTestEnvironment::BuildIdentityManagerForTests(
       SigninClientFactory::GetForProfile(profile), profile->GetPrefs(),
+      IOSProfileMetricsServiceFactory::GetForProfile(profile),
       profile->GetStatePath());
 }

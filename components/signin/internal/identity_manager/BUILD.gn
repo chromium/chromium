@@ -64,6 +64,7 @@ source_set("identity_manager") {
 
   deps = [
     "//components/image_fetcher/core",
+    "//components/metrics",
     "//components/prefs",
     "//components/signin/public/identity_manager:tribool",
     "//components/signin/public/webdata",
@@ -174,6 +175,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
+    "//components/metrics",
     "//components/os_crypt/async/browser:key_provider_interface",
     "//components/os_crypt/async/browser:test_support",
     "//components/prefs",
