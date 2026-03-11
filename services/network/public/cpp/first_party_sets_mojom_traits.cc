@@ -99,17 +99,8 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
   if (!sets.ReadPublicSetsVersion(&public_sets_version))
     return false;
 
-  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> entries;
-  if (public_sets_version.IsValid() && !sets.ReadSets(&entries))
-    return false;
-
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
-  if (public_sets_version.IsValid() && !sets.ReadAliases(&aliases))
-    return false;
-
-  if (!std::ranges::all_of(aliases, [&](const auto& pair) {
-        return entries.contains(pair.second);
-      })) {
+  net::FirstPartySetsContextConfig public_config;
+  if (!sets.ReadPublicConfig(&public_config)) {
     return false;
   }
 
@@ -118,7 +109,7 @@ bool StructTraits<network::mojom::GlobalFirstPartySetsDataView,
     return false;
 
   *out_sets = net::GlobalFirstPartySets(std::move(public_sets_version),
-                                        std::move(entries), std::move(aliases),
+                                        std::move(public_config),
                                         std::move(manual_config));
 
   return true;

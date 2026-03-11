@@ -40,10 +40,14 @@ class FirstPartySetMetadata;
 class NET_EXPORT GlobalFirstPartySets {
  public:
   GlobalFirstPartySets();
-  GlobalFirstPartySets(
+  GlobalFirstPartySets(base::Version public_sets_version,
+                       FirstPartySetsContextConfig public_config);
+
+  // Convenience factory for tests. CHECKs if inputs are not valid.
+  static GlobalFirstPartySets CreateForTesting(
       base::Version public_sets_version,
       base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
-      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+      base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
 
   GlobalFirstPartySets(GlobalFirstPartySets&&);
   GlobalFirstPartySets& operator=(GlobalFirstPartySets&&);
@@ -124,7 +128,9 @@ class NET_EXPORT GlobalFirstPartySets {
           f) const;
 
   // Whether the global sets are empty.
-  bool empty() const { return entries_.empty() && manual_config_.empty(); }
+  bool empty() const {
+    return public_config_.empty() && manual_config_.empty();
+  }
 
   const base::Version& public_sets_version() const {
     return public_sets_version_;
@@ -138,11 +144,9 @@ class NET_EXPORT GlobalFirstPartySets {
   friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                              const GlobalFirstPartySets& sets);
 
-  GlobalFirstPartySets(
-      base::Version public_sets_version,
-      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
-      base::flat_map<SchemefulSite, SchemefulSite> aliases,
-      FirstPartySetsContextConfig manual_config);
+  GlobalFirstPartySets(base::Version public_sets_version,
+                       FirstPartySetsContextConfig public_config,
+                       FirstPartySetsContextConfig manual_config);
 
   // Same as the public version of FindEntry, but is allowed to omit the
   // `config` argument (i.e. pass nullptr instead of a reference).
@@ -210,13 +214,8 @@ class NET_EXPORT GlobalFirstPartySets {
   // components are ignored.
   base::Version public_sets_version_;
 
-  // Represents the mapping of site -> entry, where keys are sites within sets,
-  // and values are entries of the sets.
-  base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;
-
-  // The site aliases. Used to normalize a given SchemefulSite into its
-  // canonical representative, before looking it up in `entries_`.
-  base::flat_map<SchemefulSite, SchemefulSite> aliases_;
+  // Stores the sets defined by the public repository.
+  FirstPartySetsContextConfig public_config_;
 
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.

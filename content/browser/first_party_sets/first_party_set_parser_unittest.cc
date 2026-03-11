@@ -58,7 +58,7 @@ constexpr char kProcessedComponentHistogram[] =
 const base::Version kVersion("1.0");
 
 const net::GlobalFirstPartySets kEmptySets =
-    net::GlobalFirstPartySets(kVersion, /*entries=*/{}, /*aliases=*/{});
+    net::GlobalFirstPartySets(kVersion, net::FirstPartySetsContextConfig());
 
 }  // namespace
 
@@ -107,7 +107,7 @@ TEST(FirstPartySetParser, AcceptsMinimal_Associated) {
 
   EXPECT_EQ(ParseSets(R"({"primary": "https://example.test",)"
                       R"("associatedSites": ["https://aaaa.test"]})"),
-            net::GlobalFirstPartySets(
+            net::GlobalFirstPartySets::CreateForTesting(
                 kVersion,
                 {
                     {example,
@@ -125,7 +125,7 @@ TEST(FirstPartySetParser, AcceptsMinimal_Service) {
   EXPECT_EQ(
       ParseSets(R"({"primary": "https://example.test",)"
                 R"("serviceSites": ["https://aaaa.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -154,7 +154,7 @@ TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
                 R"("https://b.test": ["https://b.cctld"])"
                 R"(})"
                 R"(})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -213,7 +213,7 @@ TEST(FirstPartySetParser, PrimaryIsTLD) {
                 "\n"
                 R"({"primary": "https://example2.test", "associatedSites": )"
                 R"(["https://associatedsite2.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example2,
@@ -240,7 +240,7 @@ TEST(FirstPartySetParser, PrimaryIsIPAddress) {
           "\n"
           R"({"primary": "https://example.test",)"
           R"("associatedSites": ["https://aaaa.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example2,
@@ -273,7 +273,7 @@ TEST(FirstPartySetParser, PrimaryHasNoTLD) {
                 "\n"
                 R"({"primary": "https://example2.test", "associatedSites": )"
                 R"(["https://associatedsite2.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example2,
@@ -326,7 +326,7 @@ TEST(FirstPartySetParser, AssociatedSiteIsTLD) {
                 "\n"
                 R"({"primary": "https://example2.test", "associatedSites": )"
                 R"(["https://associatedsite2.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -353,7 +353,7 @@ TEST(FirstPartySetParser, AssociatedSiteIsIPAddress) {
                 "\n"
                 R"({"primary": "https://example2.test", "associatedSites": )"
                 R"(["https://associatedsite2.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -385,7 +385,7 @@ TEST(FirstPartySetParser, AssociatedSiteHasNoTLD) {
                 "\n"
                 R"({"primary": "https://example3.test", "associatedSites": )"
                 R"(["https://associatedsite3.test"]})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -410,7 +410,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Primary) {
 
   EXPECT_EQ(ParseSets(R"({"primary": "https://subdomain.example.test", )"
                       R"("associatedSites": ["https://aaaa.test"]})"),
-            net::GlobalFirstPartySets(
+            net::GlobalFirstPartySets::CreateForTesting(
                 kVersion,
                 {
                     {example,
@@ -432,7 +432,7 @@ TEST(FirstPartySetParser, TruncatesPrimaryInvalidWithAlias) {
           R"({"primary": "https://subdomain1..test",)"
           R"("serviceSites": ["https://subdomain2..test","https://foo.test"],)"
           R"("ccTLDs": {"https://foo.test": ["https://foo.cctld"]}})"),
-      net::GlobalFirstPartySets(kVersion, {}, {}));
+      net::GlobalFirstPartySets(kVersion, net::FirstPartySetsContextConfig()));
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
@@ -441,7 +441,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_AssociatedSite) {
 
   EXPECT_EQ(ParseSets(R"({"primary": "https://example.test", )"
                       R"("associatedSites": ["https://subdomain.aaaa.test"]})"),
-            net::GlobalFirstPartySets(
+            net::GlobalFirstPartySets::CreateForTesting(
                 kVersion,
                 {
                     {example,
@@ -473,7 +473,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_RepeatedDomain) {
                 R"("associatedSites": [)"
                 R"("https://cccc.test"]})"
                 "\n"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -521,7 +521,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
                 R"("associatedSites": [)"
                 R"("https://subdomain2.aaaa.test", "https://cccc.test"]})"
                 "\n"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -551,7 +551,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
                 R"("associatedSites": [)"
                 R"("https://subdomain.aaaa.test", "https://bbbb.test"]})"
                 "\n"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -577,7 +577,7 @@ TEST(FirstPartySetParser, TruncatesSubdomain_NondisjointSets) {
           R"("associatedSites": [)"
           R"("https://subdomain2.example3.cctld", "https://bbbb.test"]})"
           "\n"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -600,7 +600,7 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
                 "[\"https://associatedsite1.test\"]}\n"
                 "{\"primary\": \"https://foo.test\", \"associatedSites\": "
                 "[\"https://associatedsite2.test\"]}"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -635,7 +635,7 @@ TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
 
       {"primary": "https://foo.test", "associatedSites": ["https://associatedsite2.test"]}
     )"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -678,7 +678,7 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
   EXPECT_EQ(
       ParseSets(R"({"primary": "https://example.test", )"
                 R"("associatedSites": ["https://associatedsite1.test"],})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -759,7 +759,7 @@ TEST(FirstPartySetParser, Accepts_ccTLDAliases) {
           "[\"https://different_prefix.cctld\"]"  //
           "}"                                     //
           "}"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -1502,7 +1502,7 @@ TEST(FirstPartySetParser, RespectsAssociatedSiteLimit) {
           R"("associatedSites": ["https://a.test", "https://b.test",)"
           R"("https://c.test", "https://d.test", "https://e.test", "https://f.test"],)"
           R"(})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -1541,7 +1541,7 @@ TEST(FirstPartySetParser, ServiceSitesAreNotCountedAgainstAssociatedSiteLimit) {
                 R"("https://e.test", "https://f.test", "https://g.test"],)"
                 R"("serviceSites": ["https://b.test", "https://c.test"],)"
                 R"(})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,
@@ -1577,7 +1577,7 @@ TEST(FirstPartySetParser, AliasesAreNotCountedAgainstAssociatedSiteLimit) {
           R"(  "https://a.test": ["https://a.cctld1", "https://a.cctld2"])"
           R"(})"
           R"(})"),
-      net::GlobalFirstPartySets(
+      net::GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {example,

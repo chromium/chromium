@@ -70,7 +70,7 @@ class GlobalFirstPartySetsTest : public ::testing::Test {
 };
 
 TEST_F(GlobalFirstPartySetsTest, CtorSkipsInvalidVersion) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       base::Version(), /*entries=*/
       {
           {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
@@ -96,10 +96,9 @@ TEST_F(GlobalFirstPartySetsTest, Clone) {
   const FirstPartySetEntry foo_entry(foo, SiteType::kPrimary);
   const FirstPartySetEntry member2_entry(foo, SiteType::kAssociated);
 
-  GlobalFirstPartySets sets(version,
-                            /*entries=*/
-                            {{example, entry}, {member1, member1_entry}},
-                            /*aliases=*/{{example_cctld, example}});
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
+      version, /*entries=*/{{example, entry}, {member1, member1_entry}},
+      /*aliases=*/{{example_cctld, example}});
   sets.ApplyManuallySpecifiedSet(
       LocalSetDeclaration::Create(
           /*set_entries=*/{{foo, foo_entry}, {member2, member2_entry}},
@@ -110,8 +109,9 @@ TEST_F(GlobalFirstPartySetsTest, Clone) {
 }
 
 TEST_F(GlobalFirstPartySetsTest, Ctor_PrimaryWithAlias_Valid) {
-  GlobalFirstPartySets global_sets(
-      kVersion, /*entries=*/
+  GlobalFirstPartySets global_sets = GlobalFirstPartySets::CreateForTesting(
+      kVersion,
+      /*entries=*/
       {
           {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
       },
@@ -141,14 +141,15 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
   FirstPartySetEntry entry(example, SiteType::kPrimary);
   FirstPartySetEntry decoy_entry(example, SiteType::kAssociated);
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, entry},
-                                       {decoy_site, decoy_entry},
-                                   },
-                                   {})
-                  .FindEntry(example, FirstPartySetsContextConfig()),
-              Optional(entry));
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, entry},
+                                                 {decoy_site, decoy_entry},
+                                             },
+                                             {})
+          .FindEntry(example, FirstPartySetsContextConfig()),
+      Optional(entry));
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
@@ -158,14 +159,15 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_NoNormalization) {
   FirstPartySetEntry entry(https_example, SiteType::kPrimary);
   FirstPartySetEntry assoc_entry(https_example, SiteType::kAssociated);
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {https_example, entry},
-                                       {associated, assoc_entry},
-                                   },
-                                   {})
-                  .FindEntry(wss_example, FirstPartySetsContextConfig()),
-              std::nullopt);
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {https_example, entry},
+                                                 {associated, assoc_entry},
+                                             },
+                                             {})
+          .FindEntry(wss_example, FirstPartySetsContextConfig()),
+      std::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
@@ -180,14 +182,15 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
           {{example, net::FirstPartySetEntryOverride(override_entry)}})
           .value();
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, public_entry},
-                                       {associated, assoc_entry},
-                                   },
-                                   {})
-                  .FindEntry(example, config),
-              Optional(override_entry));
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, public_entry},
+                                                 {associated, assoc_entry},
+                                             },
+                                             {})
+          .FindEntry(example, config),
+      Optional(override_entry));
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
@@ -201,14 +204,15 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
           {{example, net::FirstPartySetEntryOverride()}})
           .value();
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, public_entry},
-                                       {associated, assoc_entry},
-                                   },
-                                   {})
-                  .FindEntry(example, config),
-              std::nullopt);
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, public_entry},
+                                                 {associated, assoc_entry},
+                                             },
+                                             {})
+          .FindEntry(example, config),
+      std::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaAlias) {
@@ -216,11 +220,11 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaAlias) {
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry entry(example, SiteType::kPrimary);
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, entry},
-                                   },
-                                   {{example_cctld, example}})
+  EXPECT_THAT(GlobalFirstPartySets::CreateForTesting(kVersion,
+                                                     {
+                                                         {example, entry},
+                                                     },
+                                                     {{example_cctld, example}})
                   .FindEntry(example_cctld, FirstPartySetsContextConfig()),
               Optional(entry));
 }
@@ -236,13 +240,14 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
           {{example_cctld, net::FirstPartySetEntryOverride(override_entry)}})
           .value();
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, public_entry},
-                                   },
-                                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, config),
-              Optional(override_entry));
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, public_entry},
+                                             },
+                                             {{example_cctld, example}})
+          .FindEntry(example_cctld, config),
+      Optional(override_entry));
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
@@ -255,13 +260,14 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
           {{example_cctld, net::FirstPartySetEntryOverride()}})
           .value();
 
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, public_entry},
-                                   },
-                                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, config),
-              std::nullopt);
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, public_entry},
+                                             },
+                                             {{example_cctld, example}})
+          .FindEntry(example_cctld, config),
+      std::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
@@ -277,13 +283,14 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
 
   // FindEntry should ignore aliases when using the customizations. Public
   // aliases only apply to sites in the public sets.
-  EXPECT_THAT(GlobalFirstPartySets(kVersion,
-                                   {
-                                       {example, public_entry},
-                                   },
-                                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, config),
-              public_entry);
+  EXPECT_THAT(
+      GlobalFirstPartySets::CreateForTesting(kVersion,
+                                             {
+                                                 {example, public_entry},
+                                             },
+                                             {{example_cctld, example}})
+          .FindEntry(example_cctld, config),
+      public_entry);
 }
 
 TEST_F(GlobalFirstPartySetsTest, Empty_Empty) {
@@ -292,7 +299,7 @@ TEST_F(GlobalFirstPartySetsTest, Empty_Empty) {
 
 TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyEntries) {
   EXPECT_FALSE(
-      GlobalFirstPartySets(
+      GlobalFirstPartySets::CreateForTesting(
           kVersion,
           {
               {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
@@ -319,8 +326,9 @@ TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyManualSet) {
 }
 
 TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_NonemptyManualSet) {
-  GlobalFirstPartySets sets(
-      base::Version(), /*entries=*/
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
+      base::Version(),
+      /*entries=*/
       {
           {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
           {kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated)},
@@ -405,7 +413,7 @@ TEST_F(GlobalFirstPartySetsTest,
 class PopulatedGlobalFirstPartySetsTest : public GlobalFirstPartySetsTest {
  public:
   PopulatedGlobalFirstPartySetsTest()
-      : global_sets_(
+      : global_sets_(GlobalFirstPartySets::CreateForTesting(
             kVersion,
             {
                 {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
@@ -420,7 +428,7 @@ class PopulatedGlobalFirstPartySetsTest : public GlobalFirstPartySetsTest {
             },
             {
                 {kAssociated1Cctld, kAssociated1},
-            }) {}
+            })) {}
 
   GlobalFirstPartySets& global_sets() { return global_sets_; }
 
@@ -849,7 +857,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest, ComputeMetadata) {
 
 TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
   EXPECT_EQ(
-      GlobalFirstPartySets(
+      GlobalFirstPartySets::CreateForTesting(
           kVersion,
           /*entries=*/
           {
@@ -864,7 +872,7 @@ TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
 
 TEST_F(GlobalFirstPartySetsTest,
        ComputeConfig_Replacements_NoIntersection_NoRemoval) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -895,7 +903,7 @@ TEST_F(GlobalFirstPartySetsTest,
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovedFromFormerSet) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -927,7 +935,7 @@ TEST_F(
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingPrimary_RemovesFormerAssociatedSites) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -960,7 +968,7 @@ TEST_F(
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovesSingletons) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -990,7 +998,7 @@ TEST_F(
 // gets added in without updating the existing set.
 TEST_F(GlobalFirstPartySetsTest,
        ComputeConfig_Additions_NoIntersection_AddsWithoutUpdating) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1023,7 +1031,7 @@ TEST_F(GlobalFirstPartySetsTest,
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_Additions_PolicyPrimaryIsExistingAssociatedSite_PolicySetAbsorbsExistingSet) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1064,7 +1072,7 @@ TEST_F(
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_Additions_PolicyPrimaryIsExistingPrimary_PolicySetAbsorbsExistingAssociatedSites) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1098,7 +1106,7 @@ TEST_F(
 TEST_F(
     GlobalFirstPartySetsTest,
     ComputeConfig_ReplacementsAndAdditions_SetListsOverlapWithSameExistingSet) {
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1153,7 +1161,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
   // transitively overlap with the existing set. primary1 takes primaryship of
   // the normalized addition set since it was provided first. The other addition
   // sets are unaffected.
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1220,7 +1228,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
   // transitively overlap with the existing set. primary2 takes primaryship of
   // the normalized addition set since it was provided first. The other addition
   // sets are unaffected.
-  GlobalFirstPartySets sets(
+  GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
       kVersion,
       /*entries=*/
       {
@@ -1275,8 +1283,9 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
 }
 
 TEST_F(GlobalFirstPartySetsTest, InvalidPublicSetsVersion_ComputeConfig) {
-  const GlobalFirstPartySets sets(
-      base::Version(), /*entries=*/
+  const GlobalFirstPartySets sets = GlobalFirstPartySets::CreateForTesting(
+      base::Version(),
+      /*entries=*/
       {
           {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary)},
           {kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated)},

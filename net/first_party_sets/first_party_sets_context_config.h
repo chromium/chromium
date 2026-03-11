@@ -33,6 +33,12 @@ class NET_EXPORT FirstPartySetsContextConfig {
   static std::optional<FirstPartySetsContextConfig> Create(
       base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations,
       base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
+  // Factory method that validates all preconditions, returning `std::nullopt`
+  // if any are violated. Same as the above factory, except this overload
+  // accepts FirstPartySetEntries instead of FirstPartySetEntryOverrides.
+  static std::optional<FirstPartySetsContextConfig> Create(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
 
   FirstPartySetsContextConfig(FirstPartySetsContextConfig&& other);
   FirstPartySetsContextConfig& operator=(FirstPartySetsContextConfig&& other);
@@ -70,6 +76,13 @@ class NET_EXPORT FirstPartySetsContextConfig {
   // (alias, canonical site).
   void ForEachAlias(base::FunctionRef<void(const SchemefulSite&,
                                            const SchemefulSite&)> f) const;
+
+  // Resolves an alias site into the canonical representative site, if possible.
+  // The returned reference's lifetime is the *minimum* of the lifetimes of
+  // `site` and `this`. Must not be called if `site` is not contained in this
+  // configuration.
+  const SchemefulSite& ResolveAlias(const SchemefulSite& site) const
+      LIFETIME_BOUND;
 
  private:
   // mojo (de)serialization needs access to private details.

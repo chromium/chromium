@@ -1340,15 +1340,18 @@ TEST_F(PrivacySandboxServiceTest,
   // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  net::GlobalFirstPartySets global_sets(
-      GetRelatedWebsiteSetsVersion(),
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
-      },
-      {});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          GetRelatedWebsiteSetsVersion(),
+          {
+              {primary_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kPrimary)}},
+              {associate1_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kAssociated)}},
+          },
+          {});
 
   // Simulate 3PC are allowed while RWS pref is enabled
   CreateService();
@@ -1378,15 +1381,18 @@ TEST_F(
   // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  net::GlobalFirstPartySets global_sets(
-      GetRelatedWebsiteSetsVersion(),
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
-      },
-      {});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          GetRelatedWebsiteSetsVersion(),
+          {
+              {primary_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kPrimary)}},
+              {associate1_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kAssociated)}},
+          },
+          {});
 
   // Simulate all cookies are blocked while RWS pref is enabled
   prefs()->SetUserPref(
@@ -1417,15 +1423,18 @@ TEST_F(PrivacySandboxServiceTest,
   // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  net::GlobalFirstPartySets global_sets(
-      GetRelatedWebsiteSetsVersion(),
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
-      },
-      {});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          GetRelatedWebsiteSetsVersion(),
+          {
+              {primary_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kPrimary)}},
+              {associate1_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kAssociated)}},
+          },
+          {});
 
   // Simulate RWS pref disabled while 3PC are being blocked
   prefs()->SetUserPref(
@@ -1498,17 +1507,21 @@ TEST_F(PrivacySandboxServiceTest,
   // Simulate that the Global RWS are ready with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
-  mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      GetRelatedWebsiteSetsVersion(),
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
-          {associate2_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated)}},
-      },
-      {}));
+  mock_first_party_sets_handler().SetGlobalSets(
+      net::GlobalFirstPartySets::CreateForTesting(
+          GetRelatedWebsiteSetsVersion(),
+          {
+              {primary_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kPrimary)}},
+              {associate1_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kAssociated)}},
+              {associate2_site,
+               {net::FirstPartySetEntry(primary_site,
+                                        net::SiteType::kAssociated)}},
+          },
+          {}));
 
   // Simulate that associate2 is removed from the Global RWS for
   // this profile.
@@ -1608,17 +1621,18 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
   GURL youtube_gurl("https://youtube.com");
   net::SchemefulSite youtube_site(youtube_gurl);
 
-  mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      GetRelatedWebsiteSetsVersion(),
-      {
-          {youtube_primary_site,
-           {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kPrimary)}},
-          {youtube_site,
-           {net::FirstPartySetEntry(youtube_primary_site,
-                                    net::SiteType::kAssociated)}},
-      },
-      {}));
+  mock_first_party_sets_handler().SetGlobalSets(
+      net::GlobalFirstPartySets::CreateForTesting(
+          GetRelatedWebsiteSetsVersion(),
+          {
+              {youtube_primary_site,
+               {net::FirstPartySetEntry(youtube_primary_site,
+                                        net::SiteType::kPrimary)}},
+              {youtube_site,
+               {net::FirstPartySetEntry(youtube_primary_site,
+                                        net::SiteType::kAssociated)}},
+          },
+          {}));
 
   // Simulate that https://google.de is moved into a new RWS for this profile.
   mock_first_party_sets_handler().SetContextConfig(

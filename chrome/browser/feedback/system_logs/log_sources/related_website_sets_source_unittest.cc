@@ -147,7 +147,7 @@ TEST_F(RelatedWebsiteSetsSourceTest, RWS) {
   // { primary: "https://primary1.test",
   // associatedSites: ["https://associate.test"}
   // and alias { "https://primary1.com": "https://primary1.test" }.
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       base::Version("0.0"),
       {{primary1_site,
         {net::FirstPartySetEntry(primary1_site, net::SiteType::kPrimary)}},
@@ -198,7 +198,7 @@ TEST_F(RelatedWebsiteSetsSourceTest, SubsetsAreSorted) {
   const net::SchemefulSite service2(GURL("https://service2.test"));
   const net::SchemefulSite service3(GURL("https://service3.test"));
 
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       base::Version("0.0"),
       {
           {primary,

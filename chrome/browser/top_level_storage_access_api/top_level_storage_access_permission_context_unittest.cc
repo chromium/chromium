@@ -216,17 +216,18 @@ class TopLevelStorageAccessPermissionContextAPIWithFirstPartySetsTest
     TopLevelStorageAccessPermissionContextTest::SetUp();
 
     const net::SchemefulSite top_level(GetTopLevelURL());
-    first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-        base::Version("1.2.3"),
-        /*entries=*/
-        {
-            {net::SchemefulSite(GetRequesterURL()),
-             net::FirstPartySetEntry(top_level, net::SiteType::kAssociated)},
-            {top_level,
-             net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
-        },
-        /*aliases=*/{}));
-
+    first_party_sets_handler().SetGlobalSets(
+        net::GlobalFirstPartySets::CreateForTesting(
+            base::Version("1.2.3"),
+            /*entries=*/
+            {
+                {net::SchemefulSite(GetRequesterURL()),
+                 net::FirstPartySetEntry(top_level,
+                                         net::SiteType::kAssociated)},
+                {top_level,
+                 net::FirstPartySetEntry(top_level, net::SiteType::kPrimary)},
+            },
+            /*aliases=*/{}));
     profile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }

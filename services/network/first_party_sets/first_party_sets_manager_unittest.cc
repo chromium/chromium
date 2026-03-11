@@ -58,8 +58,8 @@ class FirstPartySetsManagerTest : public ::testing::Test,
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
           content,
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases) {
-    manager_.SetCompleteSets(
-        net::GlobalFirstPartySets(base::Version("1.2.3"), content, aliases));
+    manager_.SetCompleteSets(net::GlobalFirstPartySets::CreateForTesting(
+        base::Version("1.2.3"), content, aliases));
   }
 
   FirstPartySetsManager::EntriesResult FindEntriesAndWait(

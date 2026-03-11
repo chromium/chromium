@@ -73,14 +73,9 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
     return sets.public_sets_version_;
   }
 
-  static const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
-  sets(const net::GlobalFirstPartySets& sets) {
-    return sets.entries_;
-  }
-
-  static const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases(
+  static const net::FirstPartySetsContextConfig& public_config(
       const net::GlobalFirstPartySets& sets) {
-    return sets.aliases_;
+    return sets.public_config_;
   }
 
   static const net::FirstPartySetsContextConfig& manual_config(

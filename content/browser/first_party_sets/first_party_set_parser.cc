@@ -30,6 +30,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/first_party_sets_validator.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/local_set_declaration.h"
@@ -721,9 +722,15 @@ net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
     bool emit_metrics) {
   SetsAndAliases sets_and_aliases =
       ParseSetsFromStreamInternal(input, emit_errors, emit_metrics);
+  std::optional<net::FirstPartySetsContextConfig> public_config =
+      net::FirstPartySetsContextConfig::Create(
+          std::move(sets_and_aliases.first),
+          std::move(sets_and_aliases.second));
+  if (!public_config) {
+    return {};
+  }
   return net::GlobalFirstPartySets(std::move(version),
-                                   std::move(sets_and_aliases.first),
-                                   std::move(sets_and_aliases.second));
+                                   std::move(public_config).value());
 }
 
 FirstPartySetParser::PolicyParseResult

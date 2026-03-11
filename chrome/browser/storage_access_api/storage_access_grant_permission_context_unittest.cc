@@ -807,16 +807,17 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
     // Create a FPS with https://requester.example.com as the member and
     // https://embedder.com as the primary.
-    first_party_sets_handler_.SetGlobalSets(net::GlobalFirstPartySets(
-        base::Version("1.2.3"),
-        /*entries=*/
-        {{net::SchemefulSite(GetTopLevelURL()),
-          {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                   net::SiteType::kPrimary)}},
-         {net::SchemefulSite(GetRequesterURL()),
-          {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                   net::SiteType::kAssociated)}}},
-        /*aliases=*/{}));
+    first_party_sets_handler_.SetGlobalSets(
+        net::GlobalFirstPartySets::CreateForTesting(
+            base::Version("1.2.3"),
+            /*entries=*/
+            {{net::SchemefulSite(GetTopLevelURL()),
+              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                       net::SiteType::kPrimary)}},
+             {net::SchemefulSite(GetRequesterURL()),
+              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
+                                       net::SiteType::kAssociated)}}},
+            /*aliases=*/{}));
   }
 
  private:

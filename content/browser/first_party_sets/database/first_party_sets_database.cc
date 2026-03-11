@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
@@ -474,8 +475,11 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
 
   // Aliases are merged with entries inside of the public sets table so it is
   // sufficient to declare the global sets object with only the entries field.
-  net::GlobalFirstPartySets global_sets(base::Version(version), sets,
-                                        /*aliases=*/{});
+  ASSIGN_OR_RETURN(net::FirstPartySetsContextConfig public_config,
+                   net::FirstPartySetsContextConfig::Create(sets, {}));
+
+  net::GlobalFirstPartySets global_sets(base::Version(version),
+                                        std::move(public_config));
 
   // Query & apply manual configuration. Safe because this config and this
   // public sets data were written during the same run of Chrome, and the config

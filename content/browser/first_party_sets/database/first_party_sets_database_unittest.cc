@@ -312,16 +312,17 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   const std::string site_member1 = "https://member1.test";
   const std::string site_member2 = "https://member2.test";
 
-  net::GlobalFirstPartySets global_sets(
-      version,
-      /*entries=*/
-      {{net::SchemefulSite(GURL(site)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated)},
-       {net::SchemefulSite(GURL(primary)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary)}},
-      /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          version,
+          /*entries=*/
+          {{net::SchemefulSite(GURL(site)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kAssociated)},
+           {net::SchemefulSite(GURL(primary)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kPrimary)}},
+          /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
        net::FirstPartySetEntry(net::SchemefulSite(GURL(manual_primary)),
@@ -430,16 +431,17 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB_NoPublicSets) {
   const std::string site_member1 = "https://member1.test";
   const std::string site_member2 = "https://member2.test";
 
-  net::GlobalFirstPartySets global_sets(
-      base::Version(),
-      /*entries=*/
-      {{net::SchemefulSite(GURL(site)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated)},
-       {net::SchemefulSite(GURL(primary)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary)}},
-      /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          base::Version(),
+          /*entries=*/
+          {{net::SchemefulSite(GURL(site)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kAssociated)},
+           {net::SchemefulSite(GURL(primary)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kPrimary)}},
+          /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
@@ -581,16 +583,17 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   const std::string site_member1 = "https://member3.test";
   const std::string site_member2 = "https://member4.test";
 
-  net::GlobalFirstPartySets global_sets(
-      version,
-      /*entries=*/
-      {{net::SchemefulSite(GURL(site)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kAssociated)},
-       {net::SchemefulSite(GURL(primary)),
-        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
-                                net::SiteType::kPrimary)}},
-      /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          version,
+          /*entries=*/
+          {{net::SchemefulSite(GURL(site)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kAssociated)},
+           {net::SchemefulSite(GURL(primary)),
+            net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
+                                    net::SiteType::kPrimary)}},
+          /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {net::SchemefulSite(GURL(manual_site)),
@@ -715,7 +718,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
-  net::GlobalFirstPartySets input(
+  net::GlobalFirstPartySets input = net::GlobalFirstPartySets::CreateForTesting(
       version,
       /*entries=*/
       {{net::SchemefulSite(GURL(site)),
@@ -986,12 +989,14 @@ TEST_F(FirstPartySetsDatabaseTest, GetSets_NoPublicSets) {
   const net::SchemefulSite manual_site(GURL("https://aaa.test"));
   const net::SchemefulSite manual_primary(GURL("https://bbb.test"));
 
-  net::GlobalFirstPartySets global_sets(
-      base::Version(),
-      /*entries=*/
-      {{site, net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
-       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
-      /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          base::Version(),
+          /*entries=*/
+          {{site, net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
+           {primary,
+            net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
+          /*aliases=*/{});
 
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_site,
@@ -1158,15 +1163,17 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   const net::SchemefulSite config_site_member1(GURL("https://member1.test"));
   const net::SchemefulSite config_site_member2(GURL("https://member2.test"));
 
-  net::GlobalFirstPartySets global_sets(
-      version,
-      /*entries=*/
-      {{associated_site,
-        net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
-       {service_site,
-        net::FirstPartySetEntry(primary, net::SiteType::kService)},
-       {primary, net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
-      /*aliases=*/{});
+  net::GlobalFirstPartySets global_sets =
+      net::GlobalFirstPartySets::CreateForTesting(
+          version,
+          /*entries=*/
+          {{associated_site,
+            net::FirstPartySetEntry(primary, net::SiteType::kAssociated)},
+           {service_site,
+            net::FirstPartySetEntry(primary, net::SiteType::kService)},
+           {primary,
+            net::FirstPartySetEntry(primary, net::SiteType::kPrimary)}},
+          /*aliases=*/{});
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_associated_site,
        net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated)},

@@ -301,7 +301,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest, FindEntry_FpsDisabledByPref) {
   // Create Global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       kVersion,
       {
           {associate1_site,
@@ -337,13 +337,13 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
-  SetGlobalSets(
-      net::GlobalFirstPartySets(kVersion,
-                                {
-                                    {primary_site, {primary_entry}},
-                                    {associate1_site, {associate1_entry}},
-                                },
-                                {}));
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
+      kVersion,
+      {
+          {primary_site, {primary_entry}},
+          {associate1_site, {associate1_entry}},
+      },
+      {}));
 
   // Verify that FindEntry returns empty if both sources of sets aren't ready
   // yet.
@@ -378,13 +378,13 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(
-      net::GlobalFirstPartySets(kVersion,
-                                {
-                                    {primary_site, {primary_entry}},
-                                    {associate_site, {associate_entry}},
-                                },
-                                {}));
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
+      kVersion,
+      {
+          {primary_site, {primary_entry}},
+          {associate_site, {associate_entry}},
+      },
+      {}));
 
   // Simulate the profile set overrides are empty.
   service()->InitForTesting();
@@ -411,13 +411,13 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Simulate the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(
-      net::GlobalFirstPartySets(kVersion,
-                                {
-                                    {primary_site, {primary_entry}},
-                                    {associate_site, {associate_entry}},
-                                },
-                                {}));
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
+      kVersion,
+      {
+          {primary_site, {primary_entry}},
+          {associate_site, {associate_entry}},
+      },
+      {}));
 
   // Simulate the profile set overrides are empty.
   service()->InitForTesting();
@@ -436,7 +436,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Create Global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       kVersion,
       {
           {primary_site,
@@ -482,7 +482,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Create the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       kVersion,
       {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
       {}));
@@ -526,7 +526,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   // Create the global First-Party Sets with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate.test"}
-  SetGlobalSets(net::GlobalFirstPartySets(
+  SetGlobalSets(net::GlobalFirstPartySets::CreateForTesting(
       kVersion,
       {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
       {}));

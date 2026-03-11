@@ -85,15 +85,16 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
   net::SchemefulSite c(GURL("https://c.test"));
   net::SchemefulSite c_cctld(GURL("https://c.cctld"));
 
-  net::GlobalFirstPartySets original(
-      base::Version("1.2.3"),
-      /*entries=*/
-      {
-          {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
-          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
-          {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
-      },
-      /*aliases=*/{{c_cctld, c}});
+  net::GlobalFirstPartySets original =
+      net::GlobalFirstPartySets::CreateForTesting(
+          base::Version("1.2.3"),
+          /*entries=*/
+          {
+              {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+              {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
+              {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
+          },
+          /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(
@@ -121,15 +122,16 @@ TEST(FirstPartySetsTraitsTest, GlobalFirstPartySets_InvalidVersion) {
   net::SchemefulSite c(GURL("https://c.test"));
   net::SchemefulSite c_cctld(GURL("https://c.cctld"));
 
-  net::GlobalFirstPartySets original(
-      base::Version(),
-      /*entries=*/
-      {
-          {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
-          {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
-          {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
-      },
-      /*aliases=*/{{c_cctld, c}});
+  net::GlobalFirstPartySets original =
+      net::GlobalFirstPartySets::CreateForTesting(
+          base::Version(),
+          /*entries=*/
+          {
+              {a, net::FirstPartySetEntry(a, net::SiteType::kPrimary)},
+              {b, net::FirstPartySetEntry(a, net::SiteType::kAssociated)},
+              {c, net::FirstPartySetEntry(a, net::SiteType::kService)},
+          },
+          /*aliases=*/{{c_cctld, c}});
 
   original.ApplyManuallySpecifiedSet(
       net::LocalSetDeclaration::Create(

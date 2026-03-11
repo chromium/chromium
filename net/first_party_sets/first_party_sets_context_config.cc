@@ -44,6 +44,23 @@ std::optional<FirstPartySetsContextConfig> FirstPartySetsContextConfig::Create(
                                      std::move(aliases));
 }
 
+std::optional<FirstPartySetsContextConfig> FirstPartySetsContextConfig::Create(
+    base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+    base::flat_map<SchemefulSite, SchemefulSite> aliases) {
+  base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations;
+  for (auto& pair : entries) {
+    customizations.emplace(std::move(pair.first), std::move(pair.second));
+  }
+  for (const auto& pair : aliases) {
+    const auto* entry_override = base::FindOrNull(customizations, pair.second);
+    if (!entry_override) {
+      return std::nullopt;
+    }
+    customizations.emplace(pair.first, *entry_override);
+  }
+  return Create(std::move(customizations), std::move(aliases));
+}
+
 FirstPartySetsContextConfig::FirstPartySetsContextConfig(
     base::flat_map<SchemefulSite, FirstPartySetEntryOverride> customizations,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
@@ -89,6 +106,13 @@ void FirstPartySetsContextConfig::ForEachAlias(
   for (const auto& [alias, canonical] : aliases_) {
     f(alias, canonical);
   }
+}
+
+const SchemefulSite& FirstPartySetsContextConfig::ResolveAlias(
+    const SchemefulSite& site) const {
+  CHECK(Contains(site));
+  const SchemefulSite* canonical = base::FindOrNull(aliases_, site);
+  return canonical ? *canonical : site;
 }
 
 }  // namespace net
