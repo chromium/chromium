@@ -205,13 +205,14 @@
 #define VK_NONAME 0xFC
 #define VK_PA1 0xFD
 #define VK_OEM_CLEAR 0xFE
+
 #define MAPVK_VK_TO_VSC (0)
 #define MAPVK_VSC_TO_VK (1)
 #define MAPVK_VK_TO_CHAR (2)
 #define MAPVK_VSC_TO_VK_EX (3)
 #define MAPVK_VK_TO_VSC_EX (4)
 
-#define VK_DBE_SBCSCHAR 0x0f3
-#define VK_DBE_DBCSCHAR 0x0f4
+#define VK_DBE_SBCSCHAR 0xF3
+#define VK_DBE_DBCSCHAR 0xF4
 
 #endif  // UI_EVENTS_KEYCODES_KEYBOARD_DEFINES_WIN_H_

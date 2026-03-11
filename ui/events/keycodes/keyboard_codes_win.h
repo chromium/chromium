@@ -7,11 +7,13 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODES_WIN_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODES_WIN_H_
 
+#include <cstdint>
+
 #include "ui/events/keycodes/keyboard_defines_win.h"
 
 namespace ui {
 
-enum KeyboardCode : unsigned short {
+enum KeyboardCode : uint8_t {
   VKEY_CANCEL = VK_CANCEL,
   VKEY_BACK = VK_BACK,
   VKEY_TAB = VK_TAB,
