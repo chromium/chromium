@@ -394,25 +394,20 @@ bool PictureLayerImpl::AppendQuadForTile(
     // tiles in TileManager.
     tile->mark_used();
 
-    switch (draw_info.mode()) {
-      case TileDrawInfo::RESOURCE_MODE: {
-        gfx::RectF texture_rect = iter.texture_rect();
-        AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect, needs_blending,
-                           draw_info.resource_id_for_export(), texture_rect,
-                           nearest_neighbor_);
-        has_draw_quad = true;
-        break;
-      }
-      case TileDrawInfo::SOLID_COLOR_MODE: {
-        AppendSolidColorQuad(render_pass, shared_quad_state,
-                             offset_geometry_rect, offset_visible_geometry_rect,
-                             draw_info.solid_color());
-        has_draw_quad = true;
-        break;
-      }
-      case TileDrawInfo::OOM_MODE:
-        break;  // Checkerboard.
+    if (draw_info.mode() == TileDrawInfo::RESOURCE_MODE) {
+      gfx::RectF texture_rect = iter.texture_rect();
+      AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                         offset_visible_geometry_rect, needs_blending,
+                         draw_info.resource_id_for_export(), texture_rect,
+                         nearest_neighbor_);
+      has_draw_quad = true;
+    } else if (draw_info.mode() == TileDrawInfo::SOLID_COLOR_MODE) {
+      AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect,
+                           draw_info.solid_color());
+      has_draw_quad = true;
+    } else if (draw_info.mode() == TileDrawInfo::OOM_MODE) {
+      // Keep `has_draw_quad` false to end up checkerboarding below.
     }
   }
 
