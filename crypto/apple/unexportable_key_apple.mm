@@ -493,6 +493,8 @@ UnexportableKeyProviderApple::FromWrappedSigningKeySlowly(
       });
 
   if (key_dicts.empty()) {
+    LogKeychainOperationError(TPMOperation::kWrappedKeyExport,
+                              errSecItemNotFound);
     return nullptr;
   }
 
