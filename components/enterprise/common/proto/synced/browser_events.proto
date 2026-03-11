@@ -834,7 +834,7 @@ message DlpSensitiveDataEvent {
 
 // Event where a large file could not be scanned for analysis e.g. malware or
 // DLP.
-// Next ID: 25.
+// Next ID: 26.
 message UnscannedFileEvent {
   reserved 6, 9, 10, 11, 12, 14;
 
@@ -849,6 +849,10 @@ message UnscannedFileEvent {
 
   // SHA256 hash of large unscanned file.
   string download_digest_sha_256 = 4;
+
+  // The id of the scan. This will be shared by all events that are triggered
+  // from a single scan, and may be empty unless a metadata scan was performed.
+  string scan_id = 25;
 
   // Trigger category that generated this event.
   DataTransferEventTrigger trigger = 5;
