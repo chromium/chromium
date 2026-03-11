@@ -751,6 +751,25 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   ASSERT_EQ(child_data.rect, gfx::RectF(0, 0, 200, 200));
 }
 
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerStyleOnText) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="container" overscrollcontainer>
+      aa
+      <span></span>
+      bb
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  EXPECT_TRUE(container->GetLayoutObject()->IsOverscrollContainer());
+  for (auto* child = container->GetLayoutObject()->SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    EXPECT_FALSE(child->IsOverscrollContainer()) << child->DebugName();
+  }
+}
+
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
