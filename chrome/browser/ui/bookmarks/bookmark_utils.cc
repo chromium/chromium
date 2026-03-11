@@ -236,9 +236,6 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
 }
 
 bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    return false;
-  }
   return profile->GetPrefs()->GetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 }

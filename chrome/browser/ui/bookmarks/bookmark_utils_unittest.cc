@@ -16,7 +16,9 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/search/ntp_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -266,10 +268,24 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropWhenNodeDeleted) {
             ui::mojom::DragOperation::kNone);
 }
 
-TEST_F(BookmarkUtilsGetBookmarkDropOperationTest,
-       ShouldHideBookmarksWhenProjectsPanelEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(tab_groups::kProjectsPanel);
-  EXPECT_FALSE(chrome::ShouldShowTabGroupsInBookmarkBar(profile()));
+class BookmarkUtilsTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(BookmarkUtilsTest,
+       ShouldShowTabGroupsInBookmarkBar_ReturnsFalseIfPrefIsFalse) {
+  TestingProfile profile;
+  profile.GetPrefs()->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar,
+                                 false);
+  EXPECT_FALSE(chrome::ShouldShowTabGroupsInBookmarkBar(&profile));
+}
+
+TEST_F(BookmarkUtilsTest,
+       ShouldShowTabGroupsInBookmarkBar_ReturnsTrueIfPrefIsTrue) {
+  TestingProfile profile;
+  profile.GetPrefs()->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar,
+                                 true);
+  EXPECT_TRUE(chrome::ShouldShowTabGroupsInBookmarkBar(&profile));
 }
 }  // namespace
