@@ -379,6 +379,7 @@ class HistoryBackendTestBase : public testing::Test {
     }
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   HistoryClientFakeBookmarks history_client_;
@@ -721,9 +722,13 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   }
 };
 
-class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
+class InMemoryHistoryBackendTest : public HistoryBackendTestBase,
+                                   public testing::WithParamInterface<bool> {
  public:
-  InMemoryHistoryBackendTest() = default;
+  InMemoryHistoryBackendTest() {
+    scoped_feature_list_.InitWithFeatureState(kHistoryDatabaseWriteAheadLogging,
+                                              GetParam());
+  }
   InMemoryHistoryBackendTest(const InMemoryHistoryBackendTest&) = delete;
   InMemoryHistoryBackendTest& operator=(const InMemoryHistoryBackendTest&) =
       delete;
@@ -3745,12 +3750,20 @@ void InMemoryHistoryBackendTest::TestAddingAndChangingURLRows(
   EXPECT_EQ(kTestNonTypedURLAlternativeTitle, cached_row2.title());
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLsModified) {
+INSTANTIATE_TEST_SUITE_P(,
+                         InMemoryHistoryBackendTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "HistoryDatabaseWalEnabled"
+                                             : "HistoryDatabaseWalDisabled";
+                         });
+
+TEST_P(InMemoryHistoryBackendTest, OnURLsModified) {
   TestAddingAndChangingURLRows(base::BindRepeating(
       &SimulateNotificationURLsModified, base::Unretained(mem_backend_.get())));
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLVisited) {
+TEST_P(InMemoryHistoryBackendTest, OnURLVisited) {
   TestAddingAndChangingURLRows(base::BindRepeating(
       [](HistoryServiceObserver* observer, const URLRow* row1,
          const URLRow* row2, const URLRow* row3) {
@@ -3759,7 +3772,7 @@ TEST_F(InMemoryHistoryBackendTest, OnURLVisited) {
       base::Unretained(mem_backend_.get())));
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLVisitedWith404DoesNotUpdateExisting) {
+TEST_P(InMemoryHistoryBackendTest, OnURLVisitedWith404DoesNotUpdateExisting) {
   // Add a typed URL.
   URLRow row1 = CreateTestTypedURL();
   SimulateNotificationURLVisited(mem_backend_.get(), &row1, nullptr, nullptr,
@@ -3781,7 +3794,7 @@ TEST_F(InMemoryHistoryBackendTest, OnURLVisitedWith404DoesNotUpdateExisting) {
   EXPECT_EQ(row1.title(), db_row.title());
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedPiecewise) {
+TEST_P(InMemoryHistoryBackendTest, OnURLsDeletedPiecewise) {
   // Add two typed and one non-typed URLRow to the in-memory database.
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateAnotherTestTypedURL());
@@ -3806,7 +3819,7 @@ TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedPiecewise) {
   EXPECT_EQ(row1.id(), cached_row1.id());
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedEnMasse) {
+TEST_P(InMemoryHistoryBackendTest, OnURLsDeletedEnMasse) {
   // Add two typed and one non-typed URLRow to the in-memory database.
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateAnotherTestTypedURL());
@@ -3843,7 +3856,7 @@ void InMemoryHistoryBackendTest::PopulateTestURLsAndSearchTerms(
   backend_->SetKeywordSearchTermsForURL(row2->url(), kTestKeywordId, term2);
 }
 
-TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
+TEST_P(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
   std::u16string term1(kTestSearchTerm1);
@@ -3866,7 +3879,7 @@ TEST_F(InMemoryHistoryBackendTest, SetKeywordSearchTerms) {
   EXPECT_TRUE(mem_backend_->db()->GetKeywordSearchTermRow(row2.id(), nullptr));
 }
 
-TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
+TEST_P(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
   std::u16string term1(kTestSearchTerm1);
@@ -3891,7 +3904,7 @@ TEST_F(InMemoryHistoryBackendTest, DeleteKeywordSearchTerms) {
   EXPECT_FALSE(mem_backend_->db()->GetKeywordSearchTermRow(row2.id(), nullptr));
 }
 
-TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
+TEST_P(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
   std::u16string term1(kTestSearchTerm1);
@@ -3916,7 +3929,7 @@ TEST_F(InMemoryHistoryBackendTest, DeleteAllSearchTermsForKeyword) {
   EXPECT_FALSE(mem_backend_->db()->GetKeywordSearchTermRow(row2.id(), nullptr));
 }
 
-TEST_F(InMemoryHistoryBackendTest, OnURLsDeletedWithSearchTerms) {
+TEST_P(InMemoryHistoryBackendTest, OnURLsDeletedWithSearchTerms) {
   URLRow row1(CreateTestTypedURL());
   URLRow row2(CreateTestNonTypedURL());
   std::u16string term1(kTestSearchTerm1);
@@ -6072,7 +6085,6 @@ class HistoryBackendTestForVisitedLinks
   ui::PageTransition man_subframe_transition_;
   ui::PageTransition typed_transition_;
   bool is_database_enabled_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

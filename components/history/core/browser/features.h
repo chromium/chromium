@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace history {
 
@@ -84,6 +85,9 @@ BASE_DECLARE_FEATURE(kHistoryQueryOnlyLocalFirst);
 
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kWebHistoryUseNewApi);
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kHistoryDatabaseWriteAheadLogging);
 
 }  // namespace history
 

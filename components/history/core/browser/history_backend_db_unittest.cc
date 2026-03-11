@@ -35,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/download_constants.h"
 #include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/features.h"
@@ -62,13 +63,29 @@ using testing::Pair;
 
 // This must be outside the anonymous namespace for the friend statement in
 // HistoryBackend to work.
-class HistoryBackendDBTest : public HistoryBackendDBBaseTest {
+// The bool parameter controls whether WAL (Write-Ahead Logging) mode is enabled
+// for the history database.
+class HistoryBackendDBTest : public HistoryBackendDBBaseTest,
+                             public testing::WithParamInterface<bool> {
  public:
-  HistoryBackendDBTest() = default;
+  HistoryBackendDBTest() {
+    scoped_feature_list_.InitWithFeatureState(kHistoryDatabaseWriteAheadLogging,
+                                              GetParam());
+  }
   ~HistoryBackendDBTest() override = default;
+
+  bool IsWalModeEnabled() const { return GetParam(); }
 };
 
-TEST_F(HistoryBackendDBTest, ClearBrowsingData_Downloads) {
+INSTANTIATE_TEST_SUITE_P(,
+                         HistoryBackendDBTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "HistoryDatabaseWalEnabled"
+                                             : "HistoryDatabaseWalDisabled";
+                         });
+
+TEST_P(HistoryBackendDBTest, ClearBrowsingData_Downloads) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   // Initially there should be nothing in the downloads database.
@@ -120,7 +137,7 @@ TEST_F(HistoryBackendDBTest, ClearBrowsingData_Downloads) {
   EXPECT_EQ(0U, downloads.size());
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadsState) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadsState) {
   // Create the db we want.
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(22));
   {
@@ -180,7 +197,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsState) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
   base::Time now(base::Time::Now());
 
   // Create the db we want.  The schema didn't change from 22->23, so just
@@ -289,7 +306,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsReasonPathsAndDangerType) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateReferrer) {
+TEST_P(HistoryBackendDBTest, MigrateReferrer) {
   base::Time now(base::Time::Now());
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(22));
   {
@@ -332,7 +349,7 @@ TEST_F(HistoryBackendDBTest, MigrateReferrer) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadedByExtension) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadedByExtension) {
   base::Time now(base::Time::Now());
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(26));
   {
@@ -390,7 +407,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadedByExtension) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadValidators) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadValidators) {
   base::Time now(base::Time::Now());
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(27));
   {
@@ -450,7 +467,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadValidators) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadMimeType) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadMimeType) {
   base::Time now(base::Time::Now());
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(28));
   {
@@ -532,7 +549,7 @@ bool IsValidRFC4122Ver4GUID(const std::string& guid) {
           guid[19] == 'B' || guid[19] == 'a' || guid[19] == 'b');
 }
 
-TEST_F(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
+TEST_P(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
   const size_t kDownloadCount = 100;
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(29));
   base::Time now(base::Time::Now());
@@ -602,7 +619,7 @@ TEST_F(HistoryBackendDBTest, MigrateHashHttpMethodAndGenerateGuids) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateTabUrls) {
+TEST_P(HistoryBackendDBTest, MigrateTabUrls) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(30));
   {
     sql::Database db(sql::test::kTestTag);
@@ -651,7 +668,7 @@ TEST_F(HistoryBackendDBTest, MigrateTabUrls) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadSiteInstanceUrl) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadSiteInstanceUrl) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(31));
   {
     sql::Database db(sql::test::kTestTag);
@@ -699,7 +716,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSiteInstanceUrl) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateEmbedderDownloadData) {
+TEST_P(HistoryBackendDBTest, MigrateEmbedderDownloadData) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(50));
   {
     sql::Database db(sql::test::kTestTag);
@@ -746,7 +763,7 @@ TEST_F(HistoryBackendDBTest, MigrateEmbedderDownloadData) {
 
 // Tests that downloads_slices table are automatically added when migrating to
 // version 33.
-TEST_F(HistoryBackendDBTest, MigrateDownloadsSlicesTable) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadsSlicesTable) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(32));
   {
     sql::Database db(sql::test::kTestTag);
@@ -780,7 +797,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsSlicesTable) {
 
 // Tests that last access time and transient is automatically added when
 // migrating to version 36.
-TEST_F(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(32));
   {
     sql::Database db(sql::test::kTestTag);
@@ -811,7 +828,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadsLastAccessTimeAndTransient) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, DownloadCreateAndQuery) {
+TEST_P(HistoryBackendDBTest, DownloadCreateAndQuery) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   ASSERT_EQ(0u, db_->CountDownloads());
@@ -912,7 +929,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndQuery) {
   EXPECT_EQ(download_B, retrieved_download_B);
 }
 
-TEST_F(HistoryBackendDBTest, DownloadCreateAndUpdate_VolatileFields) {
+TEST_P(HistoryBackendDBTest, DownloadCreateAndUpdate_VolatileFields) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   std::vector<GURL> url_chain;
@@ -984,7 +1001,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndUpdate_VolatileFields) {
   EXPECT_EQ(download, results[0]);
 }
 
-TEST_F(HistoryBackendDBTest, ConfirmDownloadRowCreateAndDelete) {
+TEST_P(HistoryBackendDBTest, ConfirmDownloadRowCreateAndDelete) {
   // Create the DB.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
@@ -1055,7 +1072,7 @@ TEST_F(HistoryBackendDBTest, ConfirmDownloadRowCreateAndDelete) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, DownloadNukeRecordsMissingURLs) {
+TEST_P(HistoryBackendDBTest, DownloadNukeRecordsMissingURLs) {
   ASSERT_TRUE(CreateBackendAndDatabase());
   base::Time now(base::Time::Now());
 
@@ -1114,7 +1131,7 @@ TEST_F(HistoryBackendDBTest, DownloadNukeRecordsMissingURLs) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, ConfirmDownloadInProgressCleanup) {
+TEST_P(HistoryBackendDBTest, ConfirmDownloadInProgressCleanup) {
   // Create the DB.
   ASSERT_TRUE(CreateBackendAndDatabase());
 
@@ -1185,7 +1202,7 @@ TEST_F(HistoryBackendDBTest, ConfirmDownloadInProgressCleanup) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, CreateAndUpdateDownloadingSlice) {
+TEST_P(HistoryBackendDBTest, CreateAndUpdateDownloadingSlice) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   DownloadRow download;
@@ -1236,7 +1253,7 @@ TEST_F(HistoryBackendDBTest, CreateAndUpdateDownloadingSlice) {
 }
 
 // Test calling UpdateDownload with a new download slice.
-TEST_F(HistoryBackendDBTest, UpdateDownloadWithNewSlice) {
+TEST_P(HistoryBackendDBTest, UpdateDownloadWithNewSlice) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   DownloadRow download;
@@ -1282,7 +1299,7 @@ TEST_F(HistoryBackendDBTest, UpdateDownloadWithNewSlice) {
   EXPECT_EQ(download.download_slice_info[0], results[0].download_slice_info[0]);
 }
 
-TEST_F(HistoryBackendDBTest, DownloadSliceDeletedIfEmpty) {
+TEST_P(HistoryBackendDBTest, DownloadSliceDeletedIfEmpty) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   DownloadRow download;
@@ -1341,7 +1358,7 @@ TEST_F(HistoryBackendDBTest, DownloadSliceDeletedIfEmpty) {
 }
 
 // Test that the web app responsible for a download is recorded.
-TEST_F(HistoryBackendDBTest, UpdateDownloadByWebApp) {
+TEST_P(HistoryBackendDBTest, UpdateDownloadByWebApp) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   DownloadRow download;
@@ -1386,7 +1403,7 @@ TEST_F(HistoryBackendDBTest, UpdateDownloadByWebApp) {
   EXPECT_EQ(download.by_web_app_id, results[0].by_web_app_id);
 }
 
-TEST_F(HistoryBackendDBTest, MigratePresentations) {
+TEST_P(HistoryBackendDBTest, MigratePresentations) {
   // Create the db we want. Use 22 since segments didn't change in that time
   // frame.
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(22));
@@ -1457,7 +1474,7 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
   EXPECT_EQ(title, results[0]->GetTitle());
 }
 
-TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
+TEST_P(HistoryBackendDBTest, CheckLastCompatibleVersion) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(28));
   {
     sql::Database db(sql::test::kTestTag);
@@ -1497,7 +1514,7 @@ TEST_F(HistoryBackendDBTest, CheckLastCompatibleVersion) {
 
 // Tests that visit segment names are recomputed and segments merged when
 // migrating to version 38.
-TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
+TEST_P(HistoryBackendDBTest, MigrateVisitSegmentNames) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(32));
 
   const SegmentID segment_id1 = 7;
@@ -1611,7 +1628,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
 
 // Test to verify the finished column will be correctly added to download slices
 // table during migration to version 39.
-TEST_F(HistoryBackendDBTest, MigrateDownloadSliceFinished) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadSliceFinished) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(38));
   {
     sql::Database db(sql::test::kTestTag);
@@ -1644,7 +1661,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadSliceFinished) {
 
 // Test to verify the incremented_omnibox_typed_score column will be correctly
 // added to visits table during migration to version 40.
-TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutIncrementedOmniboxTypedScore) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsWithoutIncrementedOmniboxTypedScore) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(39));
 
   const VisitID visit_id1 = 1;
@@ -1715,7 +1732,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutIncrementedOmniboxTypedScore) {
 // Tests that the migration code correctly handles rows in the visit database
 // that may be in an invalid state where visit_id == referring_visit. Regression
 // test for https://crbug.com/847246.
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateVisitsWithoutIncrementedOmniboxTypedScore_BadRow) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(39));
 
@@ -1763,7 +1780,7 @@ TEST_F(HistoryBackendDBTest,
   EXPECT_FALSE(visit_row.incremented_omnibox_typed_score);
 }
 
-TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(42));
 
   // Define common uninteresting data for visits.
@@ -1826,7 +1843,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsWithoutPubliclyRoutableColumn) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
+TEST_P(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
 
   // Define common uninteresting data for visits.
@@ -1956,7 +1973,7 @@ TEST_F(HistoryBackendDBTest, MigrateFlocAllowedToAnnotationsTable) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
+TEST_P(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(44));
 
   {
@@ -2027,7 +2044,7 @@ TEST_F(HistoryBackendDBTest, MigrateReplaceClusterVisitsTable) {
 // Tests that the migration code correctly replaces the lower_term column in the
 // keyword search terms table which normalized_term which contains the
 // normalized search term during migration to version 42.
-TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
+TEST_P(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(41));
 
   const KeywordID keyword_id = 12;
@@ -2063,7 +2080,7 @@ TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
   EXPECT_EQ(normalized_term, keyword_search_term_row.normalized_term);
 }
 
-TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
+TEST_P(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(46));
 
   const VisitID visit_id1 = 1;
@@ -2104,7 +2121,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateContentAnnotationsAddRelatedSearchesColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(47));
 
@@ -2150,7 +2167,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(48));
 
@@ -2187,7 +2204,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateContextAnnotationsAddTotalForegroundDurationColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(50));
 
@@ -2229,7 +2246,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateContentAnnotationsAddSearchMetadataColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(52));
 
@@ -2274,7 +2291,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
+TEST_P(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(53));
 
   const VisitID visit_id1 = 1;
@@ -2320,7 +2337,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddPageMetadataColumns) {
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateVisitsAutoincrementIdAndAddOriginatorColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(54));
 
@@ -2358,7 +2375,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateVisitsAddOriginatorFromVisitAndOpenerVisitColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(55));
 
@@ -2415,7 +2432,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateClustersAddColumns) {
+TEST_P(HistoryBackendDBTest, MigrateClustersAddColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(56));
 
   {
@@ -2480,7 +2497,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddColumns) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
+TEST_P(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(57));
 
   // Precondition: Open the old version of the DB and make sure the new columns
@@ -2528,7 +2545,7 @@ TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(58));
 
   // Open the old version of the DB and make sure the new columns don't exist
@@ -2555,7 +2572,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddIsKnownToSyncColumn) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
+TEST_P(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(59));
 
   ClusterId cluster_id = ClusterId(1);
@@ -2589,19 +2606,31 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAddTriggerabilityCalculatedColumn) {
   // The version should have been updated.
   ASSERT_GE(GetDatabaseVersion(), 60);
 
-  // Open the db manually again and make sure the new columns exist.
+  // Check contents before closing the backend.
+  Cluster cluster = db_->GetCluster(cluster_id);
+  EXPECT_TRUE(cluster.triggerability_calculated);
+
+  // Close the backend so we can verify schema directly. With WAL mode plus
+  // exclusive locking, we can't open a second connection while the backend is
+  // open.
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist and have
+  // the correct values.
   {
     sql::Database db(sql::test::kTestTag);
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     EXPECT_TRUE(db.DoesColumnExist("clusters", "triggerability_calculated"));
-  }
 
-  // Check contents.
-  Cluster cluster = db_->GetCluster(cluster_id);
-  EXPECT_TRUE(cluster.triggerability_calculated);
+    sql::Statement s(db.GetUniqueStatement(
+        "SELECT triggerability_calculated FROM clusters WHERE cluster_id=?"));
+    s.BindInt64(0, cluster_id.value());
+    ASSERT_TRUE(s.Step());
+    EXPECT_TRUE(s.ColumnBool(0));
+  }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateClustersAutoincrementIdAndAddOriginatorColumns) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(60));
 
@@ -2643,7 +2672,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
+TEST_P(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(61));
 
   const VisitID visit_id = 1;
@@ -2692,7 +2721,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsAddHasUrlKeyedImage) {
   }
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(62));
 
@@ -2750,7 +2779,7 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateDownloadByWebApp) {
+TEST_P(HistoryBackendDBTest, MigrateDownloadByWebApp) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(63));
 
   // Precondition: Open the old version of the DB and make sure the new column
@@ -2809,7 +2838,7 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadByWebApp) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateClustersAndVisitsAddInteractionState) {
+TEST_P(HistoryBackendDBTest, MigrateClustersAndVisitsAddInteractionState) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(64));
 
   constexpr int64_t kTestClusterId = 39;
@@ -2871,7 +2900,7 @@ TEST_F(HistoryBackendDBTest, MigrateClustersAndVisitsAddInteractionState) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateVisitsAddExternalReferrerUrlColumn) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsAddExternalReferrerUrlColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(65));
 
   const VisitID visit_id = 1;
@@ -2923,7 +2952,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddExternalReferrerUrlColumn) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateVisitsAddVisitedLinkIdColumn) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsAddVisitedLinkIdColumn) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(66));
 
   const VisitID visit_id = 1;
@@ -2975,7 +3004,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddVisitedLinkIdColumn) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateRemoveTypedUrlMetadataTable) {
+TEST_P(HistoryBackendDBTest, MigrateRemoveTypedUrlMetadataTable) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(67));
 
   // Open the old version of the DB and make sure the "typed_url_sync_metadata"
@@ -3003,7 +3032,7 @@ TEST_F(HistoryBackendDBTest, MigrateRemoveTypedUrlMetadataTable) {
   }
 }
 
-TEST_F(HistoryBackendDBTest, MigrateVisitsAddAppId) {
+TEST_P(HistoryBackendDBTest, MigrateVisitsAddAppId) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(68));
 
   const VisitID visit_id = 1;
@@ -3074,7 +3103,7 @@ TEST_F(HistoryBackendDBTest, MigrateVisitsAddAppId) {
 // 3) Add a migration test beginning with `CreateDBVersion(n-1)` and ending with
 //    `ASSERT_GE(HistoryDatabase::GetCurrentVersion(), n);`
 // 4) Create history.n.sql.
-TEST_F(HistoryBackendDBTest, VerifyTestSQLFileForCurrentVersionAlreadyExists) {
+TEST_P(HistoryBackendDBTest, VerifyTestSQLFileForCurrentVersionAlreadyExists) {
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
   EXPECT_TRUE(CreateBackendAndDatabase());
@@ -3084,7 +3113,7 @@ bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
-TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
+TEST_P(HistoryBackendDBTest, QuerySegmentUsage) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   const GURL url1("file://bar");
@@ -3133,7 +3162,7 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsage) {
   EXPECT_EQ(visit_count2 * 2, results2[0]->GetVisitCount());
 }
 
-TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {
+TEST_P(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
   const GURL url("http://www.foo.com");
@@ -3152,7 +3181,7 @@ TEST_F(HistoryBackendDBTest, QuerySegmentUsageReturnsNothingForZeroVisits) {
   EXPECT_TRUE(results.empty());
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        QuerySegmentUsageWithWindowSecondarySortsByLastVisit) {
   ASSERT_TRUE(CreateBackendAndDatabase());
 
@@ -3232,14 +3261,14 @@ TEST_F(HistoryBackendDBTest,
   EXPECT_THAT(results[4]->GetURL(), url2);
 }
 
-TEST_F(HistoryBackendDBTest, DatabaseDoesNotExist) {
+TEST_P(HistoryBackendDBTest, DatabaseDoesNotExist) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(CreateBackendAndDatabase());
   EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableExists"),
               IsEmpty());
 }
 
-TEST_F(HistoryBackendDBTest, MetaTableExists) {
+TEST_P(HistoryBackendDBTest, MetaTableExists) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
@@ -3248,7 +3277,7 @@ TEST_F(HistoryBackendDBTest, MetaTableExists) {
               BucketsAre(Bucket(true, /*count=*/1)));
 }
 
-TEST_F(HistoryBackendDBTest, MetaTableDoesNotExist) {
+TEST_P(HistoryBackendDBTest, MetaTableDoesNotExist) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
@@ -3262,7 +3291,7 @@ TEST_F(HistoryBackendDBTest, MetaTableDoesNotExist) {
               BucketsAre(Bucket(false, /*count=*/1)));
 }
 
-TEST_F(HistoryBackendDBTest, KeepOldDatabaseByDefault) {
+TEST_P(HistoryBackendDBTest, KeepOldDatabaseByDefault) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
@@ -3280,7 +3309,7 @@ TEST_F(HistoryBackendDBTest, KeepOldDatabaseByDefault) {
   EXPECT_EQ(GetDatabaseVersion(), 10);
 }
 
-TEST_F(HistoryBackendDBTest, RazeOldDatabaseIfEnabled) {
+TEST_P(HistoryBackendDBTest, RazeOldDatabaseIfEnabled) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList raze_old_db(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
@@ -3300,7 +3329,7 @@ TEST_F(HistoryBackendDBTest, RazeOldDatabaseIfEnabled) {
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
-TEST_F(HistoryBackendDBTest, RazeDatabaseIfNoVersionNumber) {
+TEST_P(HistoryBackendDBTest, RazeDatabaseIfNoVersionNumber) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList raze_old_db(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
@@ -3324,7 +3353,7 @@ TEST_F(HistoryBackendDBTest, RazeDatabaseIfNoVersionNumber) {
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
-TEST_F(HistoryBackendDBTest, RazeDatabaseIfNoMetaTable) {
+TEST_P(HistoryBackendDBTest, RazeDatabaseIfNoMetaTable) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList raze_old_db(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
@@ -3346,7 +3375,7 @@ TEST_F(HistoryBackendDBTest, RazeDatabaseIfNoMetaTable) {
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
-TEST_F(HistoryBackendDBTest, CantUseLockedDatabase) {
+TEST_P(HistoryBackendDBTest, CantUseLockedDatabase) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
@@ -3355,14 +3384,22 @@ TEST_F(HistoryBackendDBTest, CantUseLockedDatabase) {
   sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  // The database can't be opened if it's locked.
+  // The database can't be opened if it's locked. In WAL mode, the failure
+  // occurs at OPEN (journal mode change blocked); otherwise at COMMIT.
   EXPECT_FALSE(CreateBackendAndDatabase());
+#if !BUILDFLAG(IS_FUCHSIA)
+  const auto expected_step = IsWalModeEnabled()
+                                 ? HistoryDatabase::InitStep::OPEN
+                                 : HistoryDatabase::InitStep::COMMIT;
+#else
+  const auto expected_step = HistoryDatabase::InitStep::COMMIT;
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   EXPECT_THAT(
       histogram_tester.GetAllSamples("History.InitializationFailureStep"),
-      BucketsAre(Bucket(HistoryDatabase::InitStep::COMMIT, /*count=*/1)));
+      BucketsAre(Bucket(expected_step, /*count=*/1)));
 }
 
-TEST_F(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
+TEST_P(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList raze_old_db(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
@@ -3375,8 +3412,27 @@ TEST_F(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
   sql::Database db(sql::test::kTestTag);
   ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
 
-  // The old database can't be razed if it's locked.
+  // The old database can't be razed if it's locked. In WAL mode, the failure
+  // occurs at OPEN (before version is even read); otherwise at RAZE_OLD_DB.
   EXPECT_FALSE(CreateBackendAndDatabase());
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (IsWalModeEnabled()) {
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("History.InitializationFailureStep"),
+        BucketsAre(Bucket(HistoryDatabase::InitStep::OPEN, /*count=*/1)));
+  } else {
+    EXPECT_THAT(
+        histogram_tester.GetAllSamplesForPrefix("History"),
+        IsSupersetOf({
+            Pair("History.DatabaseVersion",
+                 BucketsAre(Bucket(10, /*count=*/1))),
+            Pair("History.DatabaseTooOld", BucketsAre(Bucket(10, /*count=*/1))),
+            Pair("History.InitializationFailureStep",
+                 BucketsAre(Bucket(HistoryDatabase::InitStep::RAZE_OLD_DB,
+                                   /*count=*/1))),
+        }));
+  }
+#else
   EXPECT_THAT(
       histogram_tester.GetAllSamplesForPrefix("History"),
       IsSupersetOf({
@@ -3386,11 +3442,12 @@ TEST_F(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
                BucketsAre(Bucket(HistoryDatabase::InitStep::RAZE_OLD_DB,
                                  /*count=*/1))),
       }));
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   EXPECT_EQ(GetDatabaseVersion(), 10);
 }
 
 // If the database exists but is empty, it's re-initialized as if brand new.
-TEST_F(HistoryBackendDBTest, RazedDatabaseIsRecreated) {
+TEST_P(HistoryBackendDBTest, RazedDatabaseIsRecreated) {
   base::HistogramTester histogram_tester;
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
@@ -3408,7 +3465,7 @@ TEST_F(HistoryBackendDBTest, RazedDatabaseIsRecreated) {
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
-TEST_F(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
+TEST_P(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
 
   {
@@ -3428,7 +3485,7 @@ TEST_F(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
-TEST_F(HistoryBackendDBTest,
+TEST_P(HistoryBackendDBTest,
        Version43WithoutPubliclyRoutableColumnRazesDatabase) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
 

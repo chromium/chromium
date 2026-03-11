@@ -155,4 +155,11 @@ BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_ENABLED_BY_DEFAULT);
 // deprecated one (https://history.google.com/history/api/...).
 BASE_FEATURE(kWebHistoryUseNewApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables WAL (Write-Ahead Logging) mode on the main history database
+// and opens the InMemoryHistoryDB with PRAGMA locking_mode=NORMAL (a
+// prerequisite for WAL mode on the main database).
+// On Fuchsia, only enables the in-memory DB locking_mode change.
+BASE_FEATURE(kHistoryDatabaseWriteAheadLogging,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history

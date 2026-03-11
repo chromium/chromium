@@ -45,6 +45,7 @@
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -1330,13 +1331,28 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+// Parameterized variant of BrowsingDataRemoverBrowserTest that tests the
+// StorageRemovedFromDisk scenario under different history database modes.
+class BrowsingDataHistoryRemoverBrowserTest
+    : public BrowsingDataRemoverBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowsingDataHistoryRemoverBrowserTest() {
+    history_feature_list_.InitWithFeatureState(
+        history::kHistoryDatabaseWriteAheadLogging, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList history_feature_list_;
+};
+
 const std::vector<std::string> kStorageTypes{
     "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense",
 };
 
 // Test that storage doesn't leave any traces on disk.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
+IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
                        PRE_StorageRemovedFromDisk) {
   // Checking leveldb content fails in most cases. See
   // https://crbug.com/1238325.
@@ -1367,7 +1383,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
 // Restart after creating the data to ensure that everything was written to
 // disk.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
+IN_PROC_BROWSER_TEST_P(BrowsingDataHistoryRemoverBrowserTest,
+                       StorageRemovedFromDisk) {
   EXPECT_EQ(1, GetSiteDataCount());
   ExpectTotalModelCount(1);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
@@ -1400,6 +1417,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
       },
       g_browser_process->profile_manager()->user_data_dir());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingDataHistoryRemoverBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "HistoryDatabaseWalEnabled"
+                                             : "HistoryDatabaseWalDisabled";
+                         });
 
 const std::vector<std::string> kSessionOnlyStorageTestTypes{
     "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",

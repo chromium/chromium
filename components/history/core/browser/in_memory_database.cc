@@ -6,13 +6,31 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "components/history/core/browser/features.h"
+#include "sql/database.h"
 
 namespace history {
 
-InMemoryDatabase::InMemoryDatabase() : db_(/*tag=*/"HistoryInMemoryDB") {}
+InMemoryDatabase::InMemoryDatabase()
+    // When the main history database uses WAL mode, exclusive locking must be
+    // disabled on this in-memory connection. InitFromDisk() uses ATTACH to open
+    // the on-disk history file within this connection, and the locking mode of
+    // this connection governs how locks are acquired on the attached file. With
+    // exclusive locking, the ATTACH would try to exclusively lock the WAL
+    // shared-memory file (-shm), which conflicts with the main database's
+    // existing WAL connection to the same file.
+    //
+    // Without WAL mode, exclusive locking is fine: SQLite's exclusive lock is
+    // only acquired on the next lock transition (e.g. when a write occurs),
+    // and this connection only reads via ATTACH before detaching, so it never
+    // actually contends with the main database's connection.
+    : db_(sql::DatabaseOptions().set_exclusive_locking(
+              !base::FeatureList::IsEnabled(kHistoryDatabaseWriteAheadLogging)),
+          /*tag=*/"HistoryInMemoryDB") {}
 
 InMemoryDatabase::~InMemoryDatabase() = default;
 
