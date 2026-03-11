@@ -38,8 +38,9 @@ bool HasClassifierCategory(
 }
 
 bool PassesSafetyChecks(const ContentClassificationResult& result) {
+  // If language check isn't enabled, default to passing.
   return !result.is_sensitive.value_or(true) &&
-         result.is_in_target_language.value_or(false);
+         result.is_in_target_language.value_or(true);
 }
 
 }  // namespace

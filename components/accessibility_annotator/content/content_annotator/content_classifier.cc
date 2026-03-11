@@ -131,11 +131,13 @@ ContentClassificationResult ContentClassifier::Classify(
       ukm_builder(input.ukm_source_id);
 
   // 1. Check whether the page is in one of the target language(s).
-  result.is_in_target_language =
-      supported_languages_.contains(*input.adopted_language);
-  base::UmaHistogramBoolean("AccessibilityAnnotator.LanguageCheck",
-                            result.is_in_target_language.value());
-  ukm_builder.SetIsTargetLanguage(result.is_in_target_language.value());
+  if (kContentAnnotatorLanguageCheckEnabled.Get()) {
+    result.is_in_target_language =
+        supported_languages_.contains(*input.adopted_language);
+    base::UmaHistogramBoolean("AccessibilityAnnotator.LanguageCheck",
+                              result.is_in_target_language.value());
+    ukm_builder.SetIsTargetLanguage(result.is_in_target_language.value());
+  }
 
   // 2. Check whether the page is within the sensitivity threshold.
   result.is_sensitive =
