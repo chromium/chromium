@@ -150,8 +150,9 @@ bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   // Always paint when 'will-change: opacity' is present. Reduces jank for
   // common animation implementation approaches, for example, an element that
   // starts with opacity zero and later begins to animate.
-  if (style.HasWillChangeOpacityHint())
+  if (style.HasWillChangeProperty(CSSPropertyID::kOpacity)) {
     return false;
+  }
 
   if (style.HasCurrentOpacityAnimation())
     return false;

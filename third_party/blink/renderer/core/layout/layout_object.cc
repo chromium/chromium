@@ -1891,7 +1891,7 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle& style) const {
   if (IsEligibleForPaintOrLayoutContainment() &&
       (ShouldApplyPaintContainment(style) ||
        ShouldApplyLayoutContainment(style) ||
-       style.WillChangeProperties().Contains(CSSPropertyID::kContain))) {
+       style.HasWillChangeProperty(CSSPropertyID::kContain))) {
     return true;
   }
 
@@ -1903,7 +1903,7 @@ bool LayoutObject::ComputeIsAbsoluteContainer(const ComputedStyle& style,
   NOT_DESTROYED();
   return is_fixed_container ||
          (style.GetPosition() != EPosition::kStatic ||
-          style.WillChangeProperties().Contains(CSSPropertyID::kPosition)) ||
+          style.HasWillChangeProperty(CSSPropertyID::kPosition)) ||
          // crbug.com/1153042: If <fieldset> is an absolute container, its
          // anonymous content box should be an absolute container.
          (IsAnonymous() && Parent() && Parent()->IsFieldset() &&

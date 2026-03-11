@@ -1306,9 +1306,12 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
 }
 
 static bool HasPropertyThatCreatesStackingContext(
-    const Vector<CSSPropertyID>& properties) {
-  for (CSSPropertyID property : properties) {
-    switch (ResolveCSSPropertyID(property)) {
+    const StyleWillChangeData* will_change) {
+  if (!will_change) {
+    return false;
+  }
+  for (CSSPropertyID id : will_change->resolved_longhand_ids) {
+    switch (id) {
       case CSSPropertyID::kOpacity:
       case CSSPropertyID::kTransform:
       case CSSPropertyID::kTransformStyle:
@@ -1318,9 +1321,7 @@ static bool HasPropertyThatCreatesStackingContext(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kOffsetPath:
       case CSSPropertyID::kOffsetPosition:
-      case CSSPropertyID::kMask:  // Matches longhand.
       case CSSPropertyID::kMaskImage:
-      case CSSPropertyID::kWebkitMaskBoxImage:  // Matches longhand
       case CSSPropertyID::kWebkitMaskBoxImageSource:
       case CSSPropertyID::kClipPath:
       case CSSPropertyID::kWebkitBoxReflect:
@@ -1338,69 +1339,6 @@ static bool HasPropertyThatCreatesStackingContext(
     }
   }
   return false;
-}
-
-static bool IsWillChangeTransformHintProperty(CSSPropertyID property) {
-  switch (ResolveCSSPropertyID(property)) {
-    case CSSPropertyID::kTransform:
-    case CSSPropertyID::kPerspective:
-    case CSSPropertyID::kTransformStyle:
-      return true;
-    default:
-      break;
-  }
-  return false;
-}
-
-static bool IsWillChangeHintForAnyTransformProperty(CSSPropertyID property) {
-  switch (ResolveCSSPropertyID(property)) {
-    case CSSPropertyID::kTransform:
-    case CSSPropertyID::kPerspective:
-    case CSSPropertyID::kTranslate:
-    case CSSPropertyID::kScale:
-    case CSSPropertyID::kRotate:
-    case CSSPropertyID::kOffsetPath:
-    case CSSPropertyID::kOffsetPosition:
-    case CSSPropertyID::kTransformStyle:
-      return true;
-    default:
-      break;
-  }
-  return false;
-}
-
-static bool IsWillChangeCompositingHintProperty(CSSPropertyID property) {
-  if (IsWillChangeHintForAnyTransformProperty(property)) {
-    return true;
-  }
-  switch (ResolveCSSPropertyID(property)) {
-    case CSSPropertyID::kOpacity:
-    case CSSPropertyID::kFilter:
-    case CSSPropertyID::kBackdropFilter:
-    case CSSPropertyID::kTop:
-    case CSSPropertyID::kLeft:
-    case CSSPropertyID::kBottom:
-    case CSSPropertyID::kRight:
-      return true;
-    default:
-      break;
-  }
-  return false;
-}
-
-bool ComputedStyle::HasWillChangeCompositingHint() const {
-  return std::ranges::any_of(WillChangeProperties(),
-                             IsWillChangeCompositingHintProperty);
-}
-
-bool ComputedStyle::HasWillChangeTransformHint() const {
-  return std::ranges::any_of(WillChangeProperties(),
-                             IsWillChangeTransformHintProperty);
-}
-
-bool ComputedStyle::HasWillChangeHintForAnyTransformProperty() const {
-  return std::ranges::any_of(WillChangeProperties(),
-                             IsWillChangeHintForAnyTransformProperty);
 }
 
 bool ComputedStyle::RequireTransformOrigin(
@@ -3000,7 +2938,7 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   if (GetPosition() == EPosition::kSticky) {
     return true;
   }
-  if (HasPropertyThatCreatesStackingContext(WillChangeProperties())) {
+  if (HasPropertyThatCreatesStackingContext(WillChange())) {
     return true;
   }
   if (ShouldCompositeForCurrentAnimations()) {

@@ -74,41 +74,64 @@ CompositingReasons CompositingReasonsForWillChange(const ComputedStyle& style) {
   if (style.SubtreeWillChangeContents())
     return reasons;
 
-  if (style.HasWillChangeTransformHint())
-    reasons |= CompositingReason::kWillChangeTransform;
-  if (style.HasWillChangeScaleHint())
-    reasons |= CompositingReason::kWillChangeScale;
-  if (style.HasWillChangeRotateHint())
-    reasons |= CompositingReason::kWillChangeRotate;
-  if (style.HasWillChangeTranslateHint())
-    reasons |= CompositingReason::kWillChangeTranslate;
-  if (style.HasWillChangeOpacityHint())
-    reasons |= CompositingReason::kWillChangeOpacity;
-  if (style.HasWillChangeFilterHint())
-    reasons |= CompositingReason::kWillChangeFilter;
-  if (style.HasWillChangeBackdropFilterHint())
-    reasons |= CompositingReason::kWillChangeBackdropFilter;
-  if (style.HasWillChangeClipPathHint()) {
-    reasons |= CompositingReason::kWillChangeClipPath;
+  const StyleWillChangeData* will_change = style.WillChange();
+  if (!will_change) {
+    return reasons;
   }
-  if (style.HasWillChangeMixBlendModeHint()) {
-    reasons |= CompositingReason::kWillChangeMixBlendMode;
-  }
-  // Even though 'mask' generally implies mask-image, will-change treats them
-  // separately, so we need to check them both to get accurate backdrop filter
-  // reasons.
-  if (style.HasWillChangeMaskHint()) {
-    reasons |= CompositingReason::kWillChangeMask;
-  }
-  if (style.HasWillChangeMaskImageHint()) {
-    reasons |= CompositingReason::kWillChangeMaskImage;
+
+  bool has_will_change_other = false;
+  for (CSSPropertyID id : will_change->resolved_longhand_ids) {
+    switch (id) {
+      case CSSPropertyID::kBackdropFilter:
+        reasons |= CompositingReason::kWillChangeBackdropFilter;
+        break;
+      case CSSPropertyID::kClipPath:
+        reasons |= CompositingReason::kWillChangeClipPath;
+        break;
+      case CSSPropertyID::kFilter:
+        reasons |= CompositingReason::kWillChangeFilter;
+        break;
+      case CSSPropertyID::kMaskImage:
+        reasons |= CompositingReason::kWillChangeMask;
+        break;
+      case CSSPropertyID::kMixBlendMode:
+        reasons |= CompositingReason::kWillChangeMixBlendMode;
+        break;
+      case CSSPropertyID::kOpacity:
+        reasons |= CompositingReason::kWillChangeOpacity;
+        break;
+      case CSSPropertyID::kRotate:
+        reasons |= CompositingReason::kWillChangeRotate;
+        break;
+      case CSSPropertyID::kScale:
+        reasons |= CompositingReason::kWillChangeScale;
+        break;
+      case CSSPropertyID::kTranslate:
+        reasons |= CompositingReason::kWillChangeTranslate;
+        break;
+      case CSSPropertyID::kTransform:
+      case CSSPropertyID::kPerspective:
+      case CSSPropertyID::kTransformStyle:
+        reasons |= CompositingReason::kWillChangeTransform;
+        break;
+      case CSSPropertyID::kOffsetPath:
+      case CSSPropertyID::kOffsetPosition:
+      case CSSPropertyID::kTop:
+      case CSSPropertyID::kLeft:
+      case CSSPropertyID::kBottom:
+      case CSSPropertyID::kRight:
+        has_will_change_other = true;
+        break;
+      default:
+        break;
+    }
   }
 
   // kWillChangeOther is needed only when none of the explicit kWillChange*
   // reasons are set.
-  if (reasons == CompositingReason::kNone &&
-      style.HasWillChangeCompositingHint())
+  if (reasons == CompositingReason::kNone && has_will_change_other) {
     reasons |= CompositingReason::kWillChangeOther;
+  }
 
   return reasons;
 }
@@ -469,8 +492,9 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
     return true;
   }
 
-  if (object.StyleRef().WillChangeScrollPosition())
+  if (object.StyleRef().HasWillChangeScrollPosition()) {
     return true;
+  }
 
   // Though we don't treat hidden backface as a direct compositing reason, it's
   // very likely that the object will be composited, and it also indicates

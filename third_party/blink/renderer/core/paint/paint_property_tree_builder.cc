@@ -1643,7 +1643,7 @@ bool FragmentPaintPropertyTreeBuilder::NeedsEffectFor2DScaleTransform() const {
   if (object_.IsLayoutReplaced()) {
     return false;
   }
-  if (object_.StyleRef().HasWillChangeTransformHint() ||
+  if (object_.StyleRef().HasWillChangeTransformProperty() ||
       object_.StyleRef().IsRunningTransformAnimationOnCompositor()) {
     return false;
   }

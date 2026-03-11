@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property will-change value 'scroll-position, contents'
-  assert_equals: expected "scroll-position, contents" but got "contents, scroll-position"
-Harness: the test ran to completion.
-

@@ -79,8 +79,6 @@ constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
      "Has a will-change: mix-blend-mode compositing hint."},
     {CompositingReason::kWillChangeMask,
      "Has a will-change: mask compositing hint."},
-    {CompositingReason::kWillChangeMaskImage,
-     "Has a will-change: mask-image compositing hint."},
     {CompositingReason::kWillChangeOther,
      "Has a will-change compositing hint other than transform, opacity, filter"
      " and backdrop-filter."},

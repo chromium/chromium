@@ -300,7 +300,7 @@ bool BoxBackgroundPaintContext::HasBackgroundFixedToViewport(
     LayoutObject& ancestor = layer->GetLayoutObject();
     if (ancestor.HasTransformRelatedProperty() &&
         (layer->Transform() ||
-         ancestor.StyleRef().HasWillChangeHintForAnyTransformProperty())) {
+         ancestor.StyleRef().HasWillChangeAnyTransformProperty())) {
       return false;
     }
   }

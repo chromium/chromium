@@ -1248,50 +1248,20 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // Will-change utility functions.
-  bool HasWillChangeCompositingHint() const;
-  bool HasWillChangeOpacityHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kOpacity) ||
-           WillChangeProperties().Contains(CSSPropertyID::kAliasWebkitOpacity);
+  bool HasWillChangeProperty(CSSPropertyID id) const {
+    DCHECK(!IsPropertyAlias(id));
+    DCHECK_NE(id, CSSPropertyID::kInvalid);
+    DCHECK(!CSSProperty::Get(id).IsShorthand());
+    return WillChange() && WillChange()->resolved_longhand_ids.Has(id);
   }
-  // Do we have a will-change hint for transform, perspective, or
-  // transform-style?
-  // TODO(dbaron): It's not clear that perspective and transform-style belong
-  // here any more than they belong for scale, rotate, translate, or offset-*.
-  bool HasWillChangeTransformHint() const;
-  bool HasWillChangeScaleHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kScale);
+  bool HasWillChangeScrollPosition() const {
+    return WillChange() && WillChange()->has_scroll_position_value;
   }
-  bool HasWillChangeRotateHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kRotate);
+  bool HasWillChangeTransformProperty() const {
+    return WillChange() && WillChange()->has_transform_property;
   }
-  bool HasWillChangeTranslateHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kTranslate);
-  }
-  bool HasWillChangeOffsetHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kOffsetPath) ||
-           WillChangeProperties().Contains(CSSPropertyID::kOffsetPosition);
-  }
-  // The union of the above five functions (but faster).
-  bool HasWillChangeHintForAnyTransformProperty() const;
-
-  bool HasWillChangeFilterHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kFilter) ||
-           WillChangeProperties().Contains(CSSPropertyID::kAliasWebkitFilter);
-  }
-  bool HasWillChangeBackdropFilterHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kBackdropFilter);
-  }
-  bool HasWillChangeClipPathHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kClipPath);
-  }
-  bool HasWillChangeMixBlendModeHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kMixBlendMode);
-  }
-  bool HasWillChangeMaskHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kMask);
-  }
-  bool HasWillChangeMaskImageHint() const {
-    return WillChangeProperties().Contains(CSSPropertyID::kMaskImage);
+  bool HasWillChangeAnyTransformProperty() const {
+    return WillChange() && WillChange()->has_any_transform_property;
   }
 
   // Hyphen utility functions.
@@ -2219,20 +2189,21 @@ class ComputedStyle final : public ComputedStyleBase {
   // Returns |true| if filter should be considered to have non-initial value
   // for the purposes of containing blocks.
   bool HasNonInitialFilter() const {
-    return HasFilter() || HasWillChangeFilterHint();
+    return HasFilter() || HasWillChangeProperty(CSSPropertyID::kFilter);
   }
 
   // Returns |true| if backdrop-filter should be considered to have non-initial
   // value for the purposes of containing blocks.
   bool HasNonInitialBackdropFilter() const {
-    return HasBackdropFilter() || HasWillChangeBackdropFilterHint();
+    return HasBackdropFilter() ||
+           HasWillChangeProperty(CSSPropertyID::kBackdropFilter);
   }
 
   // Returns |true| if opacity should be considered to have non-initial value
   // for the purpose of creating stacking contexts.
   bool HasNonInitialOpacity() const {
-    return HasOpacity() || HasWillChangeOpacityHint() ||
-           HasCurrentOpacityAnimation();
+    return HasOpacity() || HasCurrentOpacityAnimation() ||
+           HasWillChangeProperty(CSSPropertyID::kOpacity);
   }
 
   // Returns whether this style contains any grouping property as defined by
@@ -2302,10 +2273,10 @@ class ComputedStyle final : public ComputedStyleBase {
   // position descendants.
   bool HasTransformRelatedProperty() const {
     return HasTransform() || Preserves3D() || HasPerspective() ||
-           HasWillChangeHintForAnyTransformProperty();
+           HasWillChangeAnyTransformProperty();
   }
   bool HasTransformRelatedPropertyForSVG() const {
-    return HasTransform() || HasWillChangeHintForAnyTransformProperty();
+    return HasTransform() || HasWillChangeAnyTransformProperty();
   }
 
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')

@@ -47,7 +47,7 @@ test(() => {
   assert_equals(getComputedStyle(willChangeContents, '').getPropertyValue('will-change'), 'contents');
 
   var willChangeMultiple = document.getElementById("willChangeMultiple");
-  assert_equals(getComputedStyle(willChangeMultiple, '').getPropertyValue('will-change'), 'contents, opacity, left, -webkit-transform');
+  assert_equals(getComputedStyle(willChangeMultiple, '').getPropertyValue('will-change'), 'opacity, contents, left, -webkit-transform');
 
   var willChangeContents = document.getElementById("willChangeWithArbitraryIdent");
   assert_equals(getComputedStyle(willChangeWithArbitraryIdent, '').getPropertyValue('will-change'), 'opacity, top');

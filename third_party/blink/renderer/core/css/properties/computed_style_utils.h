@@ -178,9 +178,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForTextOverflow(const TextOverflowData&,
                                         const ComputedStyle&);
   static CSSValue* TouchActionFlagsToCSSValue(TouchAction);
-  static CSSValue* ValueForWillChange(const Vector<CSSPropertyID>&,
-                                      bool will_change_contents,
-                                      bool will_change_scroll_position);
+  static CSSValue* ValueForWillChange(const StyleWillChangeData*);
 
   static CSSValue* ValueForAnimationDelay(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDirection(Timing::PlaybackDirection);
