@@ -132,10 +132,11 @@ class Tab : public gfx::AnimationDelegate,
   // Returns the color for the tab's group, if any.
   std::optional<SkColor> GetGroupColor() const;
 
+  const tabs::TabData& data() const { return data_; }
+
   // HoverCardAnchorTarget:
   bool IsActive() const override;
   bool IsValid() const override;
-  const tabs::TabData& data() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   // Notifies the AlertIndicatorButton that the active state of this tab has

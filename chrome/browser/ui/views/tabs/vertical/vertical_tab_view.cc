@@ -809,10 +809,6 @@ bool VerticalTabView::IsValid() const {
   return collection_node_ && !IsDragging();
 }
 
-const tabs::TabData& VerticalTabView::data() const {
-  return tab_data_;
-}
-
 views::BubbleBorder::Arrow VerticalTabView::GetAnchorPosition() const {
   if (pinned_ && !collapsed_) {
     return views::BubbleBorder::Arrow::TOP_LEFT;
@@ -923,7 +919,7 @@ void VerticalTabView::UpdateTabData(tabs::TabInterface* tab) {
   UpdateTitle();
 
   alert_indicator_->TransitionToAlertState(tab_data_.alert_state);
-  alert_indicator_->UpdateEnabledForMuteToggle();
+  SetHoverCardDataFrom(tab_data_);
 }
 
 void VerticalTabView::UpdateTitle() {

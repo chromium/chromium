@@ -423,20 +423,22 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   }
 
   // Discarded tabs that don't already have a thumbnail won't get one.
-  const tabs::TabData& tab_data = anchor_target->data();
-  bool has_thumbnail = tab_data.thumbnail && tab_data.thumbnail->has_data();
-  if (tab_data.is_tab_discarded && !has_thumbnail) {
+  const TabCardData& tab_card_data =
+      std::get<TabCardData>(anchor_target->data());
+  bool has_thumbnail =
+      tab_card_data.thumbnail && tab_card_data.thumbnail->has_data();
+  if (tab_card_data.is_tab_discarded && !has_thumbnail) {
     thumbnail_observer_->Observe(nullptr);
     return;
   }
 
-  if (tab_data.is_crashed) {
+  if (tab_card_data.is_crashed) {
     hover_card_->SetCrashedImage();
     thumbnail_observer_->Observe(nullptr);
     return;
   }
 
-  auto thumbnail = anchor_target->data().thumbnail;
+  auto thumbnail = tab_card_data.thumbnail;
   if (!thumbnail) {
     hover_card_->SetPlaceholderImage();
     thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
@@ -512,7 +514,8 @@ void TabHoverCardController::StartThumbnailObservation(
   DCHECK(hover_card_);
   DCHECK(waiting_for_preview());
 
-  auto thumbnail = anchor_target->data().thumbnail;
+  const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
+  auto thumbnail = card_data.thumbnail;
   if (!thumbnail || thumbnail == thumbnail_observer_->current_image()) {
     return;
   }
@@ -540,7 +543,8 @@ void TabHoverCardController::UpdateOrShowCard(
 
     // When a tab has been discarded, the thumbnail is moved to a new
     // ThumbnailTabHelper so it must be observed again.
-    if (anchor_target->data().is_tab_discarded) {
+    const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
+    if (card_data.is_tab_discarded) {
       MaybeStartThumbnailObservation(anchor_target,
                                      /* is_initial_show */ false);
     }

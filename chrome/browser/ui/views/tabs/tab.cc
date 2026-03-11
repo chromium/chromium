@@ -926,10 +926,6 @@ bool Tab::IsValid() const {
   return !closing() && !detached() && !dragging() && GetVisible();
 }
 
-const tabs::TabData& Tab::data() const {
-  return data_;
-}
-
 views::BubbleBorder::Arrow Tab::GetAnchorPosition() const {
   return views::BubbleBorder::Arrow::TOP_LEFT;
 }
@@ -1353,7 +1349,7 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
   if (did_alert_state_change || did_title_change) {
     TooltipTextChanged();
   }
-
+  SetHoverCardDataFrom(data_);
   if (controller_->HoverCardIsShowingForTab(this)) {
     controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kTabDataChanged);

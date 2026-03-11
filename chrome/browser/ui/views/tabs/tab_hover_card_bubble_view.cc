@@ -22,7 +22,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
-#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -31,12 +30,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/tabs/fade_label_view.h"
-#include "chrome/browser/ui/views/tabs/filename_elider.h"
 #include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/collaboration/public/messaging/message.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -480,8 +476,9 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
 
   SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
 
-  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
-                         anchor_target->data().thumbnail->has_data() &&
+  const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
+  bool valid_thumbnail = card_data.thumbnail &&
+                         card_data.thumbnail->has_data() &&
                          anchor_target->IsActive();
 
   if (thumbnail_view_ && !valid_thumbnail) {
@@ -504,109 +501,28 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
-CollaborationMessagingRowData
-TabHoverCardBubbleView::GetCollaborationMessagingData(
-    const tabs::TabData& tab_data) {
-  using collaboration::messaging::CollaborationEvent;
-
-  CollaborationMessagingRowData collaboration_messaging_data;
-  collaboration_messaging_data.should_show_collaboration_messaging = false;
-
-  auto data = tab_data.collaboration_messaging;
-  if (!data || !data->HasMessage()) {
-    return collaboration_messaging_data;
-  }
-
-  switch (data->collaboration_event()) {
-    case CollaborationEvent::TAB_ADDED:
-      collaboration_messaging_data.text = l10n_util::GetStringFUTF16(
-          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_ADDED_THIS_TAB,
-          data->given_name());
-      break;
-    case CollaborationEvent::TAB_UPDATED:
-      collaboration_messaging_data.text = l10n_util::GetStringFUTF16(
-          IDS_DATA_SHARING_RECENT_ACTIVITY_MEMBER_CHANGED_THIS_TAB,
-          data->given_name());
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  collaboration_messaging_data.avatar = data->GetHoverCardImage(GetWidget());
-  collaboration_messaging_data.should_show_collaboration_messaging = true;
-
-  return collaboration_messaging_data;
-}
-
 void TabHoverCardBubbleView::UpdateCardContent(
     const HoverCardAnchorTarget* anchor_target) {
+  CHECK(std::holds_alternative<TabCardData>(anchor_target->data()));
+  const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
+
   // Preview image is never visible for the active tab.
   if (thumbnail_view_) {
-    bool has_thumbnail = anchor_target->data().thumbnail &&
-                         anchor_target->data().thumbnail->has_data();
+    const bool has_thumbnail =
+        card_data.thumbnail && card_data.thumbnail->has_data();
     if (anchor_target->IsActive() ||
-        (anchor_target->data().is_tab_discarded && !has_thumbnail)) {
+        (card_data.is_tab_discarded && !has_thumbnail)) {
       thumbnail_view_->ClearImage();
     } else {
       thumbnail_view_->SetWaitingForImage();
     }
   }
 
-  std::u16string title;
-  const tabs::TabData& tab_data = anchor_target->data();
-  GURL domain_url;
-  // Use committed URL to determine if no page has yet loaded, since the title
-  // can be blank for some web pages.
-  if (!tab_data.last_committed_url.is_valid()) {
-    domain_url = tab_data.visible_url;
-    title = tab_data.is_crashed
-                ? l10n_util::GetStringUTF16(IDS_HOVER_CARD_CRASHED_TITLE)
-                : l10n_util::GetStringUTF16(IDS_TAB_LOADING_TITLE);
-    alert_state_ = std::nullopt;
-  } else {
-    domain_url = tab_data.last_committed_url;
-    title = tab_data.title;
-    alert_state_ = tab_data.alert_state;
-  }
-
-  std::u16string domain;
-  bool is_filename = false;
-  if (domain_url.SchemeIsFile()) {
-    is_filename = true;
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
-  } else if (domain_url.SchemeIsBlob()) {
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
-  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
-  } else {
-    if (tab_data.should_display_url) {
-      // Hide the domain when necessary. This leaves an empty space in the
-      // card, but this scenario is very rare. Also, shrinking the card to
-      // remove the space would result in visual noise, so we keep it simple.
-      domain = url_formatter::FormatUrl(
-          domain_url,
-          url_formatter::kFormatUrlOmitDefaults |
-              url_formatter::kFormatUrlOmitHTTPS |
-              url_formatter::kFormatUrlOmitTrivialSubdomains |
-              url_formatter::kFormatUrlTrimAfterHost,
-          base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
-    }
-
-    // Most of the time we want our standard (tail-elided) formatting for web
-    // pages, but when viewing an image in the browser, many users want to
-    // view the image dimensions (see crbug.com/1222984) so for titles that
-    // "look" like images (i.e. that end with a dimension) we instead switch
-    // to middle-elide.
-    if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {
-      is_filename = true;
-    }
-  }
-
-  title_label_->SetData({title, is_filename});
-  domain_label_->SetData({domain, false, gfx::ELIDE_HEAD});
+  title_label_->SetData(card_data.title_data);
+  domain_label_->SetData(card_data.domain_data);
 
   if (bubble_params_.show_domain) {
-    const bool domain_visible = !domain.empty();
+    const bool domain_visible = !card_data.domain_data.text.empty();
     domain_label_->SetVisible(domain_visible);
     gfx::Insets title_margins = kTextMargins;
     if (domain_visible) {
@@ -615,41 +531,47 @@ void TabHoverCardBubbleView::UpdateCardContent(
     title_label_->SetProperty(views::kMarginsKey, title_margins);
   }
 
-  CollaborationMessagingRowData collaboration_messaging_data =
-      GetCollaborationMessagingData(tab_data);
-  bool show_collaboration_messaging =
-      collaboration_messaging_data.should_show_collaboration_messaging;
+  footer_view_->SetAlertData(card_data.alert_data);
 
-  // Collaboration messaging takes precedence over discard status for shared
-  // tabs.
-  const bool show_discard_status =
-      !show_collaboration_messaging && tab_data.should_show_discard_status;
+  const bool show_collaboration_messaging =
+      card_data.show_collaboration_messaging;
+
   const base::ByteSize tab_memory_usage =
-      tab_data.tab_resource_usage ? tab_data.tab_resource_usage->memory_usage()
-                                  : base::ByteSize(0);
+      card_data.tab_resource_usage
+          ? card_data.tab_resource_usage->memory_usage()
+          : base::ByteSize(0);
   const bool is_high_memory_usage =
-      tab_data.tab_resource_usage
-          ? tab_data.tab_resource_usage->is_high_memory_usage()
+      card_data.tab_resource_usage
+          ? card_data.tab_resource_usage->is_high_memory_usage()
           : false;
+
   // High memory usage notification is considered a tab alert. Show it even
   // if the memory usage in hover cards pref is disabled.
   // However, collaboration messaging takes precedence over memory usage for
   // shared tabs.
   const bool show_memory_usage =
-      !show_collaboration_messaging && !show_discard_status &&
-      ((bubble_params_.show_memory_usage && tab_memory_usage.is_positive()) ||
-       is_high_memory_usage);
-  const bool show_footer = alert_state_.has_value() || show_discard_status ||
-                           show_memory_usage || show_collaboration_messaging;
-
-  footer_view_->SetAlertData(
-      {alert_state_, show_discard_status,
-       tab_data.discarded_memory_savings.value_or(base::ByteSize())});
+      ((tab_memory_usage.is_positive() && bubble_params_.show_memory_usage) ||
+       is_high_memory_usage) &&
+      !show_collaboration_messaging && !card_data.show_discard_status;
 
   footer_view_->SetPerformanceData(
       {show_memory_usage, is_high_memory_usage, tab_memory_usage});
 
-  footer_view_->SetCollaborationMessagingData(collaboration_messaging_data);
+  CollaborationMessagingRowData collaboration_messaging_row_data;
+  collaboration_messaging_row_data.should_show_collaboration_messaging =
+      show_collaboration_messaging;
+  collaboration_messaging_row_data.text = card_data.collaboration_message;
+  collaboration_messaging_row_data.avatar =
+      tab_groups::CollaborationMessagingTabData::GetHoverCardImage(
+          GetWidget(), card_data.collaboration_avatar,
+          /*has_message*/ card_data.collaboration_message.size() > 0u);
+
+  footer_view_->SetCollaborationMessagingData(
+      {collaboration_messaging_row_data});
+
+  const bool show_footer = card_data.alert_data.alert_state.has_value() ||
+                           card_data.show_discard_status || show_memory_usage ||
+                           show_collaboration_messaging;
 
   if (thumbnail_view_) {
     // We only clip the corners of the fade image when there isn't a footer.
