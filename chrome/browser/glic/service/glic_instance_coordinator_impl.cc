@@ -347,9 +347,6 @@ void GlicInstanceCoordinatorImpl::InvokeInternal(
     return;
   }
 
-  instance->Show(ShowOptions::ForSidePanel(
-      *tab, GlicPinTrigger::kInstanceCreation, options.invocation_source));
-
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
       *instance, tab, std::move(options), auto_submit_passkey,
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
