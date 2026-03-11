@@ -946,31 +946,35 @@ bool AutofillPopupControllerImpl::HasFilteredOutSuggestions() const {
 }
 
 bool AutofillPopupControllerImpl::ShouldShowNoSuggestionsMessage() const {
-  // The popup is considered effectively empty if it contains no suggestions or
-  // only "static" ones (e.g. footer items like "Manage addresses...") which
-  // are never filtered out.
-  const bool has_no_filterable_suggestions = std::ranges::all_of(
-      GetSuggestions(),
-      [](Suggestion::FiltrationPolicy policy) {
-        return policy == Suggestion::FiltrationPolicy::kStatic;
-      },
-      &Suggestion::filtration_policy);
-
-  // If there is no filter or if there are still some filterable (non-static)
-  // suggestions, then we shouldn't show the "no results" message.
-  if (!filter_.has_value() || !has_no_filterable_suggestions) {
+  // If there is no filter, we should never show the "no results" message.
+  if (!filter_.has_value()) {
     return false;
   }
 
   // AtMemory always replaces the suggestion list with the search results.
-  // If the list is effectively empty and a filter is set, it means the
-  // search returned no matches.
+  // Since these results are already pre-filtered by the search service,
+  // we just need to check if the list is empty.
   if (suggestions_filling_product_ == FillingProduct::kAtMemory) {
-    return true;
+    return GetSuggestions().empty();
   }
 
-  // For other products, we check if the current filter actually hid anything
-  // from the initial list.
+  // For other products, the popup is considered effectively empty if all
+  // "filterable" suggestions (the ones that actually contain data to fill)
+  // have been hidden by the filter.
+  const bool has_any_filterable_suggestions = std::ranges::any_of(
+      GetSuggestions(),
+      [](Suggestion::FiltrationPolicy policy) {
+        return policy != Suggestion::FiltrationPolicy::kStatic;
+      },
+      &Suggestion::filtration_policy);
+
+  if (has_any_filterable_suggestions) {
+    return false;
+  }
+
+  // We only show the message if the current filter actually hid anything
+  // from the initial list. This prevents showing "No results" for a popup
+  // that only contains footers from the start.
   return HasFilteredOutSuggestions();
 }
 

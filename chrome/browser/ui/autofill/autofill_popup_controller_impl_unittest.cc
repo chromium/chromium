@@ -720,8 +720,9 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_NoFilter_NoMessage) {
 }
 
 TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
-  ShowSuggestions(manager(),
-                  {Suggestion(u"result", SuggestionType::kAtMemorySearchResult)},
+  Suggestion suggestion(u"result", SuggestionType::kAtMemorySearchResult);
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  ShowSuggestions(manager(), {suggestion},
                   AutofillSuggestionTriggerSource::kAtMemory);
   client().suggestion_controller(manager()).SetFilter(
       AutofillPopupController::StringFilter(u"res"));
