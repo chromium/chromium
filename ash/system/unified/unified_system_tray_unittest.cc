@@ -67,6 +67,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 

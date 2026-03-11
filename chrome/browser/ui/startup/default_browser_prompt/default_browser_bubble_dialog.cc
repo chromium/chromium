@@ -15,6 +15,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"

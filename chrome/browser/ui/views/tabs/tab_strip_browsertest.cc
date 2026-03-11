@@ -45,6 +45,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "url/gurl.h"
 

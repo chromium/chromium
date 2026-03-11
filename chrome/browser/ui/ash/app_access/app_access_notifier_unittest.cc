@@ -41,6 +41,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/controls/image_view.h"
 
 namespace {
 

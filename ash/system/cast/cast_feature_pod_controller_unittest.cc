@@ -10,6 +10,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 namespace {

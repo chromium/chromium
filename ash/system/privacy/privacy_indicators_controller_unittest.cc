@@ -39,6 +39,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace ash {

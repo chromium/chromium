@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace ash {
