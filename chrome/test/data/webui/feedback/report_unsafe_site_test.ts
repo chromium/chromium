@@ -16,18 +16,10 @@ class TestReportUnsafeSiteBrowserProxy implements ReportUnsafeSiteBrowserProxy {
 
   constructor() {
     this.handler = TestMock.fromClass(PageHandlerRemote);
-    this.setScreenshot('data:image/png;base64,fakescreenshot');
   }
 
   getPageHandler() {
     return this.handler;
-  }
-
-  setScreenshot(dataUri: string) {
-    this.handler.setPromiseResolveFor('getTriggeringPageInfo', {
-      pageUrl: 'http://example.com',
-      screenshotDataUri: dataUri,
-    });
   }
 }
 
@@ -38,6 +30,12 @@ suite('ReportUnsafeSiteTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     browserProxy = new TestReportUnsafeSiteBrowserProxy();
     ReportUnsafeSiteBrowserProxyImpl.setInstance(browserProxy);
+
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: '',
+          screenshotDataUri: '',
+        });
   });
 
   test('ClickCancel', () => {
@@ -52,22 +50,50 @@ suite('ReportUnsafeSiteTest', () => {
   });
 
   test('ClickSend', async () => {
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: 'example.com',
+          screenshotDataUri: '',
+        });
+
     const app = document.createElement('report-unsafe-site-app');
     document.body.appendChild(app);
 
     await browserProxy.getPageHandler().whenCalled('getTriggeringPageInfo');
     await microtasksFinished();
     const sendButton =
-        app.shadowRoot.querySelector<HTMLInputElement>('.action-button');
+        app.shadowRoot.querySelector<HTMLButtonElement>('.action-button');
     assertTrue(!!sendButton);
+    assertFalse(sendButton.disabled);
     sendButton.click();
     await browserProxy.getPageHandler().whenCalled('sendReport');
     assertEquals(1, browserProxy.getPageHandler().getCallCount('closeDialog'));
   });
 
+  test('SendButtonDisabled', async () => {
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: '',
+          screenshotDataUri: '',
+        });
+    const app = document.createElement('report-unsafe-site-app');
+    document.body.appendChild(app);
+
+    await browserProxy.getPageHandler().whenCalled('getTriggeringPageInfo');
+    await microtasksFinished();
+    const sendButton =
+        app.shadowRoot.querySelector<HTMLButtonElement>('.action-button');
+    assertTrue(!!sendButton);
+    assertTrue(sendButton.disabled);
+  });
+
   test('IncludeScreenshotCheckbox_HasScreenshot', async () => {
-    browserProxy.setScreenshot(
-        'data:image/png;data:image/png;base64,fakescreenshot');
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: 'example.com',
+          screenshotDataUri:
+              'data:image/png;data:image/png;base64,fakescreenshot',
+        });
     const app = document.createElement('report-unsafe-site-app');
     document.body.appendChild(app);
 
@@ -94,7 +120,11 @@ suite('ReportUnsafeSiteTest', () => {
   });
 
   test('IncludeScreenshotCheckbox_NoScreenshot', async () => {
-    browserProxy.setScreenshot('');
+    browserProxy.getPageHandler().setPromiseResolveFor(
+        'getTriggeringPageInfo', {
+          pageUrl: 'example.com',
+          screenshotDataUri: '',
+        });
     const app = document.createElement('report-unsafe-site-app');
     document.body.appendChild(app);
 
