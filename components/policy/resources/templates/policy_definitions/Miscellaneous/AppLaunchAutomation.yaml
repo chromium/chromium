@@ -1,5 +1,4 @@
 caption: App Launch Automation
-deprecated: true
 desc: Setting this policy allows administrators to configure automation for
   launching apps on <ph name="PRODUCT_NAME">$1<ex>Google ChromeOS</ex></ph>
   devices. These apps can be launched on user login, or users can launch them
@@ -79,6 +78,6 @@ schema:
       uuid:
         type: string
 supported_on:
-- chrome_os:116-145
+- chrome_os:116-
 tags: []
 type: dict
