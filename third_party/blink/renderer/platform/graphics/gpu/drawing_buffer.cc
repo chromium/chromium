@@ -2000,7 +2000,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   } else {
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
-    bool should_use_chromium_image = false;
+    bool use_as_overlay = false;
+    bool low_latency_usage_supported = false;
 
     // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
     // this allows WebGL-rendered canvases to be composited by the OS rather
@@ -2015,14 +2016,16 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     if (SharedGpuContext::IsGpuCompositingEnabled() &&
         (!is_offscreen_canvas_ ||
          base::FeatureList::IsEnabled(kAllowOverlaysForOffscreenCanvas))) {
-      should_use_chromium_image =
+      use_as_overlay = SharedGpuContext::MaySupportWebGLImageChromium() &&
+                       SharedGpuContext::WebGLImageChromiumEnabled();
+      low_latency_usage_supported =
+          low_latency_enabled() &&
           SharedGpuContext::MaySupportWebGLImageChromium() &&
           (SharedGpuContext::WebGLImageChromiumEnabled() ||
-           (low_latency_enabled() &&
-            base::FeatureList::IsEnabled(
-                features::kLowLatencyWebGLImageChromium)));
+           base::FeatureList::IsEnabled(
+               features::kLowLatencyWebGLImageChromium));
     }
-    if (should_use_chromium_image) {
+    if (use_as_overlay || low_latency_usage_supported) {
 #if !BUILDFLAG(IS_ANDROID)
       // Android's SharedImage backing for ChromiumImage does not support BGRX.
 
@@ -2049,7 +2052,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       if (GraphicsContext3DUtils::IsScanoutSupportedForCanvasWithFormat(
               color_buffer_format_, caps)) {
         usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        if (low_latency_enabled()) {
+        if (low_latency_usage_supported) {
           usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
         }
       }
