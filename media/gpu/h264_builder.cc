@@ -43,9 +43,13 @@ void BuildPackedH264SPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
   if (sps.pic_order_cnt_type == 0) {
     bitstream_builder.AppendUE(sps.log2_max_pic_order_cnt_lsb_minus4);
   } else if (sps.pic_order_cnt_type == 1) {
-    // Ignoring the content of this branch as we don't produce
-    // sps.pic_order_cnt_type == 1
-    NOTREACHED();
+    bitstream_builder.AppendBool(sps.delta_pic_order_always_zero_flag);
+    bitstream_builder.AppendSE(sps.offset_for_non_ref_pic);
+    bitstream_builder.AppendSE(sps.offset_for_top_to_bottom_field);
+    bitstream_builder.AppendUE(sps.num_ref_frames_in_pic_order_cnt_cycle);
+    for (int i = 0; i < sps.num_ref_frames_in_pic_order_cnt_cycle; ++i) {
+      bitstream_builder.AppendSE(sps.offset_for_ref_frame[i]);
+    }
   }
 
   bitstream_builder.AppendUE(sps.max_num_ref_frames);

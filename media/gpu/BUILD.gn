@@ -797,8 +797,22 @@ fuzzer_test("media_vp9_decoder_fuzzer") {
 }
 
 if (is_win || use_vaapi) {
+  fuzzer_test("media_h264_parser_structural_fuzzer") {
+    sources = [ "fuzzers/h264_parser_structural_fuzzer.cc" ]
+    deps = [
+      ":common",
+      ":gpu",
+      "//base",
+      "//media",
+      "//media:test_support",
+    ]
+  }
+
   group("stream_builder_fuzzers") {
     testonly = true
-    public_deps = [ "//media/gpu/fuzzers/av1_builder:av1_builder_fuzzer" ]
+    public_deps = [
+      ":media_h264_parser_structural_fuzzer",
+      "//media/gpu/fuzzers/av1_builder:av1_builder_fuzzer",
+    ]
   }
 }
