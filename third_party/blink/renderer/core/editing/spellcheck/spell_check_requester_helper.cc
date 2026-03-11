@@ -21,13 +21,21 @@
 
 namespace blink {
 
-bool ShouldSendSpellingMarkersInfo() {
+bool ShouldUseAndroidSpellcheckFullApiBlink() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
       blink::features::kAndroidSpellcheckFullApiBlink);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool ShouldSendSpellingMarkersInfo() {
+  return ShouldUseAndroidSpellcheckFullApiBlink();
+}
+
+bool ShouldRemoveSuggestionMarkerOfMisspellingAndGrammarType() {
+  return ShouldUseAndroidSpellcheckFullApiBlink();
 }
 
 DocumentMarkerVector GetSpellingMarkersFromRange(const Document& document,

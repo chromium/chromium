@@ -17,6 +17,13 @@ class Document;
 // service. This is required
 CORE_EXPORT bool ShouldSendSpellingMarkersInfo();
 
+// Returns true if we need to remove suggestion markers of misspelling and
+// grammar types along with removing normal spelling and grammar markers.
+// The suggestion markers of misspelling and grammar types are typically added
+// during Android IME interactions (composition, etc.) instead of from spell
+// check callback result.
+CORE_EXPORT bool ShouldRemoveSuggestionMarkerOfMisspellingAndGrammarType();
+
 // Returns the spelling and grammar markers intersecting the given range.
 CORE_EXPORT DocumentMarkerVector
 GetSpellingMarkersFromRange(const Document& document,

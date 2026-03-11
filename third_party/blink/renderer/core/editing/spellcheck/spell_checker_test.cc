@@ -12,7 +12,9 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/grammar_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
@@ -531,6 +533,128 @@ TEST_P(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
   ASSERT_NE(nullptr, third_marker);
   EXPECT_EQ(0u, third_marker->StartOffset());
   EXPECT_EQ(3u, third_marker->EndOffset());
+}
+
+TEST_P(SpellCheckerTest,
+       MarkAndReplaceForAlsoRemovesSuggestionMarkersOfMisspellingType) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!GetParam()) {
+    GTEST_SKIP() << "Test only runs with Spell Check Full API flag enabled";
+  }
+
+  SetBodyContent(
+      "<div contenteditable>"
+      "Good moring, thisis a good day."
+      "</div>");
+  Element* div = QuerySelector("div");
+  Node* text = div->firstChild();
+
+  // Spelling Marker for 'moring'.
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 5), Position(text, 11)));
+  // Suggestion Marker of Misspelling type for 'thisis'.
+  GetDocument().Markers().AddSuggestionMarker(
+      EphemeralRange(Position(text, 13), Position(text, 19)),
+      SuggestionMarkerProperties::Builder()
+          .SetType(SuggestionMarker::SuggestionType::kMisspelling)
+          .Build());
+
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      EphemeralRange(Position(text, 0), Position(text, 31)),
+      /*request_number=*/0, /*should_force_refresh=*/false);
+
+  TextCheckingResult result;
+  result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
+  result.location = 5;
+  result.length = 6;
+  result.replacements = Vector<String>({"morning"});
+
+  GetDocument().GetFrame()->GetSpellChecker().MarkAndReplaceFor(
+      request, Vector<TextCheckingResult>({result}));
+
+  ASSERT_TRUE(ShouldRemoveSuggestionMarkerOfMisspellingAndGrammarType());
+  // After applying text check results, pre-existing markers should be cleared
+  // and the only marker should be created from the suggested replacement.
+  ASSERT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(GetDocument().Markers().Markers()[0]->GetType(),
+            DocumentMarker::MarkerType::kSpelling);
+  // The new spelling marker should have the right suggestion list (stored in
+  // description).
+  EXPECT_EQ("morning",
+            To<SpellCheckMarker>(GetDocument().Markers().Markers()[0].Get())
+                ->Description());
+  // There should be no other markers, e.g. suggestion markers should be
+  // cleared too.
+  EXPECT_EQ(nullptr,
+            GetDocument().Markers().FirstMarkerIntersectingEphemeralRange(
+                EphemeralRange(Position(text, 0), Position(text, 31)),
+                DocumentMarker::MarkerTypes::Suggestion()));
+#else
+  GTEST_SKIP() << "Test only runs on Android";
+#endif
+}
+
+TEST_P(SpellCheckerTest,
+       MarkAndReplaceForAlsoRemovesSuggestionMarkersOfGrammarType) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!GetParam()) {
+    GTEST_SKIP() << "Test only runs with Spell Check Full API flag enabled";
+  }
+
+  SetBodyContent(
+      "<div contenteditable>"
+      "Here is trees. There are a flower."
+      "</div>");
+  Element* div = QuerySelector("div");
+  Node* text = div->firstChild();
+
+  // Grammar Marker for 'is'.
+  GetDocument().Markers().AddGrammarMarker(
+      EphemeralRange(Position(text, 5), Position(text, 7)));
+  // Suggestion Marker of Grammar type for 'are'.
+  GetDocument().Markers().AddSuggestionMarker(
+      EphemeralRange(Position(text, 21), Position(text, 24)),
+      SuggestionMarkerProperties::Builder()
+          .SetType(SuggestionMarker::SuggestionType::kGrammar)
+          .Build());
+
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      EphemeralRange(Position(text, 0), Position(text, 34)),
+      /*request_number=*/0, /*should_force_refresh=*/false);
+
+  TextCheckingResult result;
+  result.decoration = TextDecorationType::kTextDecorationTypeGrammar;
+  result.location = 5;
+  result.length = 2;
+  result.replacements = Vector<String>({"are"});
+  GrammarDetail detail;
+  detail.location = 5;
+  detail.length = 2;
+  result.details.push_back(detail);
+
+  GetDocument().GetFrame()->GetSpellChecker().MarkAndReplaceFor(
+      request, Vector<TextCheckingResult>({result}));
+
+  ASSERT_TRUE(ShouldRemoveSuggestionMarkerOfMisspellingAndGrammarType());
+  // After applying text check results, pre-existing markers should be cleared
+  // and the only marker should be created from the suggested replacement.
+  ASSERT_EQ(1u, GetDocument().Markers().Markers().size());
+  EXPECT_EQ(GetDocument().Markers().Markers()[0]->GetType(),
+            DocumentMarker::MarkerType::kGrammar);
+  // The new grammar marker should have the right suggestion list (stored in
+  // description).
+  EXPECT_EQ("are",
+            To<SpellCheckMarker>(GetDocument().Markers().Markers()[0].Get())
+                ->Description());
+  // There should be no other markers, e.g. suggestion markers should be
+  // cleared too.
+  EXPECT_EQ(nullptr,
+            GetDocument().Markers().FirstMarkerIntersectingEphemeralRange(
+                EphemeralRange(Position(text, 0), Position(text, 34)),
+                DocumentMarker::MarkerTypes::Suggestion()));
+#else
+  GTEST_SKIP() << "Test only runs on Android";
+#endif
 }
 
 TEST_P(SpellCheckerTest, PasswordFieldsAreIgnored) {

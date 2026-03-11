@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/cold_mode_spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -335,6 +336,16 @@ void SpellChecker::MarkAndReplaceFor(
   // Clear the stale markers.
   RemoveMarkers(checking_range, DocumentMarker::MarkerTypes::Misspelling());
 
+  // Spelling markers can also exist in the form of Suggestion Markers, this is
+  // often added by IME interactions. After a new spell check request, markers
+  // of this form may become stale and should be removed as well.
+  if (ShouldRemoveSuggestionMarkerOfMisspellingAndGrammarType()) {
+    RemoveSuggestionMarkersByType(
+        checking_range, SuggestionMarker::SuggestionType::kMisspelling);
+    RemoveSuggestionMarkersByType(checking_range,
+                                  SuggestionMarker::SuggestionType::kGrammar);
+  }
+
   if (!results.size())
     return;
 
@@ -553,6 +564,18 @@ void SpellChecker::RemoveMarkers(const EphemeralRange& range,
     return;
 
   GetFrame().GetDocument()->Markers().RemoveMarkersInRange(range, marker_types);
+}
+
+void SpellChecker::RemoveSuggestionMarkersByType(
+    const EphemeralRange& range,
+    SuggestionMarker::SuggestionType type) {
+  DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
+  if (range.IsNull()) {
+    return;
+  }
+
+  GetFrame().GetDocument()->Markers().RemoveSuggestionMarkerByType(
+      ToEphemeralRangeInFlatTree(range), type);
 }
 
 void SpellChecker::Trace(Visitor* visitor) const {

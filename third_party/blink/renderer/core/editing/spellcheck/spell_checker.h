@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/text_checking.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -102,6 +103,8 @@ class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
   std::pair<String, int> FindFirstMisspelling(const Position&, const Position&);
 
   void RemoveMarkers(const EphemeralRange&, DocumentMarker::MarkerTypes);
+  void RemoveSuggestionMarkersByType(const EphemeralRange&,
+                                     SuggestionMarker::SuggestionType);
 
   Member<LocalDOMWindow> window_;
 
