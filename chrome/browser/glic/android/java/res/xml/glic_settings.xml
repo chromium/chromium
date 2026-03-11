@@ -13,7 +13,7 @@ found in the LICENSE file.
         android:title="@string/settings_glic_preferences_section" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-            android:key="glic_button"
+            android:key="preference_category"
             android:title="@string/settings_glic_button_toggle"
             android:summary="@string/settings_glic_button_toggle_sublabel"
             android:defaultValue="false" />
@@ -27,7 +27,6 @@ found in the LICENSE file.
         android:title="@string/settings_glic_permissions_location_toggle"
         android:summary="@string/settings_glic_permissions_location_toggle_sublabel_data_protected"
         android:defaultValue="false" />
-
     <org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference
         android:key="glic_permissions_default_tab_access"
         android:title="@string/settings_glic_permissions_default_tab_access_toggle"

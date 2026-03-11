@@ -21,7 +21,6 @@ import android.view.ViewStub;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.filters.LargeTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -163,35 +162,5 @@ public class ChromeExpandableSwitchPreferenceTest {
         // Verify that the preference is still expanded.
         onView(withId(R.id.expandable_switch_expanded_area)).check(matches(isDisplayed()));
         onView(withId(R.id.expandable_switch_expand_icon)).check(matches(isChecked()));
-    }
-
-    @Test
-    @LargeTest
-    public void testSwitchToggle() {
-        // Initial state: not checked.
-        Assert.assertFalse(mPreference.isChecked());
-        onView(withId(android.R.id.switch_widget)).check(matches(not(isChecked())));
-
-        // Click the switch.
-        onView(withId(android.R.id.switch_widget)).perform(click());
-
-        // Verify checked state.
-        Assert.assertTrue(mPreference.isChecked());
-        onView(withId(android.R.id.switch_widget)).check(matches(isChecked()));
-
-        // Verify it is NOT expanded by clicking the switch.
-        onView(withId(R.id.expandable_switch_expand_icon)).check(matches(not(isChecked())));
-        onView(withId(R.id.expandable_switch_expanded_area_stub))
-                .check(matches(not(isDisplayed())));
-
-        // Click the row (not the switch).
-        onView(withText(TITLE)).perform(click());
-
-        // Verify it IS expanded.
-        onView(withId(R.id.expandable_switch_expand_icon)).check(matches(isChecked()));
-        onView(withId(R.id.expandable_switch_expanded_area)).check(matches(isDisplayed()));
-
-        // Switch should still be checked.
-        onView(withId(android.R.id.switch_widget)).check(matches(isChecked()));
     }
 }

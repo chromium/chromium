@@ -18,8 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.LayoutRes;
 import androidx.preference.PreferenceViewHolder;
 
-import com.google.android.material.materialswitch.MaterialSwitch;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.CheckableImageView;
@@ -101,17 +99,6 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
             if (getSummary() instanceof SpannableString) {
                 summary.setMovementMethod(LinkMovementMethod.getInstance());
             }
-        }
-        MaterialSwitch switchView =
-                (MaterialSwitch) holder.findViewById(android.R.id.switch_widget);
-        if (switchView != null) {
-            switchView.setOnCheckedChangeListener(null);
-            switchView.setChecked(isChecked());
-            switchView.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        callChangeListener(isChecked);
-                        setChecked(isChecked);
-                    });
         }
         updatePreferenceContentDescription(holder.itemView);
     }
