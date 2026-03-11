@@ -214,8 +214,12 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 void AnchoredMessageBubbleView::ChipCallback() {
   CHECK(close_callback_);
   CHECK(chip_callback_);
-  close_callback_.Run();
-  chip_callback_.Run();
+  // Copy callbacks to locals before invoking: close_callback_ destroys the
+  // bubble (and |this|), so member access after that is a use-after-free.
+  auto chip_callback = chip_callback_;
+  auto close_callback = close_callback_;
+  close_callback.Run();
+  chip_callback.Run();
 }
 
 BEGIN_METADATA(AnchoredMessageBubbleView)
