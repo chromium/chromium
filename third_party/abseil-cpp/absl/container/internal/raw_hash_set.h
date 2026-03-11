@@ -459,26 +459,41 @@ class PerTableSeed {
 
 // The size and also has additionally
 // 1) one bit that stores whether we have infoz.
-// 2) PerTableSeed::kBitCount bits for the seed.
+// 2) PerTableSeed::kBitCount bits for the seed. (For SOO tables, the lowest
+//    bit of the seed is repurposed to track if sampling has been tried).
 class HashtableSize {
  public:
   static constexpr size_t kSizeBitCount = 64 - PerTableSeed::kBitCount - 1;
 
   explicit HashtableSize(uninitialized_tag_t) {}
   explicit HashtableSize(no_seed_empty_tag_t) : data_(0) {}
-  explicit HashtableSize(full_soo_tag_t) : data_(kSizeOneNoMetadata) {}
+  HashtableSize(full_soo_tag_t, bool has_tried_sampling)
+      : data_(kSizeOneNoMetadata |
+              (has_tried_sampling ? kSooHasTriedSamplingMask : 0)) {}
 
   // Returns actual size of the table.
   size_t size() const { return static_cast<size_t>(data_ >> kSizeShift); }
   void increment_size() { data_ += kSizeOneNoMetadata; }
   void increment_size(size_t size) {
-    data_ += static_cast<uint64_t>(size) * kSizeOneNoMetadata;
+    data_ += static_cast<uint64_t>(size) << kSizeShift;
   }
   void decrement_size() { data_ -= kSizeOneNoMetadata; }
   // Returns true if the table is empty.
   bool empty() const { return data_ < kSizeOneNoMetadata; }
-  // Sets the size to zero, but keeps all the metadata bits.
-  void set_size_to_zero_keep_metadata() { data_ = data_ & kMetadataMask; }
+
+  // Returns true if an empty SOO table has already queried should_sample_soo().
+  bool soo_has_tried_sampling() const {
+    return (data_ & kSooHasTriedSamplingMask) != 0;
+  }
+
+  // Records that an empty SOO table has tried sampling.
+  void set_soo_has_tried_sampling() { data_ |= kSooHasTriedSamplingMask; }
+
+  // Sets the size, but keeps all the metadata bits.
+  void set_size_keep_metadata(size_t size) {
+    data_ =
+        (data_ & kMetadataMask) | (static_cast<uint64_t>(size) << kSizeShift);
+  }
 
   PerTableSeed seed() const {
     return PerTableSeed(static_cast<size_t>(data_) & kSeedMask);
@@ -509,6 +524,10 @@ class HashtableSize {
 
  private:
   void set_seed(uint16_t seed) { data_ = (data_ & ~kSeedMask) | seed; }
+  // Bit layout of `data_`:
+  // [63 ... 17] (47 bits) : size
+  // [16]        (1 bit)   : has_infoz
+  // [15 ...  0] (16 bits) : seed
   static constexpr size_t kSizeShift = 64 - kSizeBitCount;
   static constexpr uint64_t kSizeOneNoMetadata = uint64_t{1} << kSizeShift;
   static constexpr uint64_t kMetadataMask = kSizeOneNoMetadata - 1;
@@ -516,6 +535,9 @@ class HashtableSize {
       (uint64_t{1} << PerTableSeed::kBitCount) - 1;
   // The next bit after the seed.
   static constexpr uint64_t kHasInfozMask = kSeedMask + 1;
+  // For SOO tables, the seed is unused, and bit 0 is repurposed to track
+  // whether the table has already queried should_sample_soo().
+  static constexpr uint64_t kSooHasTriedSamplingMask = 1;
   uint64_t data_;
 };
 
@@ -907,8 +929,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
  public:
   explicit CommonFields(soo_tag_t)
       : capacity_(SooCapacity()), size_(no_seed_empty_tag_t{}) {}
-  explicit CommonFields(full_soo_tag_t)
-      : capacity_(SooCapacity()), size_(full_soo_tag_t{}) {}
+  explicit CommonFields(full_soo_tag_t, bool has_tried_sampling)
+      : capacity_(SooCapacity()), size_(full_soo_tag_t{}, has_tried_sampling) {}
   explicit CommonFields(non_soo_tag_t)
       : capacity_(0), size_(no_seed_empty_tag_t{}) {}
   // For use in swapping.
@@ -963,14 +985,14 @@ class CommonFields : public CommonFieldsGenerationInfo {
   // The number of filled slots.
   size_t size() const { return size_.size(); }
   // Sets the size to zero, but keeps hashinfoz bit and seed.
-  void set_size_to_zero() { size_.set_size_to_zero_keep_metadata(); }
+  void set_size_to_zero() { size_.set_size_keep_metadata(0); }
   void set_empty_soo() {
     AssertInSooMode();
-    size_ = HashtableSize(no_seed_empty_tag_t{});
+    size_.set_size_keep_metadata(0);
   }
   void set_full_soo() {
     AssertInSooMode();
-    size_ = HashtableSize(full_soo_tag_t{});
+    size_.set_size_keep_metadata(1);
   }
   void increment_size() {
     ABSL_SWISSTABLE_ASSERT(size() < capacity());
@@ -985,6 +1007,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
     size_.decrement_size();
   }
   bool empty() const { return size_.empty(); }
+  void set_soo_has_tried_sampling() { size_.set_soo_has_tried_sampling(); }
+  bool soo_has_tried_sampling() const { return size_.soo_has_tried_sampling(); }
 
   // The seed used for the hash function.
   PerTableSeed seed() const { return size_.seed(); }
@@ -2271,7 +2295,8 @@ class raw_hash_set {
          // Note: we avoid using exchange for better generated code.
         settings_(PolicyTraits::transfer_uses_memcpy() || !that.is_full_soo()
                       ? std::move(that.common())
-                      : CommonFields{full_soo_tag_t{}},
+                      : CommonFields{full_soo_tag_t{},
+                                     that.common().soo_has_tried_sampling()},
                   that.hash_ref(), that.eq_ref(), that.char_alloc_ref()) {
     if (!PolicyTraits::transfer_uses_memcpy() && that.is_full_soo()) {
       transfer(soo_slot(), that.soo_slot());
@@ -3011,12 +3036,23 @@ class raw_hash_set {
     }
   }
 
-  // Returns true if the table needs to be sampled.
+  // Returns true if the table needs to be sampled. This keeps track of whether
+  // sampling has already been evaluated and ensures that it can only return
+  // true on its first evaluation. All subsequent calls will return false.
+  //
   // This should be called on insertion into an empty SOO table and in copy
   // construction when the size can fit in SOO capacity.
-  bool should_sample_soo() const {
+  bool should_sample_soo() {
     ABSL_SWISSTABLE_ASSERT(is_soo());
     if (!ShouldSampleHashtablezInfoForAlloc<CharAlloc>()) return false;
+    if (common().soo_has_tried_sampling()) {
+      // Already evaluated sampling on this SOO table; do not re-evaluate
+      // sampling each time it transitions from empty to full SOO state.
+      return false;
+    }
+    // TODO: b/396049910 -- consider managing this flag on the 1->0 size
+    // transition of SOO tables rather than the 0->1 transition.
+    common().set_soo_has_tried_sampling();
     return ABSL_PREDICT_FALSE(ShouldSampleNextTable());
   }
 

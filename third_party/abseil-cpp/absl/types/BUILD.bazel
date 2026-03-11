@@ -51,6 +51,32 @@ cc_library(
 )
 
 cc_library(
+    name = "source_location",
+    hdrs = ["source_location.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:config",
+        "//absl/base:nullability",
+    ],
+)
+
+cc_test(
+    name = "source_location_test",
+    size = "small",
+    srcs = ["source_location_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":source_location",
+        "//absl/base:config",
+        "//absl/strings:string_view",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
     name = "span",
     srcs = [
         "internal/span.h",

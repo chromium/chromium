@@ -135,10 +135,13 @@ cc_test(
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:malloc_internal",
+        "//absl/cleanup",
         "//absl/log",
         "//absl/log:check",
         "//absl/memory",
         "//absl/strings",
+        "//absl/strings:str_format",
         "@googletest//:gtest",
     ],
 )

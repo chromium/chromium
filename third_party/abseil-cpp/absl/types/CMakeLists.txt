@@ -129,6 +129,32 @@ absl_cc_test(
 
 absl_cc_library(
   NAME
+    source_location
+  HDRS
+    "source_location.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::nullability
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    source_location_test
+  SRCS
+    "source_location_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::config
+    absl::source_location
+    GTest::gmock_main
+)
+
+absl_cc_library(
+  NAME
     compare
   HDRS
     "compare.h"

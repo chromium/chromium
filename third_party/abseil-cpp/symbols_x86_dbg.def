@@ -1987,7 +1987,6 @@ EXPORTS
     ??0GroupPortableImpl@container_internal@absl@@QAE@PBW4ctrl_t@12@@Z
     ??0GroupSse2Impl@container_internal@absl@@QAE@PBW4ctrl_t@12@@Z
     ??0HashSetIteratorGenerationInfoDisabled@container_internal@absl@@QAE@PBE@Z
-    ??0HashtableSize@container_internal@absl@@QAE@Ufull_soo_tag_t@12@@Z
     ??0HashtableSize@container_internal@absl@@QAE@Uno_seed_empty_tag_t@12@@Z
     ??0HashtablezInfo@container_internal@absl@@QAE@XZ
     ??0HashtablezInfoHandle@container_internal@absl@@QAE@$$T@Z
@@ -2754,6 +2753,7 @@ EXPORTS
     ??RErrnoSaver@base_internal@absl@@QBEHXZ
     ??RSkipEmpty@absl@@QBE_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??RStringEq@container_internal@absl@@QBE_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@0@Z
+    ??RSymbolDecoratorDeleter@debugging_internal@absl@@QAEXPAVSymbolDecorator@12@@Z
     ??R__destroy_vector@?$vector@PAVCordzHandle@cord_internal@absl@@V?$allocator@PAVCordzHandle@cord_internal@absl@@@__Cr@std@@@__Cr@std@@QAEXXZ
     ??R__destroy_vector@?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@QAEXXZ
     ??R__destroy_vector@?$vector@PBVCordzHandle@cord_internal@absl@@V?$allocator@PBVCordzHandle@cord_internal@absl@@@__Cr@std@@@__Cr@std@@QAEXXZ
@@ -5582,8 +5582,8 @@ EXPORTS
     ?set_sampled_seed@HashtableSize@container_internal@absl@@QAEXXZ
     ?set_seed@HashtableSize@container_internal@absl@@AAEXG@Z
     ?set_short_length@Rep@CordBuffer@absl@@QAEXI@Z
+    ?set_size_keep_metadata@HashtableSize@container_internal@absl@@QAEXI@Z
     ?set_size_to_zero@CommonFields@container_internal@absl@@QAEXXZ
-    ?set_size_to_zero_keep_metadata@HashtableSize@container_internal@absl@@QAEXXZ
     ?set_slots@CommonFields@container_internal@absl@@QAEXPAX@Z
     ?set_tag@Rep@InlineData@cord_internal@absl@@QAEXC@Z
     ?set_tree@InlineData@cord_internal@absl@@QAEXPAUCordRep@23@@Z

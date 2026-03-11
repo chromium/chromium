@@ -14,6 +14,23 @@ absl_source_set("any") {
   ]
 }
 
+absl_source_set("source_location") {
+  public = [ "source_location.h" ]
+  deps = [
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:nullability",
+  ]
+}
+
+absl_test("source_location_test") {
+  sources = [ "source_location_test.cc" ]
+  deps = [
+    ":source_location",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+  ]
+}
+
 absl_source_set("span") {
   public = [ "span.h" ]
   sources = [ "internal/span.h" ]

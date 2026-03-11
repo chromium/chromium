@@ -126,18 +126,24 @@ class IsOkAndHoldsMatcher {
 class StatusCode {
  public:
   /*implicit*/ StatusCode(int code)  // NOLINT
-      : code_(static_cast<::absl::StatusCode>(code)) {}
-  /*implicit*/ StatusCode(::absl::StatusCode code) : code_(code) {}  // NOLINT
+      : code_(code) {}
+  /*implicit*/ StatusCode(::absl::StatusCode code)  // NOLINT
+      : code_(static_cast<int>(code)) {}
 
   explicit operator int() const { return static_cast<int>(code_); }
 
   friend inline void PrintTo(const StatusCode& code, std::ostream* os) {
-    // TODO(b/321095377): Change this to print the status code as a string.
-    *os << static_cast<int>(code);
+    absl::string_view text =
+        absl::StatusCodeToStringView(static_cast<absl::StatusCode>(code.code_));
+    if (!text.empty()) {
+      *os << text;
+    } else {
+      *os << code.code_;
+    }
   }
 
  private:
-  ::absl::StatusCode code_;
+  int code_;
 };
 
 // Relational operators to handle matchers like Eq, Lt, etc..

@@ -107,12 +107,15 @@ absl_cc_test(
   DEPS
     absl::base
     absl::check
+    absl::cleanup
     absl::config
     absl::core_headers
     absl::log
+    absl::malloc_internal
     absl::memory
     absl::stack_consumption
     absl::strings
+    absl::str_format
     absl::symbolize
     GTest::gmock
 )

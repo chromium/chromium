@@ -72,6 +72,8 @@ absl_source_set("symbolize") {
   # evaluate if this needs to be added here as well.
 }
 
+# symbolize_test is excluded because defines its own main function
+
 absl_source_set("examine_stack") {
   sources = [ "internal/examine_stack.cc" ]
   public = [ "internal/examine_stack.h" ]

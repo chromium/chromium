@@ -31,7 +31,7 @@ struct FastTypeTag {
 }  // namespace base_internal
 
 // The type returned by `absl::FastTypeId<T>()`.
-class FastTypeIdType {
+class FastTypeIdType final {
  public:
   // Creates a value that does not correspond to any type. This value is
   // distinct from any value returned by `FastTypeId<T>()`.
