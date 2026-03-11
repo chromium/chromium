@@ -88,15 +88,7 @@ void EntityDataManagerAndroid::Destroy(JNIEnv* env) {
 }
 
 bool EntityDataManagerAndroid::IsEligibleToAutofillAi(JNIEnv* env) {
-  const bool is_wallet_public_pass_storage_enabled =
-      account_setting_service_ &&
-      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
-
-  return MayPerformAutofillAiAction(
-      google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
-      sync_service_, is_wallet_public_pass_storage_enabled, is_off_the_record_,
-      entity_data_manager_->GetVariationCountryCode(),
-      AutofillAiAction::kOptIn);
+  return RunMayPerformAutofillAiAction(AutofillAiAction::kOptIn);
 }
 
 bool EntityDataManagerAndroid::GetAutofillAiOptInStatus(JNIEnv* env) {
@@ -236,6 +228,22 @@ bool EntityDataManagerAndroid::GetIsAutofillAiDisabledByEnterprisePolicy(
 bool EntityDataManagerAndroid::
     GetIsAutofillAiEnabledByEnterprisePolicyWithoutLogging(JNIEnv* env) {
   return autofill::IsAutofillAiEnabledByEnterprisePolicyWithoutLogging(prefs_);
+}
+
+bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAi(JNIEnv* env) {
+  return RunMayPerformAutofillAiAction(AutofillAiAction::kEnableOrDisable);
+}
+
+bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
+    AutofillAiAction action) {
+  const bool is_wallet_public_pass_storage_enabled =
+      account_setting_service_ &&
+      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+
+  return autofill::MayPerformAutofillAiAction(
+      google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
+      sync_service_, is_wallet_public_pass_storage_enabled, is_off_the_record_,
+      entity_data_manager_->GetVariationCountryCode(), action);
 }
 
 }  // namespace autofill

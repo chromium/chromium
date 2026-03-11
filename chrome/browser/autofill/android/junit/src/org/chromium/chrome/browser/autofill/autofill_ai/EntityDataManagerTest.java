@@ -177,6 +177,12 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testCanEnableOrDisableAutofillAi() {
+        when(mEntityDataManagerJniMock.canEnableOrDisableAutofillAi(NATIVE_PTR)).thenReturn(true);
+        assertTrue(mEntityDataManager.canEnableOrDisableAutofillAi());
+    }
+
+    @Test
     public void testGetAutofillAiOptInStatus() {
         when(mEntityDataManagerJniMock.getAutofillAiOptInStatus(NATIVE_PTR)).thenReturn(true);
         assertTrue(mEntityDataManager.getAutofillAiOptInStatus());
