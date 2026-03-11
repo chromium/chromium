@@ -199,20 +199,17 @@ void AttemptLoginTool::OnGetCredentials(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          actor::kGlicEnableAutoLoginPersistedPermissions)) {
-    const auto it_persistent_permission =
-        std::find_if(credentials_.begin(), credentials_.end(),
-                     [](const actor_login::Credential& cred) {
-                       return cred.has_persistent_permission;
-                     });
-    if (it_persistent_permission != credentials_.end()) {
-      OnCredentialSelected(webui::mojom::SelectCredentialDialogResponse::New(
-          task_id().value(), /*error_reason=*/std::nullopt,
-          webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
-          it_persistent_permission->id.value()));
-      return;
-    }
+  const auto it_persistent_permission =
+      std::find_if(credentials_.begin(), credentials_.end(),
+                   [](const actor_login::Credential& cred) {
+                     return cred.has_persistent_permission;
+                   });
+  if (it_persistent_permission != credentials_.end()) {
+    OnCredentialSelected(webui::mojom::SelectCredentialDialogResponse::New(
+        task_id().value(), /*error_reason=*/std::nullopt,
+        webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow,
+        it_persistent_permission->id.value()));
+    return;
   }
 
   std::erase_if(credentials_, [](const actor_login::Credential& cred) {

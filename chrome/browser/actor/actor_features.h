@@ -61,9 +61,6 @@ BASE_DECLARE_FEATURE(kGlicRecordNavigationConfirmationRequestMetrics);
 // Warning: Enabling this feature can lead to data loss when navigating.
 BASE_DECLARE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate);
 
-// Kill switch for selecting previously selected credentials.
-BASE_DECLARE_FEATURE(kGlicEnableAutoLoginPersistedPermissions);
-
 // Kill switch for skipping waiting for visual state update on new tabs.
 BASE_DECLARE_FEATURE(kGlicSkipAwaitVisualStateForNewTabs);
 

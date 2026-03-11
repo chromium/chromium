@@ -113,7 +113,7 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
              kActorLoginPermissionsUseStrongAffiliations,
          password_manager::features::kActorLoginQualityLogs,
          password_manager::features::kActorLoginGetCredentialsNoLoginForm,
-         actor::kGlicEnableAutoLoginPersistedPermissions, features::kGlicActor},
+         features::kGlicActor},
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
 
