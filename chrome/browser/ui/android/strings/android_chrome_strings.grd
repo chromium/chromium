@@ -7485,6 +7485,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Default browser promo -->
+      <message name="IDS_SET_CHROME_AS_YOUR_DEFAULT" desc="Generic text indicating that the user can change their default browser to Chrome.">
+        Set Chrome as your default
+      </message>
+      <message name="IDS_PROMO_TEXT_SECURITY" desc="Promotional text advertising the speed and security of Chrome.">
+        Fast and secure web browsing
+      </message>
+      <message name="IDS_PROMO_TEXT_CONVENIENCE" desc="Promotional text advertising the convenience of Chrome.">
+        Easily open links from message, documents and other apps
+      </message>
+      <message name="IDS_PROMO_TEXT_SYNCHRONICITY" desc="Promotional text advertising the synchronicity of Chrome.">
+        Seamlessly continue on any device
+      </message>
       <message name="IDS_MAKE_CHROME_DEFAULT" desc="Menu item in the app menu to set Chrome as the default browser.">
         Make Chrome default
       </message>

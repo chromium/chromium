@@ -87,7 +87,7 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
         Assert.assertEquals(
                 "Bottom sheet title should be default",
                 model.get(BOTTOM_SHEET_TITLE),
-                mContext.getString(R.string.educational_tip_see_more_bottom_sheet_title));
+                mContext.getString(R.string.get_the_most_out_of_chrome));
         Assert.assertEquals(
                 "Bottom sheet description should be set",
                 model.get(BOTTOM_SHEET_DESCRIPTION),

@@ -1428,7 +1428,7 @@
       </message>
 
       <!-- Setup List "See More" bottom sheet strings -->
-      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_TITLE" desc="Title for the setup list bottom sheet when set up tasks are still remaining.">
+      <message name="IDS_GET_THE_MOST_OUT_OF_CHROME" desc="a generic promotional title for Chrome.">
         Get the most out of Chrome
       </message>
       <message name="IDS_EDUCATIONAL_TIP_SEE_MORE_BOTTOM_SHEET_DESCRIPTION" desc="Description text for the setup list bottom sheet when set up tasks are still remaining.">

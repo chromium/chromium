@@ -63,9 +63,7 @@ public class EducationalTipBottomSheetCoordinator {
     }
 
     public void showBottomSheet() {
-        mModel.set(
-                BOTTOM_SHEET_TITLE,
-                mContext.getString(R.string.educational_tip_see_more_bottom_sheet_title));
+        mModel.set(BOTTOM_SHEET_TITLE, mContext.getString(R.string.get_the_most_out_of_chrome));
         mModel.set(
                 BOTTOM_SHEET_DESCRIPTION,
                 mContext.getString(R.string.educational_tip_see_more_bottom_sheet_description));
