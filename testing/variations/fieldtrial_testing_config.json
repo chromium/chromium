@@ -15721,6 +15721,26 @@
             ]
         }
     ],
+    "MallocDumpDoNotWalkFreeList": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "MallocDumpProviderPopulateDiscardableBytes",
+                        "PartitionsDumpPopulateDiscardableBytes"
+                    ]
+                }
+            ]
+        }
+    ],
     "ManagedProfileRequiredInterstitial": [
         {
             "platforms": [
