@@ -66,12 +66,9 @@ class AddSyncedVisitTask : public history::HistoryDBTask {
 
 namespace extensions {
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class HistoryApiTest : public ExtensionApiTest,
-                       public testing::WithParamInterface<ContextType> {
+class HistoryApiTest : public ExtensionApiTest {
  public:
-  HistoryApiTest() : ExtensionApiTest(GetParam()) {}
+  HistoryApiTest() = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -91,18 +88,6 @@ class HistoryApiTest : public ExtensionApiTest,
   }
 };
 
-// Android only supports MV3 and later, therefore don't need to test for
-// persistent background context.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         HistoryApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         HistoryApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 class HistoryApi404Test : public HistoryApiTest {
  public:
   HistoryApi404Test() {
@@ -113,18 +98,6 @@ class HistoryApi404Test : public HistoryApiTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Android only supports Manifest V3 and later, and persistent background
-// context is removed in MV3.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         HistoryApi404Test,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         HistoryApi404Test,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 class SyncEnabledHistoryApiTest : public HistoryApiTest {
  public:
@@ -163,41 +136,34 @@ class AddPageTask : public history::HistoryDBTask {
   const history::HistoryAddPageArgs args_;
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         SyncEnabledHistoryApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         SyncEnabledHistoryApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, MiscSearch) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/misc_search")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, TimedSearch) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, TimedSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/timed_search")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, Delete) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, Delete) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/delete")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, DeleteProhibited) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, DeleteProhibited) {
   profile()->GetPrefs()->SetBoolean(prefs::kAllowDeletingBrowserHistory, false);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/delete_prohibited"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApi404Test, GetVisits_Excludes404Visits) {
+IN_PROC_BROWSER_TEST_F(HistoryApi404Test, GetVisits_Excludes404Visits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile(),
@@ -237,11 +203,10 @@ IN_PROC_BROWSER_TEST_P(HistoryApi404Test, GetVisits_Excludes404Visits) {
       R"({
         "name": "chrome.history",
         "version": "0.1",
-        "manifest_version": 2,
+        "manifest_version": 3,
         "permissions": ["history"],
         "background": {
-          "scripts": ["get_visits_404.js"],
-          "persistent": true
+          "service_worker": "get_visits_404.js"
         }
       })";
   static constexpr char kBackgroundJs[] =
@@ -271,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(HistoryApi404Test, GetVisits_Excludes404Visits) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
+IN_PROC_BROWSER_TEST_F(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Setup: Add a foreign (aka synced) history entry to the DB.
@@ -299,11 +264,10 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
       R"({
         "name": "chrome.history",
         "version": "0.1",
-        "manifest_version": 2,
+        "manifest_version": 3,
         "permissions": ["history"],
         "background": {
-          "scripts": ["get_visits_foreign.js"],
-          "persistent": true
+          "service_worker": "get_visits_foreign.js"
         }
       })";
   static constexpr char kBackgroundJs[] =
@@ -334,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, SearchIncludesActorVisits) {
+IN_PROC_BROWSER_TEST_F(SyncEnabledHistoryApiTest, SearchIncludesActorVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   history::HistoryService* history_service =
@@ -363,11 +327,10 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, SearchIncludesActorVisits) {
       R"({
          "name": "chrome.history.actor",
          "version": "0.1",
-         "manifest_version": 2,
+         "manifest_version": 3,
          "permissions": ["history"],
          "background": {
-           "scripts": ["search_actor.js"],
-           "persistent": true
+           "service_worker": "search_actor.js"
          }
        })";
   static constexpr char kBackgroundJs[] =
@@ -389,14 +352,14 @@ IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, SearchIncludesActorVisits) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, SearchAfterAdd) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/search_after_add")) << message_;
 }
 
 // Test when History API is used from incognito mode, it has access to the
 // regular mode history and actual incognito navigation has no effect on it.
-IN_PROC_BROWSER_TEST_P(HistoryApiTest, Incognito) {
+IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
   ScopedAllowHttpForHostnamesForTesting allow_http({"www.b.com"},
                                                    profile()->GetPrefs());
