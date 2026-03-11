@@ -42,6 +42,8 @@ const CGFloat kTabGridAnimationDuration = 0.25;
 // Spacing between tab grid button and the tab grid spotlight view anchor.
 const CGFloat kSpotlightViewHorizontalInset = 12;
 const CGFloat kSpotlightViewVerticalInset = 2;
+// Offset of the tab count label in the tab grid button tab group state.
+const CGFloat kTabGroupLabelOffset = 3;
 
 // The spacing inside the stack view.
 const CGFloat kStackViewSpacing = 4;
@@ -89,11 +91,19 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   BOOL _isTabGroupsPageVisible;
   // Whether a tab group is currently being shown in the tab grid.
   BOOL _isTabGroupVisible;
+  // Whether the current tab is in a tab group.
+  BOOL _inTabGroup;
   // Context menus for the App Bar buttons.
   UIMenu* _assistantButtonMenu;
   UIMenu* _openNewTabButtonMenu;
   UIMenu* _tabGridButtonMenu;
   UIView* _spotlightView;
+  // The positioning constraints for the tab count label in the normal tab grid
+  // button state.
+  NSArray<NSLayoutConstraint*>* _tabGridButtonNormalStateConstraints;
+  // The positioning constraints for the tab count label in the tab group tab
+  // grid button state.
+  NSArray<NSLayoutConstraint*>* _tabGridButtonTabGroupStateConstraints;
 }
 
 - (void)updateForAngle:(CGFloat)angle {
@@ -114,6 +124,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   _assistantButton = [self createAssistantButton];
   _openNewTabButton = [self createOpenNewTabButton];
   _tabGridButton = [self createTabGridButton];
+  [self updateTabGridButtonForTabGridVisibility];
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
     _assistantButton, _openNewTabButton, _tabGridButton
@@ -160,6 +171,11 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   [self updateTabGridButtonForTabGridVisibility];
 }
 
+- (void)setInTabGroup:(BOOL)inTabGroup {
+  _inTabGroup = inTabGroup;
+  [self updateTabGridButtonForTabGridVisibility];
+}
+
 - (void)setMenu:(UIMenu*)menu forButtonType:(AppBarButtonType)buttonType {
   switch (buttonType) {
     case AppBarButtonTypeAssistant:
@@ -192,6 +208,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   }
   _isTabGroupVisible = tabGroupVisible;
   [self updateNewTabButtonForTabGroupsVisibility];
+  [self updateTabGridButtonForTabGridVisibility];
 }
 
 - (void)setButtonsEnabled:(BOOL)enabled {
@@ -270,7 +287,22 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   _tabCountLabel.textColor = UIColor.whiteColor;
   [self updateTabCount:_tabCount];
   [button addSubview:_tabCountLabel];
-  AddSameCenterConstraints(_tabCountLabel, button.imageView);
+  _tabGridButtonNormalStateConstraints = @[
+    [_tabCountLabel.centerXAnchor
+        constraintEqualToAnchor:button.imageView.centerXAnchor],
+    [_tabCountLabel.centerYAnchor
+        constraintEqualToAnchor:button.imageView.centerYAnchor],
+  ];
+  _tabGridButtonTabGroupStateConstraints = @[
+    [_tabCountLabel.centerXAnchor
+        constraintEqualToAnchor:button.imageView.centerXAnchor
+                       constant:kTabGroupLabelOffset],
+    [_tabCountLabel.centerYAnchor
+        constraintEqualToAnchor:button.imageView.centerYAnchor
+                       constant:kTabGroupLabelOffset],
+  ];
+
+  [button bringSubviewToFront:_tabCountLabel];
 
   if (IsBestOfAppGuidedTourEnabled()) {
     _spotlightView = [[UIView alloc] init];
@@ -359,11 +391,27 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Updates the Tab Grid button for the given Tab Grid showing state.
 - (void)updateTabGridButtonForTabGridVisibility {
-  NSString* symbolName = _isTabGridVisible ? kAppFillSymbol : kAppSymbol;
-  _tabGridButton.menu = _tabGridButtonMenu;
+  NSString* symbolName;
+  BOOL shouldShowTabGroupSymbol = _isTabGroupVisible || _inTabGroup;
+  if (shouldShowTabGroupSymbol) {
+    symbolName = _isTabGridVisible ? kSquareFilledOnSquareSymbol : kTabsSymbol;
+  } else {
+    symbolName = _isTabGridVisible ? kAppFillSymbol : kAppSymbol;
+  }
   [_tabGridSymbolView setSymbolImage:DefaultAppBarSymbol(symbolName)
                withContentTransition:[NSSymbolReplaceContentTransition
                                          replaceOffUpTransition]];
+  if (shouldShowTabGroupSymbol) {
+    [NSLayoutConstraint
+        deactivateConstraints:_tabGridButtonNormalStateConstraints];
+    [NSLayoutConstraint
+        activateConstraints:_tabGridButtonTabGroupStateConstraints];
+  } else {
+    [NSLayoutConstraint
+        deactivateConstraints:_tabGridButtonTabGroupStateConstraints];
+    [NSLayoutConstraint
+        activateConstraints:_tabGridButtonNormalStateConstraints];
+  }
   UILabel* label = _tabCountLabel;
   UIColor* labelColor =
       _isTabGridVisible ? UIColor.blackColor : UIColor.whiteColor;

@@ -9,6 +9,8 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -17,6 +19,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -40,6 +43,10 @@ namespace {
 MenuScenarioHistogram kTestMenuScenario = kMenuScenarioHistogramToolbarMenu;
 
 }  // namespace
+
+@interface AppBarMediator (Test)
+- (void)updateConsumer;
+@end
 
 class AppBarMediatorTest : public PlatformTest {
  protected:
@@ -295,5 +302,31 @@ TEST_F(AppBarMediatorTest, TestSetButtonsDisabledOnAuthenticationRequired) {
   tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
   OCMExpect([consumer_ setButtonsEnabled:NO]);
   incognito_state_.lockState = IncognitoLockState::kReauth;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer is updated when the active web state is in a group.
+TEST_F(AppBarMediatorTest, TestInTabGroup) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  regular_web_state_list_->ActivateWebStateAt(0);
+
+  // Not in a group initially.
+  OCMExpect([consumer_ setInTabGroup:NO]);
+  [mediator_ updateConsumer];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Create a group and add the web state to it.
+  OCMExpect([consumer_ setInTabGroup:YES]);
+  regular_web_state_list_->CreateGroup(
+      {0},
+      tab_groups::TabGroupVisualData(u"Group",
+                                     tab_groups::TabGroupColorId::kGrey),
+      tab_groups::TabGroupId::GenerateNew());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Remove from group.
+  OCMExpect([consumer_ setInTabGroup:NO]);
+  regular_web_state_list_->RemoveFromGroups({0});
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

@@ -48,6 +48,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:common_constants",
     "//components/search_engines:test_support",
     "//components/sync_preferences:test_support",
+    "//components/tab_groups",
     "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",

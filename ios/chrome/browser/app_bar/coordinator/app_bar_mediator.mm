@@ -299,6 +299,7 @@
   [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
   [self.consumer setTabGroupsPageVisible:_currentPage == TabGridPageTabGroups];
   [self.consumer setTabGroupVisible:_tabGridState.visibleTabGroup];
+  [self.consumer setInTabGroup:[self activeWebStateInGroup]];
 
   [self.consumer setMenu:[self createContextMenuForAssistantButton]
            forButtonType:AppBarButtonTypeAssistant];
@@ -428,6 +429,19 @@
   params.tab_group = self.currentTabGroup->GetWeakPtr();
   _URLLoader->Load(params);
   [self updateConsumer];
+}
+
+// Returns whether the active web state in the current web state list is in a
+// tab group.
+- (BOOL)activeWebStateInGroup {
+  if (!self.currentWebStateList) {
+    return NO;
+  }
+  int activeIndex = self.currentWebStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex) {
+    return NO;
+  }
+  return self.currentWebStateList->GetGroupOfWebStateAt(activeIndex) != nullptr;
 }
 
 // Returns the context menu for the Assistant button.
