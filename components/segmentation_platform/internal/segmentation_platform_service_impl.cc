@@ -150,8 +150,12 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
-  signal_handler_.TearDown();
   ClearAllUserData();
+}
+
+void SegmentationPlatformServiceImpl::Shutdown() {
+  signal_handler_.TearDown();
+  SegmentationPlatformService::Shutdown();
 }
 
 void SegmentationPlatformServiceImpl::GetSelectedSegment(

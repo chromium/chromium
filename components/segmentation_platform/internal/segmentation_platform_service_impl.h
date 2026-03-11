@@ -98,6 +98,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   ~SegmentationPlatformServiceImpl() override;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // Disallow copy/assign.
   SegmentationPlatformServiceImpl(const SegmentationPlatformServiceImpl&) =
       delete;
