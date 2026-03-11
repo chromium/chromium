@@ -847,6 +847,9 @@
   <message name="IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_REQUIRED_FIELD_CONTENT_DESCRIPTION" desc="Content description for text edit field that is marked as 'required'. It is built from the label and a string that explicitly states that the field is required." formatter_data="android_java">
     <ph name="FIELD_LABEL">%1$s<ex>City</ex></ph>, required
   </message>
+  <message name="IDS_AUTOFILL_ADDRESSES_SECTION_TITLE" desc="The title shown in the management page above the address section." formatter_data="android_java">
+    Addresses
+  </message>
   </if>
 
   <!-- Entities -->

@@ -291,6 +291,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddProfile() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -328,6 +329,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testPlusAddressEntry() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -425,6 +427,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddIncompletedProfile() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -452,6 +455,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddProfileWithInvalidPhone() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -555,6 +559,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteLocalProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(new HashSet());
@@ -567,6 +572,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteSyncableProfile() throws Exception {
         Context context = sSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(Collections.singleton(UserSelectableType.AUTOFILL));
@@ -579,6 +585,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteAccountProfile() throws Exception {
         // Setup specific to this test case.
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -600,6 +607,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testEditProfile() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 
@@ -647,6 +655,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testEditAccountProfile() throws Exception {
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
 
@@ -725,6 +734,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testEditInvalidAccountProfile() throws Exception {
         mHelper.setProfile(
                 AutofillProfile.builder()
@@ -776,6 +786,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testOpenProfileWithCompleteState() throws Exception {
         // Check the preferences on the initial screen.
         checkPreferenceCount(
@@ -798,6 +809,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testOpenProfileWithInvalidState() throws Exception {
         // Check the preferences on the initial screen.
         checkPreferenceCount(
@@ -1033,6 +1045,7 @@ public class AutofillProfilesFragmentTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiEntities_renderedCorrectly() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
         EntityType passportType = TestUtils.getPassportEntityType();
@@ -1490,9 +1503,34 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAddressSectionTitle_featureEnabled_showsTitle() throws Exception {
+        sSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        Preference category = fragment.findPreference("autofill_section_title");
+        assertNotNull(category);
+        assertEquals(
+                sSettingsActivityTestRule
+                        .getActivity()
+                        .getString(R.string.autofill_addresses_section_title),
+                category.getTitle());
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAddressSectionTitle_featureDisabled_noTitle() throws Exception {
+        sSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        Preference category = fragment.findPreference("autofill_section_title");
+        assertNull(category);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
     public void testTitle_HoTDisabled_showsAddresses() throws Exception {
         sSettingsActivityTestRule.startSettingsActivity();
 
