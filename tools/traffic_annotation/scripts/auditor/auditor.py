@@ -1305,14 +1305,18 @@ class Exporter:
     logger.info("Saving annotations to {}.".format(
         Exporter.ANNOTATIONS_XML_PATH.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_xml()
-    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str, encoding="utf-8")
+    Exporter.ANNOTATIONS_XML_PATH.write_text(xml_str,
+                                             encoding="utf-8",
+                                             newline="\n")
 
   def save_grouping_xml(self) -> None:
     """Saves self._archive into annotations.xml."""
     logger.info("Saving grouping to {}.".format(
         Exporter.GROUPING_XML_PATH.relative_to(SRC_DIR)))
     xml_str = self._generate_serialized_grouping_xml()
-    Exporter.GROUPING_XML_PATH.write_text(xml_str, encoding="utf-8")
+    Exporter.GROUPING_XML_PATH.write_text(xml_str,
+                                          encoding="utf-8",
+                                          newline="\n")
 
   def get_other_platforms_annotation_ids(self) -> List[UniqueId]:
     """Returns a list of annotations that are not defined on this platform."""

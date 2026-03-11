@@ -1,0 +1,34 @@
+chrome/browser/safe_browsing/download_protection/download_protection_delegate_desktop.cc
+118
+BranchedCompleting
+client_download_request_desktop
+client_download_request_for_platform
+
+          semantics {
+            description:
+              "Chromium checks whether a given download is likely to be "
+              "dangerous by sending this client download request to Google's "
+              "Safe Browsing servers. Safe Browsing server will respond to "
+              "this request by sending back a verdict, indicating if this "
+              "download is safe or the danger type of this download (e.g. "
+              "dangerous content, uncommon content, potentially harmful, etc)."
+            trigger:
+              "This request is triggered when a download is about to complete, "
+              "the download is not allowlisted, and its file extension is "
+              "supported by download protection service (e.g. executables, "
+              "archives). Please refer to https://cs.chromium.org/chromium/src/"
+              "chrome/browser/resources/safe_browsing/"
+              "download_file_types.asciipb for the complete list of supported "
+              "files."
+            data:
+              "URL of the file to be downloaded, its referrer chain, digest "
+              "and other features extracted from the downloaded file. Refer to "
+              "ClientDownloadRequest message in https://cs.chromium.org/"
+              "chromium/src/components/safe_browsing/csd.proto for all "
+              "submitted features."
+            user_data {
+              type: SENSITIVE_URL
+              type: WEB_CONTENT
+            }
+            last_reviewed: "2025-02-25"
+          }

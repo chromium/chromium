@@ -164,9 +164,11 @@ class NetworkTrafficAnnotationTools():
     """
 
     if use_python_auditor:
+      # On Windows, subprocess.Popen without shell=True can't find vpython3
+      # unless the .bat extension is specified explicitly.
       command_line = [
-          "vpython3", self.python_auditor_path,
-          "--build-path=" + self.build_path
+          "vpython3.bat" if sys.platform == "win32" else "vpython3",
+          self.python_auditor_path, "--build-path=" + self.build_path
       ] + args
     else:
       command_line = [self.auditor_path, "--build-path=" + self.build_path

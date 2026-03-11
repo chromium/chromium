@@ -38,11 +38,6 @@ def get_expected_files(source_file: Path) -> Path:
   return (stdout_file, stderr_file)
 
 
-def dos2unix(body: str):
-  """Converts CRLF to LF."""
-  return body.replace('\r\n', '\n')
-
-
 def remove_tracebacks(body: str):
   """Removes python tracebacks from the string."""
   regex = re.compile(
@@ -64,11 +59,11 @@ class ExtractorTest(unittest.TestCase):
 
       print("Running test on %s..." % source_file)
       (stdout_file, stderr_file) = get_expected_files(source_file)
-      expected_stdout = dos2unix(stdout_file.read_text())
-      expected_stderr = dos2unix(stderr_file.read_text())
+      expected_stdout = stdout_file.read_text()
+      expected_stderr = stderr_file.read_text()
 
       proc = run_extractor(source_file)
-      (stdout, stderr) = (dos2unix(b.decode()) for b in proc.communicate())
+      (stdout, stderr) = (b.decode() for b in proc.communicate())
 
       self.assertEqual(expected_stderr, remove_tracebacks(stderr))
       expected_returncode = 2 if expected_stderr else 0
@@ -77,16 +72,16 @@ class ExtractorTest(unittest.TestCase):
 
 
 def generate_expected_files():
-  files = list(Path(f)
-               for f in glob('*.java'))  # glob('*.cc') + glob('*.java'))
+  files = list(Path(f) for f in glob('*.cc') + glob('*.java'))
   for source_file in files:
+    if source_file.stem.startswith('test_'):
+      continue
     proc = run_extractor(source_file)
     (stdout, stderr) = (b.decode() for b in proc.communicate())
 
     (stdout_file, stderr_file) = get_expected_files(source_file)
-    stdout_file.write_text(stdout)
-    stderr_file.write_text(stderr)
-
+    stdout_file.write_text(stdout, newline='\n')
+    stderr_file.write_text(stderr, newline='\n')
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(

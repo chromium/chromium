@@ -49,7 +49,7 @@ class TrafficAnnotationTestsChecker():
     self.annotations_filename = annotations_filename
     if not errors_filename:
       errors_file, errors_filename = tempfile.mkstemp()
-      errors_file.close()
+      os.close(errors_file)
     self.errors_filename = errors_filename
 
   def RunAllTests(self):
