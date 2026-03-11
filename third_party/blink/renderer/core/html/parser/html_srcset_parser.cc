@@ -340,11 +340,10 @@ static void ParseImageCandidatesFromSrcsetAttribute(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::ConsoleMessageSource::kOther,
                     mojom::ConsoleMessageLevel::kWarning,
-                    StrCat(
-                        {"Dropped srcset candidate ",
-                         JSONValue::QuoteString(String(attribute_span.subspan(
-                             image_url_start,
-                             image_url_end - image_url_start)))})));
+                    StrCat({"Dropped srcset candidate ",
+                            JSONValue::QuoteString(attribute.subview(
+                                image_url_start,
+                                image_url_end - image_url_start))})));
           }
         }
         continue;

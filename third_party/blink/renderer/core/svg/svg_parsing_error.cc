@@ -94,7 +94,7 @@ void AppendValue(StringBuilder& builder,
     if (context_start != 0)
       builder.Append(uchar::kHorizontalEllipsis);
     EscapeStringForJSON(
-        value.GetString().Substring(context_start, context_end - context_start),
+        StringView(value, context_start, context_end - context_start),
         &builder);
     if (context_end != value.length())
       builder.Append(uchar::kHorizontalEllipsis);

@@ -90,7 +90,7 @@ class PLATFORM_EXPORT JSONValue {
   virtual void PrettyWriteJSON(StringBuilder* output) const;
   virtual std::unique_ptr<JSONValue> Clone() const;
 
-  static String QuoteString(const String&);
+  static String QuoteString(const StringView&);
 
  protected:
   JSONValue() : type_(kTypeNull) {}
@@ -309,8 +309,8 @@ inline constexpr char kJSONNullString[] = "null";
 inline constexpr char kJSONTrueString[] = "true";
 inline constexpr char kJSONFalseString[] = "false";
 
-PLATFORM_EXPORT void EscapeStringForJSON(const String&, StringBuilder*);
-void DoubleQuoteStringForJSON(const String&, StringBuilder*);
+PLATFORM_EXPORT void EscapeStringForJSON(const StringView&, StringBuilder*);
+void DoubleQuoteStringForJSON(const StringView&, StringBuilder*);
 
 }  // namespace blink
 
