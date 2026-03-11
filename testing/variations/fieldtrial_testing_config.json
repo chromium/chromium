@@ -16132,15 +16132,32 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_ESB",
+                    "name": "QRCode_ESB",
                     "params": {
                         "mobile_promo_on_desktop_promo_type": "2"
                     },
                     "enable_features": [
                         "EnableCrossDevicePrefTracker",
-                        "MobilePromoOnDesktopWithReminder"
-                    ],
-                    "disable_features": [
+                        "MobilePromoOnDesktopWithQRCode"
+                    ]
+                },
+                {
+                    "name": "QRCode_Passwords",
+                    "params": {
+                        "mobile_promo_on_desktop_promo_type": "3"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
+                        "MobilePromoOnDesktopWithQRCode"
+                    ]
+                },
+                {
+                    "name": "QRCode_Passwords_and_ESB",
+                    "params": {
+                        "mobile_promo_on_desktop_promo_type": "2,3"
+                    },
+                    "enable_features": [
+                        "EnableCrossDevicePrefTracker",
                         "MobilePromoOnDesktopWithQRCode"
                     ]
                 }
