@@ -15,7 +15,7 @@ bool IsClientCertificateProvisioningOnAndroidEnabled() {
 }
 
 BASE_FEATURE(kEnableClientCertificateProvisioningOnIOS,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsClientCertificateProvisioningOnIOSEnabled() {
   return base::FeatureList::IsEnabled(
