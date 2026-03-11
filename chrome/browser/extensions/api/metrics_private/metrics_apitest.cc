@@ -149,27 +149,15 @@ void ValidateHistograms(base::span<const RecordedHistogram> recorded) {
 
 }  // namespace
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class ExtensionMetricsApiTest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionMetricsApiTest : public ExtensionApiTest {
  public:
-  ExtensionMetricsApiTest() : ExtensionApiTest(GetParam()) {}
+  ExtensionMetricsApiTest() = default;
   ~ExtensionMetricsApiTest() override = default;
   ExtensionMetricsApiTest(const ExtensionMetricsApiTest&) = delete;
   ExtensionMetricsApiTest& operator=(const ExtensionMetricsApiTest&) = delete;
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionMetricsApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionMetricsApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
+IN_PROC_BROWSER_TEST_F(ExtensionMetricsApiTest, Metrics) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   base::UserActionTester user_action_tester;
