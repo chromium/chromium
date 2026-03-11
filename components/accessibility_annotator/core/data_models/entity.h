@@ -88,13 +88,13 @@ struct Shipment {
   std::optional<Date> estimated_delivery_date;
 };
 
-struct DriverLicense {
-  DriverLicense();
-  ~DriverLicense();
-  DriverLicense(const DriverLicense& other);
-  DriverLicense(DriverLicense&& other);
-  DriverLicense& operator=(const DriverLicense& other);
-  DriverLicense& operator=(DriverLicense&& other);
+struct DriversLicense {
+  DriversLicense();
+  ~DriversLicense();
+  DriversLicense(const DriversLicense& other);
+  DriversLicense(DriversLicense&& other);
+  DriversLicense& operator=(const DriversLicense& other);
+  DriversLicense& operator=(DriversLicense&& other);
 
   std::string name;
   std::string number;
@@ -154,7 +154,7 @@ struct Entity {
   using EntitySpecifics = std::variant<Flight,
                                        Order,
                                        Shipment,
-                                       DriverLicense,
+                                       DriversLicense,
                                        Passport,
                                        NationalId,
                                        Vehicle>;

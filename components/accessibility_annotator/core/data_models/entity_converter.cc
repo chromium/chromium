@@ -80,9 +80,9 @@ Shipment ConvertShipment(
   return shipment;
 }
 
-DriverLicense ConvertDriverLicense(
+DriversLicense ConvertDriversLicense(
     const sync_pb::AccessibilityAnnotationSpecifics::DriversLicense& proto_dl) {
-  DriverLicense dl;
+  DriversLicense dl;
   if (proto_dl.has_name()) {
     dl.name = proto_dl.name();
   }
@@ -220,7 +220,7 @@ std::optional<Entity> CreateEntityFromSpecifics(
       entity.specifics = ConvertShipment(specifics.shipment());
       break;
     case sync_pb::AccessibilityAnnotationSpecifics::kDriversLicense:
-      entity.specifics = ConvertDriverLicense(specifics.drivers_license());
+      entity.specifics = ConvertDriversLicense(specifics.drivers_license());
       break;
     case sync_pb::AccessibilityAnnotationSpecifics::kPassport:
       entity.specifics = ConvertPassport(specifics.passport());

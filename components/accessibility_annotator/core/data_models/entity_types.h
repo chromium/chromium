@@ -14,7 +14,7 @@ enum class EntityType {
   kFlight,
   kOrder,
   kShipment,
-  kDriverLicense,
+  kDriversLicense,
   kPassport,
   kNationalId,
   kVehicle,

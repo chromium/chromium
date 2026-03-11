@@ -40,12 +40,13 @@ Shipment::Shipment(Shipment&& other) = default;
 Shipment& Shipment::operator=(const Shipment& other) = default;
 Shipment& Shipment::operator=(Shipment&& other) = default;
 
-DriverLicense::DriverLicense() = default;
-DriverLicense::~DriverLicense() = default;
-DriverLicense::DriverLicense(const DriverLicense& other) = default;
-DriverLicense::DriverLicense(DriverLicense&& other) = default;
-DriverLicense& DriverLicense::operator=(const DriverLicense& other) = default;
-DriverLicense& DriverLicense::operator=(DriverLicense&& other) = default;
+DriversLicense::DriversLicense() = default;
+DriversLicense::~DriversLicense() = default;
+DriversLicense::DriversLicense(const DriversLicense& other) = default;
+DriversLicense::DriversLicense(DriversLicense&& other) = default;
+DriversLicense& DriversLicense::operator=(const DriversLicense& other) =
+    default;
+DriversLicense& DriversLicense::operator=(DriversLicense&& other) = default;
 
 Passport::Passport() = default;
 Passport::~Passport() = default;
@@ -81,7 +82,7 @@ EntityType Entity::GetType() const {
           [](const Flight&) { return EntityType::kFlight; },
           [](const Order&) { return EntityType::kOrder; },
           [](const Shipment&) { return EntityType::kShipment; },
-          [](const DriverLicense&) { return EntityType::kDriverLicense; },
+          [](const DriversLicense&) { return EntityType::kDriversLicense; },
           [](const Passport&) { return EntityType::kPassport; },
           [](const NationalId&) { return EntityType::kNationalId; },
           [](const Vehicle&) { return EntityType::kVehicle; }),
