@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2371084566192454134">टॅब आणि टॅब गट</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅबसह <ph name="TITLE_OF_GROUP" /> हा टॅब गट कोलॅप्स करा}other{<ph name="TABS_COUNT_MANY" /> टॅबसह <ph name="TITLE_OF_GROUP" /> हा टॅब गट कोलॅप्स करा}}</translation>
+<translation id="2476179388576975626">चित्रात-चित्र</translation>
 <translation id="2498435670446402865">टॅब गटाचे नाव बदला</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" आणि "<ph name="TAB_GROUP_NAME_2" />" "हे टॅब गट आता उपलब्ध नाहीत</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
