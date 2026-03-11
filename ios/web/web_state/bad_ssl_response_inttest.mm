@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -72,10 +73,18 @@ TEST_F(BadSslResponseTest, ShowSSLErrorPageCommittedInterstitial) {
     base::RunLoop().RunUntilIdle();
     return !web_state()->IsLoading();
   }));
-  NSError* error = testing::CreateErrorWithUnderlyingErrorChain(
-      {{@"NSURLErrorDomain", NSURLErrorServerCertificateUntrusted},
-       {@"kCFErrorDomainCFNetwork", kCFURLErrorServerCertificateUntrusted},
-       {net::kNSErrorDomain, net::ERR_CERT_AUTHORITY_INVALID}});
+  NSError* error;
+  if (base::ios::IsRunningOnOrLater(26, 4, 0)) {
+    error = testing::CreateErrorWithUnderlyingErrorChain(
+        {{@"NSURLErrorDomain", NSURLErrorServerCertificateUntrusted},
+         {@"NSOSStatusErrorDomain", -9808},
+         {net::kNSErrorDomain, net::ERR_CERT_AUTHORITY_INVALID}});
+  } else {
+    error = testing::CreateErrorWithUnderlyingErrorChain(
+        {{@"NSURLErrorDomain", NSURLErrorServerCertificateUntrusted},
+         {@"kCFErrorDomainCFNetwork", kCFURLErrorServerCertificateUntrusted},
+         {net::kNSErrorDomain, net::ERR_CERT_AUTHORITY_INVALID}});
+  }
   ASSERT_TRUE(test::WaitForWebViewContainingText(
       web_state(), testing::GetErrorText(
                        web_state(), url, error,
