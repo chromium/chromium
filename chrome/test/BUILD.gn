@@ -8657,6 +8657,7 @@ test("unit_tests") {
       "//chrome/utility:unit_tests",
       "//components/autofill/core/browser",
       "//components/contextual_search:public",
+      "//components/contextual_search:test_support",
       "//components/contextual_search/internal:test_support",
       "//components/data_sharing:test_support",
       "//components/ntp_tiles:pref_names",

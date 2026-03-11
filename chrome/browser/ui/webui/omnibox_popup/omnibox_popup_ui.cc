@@ -282,6 +282,8 @@ void OmniboxPopupUI::CreatePageHandler(
       std::move(pending_searchbox_handler), profile_,
       web_ui()->GetWebContents(),
       base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
+                          base::Unretained(this)),
+      base::BindRepeating(&OmniboxPopupUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
@@ -298,7 +300,13 @@ OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
           omnibox::CreateQueryControllerConfigParams(),
           contextual_search::ContextualSearchSource::kOmnibox,
           lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+      shared_session_handle_->CheckSearchContentSharingSettings(
+          Profile::FromWebUI(web_ui())->GetPrefs());
     }
   }
   return shared_session_handle_.get();
+}
+
+void OmniboxPopupUI::ClearContextualSessionHandle() {
+  shared_session_handle_.reset();
 }

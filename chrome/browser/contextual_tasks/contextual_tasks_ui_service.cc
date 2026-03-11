@@ -213,31 +213,8 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
         source_tab->GetContents());
     if (helper && helper->session_handle()) {
-      source = helper->session_handle()->GetMetricsRecorder()->source();
-
-      auto* service =
-          ContextualSearchServiceFactory::GetForProfile(profile_.get());
-      if (service) {
-        // Create a new handle for existing session. The session handle should
-        // not be moved because there can be cases where a user opens the WebUI
-        // in a new tab (and would therefore leave the source tab without a
-        // handle).
-        session_handle =
-            service->GetSession(helper->session_handle()->session_id(),
-                                helper->session_handle()->invocation_source());
-        if (session_handle) {
-          session_handle->set_submitted_context_tokens(
-              helper->session_handle()->GetSubmittedContextTokens());
-          // TODO(crbug.com/469877869): Determine what to do with the return
-          // value of this call, or move this call to a different location.
-          session_handle->CheckSearchContentSharingSettings(
-              profile_->GetPrefs());
-          // Now that fulfillment has been passed to contextual tasks, the
-          // original session handle should clear its submitted context. Not
-          // clearing leaves it in a faulty state for future queries.
-          helper->session_handle()->ClearSubmittedContextTokens();
-        }
-      }
+      session_handle = helper->TakeSessionHandle();
+      source = session_handle->GetMetricsRecorder()->source();
     }
   }
   base::UmaHistogramEnumeration(

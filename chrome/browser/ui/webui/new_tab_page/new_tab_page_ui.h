@@ -252,6 +252,8 @@ class NewTabPageUI
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
 
+  void ClearContextualSessionHandle();
+
  private:
   // new_tab_page::mojom::PageHandlerFactory:
   void CreatePageHandler(

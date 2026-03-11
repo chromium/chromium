@@ -1265,6 +1265,8 @@ void NewTabPageUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler), profile_, web_contents(),
       base::BindRepeating(&NewTabPageUI::GetOrCreateContextualSessionHandle,
+                          base::Unretained(this)),
+      base::BindRepeating(&NewTabPageUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
@@ -1348,6 +1350,10 @@ NewTabPageUI::GetOrCreateContextualSessionHandle() {
     }
   }
   return shared_session_handle_.get();
+}
+
+void NewTabPageUI::ClearContextualSessionHandle() {
+  shared_session_handle_.reset();
 }
 
 void NewTabPageUI::DidStartNavigation(

@@ -196,6 +196,8 @@ class ContextualSearchboxHandler
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
 
+  virtual void OpenUrl(GURL url, const WindowOpenDisposition disposition);
+
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
       WindowOpenDisposition disposition,
@@ -266,8 +268,6 @@ class ContextualSearchboxHandler
   void SnapshotTabContext(
       const base::UnguessableToken& context_token,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
-
-  void OpenUrl(GURL url, const WindowOpenDisposition disposition);
 
   void OnPreviewReceived(GetTabPreviewCallback callback,
                          const SkBitmap& preview_bitmap);

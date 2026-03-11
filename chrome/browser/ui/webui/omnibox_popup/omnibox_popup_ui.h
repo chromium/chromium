@@ -105,6 +105,8 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
 
+  void ClearContextualSessionHandle();
+
  private:
   raw_ptr<Profile> profile_;
 

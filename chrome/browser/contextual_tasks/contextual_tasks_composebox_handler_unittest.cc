@@ -290,6 +290,8 @@ class ContextualTasksComposeboxHandlerTest
         base::BindRepeating(
             &ContextualTasksUI::GetOrCreateContextualSessionHandle,
             base::Unretained(mock_ui_.get())),
+        base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                            base::Unretained(mock_ui_.get())),
         base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                             base::Unretained(mock_ui_.get())));
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
@@ -2742,6 +2744,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddFileContext_NullSessionHandle) {
           []() -> contextual_search::ContextualSearchSessionHandle* {
             return nullptr;
           }),
+      base::DoNothing(),
       base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(mock_ui_.get())));
   auto file_info = searchbox::mojom::SelectedFileInfo::New();
@@ -2812,6 +2815,8 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
       base::BindRepeating(
           &ContextualTasksUI::GetOrCreateContextualSessionHandle,
           base::Unretained(mock_ui_.get())),
+      base::BindRepeating(&ContextualTasksUI::ClearContextualSessionHandle,
+                          base::Unretained(mock_ui_.get())),
       std::move(mock_callback));
 
   // 2. Act: Trigger the handler to fetch the model via the callback.
