@@ -98,7 +98,8 @@
 }
 
 - (void)replaceWithItems:(NSArray<ComposeboxInputItem*>*)updatedItems {
-  _containedItems = [updatedItems copy];
+  _containedItems = [[NSMutableArray alloc] initWithArray:updatedItems
+                                                copyItems:YES];
   [_delegate composeboxInputItemCollectionDidUpdateItems:self];
 }
 
