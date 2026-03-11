@@ -124,7 +124,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       isInKeywordMode_: {type: Boolean},
       result_: {type: Object},
       searchboxLayoutMode_: {reflect: true, type: String},
-      showContextEntrypoint_: {type: Boolean},
+      showContextEntrypoint_: {
+        type: Boolean,
+        reflect: true,
+      },
       showAiModePrefEnabled_: {type: Boolean},
       isContentSharingEnabled_: {type: Boolean},
       isLensSearchEnabled_: {type: Boolean},

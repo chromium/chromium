@@ -59,7 +59,8 @@
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
 }
 
-.dropdownContainer {
+:host([has-visible-matches_]) .dropdownContainer,
+:host([show-context-entrypoint_]) .dropdownContainer {
   padding-bottom: 10px;
 }
 
