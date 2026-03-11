@@ -51,6 +51,10 @@ void AccountChooserView::UpdateView(
   UpdateBodyView(accounts, primary_account_id);
 }
 
+views::View* AccountChooserView::GetInitiallyFocusedView() {
+  return footer_view_->GetViewByElementId(kSaveButtonId);
+}
+
 std::unique_ptr<views::View> AccountChooserView::CreateBodyMultiAccount(
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id) {
