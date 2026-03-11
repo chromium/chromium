@@ -2147,7 +2147,7 @@ const AtomicString& Element::getAttribute(const QualifiedName& name) const {
 
 AtomicString Element::LowercaseIfNecessary(AtomicString name) const {
   return IsHTMLElement() && IsA<HTMLDocument>(GetDocument())
-             ? AtomicString::LowerASCII(std::move(name))
+             ? AtomicString::ToAsciiLower(std::move(name))
              : std::move(name);
 }
 

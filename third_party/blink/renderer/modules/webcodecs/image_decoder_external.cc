@@ -55,7 +55,7 @@ bool IsTypeSupportedInternal(String type) {
   // Additionally, since the ICO/CUR formats are simple, it seems fine to allow
   // the parsing to happen in JS while decoding for the individual BMP or PNG
   // files can be done using this API.
-  const auto type_lower = type.LowerASCII();
+  const auto type_lower = type.ToAsciiLower();
   if (type_lower == "image/x-icon" || type_lower == "image/vnd.microsoft.icon")
     return false;
 
@@ -175,7 +175,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   if (init->hasDesiredWidth() && init->hasDesiredHeight())
     desired_size = SkISize::Make(init->desiredWidth(), init->desiredHeight());
 
-  mime_type_ = init->type().LowerASCII();
+  mime_type_ = init->type().ToAsciiLower();
   if (!IsTypeSupportedInternal(mime_type_)) {
     tracks_->OnTracksReady(CreateUnsupportedImageTypeException(mime_type_));
     return;

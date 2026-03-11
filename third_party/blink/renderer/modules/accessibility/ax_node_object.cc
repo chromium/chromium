@@ -3638,7 +3638,7 @@ String AXNodeObject::AutoComplete() const {
     // Illegal values must be passed through, according to CORE-AAM.
     if (aria_auto_complete) {
       return aria_auto_complete == "none" ? String()
-                                          : aria_auto_complete.LowerASCII();
+                                          : aria_auto_complete.ToAsciiLower();
       ;
     }
   }

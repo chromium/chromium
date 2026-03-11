@@ -75,7 +75,7 @@ PasswordCredential* PasswordCredential::Create(
     String lower_value = submittable_element->ToHTMLElement()
                              .FastGetAttribute(html_names::kAutocompleteAttr)
                              .GetString()
-                             .LowerASCII();
+                             .ToAsciiLower();
     Vector<StringView> autofill_tokens =
         StringView(lower_value).SplitSkippingEmpty(' ');
     for (const auto& token : autofill_tokens) {

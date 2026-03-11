@@ -589,7 +589,7 @@ void ClipboardPromise::WriteClipboardItemData(
       // have args (ex. 'text/plain' only), so ensure that Blob->type is
       // contained in type.
       String web_custom_format = Clipboard::ParseWebCustomFormat(type);
-      if ((!type_with_args.contains(type.LowerASCII()) &&
+      if ((!type_with_args.contains(type.ToAsciiLower()) &&
            web_custom_format.empty()) ||
           (!web_custom_format.empty() &&
            !type_with_args.contains(web_custom_format))) {

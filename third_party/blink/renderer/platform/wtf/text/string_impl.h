@@ -425,7 +425,7 @@ class WTF_EXPORT StringImpl {
 
   bool ContainsOnlyWhitespaceOrEmpty();
 
-  scoped_refptr<StringImpl> LowerASCII();
+  scoped_refptr<StringImpl> ToAsciiLower();
   scoped_refptr<StringImpl> ToAsciiUpper();
 
   scoped_refptr<StringImpl> Fill(UChar);

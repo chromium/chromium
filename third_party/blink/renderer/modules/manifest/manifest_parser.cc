@@ -92,7 +92,7 @@ bool IsValidMimeType(const String& mime_type) {
 bool VerifyFiles(const Vector<mojom::blink::ManifestFileFilterPtr>& files) {
   for (const auto& file : files) {
     for (const auto& accept_type : file->accept) {
-      if (!IsValidMimeType(accept_type.LowerASCII())) {
+      if (!IsValidMimeType(accept_type.ToAsciiLower())) {
         return false;
       }
     }
@@ -1542,7 +1542,7 @@ ManifestParser::ParseShareTargetEnctype(const JSONObject* share_target_object) {
     return std::nullopt;
   }
 
-  String enctype = value.LowerASCII();
+  String enctype = value.ToAsciiLower();
   if (enctype == "application/x-www-form-urlencoded") {
     return mojom::blink::ManifestShareTarget::Enctype::kFormUrlEncoded;
   }

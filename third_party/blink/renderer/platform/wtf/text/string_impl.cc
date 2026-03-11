@@ -432,7 +432,7 @@ class StringImplAllocator {
   }
 };
 
-scoped_refptr<StringImpl> StringImpl::LowerASCII() {
+scoped_refptr<StringImpl> StringImpl::ToAsciiLower() {
   return ConvertAsciiCase(*this, LowerConverter(), StringImplAllocator());
 }
 

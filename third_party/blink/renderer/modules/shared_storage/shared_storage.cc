@@ -170,7 +170,7 @@ bool CanGetOutsideWorklet(ScriptState* script_state) {
 
 std::tuple<SharedStorageDataOrigin, scoped_refptr<SecurityOrigin>>
 ParseDataOrigin(const String& data_origin_value) {
-  String data_origin_value_lower = data_origin_value.LowerASCII();
+  String data_origin_value_lower = data_origin_value.ToAsciiLower();
   if (data_origin_value_lower == "context-origin") {
     return std::make_tuple(SharedStorageDataOrigin::kContextOrigin, nullptr);
   }

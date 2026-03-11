@@ -292,7 +292,7 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
 
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));
-  const AtomicString lower_ascii_locale = locale.LowerASCII();
+  const AtomicString lower_ascii_locale = locale.ToAsciiLower();
   if (!hyphenation->OpenDictionary(lower_ascii_locale))
     return nullptr;
   hyphenation->Initialize(lower_ascii_locale);

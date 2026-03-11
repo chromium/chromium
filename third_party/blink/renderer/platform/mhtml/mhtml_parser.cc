@@ -239,7 +239,7 @@ MIMEHeader* MIMEHeader::ParseHeader(SharedBufferChunkReader* buffer) {
 
 MIMEHeader::Encoding MIMEHeader::ParseContentTransferEncoding(
     const String& text) {
-  String encoding = text.StripWhiteSpace().LowerASCII();
+  String encoding = text.StripWhiteSpace().ToAsciiLower();
   if (encoding == "base64")
     return Encoding::kBase64;
   if (encoding == "quoted-printable")

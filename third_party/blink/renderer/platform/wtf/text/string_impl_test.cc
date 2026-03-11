@@ -48,49 +48,37 @@ TEST(StringImplTest, Latin1CaseFoldTable) {
   }
 }
 
-TEST(StringImplTest, LowerASCII) {
-  scoped_refptr<StringImpl> test_string_impl =
-      StringImpl::Create(base::span_from_cstring("link"));
-  EXPECT_TRUE(test_string_impl->Is8Bit());
-  EXPECT_TRUE(StringImpl::Create(base::span_from_cstring("a\xE1"))->Is8Bit());
+TEST(StringImplTest, ToAsciiLower) {
+  auto create8 = [](const char* s) {
+    return StringImpl::Create(base::span(std::string_view(s)));
+  };
 
-  EXPECT_TRUE(Equal(
-      test_string_impl.get(),
-      StringImpl::Create(base::span_from_cstring("link"))->LowerASCII().get()));
-  EXPECT_TRUE(Equal(
-      test_string_impl.get(),
-      StringImpl::Create(base::span_from_cstring("LINK"))->LowerASCII().get()));
-  EXPECT_TRUE(Equal(
-      test_string_impl.get(),
-      StringImpl::Create(base::span_from_cstring("lInk"))->LowerASCII().get()));
+  scoped_refptr<StringImpl> test_string_impl = create8("link");
+  EXPECT_TRUE(test_string_impl->Is8Bit());
+  EXPECT_TRUE(create8("a\xE1")->Is8Bit());
+
+  EXPECT_TRUE(
+      Equal(test_string_impl.get(), create8("link")->ToAsciiLower().get()));
+  EXPECT_TRUE(
+      Equal(test_string_impl.get(), create8("LINK")->ToAsciiLower().get()));
+  EXPECT_TRUE(
+      Equal(test_string_impl.get(), create8("lInk")->ToAsciiLower().get()));
 
   blink::CaseMap case_map(blink::g_empty_atom);
-  EXPECT_TRUE(Equal(
-      case_map.ToLower(StringImpl::Create(base::span_from_cstring("LINK")))
-          .Impl(),
-      StringImpl::Create(base::span_from_cstring("LINK"))->LowerASCII().get()));
-  EXPECT_TRUE(Equal(
-      case_map.ToLower(StringImpl::Create(base::span_from_cstring("lInk")))
-          .Impl(),
-      StringImpl::Create(base::span_from_cstring("lInk"))->LowerASCII().get()));
+  EXPECT_TRUE(Equal(case_map.ToLower(create8("LINK")).Impl(),
+                    create8("LINK")->ToAsciiLower().get()));
+  EXPECT_TRUE(Equal(case_map.ToLower(create8("lInk")).Impl(),
+                    create8("lInk")->ToAsciiLower().get()));
 
-  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("a\xE1")).get(),
-                    StringImpl::Create(base::span_from_cstring("A\xE1"))
-                        ->LowerASCII()
-                        .get()));
-  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("a\xC1")).get(),
-                    StringImpl::Create(base::span_from_cstring("A\xC1"))
-                        ->LowerASCII()
-                        .get()));
+  EXPECT_TRUE(
+      Equal(create8("a\xE1").get(), create8("A\xE1")->ToAsciiLower().get()));
+  EXPECT_TRUE(
+      Equal(create8("a\xC1").get(), create8("A\xC1")->ToAsciiLower().get()));
 
-  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("a\xE1")).get(),
-                     StringImpl::Create(base::span_from_cstring("a\xC1"))
-                         ->LowerASCII()
-                         .get()));
-  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("A\xE1")).get(),
-                     StringImpl::Create(base::span_from_cstring("A\xC1"))
-                         ->LowerASCII()
-                         .get()));
+  EXPECT_FALSE(
+      Equal(create8("a\xE1").get(), create8("a\xC1")->ToAsciiLower().get()));
+  EXPECT_FALSE(
+      Equal(create8("A\xE1").get(), create8("A\xC1")->ToAsciiLower().get()));
 
   static const UChar kTest[4] = {0x006c, 0x0069, 0x006e, 0x006b};  // link
   static const UChar kTestCapitalized[4] = {0x004c, 0x0049, 0x004e,
@@ -100,9 +88,10 @@ TEST(StringImplTest, LowerASCII) {
   EXPECT_FALSE(test_string_impl16->Is8Bit());
 
   EXPECT_TRUE(Equal(test_string_impl16.get(),
-                    StringImpl::Create(kTest)->LowerASCII().get()));
-  EXPECT_TRUE(Equal(test_string_impl16.get(),
-                    StringImpl::Create(kTestCapitalized)->LowerASCII().get()));
+                    StringImpl::Create(kTest)->ToAsciiLower().get()));
+  EXPECT_TRUE(
+      Equal(test_string_impl16.get(),
+            StringImpl::Create(kTestCapitalized)->ToAsciiLower().get()));
 
   static const UChar kTestWithNonASCII[2] = {0x0061, 0x00e1};  // a\xE1
   static const UChar kTestWithNonASCIIComparison[2] = {0x0061,
@@ -115,10 +104,10 @@ TEST(StringImplTest, LowerASCII) {
   DCHECK(isolated_ref->HasOneRef());
   EXPECT_TRUE(Equal(
       StringImpl::Create(kTestWithNonASCII).get(),
-      StringImpl::Create(kTestWithNonASCIICapitalized)->LowerASCII().get()));
+      StringImpl::Create(kTestWithNonASCIICapitalized)->ToAsciiLower().get()));
   EXPECT_FALSE(Equal(
       StringImpl::Create(kTestWithNonASCII).get(),
-      StringImpl::Create(kTestWithNonASCIIComparison)->LowerASCII().get()));
+      StringImpl::Create(kTestWithNonASCIIComparison)->ToAsciiLower().get()));
 }
 
 TEST(StringImplTest, ToAsciiUpper) {

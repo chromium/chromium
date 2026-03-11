@@ -145,7 +145,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
       return nullptr;
     }
 
-    domain = StrCat({".", options->domain()}).LowerASCII();
+    domain = StrCat({".", options->domain()}).ToAsciiLower();
     net::CookieInclusionStatus status;
     if (!net::cookie_util::GetCookieDomainWithString(GURL(cookie_url),
                                                      domain.Utf8(), status)) {

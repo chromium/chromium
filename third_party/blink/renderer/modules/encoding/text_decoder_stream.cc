@@ -159,7 +159,7 @@ TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
 TextDecoderStream::~TextDecoderStream() = default;
 
 String TextDecoderStream::encoding() const {
-  return encoding_.GetName().GetString().LowerASCII();
+  return encoding_.GetName().GetString().ToAsciiLower();
 }
 
 ReadableStream* TextDecoderStream::readable() const {

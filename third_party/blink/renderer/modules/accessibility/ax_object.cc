@@ -1479,7 +1479,7 @@ void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const {
 
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,
-                                element->tagName().LowerASCII());
+                                element->tagName().ToAsciiLower());
 
   if (const AtomicString& class_name = element->GetClassAttribute()) {
     TruncateAndAddStringAttribute(
@@ -1507,7 +1507,7 @@ void AXObject::SerializeHTMLAttributesForSnapshot(
       // Attribute already in kHtmlId or kClassName.
       continue;
     }
-    std::string name = attr_name.LocalName().LowerASCII().Utf8();
+    std::string name = attr_name.LocalName().ToAsciiLower().Utf8();
     std::string value = attr.Value().Utf8();
     node_data->html_attributes.push_back(std::make_pair(name, value));
   }
@@ -7939,7 +7939,7 @@ ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
       value.SimplifyWhiteSpace().SplitSkippingEmpty(' ');
   for (const auto& child : role_vector) {
     ax::mojom::blink::Role role =
-        AriaRoleToInternalRole(AtomicString(child.LowerASCII()));
+        AriaRoleToInternalRole(AtomicString(child.ToAsciiLower()));
     if (role == ax::mojom::blink::Role::kUnknown ||
         (ignore_form_and_region && (role == ax::mojom::blink::Role::kForm ||
                                     role == ax::mojom::blink::Role::kRegion))) {
@@ -8362,7 +8362,7 @@ String AXObject::GetNodeString(Node* node) {
   }
 
   StringBuilder string_builder;
-  string_builder << "<" << element->tagName().LowerASCII();
+  string_builder << "<" << element->tagName().ToAsciiLower();
   // Cannot safely get @class from SVG elements.
   if (!element->IsSVGElement() &&
       element->FastHasAttribute(html_names::kClassAttr)) {

@@ -89,7 +89,7 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
 }
 
 std::optional<media::AudioCodec> TryGetPcmCodec(const String& codec) {
-  String codecs_str = codec.LowerASCII();
+  String codecs_str = codec.ToAsciiLower();
   if (codecs_str == "ulaw") {
     return media::AudioCodec::kPCM_MULAW;
   }
@@ -108,7 +108,7 @@ std::optional<media::AudioCodec> TryGetPcmCodec(const String& codec) {
 }
 
 media::SampleFormat PcmCodecToSampleFormat(const String& codec) {
-  String codecs_str = codec.LowerASCII();
+  String codecs_str = codec.ToAsciiLower();
 
   if (codecs_str == "pcm-u8") {
     return media::SampleFormat::kSampleFormatU8;

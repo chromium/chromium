@@ -441,7 +441,7 @@ bool ResourceResponse::IsAttachment() const {
 
 AtomicString ResourceResponse::HttpContentType() const {
   return ExtractMIMETypeFromMediaType(
-      HttpHeaderField(http_names::kContentType).LowerASCII());
+      HttpHeaderField(http_names::kContentType).ToAsciiLower());
 }
 
 AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
@@ -450,7 +450,7 @@ AtomicString ResourceResponse::GetFilteredHttpContentEncoding() const {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, unknown_value,
                                   ("@unknown"));
   String content_encoding =
-      HttpHeaderField(http_names::kContentEncoding).LowerASCII();
+      HttpHeaderField(http_names::kContentEncoding).ToAsciiLower();
   if (content_encoding.IsNull() || content_encoding.empty()) {
     return g_empty_atom;
   }

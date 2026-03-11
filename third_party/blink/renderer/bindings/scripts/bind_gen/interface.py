@@ -570,7 +570,7 @@ def _make_reflect_process_keyword_state(cg_context):
             ["third_party/blink/renderer/core/keywords.h"]))
     nodes = [
         T("// [ReflectOnly]"),
-        T("const AtomicString reflect_value(${return_value}.LowerASCII());"),
+        T("const AtomicString reflect_value(${return_value}.ToAsciiLower());"),
         branches,
     ]
 

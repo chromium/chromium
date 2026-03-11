@@ -115,7 +115,7 @@ void AppendNodeToBuilder(const mojom::blink::AIPageContentNode* node,
     // Multi-line format for individual nodes
     String type_name =
         AttributeTypeToString(node->content_attributes->attribute_type);
-    builder.Append(type_name.LowerASCII());
+    builder.Append(type_name.ToAsciiLower());
 
     if (node->content_attributes->text_info) {
       builder.Append(' ');

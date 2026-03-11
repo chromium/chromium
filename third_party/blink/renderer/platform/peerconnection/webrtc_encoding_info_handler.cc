@@ -46,7 +46,7 @@ WebrtcEncodingInfoHandler::WebrtcEncodingInfoHandler(
       audio_encoder_factory_->GetSupportedEncoders();
   for (const auto& audio_spec : supported_audio_specs) {
     supported_audio_codecs_.insert(
-        String::FromUTF8(audio_spec.format.name).LowerASCII());
+        String::FromUTF8(audio_spec.format.name).ToAsciiLower());
   }
 }
 
@@ -64,7 +64,7 @@ void WebrtcEncodingInfoHandler::EncodingInfo(
   bool power_efficient = true;
   if (sdp_audio_format) {
     const String codec_name =
-        String::FromUTF8(sdp_audio_format->name).LowerASCII();
+        String::FromUTF8(sdp_audio_format->name).ToAsciiLower();
     supported = supported_audio_codecs_.Contains(codec_name);
     // Audio is always assumed to be power efficient whenever it is
     // supported.

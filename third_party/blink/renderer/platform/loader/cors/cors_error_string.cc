@@ -234,7 +234,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       Resource::ResourceTypeToString(resource_type, initiator_name);
   String resource_kind(resource_kind_raw);
   if (resource_kind.length() >= 2 && IsASCIILower(resource_kind[1])) {
-    resource_kind = resource_kind.LowerASCII();
+    resource_kind = resource_kind.ToAsciiLower();
   }
 
   Append(builder, {"Access to ", resource_kind, " at '",

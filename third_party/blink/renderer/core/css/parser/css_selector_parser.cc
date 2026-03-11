@@ -981,7 +981,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       // Lowercase for case-insensitive matching. CSS pseudo-elements are
       // case-insensitive, and escape sequences like `:bef\oRE` may produce
       // mixed-case names after tokenization.
-      AtomicString selector_name = AtomicString::LowerASCII(
+      AtomicString selector_name = AtomicString::ToAsciiLower(
           selector_name_token.Value().ToAtomicString());
       CSSSelector::PseudoType pseudo_type = ParsePseudoType(
           selector_name,

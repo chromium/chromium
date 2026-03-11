@@ -387,7 +387,7 @@ WebAudioConfiguration ToWebAudioConfiguration(
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
 
-  web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
+  web_configuration.mime_type = parsed_content_type.MimeType().ToAsciiLower();
   web_configuration.codec =
       parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
 
@@ -414,7 +414,7 @@ WebVideoConfiguration ToWebVideoConfiguration(
   ParsedContentType parsed_content_type(configuration->contentType());
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
-  web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
+  web_configuration.mime_type = parsed_content_type.MimeType().ToAsciiLower();
   web_configuration.codec =
       parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
 
@@ -723,7 +723,7 @@ bool ParseContentType(const String& content_type,
     return false;
   }
 
-  *mime_type = parsed_content_type.MimeType().LowerASCII();
+  *mime_type = parsed_content_type.MimeType().ToAsciiLower();
   *codec = parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
   return true;
 }

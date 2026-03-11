@@ -134,7 +134,9 @@ struct FontCacheKey {
 #if BUILDFLAG(IS_ANDROID)
   // Set the locale if the font is locale-specific. This allows different
   // |FontPlatformData| instances for each locale.
-  void SetLocale(const AtomicString& locale) { locale_ = locale.LowerASCII(); }
+  void SetLocale(const AtomicString& locale) {
+    locale_ = locale.ToAsciiLower();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

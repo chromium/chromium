@@ -164,7 +164,7 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
           continue;
         }
         // TODO(chrishtr): replace the below with elem->outerHTML().
-        String tag = elem->tagName().LowerASCII();
+        String tag = elem->tagName().ToAsciiLower();
         StringBuilder html;
         html << "<" << tag;
         for (unsigned i = 0; i < elem->Attributes().size(); i++) {

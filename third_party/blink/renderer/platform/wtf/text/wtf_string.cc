@@ -153,10 +153,10 @@ String String::DeprecatedLower() const {
   return blink::CaseMap::FastToLowerInvariant(impl_.get());
 }
 
-String String::LowerASCII() const {
+String String::ToAsciiLower() const {
   if (!impl_)
     return String();
-  return impl_->LowerASCII();
+  return impl_->ToAsciiLower();
 }
 
 String String::ToAsciiUpper() const {

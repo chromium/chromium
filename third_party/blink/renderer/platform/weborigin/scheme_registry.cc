@@ -139,13 +139,13 @@ URLSchemesRegistry& GetMutableURLSchemesRegistryForTest() {
 }  // namespace
 
 void SchemeRegistry::RegisterURLSchemeAsDisplayIsolated(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().display_isolated_url_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsDisplayIsolated(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().display_isolated_url_schemes.Contains(scheme);
@@ -153,12 +153,12 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsDisplayIsolated(
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsRestrictingMixedContent(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return scheme == "https";
 }
 
 bool SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().empty_document_schemes.Contains(scheme);
@@ -167,7 +167,7 @@ bool SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(const String& scheme) {
 void SchemeRegistry::SetDomainRelaxationForbiddenForURLSchemeForTest(
     bool forbidden,
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return;
 
@@ -187,7 +187,7 @@ void SchemeRegistry::ResetDomainRelaxationForTest() {
 
 bool SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry()
@@ -195,13 +195,13 @@ bool SchemeRegistry::IsDomainRelaxationForbiddenForURLScheme(
 }
 
 bool SchemeRegistry::CanDisplayOnlyIfCanRequest(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return scheme == "blob" || scheme == "filesystem";
 }
 
 void SchemeRegistry::RegisterURLSchemeAsNotAllowingJavascriptURLs(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().not_allowing_javascript_urls_schemes.insert(
       scheme);
 }
@@ -214,7 +214,7 @@ void SchemeRegistry::RemoveURLSchemeAsNotAllowingJavascriptURLsForTest(
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().not_allowing_javascript_urls_schemes.Contains(
@@ -222,7 +222,7 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsNotAllowingJavascriptURLs(
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().cors_enabled_schemes.Contains(scheme);
@@ -257,13 +257,13 @@ bool SchemeRegistry::ShouldTrackUsageMetricsForScheme(const String& scheme) {
 
 void SchemeRegistry::RegisterURLSchemeAsAllowingServiceWorkers(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().service_worker_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().service_worker_schemes.Contains(scheme);
@@ -271,13 +271,13 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingServiceWorkers(
 
 void SchemeRegistry::RegisterURLSchemeAsSupportingFetchAPI(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().fetch_api_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().fetch_api_schemes.Contains(scheme);
@@ -285,28 +285,28 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
 
 // https://url.spec.whatwg.org/#special-scheme
 bool SchemeRegistry::IsSpecialScheme(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return scheme == "ftp" || scheme == "file" || scheme == "http" ||
          scheme == "https" || scheme == "ws" || scheme == "wss";
 }
 
 void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().first_party_when_top_level_schemes.insert(
       scheme);
 }
 
 void SchemeRegistry::RemoveURLSchemeAsFirstPartyWhenTopLevelForTest(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().first_party_when_top_level_schemes.erase(
       scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().first_party_when_top_level_schemes.Contains(
@@ -315,7 +315,7 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
 
 void SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry()
       .first_party_when_top_level_with_secure_embedded_schemes.insert(scheme);
 }
@@ -324,8 +324,8 @@ bool SchemeRegistry::
     ShouldTreatURLSchemeAsFirstPartyWhenTopLevelEmbeddingSecure(
         const String& top_level_scheme,
         const String& child_scheme) {
-  DCHECK_EQ(top_level_scheme, top_level_scheme.LowerASCII());
-  DCHECK_EQ(child_scheme, child_scheme.LowerASCII());
+  DCHECK_EQ(top_level_scheme, top_level_scheme.ToAsciiLower());
+  DCHECK_EQ(child_scheme, child_scheme.ToAsciiLower());
   // Matches GURL::SchemeIsCryptographic used by
   // RenderFrameHostImpl::ComputeIsolationInfoInternal
   if (child_scheme != "https" && child_scheme != "wss")
@@ -339,7 +339,7 @@ bool SchemeRegistry::
 
 void SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().allowed_in_referrer_schemes.insert(scheme);
 }
 
@@ -350,19 +350,19 @@ void SchemeRegistry::RemoveURLSchemeAsAllowedForReferrerForTest(
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowedForReferrer(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().allowed_in_referrer_schemes.Contains(scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsError(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().error_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsError(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().error_schemes.Contains(scheme);
@@ -370,14 +370,14 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsError(const String& scheme) {
 
 void SchemeRegistry::RegisterURLSchemeAsAllowingSharedArrayBuffers(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().allowing_shared_array_buffer_schemes.insert(
       scheme);
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   if (scheme.empty())
     return false;
   return GetURLSchemesRegistry().allowing_shared_array_buffer_schemes.Contains(
@@ -387,7 +387,7 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsAllowingSharedArrayBuffers(
 void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
     const String& scheme,
     PolicyAreas policy_areas) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry()
       .content_security_policy_bypassing_schemes.insert(scheme, policy_areas);
 }
@@ -395,7 +395,7 @@ void SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
 void SchemeRegistry::
     RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
         const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry()
       .content_security_policy_bypassing_schemes.erase(scheme);
 }
@@ -417,7 +417,7 @@ bool SchemeRegistry::SchemeShouldBypassContentSecurityPolicy(
 
 void SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().secure_context_bypassing_schemes.insert(
       scheme);
 }
@@ -426,38 +426,38 @@ bool SchemeRegistry::SchemeShouldBypassSecureContextCheck(
     const String& scheme) {
   if (scheme.empty())
     return false;
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().secure_context_bypassing_schemes.Contains(
       scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsAllowingWasmEvalCSP(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().wasm_eval_csp_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::SchemeSupportsWasmEvalCSP(const String& scheme) {
   if (scheme.empty())
     return false;
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().wasm_eval_csp_schemes.Contains(scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsWebUI(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().web_ui_schemes.insert(scheme);
 }
 
 bool SchemeRegistry::IsWebUIScheme(const String& scheme) {
   if (scheme.empty())
     return false;
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().web_ui_schemes.Contains(scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsWebUIForTest(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistryForTest().web_ui_schemes.insert(scheme);
 }
 
@@ -467,7 +467,7 @@ void SchemeRegistry::RemoveURLSchemeAsWebUIForTest(const String& scheme) {
 
 void SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().code_cache_with_hashing_schemes.insert(scheme);
 }
 
@@ -479,14 +479,14 @@ void SchemeRegistry::RemoveURLSchemeAsCodeCacheWithHashingForTest(
 bool SchemeRegistry::SchemeSupportsCodeCacheWithHashing(const String& scheme) {
   if (scheme.empty())
     return false;
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().code_cache_with_hashing_schemes.Contains(
       scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(
     const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   GetMutableURLSchemesRegistry().webui_bundled_bytecode_schemes.insert(scheme);
 }
 
@@ -499,7 +499,7 @@ bool SchemeRegistry::SchemeSupportsWebUIBundledBytecode(const String& scheme) {
   if (scheme.empty()) {
     return false;
   }
-  DCHECK_EQ(scheme, scheme.LowerASCII());
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
   return GetURLSchemesRegistry().webui_bundled_bytecode_schemes.Contains(
       scheme);
 }

@@ -773,7 +773,7 @@ void ResourceLoader::DidReceiveResponse(
     // Callback is bound to a WeakPersistent, as ResourceLoader is kept alive by
     // ResourceFetcher as long as we still care about the result of the load.
     fetcher_->GetBlobRegistry()->RegisterFromStream(
-        mime_type.IsNull() ? g_empty_string : mime_type.LowerASCII(), "",
+        mime_type.IsNull() ? g_empty_string : mime_type.ToAsciiLower(), "",
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
         std::move(body_handle),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),

@@ -113,7 +113,7 @@ std::optional<VideoTrackRecorder::CodecProfile> VideoStringTagToCodecProfile(
 #endif
 
 media::AudioCodec AudioStringToAudioCodec(const String& codecs) {
-  String codecs_str = codecs.LowerASCII();
+  String codecs_str = codecs.ToAsciiLower();
 
   if (codecs_str.contains("opus")) {
     return media::AudioCodec::kOpus;
@@ -157,7 +157,7 @@ bool IsMp4MuxerRequired(const String& type) {
 bool ShouldAddParameterSetsToBitstream(const String& codecs) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
     BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  String codecs_str = codecs.LowerASCII();
+  String codecs_str = codecs.ToAsciiLower();
   return codecs_str.contains("hev1") || codecs_str.contains("avc3");
 #else
   return false;
@@ -172,7 +172,7 @@ bool ShouldAddParameterSetsToBitstream(const String& codecs) {
 // type is returned.
 VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
     const String& codecs) {
-  String codecs_str = codecs.LowerASCII();
+  String codecs_str = codecs.ToAsciiLower();
   media::VideoCodec codec = media::VideoCodec::kUnknown;
 
   if (codecs_str.contains("vp8")) {
