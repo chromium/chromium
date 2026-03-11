@@ -88,7 +88,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                 new MostVisitedTilesMediator(
                         activity,
                         mUiConfig,
-                        tilesLayout,
+                        mvTilesContainerLayout,
                         mRenderer,
                         propertyModel,
                         isTablet,

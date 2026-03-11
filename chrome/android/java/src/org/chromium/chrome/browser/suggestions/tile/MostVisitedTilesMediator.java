@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -50,6 +51,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     private final Context mContext;
     private final Resources mResources;
     private final UiConfig mUiConfig;
+    private final View mMvTilesContainerLayout;
     private final MostVisitedTilesLayout mMvTilesLayout;
     private final PropertyModel mModel;
     private final boolean mIsTablet;
@@ -74,7 +76,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     public MostVisitedTilesMediator(
             Context context,
             UiConfig uiConfig,
-            MostVisitedTilesLayout mvTilesLayout,
+            View mvTilesContainerLayout,
             TileRenderer renderer,
             PropertyModel propertyModel,
             boolean isTablet,
@@ -88,7 +90,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         mIsTablet = isTablet;
         mSnapshotTileGridChangedRunnable = snapshotTileGridChangedRunnable;
         mTileCountChangedRunnable = tileCountChangedRunnable;
-        mMvTilesLayout = mvTilesLayout;
+        mMvTilesContainerLayout = mvTilesContainerLayout;
+        mMvTilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
 
         mTileViewLandscapePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape);
@@ -266,7 +269,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
         }
 
         MarginLayoutParams marginLayoutParams =
-                (MarginLayoutParams) mMvTilesLayout.getLayoutParams();
+                (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
         marginLayoutParams.width =
                 mMvtContentFits
                         ? ViewGroup.LayoutParams.WRAP_CONTENT
@@ -292,7 +295,10 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     void updateTilesLayoutMargins(
             boolean shouldShowLogo, boolean isWhiteBackgroundOnSearchBoxApplied, boolean isTablet) {
         NewTabPageUtils.updateTilesLayoutTopMargin(
-                mMvTilesLayout, shouldShowLogo, isWhiteBackgroundOnSearchBoxApplied, isTablet);
+                mMvTilesContainerLayout,
+                shouldShowLogo,
+                isWhiteBackgroundOnSearchBoxApplied,
+                isTablet);
     }
 
     public void onSwitchToForeground() {

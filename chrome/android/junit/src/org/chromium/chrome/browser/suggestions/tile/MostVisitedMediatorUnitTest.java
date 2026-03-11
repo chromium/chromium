@@ -74,6 +74,7 @@ import java.util.ArrayList;
 public class MostVisitedMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock UiConfig mUiConfig;
+    @Mock ViewGroup mMvTilesContainerLayout;
     @Mock MostVisitedTilesLayout mMvTilesLayout;
     @Mock Tile mTile;
     @Mock SuggestionsTileView mTileView;
@@ -557,7 +558,7 @@ public class MostVisitedMediatorUnitTest {
         ViewGroup.MarginLayoutParams marginLayoutParams =
                 new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        when(mMvTilesLayout.getLayoutParams()).thenReturn(marginLayoutParams);
+        when(mMvTilesContainerLayout.getLayoutParams()).thenReturn(marginLayoutParams);
         when(mMvTilesLayout.contentFitsOnTablet(totalWidth)).thenReturn(true);
 
         // Test case of regular tablets.
@@ -591,6 +592,7 @@ public class MostVisitedMediatorUnitTest {
 
     private void createMediator(boolean isTablet) {
         mMvTilesLayout = Mockito.mock(MostVisitedTilesLayout.class);
+        when(mMvTilesContainerLayout.findViewById(R.id.mv_tiles_layout)).thenReturn(mMvTilesLayout);
 
         when(mMvTilesLayout.getResources()).thenReturn(mResources);
         when(mMvTilesLayout.getChildCount()).thenReturn(1);
@@ -602,7 +604,7 @@ public class MostVisitedMediatorUnitTest {
                 new MostVisitedTilesMediator(
                         mContext,
                         mUiConfig,
-                        mMvTilesLayout,
+                        mMvTilesContainerLayout,
                         mTileRenderer,
                         mModel,
                         isTablet,
