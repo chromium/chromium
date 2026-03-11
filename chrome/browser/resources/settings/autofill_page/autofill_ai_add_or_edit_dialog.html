@@ -97,9 +97,13 @@
     <template is="dom-if" if="[[shouldShowWalletBranding_(saveToWalletFromSettingsEnabled_, entityInstance)]]">
       <if expr="_google_chrome">
         <div class="title-icon-container">
-          <img src="chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET"
-              alt=""
-              role="presentation">
+          <picture id="branding-image">
+            <source srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET_DARK"
+                media="(prefers-color-scheme: dark)">
+            <img srcset="chrome://theme/IDR_AUTOFILL_GOOGLE_WALLET"
+                alt=""
+                role="presentation">
+          </picture>
         </div>
       </if>
     </template>

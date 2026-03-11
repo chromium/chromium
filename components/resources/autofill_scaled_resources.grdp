@@ -77,6 +77,7 @@
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_ZIP" file="google_chrome/autofill/googlepay_zip.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK" file="google_chrome/autofill/googlepay_zip_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET" file="google_chrome/autofill/googlewallet.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET_DARK" file="google_chrome/autofill/googlewallet_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET_ICON" file="google_chrome/autofill/googlewallet_icon.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AFFIRM" file="google_chrome/autofill/affirm.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AFFIRM_DARK" file="google_chrome/autofill/affirm_dark.png" />
@@ -125,6 +126,7 @@
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_KLARNA" file="autofill/pay_over_time.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK" file="autofill/pay_over_time.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET_DARK" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_WALLET_ICON" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AFFIRM" file="autofill/metadata/pay_over_time.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_AFFIRM_DARK" file="autofill/metadata/pay_over_time.png" />
