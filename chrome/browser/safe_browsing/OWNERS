@@ -11,6 +11,8 @@ per-file BUILD.gn=anunoy@chromium.org
 # For tailored security + bundled settings metrics changes.
 per-file BUILD.gn=jacastro@chromium.org
 
+per-file safe_browsing_pref_change_handler*=jacastro@chromium.org
+
 per-file *client_side_detection*=andysjlim@chromium.org
 
 per-file *notification_content_detection*=skrakowi@chromium.org
