@@ -193,3 +193,8 @@ crbug.com/480249475 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-o
 crbug.com/488337157 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-open-click.optional.html [ Pass Timeout Crash ]
 crbug.com/490381610 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Failure Pass ]
 crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specific.https.any.html [ Failure Pass ]
+
+# Flaky timing out on MSAN.
+crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.html [ Pass Timeout ]
+crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.worker.html [ Pass Timeout ]
+crbug.com/487895128 [ Linux ] virtual/indexeddb_sqlite/external/wpt/storage/estimate-indexeddb.https.any.html [ Pass Timeout ]
