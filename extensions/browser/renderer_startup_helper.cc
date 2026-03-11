@@ -672,7 +672,7 @@ void RendererStartupHelper::AddDOMActionToActivityLog(
 
 // static
 void RendererStartupHelper::BindForRenderer(
-    int process_id,
+    content::ChildProcessId process_id,
     mojo::PendingAssociatedReceiver<mojom::RendererHost> receiver) {
   auto* host = content::RenderProcessHost::FromID(process_id);
   if (!host) {

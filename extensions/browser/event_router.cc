@@ -294,7 +294,7 @@ void EventRouter::DispatchEventToSender(
 
 // static
 void EventRouter::BindForRenderer(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver) {
   auto* host = RenderProcessHost::FromID(render_process_id);
   if (!host) {
@@ -311,9 +311,10 @@ void EventRouter::BindForRenderer(
                                render_process_id);
 }
 
-void EventRouter::SwapReceiverForTesting(int render_process_id,
-                                         mojom::EventRouter* new_impl) {
-  std::map<mojo::ReceiverId, int*> receiver_contexts =
+void EventRouter::SwapReceiverForTesting(
+    content::ChildProcessId render_process_id,
+    mojom::EventRouter* new_impl) {
+  std::map<mojo::ReceiverId, content::ChildProcessId*> receiver_contexts =
       receivers_.GetAllContexts();
 
   // We don't have the ReceiverId for the receiver stored anywhere, so loop
@@ -672,9 +673,9 @@ void EventRouter::RemoveObserverForTesting(TestObserver* observer) {
 
 void EventRouter::OnListenerAdded(const EventListener* listener) {
   RenderProcessHost* process = listener->process();
-  int render_process_id = content::ChildProcessHost::kInvalidUniqueID;
+  content::ChildProcessId render_process_id;
   if (process) {
-    render_process_id = process->GetDeprecatedID();
+    render_process_id = process->GetID();
     ObserveProcess(process);
   }
 
@@ -693,9 +694,8 @@ void EventRouter::OnListenerAdded(const EventListener* listener) {
 }
 
 void EventRouter::OnListenerRemoved(const EventListener* listener) {
-  int render_process_id = listener->process()
-                              ? listener->process()->GetDeprecatedID()
-                              : content::ChildProcessHost::kInvalidUniqueID;
+  auto render_process_id = listener->process() ? listener->process()->GetID()
+                                               : content::ChildProcessId();
   const EventListenerInfo details(
       listener->event_name(), listener->extension_id(),
       listener->listener_url(), listener->filter(), listener->browser_context(),
@@ -1621,7 +1621,6 @@ EventListenerInfo::EventListenerInfo(const std::string& event_name,
       listener_url(listener_url),
       filter(filter ? std::make_optional(filter->Clone()) : std::nullopt),
       browser_context(browser_context),
-      render_process_id(content::ChildProcessHost::kInvalidUniqueID),
       worker_thread_id(kMainThreadId),
       service_worker_version_id(blink::mojom::kInvalidServiceWorkerVersionId),
       is_lazy(false) {}
@@ -1631,7 +1630,7 @@ EventListenerInfo::EventListenerInfo(const std::string& event_name,
                                      const GURL& listener_url,
                                      const base::DictValue* filter,
                                      content::BrowserContext* browser_context,
-                                     int render_process_id,
+                                     content::ChildProcessId render_process_id,
                                      int worker_thread_id,
                                      int64_t service_worker_version_id,
                                      bool is_lazy)

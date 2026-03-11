@@ -35,7 +35,7 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RendererStartupHelper::BindForRenderer, host->GetDeprecatedID()));
+      &RendererStartupHelper::BindForRenderer, host->GetID()));
 }
 
 void ChromeContentBrowserClientExtensionsPart::
@@ -45,9 +45,11 @@ void ChromeContentBrowserClientExtensionsPart::
         blink::AssociatedInterfaceRegistry& associated_registry) {
   CHECK(service_worker_version_info.process_id !=
         content::ChildProcessHost::kInvalidUniqueID);
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   associated_registry.AddInterface<mojom::RendererHost>(
       base::BindRepeating(&RendererStartupHelper::BindForRenderer,
-                          service_worker_version_info.process_id));
+                          content::ChildProcessId::FromUnsafeValue(
+                              service_worker_version_info.process_id)));
   associated_registry.AddInterface<mojom::ServiceWorkerHost>(
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
@@ -56,21 +58,25 @@ void ChromeContentBrowserClientExtensionsPart::
       base::BindRepeating(&AutomationEventRouter::BindForRenderer,
                           service_worker_version_info.process_id));
 #endif
-  associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
-      &EventRouter::BindForRenderer, service_worker_version_info.process_id));
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  associated_registry.AddInterface<mojom::EventRouter>(
+      base::BindRepeating(&EventRouter::BindForRenderer,
+                          content::ChildProcessId::FromUnsafeValue(
+                              service_worker_version_info.process_id)));
 }
 
 void ChromeContentBrowserClientExtensionsPart::
     ExposeInterfacesToRendererForRenderFrameHost(
         content::RenderFrameHost& frame_host,
         blink::AssociatedInterfaceRegistry& associated_registry) {
-  int render_process_id = frame_host.GetProcess()->GetDeprecatedID();
+  content::ChildProcessId render_process_id = frame_host.GetProcess()->GetID();
   associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_id));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
       base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                          render_process_id));
+                          render_process_id.GetUnsafeValue()));
 #endif
   associated_registry.AddInterface<mojom::EventRouter>(
       base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));

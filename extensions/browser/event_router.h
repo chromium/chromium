@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/events/event_ack_data.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
@@ -160,10 +161,10 @@ class EventRouter : public KeyedService,
                              mojom::EventFilteringInfoPtr info);
 
   static void BindForRenderer(
-      int process_id,
+      content::ChildProcessId process_id,
       mojo::PendingAssociatedReceiver<mojom::EventRouter> receiver);
 
-  void SwapReceiverForTesting(int render_process_id,
+  void SwapReceiverForTesting(content::ChildProcessId render_process_id,
                               mojom::EventRouter* new_impl);
 
   // An EventRouter is shared between `browser_context` and its associated
@@ -570,7 +571,7 @@ class EventRouter : public KeyedService,
 
   // All the Mojo receivers for the EventRouter. Keeps track of the render
   // process id.
-  mojo::AssociatedReceiverSet<mojom::EventRouter, int /*render_process_id*/>
+  mojo::AssociatedReceiverSet<mojom::EventRouter, content::ChildProcessId>
       receivers_;
 
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
@@ -727,7 +728,7 @@ struct EventListenerInfo {
                     const GURL& listener_url,
                     const base::DictValue* filter,
                     content::BrowserContext* browser_context,
-                    int render_process_id,
+                    content::ChildProcessId render_process_id,
                     int worker_thread_id,
                     int64_t service_worker_version_id,
                     bool is_lazy);
@@ -741,7 +742,7 @@ struct EventListenerInfo {
   const GURL listener_url;
   const std::optional<base::DictValue> filter;
   const raw_ptr<content::BrowserContext> browser_context;
-  const int render_process_id;
+  const content::ChildProcessId render_process_id;
   const int worker_thread_id;
   const int64_t service_worker_version_id;
   const bool is_lazy;
