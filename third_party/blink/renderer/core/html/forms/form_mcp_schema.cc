@@ -514,7 +514,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTextParameterSchema(
   auto schema = std::make_unique<JSONObject>();
   schema->SetString("type", "string");
   AddPattern(element, *schema);
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -531,7 +530,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDateParameterSchema(
   schema->SetString("format", "date");
   // Note that the "minimum" and "maximum" fields must contains numbers;
   // they cannot be used for dates.
-  AddTitle(element, *schema);
   AddDescription(element, *schema,
                  "Dates MUST be provided in 'YYYY-MM-DD' format.");
   required = element.IsRequired();
@@ -580,7 +578,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeDatetimeLocalParameterSchema(
                       "T([01][0-9]|2[0-3]):[0-5][0-9]"     // Thh:mm
                       "$");
   }
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -597,7 +594,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeMonthParameterSchema(
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#months
   schema->SetString("format", "^[0-9]{4}-(0[1-9]|1[0-2])$");
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -614,7 +610,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeWeekParameterSchema(
   // The regex format is based on the valid time microsyntax in HTML:
   // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#weeks
   schema->SetString("format", "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$");
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -651,7 +646,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeTimeParameterSchema(
     // Allow HH:MM only
     schema->SetString("format", "^([01][0-9]|2[0-3]):[0-5][0-9]$");
   }
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -682,7 +676,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeNumberParameterSchema(
     }
   }
   AddPattern(element, *schema);
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -721,7 +714,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeSelectParameterSchema(
     schema->SetArray("enum", std::move(enum_array));
   }
 
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
 
   required = element.IsRequired();
@@ -749,7 +741,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRangeParameterSchema(
   if (step_range.StepBase().Remainder(step).IsZero()) {
     schema->SetDouble("multipleOf", step.ToDouble());
   }
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -791,7 +782,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
   schema->SetBoolean("uniqueItems", true);
 
   // Add title/description from the first control for now.
-  AddTitle(*controls_for_name.front(), *schema);
   AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
 
   return schema;
@@ -809,7 +799,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeRadioParameterSchema(
                    ComputeOneOfArray(controls_for_name, enum_array, required));
   schema->SetArray("enum", std::move(enum_array));
   // Add title/description from the first control for now.
-  AddTitle(*controls_for_name.front(), *schema);
   AddDescriptionFromToolAttributeOnly(*controls_for_name.front(), *schema);
   return schema;
 }
@@ -848,7 +837,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
   // TODO: With the runtime feature ColorInputAcceptsCSSColors enabled, we may
   // support more color syntaxes.
   schema->SetString("format", "^#[0-9a-zA-Z]{6}$");
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -865,7 +853,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCustomElementParameterSchema(
   // Note that the above ParseJSON() call (and conversion to JSONObject)
   // is guaranteed to succeed by IsCustomElement().
   CHECK(schema);
-  AddTitle(element_internals, *schema);
   AddDescription(element_internals, *schema);
   required = false;
   return schema;
@@ -886,7 +873,6 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeFileParameterSchema(
   } else {
     schema->SetString("type", "string");
   }
-  AddTitle(element, *schema);
   AddDescription(element, *schema);
   required = element.IsRequired();
   return schema;
@@ -1040,12 +1026,6 @@ void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
   file_input.SetFilesFromPaths(paths);
 }
 
-void FormMCPSchema::AddTitle(ListedElement& control, JSONObject& obj) {
-  if (String title = ToolParamTitleAttribute(control); !title.empty()) {
-    obj.SetString("title", title);
-  }
-}
-
 void FormMCPSchema::AddDescription(ListedElement& control,
                                    JSONObject& obj,
                                    String extra_context) {
@@ -1104,11 +1084,6 @@ void FormMCPSchema::AddDescriptionFromToolAttributeOnly(ListedElement& control,
       !description.empty()) {
     obj.SetString("description", description);
   }
-}
-
-String FormMCPSchema::ToolParamTitleAttribute(ListedElement& control) const {
-  return control.ToHTMLElement().FastGetAttribute(
-      html_names::kToolparamtitleAttr);
 }
 
 String FormMCPSchema::ToolParamDescriptionAttribute(
@@ -1200,8 +1175,7 @@ bool FormMCPSchema::IsText(ListedElement& control) const {
       case FormControlType::kInputPassword:
         return true;
       case FormControlType::kInputHidden:
-        return !ToolParamTitleAttribute(control).empty() ||
-               !ToolParamDescriptionAttribute(control).empty();
+        return !ToolParamDescriptionAttribute(control).empty();
       default:
         break;
     }

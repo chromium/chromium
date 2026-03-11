@@ -140,7 +140,6 @@ class CORE_EXPORT FormMCPSchema {
                              const JSONValue&);
   void FillFileData(const ControlVector& controls_for_name, const JSONValue&);
 
-  void AddTitle(ListedElement&, JSONObject&);
   void AddDescription(ListedElement&, JSONObject&, String = String());
   void AddPattern(HTMLFormControlElement&, JSONObject&);
 
@@ -155,7 +154,6 @@ class CORE_EXPORT FormMCPSchema {
   // See also: https://github.com/webmachinelearning/webmcp/issues/71
   void AddDescriptionFromToolAttributeOnly(ListedElement&, JSONObject&);
 
-  String ToolParamTitleAttribute(ListedElement&) const;
   String ToolParamDescriptionAttribute(ListedElement&) const;
   String ComputeDescription(ListedElement&);
   String LabelText(ListedElement&);
