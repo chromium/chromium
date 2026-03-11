@@ -10,6 +10,9 @@ struct UrlLoadParams;
 // Protocol for loading URLs in the composebox.
 @protocol ComposeboxURLLoader
 
+// Prepares for loading a new query text.
+- (void)prepareLoadForQueryText:(NSString*)queryText;
+
 - (void)loadURLParams:(const UrlLoadParams&)URLLoadParams;
 
 @end

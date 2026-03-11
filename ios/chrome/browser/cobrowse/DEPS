@@ -2,5 +2,8 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/assistant/coordinator",
   "+ios/chrome/browser/assistant/ui",
+  "+ios/chrome/browser/composebox/coordinator",
+  "+ios/chrome/browser/composebox/public",
+  "+ios/chrome/browser/composebox/ui",
   # keep-sorted end
 ]

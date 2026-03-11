@@ -58,17 +58,21 @@ const char kBaseSearchURL[] =
   _webState->GetNavigationManager()->LoadURLWithParams(params);
 }
 
-#pragma mark - AssistantAIMMutator
+#pragma mark - ComposeboxURLLoader
 
-- (void)assistantAIMViewControllerDidRequestSearchWithText:(NSString*)text {
-  if (!_webState || text.length == 0) {
+- (void)prepareLoadForQueryText:(NSString*)queryText {
+  if (!_webState || queryText.length == 0) {
     return;
   }
 
   GURL url = net::AppendQueryParameter(GURL(kBaseSearchURL), "q",
-                                       base::SysNSStringToUTF8(text));
+                                       base::SysNSStringToUTF8(queryText));
   web::NavigationManager::WebLoadParams params{url};
   _webState->GetNavigationManager()->LoadURLWithParams(params);
+}
+
+- (void)loadURLParams:(const UrlLoadParams&)URLLoadParams {
+  // NO-OP
 }
 
 @end

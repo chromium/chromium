@@ -1952,6 +1952,9 @@ CreateInputDataFromAnnotatedPageContent(
                URLLoadParams:(const UrlLoadParams&)URLLoadParams
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  [self.URLLoader prepareLoadForQueryText:[NSString cr_fromString16:text]];
+
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
       _inNavigation = YES;

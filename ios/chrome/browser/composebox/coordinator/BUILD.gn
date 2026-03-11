@@ -81,6 +81,7 @@ source_set("input_plate") {
   public_deps = [
     ":availability",
     ":entrypoint",
+    ":mode_holder",
   ]
   deps = [
     ":aim_deps",
@@ -89,7 +90,6 @@ source_set("input_plate") {
     ":intelligence_deps",
     ":lens_deps",
     ":location_bar_deps",
-    ":mode_holder",
     ":ntp_deps",
     ":omnibox_deps",
     ":search_deps",

@@ -8,6 +8,10 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_coordinator.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
+#import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -23,6 +27,8 @@
 @implementation AssistantAIMCoordinator {
   AssistantAIMViewController* _viewController;
   AssistantAIMMediator* _mediator;
+  ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
+  ComposeboxModeHolder* _modeHolder;
 }
 
 - (void)start {
@@ -37,13 +43,30 @@
   _mediator =
       [[AssistantAIMMediator alloc] initWithWebState:std::move(webState)];
   _mediator.consumer = _viewController;
-  _viewController.mutator = _mediator;
 
   id<AssistantContainerCommands> containerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AssistantContainerCommands);
 
   [containerHandler showAssistantContainerWithContent:_viewController
                                              delegate:self];
+
+  _modeHolder = [[ComposeboxModeHolder alloc] init];
+  ComposeboxTheme* theme = [[ComposeboxTheme alloc]
+      initWithInputPlatePosition:ComposeboxInputPlatePosition::kBottom
+                       incognito:NO
+                           isNTP:NO];
+  _inputPlateCoordinator = [[ComposeboxInputPlateCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                      entrypoint:ComposeboxEntrypoint::kCobrowse
+                           query:nil
+                       URLLoader:_mediator
+                           theme:theme
+                      modeHolder:_modeHolder];
+  [_inputPlateCoordinator start];
+
+  [_viewController
+      addInputViewController:_inputPlateCoordinator.inputViewController];
 }
 
 - (void)stop {
@@ -51,6 +74,10 @@
 
   [_mediator disconnect];
   _mediator = nil;
+
+  [_inputPlateCoordinator stop];
+  _inputPlateCoordinator = nil;
+  _modeHolder = nil;
 
   if (_viewController) {
     _viewController = nil;

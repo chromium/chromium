@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
-#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
+#import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -11,39 +11,61 @@
 
 namespace {
 
+constexpr CGFloat kInputPlateMargin = 10.0f;
 constexpr CGFloat kContentMargin = 16.0;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 17.0;
 
 }  // namespace
 
-@interface AssistantAIMViewController () <UITextFieldDelegate>
-@end
-
 @implementation AssistantAIMViewController {
   UILabel* _titleLabel;
   UIView* _webStateView;
   NSArray<NSLayoutConstraint*>* _webStateViewConstraints;
-  UITextField* _temporaryTextField;
+  ComposeboxInputPlateViewController* _inputViewController;
 }
 
-@synthesize mutator = _mutator;
 @synthesize delegate = _delegate;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self setUpHeader];
   [self setUpWebStateView];
-  [self setUpTemporaryTextField];
 }
 
-#pragma mark - UITextFieldDelegate
+- (void)addInputViewController:
+    (ComposeboxInputPlateViewController*)inputViewController {
+  [self loadViewIfNeeded];
+  [self addChildViewController:inputViewController];
+  [self.view addSubview:inputViewController.view];
+  inputViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [inputViewController didMoveToParentViewController:self];
+  _inputViewController = inputViewController;
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
-  [textField resignFirstResponder];
-  [self.mutator
-      assistantAIMViewControllerDidRequestSearchWithText:textField.text];
-  return YES;
+  [_inputViewController.view
+      setContentHuggingPriority:UILayoutPriorityRequired
+                        forAxis:UILayoutConstraintAxisVertical];
+  // Allow compression on the input view to limit it's height in the available
+  // space (between the keyboard and the top of the view).
+  [_inputViewController.view
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisVertical];
+
+  [self setupConstraints];
+}
+
+- (void)setupConstraints {
+  [NSLayoutConstraint activateConstraints:@[
+    [_inputViewController.view.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+                                 constant:-kInputPlateMargin],
+    [_inputViewController.view.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor
+                       constant:kInputPlateMargin],
+    [_inputViewController.view.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor
+                       constant:-kInputPlateMargin]
+  ]];
 }
 
 #pragma mark - AssistantAIMConsumer
@@ -136,12 +158,6 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 17.0;
 // Called when the close button is tapped.
 - (void)didTapCloseButton {
   [self.delegate assistantAIMViewControllerDidTapClose:self];
-}
-
-- (void)setUpTemporaryTextField {
-  _temporaryTextField = [[UITextField alloc] init];
-  _temporaryTextField.delegate = self;
-  _temporaryTextField.returnKeyType = UIReturnKeySearch;
 }
 
 @end

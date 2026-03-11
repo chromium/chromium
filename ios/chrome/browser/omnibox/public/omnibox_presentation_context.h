@@ -15,6 +15,8 @@ enum class OmniboxPresentationContext {
   kLensOverlay,
   // The omnibox is presented in the composebox.
   kComposebox,
+  // The omnibox is presented in the cobrowse experience.
+  kCobrowse,
 };
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_PRESENTATION_CONTEXT_H_

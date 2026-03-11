@@ -5,12 +5,12 @@
 source_set("ui") {
   sources = [
     "assistant_aim_consumer.h",
-    "assistant_aim_mutator.h",
     "assistant_aim_view_controller.h",
     "assistant_aim_view_controller.mm",
   ]
   deps = [
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",

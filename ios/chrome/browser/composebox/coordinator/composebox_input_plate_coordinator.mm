@@ -227,7 +227,9 @@ const CGFloat kSnackbarBottomMargin = 10;
       initWithBaseViewController:nil
                          browser:self.browser
                    omniboxClient:std::move(omniboxClient)
-             presentationContext:OmniboxPresentationContext::kComposebox];
+             presentationContext:_entrypoint == ComposeboxEntrypoint::kCobrowse
+                                     ? OmniboxPresentationContext::kCobrowse
+                                     : OmniboxPresentationContext::kComposebox];
   _omniboxCoordinator.presenterDelegate = self.omniboxPopupPresenterDelegate;
   _omniboxCoordinator.focusDelegate = self;
   [_omniboxCoordinator start];

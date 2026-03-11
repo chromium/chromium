@@ -333,6 +333,16 @@ const char kOmniboxFocusResultedInNavigation[] =
       _omniboxTextModel->user_input_in_progress ? [self currentMatch:nullptr]
                                                 : AutocompleteMatch();
 
+  // NOTE: Suggestions are currently disabled for Cobrowse. If they are
+  // requested in the future, remove this conditional branch.
+  if (_presentationContext == OmniboxPresentationContext::kCobrowse) {
+    const AutocompleteResult result;
+    _omniboxClient->OnTextChanged(
+        current_match, _omniboxTextModel->user_input_in_progress,
+        _omniboxTextModel->user_text, result, _omniboxTextModel->HasFocus());
+    return;
+  }
+
   if (const AutocompleteResult* result =
           [self.omniboxAutocompleteController autocompleteResult]) {
     _omniboxClient->OnTextChanged(
@@ -517,8 +527,10 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   if (_omniboxTextModel) {
     _omniboxTextModel->OnSetFocus();
-
-    if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
+    if (_presentationContext == OmniboxPresentationContext::kCobrowse) {
+      [self startAutocompletePreventingInline:YES];
+    } else if (_presentationContext ==
+               OmniboxPresentationContext::kLensOverlay) {
       if (textInput.userText.length) {
         [self setUserText:textInput.userText.cr_UTF16String];
         [self startAutocompletePreventingInline:YES];
@@ -553,6 +565,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   // omnibox only display search terms.
   if (!popupOpenBeforeEdit &&
       _presentationContext != OmniboxPresentationContext::kLensOverlay &&
+      _presentationContext != OmniboxPresentationContext::kCobrowse &&
       !userInputInProgress) {
     [textInput enterPreEditState];
   }

@@ -64,7 +64,8 @@ const CGFloat kClearButtonSize = 28.0f;
 
 /// Whether the omnibox is using the text view instead of the text field.
 bool UseTextView(OmniboxPresentationContext presentation_context) {
-  return presentation_context == OmniboxPresentationContext::kComposebox;
+  return presentation_context == OmniboxPresentationContext::kComposebox ||
+         presentation_context == OmniboxPresentationContext::kCobrowse;
 }
 
 /// The maxium number of lines for the multiline omnibox before it starts

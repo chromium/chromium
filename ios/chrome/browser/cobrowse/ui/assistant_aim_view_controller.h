@@ -8,8 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
-@protocol AssistantAIMMutator;
+
 @class AssistantAIMViewController;
+@class ComposeboxInputPlateViewController;
 
 // Delegate for the AssistantAIMViewController.
 @protocol AssistantAIMViewControllerDelegate <NSObject>
@@ -22,11 +23,12 @@
 
 @interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
 
-// The mutator for this view controller.
-@property(nonatomic, weak) id<AssistantAIMMutator> mutator;
-
 // The delegate for this view controller.
 @property(nonatomic, weak) id<AssistantAIMViewControllerDelegate> delegate;
+
+// Adds the input view controller to this ViewController.
+- (void)addInputViewController:
+    (ComposeboxInputPlateViewController*)inputViewController;
 
 @end
 
