@@ -167,6 +167,10 @@ mojom("mojom") {
           cpp = "::remoting::protocol::VideoLayout"
         },
         {
+          mojom = "remoting.mojom.VideoLayout.PixelType"
+          cpp = "::remoting::protocol::VideoLayout::PixelType"
+        },
+        {
           mojom = "remoting.mojom.VideoTrackLayout"
           cpp = "::remoting::protocol::VideoTrackLayout"
         },

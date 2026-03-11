@@ -129,7 +129,9 @@ class DesktopSessionAgent
   // mojom::DesktopSessionControl implementation.
   void CreateVideoCapturer(std::int64_t desktop_display_id,
                            CreateVideoCapturerCallback callback) override;
-  void SetScreenResolution(const ScreenResolution& resolution) override;
+  void SetScreenResolution(const ScreenResolution& resolution,
+                           std::optional<std::int64_t> screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
   void LockWorkstation() override;
   void InjectSendAttentionSequence() override;
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;

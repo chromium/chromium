@@ -465,12 +465,22 @@ void DesktopSessionAgent::OnKeyboardLayoutChange(
 }
 
 void DesktopSessionAgent::SetScreenResolution(
-    const ScreenResolution& resolution) {
+    const ScreenResolution& resolution,
+    std::optional<std::int64_t> screen_id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
   if (screen_controls_) {
-    screen_controls_->SetScreenResolution(resolution, std::nullopt);
+    screen_controls_->SetScreenResolution(resolution, screen_id);
+  }
+}
+
+void DesktopSessionAgent::SetVideoLayout(const protocol::VideoLayout& layout) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
+  if (screen_controls_) {
+    screen_controls_->SetVideoLayout(layout);
   }
 }
 
@@ -546,7 +556,7 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
 
   // Create the session controller and set the initial screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
-  SetScreenResolution(resolution);
+  SetScreenResolution(resolution, std::nullopt);
 
   // Create the input injector.
   input_injector_ = desktop_environment_->CreateInputInjector();

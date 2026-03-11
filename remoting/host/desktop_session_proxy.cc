@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -190,6 +191,11 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += " ";
     result += protocol::kRemoteWebAuthnCapability;
   }
+
+#if BUILDFLAG(IS_LINUX)
+  result += " ";
+  result += protocol::kClientControlledLayoutCapability;
+#endif
 
   return result;
 }
@@ -472,7 +478,8 @@ void DesktopSessionProxy::StartInputInjector(
 }
 
 void DesktopSessionProxy::SetScreenResolution(
-    const ScreenResolution& resolution) {
+    const ScreenResolution& resolution,
+    std::optional<webrtc::ScreenId> screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   screen_resolution_ = resolution;
@@ -501,7 +508,19 @@ void DesktopSessionProxy::SetScreenResolution(
   // Passing an empty |screen_resolution_| value to the desktop process
   // indicates that the original resolution, if one exists, should be restored.
   if (desktop_session_control_) {
-    desktop_session_control_->SetScreenResolution(screen_resolution_);
+    desktop_session_control_->SetScreenResolution(screen_resolution_,
+                                                  screen_id);
+  }
+}
+
+void DesktopSessionProxy::SetVideoLayout(const protocol::VideoLayout& layout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Currently only the Linux host supports setting the video layout. It is
+  // always done by the desktop process, so there is no need to pass it to
+  // `desktop_session_connector_`.
+  if (desktop_session_control_) {
+    desktop_session_control_->SetVideoLayout(layout);
   }
 }
 

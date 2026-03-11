@@ -428,7 +428,10 @@ interface DesktopSessionControl {
       (CreateVideoCapturerResult result);
 
   // Changes the screen resolution in the desktop session.
-  SetScreenResolution(ScreenResolution new_resolution);
+  SetScreenResolution(ScreenResolution new_resolution, int64? screen_id);
+
+  // Changes the video layout in the desktop session.
+  SetVideoLayout(VideoLayout video_layout);
 
   // Locks the current desktop session.
   LockWorkstation();
@@ -543,7 +546,9 @@ union CaptureResult {
 // This struct mirrors the remoting::protocol::VideoTrackLayout message.
 struct VideoTrackLayout {
   // Unique display identifier, see ScreenId notes in desktop_capture_types.h.
-  int64 screen_id;
+  // An unset screen_id indicates that the client is requesting a new display to
+  // be added to the display layout.
+  int64? screen_id;
 
   // Name of the video stream, from the WebRTC MediaStream.id property.
   string media_stream_id;
@@ -564,6 +569,17 @@ struct VideoTrackLayout {
 
 // This struct mirrors the remoting::protocol::VideoLayout message.
 struct VideoLayout {
+  enum PixelType {
+    kUnspecifiedPixelType = 0,
+
+    // Measurements are in physical screen pixels.
+    kPhysical = 1,
+
+    // Measurements are in logical pixels, aka. density-independent pixels
+    // (DIPs).
+    kLogical = 2,
+  };
+
   // Layout info for each video track.
   array<VideoTrackLayout> tracks;
 
@@ -572,6 +588,16 @@ struct VideoLayout {
 
   // ID of the display to be associated with the main window on the client.
   int64 primary_screen_id;
+
+  // The type of pixels used for the video layout. Logical pixels are preferred
+  // because they preserve the density-independent display size on the client in
+  // show-all-displays mode, and the client does not support mixed-DPI layouts
+  // with physical pixels very well.
+  // If unspecified, physical pixels are assumed if the host is Windows or
+  // Linux, and logical pixels are assumed otherwise. The default behavior is
+  // only for compatibility with older hosts, and new hosts should always
+  // specify this field.
+  PixelType? pixel_type;
 };
 
 // Allows the desktop process to forward events and data to the network process

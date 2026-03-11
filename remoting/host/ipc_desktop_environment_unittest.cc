@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/capabilities.h"
 #include "remoting/base/constants.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_environment.h"
@@ -49,6 +50,7 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
+#include "remoting/protocol/capability_names.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -670,12 +672,9 @@ TEST_F(IpcDesktopEnvironmentTest, TouchEventsCapabilities) {
       new protocol::MockClipboardStub());
   EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
 
-  std::string expected_capabilities = "rateLimitResizeRequests multiStream";
-  if (InputInjector::SupportsTouchEvents()) {
-    expected_capabilities += " touchEvents";
-  }
-
-  EXPECT_EQ(expected_capabilities, desktop_environment_->GetCapabilities());
+  std::string capabilities = desktop_environment_->GetCapabilities();
+  ASSERT_EQ(HasCapability(capabilities, protocol::kTouchEventsCapability),
+            InputInjector::SupportsTouchEvents());
 
   // Start the input injector and screen capturer.
   input_injector_->Start(std::move(clipboard_stub));

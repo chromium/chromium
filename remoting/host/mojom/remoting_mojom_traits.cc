@@ -490,7 +490,10 @@ bool mojo::StructTraits<remoting::mojom::VideoTrackLayoutDataView,
                         ::remoting::protocol::VideoTrackLayout>::
     Read(remoting::mojom::VideoTrackLayoutDataView data_view,
          ::remoting::protocol::VideoTrackLayout* out_track) {
-  out_track->set_screen_id(data_view.screen_id());
+  std::optional<int64_t> screen_id = data_view.screen_id();
+  if (screen_id.has_value()) {
+    out_track->set_screen_id(screen_id.value());
+  }
 
   std::string media_stream_id;
   if (!data_view.ReadMediaStreamId(&media_stream_id)) {
@@ -545,6 +548,14 @@ bool mojo::StructTraits<remoting::mojom::VideoLayoutDataView,
       data_view.supports_full_desktop_capture());
 
   out_layout->set_primary_screen_id(data_view.primary_screen_id());
+
+  std::optional<::remoting::protocol::VideoLayout::PixelType> pixel_type;
+  if (!data_view.ReadPixelType(&pixel_type)) {
+    return false;
+  }
+  if (pixel_type.has_value()) {
+    out_layout->set_pixel_type(pixel_type.value());
+  }
 
   return true;
 }

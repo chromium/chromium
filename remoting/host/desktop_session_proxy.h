@@ -158,7 +158,9 @@ class DesktopSessionProxy
       std::unique_ptr<protocol::ClipboardStub> client_clipboard);
 
   // API used to implement the SessionController interface.
-  void SetScreenResolution(const ScreenResolution& resolution);
+  void SetScreenResolution(const ScreenResolution& resolution,
+                           std::optional<webrtc::ScreenId> screen_id);
+  void SetVideoLayout(const protocol::VideoLayout& layout);
 
   // API used to implement the ActionExecutor interface.
   void ExecuteAction(const protocol::ActionRequest& request);

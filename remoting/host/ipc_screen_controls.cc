@@ -18,13 +18,12 @@ IpcScreenControls::~IpcScreenControls() = default;
 void IpcScreenControls::SetScreenResolution(
     const ScreenResolution& resolution,
     std::optional<webrtc::ScreenId> screen_id) {
-  // TODO(crbug.com/40225767): Pass |screen_id| over IPC.
-  desktop_session_proxy_->SetScreenResolution(resolution);
+  desktop_session_proxy_->SetScreenResolution(resolution, screen_id);
 }
 
 void IpcScreenControls::SetVideoLayout(
     const protocol::VideoLayout& video_layout) {
-  NOTIMPLEMENTED();
+  desktop_session_proxy_->SetVideoLayout(video_layout);
 }
 
 }  // namespace remoting
