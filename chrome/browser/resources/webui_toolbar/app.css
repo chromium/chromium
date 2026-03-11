@@ -12,11 +12,6 @@
   gap: var(--toolbar-icon-default-margin);
 }
 
-reload-button-app {
-  margin: 0;
-  overflow: hidden;
-}
-
 /* TODO(crbug.com/474060468): This is roughly sketching the location bar
  * structure to illustrate where things ought to go. Proper implementation
  * would not be using hardcoded values, but likely variables derived from

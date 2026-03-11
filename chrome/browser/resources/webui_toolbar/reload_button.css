@@ -9,3 +9,8 @@
  * #import=./toolbar_button.css.js
  * #include=cr-icons-lit toolbar-button
  * #css_wrapper_metadata_end */
+
+:host {
+  margin: 0;
+  overflow: hidden;
+}

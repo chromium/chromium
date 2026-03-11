@@ -113,11 +113,11 @@ export class ReloadButtonElement extends CrLitElement {
   }
 
   /**
-   * See `onReloadButtonPointerup_` for the click event handling logic.
+   * See `onPointerup_` for the click event handling logic.
    * @param e the MouseEvent associated with the click.
    * @returns
    */
-  protected onReloadButtonPointerdown_(e: MouseEvent) {
+  protected onPointerdown_(e: MouseEvent) {
     if (e.button === BUTTON_RIGHT) {
       // The TypeScript code should only handle long press for the
       // left-click/middle-click.
@@ -159,11 +159,11 @@ export class ReloadButtonElement extends CrLitElement {
    * - If it's a long press with a duration longer than
    *   `LONG_PRESS_TIMER_THRESHOLD_MS`, no matter it's a left click or middle
    *   click, it should triggers the context menu display if the devtools is
-   *   open (see `onReloadButtonPointerdown_`).
+   *   open (see `onPointerdown_`).
    * @param e the MouseEvent associated with the click.
    * @returns
    */
-  protected onReloadButtonPointerup_(e: MouseEvent) {
+  protected onPointerup_(e: MouseEvent) {
     if (e.button === BUTTON_RIGHT) {
       return;
     }
