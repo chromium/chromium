@@ -480,7 +480,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 def _OutputKeepRules(r8_path, input_paths, libraries, targets_re_string,
                      keep_rules_output):
 
-  cmd = build_utils.JavaCmd(xmx='2G') + [
+  cmd = build_utils.JavaCmd(xmx='4G') + [
       '-cp', r8_path, 'com.android.tools.r8.tracereferences.TraceReferences',
       '--map-diagnostics:MissingDefinitionsDiagnostic', 'error', 'warning',
       '--keep-rules', '--output', keep_rules_output
