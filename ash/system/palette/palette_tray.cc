@@ -397,11 +397,6 @@ void PaletteTray::UpdateTrayItemColor(bool is_active) {
   UpdateTrayIcon();
 }
 
-void PaletteTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  UpdateTrayIcon();
-}
-
 void PaletteTray::HandleLocaleChange() {
   image_view()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_TITLE));
@@ -630,10 +625,9 @@ void PaletteTray::InitializeWithLocalState() {
 }
 
 void PaletteTray::UpdateTrayIcon() {
-  SkColor color;
-  color = GetColorProvider()->GetColor(
-      is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                  : cros_tokens::kCrosSysOnSurface);
+  ui::ColorId color = is_active()
+                          ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                          : cros_tokens::kCrosSysOnSurface;
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),

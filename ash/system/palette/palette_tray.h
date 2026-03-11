@@ -104,7 +104,6 @@ class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
   // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  void OnThemeChanged() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
