@@ -306,6 +306,9 @@ void OnDeviceModelServiceController::UpdateSolutionProviders() {
 
 void OnDeviceModelServiceController::UpdateSolutionProvider(
     mojom::OnDeviceFeature feature) {
+  if (GetOnDeviceModelType(feature) != kModelType) {
+    return;
+  }
   // Note: This always constructs the Solution, even if the provider was not
   // constructed yet, to update supported_adaptation_ranks_ on the base model.
   model_broker_impl_->GetSolutionProvider(feature).Update(GetSolution(feature));

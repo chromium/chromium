@@ -57,6 +57,8 @@ class FakeModelBroker {
         OnDeviceModelPerformanceClass::kHigh;
     // If true, installs a base model to the component_state_.
     bool preinstall_base_model = true;
+    // If true, initializes the classifier controller.
+    bool include_classifier = true;
   };
   explicit FakeModelBroker(const Options& options);
   ~FakeModelBroker();
@@ -70,11 +72,14 @@ class FakeModelBroker {
   void SimulateShutdown() {
     model_broker_state_.reset();
     component_state_.SimulateShutdown();
+    classifier_component_state_.SimulateShutdown();
   }
   void CrashService() { fake_launcher_.CrashService(); }
 
   void InstallBaseModel(FakeBaseModelAsset::Content content);
   void InstallBaseModel(std::unique_ptr<FakeBaseModelAsset> asset);
+  void InstallClassifierModel(FakeBaseModelAsset::Content content);
+  void InstallClassifierModel(std::unique_ptr<FakeBaseModelAsset> asset);
   void UpdateTarget(proto::OptimizationTarget target,
                     const ModelInfo& model_info);
   void UpdateModelAdaptation(const FakeAdaptationAsset& asset);
@@ -83,6 +88,9 @@ class FakeModelBroker {
 
   PrefService& local_state() { return local_state_.local_state(); }
   TestComponentState& component_state() { return component_state_; }
+  TestComponentState& classifier_component_state() {
+    return classifier_component_state_;
+  }
   ModelProviderRegistry& model_provider() { return model_provider_; }
 
   // Lazily instantiates model_broker_state_
@@ -94,11 +102,13 @@ class FakeModelBroker {
   on_device_model::FakeServiceLauncher& launcher() { return fake_launcher_; }
 
  private:
+  Options options_;
   ScopedModelBrokerFeatureList feature_list_;
   ModelBrokerPrefService local_state_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
   on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
   TestComponentState component_state_;
+  TestComponentState classifier_component_state_;
   OptimizationGuideLogger logger_;
   ModelProviderRegistry model_provider_{&logger_};
   std::optional<ModelBrokerState> model_broker_state_;

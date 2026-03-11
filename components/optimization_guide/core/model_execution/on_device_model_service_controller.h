@@ -70,6 +70,9 @@ class ModelController {
 // a single instance of this object.
 class OnDeviceModelServiceController final {
  public:
+  // The model type managed by this controller.
+  static constexpr OnDeviceModelType kModelType = OnDeviceModelType::kBaseModel;
+
   OnDeviceModelServiceController(
       on_device_model::ServiceClient& service_client,
       UsageTracker& usage_tracker,

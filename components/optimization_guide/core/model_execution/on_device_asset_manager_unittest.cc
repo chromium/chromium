@@ -112,7 +112,7 @@ TEST_F(OnDeviceAssetManagerTest, DoesNotNotifyServiceControllerWrongTarget) {
                fake_safety.model_info());
 
   EXPECT_FALSE(broker_.GetOrCreateBrokerState()
-                   .service_controller()
+                   .base_model_controller()
                    .GetSafetyClientForTesting()
                    .safety_model_info());
 }
@@ -124,7 +124,7 @@ TEST_F(OnDeviceAssetManagerTest, NotifiesServiceController) {
   UpdateTarget(proto::OPTIMIZATION_TARGET_TEXT_SAFETY,
                fake_safety.model_info());
   ASSERT_TRUE(broker_.GetOrCreateBrokerState()
-                  .service_controller()
+                  .base_model_controller()
                   .GetSafetyClientForTesting()
                   .safety_model_info());
 }
@@ -136,7 +136,7 @@ TEST_F(OnDeviceAssetManagerTest, UpdateLanguageDetection) {
   UpdateTarget(proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
                fake_language.model_info());
   EXPECT_EQ(fake_language.model_path(), broker_.GetOrCreateBrokerState()
-                                            .service_controller()
+                                            .base_model_controller()
                                             .GetSafetyClientForTesting()
                                             .language_detection_model_path());
 }

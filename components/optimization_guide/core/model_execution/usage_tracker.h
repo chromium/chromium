@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 class PrefService;
@@ -43,9 +44,6 @@ class UsageTracker {
   // feature.
   bool WasOnDeviceEligibleFeatureRecentlyUsed(
       mojom::OnDeviceFeature feature) const;
-
-  // Returns whether any on-device eligible feature was recently used.
-  bool WasAnyOnDeviceEligibleFeatureRecentlyUsed() const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

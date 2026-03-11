@@ -144,6 +144,7 @@ class OnDeviceModelComponentTest : public testing::Test {
   FakeModelBroker broker_{{
       .performance_class = OnDeviceModelPerformanceClass::kUnknown,
       .preinstall_base_model = false,
+      .include_classifier = false,
   }};
   base::HistogramTester histograms_;
 };

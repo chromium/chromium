@@ -380,7 +380,7 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
         model_broker_state.usage_tracker()
             .WasOnDeviceEligibleFeatureRecentlyUsed(feature);
     feature_adaptation_info->version =
-        model_broker_state.service_controller()
+        model_broker_state.base_model_controller()
             .GetFeatureMetadata(feature)
             .transform(
                 &optimization_guide::OnDeviceModelAdaptationMetadata::version)
@@ -391,7 +391,7 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
 
   if (debug_state.state_) {
     auto performance_hint =
-        model_broker_state.service_controller().GetPerformanceHint();
+        model_broker_state.base_model_controller().GetPerformanceHint();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&GetBaseModelInfo, *debug_state.state_,

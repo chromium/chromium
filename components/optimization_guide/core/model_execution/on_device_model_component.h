@@ -26,6 +26,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -307,7 +308,8 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       PrefService* local_state,
       base::SafeRef<PerformanceClassifier> performance_classifier,
       UsageTracker& usage_tracker,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> delegate,
+      OnDeviceModelType model_type);
   ~OnDeviceModelComponentStateManager() override;
 
   // Returns whether the component installation is valid.
@@ -423,6 +425,9 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
       usage_tracker_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The model type managed by this state manager.
+  const OnDeviceModelType model_type_;
 
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};

@@ -29,6 +29,10 @@ class UsageTracker;
 class OnDeviceModelClassifierController
     : public OnDeviceModelComponentStateManager::Observer {
  public:
+  // The model type managed by this controller.
+  static constexpr OnDeviceModelType kModelType =
+      OnDeviceModelType::kClassifierModel;
+
   OnDeviceModelClassifierController(
       PrefService& local_state,
       base::SafeRef<PerformanceClassifier> performance_classifier,

@@ -133,4 +133,21 @@ TEST(ModelBrokerClientTest, UnavailableAdaptationRejectsSession) {
   ASSERT_FALSE(session);
 }
 
+// Verify that CreateSession works for the classifier feature.
+TEST(ModelBrokerClientTest, ClassifierSession) {
+  base::test::TaskEnvironment task_environment_;
+  OptimizationGuideLogger logger;
+  FakeModelBroker fake_broker({});
+  fake_broker.InstallClassifierModel(FakeBaseModelAsset::Content{});
+
+  ModelBrokerClient client(fake_broker.BindAndPassRemote(),
+                           logger.GetWeakPtr());
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> future;
+
+  // Requesting the classifier feature should succeed.
+  client.CreateSession(mojom::OnDeviceFeature::kClassifier,
+                       SessionConfigParams{}, future.GetCallback());
+  ASSERT_TRUE(future.Take());
+}
+
 }  // namespace optimization_guide

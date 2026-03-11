@@ -15,6 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
@@ -155,7 +156,8 @@ OnDeviceModelClassifierController::OnDeviceModelClassifierController(
       component_state_manager_(&local_state,
                                performance_classifier,
                                usage_tracker,
-                               std::move(delegate)) {
+                               std::move(delegate),
+                               kModelType) {
   component_state_manager_.AddObserver(this);
 }
 

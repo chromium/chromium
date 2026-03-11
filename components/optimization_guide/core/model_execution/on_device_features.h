@@ -20,9 +20,18 @@ using OnDeviceFeatureSet = base::EnumSet<mojom::OnDeviceFeature,
                                          mojom::OnDeviceFeature::kMinValue,
                                          mojom::OnDeviceFeature::kMaxValue>;
 
+enum class OnDeviceModelType {
+  kBaseModel,
+  kClassifierModel,
+};
+
 // Return the name to use in histogram variants for this feature key.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string_view GetVariantName(mojom::OnDeviceFeature feature);
+
+// Returns the model type required for the feature.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+OnDeviceModelType GetOnDeviceModelType(mojom::OnDeviceFeature feature);
 
 // Returns which ModelExecutionFeature is used for this feature key.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

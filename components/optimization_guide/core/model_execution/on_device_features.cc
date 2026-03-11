@@ -38,6 +38,25 @@ std::string_view GetVariantName(mojom::OnDeviceFeature feature) {
   }
 }
 
+OnDeviceModelType GetOnDeviceModelType(mojom::OnDeviceFeature feature) {
+  switch (feature) {
+    case mojom::OnDeviceFeature::kClassifier:
+      return OnDeviceModelType::kClassifierModel;
+    case mojom::OnDeviceFeature::kCompose:
+    case mojom::OnDeviceFeature::kTest:
+    case mojom::OnDeviceFeature::kPromptApi:
+    case mojom::OnDeviceFeature::kHistorySearch:
+    case mojom::OnDeviceFeature::kSummarize:
+    case mojom::OnDeviceFeature::kHistoryQueryIntent:
+    case mojom::OnDeviceFeature::kScamDetection:
+    case mojom::OnDeviceFeature::kPermissionsAi:
+    case mojom::OnDeviceFeature::kProofreaderApi:
+    case mojom::OnDeviceFeature::kWritingAssistanceApi:
+    case mojom::OnDeviceFeature::kOnDeviceSpeechRecognition:
+      return OnDeviceModelType::kBaseModel;
+  }
+}
+
 // To enable on-device execution for a feature, update this to return a
 // non-null target.
 proto::OptimizationTarget GetOptimizationTargetForFeature(

@@ -47,14 +47,6 @@ bool UsageTracker::WasOnDeviceEligibleFeatureRecentlyUsed(
                                                         feature);
 }
 
-bool UsageTracker::WasAnyOnDeviceEligibleFeatureRecentlyUsed() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::ranges::any_of(
-      OnDeviceFeatureSet::All(), [&](mojom::OnDeviceFeature feature) {
-        return WasOnDeviceEligibleFeatureRecentlyUsed(feature);
-      });
-}
-
 void UsageTracker::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
