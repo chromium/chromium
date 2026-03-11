@@ -67,8 +67,16 @@ void DownloadRecordServiceImpl::RecordDownload(web::DownloadTask* task) {
              web::DownloadTask* task, const DownloadRecord& record,
              bool success) {
             if (service && success) {
-              service->download_task_observations_.AddObservation(task);
-              service->NotifyDownloadAdded(record);
+              // Guard against double-registration: the same task may be
+              // retried (e.g. user taps "Try Again"), which would call
+              // RecordDownload again with the same DownloadTask pointer.
+              // AddObservation CHECKs that the source is not already observed,
+              // so skip it if we are already tracking this task.
+              if (!service->download_task_observations_.IsObservingSource(
+                      task)) {
+                service->download_task_observations_.AddObservation(task);
+                service->NotifyDownloadAdded(record);
+              }
             }
           },
           weak_ptr_factory_.GetWeakPtr(), task, record));

@@ -435,3 +435,46 @@ TEST_F(DownloadRecordServiceImplTest, PersistOnlyNonIncognitoRecords) {
   EXPECT_EQ(normal_id, persistent_result[0].download_id);
   EXPECT_FALSE(persistent_result[0].is_incognito);
 }
+
+TEST_F(DownloadRecordServiceImplTest, RecordDownloadTwiceWithSameTask) {
+  const std::string download_id = "retry_download";
+  std::unique_ptr<web::FakeDownloadTask> task =
+      CreateFakeDownloadTask(download_id);
+
+  StrictMock<MockDownloadRecordObserver> mock_observer;
+  service_->AddObserver(&mock_observer);
+
+  // First RecordDownload should trigger OnDownloadAdded.
+  base::RunLoop run_loop1;
+  EXPECT_CALL(mock_observer, OnDownloadAdded(_))
+      .WillOnce([&](const DownloadRecord& record) {
+        EXPECT_EQ(download_id, record.download_id);
+        run_loop1.Quit();
+      });
+
+  service_->RecordDownload(task.get());
+  run_loop1.Run();
+
+  // Second RecordDownload with the same task (simulating retry) should NOT
+  // trigger OnDownloadAdded again because the task is already observed.
+  // This tests the guard against double-registration.
+
+  // No expectations set - StrictMock will fail if OnDownloadAdded is called.
+  // We verify this by checking that only one record exists in the database.
+  service_->RecordDownload(task.get());
+
+  service_->RemoveObserver(&mock_observer);
+
+  // Verify only one download record exists.
+  base::RunLoop run_loop2;
+  std::vector<DownloadRecord> result;
+  service_->GetAllDownloadsAsync(
+      base::BindLambdaForTesting([&](std::vector<DownloadRecord> records) {
+        result = std::move(records);
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
+
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(download_id, result[0].download_id);
+}
