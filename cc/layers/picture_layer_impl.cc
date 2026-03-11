@@ -392,12 +392,11 @@ bool PictureLayerImpl::AppendQuadForTile(
     switch (draw_info.mode()) {
       case TileDrawInfo::RESOURCE_MODE: {
         gfx::RectF texture_rect = iter.texture_rect();
-        auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-        quad->SetNew(shared_quad_state, offset_geometry_rect,
-                     offset_visible_geometry_rect, needs_blending,
-                     draw_info.resource_id_for_export(), texture_rect,
-                     nearest_neighbor_,
-                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+        auto* quad = AppendTileDrawQuad(
+            render_pass, shared_quad_state, offset_geometry_rect,
+            offset_visible_geometry_rect, needs_blending,
+            draw_info.resource_id_for_export(), texture_rect,
+            nearest_neighbor_);
         ValidateQuadResources(quad);
         has_draw_quad = true;
         break;

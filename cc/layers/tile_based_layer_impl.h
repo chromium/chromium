@@ -22,6 +22,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/tile_draw_quad.h"
 
 namespace cc {
 
@@ -108,6 +109,17 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       viz::SharedQuadState* shared_quad_state,
       const gfx::Rect& offset_geometry_rect,
       const gfx::Rect& offset_visible_geometry_rect);
+
+  // Appends a TileDrawQuad. Returns the appended quad.
+  viz::TileDrawQuad* AppendTileDrawQuad(
+      viz::CompositorRenderPass* render_pass,
+      viz::SharedQuadState* shared_quad_state,
+      const gfx::Rect& offset_geometry_rect,
+      const gfx::Rect& offset_visible_geometry_rect,
+      bool needs_blending,
+      viz::ResourceId resource_id,
+      const gfx::RectF& texture_rect,
+      bool nearest_neighbor);
 
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
@@ -453,6 +465,24 @@ viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, offset_geometry_rect,
                offset_visible_geometry_rect, color, false);
+  return quad;
+}
+
+template <typename Tiling>
+viz::TileDrawQuad* TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect,
+    bool needs_blending,
+    viz::ResourceId resource_id,
+    const gfx::RectF& texture_rect,
+    bool nearest_neighbor) {
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+  quad->SetNew(shared_quad_state, offset_geometry_rect,
+               offset_visible_geometry_rect, needs_blending, resource_id,
+               texture_rect, nearest_neighbor,
+               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
   return quad;
 }
 

@@ -205,11 +205,10 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
   if (*iter) {
     if (auto resource = iter->resource()) {
       const gfx::RectF texture_rect = iter.texture_rect();
-      auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-      quad->SetNew(shared_quad_state, offset_geometry_rect,
-                   offset_visible_geometry_rect, needs_blending,
-                   resource->resource_id, texture_rect, nearest_neighbor_,
-                   !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+      AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                         offset_visible_geometry_rect, needs_blending,
+                         resource->resource_id, texture_rect,
+                         nearest_neighbor_);
       has_draw_quad = true;
     } else if (auto color = iter->solid_color()) {
       has_draw_quad = true;
