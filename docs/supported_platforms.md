@@ -152,6 +152,10 @@ OS version supported is listed [here](https://support.google.com/chrome/a/answer
 The `is_desktop_android` GN arg configures a build of Chrome for Android that
 is customized for a desktop form factor.
 
+Chrome also runs on Android Automotive, shipping Chrome Beta on Intel-based
+chips and both Chrome Beta and Chrome Stable on ARM. Chrome's minimum
+supported OS version for Android Automotive is Android R.
+
 ### ChromeOS
 
 Chrome for ChromeOS supports both x86-64 and ARM architectures. For
