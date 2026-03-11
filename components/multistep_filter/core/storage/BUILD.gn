@@ -30,7 +30,10 @@ source_set("unit_tests") {
     ":storage",
     "//base",
     "//base/test:test_support",
+    "//components/multistep_filter/core/data_models",
     "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
