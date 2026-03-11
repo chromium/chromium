@@ -55,3 +55,7 @@ avd_variants {
     }
   }
 }
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}

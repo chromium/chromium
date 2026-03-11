@@ -55,3 +55,7 @@ additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
   version: "OYrEFrkwaK-a1rf2CSiqXp1ZugsWxQj3wS6LxjoEywMC" # 25.07.33
 }
+
+avd_launch_settings {
+  gpu_mode: "swangle_indirect"
+}
