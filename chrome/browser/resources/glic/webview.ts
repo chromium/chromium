@@ -238,7 +238,7 @@ export class WebviewController {
 
   zoom(zoomAction: ZoomAction) {
     // `WebViewType` is a union of `chrome.webviewTag.WebView` and
-    // `SlimWebViewElement`. Only full webviews support zoom.
+    // `SlimWebviewElement`. Only full webviews support zoom.
     if (!isFullWebView(this.webview)) {
       return;
     }

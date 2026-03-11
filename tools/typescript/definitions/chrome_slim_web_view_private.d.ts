@@ -4,7 +4,7 @@
 
 // This namespace is populated by bindings in
 // components/guest_view/renderer/slim_web_view/slim_web_view_bindings.cc
-// and is used to implement SlimWebViewElement.
+// and is used to implement SlimWebviewElement.
 declare namespace chrome {
   export namespace slimWebViewPrivate {
     export function allowGuestViewElementDefinition(callback: () => void): void;

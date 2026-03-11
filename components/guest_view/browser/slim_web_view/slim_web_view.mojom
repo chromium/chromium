@@ -49,7 +49,7 @@ interface PageHandler {
 
 // Interface that implements browser-to-page messages for a SlimWebView.
 interface Page {
-  // Dispatches an event to the SlimWebViewElement.
+  // Dispatches an event to the SlimWebviewElement.
   DispatchEvent(string event_name, mojo_base.mojom.DictionaryValue args,
                 int32 instance_id);
 };

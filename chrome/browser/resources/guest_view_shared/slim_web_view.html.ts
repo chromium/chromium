@@ -4,8 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SlimWebViewElement} from './slim_web_view.js';
+import type {SlimWebviewElement} from './slim_web_view.js';
 
-export function getHtml(this: SlimWebViewElement) {
+export function getHtml(this: SlimWebviewElement) {
   return html`<iframe></iframe>`;
 }

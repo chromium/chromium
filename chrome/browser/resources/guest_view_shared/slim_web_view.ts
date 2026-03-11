@@ -186,7 +186,7 @@ class SizeChangedEvent extends Event {
   }
 
   handle(element: HTMLElement) {
-    assertInstanceof(element, SlimWebViewElement);
+    assertInstanceof(element, SlimWebviewElement);
     const maxWidth = element.maxwidth || element.offsetWidth;
     const minWidth =
         Math.min(element.minwidth || element.offsetWidth, maxWidth);
@@ -262,7 +262,7 @@ const slimWebViewContainerFinalizationRegistry =
       chrome.slimWebViewPrivate.destroyContainer(containerId);
     });
 
-export class SlimWebViewElement extends CrLitElement {
+export class SlimWebviewElement extends CrLitElement {
   static get is() {
     // This is a restricted custom element name that is allowed-listed in
     // slim_web_view_bindings.cc.
@@ -497,10 +497,10 @@ export class SlimWebViewElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'webview': SlimWebViewElement;
+    'webview': SlimWebviewElement;
   }
 }
 
 chrome.slimWebViewPrivate.allowGuestViewElementDefinition(() => {
-  customElements.define(SlimWebViewElement.is, SlimWebViewElement);
+  customElements.define(SlimWebviewElement.is, SlimWebviewElement);
 });
