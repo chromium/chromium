@@ -32,55 +32,110 @@
 #import "url/gurl.h"
 
 namespace {
-// Validates whether the shortcut item is recognized, and record
-// user action metrics.
-bool ValidateShortcutItemAndRecordMetrics(NSString* shortcut_item) {
-  base::UmaHistogramEnumeration(kAppLaunchSource,
-                                AppLaunchSource::LONG_PRESS_ON_APP_ICON);
-  if ([shortcut_item isEqualToString:kShortcutNewSearch]) {
-    base::RecordAction(
-        base::UserMetricsAction("ApplicationShortcut.NewSearchPressed"));
-    return true;
-  } else if ([shortcut_item isEqualToString:kShortcutNewIncognitoSearch]) {
-    base::RecordAction(base::UserMetricsAction(
-        "ApplicationShortcut.NewIncognitoSearchPressed"));
-    return true;
-  } else if ([shortcut_item isEqualToString:kShortcutVoiceSearch]) {
-    base::RecordAction(
-        base::UserMetricsAction("ApplicationShortcut.VoiceSearchPressed"));
-    return true;
-  } else if ([shortcut_item isEqualToString:kShortcutQRScanner]) {
-    base::RecordAction(
-        base::UserMetricsAction("ApplicationShortcut.ScanQRCodePressed"));
-    return true;
-  } else if ([shortcut_item
-                 isEqualToString:kShortcutLensFromAppIconLongPress]) {
-    base::RecordAction(base::UserMetricsAction(
-        "ApplicationShortcut.LensPressedFromAppIconLongPress"));
-    return true;
-  } else if ([shortcut_item isEqualToString:kShortcutChangeWidgetToAppIcon]) {
-    // This intent is already handled by the OS, the default action for this
-    // intent is to open the app, no additional handling is needed. Check
-    // crbug.com/384806920 for additional info.
-    return false;
+
+// Possible shortcut item types, including invalid ones.
+enum class ShortcutItemType {
+  kInvalid,
+  kNewSearch,
+  kNewIncognitoSearch,
+  kVoiceSearch,
+  kQRScanner,
+  kLens,
+  kChangeWidgetToAppIcon,
+};
+
+// Maps shortcut item type string to shortcut items.
+struct ShortcutItemMapping {
+  NSString* shortcut_item_type_string;
+  ShortcutItemType shortcut_item_type;
+};
+
+// Returns the shortcut item type of `shortcut_item`.
+ShortcutItemType ShortcutItemTypeOf(UIApplicationShortcutItem* shortcut_item) {
+  const ShortcutItemMapping kShortcutItemMap[] = {
+      {kShortcutNewSearch, ShortcutItemType::kNewSearch},
+      {kShortcutNewIncognitoSearch, ShortcutItemType::kNewIncognitoSearch},
+      {kShortcutVoiceSearch, ShortcutItemType::kVoiceSearch},
+      {kShortcutQRScanner, ShortcutItemType::kQRScanner},
+      {kShortcutLensFromAppIconLongPress, ShortcutItemType::kLens},
+      {kShortcutChangeWidgetToAppIcon,
+       ShortcutItemType::kChangeWidgetToAppIcon},
+  };
+
+  NSString* shortcut_item_type = shortcut_item.type;
+  for (const auto& item : kShortcutItemMap) {
+    if ([shortcut_item_type isEqualToString:item.shortcut_item_type_string]) {
+      return item.shortcut_item_type;
+    }
   }
 
-  // Use 32 as the maximum length of the reported value for this key (31
-  // characters + '\0'). Expected values are UIApplicationShortcutItemType
-  // entries in Info.plist.
-  static crash_reporter::CrashKeyString<32> key("shortcut-item");
-  crash_reporter::ScopedCrashKeyString crash_key(
-      &key, base::SysNSStringToUTF8(shortcut_item));
-  base::debug::DumpWithoutCrashing();
-  return false;
+  return ShortcutItemType::kInvalid;
 }
+
+// Record metric for handle a shortcut of `shortcut_item_type`.
+void RecordMetrics(ShortcutItemType shortcut_item_type,
+                   NSString* shortcut_item_type_string) {
+  base::UmaHistogramEnumeration(kAppLaunchSource,
+                                AppLaunchSource::LONG_PRESS_ON_APP_ICON);
+  switch (shortcut_item_type) {
+    case ShortcutItemType::kNewSearch:
+      base::RecordAction(
+          base::UserMetricsAction("ApplicationShortcut.NewSearchPressed"));
+      break;
+    case ShortcutItemType::kNewIncognitoSearch:
+      base::RecordAction(base::UserMetricsAction(
+          "ApplicationShortcut.NewIncognitoSearchPressed"));
+      break;
+    case ShortcutItemType::kVoiceSearch:
+      base::RecordAction(
+          base::UserMetricsAction("ApplicationShortcut.VoiceSearchPressed"));
+      break;
+    case ShortcutItemType::kQRScanner:
+      base::RecordAction(
+          base::UserMetricsAction("ApplicationShortcut.ScanQRCodePressed"));
+      break;
+    case ShortcutItemType::kLens:
+      base::RecordAction(base::UserMetricsAction(
+          "ApplicationShortcut.LensPressedFromAppIconLongPress"));
+      break;
+    case ShortcutItemType::kChangeWidgetToAppIcon:
+      // This intent is already handled by the OS, the default action for this
+      // intent is to open the app, no additional handling is needed. Check
+      // crbug.com/384806920 for additional info.
+      break;
+    case ShortcutItemType::kInvalid:
+      // Use 32 as the maximum length of the reported value for this key (31
+      // characters + '\0'). Expected values are UIApplicationShortcutItemType
+      // entries in Info.plist.
+      static crash_reporter::CrashKeyString<32> key("shortcut-item");
+      crash_reporter::ScopedCrashKeyString crash_key(
+          &key, base::SysNSStringToUTF8(shortcut_item_type_string));
+      base::debug::DumpWithoutCrashing();
+      break;
+  }
+}
+
+// Returns whether the shortcut item is recognized.
+bool IsValidShortcutItem(ShortcutItemType shortcut_item_type) {
+  switch (shortcut_item_type) {
+    case ShortcutItemType::kNewSearch:
+    case ShortcutItemType::kNewIncognitoSearch:
+    case ShortcutItemType::kVoiceSearch:
+    case ShortcutItemType::kQRScanner:
+    case ShortcutItemType::kLens:
+      return true;
+    case ShortcutItemType::kChangeWidgetToAppIcon:
+    case ShortcutItemType::kInvalid:
+      return false;
+  }
+}
+
 }  // namespace
 
 @implementation TaskRequestForShortcutItem {
   UIApplicationShortcutItem* _shortcutItem;
   ShortcutCompletionHandler _shortcutHandler;
-  // Shortcut item should not be handled if the type is not recognised.
-  BOOL _isValidShortcutItem;
+  ShortcutItemType _shortcutItemType;
 }
 
 - (instancetype)initWithShortcutItem:(UIApplicationShortcutItem*)shortcutItem
@@ -90,15 +145,15 @@ bool ValidateShortcutItemAndRecordMetrics(NSString* shortcut_item) {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _shortcutItem = shortcutItem;
     _shortcutHandler = handler;
-    _isValidShortcutItem =
-        ValidateShortcutItemAndRecordMetrics(shortcutItem.type);
+    _shortcutItemType = ShortcutItemTypeOf(shortcutItem);
+    RecordMetrics(_shortcutItemType, shortcutItem.type);
   }
   return self;
 }
 
 - (void)execute {
   // Don't handle the intent if it's not recognised.
-  if (!_isValidShortcutItem) {
+  if (!IsValidShortcutItem(_shortcutItemType)) {
     if (_shortcutHandler) {
       _shortcutHandler(NO);
     }
@@ -118,19 +173,27 @@ bool ValidateShortcutItemAndRecordMetrics(NSString* shortcut_item) {
   TabOpeningPostOpeningAction action = NO_ACTION;
   GURL url = GURL(kChromeUINewTabURL);
 
-  if ([_shortcutItem.type isEqualToString:kShortcutNewSearch]) {
-    action = FOCUS_OMNIBOX;
-  } else if ([_shortcutItem.type isEqualToString:kShortcutNewIncognitoSearch]) {
-    action = FOCUS_OMNIBOX;
-    targetMode = ApplicationModeForTabOpening::INCOGNITO;
-  } else if ([_shortcutItem.type isEqualToString:kShortcutVoiceSearch]) {
-    action = START_VOICE_SEARCH;
-  } else if ([_shortcutItem.type isEqualToString:kShortcutQRScanner]) {
-    action = START_QR_CODE_SCANNER;
-  } else if ([_shortcutItem.type
-                 isEqualToString:kShortcutLensFromAppIconLongPress]) {
-    action = START_LENS_FROM_APP_ICON_LONG_PRESS;
-    url = GURL();
+  switch (_shortcutItemType) {
+    case ShortcutItemType::kNewSearch:
+      action = FOCUS_OMNIBOX;
+      break;
+    case ShortcutItemType::kNewIncognitoSearch:
+      action = FOCUS_OMNIBOX;
+      targetMode = ApplicationModeForTabOpening::INCOGNITO;
+      break;
+    case ShortcutItemType::kVoiceSearch:
+      action = START_VOICE_SEARCH;
+      break;
+    case ShortcutItemType::kQRScanner:
+      action = START_QR_CODE_SCANNER;
+      break;
+    case ShortcutItemType::kLens:
+      action = START_LENS_FROM_APP_ICON_LONG_PRESS;
+      url = GURL();
+      break;
+    case ShortcutItemType::kChangeWidgetToAppIcon:
+    case ShortcutItemType::kInvalid:
+      NOTREACHED();
   }
 
   BOOL isUnexpectedMode = NO;
@@ -167,7 +230,7 @@ bool ValidateShortcutItemAndRecordMetrics(NSString* shortcut_item) {
   }
 
   if (_shortcutHandler) {
-    _shortcutHandler(_isValidShortcutItem);
+    _shortcutHandler(YES);
   }
 }
 
