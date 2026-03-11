@@ -6079,10 +6079,6 @@ crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.any
 # Sheriff 2021-05-03
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
 
-
-# Sheriff 2021-05-07
-# Some plzServiceWorker and plzDedicatedWorker singled out from generic sheriff rounds above
-
 # For SkiaRenderer on MacOS
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
@@ -6342,11 +6338,6 @@ crbug.com/1066891 wpt_internal/bluetooth/legacy/requestDevice/sandboxed_iframe.h
 crbug.com/1066891 wpt_internal/bluetooth/legacy/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
 crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/legacy/requestDevice/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
 crbug.com/1066891 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/legacy/requestLEScan/sandboxed_iframe.https.window.html [ Failure Pass Timeout ]
-
-# Sheriff 2021-07-13
-
-# Flakes that might be caused or aggravated by PlzServiceWorker
-crbug.com/996511 external/wpt/service-workers/service-worker/getregistrations.https.html [ Crash Failure Pass Timeout ]
 
 # Test fails due to more accurate size reporting in heap snapshots.
 crbug.com/40778216 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Failure Timeout ]
