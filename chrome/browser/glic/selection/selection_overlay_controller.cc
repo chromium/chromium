@@ -102,9 +102,41 @@ SelectionOverlayController::SelectionOverlayController(
     tabs::TabInterface* tab,
     PrefService* pref_service)
     : OverlayBaseController(tab, pref_service),
-      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
+      base::BindRepeating(&SelectionOverlayController::TabForegrounded,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
+      base::BindRepeating(&SelectionOverlayController::TabDeactivated,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
+      base::BindRepeating(&SelectionOverlayController::WillDiscardContents,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
+      &SelectionOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
+}
 
 SelectionOverlayController::~SelectionOverlayController() = default;
+
+void SelectionOverlayController::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  CloseUI();
+}
+
+void SelectionOverlayController::WillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  CloseUI();
+}
+
+void SelectionOverlayController::TabDeactivated(tabs::TabInterface* tab) {
+  if (state() == State::kBackground) {
+    return;
+  }
+  TabWillEnterBackground(tab);
+}
 
 // static.
 SelectionOverlayController* SelectionOverlayController::FromOverlayWebContents(
