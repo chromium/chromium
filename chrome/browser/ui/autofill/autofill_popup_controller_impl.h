@@ -84,6 +84,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   FillingProduct GetMainFillingProduct() const override;
+  AutofillSuggestionTriggerSource GetSuggestionTriggerSource() const;
   void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
   void Show(UiSessionId ui_session_id,

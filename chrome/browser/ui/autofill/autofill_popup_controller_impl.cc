@@ -145,12 +145,14 @@ AutofillSuggestionController::GetOrCreate(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
     PopupControllerCommon controller_common,
-    int32_t form_control_ax_id) {
+    int32_t form_control_ax_id,
+    AutofillSuggestionTriggerSource trigger_source) {
   // All controllers on Desktop derive from `AutofillPopupControllerImpl`.
   if (AutofillPopupControllerImpl* previous_impl =
           static_cast<AutofillPopupControllerImpl*>(previous.get());
       previous_impl && previous_impl->delegate_.get() == delegate.get() &&
-      previous_impl->container_view() == controller_common.container_view) {
+      previous_impl->container_view() == controller_common.container_view &&
+      previous_impl->GetSuggestionTriggerSource() == trigger_source) {
     if (previous_impl->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
       previous_impl->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
     }
@@ -638,6 +640,11 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 
 FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {
   return delegate_->GetMainFillingProduct();
+}
+
+AutofillSuggestionTriggerSource
+AutofillPopupControllerImpl::GetSuggestionTriggerSource() const {
+  return trigger_source_;
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() const {

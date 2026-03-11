@@ -297,10 +297,11 @@ TEST_F(AutofillSuggestionControllerTest, GetOrCreate) {
   auto create_controller = [&](gfx::RectF bounds) {
     return AutofillSuggestionController::GetOrCreate(
         client().suggestion_controller(manager()).GetWeakPtr(),
-        manager().external_delegate().GetWeakPtrForTest(), nullptr,
+        manager().external_delegate().GetWeakPtrForTest(), web_contents(),
         PopupControllerCommon(std::move(bounds), base::i18n::UNKNOWN_DIRECTION,
                               gfx::NativeView()),
-        /*form_control_ax_id=*/0);
+        /*form_control_ax_id=*/0,
+        AutofillSuggestionTriggerSource::kUnspecified);
   };
   WeakPtr<AutofillSuggestionController> controller =
       create_controller(gfx::RectF());
@@ -366,11 +367,16 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
   base::WeakPtr<AutofillSuggestionController> controller =
       AutofillSuggestionController::GetOrCreate(
           client().suggestion_controller(manager()).GetWeakPtr(),
-          manager().external_delegate().GetWeakPtrForTest(), nullptr,
+          manager().external_delegate().GetWeakPtrForTest(), web_contents(),
           PopupControllerCommon(gfx::RectF(), base::i18n::UNKNOWN_DIRECTION,
                                 gfx::NativeView()),
-          /*form_control_ax_id=*/0);
+          /*form_control_ax_id=*/0,
+          AutofillSuggestionTriggerSource::kUnspecified);
   EXPECT_EQ(0, controller->GetLineCount());
+  if (controller) {
+    controller->Hide(SuggestionHidingReason::kViewDestroyed);
+  }
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {

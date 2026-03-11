@@ -38,7 +38,8 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
       PopupControllerCommon controller_common,
-      int32_t form_control_ax_id);
+      int32_t form_control_ax_id,
+      AutofillSuggestionTriggerSource trigger_source);
 
   using UiSessionId = AutofillClient::SuggestionUiSessionId;
   // Generates a new unique session id for suggestion UI.

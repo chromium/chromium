@@ -72,6 +72,7 @@ class AutofillKeyboardAccessoryControllerImpl
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   FillingProduct GetMainFillingProduct() const override;
+  AutofillSuggestionTriggerSource GetSuggestionTriggerSource() const;
   void Show(UiSessionId ui_session_id,
             std::vector<Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,

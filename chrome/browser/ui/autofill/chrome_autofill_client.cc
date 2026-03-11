@@ -1328,7 +1328,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
                             open_args.text_direction,
                             web_contents()->GetNativeView(),
                             open_args.anchor_type, open_args.show_tabbed_popup),
-      open_args.form_control_ax_id);
+      open_args.form_control_ax_id, open_args.trigger_source);
 
   suggestion_controller_->Show(
       session_id, open_args.suggestions, open_args.trigger_source,
