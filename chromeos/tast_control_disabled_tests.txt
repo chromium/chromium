@@ -95,7 +95,21 @@ apps.Sharesheet
 tast.apps.Sharesheet
 
 # https://crbug.com/437961311
+tast.bruschetta.AppEmacsWindowOperations.maximize@betty
+tast.bruschetta.AppEmacsWindowOperations.minimize@betty
+tast.bruschetta.AppEmacsWindowOperations.switch_tablet@betty
+tast.bruschetta.Basic.with_fieldtrial_config@betty
+tast.bruschetta.CommandVim@betty
 tast.bruschetta.CopyFilesToGuest@betty
+tast.bruschetta.CopyPaste.wayland_to_x11@betty
+tast.bruschetta.Toolkit.qt5_x11@betty
+tast.bruschetta.Toolkit.qt6_wayland@betty
+tast.bruschetta.Toolkit.qt6_x11@betty
+tast.crostini.CommandCd.baguette_stable@betty
+tast.crostini.RestartIcon.baguette_stable@betty
+tast.crostini.ShareDownloads.baguette_stable@betty
+tast.crostini.ShareFolders.baguette_stable@betty
+tast.inputs.VirtualKeyboardOverscroll.clamshell@betty
 
 # https://crbug.com/432304431
 tast.featured.FieldTrialEarlyBoot.active_trial
