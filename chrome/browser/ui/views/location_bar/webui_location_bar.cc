@@ -7,8 +7,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -102,7 +100,8 @@ WebUILocationBar::GetChipAnchor() {
 }
 
 ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {
-  return BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 Browser* WebUILocationBar::GetBrowser() {
