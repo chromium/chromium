@@ -229,7 +229,6 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         case html_names::HTMLTag::kCenter:
         case html_names::HTMLTag::kCol:
         case html_names::HTMLTag::kColgroup:
-        case html_names::HTMLTag::kCommand:
         case html_names::HTMLTag::kDd:
         case html_names::HTMLTag::kDetails:
         case html_names::HTMLTag::kDir:
@@ -294,6 +293,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
         case html_names::HTMLTag::kWbr:
         case html_names::HTMLTag::kXmp:
           return true;
+        case html_names::HTMLTag::kCommand:
+          return !RuntimeEnabledFeatures::HTMLCommandElementRemovalEnabled();
         default:
           return false;
       }

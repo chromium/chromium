@@ -3091,6 +3091,15 @@
       name: "HTMLCommandActionsV2",
       status: "test",
     },
+    // Remove support for the <command> element from the HTML parsing logic.
+    // This shipped in M148 and the flag can be removed in M150.
+    // https://issues.chromium.org/issues/491158089
+    // NOTE: when this flag is removed, be sure to also remove "command"
+    // from third_party/blink/renderer/core/html/html_tag_names.json5.
+    {
+      name: "HTMLCommandElementRemoval",
+      status: "stable",
+    },
     // Adds support for scroll commands such as 'page-up' and 'page-block-end'.
     // https://github.com/danielsakhapov/declarative-scroll-commands-for-html-explainer
     {

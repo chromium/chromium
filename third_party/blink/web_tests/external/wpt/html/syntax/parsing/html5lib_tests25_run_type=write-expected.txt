@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] html5lib_tests25.html de4aa726e09215ba9c50b97d257e6c6b880107f1
-  assert_equals: expected "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <command>\\n|       \\"A\\"" but got "#document\\n| <!DOCTYPE html>\\n| <html>\\n|   <head>\\n|   <body>\\n|     <command>\\n|     \\"A\\""
-Harness: the test ran to completion.
-

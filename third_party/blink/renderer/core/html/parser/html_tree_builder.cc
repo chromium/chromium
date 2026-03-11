@@ -693,7 +693,6 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kBase:
     case HTMLTag::kBasefont:
     case HTMLTag::kBgsound:
-    case HTMLTag::kCommand:
     case HTMLTag::kLink:
     case HTMLTag::kMeta:
     case HTMLTag::kNoframes:
@@ -1081,6 +1080,13 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     case HTMLTag::kTr:
       ParseError(token);
       break;
+    case HTMLTag::kCommand:
+      if (!RuntimeEnabledFeatures::HTMLCommandElementRemovalEnabled()) {
+        bool did_process = ProcessStartTagForInHead(token);
+        DCHECK(did_process);
+        break;
+      }
+      [[fallthrough]];
     default:
       if (token->GetName() == mathml_names::kMathTag.LocalName()) {
         tree_.ReconstructTheActiveFormattingElements();
@@ -2733,12 +2739,17 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
     case HTMLTag::kBase:
     case HTMLTag::kBasefont:
     case HTMLTag::kBgsound:
-    case HTMLTag::kCommand:
     case HTMLTag::kLink:
     case HTMLTag::kMeta:
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
       // Note: The custom processing for the <meta> tag is done in
       // HTMLMetaElement::process().
+      return true;
+    case html_names::HTMLTag::kCommand:
+      if (RuntimeEnabledFeatures::HTMLCommandElementRemovalEnabled()) {
+        return false;
+      }
+      tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
       return true;
     case HTMLTag::kTitle:
       ProcessGenericRCDATAStartTag(token);

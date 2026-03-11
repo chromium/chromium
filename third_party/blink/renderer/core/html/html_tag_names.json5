@@ -120,6 +120,8 @@
       name: "colgroup",
       interfaceName: "HTMLTableColElement",
     },
+    // TODO(crbug.com/491158089): This should be removed in M150, once the
+    // HTMLCommandElementRemoval flag was removed.
     {
       name: "command",
       interfaceName: "HTMLUnknownElement",
