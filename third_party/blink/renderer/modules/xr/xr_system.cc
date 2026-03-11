@@ -1704,7 +1704,7 @@ XRSession* XRSystem::CreateSensorlessInlineSession() {
                        mojo::NullReceiver() /* client receiver */,
                        std::move(device_config),
                        {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
-                       true, kInvalidTraceId /* sensorless_session */);
+                       kInvalidTraceId, true /* sensorless_session */);
 }
 
 void XRSystem::Dispose(DisposeType dispose_type) {
