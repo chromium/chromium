@@ -8295,7 +8295,7 @@ static_library("browser") {
 # all public deps of "browser" into a new target, and all circular dependencies
 # must include this target in a public_dep. This ensures stability and
 # correctness of the build-graph outside of //chrome/browser.
-static_library("browser_public_dependencies") {
+group("browser_public_dependencies") {
   public_deps = [
     # To avoid every target that is circularly dependent on
     # //chrome/browser:browser needing to include 2 separate targets, we include
@@ -8414,7 +8414,6 @@ static_library("browser_public_dependencies") {
       "//ui/views",
       "//ui/views/controls/webview",
     ]
-    arflags = [ "/llvmlibempty" ]
   }
   if (is_linux || is_win || is_mac) {
     public_deps += [ "//components/enterprise/core" ]
@@ -8445,7 +8444,7 @@ static_library("browser_public_dependencies") {
 # //chrome/browser:browser should be listed here. This ensures that the build
 # graph is correct and that all headers are generated before any translation
 # units are compiled.
-static_library("browser_generated_files") {
+group("browser_generated_files") {
   public_deps = [
     ":buildflags",
     "//chrome/browser/media:media_engagement_preload_proto",
@@ -8581,7 +8580,6 @@ static_library("browser_generated_files") {
     ]
   }
   if (is_win) {
-    arflags = [ "/llvmlibempty" ]
     public_deps += [ "//chrome/browser/ui/startup:buildflags" ]
   }
   if (is_win || is_mac || is_linux) {

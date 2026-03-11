@@ -5551,7 +5551,7 @@ static_library("ui") {
 # //chrome/browser. These are semantically a part of
 # //chrome/browser:browser_public_dependencies since //chrome/browser and
 # //chrome/browser/ui allow circular dependencies.
-static_library("ui_public_dependencies") {
+group("ui_public_dependencies") {
   visibility = [ "//chrome/browser:browser_public_dependencies" ]
   public_deps = [
     "//components/cross_device/logging",
@@ -5590,7 +5590,6 @@ static_library("ui_public_dependencies") {
     public_deps += [ "//chromeos/ash/services/multidevice_setup/public/mojom" ]
   }
   if (is_win) {
-    arflags = [ "/llvmlibempty" ]
     public_deps += [
       "//build:branding_buildflags",
       "//ui/views",
