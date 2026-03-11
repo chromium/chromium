@@ -114,14 +114,32 @@ void DumpModelToFile(const flatbuffers::DetachedBuffer& model_content) {
   }
 }
 
+bool CheckShapeMatch(base::span<const uint32_t> expected_shape,
+                     base::span<const int32_t> actual_shape) {
+  return std::ranges::equal(
+      expected_shape, actual_shape, [](uint32_t a, int32_t b) {
+        return base::IsValueInRangeForNumericType<int32_t>(a) &&
+               static_cast<int32_t>(a) == b;
+      });
+}
+
 template <typename T>
 base::expected<T, mojom::ErrorPtr> AsBaseExpected(
-    ::litert::Expected<T> result) {
+    ::litert::Expected<T> result,
+    std::string_view error_message = "") {
   if (result.HasValue()) {
-    return std::move(result.Value());
+    if constexpr (std::is_void_v<T>) {
+      return base::ok();
+    } else {
+      return std::move(result.Value());
+    }
   }
-  return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
-                                            result.Error().Message()));
+  std::string message(result.Error().Message());
+  if (!error_message.empty()) {
+    message = base::StrCat({error_message, ": ", message});
+  }
+  return base::unexpected(
+      mojom::Error::New(mojom::Error::Code::kUnknownError, std::move(message)));
 }
 
 }  // namespace
@@ -196,6 +214,62 @@ class GraphImplLiteRt::ComputeResources {
       self->devices.push_back(mojom::Device::kCpu);
     }
 
+    for (const auto& [name, input] : self->input_name_to_descriptor) {
+      self->input_tensor_types.push_back(::litert::RankedTensorType(
+          GetLiteRtElementType(input.descriptor.data_type()),
+          ::litert::Layout(
+              ::litert::Dimensions(input.descriptor.shape().begin(),
+                                   input.descriptor.shape().end()))));
+    }
+
+    ASSIGN_OR_RETURN(auto output_layouts,
+                     AsBaseExpected(self->model_->GetOutputTensorLayouts(
+                                        /*signature_index=*/0,
+                                        /*update_allocation=*/true),
+                                    "Failed to get output tensor layouts"));
+
+    if (self->output_name_to_descriptor.size() != output_layouts.size()) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError,
+          base::StringPrintf(
+              "The number of outputs in the model (%zu) doesn't match the "
+              "expected number of outputs (%zu).",
+              output_layouts.size(), self->output_name_to_descriptor.size())));
+    }
+
+    for (size_t i = 0; i < self->output_name_to_descriptor.size(); ++i) {
+      const auto& [name, output] = self->output_name_to_descriptor[i];
+      auto& layout = output_layouts[i];
+      // For scalar outputs the LiteRT tensor rank is 1 but the WebNN output
+      // rank is 0, so we skip the shape check for this case.
+      if (!output.descriptor.shape().empty() &&
+          !CheckShapeMatch(output.descriptor.shape(), layout.Dimensions())) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            base::StringPrintf(
+                "The shape of output tensor '%s' doesn't match the model's "
+                "output shape.",
+                name.c_str())));
+      }
+
+      auto tensor_type = ::litert::RankedTensorType(
+          GetLiteRtElementType(output.descriptor.data_type()),
+          std::move(layout));
+      ASSIGN_OR_RETURN(auto required_bytes,
+                       AsBaseExpected(tensor_type.Bytes()));
+      if (output.descriptor.PackedByteLength() != required_bytes) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            base::StringPrintf(
+                "Output buffer size (%zu bytes) is different from "
+                "the required size (%zu bytes) for output "
+                "tensor '%s'",
+                output.descriptor.PackedByteLength(),
+                static_cast<size_t>(required_bytes), name.c_str())));
+      }
+      self->output_tensor_types.push_back(std::move(tensor_type));
+    }
+
     return self;
   }
 
@@ -218,49 +292,40 @@ class GraphImplLiteRt::ComputeResources {
 #endif
   }
 
-  void DoDispatch(
+  base::expected<void, mojom::ErrorPtr> DoDispatchImpl(
       const std::vector<std::pair<std::string, TensorDescriptor>>& inputs,
       const std::vector<std::pair<std::string, TensorDescriptor>>& outputs,
-      base::flat_map<int, raw_ref<const BufferContent>> buffers,
-      ScopedTrace scoped_trace) {
+      const base::flat_map<int, raw_ref<const BufferContent>>& buffers,
+      ScopedTrace& scoped_trace) {
     scoped_trace.AddStep("Set up input and output buffers");
 
     std::vector<::litert::TensorBuffer> input_buffers;
     input_buffers.reserve(inputs.size());
-    for (const auto& [name, input] : inputs) {
-      auto tensor_type = ::litert::RankedTensorType(
-          GetLiteRtElementType(input.descriptor.data_type()),
-          ::litert::Layout(
-              ::litert::Dimensions(input.descriptor.shape().begin(),
-                                   input.descriptor.shape().end())));
+    for (int i = 0; i < inputs.size(); ++i) {
+      const auto& [name, input] = inputs[i];
       base::span<uint8_t> data = buffers.at(input.tensor_index)->AsSpan();
-      auto litert_buffer_or = ::litert::TensorBuffer::CreateFromHostMemory(
-          *env_, tensor_type, data.data(), data.size());
-      if (!litert_buffer_or) {
-        LOG(ERROR) << "Failed to create input litert buffer: "
-                   << litert_buffer_or.Error().Message();
-        return;
-      }
-      input_buffers.push_back(std::move(*litert_buffer_or));
+      ASSIGN_OR_RETURN(
+          auto litert_buffer,
+          AsBaseExpected(
+              ::litert::TensorBuffer::CreateFromHostMemory(
+                  *env_, input_tensor_types[i], data.data(), data.size()),
+              "Failed to create input LiteRT buffer"));
+      input_buffers.push_back(std::move(litert_buffer));
     }
 
     std::vector<::litert::TensorBuffer> output_buffers;
     output_buffers.reserve(outputs.size());
-    for (const auto& [name, output] : outputs) {
-      auto tensor_type = ::litert::RankedTensorType(
-          GetLiteRtElementType(output.descriptor.data_type()),
-          ::litert::Layout(
-              ::litert::Dimensions(output.descriptor.shape().begin(),
-                                   output.descriptor.shape().end())));
+    for (int i = 0; i < outputs.size(); ++i) {
+      const auto& [name, output] = outputs[i];
       base::span<uint8_t> data = buffers.at(output.tensor_index)->AsSpan();
-      auto litert_buffer_or = ::litert::TensorBuffer::CreateFromHostMemory(
-          *env_, tensor_type, data.data(), data.size());
-      if (!litert_buffer_or) {
-        LOG(ERROR) << "Failed to create output litert buffer: "
-                   << litert_buffer_or.Error().Message();
-        return;
-      }
-      output_buffers.push_back(std::move(*litert_buffer_or));
+
+      ASSIGN_OR_RETURN(
+          auto litert_buffer,
+          AsBaseExpected(
+              ::litert::TensorBuffer::CreateFromHostMemory(
+                  *env_, output_tensor_types[i], data.data(), data.size()),
+              "Failed to create output LiteRT buffer"));
+      output_buffers.push_back(std::move(litert_buffer));
     }
 
     scoped_trace.AddStep("Run inference");
@@ -273,8 +338,22 @@ class GraphImplLiteRt::ComputeResources {
 #endif
 
     if (!status) {
-      LOG(ERROR) << "Failed to compute: " << status.Error().Message();
-      return;
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError,
+          base::StrCat({"Failed to compute: ", status.Error().Message()})));
+    }
+
+    return base::ok();
+  }
+
+  void DoDispatch(
+      const std::vector<std::pair<std::string, TensorDescriptor>>& inputs,
+      const std::vector<std::pair<std::string, TensorDescriptor>>& outputs,
+      base::flat_map<int, raw_ref<const BufferContent>> buffers,
+      ScopedTrace scoped_trace) {
+    auto result = DoDispatchImpl(inputs, outputs, buffers, scoped_trace);
+    if (!result.has_value()) {
+      LOG(ERROR) << result.error()->message;
     }
   }
 
@@ -305,6 +384,9 @@ class GraphImplLiteRt::ComputeResources {
       input_name_to_descriptor;
   std::vector<std::pair<std::string, TensorDescriptor>>
       output_name_to_descriptor;
+
+  std::vector<::litert::RankedTensorType> input_tensor_types;
+  std::vector<::litert::RankedTensorType> output_tensor_types;
 
  private:
   base::expected<::litert::Options, mojom::ErrorPtr> GetCompilationOptions(
