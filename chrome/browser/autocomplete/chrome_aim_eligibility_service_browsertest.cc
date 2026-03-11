@@ -352,7 +352,7 @@ INSTANTIATE_TEST_SUITE_P(,
                              // Values for Pdf server response eligibility.
                              ::testing::Values(true, false)));
 
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && (!defined(NDEBUG))
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX))
 // TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
 #define MAYBE_ComprehensiveEligibilityTest DISABLED_ComprehensiveEligibilityTest
 #else
