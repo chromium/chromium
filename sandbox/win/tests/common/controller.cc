@@ -87,7 +87,6 @@ constexpr char kChildSwitch[] = "child";
 constexpr char kNoSandboxSwitch[] = "no-sandbox";
 constexpr char kStateSwitch[] = "state";
 constexpr char kCommandSwitch[] = "cmd";
-constexpr char kLegacySwitch[] = "legacy";
 
 std::wstring MakePathToSysBase(std::wstring_view name,
                                std::wstring_view sysname,
@@ -112,18 +111,10 @@ std::wstring MakePathToSysWow64(std::wstring_view name, bool is_obj_man_path) {
   return MakePathToSysBase(name, L"SysWOW64", is_obj_man_path);
 }
 
-int RunLegacyCommand(CommandFunction func,
-                     base::span<const std::wstring> args) {
-  std::vector<const wchar_t*> argv;
-  for (const auto& arg : args) {
-    argv.push_back(&arg[0]);
-  }
-  return func(static_cast<int>(argv.size()), std::data(argv));
-}
+using CommandType =
+    base::RepeatingCallback<int(base::span<const std::wstring>)>;
 
-base::RepeatingCallback<int(base::span<const std::wstring>)> BindCommand(
-    const std::string& command_name,
-    bool legacy_command) {
+CommandType BindCommand(const std::string& command_name) {
   HMODULE module;
   if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
@@ -137,12 +128,7 @@ base::RepeatingCallback<int(base::span<const std::wstring>)> BindCommand(
     return {};
   }
 
-  if (legacy_command) {
-    return base::BindRepeating(RunLegacyCommand,
-                               reinterpret_cast<CommandFunction>(func));
-  } else {
-    return base::BindRepeating(reinterpret_cast<CommandFunctionArgs>(func));
-  }
+  return base::BindRepeating(reinterpret_cast<CommandType::RunType*>(func));
 }
 
 }  // namespace
@@ -208,8 +194,7 @@ base::CommandLine TestRunnerBase::CreateCommandLine(
     std::string_view command,
     base::span<const std::string> args,
     SboxTestsState state,
-    bool no_sandbox,
-    bool legacy_command) {
+    bool no_sandbox) {
   // Get the path to the sandboxed process.
   base::FilePath prog_name;
   CHECK(base::PathService::Get(base::FILE_EXE, &prog_name));
@@ -217,9 +202,6 @@ base::CommandLine TestRunnerBase::CreateCommandLine(
   cmd_line.AppendSwitch(kChildSwitch);
   if (no_sandbox) {
     cmd_line.AppendSwitch(kNoSandboxSwitch);
-  }
-  if (legacy_command) {
-    cmd_line.AppendSwitch(kLegacySwitch);
   }
   DCHECK_LE(MAX_STATE, 10);
   cmd_line.AppendSwitchASCII(kStateSwitch,
@@ -233,10 +215,11 @@ base::CommandLine TestRunnerBase::CreateCommandLine(
   return cmd_line;
 }
 
-TestRunnerBase::TestRunnerBase(JobLevel job_level,
+TestRunnerBase::TestRunnerBase(std::string_view command,
+                               JobLevel job_level,
                                TokenLevel startup_token,
-                               TokenLevel main_token) {
-  timeout_ = TestTimeouts::test_launcher_timeout();
+                               TokenLevel main_token)
+    : command_(command), timeout_(TestTimeouts::test_launcher_timeout()) {
   broker_ = GetBroker();
   CHECK(broker_);
   policy_ = broker_->CreatePolicy();
@@ -291,9 +274,7 @@ bool TestRunnerBase::AddRuleSys32(FileSemantics semantics,
 }
 
 base::Process TestRunnerBase::CreateTestProcess(
-    std::string_view command,
-    base::span<const std::string> args,
-    bool legacy_command) {
+    base::span<const std::string> args) {
   if (disable_csrss_) {
     auto* config = policy_->GetConfig();
     if (config->GetAppContainer() == nullptr) {
@@ -302,8 +283,7 @@ base::Process TestRunnerBase::CreateTestProcess(
   }
 
   // Launch the sandboxed process
-  auto cmd_line =
-      CreateCommandLine(command, args, state_, no_sandbox_, legacy_command);
+  auto cmd_line = CreateCommandLine(command_, args, state_, no_sandbox_);
   return no_sandbox_ ? base::LaunchProcess(cmd_line, {})
                      : LaunchSandboxProcess(cmd_line);
 }
@@ -361,50 +341,6 @@ void TestRunnerBase::SetTimeout(base::TimeDelta timeout) {
   timeout_ = timeout;
 }
 
-TestRunner::~TestRunner() {
-  if (target_process_.IsValid() && kill_on_destruction_) {
-    target_process_.Terminate(0, /*wait=*/false);
-  }
-}
-
-int TestRunner::RunTest(std::wstring_view command) {
-  // For simplicity TestRunner supports only one process per instance.
-  if (target_process_.IsValid()) {
-    if (target_process_.IsRunning()) {
-      return SBOX_TEST_FAILED_TO_RUN_TEST;
-    }
-    target_process_.Close();
-  }
-
-  // Note: To use the `CommandLine` class we add a fake program and the switch
-  // terminator so that it doesn't sort switch arguments which can change the
-  // ordering.
-  std::wstring dummy_cmd_line = L"dummy -- ";
-  dummy_cmd_line += command;
-  auto cmd_line = base::CommandLine::FromString(dummy_cmd_line);
-  auto cmd_args = cmd_line.GetArgs();
-  if (cmd_args.empty()) {
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
-  }
-  std::vector<std::string> args;
-  for (size_t i = 1; i < cmd_args.size(); ++i) {
-    args.emplace_back(base::WideToUTF8(cmd_args[i]));
-  }
-  auto process = CreateTestProcess(base::WideToUTF8(cmd_args[0]), args,
-                                   /*legacy_command=*/true);
-  if (!process.IsValid()) {
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
-  }
-
-  // For an asynchronous run we don't bother waiting.
-  if (is_async_) {
-    target_process_ = std::move(process);
-    return SBOX_TEST_SUCCEEDED;
-  }
-
-  return WaitForResult(process);
-}
-
 bool IsChildProcessForTesting() {
   // Initialize the singleton command line.
   base::CommandLine::Init(0, nullptr);
@@ -433,7 +369,7 @@ int DispatchCall() {
   auto args = cmd_line->GetArgs();
   // We hard code two tests to avoid dispatch failures.
   if (command_name == sandbox::WaitCommandTestRunner::type::kTestName) {
-    Sleep(INFINITE);
+    ::Sleep(INFINITE);
     return SBOX_TEST_TIMED_OUT;
   }
 
@@ -459,7 +395,7 @@ int DispatchCall() {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
 
-  auto command = BindCommand(command_name, cmd_line->HasSwitch(kLegacySwitch));
+  auto command = BindCommand(command_name);
   if (!command) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   }
