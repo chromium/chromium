@@ -96,8 +96,7 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
                          AppendQuadsCustomSharedData* custom_data) override {
     return true;
   }
-  void ComputeCheckerboardedNeedsRecord(
-      AppendQuadsData* append_quads_data) override {}
+  bool ComputeCheckerboardedNeedsRecord() override { return false; }
   float GetMaximumContentsScaleForUseInAppendQuads() const override {
     return 1.f;
   }

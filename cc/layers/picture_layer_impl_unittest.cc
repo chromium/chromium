@@ -1709,7 +1709,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // All tiles in activation rect is ready to draw.
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_TRUE(active_layer()->produced_tile_last_append_quads());
 }
 
@@ -1740,7 +1740,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsComplete) {
   // All high res tiles drew, nothing was incomplete.
   EXPECT_EQ(9u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_TRUE(active_layer()->produced_tile_last_append_quads());
 }
 
@@ -1764,7 +1764,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncomplete) {
 
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_FALSE(active_layer()->produced_tile_last_append_quads());
 }
 
@@ -1829,7 +1829,7 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // Neither the high res nor the ideal tiles were considered as incomplete.
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_TRUE(active_layer()->produced_tile_last_append_quads());
 }
 
@@ -1864,7 +1864,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   EXPECT_EQ(recorded_bounds, active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_TRUE(data.checkerboarded_needs_record);
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_FALSE(active_layer()->produced_tile_last_append_quads());
 
   recorded_bounds = gfx::Rect(30, 30, 150, 150);
@@ -1884,7 +1884,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
             active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_TRUE(data.checkerboarded_needs_record);
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_FALSE(active_layer()->produced_tile_last_append_quads());
 
   // Initialize all tiles with resources.
@@ -1901,7 +1901,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->DidDraw(nullptr);
   EXPECT_EQ(4u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_TRUE(data.checkerboarded_needs_record);
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_TRUE(active_layer()->produced_tile_last_append_quads());
 
   // Now the layer is fully recorded.
@@ -1922,7 +1922,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->DidDraw(nullptr);
   EXPECT_EQ(4u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
   EXPECT_TRUE(active_layer()->produced_tile_last_append_quads());
 }
 
@@ -1979,7 +1979,7 @@ TEST_F(LegacySWPictureLayerImplTest, RasterInducingScrollPaintCheckerboarding) {
         &data);
     active_layer()->DidDraw(nullptr);
     EXPECT_EQ(1u, render_pass->quad_list.size());
-    EXPECT_EQ(expected, data.checkerboarded_needs_record);
+    EXPECT_EQ(expected, active_layer()->ComputeCheckerboardedNeedsRecord());
   };
   check_checkerboarding(false);
 

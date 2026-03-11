@@ -277,12 +277,20 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   ValidateQuadResources(quad);
 }
 
-void PictureLayerImpl::ComputeCheckerboardedNeedsRecord(
-    AppendQuadsData* append_quads_data) {
+bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
+  if (is_backdrop_filter_mask()) {
+    return false;
+  }
+
+  if (solid_color()) {
+    return false;
+  }
+
   const ScrollTree& scroll_tree =
       layer_tree_impl()->property_trees()->scroll_tree();
 
-  if (const auto& display_list = raster_source_->GetDisplayItemList()) {
+  if (const auto& display_list =
+          raster_source_ ? raster_source_->GetDisplayItemList() : nullptr) {
     for (auto& [element_id, info] : display_list->raster_inducing_scrolls()) {
       if (!info.visual_rect.Intersects(visible_layer_rect())) {
         continue;
@@ -300,13 +308,44 @@ void PictureLayerImpl::ComputeCheckerboardedNeedsRecord(
           visible_rect.Offset(
               scroll_tree.current_scroll_offset(element_id).OffsetFromOrigin());
           if (!cull_rect->Contains(gfx::ToEnclosedRect(visible_rect))) {
-            append_quads_data->checkerboarded_needs_record = true;
-            break;
+            return true;
           }
         }
       }
     }
   }
+
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
+  std::optional<gfx::Rect> scaled_cull_rect =
+      CalculateScaledCullRect(max_contents_scale);
+  if (!scaled_cull_rect) {
+    return false;
+  }
+
+  const gfx::Transform quad_to_target_transform =
+      GetScaledDrawTransform(max_contents_scale);
+  const Occlusion scaled_occlusion =
+      draw_properties()
+          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
+              quad_to_target_transform);
+  const gfx::Rect scaled_recorded_bounds =
+      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
+
+  gfx::Size scaled_bounds =
+      gfx::ScaleToCeiledSize(bounds(), max_contents_scale);
+  gfx::Rect scaled_visible_layer_rect =
+      gfx::ScaleToEnclosingRect(visible_layer_rect(), max_contents_scale);
+  scaled_visible_layer_rect.Intersect(gfx::Rect(scaled_bounds));
+
+  gfx::Rect recorded_visible_layer_rect = scaled_visible_layer_rect;
+  recorded_visible_layer_rect.Intersect(scaled_recorded_bounds);
+  gfx::Rect unoccluded_recorded_visible_rect =
+      scaled_occlusion.GetUnoccludedContentRect(recorded_visible_layer_rect);
+  if (!unoccluded_recorded_visible_rect.IsEmpty() &&
+      !scaled_cull_rect->Contains(unoccluded_recorded_visible_rect)) {
+    return true;
+  }
+  return false;
 }
 
 std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
@@ -375,11 +414,6 @@ bool PictureLayerImpl::AppendQuadForTile(
       case TileDrawInfo::OOM_MODE:
         break;  // Checkerboard.
     }
-  }
-
-  if (!append_quads_data->checkerboarded_needs_record && scaled_cull_rect &&
-      !scaled_cull_rect->Contains(visible_geometry_rect)) {
-    append_quads_data->checkerboarded_needs_record = true;
   }
 
   if (!has_draw_quad) {

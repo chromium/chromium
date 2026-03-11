@@ -2929,10 +2929,11 @@ class IncompleteRecordingLayer : public LayerImpl {
   IncompleteRecordingLayer(LayerTreeImpl* layer_tree_impl, int id)
       : LayerImpl(layer_tree_impl, id) {}
 
+  bool ComputeCheckerboardedNeedsRecord() override { return true; }
+
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
-    append_quads_data->checkerboarded_needs_record = true;
     append_quads_data->visible_layer_area += 200;
   }
 };

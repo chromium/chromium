@@ -23,8 +23,6 @@ class CC_EXPORT AppendQuadsData {
 
   int num_missing_tiles = 0;
 
-  bool checkerboarded_needs_record = false;
-
   int64_t visible_layer_area = 0;
 
   // The visible content area of tiles that are of low or non-ideal resolution.

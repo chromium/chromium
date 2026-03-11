@@ -70,6 +70,8 @@ class CC_EXPORT PictureLayerImpl
   DamageReasonSet GetDamageReasons() const override;
   void DidDraw(viz::ClientResourceProvider* resource_provider) override;
 
+  bool ComputeCheckerboardedNeedsRecord() override;
+
   // PictureLayerTilingClient overrides.
   std::unique_ptr<Tile> CreateTile(const Tile::CreateInfo& info) override;
   gfx::Size CalculateTileSize(const gfx::Size& content_bounds) override;
@@ -421,8 +423,6 @@ class CC_EXPORT PictureLayerImpl
       const gfx::Rect& coverage_rect,
       float coverage_scale,
       float ideal_contents_scale) override;
-  void ComputeCheckerboardedNeedsRecord(
-      AppendQuadsData* append_quads_data) override;
 
   bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
                          const AppendQuadsContext& context,

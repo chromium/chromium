@@ -151,6 +151,8 @@ class CC_EXPORT LayerImpl {
                            AppendQuadsData* append_quads_data) {}
   virtual void DidDraw(viz::ClientResourceProvider* resource_provider) {}
 
+  virtual bool ComputeCheckerboardedNeedsRecord();
+
   // Verify that the resource ids in the quad are valid.
   void ValidateQuadResources(viz::DrawQuad* quad) const {
 #if DCHECK_IS_ON()
@@ -557,13 +559,13 @@ class CC_EXPORT LayerImpl {
                              AppendQuadsData* append_quads_data,
                              SkColor4f color,
                              float width) const;
+  gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
 
   static float GetPreferredRasterScale(
       gfx::Vector2dF raster_space_scale_factor);
 
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
-  gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
 
   const int layer_id_;
   const raw_ptr<LayerTreeImpl> layer_tree_impl_;

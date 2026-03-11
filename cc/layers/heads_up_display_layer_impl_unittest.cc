@@ -46,7 +46,7 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
   size_t expected_quad_list_size = will_draw ? 1 : 0;
   EXPECT_EQ(expected_quad_list_size, pass_list.back()->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_FALSE(data.checkerboarded_needs_record);
+  EXPECT_FALSE(layer->ComputeCheckerboardedNeedsRecord());
 }
 
 class HeadsUpDisplayLayerImplTest : public LayerTreeImplTestBase,

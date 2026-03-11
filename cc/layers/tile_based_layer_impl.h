@@ -78,7 +78,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       : LayerImpl(tree_impl, id) {}
 
   std::optional<SkColor4f> solid_color() const { return solid_color_; }
-
   std::optional<gfx::Rect> CalculateScaledCullRect(
       float max_contents_scale) const;
 
@@ -118,11 +117,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
       const Occlusion& scaled_occlusion) = 0;
-
-  // Called from AppendQuads() for subclasses to compute and set
-  // `checkerboarded_needs_record` on `append_quads_data` as relevant.
-  virtual void ComputeCheckerboardedNeedsRecord(
-      AppendQuadsData* append_quads_data) = 0;
 
   // Called just before starting the loop appending quads to allow subclasses to
   // do any desired setup, including allowing them to create a container for
@@ -324,8 +318,6 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   // *this* invocation in order to determine which scales are now unused and can
   // be considered for removal.
   ClearLastAppendQuadsScales();
-
-  ComputeCheckerboardedNeedsRecord(append_quads_data);
 
   auto custom_data = WillAppendQuads(max_contents_scale);
 

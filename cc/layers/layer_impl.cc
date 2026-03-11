@@ -295,6 +295,10 @@ bool LayerImpl::WillDraw(DrawMode draw_mode,
   return true;
 }
 
+bool LayerImpl::ComputeCheckerboardedNeedsRecord() {
+  return false;
+}
+
 bool LayerImpl::ShowDebugBorders(DebugBorderType type) const {
   return layer_tree_impl()->debug_state().show_debug_borders.test(type);
 }

@@ -1671,13 +1671,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
             append_quads_data.approximated_visible_content_area);
 
         num_missing_tiles += append_quads_data.num_missing_tiles;
-        frame->checkerboarded_needs_record |=
-            append_quads_data.checkerboarded_needs_record;
 
         if (append_quads_data.num_missing_tiles > 0) {
           have_missing_animated_tiles |=
               layer->screen_space_transform_is_animating();
         }
+      }
+
+      if (context.draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE &&
+          layer->ComputeCheckerboardedNeedsRecord()) {
+        frame->checkerboarded_needs_record = true;
       }
 
       // TODO(zmo): Audit if this is necessary when UI is moved to TreesInViz.
