@@ -194,9 +194,8 @@ class EntityDataManager
       history_service_observation_{this};
 
   // AccessibilityAnnotatorService outlives the EntityDataManager.
-  base::ScopedObservation<
-      accessibility_annotator::AccessibilityAnnotationService,
-      accessibility_annotator::EntityDataProvider::Observer>
+  base::ScopedObservation<accessibility_annotator::EntityDataProvider,
+                          accessibility_annotator::EntityDataProvider::Observer>
       accessibility_annotator_observation_{this};
 
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;

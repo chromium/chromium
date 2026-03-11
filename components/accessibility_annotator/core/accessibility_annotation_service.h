@@ -22,11 +22,7 @@ class AccessibilityAnnotationService : public KeyedService {
       std::unique_ptr<EntityDataProvider> entity_data_provider);
   ~AccessibilityAnnotationService() override;
 
-  // EntityDataProvider methods forwarded:
-  void AddObserver(EntityDataProvider::Observer* observer);
-  void RemoveObserver(EntityDataProvider::Observer* observer);
-  void GetEntities(EntityTypeEnumSet types,
-                   base::OnceCallback<void(std::vector<Entity>)> callback);
+  EntityDataProvider& GetEntityDataProvider();
 
  private:
   std::unique_ptr<EntityDataProvider> entity_data_provider_;

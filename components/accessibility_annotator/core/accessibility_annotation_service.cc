@@ -20,20 +20,8 @@ AccessibilityAnnotationService::AccessibilityAnnotationService(
 
 AccessibilityAnnotationService::~AccessibilityAnnotationService() = default;
 
-void AccessibilityAnnotationService::AddObserver(
-    EntityDataProvider::Observer* observer) {
-  entity_data_provider_->AddObserver(observer);
-}
-
-void AccessibilityAnnotationService::RemoveObserver(
-    EntityDataProvider::Observer* observer) {
-  entity_data_provider_->RemoveObserver(observer);
-}
-
-void AccessibilityAnnotationService::GetEntities(
-    EntityTypeEnumSet types,
-    base::OnceCallback<void(std::vector<Entity>)> callback) {
-  entity_data_provider_->GetEntities(types, std::move(callback));
+EntityDataProvider& AccessibilityAnnotationService::GetEntityDataProvider() {
+  return *entity_data_provider_;
 }
 
 }  // namespace accessibility_annotator

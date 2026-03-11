@@ -88,7 +88,7 @@ EntityDataManager::EntityDataManager(
           features::kAutofillUseAccessibilityAnnotator) &&
       accessibility_annotator_service) {
     accessibility_annotator_observation_.Observe(
-        accessibility_annotator_service);
+        &accessibility_annotator_service->GetEntityDataProvider());
   }
 }
 
