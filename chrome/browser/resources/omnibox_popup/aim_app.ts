@@ -124,7 +124,6 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.$.composebox.playGlowAnimation();
       this.$.composebox.setDefaultModel();
     }
-    this.$.composebox.resetCaret();
     this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
     this.preserveContextOnClose_ = false;
