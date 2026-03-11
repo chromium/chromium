@@ -171,6 +171,7 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, AddSearchEngine) {
   EXPECT_EQ(t_url->short_name(), short_name);
   EXPECT_EQ(t_url->url(), search_url);
   EXPECT_FALSE(t_url->safe_for_autoreplace());
+  EXPECT_EQ(t_url->is_active(), TemplateURLData::ActiveStatus::kTrue);
 }
 
 TEST_F(TemplateUrlServiceAndroidUnitTest, AddSearchEngineFailed_KeywordExists) {

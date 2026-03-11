@@ -502,6 +502,7 @@ bool TemplateUrlServiceAndroid::AddSearchEngine(
   data.SetKeyword(keyword);
   data.SetURL(search_url);
   data.safe_for_autoreplace = false;
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   if (!template_url_service_->Add(std::make_unique<TemplateURL>(data))) {
     return false;
   }

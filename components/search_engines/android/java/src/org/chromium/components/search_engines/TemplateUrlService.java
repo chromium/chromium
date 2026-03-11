@@ -467,7 +467,7 @@ public class TemplateUrlService {
     }
 
     /**
-     * Adds a search engine.
+     * Adds a search engine. The search engine is active by default.
      *
      * @param shortName The short name of the search engine to be added.
      * @param keyword The keyword of the search engine to be added.

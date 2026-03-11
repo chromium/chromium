@@ -113,9 +113,10 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
                         const std::u16string& new_keyword,
                         const std::string& search_url);
 
-  // Adds a search engine with the given attributes. Returns true if the search
-  // engine was successfully added, false if the search engine with the given
-  // keyword already exists or failed to add internally.
+  // Adds a search engine with the given attributes. The new search engine is
+  // active by default. Returns true if the search engine was successfully
+  // added, false if the search engine with the given keyword already exists or
+  // failed to add internally.
   bool AddSearchEngine(JNIEnv* env,
                        const std::u16string& short_name,
                        const std::u16string& keyword,
