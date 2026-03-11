@@ -96,6 +96,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   // Helpers for tracking the incognito scrolling position.
   BOOL _incognitoScrolledAtTop;
   BOOL _scrollIncognitoToTopOnNextLayout;
+
+  // Last known preferred content height of the omnibox view controller.
+  CGFloat _omniboxPreferredContentHeight;
 }
 
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme {
@@ -631,19 +634,18 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   CGFloat contentHeight = 0;
   if ([container isKindOfClass:[ComposeboxInputPlateViewController class]]) {
     // If omnibox has no results suggestions, then the input plate should be the
-    // tallest content. Use _omniboxPopupContainer since no way to access
-    // content size of the omnibox popup table view.
+    // tallest content.
     CGFloat tallestHeight =
         _omniboxPopupContainer.hidden
             ? containerHeight + kBlurBottomMargin
-            : std::max(_omniboxPopupContainer.bounds.size.height,
-                       containerHeight + kBlurBottomMargin);
+            : containerHeight + _omniboxPreferredContentHeight;
     contentHeight = tallestHeight;
   } else {
     // Calculate content height knowing the content size of the omnibox popup
     // table view.
+    _omniboxPreferredContentHeight = containerHeight;
     contentHeight = _inputViewController.inputHeight +
-                    std::max(containerHeight, kBlurBottomMargin);
+                    std::max(_omniboxPreferredContentHeight, kBlurBottomMargin);
   }
   CGFloat totalHeight = contentHeight + kInputPlateMargin;
   if (self.preferredContentSize.height != totalHeight) {
