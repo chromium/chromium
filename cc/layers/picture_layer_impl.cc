@@ -274,6 +274,10 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
       texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
       std::move(image_animation_map), raster_source_->GetDisplayItemList(),
       GetRasterInducingScrollOffsets());
+  DidAppendQuad(quad);
+}
+
+void PictureLayerImpl::DidAppendQuad(viz::DrawQuad* quad) {
   ValidateQuadResources(quad);
 }
 
@@ -392,21 +396,17 @@ bool PictureLayerImpl::AppendQuadForTile(
     switch (draw_info.mode()) {
       case TileDrawInfo::RESOURCE_MODE: {
         gfx::RectF texture_rect = iter.texture_rect();
-        auto* quad = AppendTileDrawQuad(
-            render_pass, shared_quad_state, offset_geometry_rect,
-            offset_visible_geometry_rect, needs_blending,
-            draw_info.resource_id_for_export(), texture_rect,
-            nearest_neighbor_);
-        ValidateQuadResources(quad);
+        AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect, needs_blending,
+                           draw_info.resource_id_for_export(), texture_rect,
+                           nearest_neighbor_);
         has_draw_quad = true;
         break;
       }
       case TileDrawInfo::SOLID_COLOR_MODE: {
-        if (auto* quad = AppendSolidColorQuad(
-                render_pass, shared_quad_state, offset_geometry_rect,
-                offset_visible_geometry_rect, draw_info.solid_color())) {
-          ValidateQuadResources(quad);
-        }
+        AppendSolidColorQuad(render_pass, shared_quad_state,
+                             offset_geometry_rect, offset_visible_geometry_rect,
+                             draw_info.solid_color());
         has_draw_quad = true;
         break;
       }
@@ -417,10 +417,8 @@ bool PictureLayerImpl::AppendQuadForTile(
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
-    auto* quad = AppendCheckerboardQuad(render_pass, shared_quad_state,
-                                        offset_geometry_rect,
-                                        offset_visible_geometry_rect);
-    ValidateQuadResources(quad);
+    AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect);
 
     // Report data on any missing images that might be the largest
     // contentful image.

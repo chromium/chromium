@@ -95,31 +95,32 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     return std::ranges::contains(last_append_quads_scales_, scale);
   }
 
-  // Appends a solid-color quad with color `color`. Returns the appended quad.
-  viz::SolidColorDrawQuad* AppendSolidColorQuad(
-      viz::CompositorRenderPass* render_pass,
-      viz::SharedQuadState* shared_quad_state,
-      const gfx::Rect& offset_geometry_rect,
-      const gfx::Rect& offset_visible_geometry_rect,
-      SkColor4f color);
+  // Appends a solid-color quad with color `color`.
+  void AppendSolidColorQuad(viz::CompositorRenderPass* render_pass,
+                            viz::SharedQuadState* shared_quad_state,
+                            const gfx::Rect& offset_geometry_rect,
+                            const gfx::Rect& offset_visible_geometry_rect,
+                            SkColor4f color);
 
-  // Appends a solid-color quad for checkerboarding. Returns the appended quad.
-  viz::SolidColorDrawQuad* AppendCheckerboardQuad(
-      viz::CompositorRenderPass* render_pass,
-      viz::SharedQuadState* shared_quad_state,
-      const gfx::Rect& offset_geometry_rect,
-      const gfx::Rect& offset_visible_geometry_rect);
+  // Appends a solid-color quad for checkerboarding.
+  void AppendCheckerboardQuad(viz::CompositorRenderPass* render_pass,
+                              viz::SharedQuadState* shared_quad_state,
+                              const gfx::Rect& offset_geometry_rect,
+                              const gfx::Rect& offset_visible_geometry_rect);
 
-  // Appends a TileDrawQuad. Returns the appended quad.
-  viz::TileDrawQuad* AppendTileDrawQuad(
-      viz::CompositorRenderPass* render_pass,
-      viz::SharedQuadState* shared_quad_state,
-      const gfx::Rect& offset_geometry_rect,
-      const gfx::Rect& offset_visible_geometry_rect,
-      bool needs_blending,
-      viz::ResourceId resource_id,
-      const gfx::RectF& texture_rect,
-      bool nearest_neighbor);
+  // Appends a TileDrawQuad.
+  void AppendTileDrawQuad(viz::CompositorRenderPass* render_pass,
+                          viz::SharedQuadState* shared_quad_state,
+                          const gfx::Rect& offset_geometry_rect,
+                          const gfx::Rect& offset_visible_geometry_rect,
+                          bool needs_blending,
+                          viz::ResourceId resource_id,
+                          const gfx::RectF& texture_rect,
+                          bool nearest_neighbor);
+
+  // Invoked after a quad has been appended to allow subclasses to perform any
+  // subclass-specific validation or tracking.
+  virtual void DidAppendQuad(viz::DrawQuad* quad) {}
 
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
@@ -434,7 +435,7 @@ void TileBasedLayerImpl<Tiling>::AppendSolidQuad(
 }
 
 template <typename Tiling>
-viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
+void TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& offset_geometry_rect,
@@ -442,17 +443,17 @@ viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
     SkColor4f color) {
   float alpha = color.fA * shared_quad_state->opacity;
   if (alpha < std::numeric_limits<float>::epsilon()) {
-    return nullptr;
+    return;
   }
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, offset_geometry_rect,
                offset_visible_geometry_rect, color,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-  return quad;
+  DidAppendQuad(quad);
 }
 
 template <typename Tiling>
-viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
+void TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& offset_geometry_rect,
@@ -465,11 +466,11 @@ viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, offset_geometry_rect,
                offset_visible_geometry_rect, color, false);
-  return quad;
+  DidAppendQuad(quad);
 }
 
 template <typename Tiling>
-viz::TileDrawQuad* TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
+void TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& offset_geometry_rect,
@@ -483,7 +484,7 @@ viz::TileDrawQuad* TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
                offset_visible_geometry_rect, needs_blending, resource_id,
                texture_rect, nearest_neighbor,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-  return quad;
+  DidAppendQuad(quad);
 }
 
 template <typename Tiling>
