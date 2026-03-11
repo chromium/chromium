@@ -10,6 +10,8 @@
 
 @class NSDictionary;
 
+namespace gaia {
+
 // iOS implementation of DeviceManagementErrorDetails. It holds the user_info
 // dictionary from the original NSError and whether the error is user
 // actionable.
@@ -34,5 +36,7 @@ class IOSDeviceManagementErrorDetails : public DeviceManagementErrorDetails {
   NSDictionary* __strong ns_user_info_;
   const bool is_user_actionable_;
 };
+
+}  // namespace gaia
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_IOS_DEVICE_MANAGEMENT_ERROR_DETAILS_H_

@@ -190,7 +190,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
   // Create a GoogleServiceAuthError for DEVICE_MANAGEMENT_ERROR with the given
   // details
   static GoogleServiceAuthError FromDeviceManagementError(
-      std::unique_ptr<DeviceManagementErrorDetails> details);
+      std::unique_ptr<gaia::DeviceManagementErrorDetails> details);
 
   static bool IsValid(State state);
 
@@ -295,14 +295,14 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GoogleServiceAuthError {
 
   struct DeviceManagementError {
     explicit DeviceManagementError(
-        std::unique_ptr<DeviceManagementErrorDetails> detail);
+        std::unique_ptr<gaia::DeviceManagementErrorDetails> detail);
     ~DeviceManagementError();
     DeviceManagementError(const DeviceManagementError& other);
     DeviceManagementError& operator=(const DeviceManagementError& other);
     DeviceManagementError(DeviceManagementError&& other) noexcept;
     DeviceManagementError& operator=(DeviceManagementError&& other) noexcept;
 
-    std::unique_ptr<DeviceManagementErrorDetails> details;
+    std::unique_ptr<gaia::DeviceManagementErrorDetails> details;
 
     bool operator==(const DeviceManagementError& other) const;
   };

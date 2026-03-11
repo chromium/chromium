@@ -4,6 +4,8 @@
 
 #include "google_apis/gaia/fake_device_management_error_details.h"
 
+namespace gaia {
+
 FakeDeviceManagementErrorDetails::FakeDeviceManagementErrorDetails() = default;
 FakeDeviceManagementErrorDetails::~FakeDeviceManagementErrorDetails() = default;
 
@@ -20,3 +22,5 @@ bool FakeDeviceManagementErrorDetails::Equals(
 bool FakeDeviceManagementErrorDetails::IsUserActionable() const {
   return false;
 }
+
+}  // namespace gaia

@@ -9,6 +9,8 @@
 
 #include "google_apis/gaia/device_management_error_details.h"
 
+namespace gaia {
+
 class FakeDeviceManagementErrorDetails : public DeviceManagementErrorDetails {
  public:
   FakeDeviceManagementErrorDetails();
@@ -18,5 +20,7 @@ class FakeDeviceManagementErrorDetails : public DeviceManagementErrorDetails {
   bool Equals(const DeviceManagementErrorDetails& other) const override;
   bool IsUserActionable() const override;
 };
+
+}  // namespace gaia
 
 #endif  // GOOGLE_APIS_GAIA_FAKE_DEVICE_MANAGEMENT_ERROR_DETAILS_H_

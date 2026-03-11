@@ -113,7 +113,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
               kInvalidScope);
     } else if (state == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
       error = GoogleServiceAuthError::FromDeviceManagementError(
-          std::make_unique<FakeDeviceManagementErrorDetails>());
+          std::make_unique<gaia::FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(state);
     }
@@ -155,7 +155,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
               kInvalidScope);
     } else if (state == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
       error = GoogleServiceAuthError::FromDeviceManagementError(
-          std::make_unique<FakeDeviceManagementErrorDetails>());
+          std::make_unique<gaia::FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(state);
     }

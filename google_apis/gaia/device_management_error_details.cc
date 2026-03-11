@@ -4,6 +4,8 @@
 
 #include "google_apis/gaia/device_management_error_details.h"
 
+namespace gaia {
+
 DeviceManagementErrorDetails::~DeviceManagementErrorDetails() = default;
 
 DeviceManagementErrorDetails::DeviceManagementErrorDetails() = default;
@@ -13,3 +15,5 @@ DeviceManagementErrorDetails::DeviceManagementErrorDetails(
 
 DeviceManagementErrorDetails& DeviceManagementErrorDetails::operator=(
     const DeviceManagementErrorDetails&) = default;
+
+}  // namespace gaia

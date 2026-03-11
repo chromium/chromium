@@ -182,7 +182,7 @@ GoogleServiceAuthError GoogleServiceAuthError::AuthErrorNone() {
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromDeviceManagementError(
-    std::unique_ptr<DeviceManagementErrorDetails> details) {
+    std::unique_ptr<gaia::DeviceManagementErrorDetails> details) {
   CHECK(details);
   return GoogleServiceAuthError(DeviceManagementError(std::move(details)));
 }
@@ -394,7 +394,7 @@ DEFINE_JNI(GoogleServiceAuthError)
 #endif
 
 GoogleServiceAuthError::DeviceManagementError::DeviceManagementError(
-    std::unique_ptr<DeviceManagementErrorDetails> detail)
+    std::unique_ptr<gaia::DeviceManagementErrorDetails> detail)
     : details(std::move(detail)) {
   CHECK(details);
 }

@@ -27,7 +27,7 @@ TEST(GoogleServiceAuthErrorTest, State) {
               kInvalidScope);
     } else if (i == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
       error = GoogleServiceAuthError::FromDeviceManagementError(
-          std::make_unique<FakeDeviceManagementErrorDetails>());
+          std::make_unique<gaia::FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(i);
     }

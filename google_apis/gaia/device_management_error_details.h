@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 
+namespace gaia {
+
 // Abstract base class for platform-specific device management error details.
 // This class is intended to be implemented by platform-specific code
 // to support device management errors within the
@@ -36,5 +38,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) DeviceManagementErrorDetails {
   DeviceManagementErrorDetails(const DeviceManagementErrorDetails&);
   DeviceManagementErrorDetails& operator=(const DeviceManagementErrorDetails&);
 };
+
+}  // namespace gaia
 
 #endif  // GOOGLE_APIS_GAIA_DEVICE_MANAGEMENT_ERROR_DETAILS_H_

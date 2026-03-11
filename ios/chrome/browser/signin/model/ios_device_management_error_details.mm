@@ -9,6 +9,8 @@
 
 #import "base/check.h"
 
+namespace gaia {
+
 IOSDeviceManagementErrorDetails::IOSDeviceManagementErrorDetails(
     NSDictionary* user_info,
     bool is_user_actionable)
@@ -35,3 +37,5 @@ bool IOSDeviceManagementErrorDetails::Equals(
 bool IOSDeviceManagementErrorDetails::IsUserActionable() const {
   return is_user_actionable_;
 }
+
+}  // namespace gaia
