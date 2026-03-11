@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PageActionIconType">
   <int value="0" label="Bookmarks Star"/>
-  <int value="1" label="Click to Call"/>
+  <int value="1" label="(Deprecated) Click to Call"/>
   <int value="2" label="Cookie Controls"/>
   <int value="3" label="File System Access"/>
   <int value="4" label="Find"/>

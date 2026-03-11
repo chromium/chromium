@@ -1120,7 +1120,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"autofill_address", "true"},
     {"bookmark_star", "true"},
     {"cookie_controls", "true"},
-    {"click_to_call", "true"},
     {"collaboration_messaging", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},

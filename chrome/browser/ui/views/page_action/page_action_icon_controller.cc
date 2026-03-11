@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -44,6 +43,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/layout/box_layout.h"
@@ -104,19 +104,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                                        params.command_updater, params.browser,
                                        params.icon_label_bubble_delegate,
                                        params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kClickToCall:
-        add_page_action_icon(
-            type, std::make_unique<SharingIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate,
-                      base::BindRepeating([](content::WebContents* contents) {
-                        return static_cast<SharingUiController*>(
-                            ClickToCallUiController::GetOrCreateFromWebContents(
-                                contents));
-                      }),
-                      base::BindRepeating(
-                          SharingDialogView::GetAsBubbleForClickToCall)));
         break;
       case PageActionIconType::kCookieControls:
         add_page_action_icon(

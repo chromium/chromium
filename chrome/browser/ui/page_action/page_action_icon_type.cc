@@ -28,8 +28,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationCollaborationMessaging;
     case PageActionIconType::kMandatoryReauth:
       return &features::kPageActionsMigrationAutofillMandatoryReauth;
-    case PageActionIconType::kClickToCall:
-      return &features::kPageActionsMigrationClickToCall;
     case PageActionIconType::kSharingHub:
       return &features::kPageActionsMigrationSharingHub;
     case PageActionIconType::kAiMode:

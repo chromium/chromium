@@ -59,36 +59,18 @@ enum class ClickToCallPolicy {
   kTrue,
 };
 
-struct ClickToCallBrowserTestParams {
-  bool page_actions_migration_enabled = false;
-};
-
 }  // namespace
 
 // Browser tests for the Click To Call feature.
-class ClickToCallBrowserTest
-    : public SharingBrowserTest,
-      public ::testing::WithParamInterface<ClickToCallBrowserTestParams> {
+class ClickToCallBrowserTest : public SharingBrowserTest {
  public:
   ClickToCallBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {kClickToCall, {}}};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back({
-        features::kPageActionsMigration,
+    features_.InitWithFeatures(
         {
-            {
-                features::kPageActionsMigrationClickToCall.name,
-                GetParam().page_actions_migration_enabled ? "true" : "false",
-            },
+            kClickToCall,
+            features::kPageActionsMigration,
         },
-    });
-
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
-    CHECK_EQ(IsPageActionsMigrationEnabled(),
-             GetParam().page_actions_migration_enabled);
+        {});
   }
   ~ClickToCallBrowserTest() override = default;
 
@@ -115,16 +97,12 @@ class ClickToCallBrowserTest
     return histograms.GetTotalCountsForPrefix(HistogramName(""));
   }
 
-  bool IsPageActionsMigrationEnabled() const {
-    return IsPageActionMigrated(PageActionIconType::kClickToCall);
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
 
 // TODO(himanshujaju): Add UI checks.
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
                        ContextMenu_TelLink_SingleDeviceAvailable) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
@@ -147,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
   CheckLastSharingMessageSent(GURL(kTelUrl).GetContent());
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_NoDevicesAvailable) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_NoDevicesAvailable) {
   Init(sync_pb::SharingSpecificFields::UNKNOWN,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -162,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_NoDevicesAvailable) {
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_UnsafeTelLink) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UnsafeTelLink) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -177,7 +155,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_UnsafeTelLink) {
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -198,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_EscapedCharacters) {
   CheckLastSharingMessageSent(phone_number.GetContent());
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
                        ContextMenu_TelLink_MultipleDevicesAvailable) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
@@ -233,7 +211,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
                        ContextMenu_HighlightedText_MultipleDevicesAvailable) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
@@ -271,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_TelLink_Histograms) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_TelLink_Histograms) {
   base::HistogramTester histograms;
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
@@ -301,7 +279,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_TelLink_Histograms) {
               testing::ContainerEq(expected_counts));
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest,
                        ContextMenu_HighlightedText_Histograms) {
   base::HistogramTester histograms;
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
@@ -332,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
               testing::ContainerEq(expected_counts));
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_UKM) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UKM) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -383,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, ContextMenu_UKM) {
             *selection);
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, CloseTabWithBubble) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -408,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, CloseTabWithBubble) {
 
 // TODO(himanshujaju) - Add chromeos test for same flow.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
   auto devices = sharing_service()->GetDeviceCandidates(
@@ -445,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, LeftClick_ChooseDevice) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, OpenNewTabAndShowBubble) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, OpenNewTabAndShowBubble) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
 
@@ -479,7 +457,7 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, OpenNewTabAndShowBubble) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest, NavigateDifferentOrigin) {
+IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, NavigateDifferentOrigin) {
   Init(sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2,
        sync_pb::SharingSpecificFields::UNKNOWN);
 
@@ -533,24 +511,6 @@ class ClickToCallPolicyTest
  private:
   base::test::ScopedFeatureList features_{kClickToCall};
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ClickToCallBrowserTest,
-    ::testing::Values(
-        ClickToCallBrowserTestParams{
-            .page_actions_migration_enabled = false,
-        },
-        ClickToCallBrowserTestParams{
-            .page_actions_migration_enabled = true,
-        }),
-    [](const ::testing::TestParamInfo<ClickToCallBrowserTest::ParamType>&
-           info) {
-      return base::StrCat({
-          info.param.page_actions_migration_enabled ? "NewPageAction"
-                                                    : "OriginalPageAction",
-      });
-    });
 
 IN_PROC_BROWSER_TEST_P(ClickToCallPolicyTest, RunTest) {
   const char* kPhoneNumber = "+9876543210";

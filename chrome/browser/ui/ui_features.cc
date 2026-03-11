@@ -354,12 +354,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationClickToCall,
-                   &kPageActionsMigration,
-                   "click_to_call",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationSharingHub,
                    &kPageActionsMigration,
                    "sharing_hub",

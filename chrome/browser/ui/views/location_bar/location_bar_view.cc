@@ -510,7 +510,6 @@ void LocationBarView::Init() {
     if (optimization_guide::features::ShouldEnableOptimizationGuideIconView()) {
       params.types_enabled.push_back(PageActionIconType::kOptimizationGuide);
     }
-    params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kAutofillAddress);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
     if (!apps::features::ShouldShowLinkCapturingUX()) {

@@ -288,12 +288,6 @@ auto& GetViewCommandMap() {
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
-bool IsMigratedClickToCallBubble(
-    IntentPickerBubbleView::BubbleType bubble_type) {
-  return bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall &&
-         IsPageActionMigrated(PageActionIconType::kClickToCall);
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -964,22 +958,22 @@ void ToolbarView::ShowIntentPickerBubble(
     const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   views::Button* highlighted_button = nullptr;
-  if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
-    highlighted_button =
-        GetPageActionIconView(PageActionIconType::kClickToCall);
-  } else if (highlighted_button = GetIntentChipButton(); !highlighted_button) {
-    highlighted_button = GetPageActionView(kActionShowIntentPicker);
+  if (bubble_type != IntentPickerBubbleView::BubbleType::kClickToCall) {
+    if (highlighted_button = GetIntentChipButton(); !highlighted_button) {
+      highlighted_button = GetPageActionView(kActionShowIntentPicker);
+    }
+
+    if (!highlighted_button) {
+      return;
+    }
   }
 
-  // Post migration, highlighted_button is a nullptr for ClickToCall
-  // BubbleType but the bubble still gets shown without a page action being
-  // shown/highlighted.
-  if (highlighted_button || IsMigratedClickToCallBubble(bubble_type)) {
-    IntentPickerBubbleView::ShowBubble(
-        location_bar_view(), highlighted_button, bubble_type, GetWebContents(),
-        std::move(app_info), show_stay_in_chrome, show_remember_selection,
-        initiating_origin, std::move(callback));
-  }
+  // At this point, we either have a highlighted_button or it's a ClickToCall
+  // bubble which doesn't have a corresponding page action button to highlight.
+  IntentPickerBubbleView::ShowBubble(
+      location_bar_view(), highlighted_button, bubble_type, GetWebContents(),
+      std::move(app_info), show_stay_in_chrome, show_remember_selection,
+      initiating_origin, std::move(callback));
 }
 
 void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {

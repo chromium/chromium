@@ -14,7 +14,7 @@
 // LINT.IfChange(PageActionIconType)
 enum class PageActionIconType {
   kBookmarkStar = 0,
-  kClickToCall = 1,
+  // DEPRECATED: kClickToCall = 1,
   kCookieControls = 2,
   kFileSystemAccess = 3,
   kFind = 4,
@@ -60,7 +60,6 @@ enum class PageActionIconType {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
 static_assert(static_cast<int>(PageActionIconType::kBookmarkStar) == 0);
-static_assert(static_cast<int>(PageActionIconType::kClickToCall) == 1);
 static_assert(static_cast<int>(PageActionIconType::kCookieControls) == 2);
 static_assert(static_cast<int>(PageActionIconType::kFileSystemAccess) == 3);
 static_assert(static_cast<int>(PageActionIconType::kFind) == 4);

@@ -309,7 +309,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationCookieControls);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAutofillAddress);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationCollaborationMessaging);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAutofillMandatoryReauth);
-BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationClickToCall);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationSharingHub);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationAiMode);
 BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationVirtualCard);
