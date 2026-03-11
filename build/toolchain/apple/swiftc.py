@@ -371,13 +371,12 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         header_path = os.path.join(build_cache_dir,
                                    os.path.basename(header_path))
 
-    # Construct a path to the "plugins" directory which contains Swift
-    # macro implementations.
-    # TODO(crbug.com/482318607): Figure out why blaze doesn't need to pass this.
-    mac_platform_path = os.path.join(os.path.dirname(args.sdk_path),
-                                     'MacOSX.platform')
-    swift_plugin_path = os.path.join(mac_platform_path,
-                                     'Developer/usr/lib/swift/host/plugins')
+    # Convert the SDK path by removing symlinks so that the swift compiler can
+    # resolve the paths of compiler components whose paths are defined
+    # relative to the SDK (hard coded in the compiler).
+    # Note: The commandline argument uses a symlink in order to maximize
+    # remote build cache hits.
+    sdk_path = os.path.realpath(args.sdk_path)
 
     swiftc_args = [
         '-parse-as-library',
@@ -385,7 +384,7 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         args.module_name,
         f'@{swift_file_list_path}',
         '-sdk',
-        args.sdk_path,
+        sdk_path,
         '-target',
         args.target_triple,
         '-swift-version',
@@ -412,8 +411,6 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
         ensure_directory(os.path.join(build_cache_dir, 'ModuleCache.noindex')),
         '-pch-output-dir',
         ensure_directory(os.path.join(build_cache_dir, 'PrecompiledHeaders')),
-        '-plugin-path',
-        swift_plugin_path,
     ]
 
     # Handle optional -bridge-header flag.
