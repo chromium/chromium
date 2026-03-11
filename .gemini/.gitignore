@@ -8,4 +8,4 @@
 !policies/
 /policies/*
 !/policies/README.md
-!/policies/blocklist.toml
+!/policies/chromium-deny.toml

@@ -12,16 +12,16 @@
 toolName = "run_shell_command"
 commandRegex = "grep -(R|r)"
 decision = "deny"
-priority = 500
+priority = 100
 
 [[rule]]
 toolName = "run_shell_command"
 commandRegex = "apt(-get)? "
 decision = "deny"
-priority = 500
+priority = 100
 
 [[rule]]
 toolName = "run_shell_command"
 commandPrefix = ["ls -R", "find .", "brew"]
 decision = "deny"
-priority = 500
+priority = 100
