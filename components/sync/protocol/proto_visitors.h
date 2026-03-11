@@ -1716,6 +1716,7 @@ VISIT_PROTO_FIELDS(const sync_pb::UniquePosition& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics& proto) {
   VISIT(locale);
   VISIT(client_consent_time_usec);
+  VISIT(session_id);
   VISIT(obfuscated_gaia_id);
   VISIT(sync_consent);
   VISIT(arc_backup_and_restore_consent);
@@ -1724,6 +1725,11 @@ VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics& proto) {
   VISIT(assistant_activity_control_consent);
   VISIT(account_passwords_consent);
   VISIT(recorder_speaker_label_consent);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics::SessionId& proto) {
+  VISIT(most_significant_uuid_bits);
+  VISIT(least_significant_uuid_bits);
 }
 
 VISIT_PROTO_FIELDS(

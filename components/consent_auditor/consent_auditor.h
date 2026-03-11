@@ -6,6 +6,7 @@
 #define COMPONENTS_CONSENT_AUDITOR_CONSENT_AUDITOR_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -42,6 +43,10 @@ enum class ConsentStatus { NOT_GIVEN, GIVEN };
 // TODO(markusheintz): Document this class.
 class ConsentAuditor : public KeyedService {
  public:
+  // A Uuid that can optionally be associated with a consent, so multiple
+  // consents can be linked together. See go/ari/integration/sessions.
+  using SessionId = base::Uuid;
+
   ConsentAuditor() = default;
 
   ConsentAuditor(const ConsentAuditor&) = delete;

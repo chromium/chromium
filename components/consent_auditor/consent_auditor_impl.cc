@@ -5,11 +5,13 @@
 #include "components/consent_auditor/consent_auditor_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
@@ -23,14 +25,23 @@ namespace {
 std::unique_ptr<sync_pb::UserConsentSpecifics> CreateUserConsentSpecifics(
     const GaiaId& gaia_id,
     const std::string& locale,
-    base::Clock* clock) {
+    base::Clock* clock,
+    std::optional<ConsentAuditor::SessionId> session_id = std::nullopt) {
   std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
       std::make_unique<sync_pb::UserConsentSpecifics>();
   specifics->set_obfuscated_gaia_id(gaia_id.ToString());
   specifics->set_client_consent_time_usec(
       clock->Now().since_origin().InMicroseconds());
   specifics->set_locale(locale);
-
+  if (session_id) {
+    absl::uint128 session_id_int = session_id->AsInteger();
+    sync_pb::UserConsentSpecifics::SessionId& session_id_proto =
+        *specifics->mutable_session_id();
+    session_id_proto.set_most_significant_uuid_bits(
+        absl::Uint128High64(session_id_int));
+    session_id_proto.set_least_significant_uuid_bits(
+        absl::Uint128Low64(session_id_int));
+  }
   return specifics;
 }
 

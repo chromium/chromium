@@ -18,7 +18,7 @@ package sync_pb;
 
 import "components/sync/protocol/user_consent_types.proto";
 
-// Next id: 18
+// Next id: 19
 message UserConsentSpecifics {
   // ===========================================================================
   // Fields common to all Chrome User Consents.
@@ -35,6 +35,14 @@ message UserConsentSpecifics {
   // is needed since user consent recording may happen when a client is
   // offline.
   optional int64 client_consent_time_usec = 12;
+
+  // A 128-bit Uuid that can optionally be associated with a consent, so
+  // multiple consents can be linked together. See go/ari/integration/sessions.
+  message SessionId {
+    optional uint64 most_significant_uuid_bits = 1;
+    optional uint64 least_significant_uuid_bits = 2;
+  }
+  optional SessionId session_id = 18;
 
   // ===========================================================================
   // The specific consent type. Add new User Consent types to
