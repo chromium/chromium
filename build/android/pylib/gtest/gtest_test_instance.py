@@ -318,6 +318,42 @@ def ParseGTestJSON(json_content):
   return results
 
 
+def ParseGTestListTestsJSON(json_content):
+  """Parses the list of tests in JSON format.
+
+  See PrintJsonTestList() in googletest/src/gtest.cc for the format of this
+  JSON.
+
+  Args:
+    json_content: The JSON content as a string.
+
+  Returns:
+    A dict mapping test names to a dict containing 'file' and 'line'.
+  """
+  test_locations = {}
+  if not json_content:
+    return test_locations
+
+  try:
+    json_data = json.loads(json_content)
+  except ValueError:
+    logging.warning('Failed to parse gtest list tests JSON.')
+    return test_locations
+
+  for suite in json_data.get('testsuites', []):
+    suite_name = suite.get('name')
+    for test in suite.get('testsuite', []):
+      test_name = test.get('name')
+      file_name = test.get('file')
+      if suite_name and test_name and file_name:
+        # Gtest JSON 'file' paths are often relative to the build directory.
+        # We want to normalize them to be relative to the source root.
+        if file_name.startswith('../../'):
+          file_name = file_name.replace('../../', '//', 1)
+        test_locations[f'{suite_name}.{test_name}'] = file_name
+  return test_locations
+
+
 def _TestNameWithoutPrefix(full_test_name, prefixes):
   """Get full test name without any prefix from the given list of prefixes.
 

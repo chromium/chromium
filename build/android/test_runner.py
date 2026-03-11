@@ -1319,8 +1319,12 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
               match = re.search(r'^(.+\..+)#', r.GetName())
               test_file_name = test_class_to_file_name_dict.get(
                   match.group(1)) if match else None
-              _SinkTestResult(r, test_file_name, test_instance,
-                              result_sink_client)
+              _SinkTestResult(
+                  r,
+                  test_file_name or r.GetTestFile(),
+                  test_instance,
+                  result_sink_client,
+              )
 
   @contextlib.contextmanager
   def upload_logcats_file():

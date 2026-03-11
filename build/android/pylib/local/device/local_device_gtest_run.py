@@ -10,6 +10,7 @@ import logging
 import math
 import os
 import posixpath
+import shlex
 import shutil
 import sys
 import threading
@@ -258,6 +259,8 @@ class _ApkDelegate:
 
   def Run(self, test, device, flags=None, **kwargs):
     extras = dict(self._extras)
+    if isinstance(flags, list):
+      flags = shlex.join(flags)
     device_api = device.build_version_sdk
 
     coverage_index = None
@@ -414,8 +417,10 @@ class _ExeDelegate:
     if test:
       cmd.append('--gtest_filter=%s' % ':'.join(test))
     if flags:
-      # TODO(agrieve): This won't work if multiple flags are passed.
-      cmd.append(flags)
+      if isinstance(flags, list):
+        cmd.extend(flags)
+      else:
+        cmd.append(flags)
     cwd = constants.TEST_EXECUTABLE_DIR
 
     env = {
@@ -487,6 +492,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     else:
       self._test_perf_output_filenames = itertools.repeat(None)
     self._crashes = set()
+    self._test_locations = {}
 
   #override
   def TestPackage(self):
@@ -689,6 +695,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           ]
       ]
       flags.append('--gtest_list_tests')
+      device_json_path = posixpath.join(dev.GetExternalStoragePath(),
+                                        'gtest_list_tests.json')
+      flags.append(f'--gtest_output=json:{device_json_path}')
 
       # TODO(crbug.com/40522854): Remove retries when no longer necessary.
       for i in range(0, retries + 1):
@@ -699,7 +708,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         with self._ArchiveLogcat(dev, 'list_tests'):
           raw_test_list = crash_handler.RetryOnSystemCrash(
               lambda d: self._delegate.Run(
-                  None, d, flags=' '.join(flags), timeout=timeout),
+                  None, d, flags=flags, timeout=timeout),
               device=dev)
 
         tests = gtest_test_instance.ParseGTestListTests(raw_test_list)
@@ -710,6 +719,18 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
           if i < retries:
             logging.info('Retrying...')
         else:
+          with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+            host_json_path = os.path.join(temp_dir, 'gtest_list_tests.json')
+            try:
+              dev.PullFile(device_json_path, host_json_path)
+              dev.RemovePath(device_json_path)
+              with open(host_json_path, 'r') as f:
+                self._test_locations.update(
+                    gtest_test_instance.ParseGTestListTestsJSON(f.read()))
+            except (device_errors.CommandFailedError,
+                    device_errors.CommandTimeoutError):
+              logging.exception(
+                  'Failed to pull gtest list tests JSON from device.')
           break
       return tests
 
@@ -973,6 +994,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
     tombstones_url = None
     for r in results:
+      r.SetTestFile(self._test_locations.get(r.GetName()))
       if logcat_file:
         r.SetLink('logcat', logcat_file.Link())
 

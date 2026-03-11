@@ -45,7 +45,13 @@ class ResultType:
 class BaseTestResult:
   """Base class for a single test result."""
 
-  def __init__(self, name, test_type, duration=0, log='', failure_reason=None):
+  def __init__(self,
+               name,
+               test_type,
+               duration=0,
+               log='',
+               failure_reason=None,
+               test_file=None):
     """Construct a BaseTestResult.
 
     Args:
@@ -53,6 +59,8 @@ class BaseTestResult:
       test_type: Type of the test result as defined in ResultType.
       duration: Time it took for the test to run in milliseconds.
       log: An optional string listing any errors.
+      failure_reason: An optional string listing why the test failed.
+      test_file: An optional string listing the file location of the test.
     """
     assert name
     assert test_type in ResultType.GetTypes()
@@ -61,6 +69,7 @@ class BaseTestResult:
     self._duration = duration
     self._log = log
     self._failure_reason = failure_reason
+    self._test_file = test_file
     self._links = {}
     self._webview_multiprocess_mode = MULTIPROCESS_SUFFIX in name
 
@@ -140,6 +149,14 @@ class BaseTestResult:
   def GetDuration(self):
     """Get the test duration."""
     return self._duration
+
+  def SetTestFile(self, test_file):
+    """Set the test file location."""
+    self._test_file = test_file
+
+  def GetTestFile(self):
+    """Get the test file location."""
+    return self._test_file
 
   def SetLog(self, log):
     """Set the test log."""
