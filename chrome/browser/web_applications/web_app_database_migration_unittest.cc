@@ -31,6 +31,8 @@ proto::WebApp CreateWebAppProtoForTesting(const std::string& name,
   proto::WebApp web_app;
   CHECK(start_url.is_valid());
   web_app.set_name(name);
+  web_app.set_display_mode(
+      proto::WebApp::DisplayMode::WebApp_DisplayMode_DISPLAY_MODE_BROWSER);
   web_app.mutable_sync_data()->set_name(name);
   web_app.mutable_sync_data()->set_start_url(start_url.spec());
   webapps::ManifestId manifest_id =

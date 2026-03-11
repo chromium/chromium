@@ -173,7 +173,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
 // Resolve the final display mode based on the user display mode first, then the
 // DisplayMode overrides if any. If that doesn't end up happening, fallback to
 // using the manifest provided value to resolve the final display mode.
-DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
+DisplayMode ResolveEffectiveDisplayMode(
     DisplayMode app_display_mode,
     const std::vector<DisplayMode>& display_mode_overrides,
     mojom::UserDisplayMode user_display_mode) {
@@ -207,32 +207,32 @@ DisplayMode ResolveNonIsolatedEffectiveDisplayMode(
   return ResolveAppDisplayModeForStandaloneLaunchContainer(app_display_mode);
 }
 
-// When user_display_mode indicates a user preference for opening in
-// a browser tab, we open in a browser tab. If the developer has specified
-// the app should utilize more advanced display modes and/or fallback chain,
-// attempt honor those preferences. Otherwise, we open in a standalone
-// window (for app_display_mode 'standalone' or 'fullscreen'), or a minimal-ui
-// window (for app_display_mode 'browser' or 'minimal-ui').
-//
-// |is_isolated| overrides browser display mode for Isolated Web Apps because
-// they can't be open as a tab.
-DisplayMode ResolveEffectiveDisplayMode(
+// Isolated Web Apps always use a standalone container and do not support
+// minimal-ui or tabbed display modes.
+// TODO(crbug.com/389919693): Remove this if display mode restrictions
+// are added to the WebAppProvider system.
+DisplayMode ResolveIsolatedEffectiveDisplayMode(
     DisplayMode app_display_mode,
-    const std::vector<DisplayMode>& app_display_mode_overrides,
-    mojom::UserDisplayMode user_display_mode,
-    bool is_isolated) {
+    const std::vector<DisplayMode>& display_mode_overrides) {
   const DisplayMode resolved_display_mode =
-      ResolveNonIsolatedEffectiveDisplayMode(
-          app_display_mode, app_display_mode_overrides, user_display_mode);
-  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
-  // are added to the WebAppProvider system.
-  if (is_isolated && (resolved_display_mode == DisplayMode::kMinimalUi ||
-                      resolved_display_mode == DisplayMode::kTabbed)) {
-    return DisplayMode::kStandalone;
-  }
-  CHECK(!(is_isolated && resolved_display_mode == DisplayMode::kBrowser));
+      ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
+                                  mojom::UserDisplayMode::kStandalone);
 
-  return resolved_display_mode;
+  switch (resolved_display_mode) {
+    case DisplayMode::kBrowser:
+    case DisplayMode::kUndefined:
+    case DisplayMode::kPictureInPicture:
+    case DisplayMode::kFullscreen:
+      NOTREACHED();
+    case DisplayMode::kMinimalUi:
+    case DisplayMode::kTabbed:
+    case DisplayMode::kStandalone:
+      return DisplayMode::kStandalone;
+    case DisplayMode::kWindowControlsOverlay:
+      return DisplayMode::kWindowControlsOverlay;
+    case DisplayMode::kUnframed:
+      return DisplayMode::kUnframed;
+  }
 }
 
 }  // namespace
@@ -590,30 +590,24 @@ bool WebAppRegistrar::IsSystemApp(const webapps::AppId& app_id) const {
 
 DisplayMode WebAppRegistrar::GetAppEffectiveDisplayMode(
     const webapps::AppId& app_id) const {
-  if (!IsInstallState(app_id,
-                      {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  const auto* web_app = GetAppById(
+      app_id, WebAppFilter::InstallStateIs(
+                  proto::InstallState::INSTALLED_WITH_OS_INTEGRATION));
+  if (!web_app) {
     return DisplayMode::kBrowser;
   }
 
-  bool is_isolated = IsIsolatedApp(app_id);
-
-  auto app_display_mode = GetAppDisplayMode(app_id);
-  std::optional<mojom::UserDisplayMode> user_display_mode =
-      GetAppUserDisplayMode(app_id);
-  if (app_display_mode == DisplayMode::kUndefined ||
-      !user_display_mode.has_value()) {
-    return DisplayMode::kUndefined;
-  }
-  // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
-  // are added to the WebAppProvider system.
-  if (is_isolated) {
-    user_display_mode = mojom::UserDisplayMode::kStandalone;
+  std::vector<DisplayMode> display_mode_overrides = base::ToVector(
+      web_app->display_mode_override(), &DisplayOverride::display_mode);
+  if (AppMatches(app_id, WebAppFilter::IsIsolatedApp() |
+                             WebAppFilter::IsIsolatedSubApp())) {
+    return ResolveIsolatedEffectiveDisplayMode(web_app->display_mode(),
+                                               display_mode_overrides);
   }
 
-  std::vector<DisplayMode> display_mode_overrides =
-      GetAppDisplayModeOverride(app_id);
-  return ResolveEffectiveDisplayMode(app_display_mode, display_mode_overrides,
-                                     *user_display_mode, is_isolated);
+  return ResolveEffectiveDisplayMode(web_app->display_mode(),
+                                     display_mode_overrides,
+                                     web_app->user_display_mode());
 }
 
 DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
