@@ -88,9 +88,11 @@
 
 - (void)dismissAllSnackbars {
   CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler dismissAllSnackbars];
+  if ([dispatcher dispatchingForProtocol:@protocol(SnackbarCommands)]) {
+    id<SnackbarCommands> snackbarHandler =
+        HandlerForProtocol(dispatcher, SnackbarCommands);
+    [snackbarHandler dismissAllSnackbars];
+  }
 }
 
 @end

@@ -240,6 +240,7 @@ const CGFloat kSnackbarBottomMargin = 10;
   _aimEligibilitySubscription = {};
   _aimEligibilityService = nullptr;
   [_snackbarPresenter dismissAllSnackbars];
+  _snackbarPresenter = nil;
   if (_tabPickerCoordinator.started) {
     [_tabPickerCoordinator stop];
     _tabPickerCoordinator = nil;
