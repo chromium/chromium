@@ -31,6 +31,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -441,6 +442,14 @@ void DigitalIdentityRequestImpl::Get(
     return;
   }
 
+  // Enforce Permissions Policy browser-side.
+  if (!render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kDigitalCredentialsGet)) {
+    ReportBadMessageAndDeleteThis(
+        "digital-credentials-get permissions policy is not enabled.");
+    return;
+  }
+
   if (callback_) {
     // Only allow one in-flight wallet request.
     std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
@@ -525,6 +534,15 @@ void DigitalIdentityRequestImpl::Create(
     mojo::ReportBadMessage(
         "DigitalIdentityRequest should not be allowed in fenced frame "
         "trees.");
+    return;
+  }
+
+  // Enforce Permissions Policy browser-side.
+  if (!render_frame_host().IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::
+              kDigitalCredentialsCreate)) {
+    ReportBadMessageAndDeleteThis(
+        "digital-credentials-create permissions policy is not enabled.");
     return;
   }
 

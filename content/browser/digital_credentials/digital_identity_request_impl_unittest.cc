@@ -20,8 +20,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
@@ -1023,6 +1027,100 @@ TEST_F(DigitalIdentityRequestImplTest,
                                        mock_callback.Get());
 
   run_loop.Run();
+}
+
+// Tests for browser-side Permissions Policy enforcement.
+class DigitalIdentityRequestImplPermissionsPolicyTest
+    : public RenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebIdentityDigitalCredentials,
+         features::kWebIdentityDigitalCredentialsCreation},
+        {});
+    RenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://example.test"));
+
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kUseFakeUIForDigitalIdentity);
+  }
+
+  std::vector<DigitalCredentialGetRequestPtr> MakeGetRequests() {
+    DigitalCredentialGetRequestPtr request = DigitalCredentialGetRequest::New();
+    request->protocol = kOpenid4vpProtocol;
+    base::DictValue data;
+    data.Set("data", "test");
+    request->data = base::Value(std::move(data));
+    std::vector<DigitalCredentialGetRequestPtr> requests;
+    requests.push_back(std::move(request));
+    return requests;
+  }
+
+  std::vector<DigitalCredentialCreateRequestPtr> MakeCreateRequests() {
+    DigitalCredentialCreateRequestPtr request =
+        DigitalCredentialCreateRequest::New();
+    request->protocol = kOpenid4vpProtocol;
+    base::DictValue data;
+    data.Set("data", "test");
+    request->data = base::Value(std::move(data));
+    std::vector<DigitalCredentialCreateRequestPtr> requests;
+    requests.push_back(std::move(request));
+    return requests;
+  }
+
+  // Navigate to a page with a Permissions Policy header that denies the given
+  // feature, then bind DigitalIdentityRequest through the Mojo pipe.
+  void NavigateWithDeniedPolicyAndBind(
+      network::mojom::PermissionsPolicyFeature feature) {
+    network::ParsedPermissionsPolicy policy(1);
+    policy[0].feature = feature;
+    // Empty allowed_origins + matches_all_origins=false = deny all.
+
+    auto simulator = NavigationSimulator::CreateRendererInitiated(
+        GURL("https://example.test"), web_contents()->GetPrimaryMainFrame());
+    simulator->SetPermissionsPolicyHeader(std::move(policy));
+    simulator->Commit();
+
+    auto* rfh = static_cast<TestRenderFrameHost*>(
+        web_contents()->GetPrimaryMainFrame());
+    mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+        rfh->browser_interface_broker_receiver_for_testing();
+    blink::mojom::BrowserInterfaceBroker* broker = bib.internal_state()->impl();
+    request_remote_.reset();
+    broker->GetInterface(request_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  mojo::Remote<blink::mojom::DigitalIdentityRequest>& request_remote() {
+    return request_remote_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine command_line_;
+
+  mojo::Remote<blink::mojom::DigitalIdentityRequest> request_remote_;
+};
+
+TEST_F(DigitalIdentityRequestImplPermissionsPolicyTest,
+       GetShouldRejectWhenPermissionsPolicyDisabled) {
+  NavigateWithDeniedPolicyAndBind(
+      network::mojom::PermissionsPolicyFeature::kDigitalCredentialsGet);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  request_remote()->Get(MakeGetRequests(), base::DoNothing());
+  EXPECT_EQ("digital-credentials-get permissions policy is not enabled.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(DigitalIdentityRequestImplPermissionsPolicyTest,
+       CreateShouldRejectWhenPermissionsPolicyDisabled) {
+  NavigateWithDeniedPolicyAndBind(
+      network::mojom::PermissionsPolicyFeature::kDigitalCredentialsCreate);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  request_remote()->Create(MakeCreateRequests(), base::DoNothing());
+  EXPECT_EQ("digital-credentials-create permissions policy is not enabled.",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content
