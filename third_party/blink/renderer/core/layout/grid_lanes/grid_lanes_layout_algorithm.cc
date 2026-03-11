@@ -305,6 +305,33 @@ LayoutUnit AlignContentOffset(
   NOTREACHED();
 }
 
+// Returns the margin on the baseline side of `item` for baseline alignment
+// calculations.
+LayoutUnit GetBaselineSideMargin(const GridItemData& item,
+                                 const BoxStrut& margins,
+                                 GridTrackSizingDirection track_direction) {
+  const bool is_for_columns = track_direction == kForColumns;
+  const bool is_last_baseline = item.IsLastBaselineSpecified(track_direction);
+  if (is_last_baseline) {
+    return is_for_columns ? margins.inline_end : margins.block_end;
+  }
+  return is_for_columns ? margins.inline_start : margins.block_start;
+}
+
+LayoutUnit CalculateSynthesizedBaselineShim(
+    const GridItemData& grid_item,
+    LayoutUnit block_size,
+    GridTrackSizingDirection track_direction,
+    LayoutUnit shared_baseline,
+    LayoutUnit extra_margin) {
+  if (shared_baseline == LayoutUnit::Min()) {
+    return LayoutUnit();
+  }
+  return shared_baseline -
+         GetSynthesizedLogicalBaseline(grid_item, block_size, track_direction) -
+         extra_margin;
+}
+
 }  // namespace
 
 LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
@@ -669,9 +696,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           grid_lanes_item.BaselineWritingDirection(grid_axis_direction),
           physical_fragment);
       const LayoutUnit extra_margin =
-          grid_lanes_item.IsLastBaselineSpecified(grid_axis_direction)
-              ? (is_for_columns ? margins.inline_end : margins.block_end)
-              : (is_for_columns ? margins.inline_start : margins.block_start);
+          GetBaselineSideMargin(grid_lanes_item, margins, grid_axis_direction);
 
       StoreItemBaseline(baseline_fragment, grid_axis_direction,
                         style.GetFontBaseline(), extra_margin, track_collection,
@@ -738,6 +763,42 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
   }
 }
 
+LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
+    const GridItems::GridItemDataVector& group_items,
+    GridTrackSizingDirection grid_axis_direction,
+    SizingConstraint sizing_constraint) const {
+  LayoutUnit shared_baseline = LayoutUnit::Min();
+
+  // All items in a group have the same baseline alignment, so if the first
+  // item isn't baseline aligned, there is no need to calculate a shared
+  // baseline for the group.
+  CHECK(!group_items.empty());
+  if (!group_items[0]->IsBaselineAligned(grid_axis_direction)) {
+    return shared_baseline;
+  }
+
+  for (const Member<GridItemData>& group_item : group_items) {
+    const auto space_for_measure = CreateConstraintSpaceForMeasure(*group_item);
+    const BoxStrut margins = ComputeMarginsFor(
+        space_for_measure, group_item->node.Style(), GetConstraintSpace());
+    const LayoutUnit extra_margin =
+        GetBaselineSideMargin(*group_item, margins, grid_axis_direction);
+
+    const LayoutResult* result = LayoutItemForMeasureWithFallback(
+        group_item, space_for_measure, sizing_constraint);
+    LogicalBoxFragment baseline_fragment(
+        group_item->BaselineWritingDirection(grid_axis_direction),
+        To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
+    const LayoutUnit item_baseline = GetLogicalBaseline(
+        baseline_fragment, group_item->parent_grid_font_baseline,
+        group_item->IsLastBaselineSpecified(grid_axis_direction));
+
+    const LayoutUnit total_baseline = extra_margin + item_baseline;
+    shared_baseline = std::max(shared_baseline, total_baseline);
+  }
+  return shared_baseline;
+}
+
 GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     const GridLineResolver& line_resolver,
     const GridItems& grid_lanes_items,
@@ -776,6 +837,15 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
     wtf_size_t span_size = span.SpanSize();
     CHECK_GT(span_size, 0u);
 
+    // TODO(yanlingwang): correctly handle baseline shims for multi-spanning
+    // items
+    //
+    // For each group, iterate all items, compute each item's baseline, and
+    // choose the maximum as `shared_baseline` for the group. This value is
+    // later used to calculate baseline shims for alignment within the track.
+    const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
+        group_items, grid_axis_direction, sizing_constraint);
+
     for (const Member<GridItemData>& group_item : group_items) {
       GridItemData& item_data = *group_item;
       has_baseline_aligned_items_ |=
@@ -797,6 +867,7 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
           is_for_columns ? margins.InlineSum() : margins.BlockSum();
 
       MinMaxSizes min_max_contribution;
+      LayoutUnit baseline_shim;
       if (use_item_inline_contribution) {
         // The min/max contribution may depend on the block-size of the
         // grid-area: <div id="target" style="height: 200px; width: 600px;">
@@ -818,10 +889,28 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
           item_data.is_sizing_dependent_on_block_size = true;
         }
         min_max_contribution = result.sizes;
+
+        if (item_data.IsBaselineAligned(grid_axis_direction)) {
+          const LayoutUnit extra_margin =
+              GetBaselineSideMargin(item_data, margins, grid_axis_direction);
+
+          const LayoutUnit min_shim = CalculateSynthesizedBaselineShim(
+              item_data, min_max_contribution.min_size, grid_axis_direction,
+              shared_baseline, extra_margin);
+          min_max_contribution.min_size += min_shim;
+
+          const LayoutUnit max_shim = CalculateSynthesizedBaselineShim(
+              item_data, min_max_contribution.max_size, grid_axis_direction,
+              shared_baseline, extra_margin);
+          min_max_contribution.max_size += max_shim;
+
+          baseline_shim = std::max(min_shim, max_shim);
+        }
       } else {
         LayoutUnit block_contribution = ComputeGridLanesItemBlockContribution(
             grid_axis_direction, sizing_constraint, space, &item_data,
-            needs_intrinsic_track_size);
+            needs_intrinsic_track_size, margins, shared_baseline,
+            baseline_shim);
         min_max_contribution =
             MinMaxSizes(block_contribution, block_contribution);
       }
@@ -834,8 +923,6 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
       // on the tracks the virtual item spans. If a contribution may need to be
       // clamped, `maybe_clamp` will be set to true. See
       // https://drafts.csswg.org/css-grid/#min-size-auto for more details.
-      //
-      // TODO(almaher): Pass in the correct baseline shim.
       //
       // TODO(almaher): pass in `subgrid_minmax_sizes` when we support
       // subgrid.
@@ -888,8 +975,8 @@ GridItems GridLanesLayoutAlgorithm::BuildVirtualGridLanesItems(
                                             ? border_padding.InlineSum()
                                             : border_padding.BlockSum();
 
-        // TODO(almaher): The min clamp size should include baseline shim.
-        virtual_item->EncompassMinClampSize(margin_sum + border_padding_sum);
+        virtual_item->EncompassMinClampSize(margin_sum + border_padding_sum +
+                                            baseline_shim);
       } else {
         virtual_item->EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(
             contribution_ignoring_tracks);
@@ -1084,30 +1171,10 @@ GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
   return override_intrinsic_block_size + BorderScrollbarPadding().BlockSum();
 }
 
-// TODO(almaher): Eventually look into consolidating repeated code with
-// GridLayoutAlgorithm::ContributionSizeForGridItem().
-LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
-    GridTrackSizingDirection track_direction,
-    SizingConstraint sizing_constraint,
-    const ConstraintSpace space_for_measure,
+const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
     GridItemData* grid_lanes_item,
-    const bool needs_intrinsic_track_size) const {
-  DCHECK(grid_lanes_item);
-
-  // TODO(ikilpatrick): We'll need to record if any child used an indefinite
-  // size for its contribution, such that we can then do the 2nd pass on the
-  // track-sizing algorithm.
-
-  // TODO(almaher): Handle baseline logic here.
-
-  // TODO(ikilpatrick): This should try and skip layout when possible. Notes:
-  //  - We'll need to do a full layout for tables.
-  //  - We'll need special logic for replaced elements.
-  //  - We'll need to respect the aspect-ratio when appropriate.
-
-  // TODO(almaher): Properly handle subgrid here.
-
-  const LayoutResult* result = nullptr;
+    const ConstraintSpace& space_for_measure,
+    SizingConstraint sizing_constraint) const {
   if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
     // If we are orthogonal virtual item, resolving against an indefinite
     // size, set our inline size to our max-content contribution.
@@ -1134,19 +1201,53 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
     const MinMaxSizes sizes = min_max_sizes_result.sizes;
     const auto fallback_space = CreateConstraintSpaceForMeasure(
         *grid_lanes_item, /*opt_fixed_inline_size=*/sizes.max_size);
-
-    result = LayoutGridLanesItemForMeasure(*grid_lanes_item, fallback_space,
-                                           sizing_constraint);
-  } else {
-    result = LayoutGridLanesItemForMeasure(*grid_lanes_item, space_for_measure,
-                                           sizing_constraint);
+    return LayoutGridLanesItemForMeasure(*grid_lanes_item, fallback_space,
+                                         sizing_constraint);
   }
+  return LayoutGridLanesItemForMeasure(*grid_lanes_item, space_for_measure,
+                                       sizing_constraint);
+}
+
+// TODO(almaher): Eventually look into consolidating repeated code with
+// GridLayoutAlgorithm::ContributionSizeForGridItem().
+LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
+    GridTrackSizingDirection track_direction,
+    SizingConstraint sizing_constraint,
+    const ConstraintSpace space_for_measure,
+    GridItemData* grid_lanes_item,
+    const bool needs_intrinsic_track_size,
+    const BoxStrut& margins,
+    LayoutUnit shared_baseline,
+    LayoutUnit& baseline_shim) const {
+  DCHECK(grid_lanes_item);
+
+  // TODO(ikilpatrick): We'll need to record if any child used an indefinite
+  // size for its contribution, such that we can then do the 2nd pass on the
+  // track-sizing algorithm.
+
+  // TODO(ikilpatrick): This should try and skip layout when possible. Notes:
+  //  - We'll need to do a full layout for tables.
+  //  - We'll need special logic for replaced elements.
+  //  - We'll need to respect the aspect-ratio when appropriate.
+
+  // TODO(almaher): Properly handle subgrid here.
+
+  const LayoutResult* result = LayoutItemForMeasureWithFallback(
+      grid_lanes_item, space_for_measure, sizing_constraint);
 
   LogicalBoxFragment baseline_fragment(
       grid_lanes_item->BaselineWritingDirection(track_direction),
       To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
 
-  // TODO(almaher): Properly handle baselines here.
+  if (grid_lanes_item->IsBaselineAligned(track_direction)) {
+    const LayoutUnit baseline = GetLogicalBaseline(
+        baseline_fragment, grid_lanes_item->parent_grid_font_baseline,
+        grid_lanes_item->IsLastBaselineSpecified(track_direction));
+    const LayoutUnit extra_margin =
+        GetBaselineSideMargin(*grid_lanes_item, margins, track_direction);
+    baseline_shim = shared_baseline - baseline - extra_margin;
+    return baseline_fragment.BlockSize() + baseline_shim;
+  }
 
   return baseline_fragment.BlockSize();
 }

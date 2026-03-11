@@ -194,12 +194,19 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                                        const wtf_size_t auto_repetition_count,
                                        wtf_size_t& start_offset) const;
 
+  // Computes the block-axis contribution of a virtual grid-lanes item for track
+  // sizing. Also computes a baseline shim for the item and sets `baseline_shim`
+  // to that value, which accounts for extra space needed to align the item's
+  // baseline with the shared baseline of its track.
   LayoutUnit ComputeGridLanesItemBlockContribution(
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       const ConstraintSpace space_for_measure,
       GridItemData* virtual_item,
-      const bool needs_intrinsic_track_size) const;
+      const bool needs_intrinsic_track_size,
+      const BoxStrut& margins,
+      LayoutUnit shared_baseline,
+      LayoutUnit& baseline_shim) const;
 
   ConstraintSpace CreateConstraintSpace(
       const GridItemData& grid_lanes_item,
@@ -219,6 +226,20 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       const GridLayoutTrackCollection* track_collection = nullptr,
       bool is_for_min_max_sizing = false) const;
+
+  LayoutUnit ComputeSharedBaselineForGroup(
+      const GridItems::GridItemDataVector& group_items,
+      GridTrackSizingDirection grid_axis_direction,
+      SizingConstraint sizing_constraint) const;
+
+  // Lays out `grid_lanes_item` for measurement using `space_for_measure`. If
+  // the available inline size is indefinite (e.g., for an orthogonal virtual
+  // item), falls back to using the item's max-content contribution as its
+  // inline size.
+  const LayoutResult* LayoutItemForMeasureWithFallback(
+      GridItemData* grid_lanes_item,
+      const ConstraintSpace& space_for_measure,
+      SizingConstraint sizing_constraint) const;
 
   LayoutUnit ContributionSizeForVirtualItem(
       const GridLayoutTrackCollection& track_collection,

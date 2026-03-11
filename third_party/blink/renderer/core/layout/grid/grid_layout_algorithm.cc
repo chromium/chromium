@@ -574,20 +574,6 @@ LayoutUnit GetExtraMarginForBaseline(const BoxStrut& margins,
               : margins.block_start);
 }
 
-LayoutUnit GetSynthesizedLogicalBaseline(
-    const GridItemData& grid_item,
-    LayoutUnit block_size,
-    GridTrackSizingDirection track_direction) {
-  const auto synthesized_baseline = LogicalBoxFragment::SynthesizedBaseline(
-      grid_item.parent_grid_font_baseline,
-      grid_item.BaselineWritingDirection(track_direction).IsFlippedLines(),
-      block_size);
-
-  return grid_item.IsLastBaselineSpecified(track_direction)
-             ? block_size - synthesized_baseline
-             : synthesized_baseline;
-}
-
 LayoutUnit ComputeBlockSizeForSubgrid(const GridSizingSubtree& sizing_subtree,
                                       const GridItemData& subgrid_data,
                                       const ConstraintSpace& space) {

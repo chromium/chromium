@@ -272,6 +272,13 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
 // sizing.
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
+// Returns the synthesized logical baseline for a grid item. This is used when
+// computing min/max content contributions without a full layout result.
+LayoutUnit GetSynthesizedLogicalBaseline(
+    const GridItemData& grid_item,
+    LayoutUnit block_size,
+    GridTrackSizingDirection track_direction);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
