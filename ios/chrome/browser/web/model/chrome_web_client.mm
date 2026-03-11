@@ -675,7 +675,7 @@ web::JSErrorReportLoggingLevel ChromeWebClient::GetJSErrorReportLoggingLevel(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   UrlKeyedDataCollectionConsentHelperIOS* consent_helper =
       UrlKeyedDataCollectionConsentHelperFactoryIOS::GetForProfile(profile);
-  if (consent_helper->IsEnabled()) {
+  if (consent_helper && consent_helper->IsEnabled()) {
     return web::JSErrorReportLoggingLevel::FULL;
   }
 
