@@ -26,8 +26,9 @@ using ProfileMetricsContext = std::optional<size_t>;
 // and the per-profile histogram (if the profile is suitable for per-profile
 // histograms, on supported platforms).
 //
-// The histograms should be defined in the XML file using the `ProfileIndex`
-// variant from tools/metrics/histograms/metadata/profile/histograms.xml
+// The histograms should be defined in the XML file using the
+// `ProfileIndex{sub_dir}` variant from
+// tools/metrics/histograms/metadata/{sub_dir}/histograms.xml
 class ProfileMetricsService : public KeyedService {
  public:
   explicit ProfileMetricsService(ProfileMetricsContext context = std::nullopt);

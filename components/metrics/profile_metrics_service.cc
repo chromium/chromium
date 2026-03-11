@@ -8,10 +8,17 @@
 
 namespace {
 
+// Sharing variants definition is not currently supported across multiple
+// sub-directories, so a duplication is necessary. List below (in
+// LINT.ThenChange) all required histogram sub-directories that implement
+// per profile metrics - the variants names must be unique: use
+// "ProfileIndex{sub_dir_name}" for consistency.
+//
 // LINT.IfChange(histogram_suffix)
 constexpr std::string_view kHistogramSuffixFormat = ".Profile%d";
 constexpr size_t kMaxProfileIndexToLog = 19;
-// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/histograms.xml:ProfileIndex)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:ProfileIndexSignin,
+// //tools/metrics/histograms/metadata/profile/histograms.xml:ProfileIndexProfile)
 
 std::string GetHistogramSuffix(std::optional<size_t> profile_index) {
   if (!profile_index.has_value()) {
