@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.ColorInt;
@@ -31,13 +32,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Coordinator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
 public class LogoCoordinator {
+    private final Context mContext;
     private final PropertyModel mLogoModel;
+    // This supplier is only used when the NTP surface is in tablet mode.
+    private final Supplier<Boolean> mIsInMultiWindowModeSupplier;
     private LogoMediator mMediator;
     private LogoView mLogoView;
+    private boolean mIsInMultiWindowModeOnTablet;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
     // The current tint color of logo if the DSE is Google. It is null when the default colorful
     // Google logo is used.
@@ -53,26 +59,36 @@ public class LogoCoordinator {
      *
      * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
-     * @param logoView The view that shows the search provider logo.
+     * @param parentView The parent view.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
+     * @param isInMultiWindowModeSupplier The Supplier of whether the device is in multiple window
+     *     mode.
      */
     public LogoCoordinator(
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
-            LogoView logoView,
+            ViewGroup parentView,
             Callback<Logo> onLogoAvailableCallback,
-            @Nullable VisibilityObserver visibilityObserver) {
+            @Nullable VisibilityObserver visibilityObserver,
+            Supplier<Boolean> isInMultiWindowModeSupplier) {
         // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
+        mContext = context;
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
-        mLogoView = logoView;
+        mLogoView = parentView.findViewById(R.id.search_provider_logo);
+        mIsInMultiWindowModeSupplier = isInMultiWindowModeSupplier;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
 
         Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
         mLogoColor =
                 NtpCustomizationUtils.setTintForDefaultGoogleLogo(
                         context, defaultGoogleLogoDrawable);
+        mIsInMultiWindowModeOnTablet = mIsInMultiWindowModeSupplier.get();
+        setDoodleSize(
+                mIsInMultiWindowModeOnTablet
+                        ? LogoUtils.DoodleSize.TABLET_SPLIT_SCREEN
+                        : LogoUtils.DoodleSize.REGULAR);
 
         mMediator =
                 new LogoMediator(
@@ -248,6 +264,28 @@ public class LogoCoordinator {
                 NtpCustomizationUtils.getTintedGoogleLogoDrawableImpl(
                         context, defaultGoogleLogoDrawable, backgroundType, primaryColor);
         mMediator.updateDefaultGoogleLogo(tintedDrawable);
+    }
+
+    /**
+     * Adjusts the doodle size while the tablet transitions to or from a multi-screen layout,
+     * ensuring the change occurs post-logo initialization.
+     */
+    public void updateDoodleOnTablet(boolean showingNonStandardGoogleLogo) {
+        boolean isInMultiWindowModeOnTabletPreviousValue = mIsInMultiWindowModeOnTablet;
+        mIsInMultiWindowModeOnTablet = mIsInMultiWindowModeSupplier.get();
+
+        if (isInMultiWindowModeOnTabletPreviousValue == mIsInMultiWindowModeOnTablet) return;
+
+        int doodleSize =
+                mIsInMultiWindowModeOnTablet
+                        ? LogoUtils.DoodleSize.TABLET_SPLIT_SCREEN
+                        : LogoUtils.DoodleSize.REGULAR;
+        setDoodleSize(doodleSize);
+
+        if (showingNonStandardGoogleLogo) {
+            LogoUtils.setLogoViewLayoutParamsForDoodle(
+                    mLogoView, mContext.getResources(), doodleSize);
+        }
     }
 
     /**

@@ -42,8 +42,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.logo.LogoUtils;
-import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
-import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
@@ -92,7 +90,6 @@ public class NewTabPageLayout extends LinearLayout {
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
     private LogoCoordinator mLogoCoordinator;
-    private LogoView mLogoView;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private @Nullable MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
 
@@ -148,8 +145,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     private boolean mIsTablet;
     private @Nullable Supplier<Integer> mTabStripHeightSupplier;
-    // This variable is only valid when the NTP surface is in tablet mode.
-    private boolean mIsInMultiWindowModeOnTablet;
+
     private Callback<Logo> mOnLogoAvailableCallback;
 
     // mIsComposeplateEnabled is null before checking whether to initialize composeplate view in
@@ -545,17 +541,14 @@ public class NewTabPageLayout extends LinearLayout {
                                             logo == null ? null : logo.image);
                         });
 
-        mLogoView = findViewById(R.id.search_provider_logo);
-
         mLogoCoordinator =
                 new LogoCoordinator(
                         mContext,
                         logoClickedCallback,
-                        mLogoView,
+                        /* parentView= */ this,
                         mOnLogoAvailableCallback,
-                        /* visibilityObserver= */ null);
-        mLogoCoordinator.setDoodleSize(
-                mIsInMultiWindowModeOnTablet ? DoodleSize.TABLET_SPLIT_SCREEN : DoodleSize.REGULAR);
+                        /* visibilityObserver= */ null,
+                        () -> MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity));
         mLogoCoordinator.initWithNative(mProfile);
     }
 
@@ -1118,24 +1111,9 @@ public class NewTabPageLayout extends LinearLayout {
      * ensuring the change occurs post-logo initialization.
      */
     private void updateDoodleOnTablet() {
-        if (!mIsTablet) return;
+        if (!mIsTablet || mLogoCoordinator == null) return;
 
-        boolean isInMultiWindowModeOnTabletPreviousValue = mIsInMultiWindowModeOnTablet;
-        mIsInMultiWindowModeOnTablet =
-                MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-
-        if (mLogoView != null
-                && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
-            int doodleSize =
-                    mIsInMultiWindowModeOnTablet
-                            ? DoodleSize.TABLET_SPLIT_SCREEN
-                            : DoodleSize.REGULAR;
-            if (mLogoCoordinator != null) mLogoCoordinator.setDoodleSize(doodleSize);
-
-            if (mShowingNonStandardGoogleLogo) {
-                LogoUtils.setLogoViewLayoutParamsForDoodle(mLogoView, getResources(), doodleSize);
-            }
-        }
+        mLogoCoordinator.updateDoodleOnTablet(mShowingNonStandardGoogleLogo);
     }
 
     private void updateSearchBoxTwoSideMargin() {

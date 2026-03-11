@@ -537,7 +537,6 @@ chrome_java_resources = [
   "java/res/layout/legacy_sync_promo_view.xml",
   "java/res/layout/lightweight_fre_tos.xml",
   "java/res/layout/list_menu_button.xml",
-  "java/res/layout/logo_view_layout.xml",
   "java/res/layout/long_screenshots_area_selection_dialog.xml",
   "java/res/layout/manage_space_activity.xml",
   "java/res/layout/material_tooltip.xml",

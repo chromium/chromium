@@ -64,6 +64,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-sw600dp/ic_google_logo.xml",
     "java/res/drawable/ic_google_logo.xml",
+    "java/res/layout/logo_view_layout.xml",
     "java/res/values-sw600dp/dimens.xml",
     "java/res/values/dimens.xml",
   ]
