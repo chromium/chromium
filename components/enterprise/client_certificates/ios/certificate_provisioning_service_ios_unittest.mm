@@ -18,6 +18,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
@@ -25,6 +26,7 @@
 #import "components/enterprise/client_certificates/core/mock_certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/mock_private_key.h"
 #import "components/enterprise/client_certificates/ios/client_identity_ios.h"
+#import "components/enterprise/client_certificates/ios/client_identity_ios_error.h"
 #import "crypto/apple/test_helpers.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -70,6 +72,8 @@ class CertificateProvisioningServiceIOSTest : public PlatformTest {
     auto mock_core_service =
         std::make_unique<StrictMock<MockCertificateProvisioningService>>();
     mock_core_service_ = mock_core_service.get();
+    EXPECT_CALL(*mock_core_service_, GetLoggingContext())
+        .WillRepeatedly(Return("Test"));
     service_ =
         CertificateProvisioningServiceIOS::Create(std::move(mock_core_service));
   }
@@ -279,6 +283,30 @@ TEST_F(CertificateProvisioningServiceIOSTest,
   EXPECT_NE(first_identity->identity_ref.get(),
             second_identity->identity_ref.get());
   EXPECT_EQ(second_identity->private_key(), mocked_private_key_2);
+}
+
+// Tests that if creating the SecIdentityRef fails, the terminal error is
+// recorded to UMA.
+TEST_F(CertificateProvisioningServiceIOSTest,
+       GetIdentityIOS_RecordsMetricsOnFailure) {
+  base::HistogramTester histogram_tester;
+  // Use a private key mock that does not return a valid SecKeyRef.
+  auto private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  EXPECT_CALL(*private_key, GetSecKeyRef()).WillOnce(Return(nullptr));
+  auto certificate = LoadTestCert();
+  ClientIdentity core_identity("test", private_key, certificate);
+
+  EXPECT_CALL(*mock_core_service_, GetManagedIdentity(_))
+      .WillOnce(RunOnceCallback<0>(core_identity));
+
+  base::test::TestFuture<std::optional<ClientIdentityIOS>> test_future;
+  service_->GetManagedIdentityIOS(test_future.GetCallback());
+
+  ASSERT_FALSE(test_future.Get().has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.ClientCertificate.Test.IOS.ClientIdentityError",
+      ClientIdentityIOSError::kPrivateKeyConversionFailed, 1);
 }
 
 }  // namespace client_certificates

@@ -13,12 +13,14 @@ source_set("ios") {
     "certificate_provisioning_service_ios.h",
     "client_identity_ios.h",
     "client_identity_ios_error.h",
+    "metrics_util.h",
   ]
 
   sources = [
     "certificate_provisioning_service_ios.mm",
     "client_identity_ios.mm",
     "client_identity_ios_error.mm",
+    "metrics_util.cc",
   ]
 
   public_deps = [

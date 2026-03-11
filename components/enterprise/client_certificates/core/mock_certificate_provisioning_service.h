@@ -30,7 +30,7 @@ class MockCertificateProvisioningService
               (base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(Status, GetCurrentStatus, (), (const, override));
-
+  MOCK_METHOD(std::string, GetLoggingContext, (), (const, override));
 };
 
 }  // namespace client_certificates

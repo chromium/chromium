@@ -83,6 +83,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<enum name="ClientIdentityIOSError">
+  <summary>
+    The error type occured during instantiation of ClientIdentityIOS object.
+  </summary>
+  <int value="0" label="Invalid Base Identity"/>
+  <int value="1" label="Certificate Conversion Failed"/>
+  <int value="2" label="Private Key Conversion Failed"/>
+  <int value="3" label="SecIdentityRef Creation Failed"/>
+</enum>
+
 <enum name="CwsPromotionBannerEvent">
   <summary>
     User interaction events with the enterprise promotion banner on the Chrome

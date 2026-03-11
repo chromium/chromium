@@ -68,6 +68,7 @@ class CertificateProvisioningServiceImpl
   void DeleteManagedIdentities(
       base::OnceCallback<void(bool)> callback) override;
   Status GetCurrentStatus() const override;
+  std::string GetLoggingContext() const override;
 
  private:
   bool IsPolicyEnabled() const;
@@ -115,10 +116,6 @@ class CertificateProvisioningServiceImpl
 
   const std::string policy_pref() const {
     return context_delegate_->GetPolicyPref();
-  }
-
-  const std::string logging_context() const {
-    return context_delegate_->GetLoggingContext();
   }
 
   PrefChangeRegistrar pref_observer_;
@@ -221,6 +218,10 @@ CertificateProvisioningServiceImpl::GetCurrentStatus() const {
   status.identity = cached_identity_;
   status.last_upload_code = last_upload_code_;
   return status;
+}
+
+std::string CertificateProvisioningServiceImpl::GetLoggingContext() const {
+  return context_delegate_->GetLoggingContext();
 }
 
 bool CertificateProvisioningServiceImpl::IsPolicyEnabled() const {
@@ -389,7 +390,7 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
   scoped_refptr<PrivateKey> private_key =
       std::move(expected_private_key.value());
   if (private_key) {
-    LogPrivateKeyCreationSource(logging_context(), private_key->GetSource());
+    LogPrivateKeyCreationSource(GetLoggingContext(), private_key->GetSource());
   }
 
   LOG_POLICY(INFO, DEVICE_TRUST) << "Fetching a certificate from the server...";
@@ -407,7 +408,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     HttpCodeOrClientError upload_code,
     scoped_refptr<net::X509Certificate> certificate) {
   last_upload_code_ = upload_code;
-  LogCertificateCreationResponse(logging_context(), upload_code, !!certificate);
+  LogCertificateCreationResponse(GetLoggingContext(), upload_code,
+                                 !!certificate);
 
   if (!certificate) {
     if (last_upload_code_->has_value()) {
@@ -513,13 +515,13 @@ void CertificateProvisioningServiceImpl::OnIdentitiesDeleted(
 void CertificateProvisioningServiceImpl::OnProvisioningError(
     ProvisioningError provisioning_error,
     std::optional<StoreError> store_error) {
-  LogProvisioningError(logging_context(), provisioning_error,
+  LogProvisioningError(GetLoggingContext(), provisioning_error,
                        std::move(store_error));
   OnFinishedProvisioning(/*success=*/false);
 }
 
 void CertificateProvisioningServiceImpl::OnFinishedProvisioning(bool success) {
-  LogProvisioningContext(logging_context(), provisioning_context_.value(),
+  LogProvisioningContext(GetLoggingContext(), provisioning_context_.value(),
                          success);
   provisioning_context_.reset();
 

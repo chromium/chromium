@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/ios/client_identity_ios_error.h"
+#include "components/enterprise/client_certificates/ios/metrics_util.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "net/cert/x509_certificate.h"
 
@@ -35,6 +36,7 @@ class CertificateProvisioningServiceIOSImpl
   void DeleteManagedIdentities(
       base::OnceCallback<void(bool)> callback) override;
   Status GetCurrentStatus() const override;
+  std::string GetLoggingContext() const override;
 
   // CertificateProvisioningServiceIOS:
   void GetManagedIdentityIOS(GetManagedIdentityIOSCallback callback) override;
@@ -97,6 +99,10 @@ CertificateProvisioningServiceIOSImpl::GetCurrentStatus() const {
   return status;
 }
 
+std::string CertificateProvisioningServiceIOSImpl::GetLoggingContext() const {
+  return core_service_->GetLoggingContext();
+}
+
 void CertificateProvisioningServiceIOSImpl::GetManagedIdentityIOS(
     GetManagedIdentityIOSCallback callback) {
   core_service_->GetManagedIdentity(base::BindOnce(
@@ -123,6 +129,7 @@ void CertificateProvisioningServiceIOSImpl::UpdateIOSCache(
         << "Successfully generated SecIdentityRef. Updating cache for iOS.";
     cached_ios_identity_ = std::move(create_result.value());
   } else {
+    LogClientIdentityIOSError(GetLoggingContext(), create_result.error());
     LOG_POLICY(ERROR, DEVICE_TRUST)
         << "Failed to create SecIdentityRef: "
         << ClientIdentityIOSErrorToString(create_result.error())

@@ -55,6 +55,7 @@ class MockCertificateProvisioningServiceIOS
               GetManagedIdentityIOS,
               (GetManagedIdentityIOSCallback),
               (override));
+  MOCK_METHOD(std::string, GetLoggingContext, (), (const, override));
 };
 
 }  // namespace

@@ -513,6 +513,17 @@ chromium-metrics-reviews@google.com.
   <token key="Level" variants="ClientCertLevel"/>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificate.{Level}.IOS.ClientIdentityError"
+    enum="ClientIdentityIOSError" expires_after="2027-01-02">
+  <owner>antoli@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures a terminal error that occurred when trying to instantiate a
+    SecIdentityRef for a {Level} level client certificate on iOS.
+  </summary>
+  <token key="Level" variants="ClientCertLevel"/>
+</histogram>
+
 <histogram name="Enterprise.ClientCertificate.{Level}.Provisioning.Error"
     enum="CertificateProvisioningError" expires_after="2027-01-02">
   <owner>seblalancette@chromium.org</owner>

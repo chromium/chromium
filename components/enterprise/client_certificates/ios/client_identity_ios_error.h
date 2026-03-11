@@ -10,8 +10,9 @@
 namespace client_certificates {
 
 // Represents the various error types that can occur during the instantiation
-// of a `ClientIdentityIOS` instance.
-// TODO(b/481664880): Add logging to UMA.
+// of a `ClientIdentityIOS` instance. Entries
+// should not be renumbered and numeric values should never be reused.
+// LINT.IfChange(ClientIdentityIOSError)
 enum class ClientIdentityIOSError {
   kInvalidBaseIdentity = 0,
   kCertificateConversionFailed = 1,
@@ -19,6 +20,7 @@ enum class ClientIdentityIOSError {
   kSecIdentityCreateFailed = 3,
   kMaxValue = kSecIdentityCreateFailed
 };
+// LINT.ThenChange(tools/metrics/histograms/metadata/enterprise/enums.xml:ClientIdentityIOSError)
 
 // Returns a string representation of `error`.
 std::string_view ClientIdentityIOSErrorToString(ClientIdentityIOSError error);

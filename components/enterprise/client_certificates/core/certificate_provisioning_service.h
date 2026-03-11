@@ -76,6 +76,10 @@ class CertificateProvisioningService : public KeyedService {
   // Returns metadata about the current status of the service, mainly for
   // debugging purposes.
   virtual Status GetCurrentStatus() const = 0;
+
+  // Returns the logging context for the current service (e.g., "Browser" or
+  // "Profile").
+  virtual std::string GetLoggingContext() const = 0;
 };
 
 }  // namespace client_certificates
