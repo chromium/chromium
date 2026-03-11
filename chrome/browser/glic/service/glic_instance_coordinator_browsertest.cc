@@ -1049,4 +1049,31 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeFailsOnInstanceDestruction) {
+  // Add a new tab so we don't close the browser when we close the active tab.
+  CreateAndActivateTab(GURL("about:blank"));
+
+  // Go back to the original tab and open Glic.
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ActivateTab(tab1);
+
+  GlicInstanceImpl* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  base::test::TestFuture<GlicInvokeError> error_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_error = error_future.GetCallback();
+
+  coordinator().Invoke(tab1, std::move(options));
+
+  // Destroy the instance while Invoke is in progress by closing the tab it is
+  // bound to.
+  tab1->Close();
+
+  // The error should be either kInstanceDestroyed or kTabClosed, depending on
+  // the order of destruction. The user expects it to cause instance deletion.
+  EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyed);
+}
+
 }  // namespace glic
