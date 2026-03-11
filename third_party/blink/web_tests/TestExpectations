@@ -9461,7 +9461,7 @@ crbug.com/449751911 crbug.com/41366962 external/wpt/html/semantics/tabular-data/
 crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Pass Timeout ]
 
 # WebAudio configurable render quantum failing test
-crbug.com/486238126 webaudio/WaveShaper/waveshaper-rendersizehint.html [ Crash Failure ]
+crbug.com/486238126 webaudio/WaveShaper/waveshaper-rendersizehint.html [ Crash Failure Timeout ]
 
 # Gardener 2025-10-10
 crbug.com/450592015 [ Mac12-arm64 ] external/wpt/webxr/idlharness.https.window.html [ Failure ]
