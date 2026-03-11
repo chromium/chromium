@@ -98,7 +98,8 @@ int InitSocketPoolHelper(
     ClientSocketHandle* socket_handle,
     HttpNetworkSession::SocketPoolType socket_pool_type,
     CompletionOnceCallback callback,
-    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
+    const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+    ClientSocketPool::PreconnectCompletionCallback preconnect_callback) {
   DCHECK(endpoint.IsValid());
 
   session->ApplyTestingFixedPort(endpoint);
@@ -125,7 +126,7 @@ int InitSocketPoolHelper(
   if (num_preconnect_streams) {
     return pool->RequestSockets(connection_group, std::move(socket_params),
                                 proxy_annotation, num_preconnect_streams,
-                                std::move(callback), net_log);
+                                std::move(preconnect_callback), net_log);
   }
 
   return socket_handle->Init(connection_group, std::move(socket_params),
@@ -228,7 +229,8 @@ int InitSocketHandleForHttpRequest(
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, socket_tag,
       net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::move(callback), proxy_auth_callback);
+      std::move(callback), proxy_auth_callback,
+      ClientSocketPool::PreconnectCompletionCallback());
 }
 
 int InitSocketHandleForWebSocketRequest(
@@ -260,7 +262,7 @@ int InitSocketHandleForWebSocketRequest(
       std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
       SocketTag(), net_log, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
-      proxy_auth_callback);
+      proxy_auth_callback, ClientSocketPool::PreconnectCompletionCallback());
 }
 
 int PreconnectSocketsForHttpRequest(
@@ -275,7 +277,7 @@ int PreconnectSocketsForHttpRequest(
     SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
-    CompletionOnceCallback callback) {
+    ClientSocketPool::PreconnectCompletionCallback callback) {
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
   // equivalent.
   DCHECK(endpoint.scheme() == url::kHttpScheme ||
@@ -286,8 +288,8 @@ int PreconnectSocketsForHttpRequest(
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
       net_log, num_preconnect_streams, nullptr,
-      HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
-      ClientSocketPool::ProxyAuthCallback());
+      HttpNetworkSession::NORMAL_SOCKET_POOL, CompletionOnceCallback(),
+      ClientSocketPool::ProxyAuthCallback(), std::move(callback));
 }
 
 }  // namespace net

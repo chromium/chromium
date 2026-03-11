@@ -518,7 +518,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      CompletionOnceCallback callback,
+      ClientSocketPool::PreconnectCompletionCallback callback,
       const NetLogWithSource& net_log) override {
     last_num_streams_ = num_sockets;
     last_group_id_ = group_id;

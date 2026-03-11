@@ -804,18 +804,18 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
 
-    // The lifeime of the preconnect tasks is not controlled by |connection_|.
-    // It may outlives |this|. So we can't use |io_callback_| which holds
+    // The lifetime of the preconnect tasks is not controlled by |connection_|.
+    // It may outlive |this|. So we can't use |io_callback_| which holds
     // base::Unretained(this).
-    auto callback =
-        base::BindOnce(&Job::OnIOComplete, ptr_factory_.GetWeakPtr());
+    auto preconnect_callback = base::BindOnce(&Job::OnPreconnectSocketsComplete,
+                                              ptr_factory_.GetWeakPtr());
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
-        std::move(callback));
+        std::move(preconnect_callback));
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
@@ -1363,6 +1363,14 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
       SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key);
+}
+
+void HttpStreamFactory::Job::OnPreconnectSocketsComplete(bool success) {
+  // The preconnect callback only provides a boolean indicating success or
+  // failure. We convert this to a `net::Error` to use the existing logic
+  // which uses `int` to pass around the errors as an argument including
+  // `OnIOComplete()` to be consistent with the rest of the job.
+  OnIOComplete(success ? OK : ERR_FAILED);
 }
 
 void HttpStreamFactory::Job::RecordPreconnectHistograms(int result) {

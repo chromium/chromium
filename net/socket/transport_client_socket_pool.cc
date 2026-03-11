@@ -304,7 +304,7 @@ int TransportClientSocketPool::RequestSockets(
     scoped_refptr<SocketParams> params,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     size_t num_sockets,
-    CompletionOnceCallback callback,
+    PreconnectCompletionCallback callback,
     const NetLogWithSource& net_log) {
   // TODO(eroman): Split out the host and port parameters.
   net_log.AddEvent(NetLogEventType::TCP_CLIENT_SOCKET_POOL_REQUESTED_SOCKETS,
@@ -336,9 +336,12 @@ int TransportClientSocketPool::RequestSockets(
   base::RepeatingClosure preconnect_done_closure = base::BarrierClosure(
       num_sockets,
       base::BindOnce(
-          [](CompletionOnceCallback callback) {
+          [](PreconnectCompletionCallback callback) {
+            // TODO(crbug.com/453308537): Current implementation always returns
+            // true to be consistent with the previous implementation. Update
+            // to return false when preconnect fails.
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE, base::BindOnce(std::move(callback), OK));
+                FROM_HERE, base::BindOnce(std::move(callback), true));
           },
           std::move(callback)));
   int pending_connect_job_count = 0;

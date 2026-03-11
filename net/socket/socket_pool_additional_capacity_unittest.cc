@@ -397,7 +397,7 @@ class MockClientSocketPool : public ClientSocketPool {
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      CompletionOnceCallback callback,
+      PreconnectCompletionCallback callback,
       const NetLogWithSource& net_log) override {
     NOTIMPLEMENTED();
     return ERR_IO_PENDING;

@@ -128,7 +128,7 @@ int PreconnectSocketsForHttpRequest(
     SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
-    CompletionOnceCallback callback);
+    ClientSocketPool::PreconnectCompletionCallback callback);
 
 }  // namespace net
 

@@ -96,6 +96,19 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       base::OnceClosure restart_with_auth_callback)>
       ProxyAuthCallback;
 
+  // Callback for preconnect socket requests. The bool indicates whether the
+  // request is successful. Currently, preconnect is considered "successful"
+  // when a socket is available for use. This means that if we have multiple
+  // preconnect socket requests, and if any one of them succeeds, we will return
+  // true. False is only returned when *all* preconnect socket requests fail.
+  // Note that even if this returns true, we might not have the preconnected
+  // socket in the pool already, since we might have another request which might
+  // use the socket right after it was preconnected. This is expected behavior,
+  // since we are correctly using the preconnected socket on a subsequent
+  // request. Since the preconnect itself is correctly handled and completed, we
+  // return true in these cases.
+  using PreconnectCompletionCallback = base::OnceCallback<void(bool)>;
+
   // Group ID for a socket request. Requests with the same group ID are
   // considered indistinguishable.
   class NET_EXPORT GroupId {
@@ -281,7 +294,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       scoped_refptr<SocketParams> params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      CompletionOnceCallback callback,
+      PreconnectCompletionCallback callback,
       const NetLogWithSource& net_log) = 0;
 
   // Called to change the priority of a RequestSocket call that returned
