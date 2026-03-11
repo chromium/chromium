@@ -1095,9 +1095,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.DesktopCapturerImpl"
-    enum="WebRtcDesktopCapturerImpl" expires_after="2026-03-15">
+    enum="WebRtcDesktopCapturerImpl" expires_after="2026-09-15">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
+  <owner>ilnik@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>
     This measures the frequency of use for each desktop capturer implementation,
