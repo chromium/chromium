@@ -146,6 +146,50 @@ TEST_F(CSSPrimitiveValueTest, Zooming) {
   EXPECT_EQ("calc(10% + 100px)", converted->CustomCSSText());
 }
 
+TEST_F(CSSPrimitiveValueTest,
+       ConvertToLengthTypedArithmeticCancelsTimeAndPercent) {
+  const CSSPrimitiveValue* value = ParseValue("calc(10px * 1% * 1s / 1% / 1s)");
+
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
+  Length length = value->ConvertToLength(conversion_data);
+  PixelsAndPercent pixels_and_percent = length.GetPixelsAndPercent();
+  EXPECT_EQ(10.0f, pixels_and_percent.pixels);
+  EXPECT_EQ(0.0f, pixels_and_percent.percent);
+}
+
+TEST_F(CSSPrimitiveValueTest,
+       ConvertToLengthTypedArithmeticMixedUnitsDoesNotCrash) {
+  const char* test_cases[] = {
+      "calc((1px + 1%) * 2s / 1ms)",
+      "calc(((1px + 1%) / 2s) * 1ms)",
+      "calc((1px + 1%) * 5kHz / 10kHz)",
+      "calc(((1px + 1%) / 5kHz) * 10kHz)",
+      "calc((1px + 1%) * 10dpi / 2dpi)",
+      "calc(((1px + 1%) / 10dpi) * 2dpi)",
+      "calc(max(1px, 1%) * 5s / 1s)",
+      "calc((max(1px, 1%) / 5s) * 1s)",
+      "calc(max(1px, 1%) * 1kHz / 10kHz)",
+      "calc((max(1px, 1%) / 1kHz) * 10kHz)",
+      "calc(max(1px, 1%) * 2dpi / 3dpi)",
+      "calc((max(1px, 1%) / 2dpi) * 3dpi)",
+      ("calc(((((10px * (3 / 0.5)) / (2dppx / 2dpcm)) * (5% / 50%)) * "
+       "(20kHz / 20kHz)))"),
+  };
+
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
+  for (const char* expression : test_cases) {
+    SCOPED_TRACE(expression);
+    const CSSPrimitiveValue* value =
+        To<CSSPrimitiveValue>(css_test_helpers::ParseValue(
+            GetDocument(), "<length-percentage>", expression));
+    ASSERT_NE(value, nullptr);
+    Length length = value->ConvertToLength(conversion_data);
+    const CSSPrimitiveValue* round_trip =
+        CSSPrimitiveValue::CreateFromLength(length, conversion_data.Zoom());
+    EXPECT_NE(round_trip, nullptr);
+  }
+}
+
 TEST_F(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
   UnitValue a = {std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};

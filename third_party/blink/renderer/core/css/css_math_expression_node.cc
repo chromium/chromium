@@ -1302,9 +1302,20 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
 const CalculationExpressionNode*
 CSSMathExpressionNumericLiteral::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
-  if (Category() == kCalcNumber) {
-    return MakeGarbageCollected<CalculationExpressionNumberNode>(
-        value_->DoubleValue());
+  switch (Category()) {
+    case kCalcNumber:
+      return MakeGarbageCollected<CalculationExpressionNumberNode>(
+          value_->DoubleValue());
+    case kCalcTime:
+    case kCalcFrequency:
+    case kCalcResolution: {
+      std::optional<double> canonical_value = ComputeValueInCanonicalUnit();
+      DCHECK(canonical_value.has_value());
+      return MakeGarbageCollected<CalculationExpressionNumberNode>(
+          canonical_value.value());
+    }
+    default:
+      break;
   }
   return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
       *ToPixelsAndPercent(length_resolver));
@@ -2969,11 +2980,104 @@ CalculationOperator ConvertOperator(CSSMathOperator op) {
   }
 }
 
+struct ArithmeticTreeConstraints {
+  bool is_pure_arithmetic = true;
+  bool contains_typed_literal = false;
+};
+
+ArithmeticTreeConstraints CheckArithmeticTreeConstraints(
+    const CSSMathExpressionNode* node) {
+  // 1. Check restrictions that break pure arithmetic
+  if (node->IsIdentifierLiteral() || node->IsKeywordLiteral() ||
+      node->IsContainerFeature() || node->IsAnchorQuery() ||
+      node->IsRandomFunction()) {
+    return {.is_pure_arithmetic = false};
+  }
+
+  // 2. Check for typed literals that need collapse
+  if (node->IsNumericLiteral()) {
+    switch (node->Category()) {
+      case kCalcAngle:
+      case kCalcTime:
+      case kCalcFrequency:
+      case kCalcResolution:
+        return {.contains_typed_literal = true};
+      default:
+        return {};
+    }
+  }
+
+  // 3. If it's an operation, ensure it's arithmetic and check its children
+  const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
+  if (!operation) {
+    return {};
+  }
+  if (!operation->IsArithmeticOperation()) {
+    return {.is_pure_arithmetic = false};
+  }
+
+  ArithmeticTreeConstraints constraints;
+  for (const CSSMathExpressionNode* operand : operation->GetOperands()) {
+    ArithmeticTreeConstraints child_constraints =
+        CheckArithmeticTreeConstraints(operand);
+    if (!child_constraints.is_pure_arithmetic) {
+      return {.is_pure_arithmetic = false};
+    }
+    constraints.contains_typed_literal |=
+        child_constraints.contains_typed_literal;
+  }
+  return constraints;
+}
+
 }  // namespace
 
 const CalculationExpressionNode*
 CSSMathExpressionOperation::ToCalculationExpression(
     const CSSLengthResolver& length_resolver) const {
+  // Collapse pure arithmetic expressions with a canonical
+  // number/length/percent result before lowering children when they contain
+  // typed-arithmetic literal categories that the normal length-lowering path
+  // cannot descend into safely, such as 1s * (1 / 1s).
+  ArithmeticTreeConstraints arithmetic_tree_constraints =
+      CheckArithmeticTreeConstraints(this);
+  if (arithmetic_tree_constraints.is_pure_arithmetic &&
+      arithmetic_tree_constraints.contains_typed_literal &&
+      !HasUnresolvablePercentages()) {
+    switch (Category()) {
+      case kCalcNumber:
+        if (std::optional<double> value =
+                ComputeValueInCanonicalUnit(length_resolver)) {
+          return MakeGarbageCollected<CalculationExpressionNumberNode>(
+              ClampTo<float>(*value));
+        }
+        break;
+      case kCalcLength:
+        if (!HasPercentage()) {
+          if (std::optional<double> value =
+                  ComputeValueInCanonicalUnit(length_resolver)) {
+            return MakeGarbageCollected<
+                CalculationExpressionPixelsAndPercentNode>(
+                PixelsAndPercent(ClampTo<float>(*value), 0.0f,
+                                 /*has_explicit_pixels=*/true,
+                                 /*has_explicit_percent=*/false));
+          }
+        }
+        break;
+      case kCalcPercent:
+        if (std::optional<double> value =
+                ComputeValueInCanonicalUnit(length_resolver)) {
+          return MakeGarbageCollected<
+              CalculationExpressionPixelsAndPercentNode>(
+              PixelsAndPercent(0.0f, ClampTo<float>(*value),
+                               /*has_explicit_pixels=*/false,
+                               /*has_explicit_percent=*/true));
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   CalculationOperator op = ConvertOperator(operator_);
   HeapVector<Member<const CalculationExpressionNode>> operands;
   operands.reserve(operands_.size());
