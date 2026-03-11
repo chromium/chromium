@@ -52,6 +52,7 @@
 #include "content/public/common/page_visibility_state.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -414,6 +415,12 @@ void AIManager::AddReceiver(
 void AIManager::CanCreateLanguageModel(
     blink::mojom::AILanguageModelCreateOptionsPtr options,
     CanCreateLanguageModelCallback callback) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!IsBuiltInAIAPIsEnabledByPolicy()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableEnterprisePolicyDisabled);
@@ -464,6 +471,12 @@ void AIManager::CreateLanguageModel(
         client,
     blink::mojom::AILanguageModelCreateOptionsPtr options) {
   CHECK(options);
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!CheckAndFixLanguages(
           options, "LanguageModel",
           AILanguageModel::GetEnabledLanguageBaseCodes(),
@@ -585,6 +598,12 @@ void AIManager::CreateLanguageModelInternal(
 void AIManager::CanCreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options,
     CanCreateSummarizerCallback callback) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kSummarizer)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!IsBuiltInAIAPIsEnabledByPolicy()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableEnterprisePolicyDisabled);
@@ -614,6 +633,12 @@ void AIManager::CanCreateSummarizer(
 void AIManager::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
     blink::mojom::AISummarizerCreateOptionsPtr options) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kSummarizer)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!CheckAndFixLanguages(
           options, "Summarizer", AISummarizer::GetEnabledLanguageBaseCodes(),
           AISummarizer::GetDefaultSupportedLanguageBaseCodes())) {
@@ -674,6 +699,7 @@ void AIManager::CreateSummarizer(
 void AIManager::CanCreateProofreader(
     blink::mojom::AIProofreaderCreateOptionsPtr options,
     CanCreateProofreaderCallback callback) {
+  // TODO(crbug.com/466425250): Enforce permissions policy.
   // TODO(crbug.com/424673180): Add a warning message when options
   // `includeCorrectionTypes` and `includeCorrectionExplanations` are set to
   // true as those features are not yet supported by the API.
@@ -691,6 +717,7 @@ void AIManager::CanCreateProofreader(
 void AIManager::CreateProofreader(
     mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient> client,
     blink::mojom::AIProofreaderCreateOptionsPtr options) {
+  // TODO(crbug.com/466425250): Enforce permissions policy.
   if (!CheckAndFixLanguages(
           options, "Proofreader", AIProofreader::GetEnabledLanguageBaseCodes(),
           AIProofreader::GetDefaultSupportedLanguageBaseCodes())) {
@@ -778,6 +805,12 @@ void AIManager::GetLanguageModelParams(
 
 void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
                                 CanCreateWriterCallback callback) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kWriter)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!IsBuiltInAIAPIsEnabledByPolicy()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableEnterprisePolicyDisabled);
@@ -798,6 +831,12 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
     blink::mojom::AIWriterCreateOptionsPtr options) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kWriter)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!CheckAndFixLanguages(options, "Writer",
                             AIWriter::GetEnabledLanguageBaseCodes(),
                             AIWriter::GetDefaultSupportedLanguageBaseCodes())) {
@@ -841,6 +880,12 @@ void AIManager::CreateWriter(
 void AIManager::CanCreateRewriter(
     blink::mojom::AIRewriterCreateOptionsPtr options,
     CanCreateRewriterCallback callback) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kRewriter)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!IsBuiltInAIAPIsEnabledByPolicy()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableEnterprisePolicyDisabled);
@@ -861,6 +906,12 @@ void AIManager::CanCreateRewriter(
 void AIManager::CreateRewriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
     blink::mojom::AIRewriterCreateOptionsPtr options) {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (rfh && !rfh->IsFeatureEnabled(
+                 network::mojom::PermissionsPolicyFeature::kRewriter)) {
+    receivers_.ReportBadMessage("Permissions policy disabled");
+    return;
+  }
   if (!CheckAndFixLanguages(
           options, "Rewriter", AIRewriter::GetEnabledLanguageBaseCodes(),
           AIRewriter::GetDefaultSupportedLanguageBaseCodes())) {

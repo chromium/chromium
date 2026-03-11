@@ -26,6 +26,8 @@
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -689,6 +691,22 @@ TEST_F(AIWriterTest, CrashRecoveryMeasureInputUsage) {
               std::string(kContextString).size() +
               std::string(kInputString).size();
   EXPECT_EQ(measure_future.Get(), size);
+}
+
+TEST_F(AIWriterTest, CanCreatePermissionsPolicyDisabled) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kWriter);
+  mojo::test::BadMessageObserver observer;
+  GetAIManagerRemote()->CanCreateWriter(GetDefaultOptions(), base::DoNothing());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Permissions policy disabled");
+}
+
+TEST_F(AIWriterTest, CreatePermissionsPolicyDisabled) {
+  DisablePolicy(network::mojom::PermissionsPolicyFeature::kWriter);
+  mojo::test::BadMessageObserver observer;
+  TestCreateWriterClient create_writer_client;
+  GetAIManagerRemote()->CreateWriter(
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+  EXPECT_EQ(observer.WaitForBadMessage(), "Permissions policy disabled");
 }
 
 }  // namespace

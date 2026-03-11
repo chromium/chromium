@@ -119,6 +119,7 @@ source_set("unit_tests") {
     "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
     "ai_proofreader_unittest.cc",
+    "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
     "ai_writer_unittest.cc",
   ]
