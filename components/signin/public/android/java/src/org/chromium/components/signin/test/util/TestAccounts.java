@@ -87,7 +87,7 @@ public class TestAccounts {
      * To be used in test cases where we want to test Signin flows for accounts that don't have a
      * displayable name or email.
      */
-    public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
+    public static final AccountInfo CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME =
             new AccountInfo.Builder("child.test@gmail.com", new GaiaId("child-gaia-id"))
                     .accountImage(createAvatar())
                     .accountCapabilities(

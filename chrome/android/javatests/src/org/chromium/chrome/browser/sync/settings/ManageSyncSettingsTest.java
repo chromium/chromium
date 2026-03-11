@@ -783,7 +783,7 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     public void testSigninSettingsTopAvatarWithNonDisplayableEmailAndNoName() throws Exception {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
-        var childAccount = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        var childAccount = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
         signinTestRule.addAccount(childAccount);
         // Child accounts are automatically signed-in in the background.
         signinTestRule.waitForSignin(childAccount);

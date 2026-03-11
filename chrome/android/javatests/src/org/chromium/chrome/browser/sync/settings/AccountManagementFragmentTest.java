@@ -157,7 +157,7 @@ public class AccountManagementFragmentTest {
             testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
                     throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
-        AccountInfo accountInfo = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        AccountInfo accountInfo = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
         signinTestRule.addAccount(accountInfo);
         // Child accounts are signed-in automatically in the background.
         signinTestRule.waitForSignin(accountInfo);

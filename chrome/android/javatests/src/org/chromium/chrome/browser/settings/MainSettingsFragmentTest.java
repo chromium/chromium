@@ -617,7 +617,7 @@ public class MainSettingsFragmentTest {
         // Account set up.
         // If both fullName and givenName are empty, accountCapabilities is ignored.
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
-        AccountInfo accountInfo = TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
+        AccountInfo accountInfo = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
         signinTestRule.addAccount(accountInfo);
         // Child accounts are signed-in automatically in the background.
         signinTestRule.waitForSignin(accountInfo);
@@ -628,7 +628,7 @@ public class MainSettingsFragmentTest {
                     return !signInPreference
                             .getProfileDataCache()
                             .getProfileDataOrDefault(
-                                    TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME
+                                    TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME
                                             .getEmail())
                             .hasDisplayableEmailAddress();
                 });
@@ -636,7 +636,7 @@ public class MainSettingsFragmentTest {
 
         mSettingsActivityTestRule.startSettingsActivity();
 
-        onView(withText(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME.getEmail()))
+        onView(withText(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME.getEmail()))
                 .check(doesNotExist());
         onView(allOf(withText(R.string.default_google_account_username), isDisplayed()))
                 .check(matches(isDisplayed()));
