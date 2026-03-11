@@ -61,6 +61,12 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
               BookmarkAllUserNodesRemoved,
               (const std::set<GURL>&, const base::Location&));
 
+  MOCK_METHOD(void, OnWillRemoveAllUserBookmarks, (const base::Location&));
+
+  MOCK_METHOD(void, ExtensiveBookmarkChangesBeginning, ());
+
+  MOCK_METHOD(void, ExtensiveBookmarkChangesEnded, ());
+
   MOCK_METHOD(void, GroupedBookmarkChangesBeginning, ());
 
   MOCK_METHOD(void, GroupedBookmarkChangesEnded, ());
