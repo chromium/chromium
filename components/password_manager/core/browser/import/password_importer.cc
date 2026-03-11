@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -314,8 +313,8 @@ void ReportImportResultsMetrics(const ImportResults& results,
   // Number of rows with all login fields (URL, username, password) empty.
   size_t empty_all_login_fields = 0;
 
-  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
-                          results.number_imported);
+  base::UmaHistogramCounts1M("PasswordManager.ImportedPasswordsPerUserInCSV",
+                             results.number_imported);
   for (const ImportEntry& entry : results.displayed_entries) {
     missing_only_password_rows += IsPasswordMissing(entry) &&
                                   !IsUsernameMissing(entry) &&
