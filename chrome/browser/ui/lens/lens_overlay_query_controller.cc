@@ -707,6 +707,8 @@ std::unique_ptr<lens::LensOverlayRequestId>
 LensOverlayQueryController::GetNextRequestId(
     RequestIdUpdateMode update_mode,
     lens::LensOverlayRequestId::MediaType media_type) {
+  // LensOverlay uploads are all considered implicit uploads.
+  request_id_generator_->SetIsImplicitUpload(true);
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator_->GetNextRequestId(update_mode, media_type);
   latest_request_id_ = *request_id.get();
@@ -807,6 +809,8 @@ LensOverlayQueryController::LensServerFetchRequest::~LensServerFetchRequest() =
     default;
 
 std::string LensOverlayQueryController::GetVsridForNewTab() {
+  // LensOverlay search urls are all considered to use implicit uploads.
+  request_id_generator_->SetIsImplicitUpload(true);
   std::unique_ptr<lens::LensOverlayRequestId> request_id =
       request_id_generator_->GetNextRequestId(
           RequestIdUpdateMode::kOpenInNewTab,

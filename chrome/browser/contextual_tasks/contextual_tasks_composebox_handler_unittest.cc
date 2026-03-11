@@ -527,6 +527,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -623,6 +624,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -968,6 +970,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -1255,6 +1258,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -1829,6 +1833,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
           [](int32_t tab_id, std::optional<int64_t> context_id,
              std::unique_ptr<lens::ContextualInputData> data,
              ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
             std::move(callback).Run(true);
           });
 
@@ -2000,9 +2005,13 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 
   EXPECT_CALL(*handler_, UploadTabContextWithData(testing::_, testing::_,
                                                   testing::_, testing::_))
-      .WillRepeatedly([](int32_t, auto, auto, auto callback) {
-        std::move(callback).Run(true);
-      });
+      .WillRepeatedly(
+          [](int32_t tab_id, std::optional<int64_t> context_id,
+             std::unique_ptr<lens::ContextualInputData> data,
+             ContextualSearchboxHandler::RecontextualizeTabCallback callback) {
+            EXPECT_TRUE(data->is_implicit_upload);
+            std::move(callback).Run(true);
+          });
 
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
       .WillOnce(testing::Return(lens::ClientToAimMessage()));
@@ -2615,7 +2624,6 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest, UpdateSuggestedTabContext) {
-
   GURL url("https://example.com");
   auto tab_info = searchbox::mojom::TabInfo::New();
   tab_info->url = url;
