@@ -176,17 +176,6 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 // Used to gate the immersive SRP in the Composebox.
 BASE_DECLARE_FEATURE(kComposeboxImmersiveSRP);
 
-// Variations of Composebox tab picker.
-extern const char kComposeboxTabPickerVariationParam[];
-extern const char kComposeboxTabPickerVariationParamCachedAPC[];
-extern const char kComposeboxTabPickerVariationParamOnFlightAPC[];
-
-// Feature flag for the tab picker in the Composebox.
-BASE_DECLARE_FEATURE(kComposeboxTabPickerVariation);
-
-// Returns true is we should use cached APCs in the Composebox.
-bool IsComposeboxTabPickerCachedAPCEnabled();
-
 // Variations of Composebox.
 extern const char kComposeboxParam[];
 extern const char kComposeboxParamAllOmniboxEntrypoints[];

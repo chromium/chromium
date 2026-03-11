@@ -181,21 +181,6 @@ const FeatureEntry::FeatureVariation kNTPMIAEntrypointVariations[] = {
      kNTPMIAEntrypointAIMInQuickActions, nullptr},
 };
 
-const FeatureEntry::FeatureParam kComposeboxTabPickerVariationCachedAPC[] = {
-    {kComposeboxTabPickerVariationParam,
-     kComposeboxTabPickerVariationParamCachedAPC}};
-
-const FeatureEntry::FeatureParam kComposeboxTabPickerVariationOnFlightAPC[] = {
-    {kComposeboxTabPickerVariationParam,
-     kComposeboxTabPickerVariationParamOnFlightAPC}};
-
-const FeatureEntry::FeatureVariation kComposeboxTabPickerVariationVariations[] =
-    {
-        {"A) Use Cached APC", kComposeboxTabPickerVariationCachedAPC, nullptr},
-        {"B) Use On flight APC", kComposeboxTabPickerVariationOnFlightAPC,
-         nullptr},
-};
-
 const FeatureEntry::FeatureParam kDisableKeyboardAccessoryOnlySymbolsParam[] = {
     {kDisableKeyboardAccessoryParam, kDisableKeyboardAccessoryOnlySymbols}};
 
@@ -2386,13 +2371,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"composebox-immersive-srp", flag_descriptions::kComposeboxImmersiveSRPName,
      flag_descriptions::kComposeboxImmersiveSRPDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kComposeboxImmersiveSRP)},
-    {"composebox-tab-picker-variation",
-     flag_descriptions::kComposeboxTabPickerVariationName,
-     flag_descriptions::kComposeboxTabPickerVariationDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kComposeboxTabPickerVariation,
-                                    kComposeboxTabPickerVariationVariations,
-                                    "ComposeboxTabPickerVariation")},
     {"composebox-uses-chrome-compose-client",
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientName,
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,

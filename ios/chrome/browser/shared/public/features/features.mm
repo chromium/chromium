@@ -115,22 +115,6 @@ BASE_FEATURE(kNTPMIAEntrypointAllLocales,
 // Used to gate the immersive SRP in the Composebox.
 BASE_FEATURE(kComposeboxImmersiveSRP, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kComposeboxTabPickerVariationParam[] =
-    "kComposeboxTabPickerVariationParam";
-const char kComposeboxTabPickerVariationParamCachedAPC[] =
-    "kComposeboxTabPickerVariationParamCachedAPC";
-const char kComposeboxTabPickerVariationParamOnFlightAPC[] =
-    "kComposeboxTabPickerVariationParamOnFlightAPC";
-
-// Feature flag for the tab picker in the Composebox.
-BASE_FEATURE(kComposeboxTabPickerVariation, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsComposeboxTabPickerCachedAPCEnabled() {
-  std::string param = base::GetFieldTrialParamValueByFeature(
-      kComposeboxTabPickerVariation, kComposeboxTabPickerVariationParam);
-  return param == kComposeboxTabPickerVariationParamCachedAPC;
-}
-
 BASE_FEATURE(kOmniboxDRSPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTraitCollectionWorkAround,

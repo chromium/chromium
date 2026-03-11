@@ -1769,11 +1769,6 @@
     "expiry_milestone": 150
   },
   {
-    "name":"composebox-tab-picker-variation",
-    "owners": ["ameurhosni@google.com","alionadangla@google.com","radunitescu@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "composebox-uses-chrome-compose-client",
     "owners": ["niharm@google.com", "chrome-desktop-ntp@google.com"],
     "expiry_milestone": 150

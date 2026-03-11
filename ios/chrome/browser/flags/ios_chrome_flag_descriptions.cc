@@ -365,11 +365,6 @@ const char kComposeboxServerSideStateName[] =
 extern const char kComposeboxServerSideStateDescription[] =
     "When enabled, the server side state will be used in the composebox";
 
-const char kComposeboxTabPickerVariationName[] =
-    "Enable tab picker variation in the composebox";
-const char kComposeboxTabPickerVariationDescription[] =
-    "When enabled, the method of attaching tabs differs.";
-
 const char kConfirmationButtonSwapOrderName[] =
     "Swap Button Order in confirmation alerts";
 const char kConfirmationButtonSwapOrderDescription[] =

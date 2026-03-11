@@ -231,9 +231,6 @@ extern const char kComposeboxMenuTitleDescription[];
 extern const char kComposeboxServerSideStateName[];
 extern const char kComposeboxServerSideStateDescription[];
 
-extern const char kComposeboxTabPickerVariationName[];
-extern const char kComposeboxTabPickerVariationDescription[];
-
 extern const char kConfirmationButtonSwapOrderName[];
 extern const char kConfirmationButtonSwapOrderDescription[];
 
