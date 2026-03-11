@@ -476,7 +476,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     const available = [];
     for (let matchIndex = 0; matchIndex < result.matches.length; matchIndex++) {
       const match = result.matches[matchIndex]!;
-      if (match.isHidden) {
+      // Preserve selection of the default match, even if hidden, to stay
+      // compatible with OmniboxEditModel's keyword mode handling.
+      if (match.isHidden && !match.allowedToBeDefaultMatch) {
         continue;
       }
       available.push({
