@@ -333,6 +333,7 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
 
     const gfx::Rect previous_bounds_in_screen =
         child_node->node_view_->GetBoundsInScreen();
+    const bool was_focused = child_node->node_view_->HasFocus();
 
     std::unique_ptr<views::View> removed_view =
         src_parent_node->detach_child_from_node_
@@ -351,6 +352,9 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
       dst_parent_node->node_view_->AddChildView(std::move(removed_view));
     }
     dst_parent_node->EnsureFocusOrder(new_index);
+    if (was_focused) {
+      child_node->node_view_->RequestFocus();
+    }
     return;
   }
 
