@@ -1166,13 +1166,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kFailedToGetUWPAppCoreWindowProcessId"/>
 </enum>
 
-<enum name="GetDeviceInfosResult">
-  <int value="0" label="SuccessNoRetry"/>
-  <int value="1" label="FailureNoRetry"/>
-  <int value="2" label="SucessAfterRetry"/>
-  <int value="3" label="FailureAfterRetry"/>
-</enum>
-
 <enum name="GetDisplayMediaAudioToggleStatus">
   <int value="0" label="AudioNotRequested"/>
   <int value="1" label="AudioRequestedButNotSupported"/>

@@ -14,7 +14,6 @@
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/renderer_host/media/service_video_capture_device_launcher.h"
 #include "content/browser/renderer_host/media/virtual_video_capture_devices_changed_observer.h"
-#include "content/browser/video_capture_service_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -43,31 +42,6 @@ CreateAcceleratorFactory() {
       content::DelegateToBrowserGpuServiceAcceleratorFactory>();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Do not reorder, used for UMA Media.VideoCapture.GetDeviceInfosResult
-enum class GetDeviceInfosResult {
-  kSucessNoRetry = 0,
-  kFailureNoRetry = 1,
-  kSucessAfterRetry = 2,
-  kFailureAfterRetry = 3,
-  kMaxValue = kFailureAfterRetry,
-};
-
-void LogGetDeviceInfosResult(
-    std::optional<GetSourceInfosResult> get_source_infos_result,
-    bool get_device_infos_retried) {
-  GetDeviceInfosResult result;
-  if (get_source_infos_result &&
-      *get_source_infos_result == GetSourceInfosResult::kSuccess) {
-    result = get_device_infos_retried ? GetDeviceInfosResult::kSucessAfterRetry
-                                      : GetDeviceInfosResult::kSucessNoRetry;
-  } else {
-    result = get_device_infos_retried ? GetDeviceInfosResult::kFailureAfterRetry
-                                      : GetDeviceInfosResult::kFailureNoRetry;
-  }
-  base::UmaHistogramEnumeration("Media.VideoCapture.GetDeviceInfosResult",
-                                result);
-}
 
 }  // anonymous namespace
 
@@ -169,7 +143,6 @@ void ServiceVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   emit_log_message_cb_.Run("ServiceVideoCaptureProvider::GetDeviceInfosAsync");
-  get_device_infos_retried_ = false;
   get_device_infos_pending_callbacks_.push_back(std::move(result_callback));
   GetDeviceInfosAsyncForRetry();
 }
@@ -270,13 +243,6 @@ ServiceVideoCaptureProvider::LazyConnectToService() {
 #endif
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider;
-#if BUILDFLAG(IS_MAC)
-  if (get_device_infos_retried_) {
-    // If the service crashed once during a device info query, enable the
-    // safe-mode VideoCaptureService.
-    EnableVideoCaptureServiceSafeMode();
-  }
-#endif
   GetVideoCaptureService().ConnectToVideoSourceProvider(
       source_provider.BindNewPipeAndPassReceiver());
   source_provider.set_disconnect_handler(base::BindOnce(
@@ -310,7 +276,6 @@ void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     GetSourceInfosResult result,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  LogGetDeviceInfosResult(result, get_device_infos_retried_);
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
     media::mojom::DeviceEnumerationResult callback_result;
     switch (result) {
@@ -332,23 +297,6 @@ void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
 void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (base::FeatureList::IsEnabled(
-          features::kRetryGetVideoCaptureDeviceInfos)) {
-    if (!get_device_infos_retried_) {
-      get_device_infos_retried_ = true;
-      // Do nothing, OnServiceStopped will retry the query automatically when
-      // the service has been torn down.
-      return;
-    }
-    LOG(WARNING) << "Too many GetDeviceInfos() retries";
-    emit_log_message_cb_.Run(
-        "ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped: Too many "
-        "retries");
-  }
-
-  LogGetDeviceInfosResult(/*get_source_infos_result=*/std::nullopt,
-                          get_device_infos_retried_);
-
   // After too many retries, we just return an empty list
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
     std::move(callback).Run(

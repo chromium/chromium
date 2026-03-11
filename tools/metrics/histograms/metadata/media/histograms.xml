@@ -7775,17 +7775,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.GetDeviceInfosResult"
-    enum="GetDeviceInfosResult" expires_after="M118">
-  <owner>orphis@chromium.org</owner>
-  <owner>toprice@chromium.org</owner>
-  <summary>
-    Used to track the resolution of
-    ServiceVideoCaptureProvider::GetDeviceInfosAsync() and if a retry has been
-    used to get to the current result. See http://crbug.com/1379392.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.Height" units="pixels"
     expires_after="2026-03-25">
   <owner>hiroh@chromium.org</owner>

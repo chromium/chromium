@@ -75,10 +75,6 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    // Those tests are incompatible with the automatic retry with safe mode on
-    // macOS.
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kRetryGetVideoCaptureDeviceInfos);
 #if BUILDFLAG(IS_CHROMEOS)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {

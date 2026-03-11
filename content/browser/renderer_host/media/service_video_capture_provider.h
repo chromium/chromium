@@ -99,7 +99,6 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_uninitialize_;
 
   std::vector<GetDeviceInfosCallback> get_device_infos_pending_callbacks_;
-  bool get_device_infos_retried_ = false;
 
   // We own this but it must operate on the UI thread.
   class ServiceProcessObserver;

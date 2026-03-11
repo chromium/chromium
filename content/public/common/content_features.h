@@ -243,7 +243,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRestrictThreadPoolInBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRendererProcessPriority);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kRetryGetVideoCaptureDeviceInfos);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipIPCChannelPausingForNonGuests);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly;

@@ -6485,13 +6485,6 @@ inline constexpr char kMacPWAsNotificationAttributionDescription[] =
     "Route notifications for PWAs on Mac through the app shim, attributing "
     "notifications to the correct apps.";
 
-inline constexpr char kRetryGetVideoCaptureDeviceInfosName[] =
-    "Retry capture device enumeration on crash";
-inline constexpr char kRetryGetVideoCaptureDeviceInfosDescription[] =
-    "Enables retries when enumerating the available video capture devices "
-    "after a crash. The capture service is restarted without loading external "
-    "DAL plugins which could have caused the crash.";
-
 inline constexpr char kUnexportableKeyDeletionName[] =
     "Enable Unexportable Key Deletion";
 inline constexpr char kUnexportableKeyDeletionDescription[] =

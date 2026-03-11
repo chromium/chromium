@@ -6268,12 +6268,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTouchTextEditingRedesignName,
      flag_descriptions::kTouchTextEditingRedesignDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
-#if BUILDFLAG(IS_MAC)
-    {"enable-retry-capture-device-enumeration-on-crash",
-     flag_descriptions::kRetryGetVideoCaptureDeviceInfosName,
-     flag_descriptions::kRetryGetVideoCaptureDeviceInfosDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kRetryGetVideoCaptureDeviceInfos)},
-#endif  // BUILDFLAG(IS_MAC)
     {"enable-web-payments-experimental-features",
      flag_descriptions::kWebPaymentsExperimentalFeaturesName,
      flag_descriptions::kWebPaymentsExperimentalFeaturesDescription, kOsAll,

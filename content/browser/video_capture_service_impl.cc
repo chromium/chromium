@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/video_capture_service_impl.h"
-
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -32,12 +30,6 @@
 
 namespace content {
 
-namespace {
-
-std::atomic<bool> g_use_safe_mode(false);
-
-}  // namespace
-
 // Helper class to allow access to class-based passkeys.
 class VideoCaptureServiceLauncher {
  public:
@@ -46,28 +38,13 @@ class VideoCaptureServiceLauncher {
           receiver) {
     ServiceProcessHost::Options options;
     options.WithDisplayName("Video Capture");
-    // TODO(crbug.com/328099369) Remove once gpu client is provided directly.
+    // TODO(https://crbug.com/328099369) Remove once gpu client is provided
+    // directly.
     options.WithGpuClient(ServiceProcessHostGpuClient::GetPassKey());
 #if BUILDFLAG(IS_MAC)
     // On Mac, the service requires a CFRunLoop which is provided by a
-    // UI message loop. See https://crbug.com/834581.
+    // UI message loop. See https://crbug.com/40572495.
     options.WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi});
-    if (g_use_safe_mode) {
-      // When safe-mode is enabled, we keep the original entitlements and the
-      // hardened runtime to only load safe DAL plugins and reduce crash risk
-      // from third-party DAL plugins.
-      // As this is not possible to do with unsigned developer builds, we use
-      // an undocumented environment variable that macOS CMIO module checks to
-      // prevent loading any plugins.
-      setenv("CMIO_DAL_Ignore_Standard_PlugIns", "", 1);
-    } else {
-      // On Mac, the service also needs to have a different set of
-      // entitlements, the reason being that some virtual cameras DAL plugins
-      // are not signed or are signed by a different Team ID. Hence,
-      // library validation has to be disabled (see
-      // http://crbug.com/990381#c21).
-      options.WithChildFlags(ChildProcessHost::CHILD_PLUGIN);
-    }
 #endif
 #if defined(WEBRTC_USE_PIPEWIRE)
     // The PipeWire camera implementation in webrtc uses gdbus for portal
@@ -125,11 +102,6 @@ void BindProxyRemoteOnUIThread(
 }
 
 }  // namespace
-
-void EnableVideoCaptureServiceSafeMode() {
-  LOG(WARNING) << "Enabling safe mode VideoCaptureService";
-  g_use_safe_mode = true;
-}
 
 video_capture::mojom::VideoCaptureService& GetVideoCaptureService() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {

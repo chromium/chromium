@@ -811,17 +811,6 @@ BASE_FEATURE_PARAM(size_t,
                    42u);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enables retrying to obtain list of available cameras after restarting the
-// video capture service if a previous attempt failed, which could be caused
-// by a service crash.
-BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
-#if BUILDFLAG(IS_MAC)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // When enabled, the IPC channel will not be paused when launching non-guest
 // renderer processes. This makes it possible for all kinds of mojo calls
 // to be sent to the renderer process before OnProcessLaunched fires. When the

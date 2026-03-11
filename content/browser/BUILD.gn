@@ -2366,7 +2366,6 @@ source_set("browser") {
     "usb/web_usb_service_impl.cc",
     "usb/web_usb_service_impl.h",
     "video_capture_service_impl.cc",
-    "video_capture_service_impl.h",
     "wake_lock/wake_lock_context_host.cc",
     "wake_lock/wake_lock_context_host.h",
     "wake_lock/wake_lock_service_impl.cc",
