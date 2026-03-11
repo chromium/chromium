@@ -19,6 +19,10 @@
 // Whether the animator is presenting or dismissing.
 @property(nonatomic, assign) BOOL presenting;
 
+// YES if the animator should position its container according to a larger
+// layout.
+@property(nonatomic, assign) BOOL shouldUseLargeLayout;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_PRESENTATION_COMPOSEBOX_IPAD_ANIMATOR_H_
