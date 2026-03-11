@@ -211,8 +211,12 @@ bool IsValidFileUploadStatusForMultimodalRequest(
              contextual_search::FileUploadStatus::kUploadSuccessful;
 }
 
-// Returns true if the media type has an image.
-bool MediaTypeHasImage(lens::LensOverlayRequestId::MediaType media_type) {
+// Returns true if the request id corresponds to an image upload.
+bool RequestIdHasImage(const lens::LensOverlayRequestId& request_id) {
+  lens::LensOverlayRequestId::MediaType media_type = request_id.media_type();
+  if (media_type == lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE) {
+    return request_id.mime_type().starts_with("image/");
+  }
   return media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
          media_type ==
              lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE ||
@@ -220,15 +224,23 @@ bool MediaTypeHasImage(lens::LensOverlayRequestId::MediaType media_type) {
 }
 
 // Returns the interaction type for the given media type.
-lens::LensOverlayInteractionRequestMetadata::Type MediaTypeToInteractionType(
-    lens::LensOverlayRequestId::MediaType media_type) {
-  switch (media_type) {
+lens::LensOverlayInteractionRequestMetadata::Type RequestIdToInteractionType(
+    const lens::LensOverlayRequestId& request_id) {
+  switch (request_id.media_type()) {
     case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE:
     case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE:
       return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
     case lens::LensOverlayRequestId::MEDIA_TYPE_PDF:
     case lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE:
       return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
+    case lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE:
+      // Image uploads do not have a specific interaction type, and webpages
+      // are not supported as raw file uploads, so only check for pdf.
+      if (request_id.mime_type().starts_with("application/pdf")) {
+        return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
+      }
+      return lens::LensOverlayInteractionRequestMetadata::
+          CONTEXTUAL_SEARCH_QUERY;
     default:
       return lens::LensOverlayInteractionRequestMetadata::
           CONTEXTUAL_SEARCH_QUERY;
@@ -236,9 +248,9 @@ lens::LensOverlayInteractionRequestMetadata::Type MediaTypeToInteractionType(
 }
 
 // Returns the LensOverlayVisualInputType for the given media type.
-lens::LensOverlayVisualInputType MediaTypeToVisualInputType(
-    lens::LensOverlayRequestId::MediaType media_type) {
-  switch (media_type) {
+lens::LensOverlayVisualInputType RequestIdToVisualInputType(
+    const lens::LensOverlayRequestId& request_id) {
+  switch (request_id.media_type()) {
     case lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE:
       return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN;
     case lens::LensOverlayRequestId::MEDIA_TYPE_PDF:
@@ -247,6 +259,13 @@ lens::LensOverlayVisualInputType MediaTypeToVisualInputType(
     case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE:
     case lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE:
       return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_WEBPAGE;
+    case lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE:
+      // Image uploads do not send a visual input type, and webpages
+      // are not supported as raw file uploads, so only check for pdf.
+      if (request_id.mime_type().starts_with("application/pdf")) {
+        return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_PDF;
+      }
+      return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN;
     default:
       return lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN;
   }
@@ -478,8 +497,7 @@ void ComposeboxQueryController::CreateSearchUrl(
         contextual_input->mutable_request_id()->CopyFrom(
             file_info->request_id.value());
 
-        has_image_upload |=
-            MediaTypeHasImage(file_info->request_id->media_type());
+        has_image_upload |= RequestIdHasImage(*file_info->request_id);
 
         // Add the viewport request id to the contextual inputs if it exists.
         if (file_info->viewport_request_id_) {
@@ -539,6 +557,8 @@ void ComposeboxQueryController::CreateSearchUrl(
             search_url_request_info->image_crop.has_value()
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
                 : last_active_lens_file->request_id->media_type();
+        bool is_raw_file = last_active_lens_file->request_id->media_type() ==
+                           lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE;
         // If there is only contextual input, create a search url using the
         // vsrid (single-context) parameter.
         bool is_translate =
@@ -562,15 +582,21 @@ void ComposeboxQueryController::CreateSearchUrl(
                 {kVisualInputTypeQueryParameter, vit_value});
           }
         }
+        std::unique_ptr<lens::LensOverlayRequestId> request_id = nullptr;
+        if (!is_translate) {
+          request_id = is_raw_file
+                           ? request_id_generator_.GetNextRequestId(
+                                 lens::RequestIdUpdateMode::kSearchUrl,
+                                 last_active_lens_file->request_id->mime_type())
+                           : request_id_generator_.GetNextRequestId(
+                                 lens::RequestIdUpdateMode::kSearchUrl,
+                                 context_media_type);
+        }
         std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_, is_aim_search,
             search_url_request_info->aim_entry_point,
             search_url_request_info->query_start_time,
-            cluster_info_->search_session_id(),
-            is_translate ? nullptr
-                         : request_id_generator_.GetNextRequestId(
-                               lens::RequestIdUpdateMode::kSearchUrl,
-                               context_media_type),
+            cluster_info_->search_session_id(), std::move(request_id),
             search_url_request_info->invocation_source, lns_surface,
             base::UTF8ToUTF16(search_url_request_info->query_text),
             std::move(search_url_request_info->additional_params)));
@@ -671,7 +697,7 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
               : file_info->request_id->media_type();
       lens_image_query_data->mutable_request_id()->set_media_type(media_type);
       lens_image_query_data->set_visual_input_type(
-          MediaTypeToVisualInputType(media_type));
+          RequestIdToVisualInputType(lens_image_query_data->request_id()));
     }
 
     // Add added inputs.
@@ -748,6 +774,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   file_info->tab_url = contextual_input_data->page_url;
   file_info->tab_title = contextual_input_data->page_title;
   file_info->tab_session_id = contextual_input_data->tab_session_id;
+  file_info->mime_type_string = contextual_input_data->mime_type_string;
   if (contextual_input_data->file_name.has_value()) {
     file_info->file_name = contextual_input_data->file_name.value();
   }
@@ -840,10 +867,19 @@ void ComposeboxQueryController::StartFileUploadFlow(
     request_id_generator_.SetContextId(context_id);
     request_id_generator_.SetHasChromeTabData(
         current_file_info.tab_session_id.has_value());
-    current_file_info.request_id = *request_id_generator_.GetNextRequestId(
-        lens::RequestIdUpdateMode::kMultiContextUploadRequest,
-        lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                  use_has_viewport_media_type));
+    if (current_file_info.mime_type != lens::MimeType::kImage &&
+        !has_viewport_screenshot &&
+        current_file_info.mime_type_string.has_value() &&
+        lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+      current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+          lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+          current_file_info.mime_type_string.value());
+    } else {
+      current_file_info.request_id = *request_id_generator_.GetNextRequestId(
+          lens::RequestIdUpdateMode::kMultiContextUploadRequest,
+          lens::MimeTypeToMediaType(current_file_info.mime_type,
+                                    use_has_viewport_media_type));
+    }
   }
 
   // Update the file upload status to processing.
@@ -1179,10 +1215,9 @@ void ComposeboxQueryController::SendInteractionRequest(
           ->set_query(query_text);
     }
   } else if (!query_text.empty()) {
-    lens::LensOverlayRequestId::MediaType media_type =
-        latest_interaction_request_data_->request_id_->media_type();
     lens::LensOverlayInteractionRequestMetadata::Type interaction_type =
-        MediaTypeToInteractionType(media_type);
+        RequestIdToInteractionType(
+            *latest_interaction_request_data_->request_id_);
     // If there is only `query_text`, this is a contextual flow.
     interaction_request_metadata.set_type(interaction_type);
     interaction_request_metadata.mutable_query_metadata()

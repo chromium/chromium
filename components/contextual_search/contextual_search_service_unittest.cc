@@ -4,9 +4,11 @@
 
 #include "components/contextual_search/contextual_search_service.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/fake_variations_client.h"
+#include "components/lens/lens_features.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -539,7 +541,7 @@ TEST_F(ContextualSearchServiceTest, StartFileContextUploadFlow_PdfPageTitle) {
 }
 
 TEST_F(ContextualSearchServiceTest,
-       StartFileContextUploadFlow_ImageNoPageTitle) {
+       StartFileContextUploadFlow_ImagePageTitle) {
   auto mock_controller =
       std::make_unique<MockContextualSearchContextController>();
   auto metrics_recorder = std::make_unique<ContextualSearchMetricsRecorder>(
@@ -558,15 +560,61 @@ TEST_F(ContextualSearchServiceTest,
   std::vector<uint8_t> file_bytes = {1, 2, 3};
   mojo_base::BigBuffer buffer(file_bytes);
 
-  // Expect StartFileUploadFlow to be called without the page title set.
+  // Expect StartFileUploadFlow to be called with the page title set.
   EXPECT_CALL(*mock_controller_ptr,
               StartFileUploadFlow(file_token, testing::NotNull(), _))
       .WillOnce(
           testing::WithArgs<1>([&](std::unique_ptr<lens::ContextualInputData>
                                        contextual_input_data) {
-            EXPECT_FALSE(contextual_input_data->page_title.has_value());
+            EXPECT_TRUE(contextual_input_data->page_title.has_value());
+            EXPECT_EQ(contextual_input_data->page_title.value(), file_name);
             EXPECT_TRUE(contextual_input_data->file_name.has_value());
             EXPECT_EQ(contextual_input_data->file_name.value(), file_name);
+            EXPECT_TRUE(contextual_input_data->primary_content_type.has_value());
+            EXPECT_EQ(contextual_input_data->primary_content_type.value(), lens::MimeType::kImage);
+          }));
+
+  session_handle->StartFileContextUploadFlow(
+      file_token, file_name, file_mime_type, std::move(buffer), std::nullopt);
+}
+
+TEST_F(ContextualSearchServiceTest,
+       StartFileContextUploadFlow_RawFileMediaTypesEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(lens::features::kLensSendRawFileMediaTypes);
+
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto metrics_recorder = std::make_unique<ContextualSearchMetricsRecorder>(
+      ContextualSearchSource::kUnknown);
+
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto session_handle = service_->CreateSessionForTesting(
+      std::move(mock_controller), std::move(metrics_recorder));
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  base::UnguessableToken file_token = session_handle->CreateContextToken();
+  std::string file_name = "test_file.csv";
+  std::string file_mime_type = "text/csv";
+  std::vector<uint8_t> file_bytes = {1, 2, 3};
+  mojo_base::BigBuffer buffer(file_bytes);
+
+  // Expect StartFileUploadFlow to be called with page title and mime type as kUnknown.
+  EXPECT_CALL(*mock_controller_ptr,
+              StartFileUploadFlow(file_token, testing::NotNull(), _))
+      .WillOnce(
+          testing::WithArgs<1>([&](std::unique_ptr<lens::ContextualInputData>
+                                       contextual_input_data) {
+            EXPECT_TRUE(contextual_input_data->page_title.has_value());
+            EXPECT_EQ(contextual_input_data->page_title.value(), file_name);
+            EXPECT_TRUE(contextual_input_data->file_name.has_value());
+            EXPECT_EQ(contextual_input_data->file_name.value(), file_name);
+            EXPECT_TRUE(contextual_input_data->primary_content_type.has_value());
+            EXPECT_EQ(contextual_input_data->primary_content_type.value(), lens::MimeType::kUnknown);
+            EXPECT_TRUE(contextual_input_data->mime_type_string.has_value());
+            EXPECT_EQ(contextual_input_data->mime_type_string.value(), file_mime_type);
           }));
 
   session_handle->StartFileContextUploadFlow(

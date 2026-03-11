@@ -42,6 +42,8 @@ struct ContextualInputData {
   std::optional<std::vector<ContextualInput>> context_input;
   // The mime type of this content.
   std::optional<lens::MimeType> primary_content_type;
+  // The mime type string of this content, if the file was uploaded manually.
+  std::optional<std::string> mime_type_string;
   // If the context is a webpage pr pdf, this is the URL associated with it.
   std::optional<GURL> page_url;
   // If the context is a webpage or pdf, this is the title of it.

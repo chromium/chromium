@@ -127,6 +127,9 @@ struct FileInfo {
   // Whether or not this file was superceded by a new file upload with the same
   // context id.
   bool is_superceded = false;
+
+  // The mime type string of the file, if known.
+  std::optional<std::string> mime_type_string;
 };
 
 // LINT.IfChange(ContextualSearchErrorPage)

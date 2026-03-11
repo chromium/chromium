@@ -191,6 +191,11 @@ BASE_DECLARE_FEATURE(kLensUseSeparateRequestIdForViewportImages);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSendVitForSingleContextNextQueries);
 
+// Enables sending raw file media types for manually uploaded files, meaning
+// that all file types are supported for manual uploads.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSendRawFileMediaTypes);
+
 // Enables restricting annotated page content to same site frames for contextual
 // next queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1111,6 +1116,12 @@ extern bool IsLensOverlayNonBlockingPrivacyNoticeEnabled();
 // non-positive value.
 COMPONENT_EXPORT(LENS_FEATURES)
 int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap();
+
+// Enables sending raw file media types for manually uploaded files, meaning
+// that all file types are supported for manual uploads.
+// TODO(crbug.com/489495600): Also disable input limits for the file picker.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSendRawFileMediaTypesEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

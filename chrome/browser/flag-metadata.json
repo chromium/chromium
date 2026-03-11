@@ -6129,6 +6129,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-enable-raw-file-media-types",
+    "owners": ["hujasonx@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "lens-exact-matches-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 145
