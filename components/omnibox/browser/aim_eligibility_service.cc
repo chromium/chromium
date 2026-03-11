@@ -523,7 +523,7 @@ bool AimEligibilityService::IsCobrowseEligible() const {
           omnibox::kAimCoBrowseEligibilityCheckEnabled)) {
     return true;
   }
-  return GetMostRecentResponse().is_cobrowse_eligible();
+  return IsAimEligible() && GetMostRecentResponse().is_cobrowse_eligible();
 }
 
 bool AimEligibilityService::IsFuseboxEligible() const {
@@ -531,7 +531,7 @@ bool AimEligibilityService::IsFuseboxEligible() const {
           omnibox::kAimFuseboxEligibilityCheckEnabled)) {
     return true;
   }
-  return GetMostRecentResponse().is_fusebox_eligible();
+  return IsAimEligible() && GetMostRecentResponse().is_fusebox_eligible();
 }
 
 bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
