@@ -1017,6 +1017,8 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/update/isolated_web_app_update_manager_unittest.cc",
     "isolated_web_apps/update_manifest/update_manifest_fetcher_unittest.cc",
     "isolated_web_apps/update_manifest/update_manifest_unittest.cc",
+    "jobs/finalize_install_job_unittest.cc",
+    "jobs/finalize_update_job_unittest.cc",
     "jobs/install_placeholder_job_unittest.cc",
     "jobs/manifest_to_web_app_install_info_job_unittest.cc",
     "jobs/migration_target_install_job_unittest.cc",
