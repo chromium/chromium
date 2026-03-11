@@ -1098,7 +1098,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             pendingId);
 
             // 4. Add windowing features.
-            // TODO(crbug.com/475200706): Handle multiple profiles for mobile.
+            // TODO(crbug.com/491791326): Handle multiple profiles for mobile.
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             assert profile != null;
             chromeAndroidTask.addFeature(

@@ -280,7 +280,7 @@ final class ChromeAndroidTaskImpl
 
     private final @BrowserWindowType int mBrowserWindowType;
 
-    // TODO(crbug.com/475200706): Consider removing this field and just relying on the
+    // TODO(crbug.com/491791515): Consider removing this field and just relying on the
     // TabModelSelector to determine the profile.
     private final Profile mInitialProfile;
 
