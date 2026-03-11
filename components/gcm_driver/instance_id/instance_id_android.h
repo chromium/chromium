@@ -65,15 +65,11 @@ class InstanceIDAndroid : public InstanceID {
   void DeleteIDImpl(DeleteIDCallback callback) override;
 
   // Methods called from Java via JNI:
-  void DidGetID(JNIEnv* env,
-                int32_t request_id,
-                const base::android::JavaRef<jstring>& jid);
+  void DidGetID(JNIEnv* env, int32_t request_id, const std::string& id);
   void DidGetCreationTime(JNIEnv* env,
                           int32_t request_id,
                           int64_t creation_time_unix_ms);
-  void DidGetToken(JNIEnv* env,
-                   int32_t request_id,
-                   const base::android::JavaRef<jstring>& jtoken);
+  void DidGetToken(JNIEnv* env, int32_t request_id, const std::string& token);
   void DidDeleteToken(JNIEnv* env, int32_t request_id, bool success);
   void DidDeleteID(JNIEnv* env, int32_t request_id, bool success);
 

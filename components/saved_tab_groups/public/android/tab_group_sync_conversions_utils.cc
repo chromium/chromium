@@ -45,12 +45,10 @@ base::Uuid JavaStringToUuid(JNIEnv* env, const JavaRef<jstring>& j_uuid) {
 
 EitherGroupID JavaSyncOrLocalGroupIdToEitherGroupId(
     JNIEnv* env,
-    const JavaRef<jstring>& j_sync_group_id,
+    const std::string& sync_group_id,
     const JavaRef<jobject>& j_local_group_id) {
   if (j_local_group_id.is_null()) {
-    std::string sync_group_id_str =
-        ConvertJavaStringToUTF8(env, j_sync_group_id);
-    return base::Uuid::ParseLowercase(sync_group_id_str);
+    return base::Uuid::ParseLowercase(sync_group_id);
   } else {
     LocalTabGroupID local_group_id =
         TabGroupSyncConversionsBridge::FromJavaTabGroupId(env,

@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
@@ -21,11 +20,10 @@
 #include "components/collaboration/public/messaging/message.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/collaboration/internal/messaging_jni_headers/MessagingBackendServiceBridge_jni.h"
-
-using base::android::ConvertJavaStringToUTF16;
 
 namespace collaboration::messaging::android {
 namespace {
@@ -89,22 +87,19 @@ base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForTab(
     JNIEnv* env,
     int32_t j_local_tab_id,
-    const base::android::JavaRef<jstring>& j_sync_tab_id,
+    const std::optional<base::Uuid>& sync_tab_id,
     int32_t j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
 
   if (j_local_tab_id != kInvalidTabId) {
-    CHECK(!j_sync_tab_id);
+    CHECK(!sync_tab_id);
     tab_groups::LocalTabID tab_id = tab_groups::FromJavaTabId(j_local_tab_id);
     auto messages = service_->GetMessagesForTab(tab_id, type);
     return PersistentMessagesToJava(env, messages);
   }
-  if (j_sync_tab_id) {
+  if (sync_tab_id) {
     CHECK(j_local_tab_id == kInvalidTabId);
-    std::string sync_tab_id_str =
-        base::android::ConvertJavaStringToUTF8(env, j_sync_tab_id);
-    auto tab_id = base::Uuid::ParseLowercase(sync_tab_id_str);
-    auto messages = service_->GetMessagesForTab(tab_id, type);
+    auto messages = service_->GetMessagesForTab(*sync_tab_id, type);
     return PersistentMessagesToJava(env, messages);
   }
 
@@ -115,24 +110,21 @@ base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetMessagesForGroup(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_local_group_id,
-    const base::android::JavaRef<jstring>& j_sync_group_id,
+    const std::optional<base::Uuid>& sync_group_id,
     int32_t j_type) {
   auto type = static_cast<PersistentNotificationType>(j_type);
 
   if (j_local_group_id) {
-    CHECK(!j_sync_group_id);
+    CHECK(!sync_group_id);
     auto group_id =
         tab_groups::TabGroupSyncConversionsBridge::FromJavaTabGroupId(
             env, j_local_group_id);
     auto messages = service_->GetMessagesForGroup(group_id, type);
     return PersistentMessagesToJava(env, messages);
   }
-  if (j_sync_group_id) {
+  if (sync_group_id) {
     CHECK(!j_local_group_id);
-    std::string sync_group_id_str =
-        base::android::ConvertJavaStringToUTF8(env, j_sync_group_id);
-    auto group_id = base::Uuid::ParseLowercase(sync_group_id_str);
-    auto messages = service_->GetMessagesForGroup(group_id, type);
+    auto messages = service_->GetMessagesForGroup(*sync_group_id, type);
     return PersistentMessagesToJava(env, messages);
   }
 
@@ -149,29 +141,24 @@ MessagingBackendServiceBridge::GetMessages(JNIEnv* env, int32_t j_type) {
 base::android::ScopedJavaLocalRef<jobject>
 MessagingBackendServiceBridge::GetActivityLog(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_collaboration_id) {
+    const std::string& collaboration_id) {
   ActivityLogQueryParams query_params;
-  query_params.collaboration_id = data_sharing::GroupId(
-      base::android::ConvertJavaStringToUTF8(env, j_collaboration_id));
+  query_params.collaboration_id = data_sharing::GroupId(collaboration_id);
   auto activity_log_items = service_->GetActivityLog(query_params);
   return ActivityLogItemsToJava(env, activity_log_items);
 }
 
 void MessagingBackendServiceBridge::ClearDirtyTabMessagesForGroup(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_collaboration_id) {
-  auto collaboration_id = data_sharing::GroupId(
-      base::android::ConvertJavaStringToUTF8(env, j_collaboration_id));
-  service_->ClearDirtyTabMessagesForGroup(collaboration_id);
+    const std::string& collaboration_id) {
+  service_->ClearDirtyTabMessagesForGroup(
+      data_sharing::GroupId(collaboration_id));
 }
 
 void MessagingBackendServiceBridge::ClearPersistentMessage(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_message_id,
+    const base::Uuid& message_id,
     int32_t j_type) {
-  CHECK(j_message_id);
-  auto message_id = base::Uuid::ParseLowercase(
-      base::android::ConvertJavaStringToUTF8(env, j_message_id));
   auto type = static_cast<PersistentNotificationType>(j_type);
   service_->ClearPersistentMessage(message_id, type);
 }

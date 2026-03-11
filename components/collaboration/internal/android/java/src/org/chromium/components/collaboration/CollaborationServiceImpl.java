@@ -6,6 +6,7 @@ package org.chromium.components.collaboration;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -141,29 +142,35 @@ public class CollaborationServiceImpl implements CollaborationService {
         void startShareOrManageFlow(
                 long nativeCollaborationServiceAndroid,
                 long delegateNativePtr,
-                @Nullable String syncId,
+                @JniType("std::string") @Nullable String syncId,
                 @Nullable LocalTabGroupId localId,
                 int entry);
 
         void startLeaveOrDeleteFlow(
                 long nativeCollaborationServiceAndroid,
                 long delegateNativePtr,
-                @Nullable String syncId,
+                @JniType("std::string") @Nullable String syncId,
                 @Nullable LocalTabGroupId localId,
                 int entry);
 
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
 
         int getCurrentUserRoleForGroup(
-                long nativeCollaborationServiceAndroid, @Nullable String collaborationId);
+                long nativeCollaborationServiceAndroid,
+                @JniType("std::string") @Nullable String collaborationId);
 
         GroupData getGroupData(
-                long nativeCollaborationServiceAndroid, @Nullable String collaborationId);
+                long nativeCollaborationServiceAndroid,
+                @JniType("std::string") @Nullable String collaborationId);
 
         void leaveGroup(
-                long nativeCollaborationServiceAndroid, String groupId, Callback<Boolean> callback);
+                long nativeCollaborationServiceAndroid,
+                @JniType("std::string") String groupId,
+                Callback<Boolean> callback);
 
         void deleteGroup(
-                long nativeCollaborationServiceAndroid, String groupId, Callback<Boolean> callback);
+                long nativeCollaborationServiceAndroid,
+                @JniType("std::string") String groupId,
+                Callback<Boolean> callback);
     }
 }

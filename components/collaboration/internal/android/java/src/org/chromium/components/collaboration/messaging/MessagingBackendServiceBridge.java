@@ -6,6 +6,7 @@ package org.chromium.components.collaboration.messaging;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -206,30 +207,32 @@ import java.util.Set;
         List<PersistentMessage> getMessagesForTab(
                 long nativeMessagingBackendServiceBridge,
                 int localTabId,
-                @Nullable String syncTabId,
+                @JniType("std::optional<base::Uuid>") @Nullable String syncTabId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessagesForGroup(
                 long nativeMessagingBackendServiceBridge,
                 @Nullable LocalTabGroupId localGroupId,
-                @Nullable String syncGroupId,
+                @JniType("std::optional<base::Uuid>") @Nullable String syncGroupId,
                 @PersistentNotificationType int type);
 
         List<PersistentMessage> getMessages(
                 long nativeMessagingBackendServiceBridge, @PersistentNotificationType int type);
 
         List<ActivityLogItem> getActivityLog(
-                long nativeMessagingBackendServiceBridge, String collaborationId);
+                long nativeMessagingBackendServiceBridge,
+                @JniType("std::string") String collaborationId);
 
         void clearDirtyTabMessagesForGroup(
-                long nativeMessagingBackendServiceBridge, String collaborationId);
+                long nativeMessagingBackendServiceBridge,
+                @JniType("std::string") String collaborationId);
 
         void runInstantaneousMessageSuccessCallback(
                 long nativeMessagingBackendServiceBridge, long callback, boolean success);
 
         void clearPersistentMessage(
                 long nativeMessagingBackendServiceBridge,
-                String messageId,
+                @JniType("base::Uuid") String messageId,
                 @PersistentNotificationType int type);
     }
 }

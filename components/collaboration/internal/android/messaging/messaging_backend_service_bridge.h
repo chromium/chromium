@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_MESSAGING_BACKEND_SERVICE_BRIDGE_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_ANDROID_MESSAGING_MESSAGING_BACKEND_SERVICE_BRIDGE_H_
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/supports_user_data.h"
 #include "base/uuid.h"
+#include "components/collaboration/internal/android/messaging/conversion_utils.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 
 namespace collaboration::messaging::android {
@@ -45,25 +48,23 @@ class MessagingBackendServiceBridge
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForTab(
       JNIEnv* env,
       int32_t j_local_tab_id,
-      const base::android::JavaRef<jstring>& j_sync_tab_id,
+      const std::optional<base::Uuid>& sync_tab_id,
       int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessagesForGroup(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_local_group_id,
-      const base::android::JavaRef<jstring>& j_sync_group_id,
+      const std::optional<base::Uuid>& sync_group_id,
       int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetMessages(JNIEnv* env,
                                                          int32_t j_type);
   base::android::ScopedJavaLocalRef<jobject> GetActivityLog(
       JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_collaboration_id);
-  void ClearDirtyTabMessagesForGroup(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_collaboration_id);
-  void ClearPersistentMessage(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_message_id,
-      int32_t j_type);
+      const std::string& collaboration_id);
+  void ClearDirtyTabMessagesForGroup(JNIEnv* env,
+                                     const std::string& collaboration_id);
+  void ClearPersistentMessage(JNIEnv* env,
+                              const base::Uuid& message_id,
+                              int32_t j_type);
 
   void RunInstantaneousMessageSuccessCallback(JNIEnv* env,
                                               int64_t j_callback,

@@ -34,7 +34,7 @@ base::Uuid JavaStringToUuid(JNIEnv* env, const JavaRef<jstring>& j_uuid);
 // Converts a Java sync or local group ID to EitherGroupID.
 EitherGroupID JavaSyncOrLocalGroupIdToEitherGroupId(
     JNIEnv* env,
-    const JavaRef<jstring>& j_sync_group_id,
+    const std::string& sync_group_id,
     const JavaRef<jobject>& j_local_group_id);
 
 }  // namespace tab_groups

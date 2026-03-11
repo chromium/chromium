@@ -6,6 +6,7 @@ package org.chromium.components.collaboration.comments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -38,12 +39,12 @@ import java.util.UUID;
 
     @Override
     public boolean isInitialized() {
-        return CommentsServiceBridgeJni.get().isInitialized(mNativeCommentsServiceBridge, this);
+        return CommentsServiceBridgeJni.get().isInitialized(mNativeCommentsServiceBridge);
     }
 
     @Override
     public boolean isEmptyService() {
-        return CommentsServiceBridgeJni.get().isEmptyService(mNativeCommentsServiceBridge, this);
+        return CommentsServiceBridgeJni.get().isEmptyService(mNativeCommentsServiceBridge);
     }
 
     @Override
@@ -53,17 +54,16 @@ import java.util.UUID;
             String content,
             @Nullable UUID parentCommentId,
             Callback<Boolean> successCallback) {
-        String uuid =
+        String uuidString =
                 CommentsServiceBridgeJni.get()
                         .addComment(
                                 mNativeCommentsServiceBridge,
-                                this,
                                 collaborationId,
                                 url,
                                 content,
-                                parentCommentId == null ? "" : parentCommentId.toString(),
+                                parentCommentId == null ? null : parentCommentId.toString(),
                                 successCallback);
-        return UUID.fromString(uuid);
+        return UUID.fromString(uuidString);
     }
 
     @Override
@@ -71,7 +71,6 @@ import java.util.UUID;
         CommentsServiceBridgeJni.get()
                 .editComment(
                         mNativeCommentsServiceBridge,
-                        this,
                         commentId.toString(),
                         newContent,
                         successCallback);
@@ -80,8 +79,7 @@ import java.util.UUID;
     @Override
     public void deleteComment(UUID commentId, Callback<Boolean> successCallback) {
         CommentsServiceBridgeJni.get()
-                .deleteComment(
-                        mNativeCommentsServiceBridge, this, commentId.toString(), successCallback);
+                .deleteComment(mNativeCommentsServiceBridge, commentId.toString(), successCallback);
     }
 
     @Override
@@ -91,11 +89,7 @@ import java.util.UUID;
             Callback<CommentsService.QueryResult> callback) {
         CommentsServiceBridgeJni.get()
                 .queryComments(
-                        mNativeCommentsServiceBridge,
-                        this,
-                        filterCriteria,
-                        paginationCriteria,
-                        callback);
+                        mNativeCommentsServiceBridge, filterCriteria, paginationCriteria, callback);
     }
 
     @Override
@@ -103,58 +97,52 @@ import java.util.UUID;
             CommentsService.CommentsObserver observer,
             CommentsService.FilterCriteria filterCriteria) {
         CommentsServiceBridgeJni.get()
-                .addObserver(mNativeCommentsServiceBridge, this, observer, filterCriteria);
+                .addObserver(mNativeCommentsServiceBridge, observer, filterCriteria);
     }
 
     @Override
     public void removeObserver(CommentsService.CommentsObserver observer) {
-        CommentsServiceBridgeJni.get().removeObserver(mNativeCommentsServiceBridge, this, observer);
+        CommentsServiceBridgeJni.get().removeObserver(mNativeCommentsServiceBridge, observer);
     }
 
     @NativeMethods
     interface Natives {
-        boolean isInitialized(long nativeCommentsServiceBridge, CommentsServiceBridge caller);
+        boolean isInitialized(long nativeCommentsServiceBridge);
 
-        boolean isEmptyService(long nativeCommentsServiceBridge, CommentsServiceBridge caller);
+        boolean isEmptyService(long nativeCommentsServiceBridge);
 
+        @JniType("base::Uuid")
         String addComment(
                 long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
-                String collaborationId,
-                GURL url,
-                String content,
-                String parentCommentId,
+                @JniType("std::string") String collaborationId,
+                @JniType("GURL") GURL url,
+                @JniType("std::string") String content,
+                @JniType("std::optional<base::Uuid>") @Nullable String parentCommentId,
                 Callback<Boolean> successCallback);
 
         void editComment(
                 long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
-                String commentId,
-                String newContent,
+                @JniType("base::Uuid") String commentId,
+                @JniType("std::string") String newContent,
                 Callback<Boolean> successCallback);
 
         void deleteComment(
                 long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
-                String commentId,
+                @JniType("base::Uuid") String commentId,
                 Callback<Boolean> successCallback);
 
         void queryComments(
                 long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
                 CommentsService.FilterCriteria filterCriteria,
                 CommentsService.PaginationCriteria paginationCriteria,
                 Callback<CommentsService.QueryResult> callback);
 
         void addObserver(
                 long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
                 CommentsService.CommentsObserver observer,
                 CommentsService.FilterCriteria filterCriteria);
 
         void removeObserver(
-                long nativeCommentsServiceBridge,
-                CommentsServiceBridge caller,
-                CommentsService.CommentsObserver observer);
+                long nativeCommentsServiceBridge, CommentsService.CommentsObserver observer);
     }
 }

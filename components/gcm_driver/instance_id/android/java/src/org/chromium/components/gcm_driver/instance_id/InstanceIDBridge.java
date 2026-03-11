@@ -6,6 +6,7 @@ package org.chromium.components.gcm_driver.instance_id;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.AsyncTask;
@@ -45,7 +46,8 @@ public class InstanceIDBridge {
      * share an underlying InstanceIDWithSubtype.
      */
     @CalledByNative
-    public static InstanceIDBridge create(long nativeInstanceIDAndroid, String subtype) {
+    public static InstanceIDBridge create(
+            long nativeInstanceIDAndroid, @JniType("std::string") String subtype) {
         return new InstanceIDBridge(nativeInstanceIDAndroid, subtype);
     }
 
@@ -104,14 +106,16 @@ public class InstanceIDBridge {
     }
 
     /**
-     * Async wrapper for {@link InstanceID#getToken(String, String)}.
-     * |isLazy| isn't part of the InstanceID.getToken() call and not sent to the
-     * FCM server. It's used to mark the subscription as lazy such that incoming
-     * messages are deferred until there are visible activities.
+     * Async wrapper for {@link InstanceID#getToken(String, String)}. |isLazy| isn't part of the
+     * InstanceID.getToken() call and not sent to the FCM server. It's used to mark the subscription
+     * as lazy such that incoming messages are deferred until there are visible activities.
      */
     @CalledByNative
     private void getToken(
-            final int requestId, final String authorizedEntity, final String scope, int flags) {
+            final int requestId,
+            final @JniType("std::string") String authorizedEntity,
+            final @JniType("std::string") String scope,
+            int flags) {
         new BridgeAsyncTask<String>() {
             @Override
             protected String doBackgroundWork() {
@@ -142,7 +146,9 @@ public class InstanceIDBridge {
     /** Async wrapper for {@link InstanceID#deleteToken(String, String)}. */
     @CalledByNative
     private void deleteToken(
-            final int requestId, final String authorizedEntity, final String scope) {
+            final int requestId,
+            final @JniType("std::string") String authorizedEntity,
+            final @JniType("std::string") String scope) {
         new BridgeAsyncTask<Boolean>() {
             @Override
             protected Boolean doBackgroundWork() {
@@ -248,11 +254,13 @@ public class InstanceIDBridge {
 
     @NativeMethods
     interface Natives {
-        void didGetID(long nativeInstanceIDAndroid, int requestId, String id);
+        void didGetID(
+                long nativeInstanceIDAndroid, int requestId, @JniType("std::string") String id);
 
         void didGetCreationTime(long nativeInstanceIDAndroid, int requestId, long creationTime);
 
-        void didGetToken(long nativeInstanceIDAndroid, int requestId, String token);
+        void didGetToken(
+                long nativeInstanceIDAndroid, int requestId, @JniType("std::string") String token);
 
         void didDeleteToken(long nativeInstanceIDAndroid, int requestId, boolean success);
 

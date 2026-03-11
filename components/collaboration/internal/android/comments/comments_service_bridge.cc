@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/uuid.h"
 #include "components/collaboration/public/comments/comments_service.h"
-#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,6 @@
 #include "components/collaboration/internal/comments_jni_headers/CommentsServiceBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaGlobalRef;
@@ -70,70 +69,51 @@ ScopedJavaLocalRef<jobject> CommentsServiceBridge::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-bool CommentsServiceBridge::IsInitialized(JNIEnv* env,
-                                          const JavaRef<jobject>& j_caller) {
+bool CommentsServiceBridge::IsInitialized(JNIEnv* env) {
   return service_->IsInitialized();
 }
 
-bool CommentsServiceBridge::IsEmptyService(JNIEnv* env,
-                                           const JavaRef<jobject>& j_caller) {
+bool CommentsServiceBridge::IsEmptyService(JNIEnv* env) {
   return service_->IsEmptyService();
 }
 
-ScopedJavaLocalRef<jstring> CommentsServiceBridge::AddComment(
+base::Uuid CommentsServiceBridge::AddComment(
     JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
-    const JavaRef<jstring>& j_collaboration_id,
-    const JavaRef<jobject>& j_url,
-    const JavaRef<jstring>& j_content,
-    const JavaRef<jstring>& j_parent_comment_id,
+    const std::string& collaboration_id,
+    const GURL& url,
+    const std::string& content,
+    const std::optional<base::Uuid>& parent_comment_id,
     const JavaRef<jobject>& j_success_callback) {
-  std::optional<base::Uuid> parent_comment_id;
-  if (j_parent_comment_id) {
-    parent_comment_id = tab_groups::JavaStringToUuid(env, j_parent_comment_id);
-  }
-
   auto callback =
       base::BindOnce(&RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_success_callback));
-  base::Uuid new_comment_id = service_->AddComment(
-      GroupId(ConvertJavaStringToUTF8(env, j_collaboration_id)),
-      url::GURLAndroid::ToNativeGURL(env, j_url),
-      ConvertJavaStringToUTF8(env, j_content), parent_comment_id,
-      std::move(callback));
-
-  return tab_groups::UuidToJavaString(env, new_comment_id);
+  return service_->AddComment(GroupId(collaboration_id), url, content,
+                              parent_comment_id, std::move(callback));
 }
 
 void CommentsServiceBridge::EditComment(
     JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
-    const JavaRef<jstring>& j_comment_id,
-    const JavaRef<jstring>& j_new_content,
+    const base::Uuid& comment_id,
+    const std::string& new_content,
     const JavaRef<jobject>& j_success_callback) {
   auto callback =
       base::BindOnce(&RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_success_callback));
-  service_->EditComment(tab_groups::JavaStringToUuid(env, j_comment_id),
-                        ConvertJavaStringToUTF8(env, j_new_content),
-                        std::move(callback));
+  service_->EditComment(comment_id, new_content, std::move(callback));
 }
 
 void CommentsServiceBridge::DeleteComment(
     JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
-    const JavaRef<jstring>& j_comment_id,
+    const base::Uuid& comment_id,
     const JavaRef<jobject>& j_success_callback) {
   auto callback =
       base::BindOnce(&RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_success_callback));
-  service_->DeleteComment(tab_groups::JavaStringToUuid(env, j_comment_id),
-                          std::move(callback));
+  service_->DeleteComment(comment_id, std::move(callback));
 }
 
 void CommentsServiceBridge::QueryComments(
     JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     const JavaRef<jobject>& j_filter_criteria,
     const JavaRef<jobject>& j_pagination_criteria,
     const JavaRef<jobject>& j_callback) {
@@ -142,14 +122,12 @@ void CommentsServiceBridge::QueryComments(
 
 void CommentsServiceBridge::AddObserver(
     JNIEnv* env,
-    const JavaRef<jobject>& j_caller,
     const JavaRef<jobject>& j_observer,
     const JavaRef<jobject>& j_filter_criteria) {
   // TODO(crbug.com/435005417): Implement this.
 }
 
 void CommentsServiceBridge::RemoveObserver(JNIEnv* env,
-                                           const JavaRef<jobject>& j_caller,
                                            const JavaRef<jobject>& j_observer) {
   // TODO(crbug.com/435005417): Implement this.
 }

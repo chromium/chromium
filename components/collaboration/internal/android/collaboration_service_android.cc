@@ -22,7 +22,6 @@
 #include "components/collaboration/public/core_jni_headers/ServiceStatus_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -84,11 +83,11 @@ void CollaborationServiceAndroid::StartJoinFlow(JNIEnv* env,
 void CollaborationServiceAndroid::StartShareOrManageFlow(
     JNIEnv* env,
     int64_t delegateNativePtr,
-    const JavaRef<jstring>& j_sync_group_id,
+    const std::string& sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
     int32_t entry) {
   tab_groups::EitherGroupID either_id =
-      tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, j_sync_group_id,
+      tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, sync_group_id,
                                                         j_local_group_id);
 
   collaboration_service_->StartShareOrManageFlow(
@@ -99,11 +98,11 @@ void CollaborationServiceAndroid::StartShareOrManageFlow(
 void CollaborationServiceAndroid::StartLeaveOrDeleteFlow(
     JNIEnv* env,
     int64_t delegateNativePtr,
-    const JavaRef<jstring>& j_sync_group_id,
+    const std::string& sync_group_id,
     const JavaRef<jobject>& j_local_group_id,
     int32_t entry) {
   tab_groups::EitherGroupID either_id =
-      tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, j_sync_group_id,
+      tab_groups::JavaSyncOrLocalGroupIdToEitherGroupId(env, sync_group_id,
                                                         j_local_group_id);
 
   collaboration_service_->StartLeaveOrDeleteFlow(
@@ -123,19 +122,18 @@ ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetServiceStatus(
 
 int32_t CollaborationServiceAndroid::GetCurrentUserRoleForGroup(
     JNIEnv* env,
-    const JavaRef<jstring>& group_id) {
+    const std::string& group_id) {
   data_sharing::MemberRole role =
-      collaboration_service_->GetCurrentUserRoleForGroup(
-          GroupId(ConvertJavaStringToUTF8(env, group_id)));
+      collaboration_service_->GetCurrentUserRoleForGroup(GroupId(group_id));
 
   return static_cast<int32_t>(role);
 }
 
 jni_zero::ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetGroupData(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& group_id) {
-  const std::optional<GroupData> data = collaboration_service_->GetGroupData(
-      GroupId(ConvertJavaStringToUTF8(env, group_id)));
+    const std::string& group_id) {
+  const std::optional<GroupData> data =
+      collaboration_service_->GetGroupData(GroupId(group_id));
   if (!data.has_value()) {
     return nullptr;
   }
@@ -145,20 +143,20 @@ jni_zero::ScopedJavaLocalRef<jobject> CollaborationServiceAndroid::GetGroupData(
 
 void CollaborationServiceAndroid::LeaveGroup(
     JNIEnv* env,
-    const JavaRef<jstring>& group_id,
+    const std::string& group_id,
     const JavaRef<jobject>& j_callback) {
   collaboration_service_->LeaveGroup(
-      GroupId(ConvertJavaStringToUTF8(env, group_id)),
+      GroupId(group_id),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void CollaborationServiceAndroid::DeleteGroup(
     JNIEnv* env,
-    const JavaRef<jstring>& group_id,
+    const std::string& group_id,
     const JavaRef<jobject>& j_callback) {
   collaboration_service_->DeleteGroup(
-      GroupId(ConvertJavaStringToUTF8(env, group_id)),
+      GroupId(group_id),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
