@@ -61,7 +61,7 @@ ______________________________________________________________________
 ## Final Message Template:
 
 ```
-[Component]: [Short summary of change (< 50 chars)]
+[Component] [Short summary of change (< 50 chars)]
 
 [Description explaining the "Why" and "How". Focus on rationale,
 previous behavior, and the impact of the change. Wrap this
