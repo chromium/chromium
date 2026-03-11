@@ -350,7 +350,12 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                       const UserType user_type);
 
-  base::ObserverList<UserManager::Observer> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      UserManager::Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
 
   // A list of User instances taking their ownership.
   // Following members can refer User instances in this vector.

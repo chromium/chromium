@@ -259,7 +259,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
 
   void OnAppTypeInitialized();
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Maps from app_id to the latest state: the "sum" of all previous deltas.
   std::map<std::string, AppPtr, std::less<>> states_;
