@@ -14,47 +14,34 @@ namespace extensions {
 
 namespace {
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class ExtensionModuleApiTest : public ExtensionApiTest,
-                               public testing::WithParamInterface<ContextType> {
+class ExtensionModuleApiTest : public ExtensionApiTest {
  public:
-  ExtensionModuleApiTest() : ExtensionApiTest(GetParam()) {}
+  ExtensionModuleApiTest() = default;
   ~ExtensionModuleApiTest() override = default;
   ExtensionModuleApiTest(const ExtensionModuleApiTest&) = delete;
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;
 };
 
-// Android only supports service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionModuleApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionModuleApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, CognitoFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, CognitoFile) {
   ASSERT_TRUE(RunExtensionTest("extension_module/cognito_file", {},
                                {.allow_file_access = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, IncognitoFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, IncognitoFile) {
   ASSERT_TRUE(
       RunExtensionTest("extension_module/incognito_file", {},
                        {.allow_in_incognito = true, .allow_file_access = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, CognitoNoFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, CognitoNoFile) {
   ASSERT_TRUE(RunExtensionTest("extension_module/cognito_nofile")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionModuleApiTest, IncognitoNoFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionModuleApiTest, IncognitoNoFile) {
   ASSERT_TRUE(RunExtensionTest("extension_module/incognito_nofile", {},
                                {.allow_in_incognito = true}))
       << message_;
