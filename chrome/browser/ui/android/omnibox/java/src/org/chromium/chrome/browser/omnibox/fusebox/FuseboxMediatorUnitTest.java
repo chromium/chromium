@@ -83,6 +83,7 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -665,6 +666,40 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void popupToolCanvasClicked_activatesCanvasMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
+        assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
+    }
+
+    @Test
+    public void popupToolDeepSearchClicked_activatesDeepSearchMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
+        assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void popupModelAutoClicked_setsModelMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run();
+        assertEquals(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE, mInput.getModelMode());
+        verify(mComposeboxQueryControllerBridge)
+                .setActiveTool(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
+    }
+
+    @Test
+    public void popupModelProClicked_setsModelMode() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mModel.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run();
+        assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE, mInput.getModelMode());
+        verify(mComposeboxQueryControllerBridge)
+                .setActiveTool(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
     }
 
     @Test
