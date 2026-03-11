@@ -21,7 +21,16 @@
   // done here, not in -application:didFinishLaunchingWithOptions: when state
   // restoration is supported.
 
-  self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+  UIWindowScene* scene = nil;
+  for (UIScene* connectedScene in UIApplication.sharedApplication
+           .connectedScenes) {
+    if ([connectedScene isKindOfClass:[UIWindowScene class]]) {
+      scene = (UIWindowScene*)connectedScene;
+      break;
+    }
+  }
+  self.window = [[UIWindow alloc] initWithWindowScene:scene];
+  self.window.frame = [[UIScreen mainScreen] bounds];
   self.window.backgroundColor = [UIColor whiteColor];
   self.window.tintColor = [UIColor darkGrayColor];
 
