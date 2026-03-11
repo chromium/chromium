@@ -5,5 +5,3 @@
 #import "ios/chrome/browser/snapshots/model/features.h"
 
 BASE_FEATURE(kSnapshotInSwift, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kRemoveGreySnapshot, base::FEATURE_DISABLED_BY_DEFAULT);
