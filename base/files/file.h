@@ -248,9 +248,6 @@ class BASE_EXPORT File {
   std::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
   // Same as above but without seek.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int WriteAtCurrentPos(const char* data, int size);
   std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Same as above but does not make any effort to write all data on all
@@ -430,6 +427,10 @@ class BASE_EXPORT File {
   // PRECONDITIONS: `size` must be non-negative and `data` must point to at
   // least `size` valid bytes.
   UNSAFE_BUFFER_USAGE int Read(int64_t offset, char* data, int size);
+
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
+  UNSAFE_BUFFER_USAGE int WriteAtCurrentPos(const char* data, int size);
 
   // Writes the given buffer into the file at the given offset, overwriting any
   // data that was previously there. Returns the number of bytes written, or -1
