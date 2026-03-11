@@ -58,6 +58,9 @@ class BLINK_EXPORT WebOptionElement final : public WebElement {
 
   bool IsEnabled() const;
 
+  // Returns whether the option is currently selected.
+  bool IsSelected() const;
+
 #if INSIDE_BLINK
   WebOptionElement(HTMLOptionElement*);
   WebOptionElement& operator=(HTMLOptionElement*);

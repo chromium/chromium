@@ -975,8 +975,8 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
   if (!select.IsMultiple()) {
     String selected_value;
     CHECK(ToString(value, selected_value));
-    select.SetValue(selected_value, /*send_events=*/true,
-                    WebAutofillState::kNotFilled);
+    select.SelectOptionByValue(selected_value, /*send_events=*/true,
+                               WebAutofillState::kNotFilled);
     return;
   }
 
