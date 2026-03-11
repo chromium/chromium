@@ -658,8 +658,8 @@ bool Iban::MatchesPrefixAndSuffix(const Iban& iban) const {
   // Therefore, even if the values of `kPrefixLength` or `kSuffixLength` change
   // later, leading to differences in length between the client and server, it
   // remains essential to match substrings and identify the matched IBAN.
-  bool prefix_matched = base::StartsWith(prefix(), iban.prefix()) ||
-                        base::StartsWith(iban.prefix(), prefix());
+  bool prefix_matched = prefix().starts_with(iban.prefix()) ||
+                        iban.prefix().starts_with(prefix());
   if (!prefix_matched) {
     return false;
   }
