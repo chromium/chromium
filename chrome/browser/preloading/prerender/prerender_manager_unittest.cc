@@ -366,6 +366,39 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
   EXPECT_EQ(prerender_host_id, content::PrerenderHostId());
 }
 
+TEST_F(PrerenderManagerPrewarmTest, PrewarmPageRevalidatedAndNotCreatedAgain) {
+  // Use same origin url as the test search URL so that it can be reused
+  // by the search prerender.
+  const GURL prewarm_url = GetUrl("/foo");
+  ASSERT_TRUE(prewarm_url.is_valid());
+  prerender_manager()->SetPrewarmUrlForTesting(prewarm_url);
+
+  // Prerender the prewarm page.
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+  EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+
+  // Trigger a new search prerender.
+  GURL search_suggestion_url = GetSearchSuggestionUrl("pre", "prerender");
+  GURL canonical_search_url = GetCanonicalSearchUrl(search_suggestion_url);
+
+  prerender_manager()->StartPrerenderSearchResult(canonical_search_url,
+                                                  search_suggestion_url,
+                                                  /*attempt=*/nullptr);
+
+  // Trying to prewarm again won't create a new prewarm page because we have a
+  // prerender running right now.
+  EXPECT_FALSE(prerender_manager()->MaybeStartPrewarmSearchResult());
+
+  // Now cancel the search prerender.
+  prerender_manager()->StopPrerenderSearchResult(canonical_search_url);
+
+  // Trigger prewarm again and it should create a new prewarm page.
+  EXPECT_TRUE(prerender_manager()->MaybeStartPrewarmSearchResult());
+  registry_observer.WaitForTrigger(prewarm_url);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrerenderManagerPrewarmTest, StartPrewarmInKioskSessionForKioskMode) {
   base::HistogramTester histogram_tester;

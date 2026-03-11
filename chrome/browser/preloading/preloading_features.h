@@ -16,6 +16,7 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kPrewarmUrl);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmZeroSuggestTrigger);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmUserInteractionTrigger);
 BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmThrottlePrefetch);
+BASE_DECLARE_FEATURE_PARAM(bool, kPrewarmRevalidate);
 BASE_DECLARE_FEATURE_PARAM(bool, kForceEnableWithDevTools);
 BASE_DECLARE_FEATURE_PARAM(int, kMinMemoryThresholdMb);
 

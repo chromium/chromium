@@ -245,8 +245,6 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 }
 
 bool PrerenderManager::MaybeStartPrewarmSearchResult() {
-  // TODO(https://crbug.com/423465927): Revalidate the handle when the prewarm
-  // is reused for prerendering.
   GURL prewarm_url;
   PrewarmDecision decision = ShouldPrewarm(prewarm_url);
   base::UmaHistogramEnumeration(kHistogramPrerenderPrewarmDecision, decision);
@@ -466,7 +464,7 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 
 PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
     GURL& prewarm_url) {
-  if (search_prewarm_handle_ || HasSearchResultPagePrerendered()) {
+  if (IsPrewarmValid() || HasSearchResultPagePrerendered()) {
     return PrewarmDecision::kAlreadyExists;
   }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
@@ -535,6 +533,14 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return PrewarmDecision::kReady;
+}
+
+bool PrerenderManager::IsPrewarmValid() {
+  if (base::FeatureList::IsEnabled(features::kPrewarm) &&
+      features::kPrewarmRevalidate.Get()) {
+    return search_prewarm_handle_ && search_prewarm_handle_->IsValid();
+  }
+  return search_prewarm_handle_ != nullptr;
 }
 
 void PrerenderManager::OnSearchPrewarmPrerenderNavigationHandle(
