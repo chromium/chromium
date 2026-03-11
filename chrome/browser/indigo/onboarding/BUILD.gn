@@ -8,6 +8,7 @@ source_set("onboarding") {
     "indigo_onboarding_dialog.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",

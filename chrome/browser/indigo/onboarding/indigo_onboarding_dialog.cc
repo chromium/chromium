@@ -9,10 +9,12 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -25,6 +27,23 @@
 #include "url/gurl.h"
 
 namespace indigo {
+
+namespace {
+
+class OnboardingWebView : public views::WebView {
+ public:
+  using WebView::WebView;
+
+  // WebContentsDelegate:
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override {
+    FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                     params);
+  }
+};
+
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(IndigoOnboardingDialog, kWebViewId);
 
@@ -46,7 +65,7 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
     : close_callback_(std::move(close_callback)) {
   Profile* profile =
       Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
-  auto web_view = std::make_unique<views::WebView>(profile);
+  auto web_view = std::make_unique<OnboardingWebView>(profile);
   web_view->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(onboarding_url));
   web_view->SetPreferredSize(gfx::Size(800, 600));
