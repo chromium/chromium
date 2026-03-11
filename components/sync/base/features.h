@@ -24,9 +24,6 @@ inline constexpr base::FeatureParam<int>
 // Enables syncing of settings from the user's account.
 BASE_DECLARE_FEATURE(kSyncAccountSettings);
 
-// Enables syncing of Loyalty Cards coming from Google Wallet.
-BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
-
 // Makes the AUTOFILL_VALUABLE sync type non-encryptable.
 BASE_DECLARE_FEATURE(kSyncMakeAutofillValuableNonEncryptable);
 

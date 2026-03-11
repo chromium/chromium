@@ -21,8 +21,6 @@ BASE_FEATURE(kSyncAccountSettings,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
                                      : base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled by default, intended as a kill switch.
 BASE_FEATURE(kSyncMakeAutofillValuableNonEncryptable,
              base::FEATURE_ENABLED_BY_DEFAULT);

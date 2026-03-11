@@ -165,9 +165,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->AddTable(
       std::make_unique<plus_addresses::PlusAddressTable>());
 #if !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    profile_database_->AddTable(std::make_unique<autofill::ValuablesTable>());
-  }
+  profile_database_->AddTable(std::make_unique<autofill::ValuablesTable>());
 #endif
   profile_database_->LoadDatabase(os_crypt);
 
@@ -214,11 +212,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletUsageDataSyncBridgeOnDBSequence, db_task_runner,
                      profile_autofill_web_data_));
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    profile_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitValuableSyncBridgeOnDBSequence, db_task_runner,
-                       profile_autofill_web_data_));
-  }
+  profile_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitValuableSyncBridgeOnDBSequence, db_task_runner,
+                     profile_autofill_web_data_));
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
     profile_autofill_web_data_->GetAutofillBackend(

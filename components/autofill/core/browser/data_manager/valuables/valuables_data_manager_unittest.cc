@@ -72,8 +72,6 @@ class ValuablesDataManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncAutofillLoyaltyCard};
   std::unique_ptr<PrefService> prefs_;
   NiceMock<MockAutofillImageFetcher> mock_image_fetcher_;
   raw_ptr<ValuablesTable> valuables_table_;

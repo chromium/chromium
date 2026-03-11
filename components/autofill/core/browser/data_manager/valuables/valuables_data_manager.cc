@@ -31,9 +31,7 @@ ValuablesDataManager::ValuablesDataManager(
     return;
   }
   webdata_service_observer_.Observe(webdata_service_.get());
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    LoadLoyaltyCards();
-  }
+  LoadLoyaltyCards();
 }
 
 ValuablesDataManager::~ValuablesDataManager() = default;

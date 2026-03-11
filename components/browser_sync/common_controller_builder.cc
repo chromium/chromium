@@ -816,8 +816,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
 #if !BUILDFLAG(IS_IOS)
-  if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+  if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE)) {
     scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service =
         profile_autofill_web_data_service_.value();
     if (autofill_web_data_service) {

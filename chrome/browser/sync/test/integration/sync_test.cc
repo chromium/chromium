@@ -1331,9 +1331,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    allowed_types.Put(syncer::AUTOFILL_VALUABLE);
-  }
+  allowed_types.Put(syncer::AUTOFILL_VALUABLE);
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE_METADATA);
