@@ -82,14 +82,10 @@ class GlicActorTaskManager {
       std::optional<page_content_annotations::ScreenshotOptions::
                         ScreenshotCollectionOptions>
           screenshot_collection_options,
-      actor::mojom::ActionResultCode result_code,
-      std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
   void DidFinishBuildObservation(
       mojom::WebClientHandler::PerformActionsCallback callback,
       base::TimeTicks start_time,
-      actor::mojom::ActionResultCode result_code,
-      std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results,
       actor::TaskId task_id,
       bool skip_async_observation_information,

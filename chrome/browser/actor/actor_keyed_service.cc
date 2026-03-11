@@ -532,9 +532,9 @@ void ActorKeyedService::PerformActions(
                          .Add("task_id", task_id)
                          .AddError("Invalid Task")
                          .Build());
-    RunLater(base::BindOnce(std::move(callback),
-                            mojom::ActionResultCode::kTaskWentAway,
-                            std::nullopt, std::move(empty_results)));
+    RunLater(base::BindOnce(
+        std::move(callback),
+        MakeResultVector(mojom::ActionResultCode::kTaskWentAway)));
     return;
   }
 
@@ -542,9 +542,9 @@ void ActorKeyedService::PerformActions(
     GetJournal().Log(
         GURL(), task_id, "ActorKeyedService::PerformActions",
         JournalDetailsBuilder().AddError("Empty Actions List").Build());
-    RunLater(base::BindOnce(std::move(callback),
-                            mojom::ActionResultCode::kEmptyActionSequence,
-                            std::nullopt, std::move(empty_results)));
+    RunLater(base::BindOnce(
+        std::move(callback),
+        MakeResultVector(mojom::ActionResultCode::kEmptyActionSequence)));
     return;
   }
 
@@ -558,22 +558,16 @@ void ActorKeyedService::PerformActions(
 
 void ActorKeyedService::OnActionsFinished(
     PerformActionsCallback callback,
-    mojom::ActionResultPtr result,
-    std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
   TRACE_EVENT0("actor", "ActorKeyedService::OnActionsFinished");
-  // If the result if Ok then we must not have a failed action.
-  CHECK(!IsOk(*result) || !index_of_failed_action);
 
   if (base::FeatureList::IsEnabled(
           actor::kGlicPerformActionsReturnsBeforeStateChange)) {
-    std::move(callback).Run(result->code, index_of_failed_action,
-                            std::move(action_results));
+    std::move(callback).Run(std::move(action_results));
   } else {
     // RunLater is load bearing. See:
     // https://chromium-review.googlesource.com/c/chromium/src/+/7552225/comment/b0b7f011_71da3233/
-    RunLater(base::BindOnce(std::move(callback), result->code,
-                            index_of_failed_action, std::move(action_results)));
+    RunLater(base::BindOnce(std::move(callback), std::move(action_results)));
   }
 }
 

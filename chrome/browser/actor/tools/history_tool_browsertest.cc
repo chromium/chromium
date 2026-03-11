@@ -377,7 +377,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest, HistoryTool_BackFromPOST) {
 
     // The history tool should see the navigation to the error page as an
     // error.
-    const mojom::ActionResultPtr& result = std::get<0>(fut.Get());
+    const auto& action_results = fut.Get();
+    ASSERT_EQ(action_results.size(), 1u);
+    const mojom::ActionResultPtr& result = action_results[0].result;
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 
@@ -444,7 +446,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
     // The history tool should see the navigation to the error page as an
     // error.
-    const mojom::ActionResultPtr& result = std::get<0>(fut.Get());
+    const auto& action_results = fut.Get();
+    ASSERT_EQ(action_results.size(), 1u);
+    const mojom::ActionResultPtr& result = action_results[0].result;
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 
@@ -514,7 +518,9 @@ IN_PROC_BROWSER_TEST_F(ActorHistoryToolBrowserTest,
 
     // The history tool should see the navigation to the error page as an
     // error.
-    const mojom::ActionResultPtr& result = std::get<0>(fut.Get());
+    const auto& action_results = fut.Get();
+    ASSERT_EQ(action_results.size(), 1u);
+    const mojom::ActionResultPtr& result = action_results[0].result;
     EXPECT_EQ(result->code, mojom::ActionResultCode::kHistoryErrorPage);
     EXPECT_THAT(result->message, testing::HasSubstr("ERR_CACHE_MISS"));
 

@@ -719,31 +719,29 @@ void ExpectOkResult(const mojom::ActionResult& result) {
 }
 
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
-  const auto& result = *(future.Get<0>());
+  const auto& result = *(future.Get());
   ExpectOkResult(result);
 }
 
 void ExpectOkResult(ActResultFuture& future) {
-  const auto& result = *(future.Get<0>());
-  ExpectOkResult(result);
-}
-
-void ExpectOkResult(PerformActionsFuture& future) {
-  const auto& result = future.Get<0>();
-  EXPECT_TRUE(IsOk(result)) << "Expected OK result, got " << result;
+  const auto& action_results = future.Get();
+  for (const auto& action_result : action_results) {
+    ExpectOkResult(*action_result.result);
+  }
 }
 
 void ExpectErrorResult(ActResultFuture& future,
                        mojom::ActionResultCode expected_code) {
-  const auto& result = *(future.Get<0>());
-  EXPECT_EQ(result.code, expected_code)
-      << "Result is " << ToDebugString(result);
-}
-
-void ExpectErrorResult(PerformActionsFuture& future,
-                       mojom::ActionResultCode expected_code) {
-  const auto& actual_code = future.Get<0>();
-  EXPECT_EQ(actual_code, expected_code);
+  const auto& action_results = future.Get();
+  bool found_error = false;
+  for (const auto& action_result : action_results) {
+    if (!IsOk(*action_result.result)) {
+      found_error = action_result.result->code == expected_code;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_error) << "Expected error code " << expected_code
+                           << " not found in action results.";
 }
 
 bool SetUpOptimizationGuideComponentBlocklist(const base::FilePath& path,

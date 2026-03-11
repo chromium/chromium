@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest, TwoClicksInBackgroundTab) {
   actor_task().Act(ToRequestList(click1, click2), result.GetCallback());
 
   // Check that the action succeeded.
-  ExpectOkResult(*result.Get<0>());
+  ExpectOkResult(result);
 
   // Check background color changed to green in the background tab.
   EXPECT_EQ("green", EvalJs(tab->GetContents(), "document.body.bgColor"));

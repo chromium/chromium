@@ -1030,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   actor_keyed_service->PerformActions(task_id, std::move(actions),
                                       actor::ActorTaskMetadata(),
                                       result_future.GetCallback());
-  EXPECT_EQ(result_future.Get<0>(), actor::mojom::ActionResultCode::kOk);
+  ExpectOkResult(result_future);
 
   // Wait for the animation to start and verify the border is showing.
   tester->WaitForAnimationStart();
@@ -1094,7 +1094,7 @@ IN_PROC_BROWSER_TEST_F(
   actor_keyed_service->PerformActions(task_id, std::move(actions),
                                       actor::ActorTaskMetadata(),
                                       result_future.GetCallback());
-  EXPECT_EQ(result_future.Get<0>(), actor::mojom::ActionResultCode::kOk);
+  ExpectOkResult(result_future);
 
   // Verify the border is not showing.
   EXPECT_FALSE(border->IsShowing());

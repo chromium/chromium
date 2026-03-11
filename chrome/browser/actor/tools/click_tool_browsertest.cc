@@ -648,7 +648,9 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolPDFBrowserTest, MAYBE_Click) {
     } else {
       // Sometimes it might be allowed, but it will fail eventually. Keep
       // looping until we fail.
-      const auto& result = *(future.Get<0>());
+      const auto& action_results = future.Get();
+      ASSERT_EQ(action_results.size(), 1u);
+      const auto& result = *action_results[0].result;
       if (result.code ==
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation) {
         break;

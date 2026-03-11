@@ -154,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       first_task_id, ToRequestList(action_request), ActorTaskMetadata(),
       result_future.GetCallback());
   ExpectOkResult(result_future);
-  EXPECT_FALSE(result_future.Get<1>().has_value());
-  EXPECT_EQ(result_future.Get<2>().size(), 1u);
+  EXPECT_EQ(result_future.Get().size(), 1u);
   EXPECT_EQ(web_contents()->GetURL(), url);
 
   actor_keyed_service()->StopTask(first_task_id,
@@ -282,8 +281,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
   AddTabToTask(active_tab()->GetHandle(), task);
 
-  TestFuture<base::TimeTicks /*start_time*/, mojom::ActionResultCode,
-             std::optional<size_t> /*index_of_failed_actions*/,
+  TestFuture<base::TimeTicks /*start_time*/,
              std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId,
              bool /*skip_async_observation_information*/,
              std::optional<page_content_annotations::ScreenshotOptions::
@@ -292,11 +290,11 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
       future;
   actor::BuildActionsResultWithObservations(
-      *GetProfile(), base::TimeTicks::Now(), mojom::ActionResultCode::kOk,
-      std::nullopt, std::vector<actor::ActionResultWithLatencyInfo>(), *task,
-      true, std::nullopt, future.GetCallback());
+      *GetProfile(), base::TimeTicks::Now(),
+      std::vector<actor::ActionResultWithLatencyInfo>(), *task, true,
+      std::nullopt, future.GetCallback());
   const std::unique_ptr<optimization_guide::proto::ActionsResult>&
-      actions_result = future.Get<7>();
+      actions_result = future.Get<5>();
   ASSERT_TRUE(actions_result);
   EXPECT_EQ(actions_result->action_result(),
             static_cast<int32_t>(mojom::ActionResultCode::kOk));

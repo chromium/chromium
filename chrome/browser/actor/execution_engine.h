@@ -147,9 +147,7 @@ class ExecutionEngine : public ToolDelegate {
 
   // Performs the given tool actions and invokes the callback when completed.
   using ActCallback =
-      base::OnceCallback<void(mojom::ActionResultPtr,
-                              std::optional<size_t>,
-                              std::vector<ActionResultWithLatencyInfo>)>;
+      base::OnceCallback<void(std::vector<ActionResultWithLatencyInfo>)>;
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 

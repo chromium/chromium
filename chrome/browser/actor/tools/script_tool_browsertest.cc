@@ -43,7 +43,7 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
 
-    const auto& action_results = result.Get<2>();
+    const auto& action_results = result.Get();
     EXPECT_EQ(action_results.size(), 1u);
     EXPECT_TRUE(action_results.at(0).result);
     actor::mojom::ScriptToolResponsePtr response =
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   ExpectOkResult(result);
   EXPECT_EQ(actor_task().GetState(), ActorTask::State::kReflecting);
 
-  const auto& action_results = result.Get<2>();
+  const auto& action_results = result.Get();
   ASSERT_EQ(action_results.size(), 1u);
   ASSERT_TRUE(action_results.at(0).result->script_tool_response);
   base::Value actual_json = base::test::ParseJson(

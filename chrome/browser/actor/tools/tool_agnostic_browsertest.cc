@@ -483,7 +483,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                         /*follow_by_enter=*/false);
     ActResultFuture future;
     actor_task().Act(ToRequestList(action), future.GetCallback());
-    const mojom::ActionResult& result = *(future.Get<0>());
+    const auto& action_results = future.Get();
+    ASSERT_EQ(action_results.size(), 1u);
+    const mojom::ActionResult& result = *action_results[0].result;
     ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
     ASSERT_FALSE(result.requires_page_stabilization);
     ASSERT_EQ(EvalJs(web_contents(), "window.scrollY"), scroll_before);
@@ -499,7 +501,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
                         /*follow_by_enter=*/false);
     ActResultFuture future;
     actor_task().Act(ToRequestList(action), future.GetCallback());
-    const mojom::ActionResult& result = *(future.Get<0>());
+    const auto& action_results = future.Get();
+    ASSERT_EQ(action_results.size(), 1u);
+    const mojom::ActionResult& result = *action_results[0].result;
     ASSERT_EQ(result.code, mojom::ActionResultCode::kElementDisabled);
     ASSERT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
 

@@ -91,8 +91,8 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
       ActResultFuture& result_future,
       std::vector<ExpectedTabObservation> expected_tab_observations) {
     base::test::TestFuture<
-        base::TimeTicks, mojom::ActionResultCode, std::optional<size_t>,
-        std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId, bool,
+        base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
+        actor::TaskId, bool,
         std::optional<page_content_annotations::ScreenshotOptions::
                           ScreenshotCollectionOptions>,
         std::unique_ptr<ActionsResult>,
@@ -100,19 +100,14 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
         future;
 
     const std::vector<actor::ActionResultWithLatencyInfo>& action_results =
-        result_future.Get<2>();
+        result_future.Get();
     actor::BuildActionsResultWithObservations(
         *browser()->profile(), /*start_time=*/base::TimeTicks::Now(),
-        expected_code,
-        /*index_of_failed_action=*/
-        expected_code == mojom::ActionResultCode::kOk
-            ? std::nullopt
-            : std::optional<size_t>(0),
         action_results, actor_task(),
         /*skip_async_observation_information=*/true,
         /*screenshot_collection_options=*/std::nullopt, future.GetCallback());
 
-    const std::unique_ptr<ActionsResult>& actions_result = future.Get<7>();
+    const std::unique_ptr<ActionsResult>& actions_result = future.Get<5>();
     ASSERT_TRUE(actions_result);
     EXPECT_EQ(actions_result->action_result(),
               static_cast<int32_t>(expected_code));
@@ -381,8 +376,8 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   std::vector<ExpectedTabObservation> expected_tab_observations = {
       {TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}};
 
-  VerifyActionsResult(mojom::ActionResultCode::kNavigateCommittedErrorPage,
-                      result, expected_tab_observations);
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
+                      expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
@@ -433,8 +428,8 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
        /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()},
       {TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}};
 
-  VerifyActionsResult(mojom::ActionResultCode::kNavigateCommittedErrorPage,
-                      result, expected_tab_observations);
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
+                      expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 2);
   EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(valid_url));
@@ -465,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   std::vector<ExpectedTabObservation> expected_tab_observations = {
       {TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY}};
 
-  VerifyActionsResult(mojom::ActionResultCode::kTabWentAway, result,
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
                       expected_tab_observations);
 }
 
@@ -575,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolTimeoutBrowserTest,
   // The overall tool result is ok unless new tab creation fails.
   ExpectOkResult(result);
 
-  VerifyActionsResult(mojom::ActionResultCode::kToolTimeout, result,
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
                       {{TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}});
 
   observer.VerifyTabCountRestored();

@@ -59,13 +59,8 @@ auto UiEventDispatcherCallback(
 }
 
 using ActResultFuture =
-    base::test::TestFuture<mojom::ActionResultPtr,
-                           std::optional<size_t>,
-                           std::vector<ActionResultWithLatencyInfo>>;
-using PerformActionsFuture =
-    base::test::TestFuture<mojom::ActionResultCode,
-                           std::optional<size_t>,
-                           std::vector<ActionResultWithLatencyInfo>>;
+    base::test::TestFuture<std::vector<ActionResultWithLatencyInfo>>;
+using PerformActionsFuture = ActResultFuture;
 
 /////////////////////////
 // Proto action makers
@@ -254,9 +249,6 @@ void ExpectOkResult(const mojom::ActionResult& result);
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectOkResult(ActResultFuture& future);
 void ExpectErrorResult(ActResultFuture& future,
-                       mojom::ActionResultCode expected_code);
-void ExpectOkResult(PerformActionsFuture& future);
-void ExpectErrorResult(PerformActionsFuture& future,
                        mojom::ActionResultCode expected_code);
 
 // Sets up GLIC_ACTION_PAGE_BLOCK to block the given host via component updater.

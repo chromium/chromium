@@ -57,8 +57,6 @@ BuildToolRequestResult BuildToolRequest(
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks start_time,
-    mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
@@ -67,8 +65,6 @@ void BuildActionsResultWithObservations(
         screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks start_time,
-             mojom::ActionResultCode result_code,
-             std::optional<size_t> index_of_failed_action,
              std::vector<actor::ActionResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,

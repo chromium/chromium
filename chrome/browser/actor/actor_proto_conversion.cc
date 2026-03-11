@@ -1100,8 +1100,6 @@ GetScreenshotCollectionOptions(
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks actions_start_time,
-    mojom::ActionResultCode result_code,
-    std::optional<size_t> index_of_failed_action,
     std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     bool skip_async_observation_information,
@@ -1110,8 +1108,6 @@ void BuildActionsResultWithObservations(
         screenshot_collection_options,
     base::OnceCallback<
         void(base::TimeTicks actions_start_time,
-             mojom::ActionResultCode result_code,
-             std::optional<size_t> index_of_failed_action,
              std::vector<actor::ActionResultWithLatencyInfo> action_results,
              actor::TaskId task_id,
              bool skip_async_observation_information,
@@ -1125,6 +1121,10 @@ void BuildActionsResultWithObservations(
   auto* profile = Profile::FromBrowserContext(&browser_context);
   auto* actor_service = actor::ActorKeyedService::Get(profile);
   CHECK(actor_service);
+
+  mojom::ActionResultCode result_code = mojom::ActionResultCode::kOk;
+  std::optional<size_t> index_of_failed_action;
+  ExtractErrorResult(action_results, &result_code, index_of_failed_action);
 
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry =
       actor_service->GetJournal().CreatePendingAsyncEntry(
@@ -1304,8 +1304,7 @@ void BuildActionsResultWithObservations(
   RecordPageContextTabCount(tabs_to_fetch.size());
 
   if (skip_async_observation_information) {
-    std::move(callback).Run(actions_start_time, result_code,
-                            index_of_failed_action, std::move(action_results),
+    std::move(callback).Run(actions_start_time, std::move(action_results),
                             task.id(), skip_async_observation_information,
                             screenshot_collection_options, std::move(response),
                             std::move(journal_entry));
@@ -1313,9 +1312,8 @@ void BuildActionsResultWithObservations(
   }
   base::RepeatingClosure barrier = base::BarrierClosure(
       tabs_to_fetch.size(),
-      base::BindOnce(std::move(callback), actions_start_time, result_code,
-                     index_of_failed_action, action_results, task.id(),
-                     skip_async_observation_information,
+      base::BindOnce(std::move(callback), actions_start_time, action_results,
+                     task.id(), skip_async_observation_information,
                      screenshot_collection_options, std::move(response),
                      std::move(journal_entry)));
   for (auto& [tab, tab_observation] : tabs_to_fetch) {

@@ -346,7 +346,13 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ActResultFuture success;
     std::unique_ptr<ToolRequest> action = std::move(make_action).Run();
     task_->Act(ToRequestList(std::move(action)), success.GetCallback());
-    return IsOk(*success.Get<0>());
+    const auto& action_results = success.Get();
+    for (const auto& action_result : action_results) {
+      if (!IsOk(*action_result.result)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   tabs::MockTabInterface* GetTab() {
@@ -814,9 +820,12 @@ TEST_F(ExecutionEngineTest, MAYBE_LatencyInfoAndActionDurationHistogram) {
   std::move(on_invoke_future.Take()).Run(MakeOkResult());
 
   ASSERT_TRUE(result.Wait());
-  EXPECT_TRUE(IsOk(*result.Get<0>()));
+  const auto& action_results = result.Get();
+  for (const auto& action_result : action_results) {
+    EXPECT_TRUE(IsOk(*action_result.result));
+  }
 
-  auto& actions_result = result.Get<2>();
+  const auto& actions_result = action_results;
   EXPECT_EQ(actions_result.size(), 1u);
   EXPECT_EQ(actions_result[0].start_time, action_start_time);
   EXPECT_EQ(actions_result[0].end_time, action_start_time + simulated_duration);
