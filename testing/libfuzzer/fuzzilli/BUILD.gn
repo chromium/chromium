@@ -8,5 +8,8 @@ source_set("fuzzilli_driver") {
   sources = [ "fuzzilli_driver.cc" ]
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//v8:fuzzilli_cov",
+  ]
 }
