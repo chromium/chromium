@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 
@@ -111,6 +112,10 @@ void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
 }
 
 ActionableError FakePasswordStoreBackend::GetError() {
+  if (password_store_backend_error_.has_value()) {
+    return BackendErrorToActionableError(
+        password_store_backend_error_.value().type);
+  }
   return ActionableError::kNoError;
 }
 

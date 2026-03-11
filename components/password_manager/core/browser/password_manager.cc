@@ -665,16 +665,6 @@ void PasswordManager::RegisterLocalPrefs(PrefRegistrySimple* registry) {
                              PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
-bool PasswordManager::ShouldAllowSavingPasswordsWithInFlowRecovery() {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/483652520): Also check if the client is in the correct error state.
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kInFlowTrustedVaultKeyRetrievalAndroid);
-#else
-  return false;
-#endif
-}
-
 PasswordManager::PasswordManager(PasswordManagerClient* client)
     : client_(client),
       account_store_cb_list_subscription_(
@@ -1628,7 +1618,7 @@ void PasswordManager::OnLoginSuccessful() {
 
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
                         able_to_save_passwords);
-  if (!submitted_manager->IsPasswordUpdate() && !(able_to_save_passwords || ShouldAllowSavingPasswordsWithInFlowRecovery())) {
+  if (!submitted_manager->IsPasswordUpdate() && !able_to_save_passwords) {
     return;
   }
 

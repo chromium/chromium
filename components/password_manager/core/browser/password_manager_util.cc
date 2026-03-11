@@ -69,6 +69,18 @@ bool IsBetterMatch(const PasswordForm& lhs, const PasswordForm& rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Returns true if the password saving should be allowed for the in-flow
+// Trusted Vault key recovery.
+bool ShouldAllowSavingPasswordsWithInFlowRecovery(
+    password_manager::ActionableError error) {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kInFlowTrustedVaultKeyRetrievalAndroid) &&
+         error == password_manager::ActionableError::kTrustedVaultKeyNeeded;
+}
+#endif
+
 }  // namespace
 
 // Update |credential| to reflect usage.
@@ -119,16 +131,21 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
 #if BUILDFLAG(IS_ANDROID)
   if (password_manager::sync_util::HasChosenToSyncPasswords(
           client->GetSyncService())) {
-    // After store split on Android, AccountPasswordStore is a default store for
-    // saving passwords when sync is enabled. If either of conditions above is
-    // not satisfied fallback to ProfilePasswordStore.
-    return client->GetAccountPasswordStore() &&
-           IsAbleToSavePasswords(client->GetAccountPasswordStore()->GetError());
+    const password_manager::PasswordStoreInterface* account_store =
+        client->GetAccountPasswordStore();
+    password_manager::ActionableError error =
+        account_store ? account_store->GetError()
+                      : password_manager::ActionableError::kNoError;
+    const bool is_able_to_save =
+        IsAbleToSavePasswords(error) ||
+        ShouldAllowSavingPasswordsWithInFlowRecovery(error);
+    return account_store && is_able_to_save;
   }
 #endif
   // TODO(b/324054761): Check AccountPasswordStore store when needed.
-  return client->GetProfilePasswordStore() &&
-         IsAbleToSavePasswords(client->GetProfilePasswordStore()->GetError());
+  const password_manager::PasswordStoreInterface* profile_store =
+      client->GetProfilePasswordStore();
+  return profile_store && IsAbleToSavePasswords(profile_store->GetError());
 }
 
 std::string_view GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {

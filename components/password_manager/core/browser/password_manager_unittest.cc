@@ -76,6 +76,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -279,6 +280,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
+  MOCK_METHOD(const syncer::SyncService*,
+              GetSyncService,
+              (),
+              (const, override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(url::Origin, GetLastCommittedOrigin, (), (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
@@ -876,7 +881,8 @@ TEST_P(PasswordManagerTest, FormSubmitWithOnlyNewPasswordField) {
   observed.push_back(form.form_data);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
@@ -1719,38 +1725,55 @@ TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-  TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSavedBecauseOfTrustedVaultKey) {
+
+// Tests that the user is still prompted to save the password when the account
+// store is not available due to the trusted vault key retrieval flow.
+// The same can't happen with the profile store because it's local-only and it
+// doesn't support E2EE.
+TEST_P(
+    PasswordManagerTest,
+    FormSubmitWhenPasswordsCannotBeSavedToAccountStoreBecauseOfTrustedVaultKey) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kInFlowTrustedVaultKeyRetrievalAndroid};
-    auto store = base::MakeRefCounted<PasswordStore>(
-        std::make_unique<FailingPasswordStoreBackend>());
-    store->Init(/*affiliated_match_helper=*/nullptr);
-    ON_CALL(client_, GetProfilePasswordStore())
-        .WillByDefault(Return(store.get()));
 
-    FormData form_data(MakeSimpleFormData());
-    std::vector<FormData> observed = {form_data};
-    EXPECT_FALSE(manager()->IsPasswordFieldDetectedOnPage());
-    manager()->OnPasswordFormsParsed(&driver_, observed);
-    EXPECT_TRUE(manager()->IsPasswordFieldDetectedOnPage());
-    manager()->OnPasswordFormsRendered(&driver_, observed);
-    task_environment_.RunUntilIdle();
+  // Set up the sync service to sync passwords such that the account store would
+  // be used.
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kPasswords});
+  ON_CALL(client_, GetSyncService()).WillByDefault(Return(&sync_service));
 
-    EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
-        .WillRepeatedly(Return(true));
-    OnPasswordFormSubmitted(form_data);
+  auto backend = std::make_unique<FakePasswordStoreBackend>();
+  backend->ReturnErrorOnRequest(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kIrretrievableSecurityDomain));
+  auto store = base::MakeRefCounted<PasswordStore>(std::move(backend));
+  store->Init(/*affiliated_match_helper=*/nullptr);
+  ON_CALL(client_, GetAccountPasswordStore())
+      .WillByDefault(Return(store.get()));
 
-    EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(1);
+  FormData form_data(MakeSimpleFormData());
+  std::vector<FormData> observed = {form_data};
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 
-    observed.clear();
-    manager()->OnPasswordFormsParsed(&driver_, observed);
-    manager()->OnPasswordFormsRendered(&driver_, observed);
-    task_environment_.RunUntilIdle();
-    // Objects owned by the manager may keep references to the store - therefore
-    // destroy the manager prior to store destruction.
-    ResetManager();
-    store->ShutdownOnUIThread();
-  }
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form_data);
+
+  // The user is still prompted to save the password, but it will be saved to
+  // the account store when the trusted vault key retrieval flow completes.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(1);
+
+  observed.clear();
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed);
+  // Objects owned by the manager may keep references to the store - therefore
+  // destroy the manager prior to store destruction.
+  ResetManager();
+  store->ShutdownOnUIThread();
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(PasswordManagerTest,
@@ -3999,7 +4022,8 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   test_api(form.form_data).field(1).set_autocomplete_attribute("new-password");
 
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 }
 
 // Username first flows are not yet available on iOS (crbug.com/1064560).
@@ -4024,7 +4048,8 @@ TEST_P(PasswordManagerTest,
   // We do not call `OnPasswordFormsParsed()` (to simulate the renderer) because
   // the renderer does not recognize it as a relevant form, since the field does
   // not have an autocomplete="username" attribute.
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 }
 
 // Check that when autofill predictions for a `SINGLE_USERNAME` field with an
@@ -4055,7 +4080,8 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion);
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
 
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 }
 
 // Check that an update from a login form to a form with a `SINGLE_USERNAME`
@@ -4091,7 +4117,8 @@ TEST_P(PasswordManagerTest,
       CreateServerPredictions(modified_form_data,
                               {{0, FieldType::SINGLE_USERNAME}}));
 
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 }
 #endif  // !BUIDFLAG(IS_IOS)
 
@@ -4124,7 +4151,8 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
   test_api(form2.form_data).field(1).set_autocomplete_attribute("new-password");
   manager()->OnPasswordFormsParsed(&driver_,
                                    {form1.form_data, form2.form_data});
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
 }
 
 // Checks the following scenario:
@@ -4679,7 +4707,8 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
   manager()->ProcessAutofillPredictions(
       &driver_, form_data,
       CreateServerPredictions(form_data, {{0, FieldType::SINGLE_USERNAME}}));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
   EXPECT_EQ(form_data.renderer_id(), fill_data.form_renderer_id);
   EXPECT_EQ(saved_match.username_value,
             fill_data.preferred_login.username_value);
@@ -4709,7 +4738,8 @@ TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
       &driver_, form_data,
       CreateServerPredictions(
           form_data, {{0, FieldType::SINGLE_USERNAME_FORGOT_PASSWORD}}));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager()->HaveFormManagersReceivedData(&driver_); }));
   EXPECT_EQ(form_data.renderer_id(), fill_data.form_renderer_id);
   EXPECT_EQ(saved_match.username_value,
             fill_data.preferred_login.username_value);
