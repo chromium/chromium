@@ -12,6 +12,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
@@ -23,11 +24,15 @@ class BrowserWindowInterface;
 // from the UpgradeDetector and updating browser UI appropriately.
 class UpgradeNotificationController : public UpgradeObserver {
  public:
+  DECLARE_USER_DATA(UpgradeNotificationController);
+
   explicit UpgradeNotificationController(BrowserWindowInterface* browser);
   UpgradeNotificationController(const UpgradeNotificationController&) = delete;
   UpgradeNotificationController& operator=(
       const UpgradeNotificationController&) = delete;
   ~UpgradeNotificationController() override;
+
+  static UpgradeNotificationController* From(BrowserWindowInterface* browser);
 
   // UpgradeObserver:
   void OnOutdatedInstall() override;
@@ -41,6 +46,8 @@ class UpgradeNotificationController : public UpgradeObserver {
   const raw_ref<BrowserWindowInterface> browser_;
   base::ScopedObservation<UpgradeDetector, UpgradeObserver>
       upgrade_detector_observation_{this};
+  ui::ScopedUnownedUserData<UpgradeNotificationController>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_UPGRADE_NOTIFICATION_CONTROLLER_H_

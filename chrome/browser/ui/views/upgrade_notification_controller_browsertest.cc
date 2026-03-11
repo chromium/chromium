@@ -23,7 +23,7 @@ class OutdatedUpgradeBubbleTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto* const upgrade_notification_controller =
-        browser()->GetFeatures().upgrade_notification_controller();
+        UpgradeNotificationController::From(browser());
     CHECK(upgrade_notification_controller);
 
     if (name == "Outdated") {
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest, InvokeUi_Critical) {
 IN_PROC_BROWSER_TEST_F(OutdatedUpgradeBubbleTest,
                        CriticalNotificationBubbleViewAccessibleProperties) {
   auto* const upgrade_notification_controller =
-      browser()->GetFeatures().upgrade_notification_controller();
+      UpgradeNotificationController::From(browser());
   auto bubble_view = upgrade_notification_controller
                          ->GetCriticalNotificationBubbleViewForTest();
   ASSERT_TRUE(bubble_view);

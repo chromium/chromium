@@ -485,10 +485,6 @@ class BrowserWindowFeatures {
     return history_clusters_side_panel_coordinator_.get();
   }
 
-  UpgradeNotificationController* upgrade_notification_controller() {
-    return upgrade_notification_controller_.get();
-  }
-
   BrowserContentSettingBubbleModelDelegate*
   content_setting_bubble_model_delegate() {
     return content_setting_bubble_model_delegate_.get();

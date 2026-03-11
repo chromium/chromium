@@ -51,8 +51,17 @@ UpgradeNotificationController::GetCriticalNotificationBubbleViewForTest() {
 }
 #endif
 
+DEFINE_USER_DATA(UpgradeNotificationController);
+
 UpgradeNotificationController::UpgradeNotificationController(
     BrowserWindowInterface* browser)
-    : browser_(CHECK_DEREF(browser)) {
+    : browser_(CHECK_DEREF(browser)),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   upgrade_detector_observation_.Observe(UpgradeDetector::GetInstance());
+}
+
+// static
+UpgradeNotificationController* UpgradeNotificationController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
 }
