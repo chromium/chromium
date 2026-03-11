@@ -9,7 +9,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/media/media_notification_provider_observer.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -19,7 +19,6 @@ class PrefService;
 
 namespace views {
 class Button;
-class ImageView;
 class View;
 class Widget;
 }  // namespace views
@@ -30,9 +29,9 @@ class Shelf;
 class TrayBubbleWrapper;
 
 class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
-                             public TrayBackgroundView,
+                             public ImagedTrayIcon,
                              public SessionObserver {
-  METADATA_HEADER(MediaTray, TrayBackgroundView)
+  METADATA_HEADER(MediaTray, ImagedTrayIcon)
 
  public:
   // Register `prefs::kGlobalMediaControlsPinned`.
@@ -68,7 +67,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnNotificationListChanged() override;
   void OnNotificationListViewSizeChanged() override;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
   views::Widget* GetBubbleWidget() const override;
@@ -83,7 +82,7 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnLockStateChanged(bool locked) override;
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
-  // Callback called when this TrayBackgroundView is pressed.
+  // Callback called when this ImagedTrayIcon is pressed.
   void OnTrayButtonPressed();
 
   // Show/hide media tray.
@@ -116,9 +115,6 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
 
   std::unique_ptr<TrayBubbleWrapper> bubble_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView> icon_;
 
   raw_ptr<views::View> content_view_ = nullptr;
   raw_ptr<views::View> empty_state_view_ = nullptr;

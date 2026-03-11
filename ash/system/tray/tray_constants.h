@@ -259,7 +259,6 @@ inline constexpr auto kPrivacyScreenToastInsets = gfx::Insets::VH(10, 16);
 inline constexpr int kPrivacyScreenToastSpacing = 16;
 
 // Constants used for media tray.
-inline constexpr int kMediaTrayPadding = 8;
 inline constexpr int kMediaNotificationListViewBottomPadding = 8;
 
 // There is no active user session during oobe, which means it doesn't support

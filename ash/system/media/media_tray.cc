@@ -16,10 +16,10 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/media/media_notification_provider.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
@@ -197,7 +197,11 @@ BEGIN_METADATA(MediaTray, PinButton)
 END_METADATA
 
 MediaTray::MediaTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kMediaPlayer) {
+    : ImagedTrayIcon(shelf,
+                     ui::ImageModel(),
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT),
+                     TrayBackgroundViewCatalogName::kMediaPlayer) {
   SetCallback(base::BindRepeating(&MediaTray::OnTrayButtonPressed,
                                   base::Unretained(this)));
   if (MediaNotificationProvider::Get()) {
@@ -206,11 +210,6 @@ MediaTray::MediaTray(Shelf* shelf)
 
   Shell::Get()->session_controller()->AddObserver(this);
 
-  tray_container()->SetMargin(kMediaTrayPadding, 0);
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
-  icon_ = tray_container()->AddChildView(std::move(icon));
   UpdateTrayItemColor(is_active());
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
@@ -250,7 +249,7 @@ void MediaTray::UpdateAfterLoginStatusChange() {
 }
 
 void MediaTray::HandleLocaleChange() {
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
 }
 
@@ -297,7 +296,7 @@ void MediaTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 }
 
 void MediaTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       kGlobalMediaControlsIcon,
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface));
