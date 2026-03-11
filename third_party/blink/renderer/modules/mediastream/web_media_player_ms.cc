@@ -448,7 +448,7 @@ void WebMediaPlayerMS::Shutdown() {
     audio_renderer_->Stop();
   }
 
-  media_log_->AddEvent<media::MediaLogEvent::kWebMediaPlayerDestroyed>();
+  media_log_->OnWebMediaPlayerDestroyed();
 
   delegate_->PlayerGone(delegate_id_);
   delegate_->RemoveObserver(delegate_id_);
