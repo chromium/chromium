@@ -1437,6 +1437,8 @@ component("platform") {
     "peerconnection/rtc_video_encoder.h",
     "peerconnection/rtc_video_encoder_factory.cc",
     "peerconnection/rtc_video_encoder_factory.h",
+    "peerconnection/rtc_video_encoder_media_log.cc",
+    "peerconnection/rtc_video_encoder_media_log.h",
     "peerconnection/rtc_void_request.h",
     "peerconnection/stats_collecting_decoder.cc",
     "peerconnection/stats_collecting_decoder.h",
