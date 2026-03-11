@@ -3223,11 +3223,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-doze-mode-power-scheduler",
-    "owners": ["yichenz@chromium.org", "cros-sw-perf@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-drdc",
     "owners": [ "vikassoni@chromium.org", "sunnyps@chromium.org" ],
     "expiry_milestone": 130

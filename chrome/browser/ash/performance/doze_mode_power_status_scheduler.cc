@@ -193,10 +193,8 @@ void DozeModePowerStatusScheduler::Stop() {
 }
 
 void DozeModePowerStatusScheduler::OnArcStarted() {
-  if (features::IsDozeModePowerSchedulerEnabled()) {
-    // When ARC started, initialize this class.
-    Start();
-  }
+  // When ARC started, initialize this class.
+  Start();
 }
 
 void DozeModePowerStatusScheduler::OnArcSessionStopped(

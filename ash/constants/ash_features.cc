@@ -2118,8 +2118,6 @@ BASE_FEATURE(kPeripheralNotification, base::FEATURE_ENABLED_BY_DEFAULT);
 // cursor with possible tearing artifacts.
 BASE_FEATURE(kEnableFastInkForSoftwareCursor, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableDozeModePowerScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables fwupd developer mode, disabling all firmware authentication checks.
 BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2391,10 +2389,6 @@ bool IsDemoModeSignInFileCleanupEnabled() {
 
 bool IsDeskTemplateSyncEnabled() {
   return base::FeatureList::IsEnabled(kDeskTemplateSync);
-}
-
-bool IsDozeModePowerSchedulerEnabled() {
-  return base::FeatureList::IsEnabled(kEnableDozeModePowerScheduler);
 }
 
 bool IsDisplayPerformanceModeEnabled() {
