@@ -2,6 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("onep_resolver") {
+  sources = [
+    "onep_resolver.h",
+    "onep_resolver_impl.cc",
+    "onep_resolver_impl.h",
+  ]
+
+  deps = [
+    ":annotation_reducer",
+    "//base",
+    "//components/accessibility_annotator/core:features",
+  ]
+}
+
 source_set("annotation_reducer") {
   sources = [
     "autofill_data_provider.h",
@@ -17,12 +31,17 @@ source_set("annotation_reducer") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "query_classifier_unittest.cc" ]
+  sources = [
+    "onep_resolver_impl_unittest.cc",
+    "query_classifier_unittest.cc",
+  ]
 
   deps = [
     ":annotation_reducer",
+    ":onep_resolver",
     "//base",
     "//base/test:test_support",
+    "//components/accessibility_annotator/core:features",
     "//testing/gmock",
     "//testing/gtest",
   ]

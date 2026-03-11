@@ -35,4 +35,7 @@ const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled{
 const base::FeatureParam<int> kContentAnnotatorMaxCacheAnnotations{
     &kContentAnnotator, "content_annotator_max_cache_annotations", 10};
 
+BASE_FEATURE(kAccessibilityAnnotationReducerOnePResolver,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace accessibility_annotator

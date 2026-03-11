@@ -31,6 +31,8 @@ extern const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation;
 extern const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled;
 extern const base::FeatureParam<int> kContentAnnotatorMaxCacheAnnotations;
 
+BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
+
 }  // namespace accessibility_annotator
 
 #endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_FEATURES_H_
