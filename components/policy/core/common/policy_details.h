@@ -50,6 +50,10 @@ struct POLICY_EXPORT PolicyDetails {
 
   // Contains tags that describe impact on a user's privacy or security.
   RiskTag risk_tags[kMaxRiskTagCount];
+
+  // True if the policy can be set at both the machine and
+  // user scopes simultaneously.
+  bool uses_local_state_and_profile_prefs : 1;
 };
 
 // A typedef for functions that match the signature of

@@ -756,6 +756,12 @@ Additional details:
   <message name="IDS_POLICY_CONFLICT_DIFF_VALUE" desc="Text explaining that a policy had conflicting sources and values.">
     This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.
   </message>
+  <message name="IDS_POLICY_USES_SAME_LOCAL_STATE_AND_PROFILE_PREFS" desc="Text explaining that a policy has the same value for machine and user.">
+    This policy has the same value applied at the machine and user levels. The policy is working as intended.
+  </message>
+  <message name="IDS_POLICY_USES_LOCAL_STATE_AND_PROFILE_PREFS" desc="Text explaining that a policy had conflicting sources and values from both machine and user scopes and they were merged.">
+    This policy has different values applied at the machine and user levels. The policy is working as intended.
+  </message>
   <message name="IDS_POLICY_MIGRATED_OLD_POLICY" desc="Text explaining that a policy is deprecated, and that admins should use the new policy instead">
     This policy is deprecated. You should use the <ph name="NEW_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy instead.
   </message>

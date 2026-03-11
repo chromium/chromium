@@ -24,6 +24,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -45,11 +46,12 @@ const char16_t kTestError[] = u"Test error message";
 const PolicyDetails kExternalDetails_ = {false, false, kProfile, 0, 10, {}};
 const PolicyDetails kNonExternalDetails_ = {false, false, kProfile, 0, 0, {}};
 #if !BUILDFLAG(IS_CHROMEOS)
+const PolicyDetails kUsesLocalStateAndProfilePrefsDetails = {
+    false, false, kProfile, 0, 0, {}, true};
 const PolicyDetails kUserCloudDetails = {false, false, kSingleProfile,
                                          0,     0,     {}};
 #endif
 
-// Utility functions for the tests.
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
            std::move(value), nullptr);
@@ -1360,8 +1362,8 @@ class PolicyMapMergeTest
                             POLICY_SOURCE_ENTERPRISE_DEFAULT, std::nullopt,
                             CreateExternalDataFetcher("a"));
     policy_map_expected.GetMutable(kTestPolicyName3)
-        ->AddMessage(PolicyMap::MessageType::kWarning,
-                     IDS_POLICY_CONFLICT_DIFF_VALUE);
+        ->AddMessage(PolicyMap::MessageType::kInfo,
+                     IDS_POLICY_CONFLICT_SAME_VALUE);
     policy_map_expected.GetMutable(kTestPolicyName3)
         ->AddConflictingPolicy(policy_map_2.Get(kTestPolicyName3)->DeepCopy());
     // Cloud machine over platform user for recommended policies.
@@ -1881,6 +1883,108 @@ TEST_P(PolicyMapPriorityTest, SingleProfilePolicyWithMissingDetails) {
                               nullptr);
   EXPECT_TRUE(policy_map_.EntryHasHigherPriority(cloud_user, cloud_machine));
   EXPECT_FALSE(policy_map_.EntryHasHigherPriority(cloud_machine, cloud_user));
+}
+
+TEST_F(PolicyMapTest,
+       MergeFrom_UsesLocalStateAndProfilePrefs_ConflictingValue) {
+  PolicyMap user_policy_map;
+  // Set up a user-level policy.
+  user_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                      base::Value("user_value"), nullptr);
+  user_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  // Set up a machine-level policy.
+  PolicyMap machine_policy_map;
+  machine_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                         POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                         base::Value("machine_value"), nullptr);
+  machine_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  std::u16string kExpectedMessage =
+      l10n_util::GetStringUTF16(IDS_POLICY_USES_LOCAL_STATE_AND_PROFILE_PREFS);
+
+  // Merge the machine policy into the user policy map and check for the
+  // informational message.
+  user_policy_map.MergeFrom(machine_policy_map);
+  const PolicyMap::Entry* entry = user_policy_map.Get(kTestPolicyName1);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(kExpectedMessage,
+            entry->GetLocalizedMessages(
+                PolicyMap::MessageType::kInfo,
+                base::BindRepeating(&l10n_util::GetStringUTF16)));
+}
+
+TEST_F(PolicyMapTest, MergeFrom_UsesLocalStateAndProfilePrefs_SameValue) {
+  PolicyMap user_policy_map;
+  // Set up a user-level policy.
+  user_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                      base::Value("same_value"), nullptr);
+  user_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  // Set up a machine-level policy.
+  PolicyMap machine_policy_map;
+  machine_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                         POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                         base::Value("same_value"), nullptr);
+  machine_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  std::u16string kExpectedMessage = l10n_util::GetStringUTF16(
+      IDS_POLICY_USES_SAME_LOCAL_STATE_AND_PROFILE_PREFS);
+
+  // Merge the machine policy into the user policy map and check for the
+  // informational message.
+  user_policy_map.MergeFrom(machine_policy_map);
+  const PolicyMap::Entry* entry = user_policy_map.Get(kTestPolicyName1);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(kExpectedMessage,
+            entry->GetLocalizedMessages(
+                PolicyMap::MessageType::kInfo,
+                base::BindRepeating(&l10n_util::GetStringUTF16)));
+}
+
+TEST_F(PolicyMapTest,
+       MergeFrom_UsesLocalStateAndProfilePrefs_NonScopeConflict) {
+  PolicyMap platform_policy_map;
+  // Set up a user-level policy from platform source.
+  platform_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                          POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
+                          base::Value("platform_value"), nullptr);
+  platform_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  // Set up a user-level policy from cloud source.
+  PolicyMap cloud_policy_map;
+  cloud_policy_map.Set(kTestPolicyName1, POLICY_LEVEL_MANDATORY,
+                       POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                       base::Value("cloud_value"), nullptr);
+  cloud_policy_map.GetMutable(kTestPolicyName1)->details =
+      &kUsesLocalStateAndProfilePrefsDetails;
+
+  std::u16string kExpectedMessage =
+      l10n_util::GetStringUTF16(IDS_POLICY_CONFLICT_DIFF_VALUE);
+
+  // Merge the cloud policy into the platform policy map.
+  // Cloud has higher priority and will win.
+  platform_policy_map.MergeFrom(cloud_policy_map);
+  const PolicyMap::Entry* entry = platform_policy_map.Get(kTestPolicyName1);
+  ASSERT_TRUE(entry);
+  // The special informational message should NOT be present.
+  EXPECT_TRUE(entry
+                  ->GetLocalizedMessages(
+                      PolicyMap::MessageType::kInfo,
+                      base::BindRepeating(&l10n_util::GetStringUTF16))
+                  .empty());
+  // The generic warning message for conflicting values should be present.
+  EXPECT_EQ(kExpectedMessage,
+            entry->GetLocalizedMessages(
+                PolicyMap::MessageType::kWarning,
+                base::BindRepeating(&l10n_util::GetStringUTF16)));
 }
 
 INSTANTIATE_TEST_SUITE_P(PolicyMapPriorityTestInstance,

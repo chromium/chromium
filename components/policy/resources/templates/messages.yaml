@@ -103,6 +103,10 @@ doc_feature_user_only:
   desc: The name of the feature that indicates whether a policy can only be set with
     signed in managed account.
   text: User Only
+doc_feature_uses_machine_and_user_values:
+  desc: The name of the feature that indicates whether a policy can be set for the
+    machine and for the user.
+  text: Can be set for machine and user
 doc_group_intro:
   desc: Introduction text for the generated policy atomic group documentation
   text: Both Chromium and Google Chrome have some groups of policies that depend on

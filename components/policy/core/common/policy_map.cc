@@ -221,7 +221,7 @@ void PolicyMap::Entry::ClearMessage(MessageType type, int message_id) {
 }
 
 void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
-  // Move all of the newly conflicting Entry's conflicts into this Entry.
+  // Move all of the newly conflicting Entries conflicts into this Entry.
   std::move(conflict.conflicts.begin(), conflict.conflicts.end(),
             std::back_inserter(conflicts));
 
@@ -301,6 +301,10 @@ void PolicyMap::Entry::SetIsDefaultValue() {
 
 bool PolicyMap::Entry::IsDefaultValue() const {
   return is_default_value_;
+}
+
+bool PolicyMap::Entry::UsesLocalStateAndProfilePrefs() const {
+  return details && details->uses_local_state_and_profile_prefs;
 }
 
 PolicyMap::EntryConflict::EntryConflict() = default;
@@ -493,12 +497,26 @@ void PolicyMap::MergePolicy(const std::string& policy_name,
       higher_policy.source != conflicting_policy.source &&
       conflicting_policy.source == POLICY_SOURCE_ENTERPRISE_DEFAULT;
   if (!overwriting_default_policy) {
-    policy->value_unsafe() &&
-            *other_policy_copy.value_unsafe() == *policy->value_unsafe()
-        ? higher_policy.AddMessage(MessageType::kInfo,
-                                   IDS_POLICY_CONFLICT_SAME_VALUE)
-        : higher_policy.AddMessage(MessageType::kWarning,
-                                   IDS_POLICY_CONFLICT_DIFF_VALUE);
+    const bool is_scope_conflict =
+        higher_policy.scope != conflicting_policy.scope;
+    bool are_values_equal =
+        (!policy->value_unsafe() && !other_policy_copy.value_unsafe()) ||
+        (policy->value_unsafe() && other_policy_copy.value_unsafe() &&
+         *policy->value_unsafe() == *other_policy_copy.value_unsafe());
+    if (higher_policy.UsesLocalStateAndProfilePrefs() && is_scope_conflict) {
+      higher_policy.AddMessage(
+          MessageType::kInfo,
+          are_values_equal ? IDS_POLICY_USES_SAME_LOCAL_STATE_AND_PROFILE_PREFS
+                           : IDS_POLICY_USES_LOCAL_STATE_AND_PROFILE_PREFS);
+    } else {
+      if (are_values_equal) {
+        higher_policy.AddMessage(MessageType::kInfo,
+                                 IDS_POLICY_CONFLICT_SAME_VALUE);
+      } else {
+        higher_policy.AddMessage(MessageType::kWarning,
+                                 IDS_POLICY_CONFLICT_DIFF_VALUE);
+      }
+    }
     higher_policy.AddConflictingPolicy(std::move(conflicting_policy));
   }
 

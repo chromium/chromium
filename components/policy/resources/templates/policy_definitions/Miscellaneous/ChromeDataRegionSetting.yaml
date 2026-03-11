@@ -16,6 +16,7 @@ features:
   dynamic_refresh: false
   per_profile: true
   user_only: true
+  uses_machine_and_user_values: true
 items:
 - caption: No preference.
   name: NoPreference

@@ -117,6 +117,10 @@ class POLICY_EXPORT PolicyMap {
     // Sets |ignored_| to true.
     void SetIgnored();
 
+    // Returns true if the policy values from both machine and user scopes
+    // should be stored in prefs.
+    bool UsesLocalStateAndProfilePrefs() const;
+
     // Marks the policy as blocked because it is not supported in the current
     // environment.
     void SetBlocked();
