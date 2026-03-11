@@ -121,6 +121,12 @@ export class ToolbarAppElement extends CrLitElement {
       this.trackedElementManager_.startTracking(
           splitTabs, 'kToolbarSplitTabsToolbarButtonElementId');
     }
+    const locationBar =
+        this.shadowRoot.querySelector<HTMLElement>('#location-bar');
+    if (locationBar) {
+      this.trackedElementManager_.startTracking(
+          locationBar, 'kLocationBarElementId');
+    }
   }
 
   /**

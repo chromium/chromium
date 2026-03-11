@@ -1487,10 +1487,11 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
     return;
   }
 
-  CHECK(location_bar_view_)
-      << "Alternate location bar impls need to handle this.";
-  location_bar_view_->page_action_icon_controller()->ZoomChangedForActiveTab(
-      can_show_bubble);
+  // Other impls are expected to only launch after page action migration.
+  if (location_bar_view_) {
+    location_bar_view_->page_action_icon_controller()->ZoomChangedForActiveTab(
+        can_show_bubble);
+  }
 }
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {

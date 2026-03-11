@@ -550,10 +550,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (browser_view && IsPageActionMigrated(PageActionIconType::kAiMode)) {
       LocationBarView* location_bar_view = browser_view->GetLocationBarView();
-      ai_mode_page_action_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<omnibox::AiModePageActionController>(
-                  *browser, *browser, *profile, *location_bar_view);
+      // TODO(crbug.com/491707187): Make it work with any LocationBar
+      if (location_bar_view) {
+        ai_mode_page_action_controller_ =
+            GetUserDataFactory()
+                .CreateInstance<omnibox::AiModePageActionController>(
+                    *browser, *browser, *profile, *location_bar_view);
+      }
     }
 
     auto* experiment_manager =

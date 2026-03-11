@@ -221,5 +221,6 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 
 const std::vector<ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() const {
-  return {kReloadButtonElementId, kToolbarSplitTabsToolbarButtonElementId};
+  return {kLocationBarElementId, kReloadButtonElementId,
+          kToolbarSplitTabsToolbarButtonElementId};
 }
