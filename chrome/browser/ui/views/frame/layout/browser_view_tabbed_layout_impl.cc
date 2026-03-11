@@ -768,8 +768,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
           ? views().toolbar_height_side_panel->GetAnimationValue()
           : 0.0;
   const bool pad_toolbar_height_side_panel_top =
-      tab_strip_type != TabStripType::kVertical ||
-      delegate().GetImmersiveModeController()->IsEnabled();
+      !base::FeatureList::IsEnabled(features::kDetachedTabs) &&
+      (tab_strip_type != TabStripType::kVertical ||
+       delegate().GetImmersiveModeController()->IsEnabled());
   bool adjust_for_shadow_box = false;
   if (horizontal_layout.has_toolbar_height_side_panel()) {
     const SidePanel* const toolbar_height_side_panel =

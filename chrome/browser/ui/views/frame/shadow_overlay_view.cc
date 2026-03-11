@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -47,7 +48,10 @@ class ShadowOverlayView::CornerView : public views::View {
   static constexpr float kCornerSubpixelOverpaint = 0.5f;
 
   CornerView(Corner corner, BrowserView& browser_view) : corner_(corner) {
-    SetBackground(std::make_unique<ThemedBackground>(&browser_view));
+    SetBackground(std::make_unique<ThemedBackground>(
+        &browser_view, base::FeatureList::IsEnabled(features::kDetachedTabs)
+                           ? ThemedBackground::ThemeChoice::kFrameTheme
+                           : ThemedBackground::ThemeChoice::kToolbarTheme));
   }
   ~CornerView() override = default;
 
