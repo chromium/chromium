@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
-#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/security_state/core/security_state.h"
@@ -62,6 +61,7 @@ class OmniboxContextMenu;
 enum class OmniboxPart;
 class OmniboxPopupAimPresenter;
 class OmniboxPopupFileSelector;
+class OmniboxPopupUI;
 class OmniboxPopupView;
 class OmniboxViewViews;
 class OmniboxChipButton;
