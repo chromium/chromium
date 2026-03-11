@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -11,8 +12,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -48,7 +49,7 @@ public class SafetyHubModuleDelegateImpl
         implements SafetyHubModuleDelegate, BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private static final int INVALID_PASSWORD_COUNT = -1;
     private final Profile mProfile;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final SigninAndHistorySyncActivityLauncher mSigninLauncher;
     private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
     private @Nullable BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
@@ -71,14 +72,14 @@ public class SafetyHubModuleDelegateImpl
      *     article in a CCT.
      */
     public SafetyHubModuleDelegateImpl(
-            WindowAndroid windowAndroid,
+            Supplier<@Nullable WindowAndroid> windowAndroidSupplier,
             Activity activity,
             ActivityResultTracker activityResultTracker,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             Profile profile,
-            SnackbarManager snackbarManager,
-            OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable SnackbarManager> snackbarManagerSupplier,
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SigninAndHistorySyncActivityLauncher signinLauncher,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
@@ -87,39 +88,47 @@ public class SafetyHubModuleDelegateImpl
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
-            bottomSheetControllerSupplier.onAvailable(
-                    (bottomSheetController) -> {
-                        // Wait for the BottomSheetController to be available before initializing
-                        // the coordinator, as it may be null during early startup.
+            SupplierUtils.waitForAll(
+                    () -> {
                         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
                         profileSupplier.set(mProfile);
                         mSigninCoordinator =
                                 mSigninLauncher
                                         .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
-                                                windowAndroid,
+                                                assertNonNull(windowAndroidSupplier.get()),
                                                 activity,
                                                 activityResultTracker,
                                                 this,
                                                 deviceLockActivityLauncher,
                                                 profileSupplier,
-                                                () -> bottomSheetController,
-                                                modalDialogManagerSupplier.get(),
-                                                snackbarManager,
+                                                SupplierUtils.asNonNull(
+                                                        bottomSheetControllerSupplier),
+                                                assertNonNull(modalDialogManagerSupplier.get()),
+                                                assertNonNull(snackbarManagerSupplier.get()),
                                                 SigninAccessPoint.SAFETY_CHECK);
-                    });
+                    },
+                    windowAndroidSupplier,
+                    modalDialogManagerSupplier,
+                    snackbarManagerSupplier);
         }
     }
 
     @Override
     public void showPasswordCheckUi(Context context) {
         SafetyHubUtils.showPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+                context,
+                mProfile,
+                SupplierUtils.asNonNull(mModalDialogManagerSupplier),
+                mSettingsCustomTabLauncher);
     }
 
     @Override
     public void showLocalPasswordCheckUi(Context context) {
         SafetyHubUtils.showLocalPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+                context,
+                mProfile,
+                SupplierUtils.asNonNull(mModalDialogManagerSupplier),
+                mSettingsCustomTabLauncher);
     }
 
     @Override

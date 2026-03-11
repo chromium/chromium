@@ -97,8 +97,12 @@ public class SafetyHubModuleDelegateTest {
                         mock(ModalDialogManager.Presenter.class),
                         ModalDialogManager.ModalDialogType.APP);
 
+        OneshotSupplierImpl<WindowAndroid> windowAndroidSupplier = new OneshotSupplierImpl<>();
+        OneshotSupplierImpl<SnackbarManager> snackbarManagerSupplier = new OneshotSupplierImpl<>();
         OneshotSupplierImpl<BottomSheetController> bottomSheetControllerSupplier =
                 new OneshotSupplierImpl<>();
+        windowAndroidSupplier.set(mWindowAndroid);
+        snackbarManagerSupplier.set(mSnackbarManager);
         bottomSheetControllerSupplier.set(mBottomSheetController);
         when(mSigninLauncher.createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
                         eq(mWindowAndroid),
@@ -116,12 +120,12 @@ public class SafetyHubModuleDelegateTest {
 
         mSafetyHubModuleDelegate =
                 new SafetyHubModuleDelegateImpl(
-                        mWindowAndroid,
+                        windowAndroidSupplier,
                         mActivity,
                         mActivityResultTracker,
                         mDeviceLockActivityLauncher,
                         mProfile,
-                        mSnackbarManager,
+                        snackbarManagerSupplier,
                         bottomSheetControllerSupplier,
                         () -> mModalDialogManager,
                         mSigninLauncher,

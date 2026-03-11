@@ -46,7 +46,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -151,8 +150,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private Profile mProfile;
     private ScrimManager mScrimManager;
     private ManagedBottomSheetController mManagedBottomSheetController;
-    private final SettableMonotonicObservableSupplier<WindowAndroid> mWindowAndroidSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final OneshotSupplierImpl<WindowAndroid> mWindowAndroidSupplier =
+            new OneshotSupplierImpl<>();
 
     private final OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -912,7 +911,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         WindowAndroid windowAndroid = mWindowAndroidSupplier.get();
-        mWindowAndroidSupplier.destroy();
         if (windowAndroid != null) {
             windowAndroid.destroy();
         }
