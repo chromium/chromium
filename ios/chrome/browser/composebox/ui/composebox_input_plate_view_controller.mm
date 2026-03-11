@@ -57,6 +57,7 @@ enum class InputPlateString {
   kImageGeneration,
   kCanvas,
   kDeepSearch,
+  kRegularModel,
   kAutoModel,
   kThinkingModel,
   kToolsSection,
@@ -1672,6 +1673,30 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
   if (_modelPickerAllowed) {
     CHECK(ShowComposeboxAdditionalAdvancedTools());
+
+    // Note: When possible, this is meant to be replaced by 'Auto'.
+    UIAction* regularModelOption = [UIAction
+        actionWithTitle:[self titleFor:InputPlateString::kRegularModel
+                                  type:InputPlateStringType::kMenuLabel]
+                  image:DefaultSymbolWithPointSize(kBoltSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleModelChangeFromToolsMenuWithOption:
+                                ComposeboxModelOption::kRegular];
+                }];
+
+    if (!_allowedModels.contains(ComposeboxModelOption::kRegular) ||
+        _allowedModels.contains(ComposeboxModelOption::kAuto)) {
+      regularModelOption.attributes |= UIMenuElementAttributesHidden;
+    }
+    if (_disabledModels.contains(ComposeboxModelOption::kRegular)) {
+      regularModelOption.attributes |= UIMenuElementAttributesDisabled;
+    }
+    if (_modelOption == ComposeboxModelOption::kRegular) {
+      [regularModelOption setState:UIMenuElementStateOn];
+    }
+
     NSString* autoModelTitle = [self titleFor:InputPlateString::kAutoModel
                                          type:InputPlateStringType::kMenuLabel];
     UIAction* autoModelOption = [UIAction
@@ -1723,7 +1748,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                         image:nil
                    identifier:nil
                       options:UIMenuOptionsDisplayInline
-                     children:@[ autoModelOption, thinkingModelOption ]];
+                     children:@[
+                       regularModelOption, autoModelOption, thinkingModelOption
+                     ]];
 
     [sections addObject:modelPickerMenu];
   }
@@ -2052,6 +2079,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       serverBundle = [_serverStrings
           stringsForControl:ComposeboxInputPlateControls::kDeepSearch];
       break;
+    case kRegularModel:
+      serverBundle =
+          [_serverStrings stringsForModel:ComposeboxModelOption::kRegular];
+      break;
     case kAutoModel:
       serverBundle =
           [_serverStrings stringsForModel:ComposeboxModelOption::kAuto];
@@ -2104,6 +2135,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                        IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ENABLED_PLACEHOLDER)
                  : l10n_util::GetNSString(
                        IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION);
+    case kRegularModel:
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO);
     case kAutoModel:
       return l10n_util::GetNSString(
           IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO);

@@ -102,7 +102,7 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
       return ComposeboxModelOption::kThinking;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
     default:
-      return ComposeboxModelOption::kNone;
+      return ComposeboxModelOption::kRegular;
   }
 }
 
@@ -625,32 +625,41 @@ CreateInputDataFromAnnotatedPageContent(
 
   [self updateModel];
 
-  BOOL advancedModel = _modelOption == kAuto || _modelOption == kThinking;
-  switch (modelOption) {
-    case kNone:
-      _inputStateModel->setActiveModel(
-          omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
-      break;
-    case kAuto:
-      _inputStateModel->setActiveModel(
-          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
-      break;
-    case kThinking:
-      _inputStateModel->setActiveModel(
-          omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
-      break;
+  if (_inputStateModel) {
+    switch (modelOption) {
+      case kNone:
+        _inputStateModel->setActiveModel(_inputState.GetDefaultModel());
+        break;
+      case kRegular:
+        _inputStateModel->setActiveModel(
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+        break;
+      case kAuto:
+        _inputStateModel->setActiveModel(
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+        break;
+      case kThinking:
+        _inputStateModel->setActiveModel(
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+        break;
+      default:
+        break;
+    }
   }
 
-  if (modelOption == kNone) {
+  // When the model option is reset (set to none), reset the mode to regular
+  // search before exiting.
+  BOOL switchToRegular = _modelOption == kNone && !_modeHolder.isRegularSearch;
+  if (switchToRegular) {
+    _modeHolder.mode = ComposeboxMode::kRegularSearch;
     return;
   }
-
   // Only when the user explicitly picked the advanced model in regular mode
   // do the switch to AIM.
-  if (explicitUserAction && advancedModel) {
-    if (_modeHolder.isRegularSearch) {
-      _modeHolder.mode = ComposeboxMode::kAIM;
-    }
+  BOOL switchToAIM = explicitUserAction && _modeHolder.isRegularSearch;
+  if (switchToAIM) {
+    _modeHolder.mode = ComposeboxMode::kAIM;
+    return;
   }
 }
 
@@ -1775,18 +1784,12 @@ CreateInputDataFromAnnotatedPageContent(
 
 // The list of model options available based on the input model.
 - (std::unordered_set<ComposeboxModelOption>)allowedModels {
-  std::unordered_set<ComposeboxModelOption> allowed = {
-      ComposeboxModelOption::kNone};
+  std::unordered_set<ComposeboxModelOption> allowed = {};
   if (!ShowComposeboxAdditionalAdvancedTools()) {
     return allowed;
   }
   for (auto modelType : _inputState.allowed_models) {
-    if (modelType == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
-      allowed.insert(ComposeboxModelOption::kThinking);
-    } else if (modelType ==
-               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE) {
-      allowed.insert(ComposeboxModelOption::kAuto);
-    }
+    allowed.insert(ModelOptionForModelMode(modelType));
   }
 
   return allowed;
@@ -1794,18 +1797,12 @@ CreateInputDataFromAnnotatedPageContent(
 
 // The list of model options disabled based on the input model.
 - (std::unordered_set<ComposeboxModelOption>)disabledModels {
-  std::unordered_set<ComposeboxModelOption> disabled = {
-      ComposeboxModelOption::kNone};
+  std::unordered_set<ComposeboxModelOption> disabled = {};
   if (!ShowComposeboxAdditionalAdvancedTools()) {
     return disabled;
   }
   for (auto modelType : _inputState.disabled_models) {
-    if (modelType == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO) {
-      disabled.insert(ComposeboxModelOption::kThinking);
-    } else if (modelType ==
-               omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE) {
-      disabled.insert(ComposeboxModelOption::kAuto);
-    }
+    disabled.insert(ModelOptionForModelMode(modelType));
   }
 
   return disabled;
@@ -2023,20 +2020,25 @@ CreateInputDataFromAnnotatedPageContent(
 // Reacts to a change in the model choice.
 - (void)updateModelOnModeChange {
   using enum ComposeboxModelOption;
+
   if (_modeHolder.isRegularSearch) {
     [self setModelOption:kNone];
     return;
   }
 
-  if (_modelOption == kNone) {
+  BOOL applyDefaultSelection = _modelOption == kNone;
+  if (applyDefaultSelection) {
     auto allowedModels = [self allowedModels];
     auto disabledModel = [self disabledModels];
     BOOL autoAllowed = allowedModels.contains(kAuto);
     BOOL autoDisabled = disabledModel.contains(kAuto);
-    if (autoAllowed && !autoDisabled) {
-      [self setModelOption:ComposeboxModelOption::kAuto];
-    }
-    return;
+    BOOL defaultToAuto = autoAllowed && !autoDisabled;
+
+    ComposeboxModelOption defaultOption = defaultToAuto
+                                              ? ComposeboxModelOption::kAuto
+                                              : ComposeboxModelOption::kRegular;
+
+    [self setModelOption:defaultOption];
   }
 }
 
@@ -2322,10 +2324,12 @@ CreateInputDataFromAnnotatedPageContent(
     [self.consumer setServerStrings:serverStrings];
   }
 
-  ComposeboxModelOption requiredModel =
-      ModelOptionForModelMode(inputState.active_model);
-  [self setModelOption:requiredModel];
   [self changeModeForInputState:inputState];
+  if (!_modeHolder.isRegularSearch) {
+    ComposeboxModelOption requiredModel =
+        ModelOptionForModelMode(inputState.active_model);
+    [self setModelOption:requiredModel];
+  }
 
   [self commitUIUpdates];
 }
