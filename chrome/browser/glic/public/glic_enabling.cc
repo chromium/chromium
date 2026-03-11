@@ -226,8 +226,6 @@ std::string GlicGlobalEnabling::Delegate::GetPermanentCountryCode() {
   std::string permanent_country_code =
       base::ToLowerASCII(variations::GetCurrentCountryCode(
           g_browser_process->variations_service()));
-  DLOG_IF(WARNING, permanent_country_code.empty())
-      << "Couldn't get permanent country info.";
   return permanent_country_code;
 }
 
@@ -237,8 +235,6 @@ std::string GlicGlobalEnabling::Delegate::GetSessionCountryCode() {
     latest_country = base::ToLowerASCII(
         g_browser_process->variations_service()->GetLatestCountry());
   }
-  DLOG_IF(WARNING, latest_country.empty())
-      << "Couldn't get latest country info.";
   return latest_country;
 }
 
