@@ -119,7 +119,7 @@ void MemoryPurgeManager::OnRendererBackgrounded() {
     return;
   }
 
-  if (!kPurgeOnBackgroundingEnabled) {
+  if (!features::IsMemoryPurgeOnBackgroundingEnabled()) {
 #if BUILDFLAG(IS_ANDROID)
     // If we do not freeze renderers, we want to trigger compaction directly
     // when we are backgrounded here.

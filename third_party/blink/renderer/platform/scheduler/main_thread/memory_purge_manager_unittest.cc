@@ -240,7 +240,7 @@ TEST_F(MemoryPurgeManagerTest, PurgeRendererMemoryWhenBackgroundedDisabled) {
 
 TEST_F(MemoryPurgeManagerTest,
        PurgeRendererMemoryWhenBackgroundedEnabledForegroundedBeforePurge) {
-  if (!MemoryPurgeManager::kPurgeOnBackgroundingEnabled) {
+  if (!features::IsMemoryPurgeOnBackgroundingEnabled()) {
     GTEST_SKIP();
   }
 
@@ -345,7 +345,7 @@ TEST_F(MemoryPurgeManagerTest, MemoryPurgeOnFreezeDisabled) {
   FastForwardBy(base::Seconds(1));
   EXPECT_EQ(0U, MemoryPressureCount());
 
-  if (MemoryPurgeManager::kPurgeOnBackgroundingEnabled) {
+  if (features::IsMemoryPurgeOnBackgroundingEnabled()) {
     // A backgrounded purge should still proceed.
     memory_purge_manager_.OnPageResumed();
     memory_purge_manager_.OnRendererForegrounded();

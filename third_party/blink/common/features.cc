@@ -2727,6 +2727,21 @@ bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
 }
 
+// Purge on renderer backgrounding is disabled on Android. On mobile Android,
+// it's redundant with the purge that occurs on page freezing (unlike on
+// desktop, freezing is applied to most background pages on mobile Android). A
+// field trial confirmed that an additional purge is not necessary. See
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1335069#c3.
+bool IsMemoryPurgeOnBackgroundingEnabled() {
+  return
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+      false
+#else
+      true
+#endif
+      ;
+}
+
 bool IsParkableStringsToDiskEnabled() {
   // Always enabled as soon as compression is enabled.
   return base::FeatureList::IsEnabled(kCompressParkableStrings);

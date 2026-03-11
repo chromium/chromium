@@ -1983,6 +1983,8 @@ BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
+BLINK_COMMON_EXPORT bool IsMemoryPurgeOnBackgroundingEnabled();
+
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
 
 BLINK_COMMON_EXPORT bool IsPersistentCacheForCodeCacheEnabled();
