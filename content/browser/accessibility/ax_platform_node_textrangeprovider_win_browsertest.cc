@@ -2086,17 +2086,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(nullptr, text_range_provider.Get());
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, paragraphs[0].c_str());
 
-  // There is no trailing '\n' because the second paragraph already has merged
-  // trailing whitespace in it, and in such cases we made the design decision
-  // not to add an extra line break.
+  // The paragraph boundary newline between `paragraphs[0]` and `paragraphs[1]`
+  // is present because `paragraphs[1]` starts with non-whitespace content.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ 1,
       /*expected_text*/ (paragraphs[0] + L'\n' + paragraphs[1]).c_str(),
       /*expected_count*/ 1);
-  // There is no trailing '\n' because the second paragraph already has merged
-  // trailing whitespace in it, and in such cases we made the design decision
-  // not to add an extra line break.
+  // `paragraphs[1]` includes trailing whitespace from the <br> elements plus
+  // the paragraph boundary newline before "more text".
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ 1,
@@ -2166,15 +2164,15 @@ IN_PROC_BROWSER_TEST_F(
       /*count*/ -1,
       /*expected_text*/ (paragraphs[1] + paragraphs[2] + L'\n').c_str(),
       /*expected_count*/ -1);
-  // There is no trailing '\n' because the second paragraph already has merged
-  // trailing whitespace in it.
+  // `paragraphs[1]` includes trailing whitespace from the <br> elements plus
+  // the paragraph boundary newline before "more text".
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Paragraph,
       /*count*/ -1,
       /*expected_text*/ (paragraphs[1]).c_str(),
       /*expected_count*/ -1);
-  // There is no trailing '\n' because the second paragraph already has merged
-  // trailing whitespace in it.
+  // The paragraph boundary newline between `paragraphs[0]` and `paragraphs[1]`
+  // is present because `paragraphs[1]` starts with non-whitespace content.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Paragraph,
       /*count*/ -1,
@@ -3184,6 +3182,10 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       TextUnit_Character, "Test ing.",
       {L"T", L"e", L"s", L"t", L" ", L"i", L"n", L"g", L"."});
 
+  AssertMoveByUnitForMarkup(TextUnit_Character,
+                            "<div>ab</div><br><div>cd</div>",
+                            {L"a", L"b", L"\n", L"\n", L"c", L"d"});
+
   // The text consists of an e acute, and two emoticons.
   const std::string html = R"HTML(<!DOCTYPE html>
       <html>
@@ -3354,6 +3356,32 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // boundary (but not past the start of the line).
   text_range_provider->ExpandToEnclosingUnit(TextUnit_Line);
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"next text on line two");
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       ExpandToEnclosingUnitDocument_RetainsLineBreaks) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+        <body>
+          <div>This is line 1.</div>
+          <br>
+          <div>This is line 2. This is longer text.</div>
+        </body>
+      </html>)HTML");
+
+  ui::BrowserAccessibility* text_node =
+      FindNode(ax::mojom::Role::kStaticText, "This is line 1.");
+  ASSERT_NE(nullptr, text_node);
+
+  ComPtr<ITextRangeProvider> provider;
+  GetTextRangeProviderFromTextNode(*text_node, &provider);
+  ASSERT_NE(nullptr, provider.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(provider->ExpandToEnclosingUnit(TextUnit_Document));
+  EXPECT_UIA_TEXTRANGE_EQ(provider,
+                          L"This is line 1.\n\nThis is line 2. This is longer "
+                          L"text.");
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
@@ -4385,6 +4413,194 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_GT(height, 0);
 
   ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(rectangles.Get()));
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests that character-by-character movement through paragraph boundaries
+// correctly includes the generated newline character in both forward and
+// backward directions.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterAcrossParagraphBoundary) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <p>First paragraph</p>
+      <p>Second paragraph</p>
+    </body>
+  </html>)HTML";
+
+  const std::vector<const wchar_t*> characters = {
+      L"F", L"i", L"r", L"s", L"t",  L" ", L"p", L"a", L"r", L"a", L"g",
+      L"r", L"a", L"p", L"h", L"\n", L"S", L"e", L"c", L"o", L"n", L"d",
+      L" ", L"p", L"a", L"r", L"a",  L"g", L"r", L"a", L"p", L"h"};
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup, characters);
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests character movement through multiple paragraph boundaries, including
+// cases with trailing and leading whitespace.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterAcrossMultipleParagraphs) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <p>AB</p>
+      <p>CD</p>
+      <p>EF</p>
+    </body>
+  </html>)HTML";
+
+  const std::vector<const wchar_t*> characters = {L"A", L"B",  L"\n", L"C",
+                                                  L"D", L"\n", L"E",  L"F"};
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup, characters);
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests character movement through div-based paragraph boundaries.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterAcrossDivParagraphs) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <div>First</div>
+      <div>Second</div>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"F", L"i", L"r", L"s", L"t", L"\n", L"S", L"e",
+                             L"c", L"o", L"n", L"d"});
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests character movement with empty paragraph between paragraphs.
+// An empty paragraph does not produce an additional newline in the text
+// representation.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterEmptyParagraph) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <p>AB</p>
+      <p></p>
+      <p>CD</p>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"C", L"D"});
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests character movement with content ending in newline (trailing newline).
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterTrailingBr) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <div>AB<br></div>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n"});
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests character movement with spans containing whitespace across paragraph
+// boundaries. HTML whitespace collapsing removes trailing/leading spaces at
+// block boundaries.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterSpansWithWhitespace) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <p><span>AB </span></p>
+      <p><span> CD</span></p>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"C", L"D"});
+}
+
+// Regression test for https://crbug.com/469120962.
+// Tests character movement inside a <textarea> with a line break. The textarea
+// is an atomic text field, so the <br> is an internal line break, not a
+// paragraph boundary. No generated paragraph-boundary newline should be
+// produced.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterTextarea) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <textarea>AB
+CD</textarea>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"C", L"D"});
+}
+
+// Regression test for https://crbug.com/469120962.
+// Tests character movement inside a <pre> element with a preserved newline.
+// The newline is part of the pre-formatted content, not a paragraph boundary.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterPre) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <pre>AB
+CD</pre>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"C", L"D"});
+}
+
+// Regression test for https://crbug.com/469120962.
+// Tests character movement with consecutive <br> elements inside a single
+// container. Both <br> elements produce their own newline characters, but no
+// generated paragraph-boundary newline should be produced because they are all
+// inside the same block container.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterDoubleBr) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <div>AB<br><br>CD</div>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"\n", L"C", L"D"});
+}
+
+// Regression test for https://crbug.com/469120962.
+// Tests character movement with a <br> at the end of a paragraph followed by
+// another paragraph. The <br> inside the first <p> produces its own newline.
+// The paragraph boundary between the two <p> elements would normally produce
+// a generated newline, but since the <br> is inside the first <p> (not between
+// the two blocks), IsFollowedByGeneratedNewline() does not produce it.
+// TODO(crbug.com/469120962): Fix character navigation to produce both
+// newlines. The expected result should be:
+//   {L"A", L"B", L"\n", L"\n", L"C", L"D"}
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByCharacterBrAtEndOfParagraph) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <p>AB<br></p>
+      <p>CD</p>
+    </body>
+  </html>)HTML";
+
+  AssertMoveByUnitForMarkup(TextUnit_Character, html_markup,
+                            {L"A", L"B", L"\n", L"C", L"D"});
 }
 
 }  // namespace content

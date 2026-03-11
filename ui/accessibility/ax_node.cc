@@ -2475,6 +2475,21 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   return nullptr;
 }
 
+AXNode* AXNode::GetParagraphContainerAncestor() const {
+  for (const AXNode* ancestor = this; ancestor;
+       ancestor = ancestor->GetParentCrossingTreeBoundary()) {
+    if (ancestor->GetBoolAttribute(
+            ax::mojom::BoolAttribute::kIsLineBreakingObject) &&
+        // Exclude `<br>` elements and their `kInlineTextBox` children —
+        // these have `kIsLineBreakingObject` but are not block containers.
+        ancestor->GetRole() != ax::mojom::Role::kLineBreak &&
+        ancestor->GetRole() != ax::mojom::Role::kInlineTextBox) {
+      return const_cast<AXNode*>(ancestor);
+    }
+  }
+  return nullptr;
+}
+
 AXNode* AXNode::GetTextFieldInnerEditorElement() const {
   if (!data().IsAtomicTextField() || !GetUnignoredChildCount())
     return nullptr;

@@ -8610,7 +8610,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
   // Verify the full document text first (move by 0 has no effect but shows
-  // current range)
+  // current range). The <br> elements between block containers produce both
+  // a <br> newline and a paragraph-boundary newline.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 0,
                   /*expected_text*/
@@ -9307,8 +9308,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   GetTextRangeProviderFromTextNode(text_range_provider, root_node);
 
   // The full text should be: "Paragraph one.\nParagraph two.\nParagraph three."
-  // Since all paragraphs have the same text attributes and NO misspellings,
-  // the entire document should be ONE format unit.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 0,
                   /*expected_text*/
@@ -9328,6 +9327,423 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                   /*expected_text*/
                   L"Paragraph one.\nParagraph two.\nParagraph three.",
                   /*expected_count*/ 0);
+}
+
+// Moving by character should land on generated paragraph-break newlines,
+// and `GetText()` should return "\n" for those positions.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestMoveCharacterLandsOnGeneratedNewline) {
+  // Build a simple tree with two paragraphs separated by a generated newline.
+  // Full text: "Hello\nWorld"
+  //   1 kRootWebArea
+  //   ++2 kParagraph (kIsLineBreakingObject)
+  //   ++++3 kStaticText "Hello"
+  //   ++4 kParagraph (kIsLineBreakingObject)
+  //   ++++5 kStaticText "World"
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData para1_data;
+  para1_data.id = 2;
+  para1_data.role = ax::mojom::Role::kParagraph;
+  para1_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData text1_data;
+  text1_data.id = 3;
+  text1_data.role = ax::mojom::Role::kStaticText;
+  text1_data.SetName("Hello");
+
+  AXNodeData para2_data;
+  para2_data.id = 4;
+  para2_data.role = ax::mojom::Role::kParagraph;
+  para2_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData text2_data;
+  text2_data.id = 5;
+  text2_data.role = ax::mojom::Role::kStaticText;
+  text2_data.SetName("World");
+
+  root_data.child_ids = {para1_data.id, para2_data.id};
+  para1_data.child_ids = {text1_data.id};
+  para2_data.child_ids = {text2_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, para1_data, text1_data, para2_data, text2_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+  AXNode* root_node = GetRoot();
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  // Verify full text includes the generated newline.
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello\nWorld");
+
+  // Move forward by character through the text.
+  // After moving 5 characters, we should be at "o" (the last char of "Hello").
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 5,
+                  /*expected_text*/ L"\n",
+                  /*expected_count*/ 5);
+
+  // The next character after "Hello" should be the generated newline "\n".
+  // This is the core of the bug: the generated newline must be navigable
+  // and `GetText()` must return "\n" for it.
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 1,
+                  /*expected_text*/ L"W",
+                  /*expected_count*/ 1);
+
+  // Moving backward from "W" should land back on the "\n".
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ -1,
+                  /*expected_text*/ L"\n",
+                  /*expected_count*/ -1);
+
+  // And moving backward again from "\n" should land on "o".
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ -1,
+                  /*expected_text*/ L"o",
+                  /*expected_count*/ -1);
+}
+
+// Regression test for https://crbug.com/469120959.
+// Tests that MoveEndpointByUnit correctly handles generated newlines when
+// expanding from a degenerate range positioned at a paragraph boundary.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestMoveEndpointByCharacterAtGeneratedNewline) {
+  // Build a tree with three paragraphs to test multiple boundaries.
+  // Full text: "First\nSecond\nThird"
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData para1_data;
+  para1_data.id = 2;
+  para1_data.role = ax::mojom::Role::kParagraph;
+  para1_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData text1_data;
+  text1_data.id = 3;
+  text1_data.role = ax::mojom::Role::kStaticText;
+  text1_data.SetName("First");
+
+  AXNodeData para2_data;
+  para2_data.id = 4;
+  para2_data.role = ax::mojom::Role::kParagraph;
+  para2_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData text2_data;
+  text2_data.id = 5;
+  text2_data.role = ax::mojom::Role::kStaticText;
+  text2_data.SetName("Second");
+
+  AXNodeData para3_data;
+  para3_data.id = 6;
+  para3_data.role = ax::mojom::Role::kParagraph;
+  para3_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+
+  AXNodeData text3_data;
+  text3_data.id = 7;
+  text3_data.role = ax::mojom::Role::kStaticText;
+  text3_data.SetName("Third");
+
+  root_data.child_ids = {para1_data.id, para2_data.id, para3_data.id};
+  para1_data.child_ids = {text1_data.id};
+  para2_data.child_ids = {text2_data.id};
+  para3_data.child_ids = {text3_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data,  para1_data, text1_data, para2_data,
+                  text2_data, para3_data, text3_data};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  const AXTree* tree = GetTree();
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
+
+  // Create a degenerate range at the boundary between "First" and "Second"
+  // (end of text1, start of text2). This is where the generated \n lives.
+  const AXNode* text1_node = tree->GetFromId(3);
+  const AXNode* text2_node = tree->GetFromId(5);
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner,
+      /*start_anchor*/ text1_node, /*start_offset*/ 5,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ text2_node, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // This range spans the generated newline between paragraphs.
+  EXPECT_UIA_TEXTRANGE_EQ(range.Get(), L"\n");
+
+  // Expand backward by one character from the degenerate position at text2:0
+  // to verify we correctly pick up the generated newline.
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range2;
+  CreateTextRangeProviderWin(
+      range2, owner,
+      /*start_anchor*/ text2_node, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor*/ text2_node, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  // `MoveEndpointByUnit()` backward should find the generated newline.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(range2.Get(), TextPatternRangeEndpoint_Start,
+                                   TextUnit_Character,
+                                   /*count*/ -1,
+                                   /*expected_text*/ L"\n",
+                                   /*expected_count*/ -1);
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest, CreateNextNonLineBreakPosition) {
+  // Tree:
+  // RootWebArea(1) [kIsLineBreaking]
+  // ├── GenericContainer(2) [kIsLineBreaking]  // div
+  // │   └── StaticText(3) "hello"
+  // │       └── InlineTextBox(4) "hello"
+  // ├── LineBreak(5) [kIsLineBreaking]  // br
+  // │   └── InlineTextBox(6) "\n" [kIsLineBreaking]
+  // └── GenericContainer(7) [kIsLineBreaking]  // div
+  //     └── StaticText(8) "world"
+  //         └── InlineTextBox(9) "world"
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {2, 5, 7};
+
+  AXNodeData div1;
+  div1.id = 2;
+  div1.role = ax::mojom::Role::kGenericContainer;
+  div1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  div1.child_ids = {3};
+
+  AXNodeData text_hello;
+  text_hello.id = 3;
+  text_hello.role = ax::mojom::Role::kStaticText;
+  text_hello.SetName("hello");
+  text_hello.child_ids = {4};
+
+  AXNodeData inline_hello;
+  inline_hello.id = 4;
+  inline_hello.role = ax::mojom::Role::kInlineTextBox;
+  inline_hello.SetName("hello");
+
+  AXNodeData line_break;
+  line_break.id = 5;
+  line_break.role = ax::mojom::Role::kLineBreak;
+  line_break.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+  line_break.SetName("\n");
+  line_break.child_ids = {6};
+
+  AXNodeData inline_newline;
+  inline_newline.id = 6;
+  inline_newline.role = ax::mojom::Role::kInlineTextBox;
+  inline_newline.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  inline_newline.SetName("\n");
+
+  AXNodeData div2;
+  div2.id = 7;
+  div2.role = ax::mojom::Role::kGenericContainer;
+  div2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  div2.child_ids = {8};
+
+  AXNodeData text_world;
+  text_world.id = 8;
+  text_world.role = ax::mojom::Role::kStaticText;
+  text_world.SetName("world");
+  text_world.child_ids = {9};
+
+  AXNodeData inline_world;
+  inline_world.id = 9;
+  inline_world.role = ax::mojom::Role::kInlineTextBox;
+  inline_world.SetName("world");
+
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes = {root,           div1, text_hello, inline_hello, line_break,
+                  inline_newline, div2, text_world, inline_world};
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  Init(update);
+
+  // CreateNextNonLineBreakPosition from LineBreak(5) → "world" text.
+  {
+    AXNode* br_node = GetRoot()->children()[1];
+    ASSERT_EQ(br_node->GetRole(), ax::mojom::Role::kLineBreak);
+
+    AXNodePosition::AXPositionInstance pos = CreateTextPosition(
+        *br_node, /*text_offset=*/0, ax::mojom::TextAffinity::kDownstream);
+    AXNodePosition::AXPositionInstance result =
+        pos->CreateNextNonLineBreakPosition();
+
+    ASSERT_FALSE(result->IsNullPosition());
+    EXPECT_FALSE(result->GetAnchor()->IsLineBreak());
+    // Should land on the "world" inline text box.
+    EXPECT_EQ(result->GetAnchor()->GetRole(), ax::mojom::Role::kInlineTextBox);
+    EXPECT_EQ(result->GetAnchor()->GetStringAttribute(
+                  ax::mojom::StringAttribute::kName),
+              "world");
+  }
+
+  // CreateNextNonLineBreakPosition from StaticText(3) → stays on same leaf
+  // (already non-linebreak, returns self).
+  {
+    AXNode* hello_node = GetRoot()->children()[0]->children()[0];
+    ASSERT_EQ(hello_node->GetRole(), ax::mojom::Role::kStaticText);
+
+    AXNodePosition::AXPositionInstance pos = CreateTextPosition(
+        *hello_node, /*text_offset=*/0, ax::mojom::TextAffinity::kDownstream);
+    AXNodePosition::AXPositionInstance result =
+        pos->CreateNextNonLineBreakPosition();
+
+    ASSERT_FALSE(result->IsNullPosition());
+    // The position is cloned and returned as-is since the anchor is not a line
+    // break.
+    EXPECT_EQ(result->GetAnchor()->id(), hello_node->id());
+  }
+
+  // CreatePreviousNonLineBreakPosition from LineBreak(5) → "hello" text.
+  {
+    AXNode* br_node = GetRoot()->children()[1];
+    AXNodePosition::AXPositionInstance pos = CreateTextPosition(
+        *br_node, /*text_offset=*/0, ax::mojom::TextAffinity::kDownstream);
+    AXNodePosition::AXPositionInstance result =
+        pos->CreatePreviousNonLineBreakPosition();
+
+    ASSERT_FALSE(result->IsNullPosition());
+    EXPECT_FALSE(result->GetAnchor()->IsLineBreak());
+    EXPECT_EQ(result->GetAnchor()->GetRole(), ax::mojom::Role::kInlineTextBox);
+    EXPECT_EQ(result->GetAnchor()->GetStringAttribute(
+                  ax::mojom::StringAttribute::kName),
+              "hello");
+  }
+
+  // Test with multiple consecutive <br> elements.
+  // Tree:
+  // RootWebArea(1) [kIsLineBreaking]
+  // ├── StaticText(2) "A"
+  // │   └── InlineTextBox(3) "A"
+  // ├── LineBreak(4) [kIsLineBreaking]
+  // │   └── InlineTextBox(5) "\n" [kIsLineBreaking]
+  // ├── LineBreak(6) [kIsLineBreaking]
+  // │   └── InlineTextBox(7) "\n" [kIsLineBreaking]
+  // ├── LineBreak(8) [kIsLineBreaking]
+  // │   └── InlineTextBox(9) "\n" [kIsLineBreaking]
+  // └── StaticText(10) "B"
+  //     └── InlineTextBox(11) "B"
+  {
+    AXNodeData root2;
+    root2.id = 1;
+    root2.role = ax::mojom::Role::kRootWebArea;
+    root2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                           true);
+    root2.child_ids = {2, 4, 6, 8, 10};
+
+    AXNodeData st_a;
+    st_a.id = 2;
+    st_a.role = ax::mojom::Role::kStaticText;
+    st_a.SetName("A");
+    st_a.child_ids = {3};
+
+    AXNodeData itb_a;
+    itb_a.id = 3;
+    itb_a.role = ax::mojom::Role::kInlineTextBox;
+    itb_a.SetName("A");
+
+    AXNodeData br1;
+    br1.id = 4;
+    br1.role = ax::mojom::Role::kLineBreak;
+    br1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    br1.SetName("\n");
+    br1.child_ids = {5};
+
+    AXNodeData itb_br1;
+    itb_br1.id = 5;
+    itb_br1.role = ax::mojom::Role::kInlineTextBox;
+    itb_br1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+    itb_br1.SetName("\n");
+
+    AXNodeData br2;
+    br2.id = 6;
+    br2.role = ax::mojom::Role::kLineBreak;
+    br2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    br2.SetName("\n");
+    br2.child_ids = {7};
+
+    AXNodeData itb_br2;
+    itb_br2.id = 7;
+    itb_br2.role = ax::mojom::Role::kInlineTextBox;
+    itb_br2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+    itb_br2.SetName("\n");
+
+    AXNodeData br3;
+    br3.id = 8;
+    br3.role = ax::mojom::Role::kLineBreak;
+    br3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    br3.SetName("\n");
+    br3.child_ids = {9};
+
+    AXNodeData itb_br3;
+    itb_br3.id = 9;
+    itb_br3.role = ax::mojom::Role::kInlineTextBox;
+    itb_br3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                             true);
+    itb_br3.SetName("\n");
+
+    AXNodeData st_b;
+    st_b.id = 10;
+    st_b.role = ax::mojom::Role::kStaticText;
+    st_b.SetName("B");
+    st_b.child_ids = {11};
+
+    AXNodeData itb_b;
+    itb_b.id = 11;
+    itb_b.role = ax::mojom::Role::kInlineTextBox;
+    itb_b.SetName("B");
+
+    AXTreeUpdate update2;
+    update2.root_id = root2.id;
+    update2.nodes = {root2,   st_a, itb_a,   br1,  itb_br1, br2,
+                     itb_br2, br3,  itb_br3, st_b, itb_b};
+    update2.has_tree_data = true;
+    update2.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+    Init(update2);
+
+    // CreateNextNonLineBreakPosition from br1(4) skips ALL three <br>s → "B".
+    AXNode* br1_node = GetRoot()->children()[1];
+    ASSERT_EQ(br1_node->GetRole(), ax::mojom::Role::kLineBreak);
+
+    AXNodePosition::AXPositionInstance pos = CreateTextPosition(
+        *br1_node, /*text_offset=*/0, ax::mojom::TextAffinity::kDownstream);
+    AXNodePosition::AXPositionInstance result =
+        pos->CreateNextNonLineBreakPosition();
+
+    ASSERT_FALSE(result->IsNullPosition());
+    EXPECT_FALSE(result->GetAnchor()->IsLineBreak());
+    EXPECT_EQ(result->GetAnchor()->GetStringAttribute(
+                  ax::mojom::StringAttribute::kName),
+              "B");
+  }
 }
 
 }  // namespace ui

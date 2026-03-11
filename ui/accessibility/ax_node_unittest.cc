@@ -1127,4 +1127,96 @@ TEST(AXNodeTest, GetExtraAnnouncementNodeByPriority) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
+TEST(AXNodeTest, GetParagraphContainerAncestor) {
+  // Tree:
+  // RootWebArea(1) [kIsLineBreaking]
+  // ├── GenericContainer(2) [kIsLineBreaking]  // div
+  // │   └── StaticText(3) "hello"
+  // ├── LineBreak(4) [kIsLineBreaking]  // br
+  // │   └── InlineTextBox(5) "\n" [kIsLineBreaking]
+  // └── GenericContainer(6) [kIsLineBreaking]  // div
+  //     └── StaticText(7) "world"
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  root.child_ids = {2, 4, 6};
+
+  AXNodeData div1;
+  div1.id = 2;
+  div1.role = ax::mojom::Role::kGenericContainer;
+  div1.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  div1.child_ids = {3};
+
+  AXNodeData text_hello;
+  text_hello.id = 3;
+  text_hello.role = ax::mojom::Role::kStaticText;
+  text_hello.SetName("hello");
+
+  AXNodeData line_break;
+  line_break.id = 4;
+  line_break.role = ax::mojom::Role::kLineBreak;
+  line_break.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                              true);
+  line_break.SetName("\n");
+  line_break.child_ids = {5};
+
+  AXNodeData inline_text_newline;
+  inline_text_newline.id = 5;
+  inline_text_newline.role = ax::mojom::Role::kInlineTextBox;
+  inline_text_newline.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  inline_text_newline.SetName("\n");
+
+  AXNodeData div2;
+  div2.id = 6;
+  div2.role = ax::mojom::Role::kGenericContainer;
+  div2.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+  div2.child_ids = {7};
+
+  AXNodeData text_world;
+  text_world.id = 7;
+  text_world.role = ax::mojom::Role::kStaticText;
+  text_world.SetName("world");
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = root.id;
+  initial_state.nodes = {
+      root, div1,      text_hello, line_break, inline_text_newline,
+      div2, text_world};
+  initial_state.has_tree_data = true;
+
+  AXTreeData tree_data;
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data = tree_data;
+
+  AXTree tree;
+  ASSERT_TRUE(tree.Unserialize(initial_state)) << tree.error();
+
+  // StaticText(3) "hello" → GenericContainer(2)
+  EXPECT_EQ(tree.GetFromId(3)->GetParagraphContainerAncestor(),
+            tree.GetFromId(2));
+
+  // LineBreak(4) → RootWebArea(1) (skips LineBreak itself)
+  EXPECT_EQ(tree.GetFromId(4)->GetParagraphContainerAncestor(),
+            tree.GetFromId(1));
+
+  // InlineTextBox(5) child of LineBreak → RootWebArea(1)
+  EXPECT_EQ(tree.GetFromId(5)->GetParagraphContainerAncestor(),
+            tree.GetFromId(1));
+
+  // StaticText(7) "world" → GenericContainer(6)
+  EXPECT_EQ(tree.GetFromId(7)->GetParagraphContainerAncestor(),
+            tree.GetFromId(6));
+
+  // GenericContainer(2) → itself
+  EXPECT_EQ(tree.GetFromId(2)->GetParagraphContainerAncestor(),
+            tree.GetFromId(2));
+
+  // RootWebArea(1) → itself
+  EXPECT_EQ(tree.GetFromId(1)->GetParagraphContainerAncestor(),
+            tree.GetFromId(1));
+}
+
 }  // namespace ui

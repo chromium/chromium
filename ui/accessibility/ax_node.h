@@ -733,6 +733,12 @@ class AX_EXPORT AXNode final {
   // contenteditable without the role, (see `AXNodeData::IsTextField()`).
   AXNode* GetTextFieldAncestor() const;
 
+  // Returns the nearest ancestor (or self) that is a block-level container
+  // (has `kIsLineBreakingObject` attribute), excluding `<br>` elements and
+  // their inline text box children. Returns nullptr if no such ancestor
+  // exists.
+  AXNode* GetParagraphContainerAncestor() const;
+
   // Get the native text field's deepest container; the lowest descendant that
   // contains all its text. Returns nullptr if the text field is empty, or if it
   // is not an atomic text field, (e.g., <input> or <textarea>).

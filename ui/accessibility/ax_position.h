@@ -2839,6 +2839,30 @@ class AXPosition {
     return text_position->CreatePositionAtEndOfAnchor();
   }
 
+  // Walks forward from this position past any consecutive line break elements,
+  // returning the first non-line-break text position. Returns a null position
+  // if no non-line-break text exists after.
+  AXPositionInstance CreateNextNonLineBreakPosition() const {
+    AXPositionInstance position = Clone();
+    while (!position->IsNullPosition() &&
+           position->GetAnchor()->IsLineBreak()) {
+      position = position->CreateNextPositionAtAnchorWithText();
+    }
+    return position;
+  }
+
+  // Walks backward from this position past any consecutive line break
+  // elements, returning the first non-line-break text position. Returns a
+  // null position if no non-line-break text exists before.
+  AXPositionInstance CreatePreviousNonLineBreakPosition() const {
+    AXPositionInstance position = Clone();
+    while (!position->IsNullPosition() &&
+           position->GetAnchor()->IsLineBreak()) {
+      position = position->CreatePreviousPositionAtAnchorWithText();
+    }
+    return position;
+  }
+
   // Generated newline characters are not part of any AXNode in the AXTree. They
   // are appended to the accessible textual representation exposed to ATs in
   // AXRange::GetText. They are necessary to expose the implicit newlines
@@ -2914,41 +2938,168 @@ class AXPosition {
            !IsInUnignoredEmptyObject();
   }
 
+  // Returns true if a generated paragraph-boundary newline ('\n') should be
+  // reported after this position. Generated newlines are virtual characters
+  // inserted by `GetText()` between block-level elements (no corresponding
+  // `AXNode`). When a <br> sits between blocks, the generated newline is
+  // reported from the text BEFORE the <br>, not from the <br> itself.
   bool IsFollowedByGeneratedNewline() const {
-    // Hard line breaks (such as <br> in HTML) are discounted because generated
-    // newlines are only inserted between neighboring block elements (such as
-    // <p>Hello</p><p>world</p>). Generated newlines are always a product of
-    // layout and have no corresponding AXNode to it. Hard line breaks have
-    // a matching AXNode and thus do not require to be treated differently.
     AXPositionInstance leaf_text_position = AsLeafTextPosition();
     if (!leaf_text_position->AllowsCharacterStopsOnGeneratedNewline() ||
         leaf_text_position->affinity_ != ax::mojom::TextAffinity::kDownstream ||
-        leaf_text_position->GetAnchor()->IsLineBreak() ||
         !leaf_text_position->AtEndOfParagraph()) {
+      return false;
+    }
+
+    // Line break nodes (e.g., <br>) have their own newline character and
+    // never report a generated newline.
+    if (leaf_text_position->GetAnchor()->IsLineBreak()) {
       return false;
     }
 
     AXPositionInstance next_position =
         leaf_text_position->CreateNextPositionAtAnchorWithText();
-    return next_position->AllowsCharacterStopsOnGeneratedNewline() &&
-           !next_position->IsNullPosition() &&
-           !next_position->GetAnchor()->IsLineBreak() &&
-           next_position->AtStartOfParagraph();
+    if (next_position->IsNullPosition()) {
+      return false;
+    }
+
+    // If the next text anchor is a line break (e.g., <br>), check whether
+    // the <br> sits between two different block-level containers. If so,
+    // report the generated paragraph boundary newline HERE (at the end of
+    // the current non-br text, before the <br>), so it appears as a
+    // separate character BEFORE the <br>'s own newline during traversal.
+    if (next_position->GetAnchor()->IsLineBreak()) {
+      // Line breaks inside atomic text fields (e.g., <textarea>) are always
+      // internal line breaks, not paragraph boundaries. No generated
+      // paragraph-boundary newline should be produced.
+      if (next_position->GetAnchor()->IsDescendantOfAtomicTextField()) {
+        return false;
+      }
+
+      // Walk past all consecutive <br> elements to find the next non-br
+      // text anchor.
+      AXPositionInstance past_brs =
+          next_position->CreateNextNonLineBreakPosition();
+      if (past_brs->IsNullPosition() ||
+          !past_brs->AllowsCharacterStopsOnGeneratedNewline()) {
+        return false;
+      }
+
+      // Find paragraph containers (nearest non-<br> line-breaking ancestor)
+      // for the current text, the <br>, and the text after the <br>s.
+      const AXNode* current_container =
+          leaf_text_position->GetAnchor()->GetParagraphContainerAncestor();
+      const AXNode* next_container =
+          past_brs->GetAnchor()->GetParagraphContainerAncestor();
+      const AXNode* br_container =
+          next_position->GetAnchor()->GetParagraphContainerAncestor();
+
+      const bool containers_changed = current_container && next_container &&
+                                      current_container != next_container;
+      // Only report a generated newline if the <br> is truly between two
+      // different block containers AND its paragraph container is an
+      // ancestor of both. If the br is in its own sibling block container
+      // (e.g., <p>A</p><div><br></div><p>B</p>), it's not truly
+      // "between" the blocks — it's inside its own block.
+      const bool br_is_between_containers =
+          br_container && current_container && next_container &&
+          br_container != current_container && br_container != next_container &&
+          current_container->IsDescendantOf(br_container) &&
+          next_container->IsDescendantOf(br_container);
+      const bool involves_empty_paragraph =
+          leaf_text_position->IsInUnignoredEmptyObject() ||
+          past_brs->IsInUnignoredEmptyObject();
+
+      return ((containers_changed && br_is_between_containers) ||
+              involves_empty_paragraph) &&
+             past_brs->AtStartOfParagraph();
+    }
+
+    if (!next_position->AllowsCharacterStopsOnGeneratedNewline()) {
+      return false;
+    }
+
+    // When no line breaks are involved, generate a newline at any paragraph
+    // boundary.
+    return next_position->AtStartOfParagraph();
   }
 
   bool IsPrecededByGeneratedNewline() const {
-    // Hard line breaks (such as <br> in HTML) are discounted because generated
-    // newlines are only inserted between neighboring block elements (such as
-    // <p>Hello</p><p>world</p>). Generated newlines are always a product of
-    // layout and have no corresponding AXNode to it. Hard line breaks have
-    // a matching AXNode and thus do not require to be treated differently.
+    // Generated newlines are virtual characters representing paragraph
+    // boundaries. When <br> elements sit between block-level containers
+    // (e.g., <div>A</div><br><div>B</div>), the generated newline is
+    // located at the end of the text BEFORE the <br>. Therefore:
+    //   - <br> positions ARE preceded by a generated newline (it's right
+    //     before the <br>)
+    //   - Non-<br> positions after a <br> sequence are NOT preceded by a
+    //     generated newline (the generated newline is before the <br>,
+    //     separated by the <br>'s own newline character)
     AXPositionInstance leaf_text_position = AsLeafTextPosition();
     if (!leaf_text_position->AllowsCharacterStopsOnGeneratedNewline() ||
-        leaf_text_position->GetAnchor()->IsLineBreak() ||
         !leaf_text_position->AtStartOfParagraph()) {
       return false;
     }
 
+    // When a <br> is at the start of a paragraph and sits between two
+    // different block containers, a generated newline precedes it (reported
+    // by `IsFollowedByGeneratedNewline()` on the preceding non-br text).
+    if (leaf_text_position->GetAnchor()->IsLineBreak()) {
+      // Line breaks inside atomic text fields (e.g., <textarea>) are always
+      // internal line breaks, not paragraph boundaries. No generated
+      // paragraph-boundary newline should be produced.
+      if (leaf_text_position->GetAnchor()->IsDescendantOfAtomicTextField()) {
+        return false;
+      }
+
+      // Walk backward past consecutive <br>s to find previous non-br text.
+      AXPositionInstance prev_position =
+          leaf_text_position->CreatePreviousPositionAtAnchorWithText();
+      prev_position = prev_position->CreatePreviousNonLineBreakPosition();
+      if (prev_position->IsNullPosition() ||
+          !prev_position->AllowsCharacterStopsOnGeneratedNewline()) {
+        return false;
+      }
+
+      // Walk forward past consecutive <br>s to find next non-br text.
+      AXPositionInstance past_brs =
+          leaf_text_position->CreateNextNonLineBreakPosition();
+      if (past_brs->IsNullPosition() ||
+          !past_brs->AllowsCharacterStopsOnGeneratedNewline()) {
+        return false;
+      }
+
+      // Check if the <br> sits between two different block containers.
+      const AXNode* prev_container =
+          prev_position->GetAnchor()->GetParagraphContainerAncestor();
+      const AXNode* next_container =
+          past_brs->GetAnchor()->GetParagraphContainerAncestor();
+      const AXNode* br_container =
+          leaf_text_position->GetAnchor()->GetParagraphContainerAncestor();
+
+      const bool containers_changed =
+          prev_container && next_container && prev_container != next_container;
+      const bool br_is_between_containers =
+          br_container && prev_container && next_container &&
+          br_container != prev_container && br_container != next_container &&
+          prev_container->IsDescendantOf(br_container) &&
+          next_container->IsDescendantOf(br_container);
+
+      if (containers_changed && br_is_between_containers) {
+        // Only the FIRST <br> in a consecutive sequence is preceded by
+        // the generated newline. Subsequent <br>s are preceded by the
+        // previous <br>'s own newline character.
+        AXPositionInstance immediate_prev =
+            leaf_text_position->CreatePreviousPositionAtAnchorWithText();
+        if (!immediate_prev->IsNullPosition() &&
+            !immediate_prev->GetAnchor()->IsLineBreak()) {
+          return prev_position->AtEndOfParagraph();
+        }
+      }
+
+      return false;
+    }
+
+    // For non-line-break positions, walk backward to find the previous text.
     AXPositionInstance previous_position =
         leaf_text_position->CreatePreviousPositionAtAnchorWithText();
     if (previous_position->IsNullPosition()) {
@@ -2961,9 +3112,37 @@ class AXPosition {
              start_of_content->IsFollowedByGeneratedNewline();
     }
 
-    return previous_position->AllowsCharacterStopsOnGeneratedNewline() &&
-           !previous_position->GetAnchor()->IsLineBreak() &&
-           previous_position->AtEndOfParagraph();
+    // Walk backward past any line break nodes to find the previous
+    // non-line-break text anchor. Bounded by the number of consecutive
+    // line break elements (typically 1-3 in practice).
+    bool skipped_line_breaks = false;
+    while (!previous_position->IsNullPosition() &&
+           previous_position->GetAnchor()->IsLineBreak()) {
+      skipped_line_breaks = true;
+      previous_position =
+          previous_position->CreatePreviousPositionAtAnchorWithText();
+    }
+
+    if (previous_position->IsNullPosition() ||
+        !previous_position->AllowsCharacterStopsOnGeneratedNewline()) {
+      return false;
+    }
+
+    // When we skipped past line break nodes, any generated paragraph-
+    // boundary newline is placed at the end of the text BEFORE the <br>
+    // (via `IsFollowedByGeneratedNewline()`), not at this position. This
+    // applies regardless of the container relationship:
+    //   - <br> between blocks: generated newline is before the <br>
+    //   - <br> inside same block: no generated newline (internal line break)
+    //   - <br> inside a text field: no generated newline (internal line break)
+    //   - <br> at end of a paragraph: generated newline is before the <br>
+    if (skipped_line_breaks) {
+      return false;
+    }
+
+    // No line breaks were skipped — fall back to original paragraph
+    // boundary check.
+    return previous_position->AtEndOfParagraph();
   }
 
   // Returns a text position located right before the next character (from this
