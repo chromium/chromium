@@ -2165,7 +2165,6 @@ static_library("ui") {
       "//ash/webui/scanner_feedback_ui",
       "//ash/webui/scanning",
       "//ash/webui/settings/public/constants",
-      "//ash/webui/settings/public/constants:mojom",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
       "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
@@ -2438,7 +2437,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/ash/print_preview_cros",
       "//chrome/browser/ui/webui/ash/sanitize_dialog",
       "//chrome/browser/ui/webui/ash/settings",
-      "//chrome/browser/ui/webui/ash/settings/app_management",
       "//chrome/browser/ui/webui/ash/settings/pages",
       "//chrome/browser/ui/webui/ash/settings/pages/a11y",
       "//chrome/browser/ui/webui/ash/settings/pages/about",
@@ -2675,7 +2673,6 @@ static_library("ui") {
       "//chrome/browser/ash/usb",
       "//chrome/browser/ui/ash/login",
       "//chrome/browser/ui/webui/ash/login",
-      "//chrome/browser/ui/webui/ash/settings/app_management",
       "//ui/base/mojom:ui_base_types",
     ]
 

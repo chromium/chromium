@@ -63,10 +63,7 @@ source_set("impl") {
       "//chrome/browser/web_applications",
     ]
     if (is_chromeos) {
-      deps += [
-        "//chrome/browser/ash/floating_sso",
-        "//chrome/browser/ui/webui/ash/settings/app_management",
-      ]
+      deps += [ "//chrome/browser/ash/floating_sso" ]
     }
   }
   deps += [

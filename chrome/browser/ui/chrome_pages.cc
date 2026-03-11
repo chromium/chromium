@@ -71,10 +71,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #else
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif
@@ -681,24 +679,6 @@ void ShowSharedTabGroupActivity(Profile* profile) {
   ShowSingletonTab(browser,
                    GURL(data_sharing::features::kActivityLogsURL.Get()));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ShowAppManagementPage(Profile* profile,
-                           const std::string& app_id,
-                           ash::settings::AppManagementEntryPoint entry_point) {
-  // This histogram is also declared and used at chrome/browser/resources/
-  // settings/chrome_os/os_apps_page/app_management_page/constants.js.
-  constexpr char kAppManagementEntryPointsHistogramName[] =
-      "AppManagement.EntryPoints";
-
-  base::UmaHistogramEnumeration(kAppManagementEntryPointsHistogramName,
-                                entry_point);
-  std::string sub_page = base::StrCat(
-      {chromeos::settings::mojom::kAppDetailsSubpagePath, "?id=", app_id});
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
-                                                               sub_page);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ShowWebAppSettingsImpl(Browser* browser,

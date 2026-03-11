@@ -13,6 +13,7 @@
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/window_properties.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -102,6 +103,11 @@ bool SettingsWindowManager::UseDeprecatedSettingsWindow(Profile* profile) {
 
 void SettingsWindowManager::Open(const user_manager::User& user,
                                  OpenParams params) {
+  if (params.entry_point.has_value()) {
+    base::UmaHistogramEnumeration("AppManagement.EntryPoints",
+                                  params.entry_point.value());
+  }
+
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
 

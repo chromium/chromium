@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/plugin_vm_service/plugin_vm_service.pb.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/prefs/pref_service.h"
@@ -116,20 +116,15 @@ void PluginVmServiceProvider::ShowSettingsPage(
     return;
   }
 
+  std::string sub_page;
+  std::optional<ash::SettingsAppManager::EntryPoint> entry_point;
+
   if (request.subpage_path() == kShowSettingsPageDetails) {
-    Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-    chrome::ShowAppManagementPage(
-        primary_profile, plugin_vm::kPluginVmShelfAppId,
-        settings::AppManagementEntryPoint::kDBusServicePluginVm);
+    sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(
+        plugin_vm::kPluginVmShelfAppId);
+    entry_point = ash::SettingsAppManager::EntryPoint::kDBusServicePluginVm;
   } else if (request.subpage_path() == kShowSettingsPageSharedPaths) {
-    if (auto* session =
-            session_manager::SessionManager::Get()->GetPrimarySession()) {
-      ash::SettingsAppManager::Get()->Open(
-          CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
-              session->account_id())),
-          {.sub_page =
-               chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath});
-    }
+    sub_page = chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath;
   } else {
     constexpr char error_message[] = "Invalid subpage_path";
     LOG(ERROR) << error_message;
@@ -137,6 +132,16 @@ void PluginVmServiceProvider::ShowSettingsPage(
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS, error_message));
     return;
+  }
+
+  if (auto* session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(session->account_id());
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(user),
+        ash::SettingsAppManager::OpenParams{.sub_page = sub_page,
+                                            .entry_point = entry_point});
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));

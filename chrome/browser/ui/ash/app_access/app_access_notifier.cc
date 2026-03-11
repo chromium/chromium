@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "app_access_notifier.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -23,6 +23,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
@@ -30,6 +32,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/user.h"
 
 namespace {
 
@@ -278,9 +281,15 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
   DCHECK(app_type != apps::AppType::kSystemWeb);
 
   if (app_type == apps::AppType::kWeb) {
-    chrome::ShowAppManagementPage(profile, app_id,
-                                  ash::settings::AppManagementEntryPoint::
-                                      kPrivacyIndicatorsNotificationSettings);
+    const user_manager::User* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(user),
+        ash::SettingsAppManager::OpenParams{
+            .sub_page =
+                ash::SettingsAppManager::CreateAppManagementPagePath(app_id),
+            .entry_point = ash::SettingsAppManager::EntryPoint::
+                kPrivacyIndicatorsNotificationSettings});
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile)->OpenNativeSettings(
         app_id);

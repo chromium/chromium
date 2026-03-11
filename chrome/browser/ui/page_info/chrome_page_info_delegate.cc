@@ -83,7 +83,6 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_service_factory.h"
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 #include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
 namespace {

@@ -23,10 +23,6 @@
 #include "chrome/browser/signin/signin_promo.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
-#endif
-
 namespace apps {
 enum class LaunchSource;
 }
@@ -157,12 +153,6 @@ void ShowSharedTabGroupActivity(Profile* profile);
 
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
-
-#if BUILDFLAG(IS_CHROMEOS)
-void ShowAppManagementPage(Profile* profile,
-                           const std::string& app_id,
-                           ash::settings::AppManagementEntryPoint entry_point);
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Show chrome://app-settings/<app-id> page.

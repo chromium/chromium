@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -15,9 +16,11 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_manager/user.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -60,16 +63,24 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                       .GetAppType(app_id);
   DCHECK_NE(app_type, apps::AppType::kUnknown);
 
+  std::string sub_page;
+  std::optional<ash::SettingsAppManager::EntryPoint> entry_point;
   if (app_type == apps::AppType::kWeb ||
       app_type == apps::AppType::kSystemWeb) {
-    chrome::ShowAppManagementPage(profile, app_id,
-                                  ash::settings::AppManagementEntryPoint::
-                                      kAppListContextMenuAppInfoWebApp);
+    sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(app_id);
+    entry_point =
+        ash::SettingsAppManager::EntryPoint::kAppListContextMenuAppInfoWebApp;
   } else {
-    chrome::ShowAppManagementPage(profile, app_id,
-                                  ash::settings::AppManagementEntryPoint::
-                                      kAppListContextMenuAppInfoChromeApp);
+    sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(app_id);
+    entry_point = ash::SettingsAppManager::EntryPoint::
+        kAppListContextMenuAppInfoChromeApp;
   }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  ash::SettingsAppManager::Get()->Open(
+      CHECK_DEREF(user), ash::SettingsAppManager::OpenParams{
+                             .sub_page = sub_page, .entry_point = entry_point});
 }
 
 void AppListControllerDelegate::UninstallApp(Profile* profile,

@@ -76,7 +76,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
@@ -88,6 +87,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -921,16 +921,24 @@ void ChromeShelfController::DoShowAppInfoFlow(const std::string& app_id) {
     return;
   }
 
+  std::string sub_page;
+  std::optional<ash::SettingsAppManager::EntryPoint> entry_point;
   if (app_type == apps::AppType::kWeb ||
       app_type == apps::AppType::kSystemWeb) {
-    chrome::ShowAppManagementPage(
-        profile_, app_id,
-        ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoWebApp);
+    sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(app_id);
+    entry_point =
+        ash::SettingsAppManager::EntryPoint::kShelfContextMenuAppInfoWebApp;
   } else {
-    chrome::ShowAppManagementPage(profile_, app_id,
-                                  ash::settings::AppManagementEntryPoint::
-                                      kShelfContextMenuAppInfoChromeApp);
+    sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(app_id);
+    entry_point =
+        ash::SettingsAppManager::EntryPoint::kShelfContextMenuAppInfoChromeApp;
   }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
+  ash::SettingsAppManager::Get()->Open(
+      *user, ash::SettingsAppManager::OpenParams{.sub_page = sub_page,
+                                                 .entry_point = entry_point});
 }
 
 ///////////////////////////////////////////////////////////////////////////////

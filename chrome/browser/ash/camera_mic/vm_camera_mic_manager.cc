@@ -33,7 +33,6 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
@@ -370,27 +369,35 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
   // Opens the settings page.
   void OpenSettings() const {
+    std::string sub_page;
+    std::optional<ash::SettingsAppManager::EntryPoint> entry_point;
     switch (vm_type_) {
-      case VmType::kCrostiniVm: {
-        auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-            profile_.get());
-        ash::SettingsAppManager::Get()->Open(
-            CHECK_DEREF(user),
-            {.sub_page =
-                 chromeos::settings::mojom::kCrostiniDetailsSubpagePath});
+      case VmType::kCrostiniVm:
+        sub_page = chromeos::settings::mojom::kCrostiniDetailsSubpagePath;
         break;
-      }
       case VmType::kPluginVm:
-        chrome::ShowAppManagementPage(
-            profile_, plugin_vm::kPluginVmShelfAppId,
-            settings::AppManagementEntryPoint::kNotificationPluginVm);
+        sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(
+            plugin_vm::kPluginVmShelfAppId);
+        entry_point =
+            ash::SettingsAppManager::EntryPoint::kNotificationPluginVm;
         break;
       case VmType::kBorealis:
-        chrome::ShowAppManagementPage(
-            profile_, borealis::kClientAppId,
-            settings::AppManagementEntryPoint::kAppManagementMainViewBorealis);
+        sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(
+            borealis::kClientAppId);
+        entry_point =
+            ash::SettingsAppManager::EntryPoint::kAppManagementMainViewBorealis;
         break;
+      default:
+        return;
     }
+
+    const user_manager::User* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            profile_.get());
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(user),
+        ash::SettingsAppManager::OpenParams{.sub_page = sub_page,
+                                            .entry_point = entry_point});
   }
 
   const raw_ptr<Profile, LeakedDanglingUntriaged> profile_;

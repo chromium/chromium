@@ -21,6 +21,35 @@ namespace ash {
 // This (its implementation class) can be alive at most once at a time.
 class COMPONENT_EXPORT(SETTINGS_UI) SettingsAppManager {
  public:
+  // These are used in histograms, do not remove/renumber entries. If you're
+  // adding to this enum with the intention that it will be logged, update the
+  // EntryPoint enum listing in
+  // tools/metrics/histograms/metadata/apps/enums.xml.
+  enum class EntryPoint {
+    kAppListContextMenuAppInfoArc = 0,
+    kAppListContextMenuAppInfoChromeApp = 1,
+    kAppListContextMenuAppInfoWebApp = 2,
+    kShelfContextMenuAppInfoArc = 3,
+    kShelfContextMenuAppInfoChromeApp = 4,
+    kShelfContextMenuAppInfoWebApp = 5,
+    kAppManagementMainViewArc = 6,
+    kAppManagementMainViewChromeApp = 7,
+    kAppManagementMainViewWebApp = 8,
+    kOsSettingsMainPage = 9,
+    kAppManagementMainViewPluginVm = 10,
+    kDBusServicePluginVm = 11,
+    kNotificationPluginVm = 12,
+    kAppManagementMainViewBorealis = 13,
+    kPageInfoView = 14,
+    kPrivacyIndicatorsNotificationSettings = 15,
+    kSubAppsInstallPrompt = 16,
+    kSiteDataDialog = 17,
+    kMaxValue = kSiteDataDialog,
+  };
+
+  // Helper method to create the path.
+  static std::string CreateAppManagementPagePath(std::string_view app_id);
+
   // Returns the singleton instance
   static SettingsAppManager* Get();
 
@@ -31,10 +60,13 @@ class COMPONENT_EXPORT(SETTINGS_UI) SettingsAppManager {
     // If specified, opens the subpage, instead of settings top page.
     std::string_view sub_page;
     std::optional<chromeos::settings::mojom::Setting> setting_id;
+    // If specified, used to record AppManagement.EntryPoints histogram.
+    std::optional<EntryPoint> entry_point;
 
     // ID of the display to be used, if given.
     int64_t display_id = display::kInvalidDisplayId;
   };
+
   // Opens the settings app of the given `user`.
   virtual void Open(const user_manager::User& user, OpenParams params) = 0;
 

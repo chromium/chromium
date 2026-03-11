@@ -7,6 +7,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -42,10 +43,12 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/launch_util.h"
@@ -525,9 +528,16 @@ void AppServiceShelfContextMenu::BuildChromeAppMenu(
 
 void AppServiceShelfContextMenu::ShowAppInfo() {
   if (app_type_ == apps::AppType::kArc) {
-    chrome::ShowAppManagementPage(
-        controller()->profile(), item().id.app_id,
-        ash::settings::AppManagementEntryPoint::kShelfContextMenuAppInfoArc);
+    const user_manager::User* user =
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            controller()->profile());
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(user),
+        ash::SettingsAppManager::OpenParams{
+            .sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(
+                item().id.app_id),
+            .entry_point = ash::SettingsAppManager::EntryPoint::
+                kShelfContextMenuAppInfoArc});
     return;
   }
 

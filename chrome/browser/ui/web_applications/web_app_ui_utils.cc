@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -22,6 +21,13 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/web_app_id.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/user_manager/user.h"
+#endif
 
 namespace web_app {
 
@@ -75,9 +81,23 @@ bool HandleAppManagementLinkClickedInPageInfo(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  chrome::ShowAppManagementPage(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()), *app_id,
-      ash::settings::AppManagementEntryPoint::kPageInfoView);
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          web_contents->GetBrowserContext());
+  // TODO: Remove the if stmt, and replace it by CHECK().
+  // This method is called only by clicking the "Site setting" or "App setting"
+  // option from the Page Info bubble, which is shown from the browser's
+  // omnibox. Theoretically a shimless RMA profile may have an app. But shimless
+  // RMA screen is full-screen and has no omnibox.
+  if (!user) {
+    return false;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      *user,
+      ash::SettingsAppManager::OpenParams{
+          .sub_page =
+              ash::SettingsAppManager::CreateAppManagementPagePath(*app_id),
+          .entry_point = ash::SettingsAppManager::EntryPoint::kPageInfoView});
   return true;
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithTab(web_contents), *app_id,
@@ -92,9 +112,24 @@ void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
     return;
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  chrome::ShowAppManagementPage(
-      profile.get(), parent_app_id,
-      ash::settings::AppManagementEntryPoint::kSubAppsInstallPrompt);
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile.get());
+  // TODO: Remove the if stmt, and replace it by CHECK().
+  // The function OpenAppSettingsForParentApp is bound as a callback to the
+  // "Manage" link in the Sub Apps Install dialog. This dialog is only triggered
+  // when a parent Web App tries to install its Sub App.
+  // The Web App can be enabled not only on user profiles but also on shimless
+  // RMA profiles, so this method may get a shimless RMA profile.
+  if (!user) {
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      *user,
+      ash::SettingsAppManager::OpenParams{
+          .sub_page = ash::SettingsAppManager::CreateAppManagementPagePath(
+              parent_app_id),
+          .entry_point =
+              ash::SettingsAppManager::EntryPoint::kSubAppsInstallPrompt});
 #else
   chrome::ShowWebAppSettings(profile.get(), parent_app_id,
                              AppSettingsPageEntryPoint::kSubAppsInstallPrompt);
@@ -104,8 +139,21 @@ void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
 void OpenAppSettingsForInstalledRelatedApp(const webapps::AppId& app_id,
                                            Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  chrome::ShowAppManagementPage(
-      profile, app_id, ash::settings::AppManagementEntryPoint::kSiteDataDialog);
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  // TODO: Remove the if stmt, and replace it by CHECK().
+  // This method is called only from PageSpecificSiteDataDialog, which is
+  // accessed by clicking the "Site Data" or "Cookies" option from the Page Info
+  // bubble, which is shown from the browser's omnibox.
+  if (!user) {
+    return;
+  }
+  ash::SettingsAppManager::Get()->Open(
+      *user,
+      ash::SettingsAppManager::OpenParams{
+          .sub_page =
+              ash::SettingsAppManager::CreateAppManagementPagePath(app_id),
+          .entry_point = ash::SettingsAppManager::EntryPoint::kSiteDataDialog});
 #else
   chrome::ShowWebAppSettings(profile, app_id,
                              AppSettingsPageEntryPoint::kSiteDataDialog);
