@@ -155,7 +155,8 @@ FocusgroupDirection FocusgroupControllerUtils::FocusgroupDirectionForEvent(
     const KeyboardEvent* event,
     const Element& focused_element) {
   DCHECK(event);
-  if (event->ctrlKey() || event->metaKey() || event->shiftKey()) {
+  if (event->ctrlKey() || event->metaKey() || event->shiftKey() ||
+      event->altKey()) {
     return FocusgroupDirection::kNone;
   }
 

@@ -326,6 +326,13 @@ TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventValid) {
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kNone);
 
+  // When the alt key is pressed, even when combined with a valid arrow key, it
+  // should return kNone (e.g., Alt+Left/Right is browser Back/Forward on
+  // Windows).
+  event = KeyDownEvent(ui::DomKey::ARROW_UP, nullptr, WebInputEvent::kAltKey);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
+            FocusgroupDirection::kNone);
+
   // Any other key than an arrow key should return kNone.
   event = KeyDownEvent(ui::DomKey::TAB);
   EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
