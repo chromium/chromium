@@ -51,6 +51,28 @@
 
 namespace {
 
+// The types of strings that can be shown in the interface.
+enum class InputPlateString {
+  kAIM,
+  kImageGeneration,
+  kCanvas,
+  kDeepSearch,
+  kAutoModel,
+  kThinkingModel,
+  kToolsSection,
+  kModelsSection,
+};
+
+// The types of strings that can be shown in the interface.
+enum class InputPlateStringType {
+  // A menu label string.
+  kMenuLabel,
+  // A chip label string.
+  kChipLabel,
+  // A hint text.
+  kHintText,
+};
+
 /// The reuse identifier for the input item cells in the carousel.
 NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 /// The identifier for the main section of the collection view.
@@ -281,6 +303,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   /// The remaining capacity for attachments.
   NSUInteger _remainingAttachmentCapacity;
+
+  /// The server side strings for the input plate elements.
+  ComposeboxServerStrings* _serverStrings;
 }
 
 /// ComposeboxAnimationContext
@@ -784,7 +809,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 }
 
 - (void)setServerStrings:(ComposeboxServerStrings*)serverStrings {
-  // TODO(crbug.com/487169190): Integrate server strings.
+  _serverStrings = serverStrings;
+  [self updatePlusButtonItems];
+  [self updatePlaceholderText];
 }
 
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {
@@ -1155,25 +1182,24 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 /// Updates the placeholder text based on the current operating mode of the
 /// composebox.
 - (void)updatePlaceholderText {
+  using enum InputPlateString;
+
+  InputPlateString element;
   if (_AIModeEnabled) {
-    [_editView
-        setCustomPlaceholderText:
-            l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER)];
+    element = kAIM;
   } else if (_imageGenerationEnabled) {
-    [_editView
-        setCustomPlaceholderText:l10n_util::GetNSString(
-                                     IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER)];
+    element = kImageGeneration;
   } else if (_canvasEnabled) {
-    [_editView setCustomPlaceholderText:
-                   l10n_util::GetNSString(
-                       IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER)];
+    element = kCanvas;
   } else if (_deepSearchEnabled) {
-    [_editView setCustomPlaceholderText:
-                   l10n_util::GetNSString(
-                       IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ENABLED_PLACEHOLDER)];
+    element = kDeepSearch;
   } else {
     [_editView setCustomPlaceholderText:nil];
+    return;
   }
+  [_editView
+      setCustomPlaceholderText:[self titleFor:element
+                                         type:InputPlateStringType::kHintText]];
 }
 
 /// Adds and constraints the 'X' mark indicator to the given button.
@@ -1236,10 +1262,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIImage* icon = CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
                                             kAIMButtonSymbolPointSize);
 
-  button.configuration = [self
-      modeIndicatorButtonConfigWithTitle:l10n_util::GetNSString(
-                                             IDS_IOS_COMPOSEBOX_AIM_ACTION)
-                                   image:icon];
+  NSString* title = [self titleFor:InputPlateString::kAIM
+                              type:InputPlateStringType::kChipLabel];
+  button.configuration = [self modeIndicatorButtonConfigWithTitle:title
+                                                            image:icon];
 
   return button;
 }
@@ -1493,7 +1519,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       kComposeboxSelectTabsActionAccessibilityIdentifier;
 
   UIAction* aimAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION)
+      actionWithTitle:[self titleFor:InputPlateString::kAIM
+                                type:InputPlateStringType::kMenuLabel]
                 image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
                                                 kSymbolActionPointSize)
            identifier:nil
@@ -1507,13 +1534,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [aimAction setState:UIMenuElementStateOn];
   }
 
-  UIAction* createImageAction =
-      [UIAction actionWithTitle:[self createImageActionTitle]
-                          image:[self bananaIcon]
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakSelf handleImageGenTappedFromToolMenu];
-                        }];
+  UIAction* createImageAction = [UIAction
+      actionWithTitle:[self titleFor:InputPlateString::kImageGeneration
+                                type:InputPlateStringType::kMenuLabel]
+                image:[self bananaIcon]
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleImageGenTappedFromToolMenu];
+              }];
   createImageAction.accessibilityIdentifier =
       kComposeboxImageGenerationActionAccessibilityIdentifier;
 
@@ -1583,14 +1611,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                      galleryAction, fileAction
                    ]];
 
-  UIAction* canvasAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-                image:CustomSymbolWithPointSize(kDocumentBadgeSpark,
-                                                kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf handleCanvasTappedFromToolMenu];
-              }];
+  UIAction* canvasAction =
+      [UIAction actionWithTitle:[self titleFor:InputPlateString::kCanvas
+                                          type:InputPlateStringType::kMenuLabel]
+                          image:CustomSymbolWithPointSize(
+                                    kDocumentBadgeSpark, kSymbolActionPointSize)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf handleCanvasTappedFromToolMenu];
+                        }];
   UIMenuElementAttributes canvasAttributes = 0;
   if (_canvasActionsHidden) {
     canvasAttributes |= UIMenuElementAttributesHidden;
@@ -1604,9 +1633,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [canvasAction setState:UIMenuElementStateOn];
   }
 
+  NSString* deepSearchTitle = [self titleFor:InputPlateString::kDeepSearch
+                                        type:InputPlateStringType::kMenuLabel];
   UIAction* deepSearchAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
+      [UIAction actionWithTitle:deepSearchTitle
                           image:CustomSymbolWithPointSize(
                                     kDeepSearchSymbol, kSymbolActionPointSize)
                      identifier:nil
@@ -1626,8 +1656,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [deepSearchAction setState:UIMenuElementStateOn];
   }
 
+  NSString* toolsSectionTitle =
+      [self titleFor:InputPlateString::kToolsSection
+                type:InputPlateStringType::kMenuLabel];
   UIMenu* modeMenu = [UIMenu
-      menuWithTitle:@""
+      menuWithTitle:toolsSectionTitle
               image:nil
          identifier:nil
             options:UIMenuOptionsDisplayInline
@@ -1639,9 +1672,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [[NSMutableArray alloc] initWithArray:@[ attachmentMenu, modeMenu ]];
   if (_modelPickerAllowed) {
     CHECK(ShowComposeboxAdditionalAdvancedTools());
+    NSString* autoModelTitle = [self titleFor:InputPlateString::kAutoModel
+                                         type:InputPlateStringType::kMenuLabel];
     UIAction* autoModelOption = [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO)
+        actionWithTitle:autoModelTitle
                   image:DefaultSymbolWithPointSize(kSyncEnabledSymbol,
                                                    kSymbolActionPointSize)
              identifier:nil
@@ -1661,8 +1695,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     }
 
     UIAction* thinkingModelOption = [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING)
+        actionWithTitle:[self titleFor:InputPlateString::kThinkingModel
+                                  type:InputPlateStringType::kMenuLabel]
                   image:DefaultSymbolWithPointSize(kClockSymbol,
                                                    kSymbolActionPointSize)
              identifier:nil
@@ -1681,10 +1715,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [thinkingModelOption setState:UIMenuElementStateOn];
     }
 
+    NSString* modelPickerTitle =
+        [self titleFor:InputPlateString::kModelsSection
+                  type:InputPlateStringType::kMenuLabel];
     UIMenu* modelPickerMenu =
-        [UIMenu menuWithTitle:l10n_util::GetNSStringF(
-                                  IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE,
-                                  base::SysNSStringToUTF16(@"3"))
+        [UIMenu menuWithTitle:modelPickerTitle
                         image:nil
                    identifier:nil
                       options:UIMenuOptionsDisplayInline
@@ -1959,9 +1994,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       forControlEvents:UIControlEventTouchUpInside];
   button.layer.borderWidth = 0;
 
+  NSString* title = [self titleFor:InputPlateString::kImageGeneration
+                              type:InputPlateStringType::kChipLabel];
   UIButtonConfiguration* config =
-      [self modeIndicatorButtonConfigWithTitle:[self createImageActionTitle]
-                                         image:[self bananaIcon]];
+      [self modeIndicatorButtonConfigWithTitle:title image:[self bananaIcon]];
   config.contentInsets = kImageGenerationButtonInsets;
   config.background.backgroundColor =
       [_theme imageGenerationButtonBackgroundColor];
@@ -1978,7 +2014,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)updateCreateImageTitle {
   UIButtonConfiguration* config = _imageGenerationButton.configuration;
 
-  NSString* createImageTitle = [self createImageActionTitle];
+  NSString* createImageTitle = [self titleFor:InputPlateString::kImageGeneration
+                                         type:InputPlateStringType::kChipLabel];
   UIFont* font = [UIFont systemFontOfSize:kAIMButtonFontSize
                                    weight:UIFontWeightMedium];
   NSDictionary* attributes = @{NSFontAttributeName : font};
@@ -1990,8 +2027,97 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _imageGenerationButton.configuration = config;
 }
 
-- (NSString*)createImageActionTitle {
-  return l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION);
+- (NSString*)serverStringForElement:(InputPlateString)element
+                               type:(InputPlateStringType)type {
+  using enum InputPlateString;
+
+  ComposeboxServerStringBundle* serverBundle;
+  switch (element) {
+    case kAIM:
+      // AIM always falls back to local default.
+      return nil;
+    case kToolsSection:
+      return _serverStrings.toolsSectionHeader;
+    case kModelsSection:
+      return _serverStrings.modelSectionHeader;
+    case kImageGeneration:
+      serverBundle = [_serverStrings
+          stringsForControl:ComposeboxInputPlateControls::kCreateImage];
+      break;
+    case kCanvas:
+      serverBundle = [_serverStrings
+          stringsForControl:ComposeboxInputPlateControls::kCanvas];
+      break;
+    case kDeepSearch:
+      serverBundle = [_serverStrings
+          stringsForControl:ComposeboxInputPlateControls::kDeepSearch];
+      break;
+    case kAutoModel:
+      serverBundle =
+          [_serverStrings stringsForModel:ComposeboxModelOption::kAuto];
+      break;
+    case kThinkingModel:
+      serverBundle =
+          [_serverStrings stringsForModel:ComposeboxModelOption::kThinking];
+      break;
+  }
+
+  switch (type) {
+    case InputPlateStringType::kMenuLabel:
+      return serverBundle.menuLabel;
+    case InputPlateStringType::kChipLabel:
+      return serverBundle.chipLabel;
+    case InputPlateStringType::kHintText:
+      return serverBundle.hintText;
+  }
+}
+
+- (NSString*)localFallbackForElement:(InputPlateString)element
+                                type:(InputPlateStringType)type {
+  using enum InputPlateString;
+  using enum InputPlateStringType;
+
+  switch (element) {
+    case kAIM:
+      return type == kHintText
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER)
+                 : l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_AIM_ACTION);
+    case kToolsSection:
+      return @"";
+    case kModelsSection:
+      return l10n_util::GetNSStringF(IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE,
+                                     base::SysNSStringToUTF16(@"3"));
+    case kImageGeneration:
+      return type == kHintText ? l10n_util::GetNSString(
+                                     IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER)
+                               : l10n_util::GetNSString(
+                                     IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION);
+    case kCanvas:
+      return type == kHintText
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER)
+                 : l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANVAS_ACTION);
+    case kDeepSearch:
+      return type == kHintText
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ENABLED_PLACEHOLDER)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION);
+    case kAutoModel:
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO);
+    case kThinkingModel:
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING);
+  }
+}
+
+// Returns the title for the given input plate element of a certain type.
+- (NSString*)titleFor:(InputPlateString)element
+                 type:(InputPlateStringType)type {
+  return [self serverStringForElement:element type:type]
+             ?: [self localFallbackForElement:element type:type];
 }
 
 // Creates a new canvas button to be displayed in the input plate.
@@ -2005,12 +2131,13 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       forControlEvents:UIControlEventTouchUpInside];
   button.layer.borderWidth = 0;
 
-  UIButtonConfiguration* config = [self
-      modeIndicatorButtonConfigWithTitle:l10n_util::GetNSString(
-                                             IDS_IOS_COMPOSEBOX_CANVAS_ACTION)
-                                   image:CustomSymbolWithPointSize(
-                                             kDocumentBadgeSpark,
-                                             kAIMButtonSymbolPointSize)];
+  NSString* title = [self titleFor:InputPlateString::kCanvas
+                              type:InputPlateStringType::kChipLabel];
+  UIButtonConfiguration* config =
+      [self modeIndicatorButtonConfigWithTitle:title
+                                         image:CustomSymbolWithPointSize(
+                                                   kDocumentBadgeSpark,
+                                                   kAIMButtonSymbolPointSize)];
   NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
   insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;
   config.contentInsets = insets;
@@ -2043,9 +2170,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       forControlEvents:UIControlEventTouchUpInside];
   button.layer.borderWidth = 0;
 
+  NSString* title = [self titleFor:InputPlateString::kDeepSearch
+                              type:InputPlateStringType::kChipLabel];
   UIButtonConfiguration* config =
-      [self modeIndicatorButtonConfigWithTitle:
-                l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
+      [self modeIndicatorButtonConfigWithTitle:title
                                          image:CustomSymbolWithPointSize(
                                                    kDeepSearchSymbol,
                                                    kAIMButtonSymbolPointSize)];
