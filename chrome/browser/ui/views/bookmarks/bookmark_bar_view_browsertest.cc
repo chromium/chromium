@@ -1013,7 +1013,13 @@ class BookmarkBarTest : public BookmarkBarTestBase {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(BookmarkBarTest, AllBookmarksButtonHighlight) {
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491651711): This test is flaky.
+#define MAYBE_AllBookmarksButtonHighlight DISABLED_AllBookmarksButtonHighlight
+#else
+#define MAYBE_AllBookmarksButtonHighlight AllBookmarksButtonHighlight
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, MAYBE_AllBookmarksButtonHighlight) {
   TestContextMenuHighlight(bookmark_bar()->all_bookmarks_button());
 }
 
@@ -1029,7 +1035,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarTest, BookmarkFolderButtonHighlight) {
   TestContextMenuHighlight(GetBookmarkButton(0));
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkBarTest, AppsPageShortcutHighlight) {
+#if BUILDFLAG(IS_WIN)
+//  TODO(crbug.com/491651711): This test is flaky.
+#define MAYBE_AppsPageShortcutHighlight DISABLED_AppsPageShortcutHighlight
+#else
+#define MAYBE_AppsPageShortcutHighlight AppsPageShortcutHighlight
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarkBarTest, MAYBE_AppsPageShortcutHighlight) {
   TestContextMenuHighlight(GetAppsPageShortCut());
 }
 
