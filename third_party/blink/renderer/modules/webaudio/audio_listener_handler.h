@@ -49,15 +49,15 @@ class AudioListenerHandler final
                           up_z_handler_->Value());
   }
 
-  const float* GetPositionXValues(uint32_t frames_to_process);
-  const float* GetPositionYValues(uint32_t frames_to_process);
-  const float* GetPositionZValues(uint32_t frames_to_process);
-  const float* GetForwardXValues(uint32_t frames_to_process);
-  const float* GetForwardYValues(uint32_t frames_to_process);
-  const float* GetForwardZValues(uint32_t frames_to_process);
-  const float* GetUpXValues(uint32_t frames_to_process);
-  const float* GetUpYValues(uint32_t frames_to_process);
-  const float* GetUpZValues(uint32_t frames_to_process);
+  base::span<const float> GetPositionXValues(uint32_t frames_to_process);
+  base::span<const float> GetPositionYValues(uint32_t frames_to_process);
+  base::span<const float> GetPositionZValues(uint32_t frames_to_process);
+  base::span<const float> GetForwardXValues(uint32_t frames_to_process);
+  base::span<const float> GetForwardYValues(uint32_t frames_to_process);
+  base::span<const float> GetForwardZValues(uint32_t frames_to_process);
+  base::span<const float> GetUpXValues(uint32_t frames_to_process);
+  base::span<const float> GetUpYValues(uint32_t frames_to_process);
+  base::span<const float> GetUpZValues(uint32_t frames_to_process);
 
   // True if any of AudioParams have automations.
   bool HasSampleAccurateValues() const;

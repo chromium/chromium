@@ -76,55 +76,58 @@ AudioListenerHandler::~AudioListenerHandler() {
   panner_handlers_.clear();
 }
 
-const float* AudioListenerHandler::GetPositionXValues(
+base::span<const float> AudioListenerHandler::GetPositionXValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return position_x_values_.Data();
+  return position_x_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetPositionYValues(
+base::span<const float> AudioListenerHandler::GetPositionYValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return position_y_values_.Data();
+  return position_y_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetPositionZValues(
+base::span<const float> AudioListenerHandler::GetPositionZValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return position_z_values_.Data();
+  return position_z_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetForwardXValues(
+base::span<const float> AudioListenerHandler::GetForwardXValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return forward_x_values_.Data();
+  return forward_x_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetForwardYValues(
+base::span<const float> AudioListenerHandler::GetForwardYValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return forward_y_values_.Data();
+  return forward_y_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetForwardZValues(
+base::span<const float> AudioListenerHandler::GetForwardZValues(
     uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return forward_z_values_.Data();
+  return forward_z_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetUpXValues(uint32_t frames_to_process) {
+base::span<const float> AudioListenerHandler::GetUpXValues(
+    uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return up_x_values_.Data();
+  return up_x_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetUpYValues(uint32_t frames_to_process) {
+base::span<const float> AudioListenerHandler::GetUpYValues(
+    uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return up_y_values_.Data();
+  return up_y_values_.as_span();
 }
 
-const float* AudioListenerHandler::GetUpZValues(uint32_t frames_to_process) {
+base::span<const float> AudioListenerHandler::GetUpZValues(
+    uint32_t frames_to_process) {
   UpdateValuesIfNeeded(frames_to_process);
-  return up_z_values_.Data();
+  return up_z_values_.as_span();
 }
 
 bool AudioListenerHandler::HasSampleAccurateValues() const {

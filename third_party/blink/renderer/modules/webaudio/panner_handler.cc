@@ -248,49 +248,50 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   orientation_z_->CalculateSampleAccurateValues(
       orientation_z_values_.as_span().first(frames_to_process));
 
-  const float* listener_x =
+  base::span<const float> listener_x =
       listener_handler_->GetPositionXValues(render_quantum_frames);
-  const float* listener_y =
+  base::span<const float> listener_y =
       listener_handler_->GetPositionYValues(render_quantum_frames);
-  const float* listener_z =
+  base::span<const float> listener_z =
       listener_handler_->GetPositionZValues(render_quantum_frames);
-  const float* forward_x =
+  base::span<const float> forward_x =
       listener_handler_->GetForwardXValues(render_quantum_frames);
-  const float* forward_y =
+  base::span<const float> forward_y =
       listener_handler_->GetForwardYValues(render_quantum_frames);
-  const float* forward_z =
+  base::span<const float> forward_z =
       listener_handler_->GetForwardZValues(render_quantum_frames);
-  const float* up_x = listener_handler_->GetUpXValues(render_quantum_frames);
-  const float* up_y = listener_handler_->GetUpYValues(render_quantum_frames);
-  const float* up_z = listener_handler_->GetUpZValues(render_quantum_frames);
+  base::span<const float> up_x =
+      listener_handler_->GetUpXValues(render_quantum_frames);
+  base::span<const float> up_y =
+      listener_handler_->GetUpYValues(render_quantum_frames);
+  base::span<const float> up_z =
+      listener_handler_->GetUpZValues(render_quantum_frames);
 
-  UNSAFE_TODO({
-    // Compute the azimuth, elevation, and total gains for each position.
-    for (unsigned k = 0; k < frames_to_process; ++k) {
-      gfx::Point3F panner_position(panner_x_values_[k], panner_y_values_[k],
-                                   panner_z_values_[k]);
-      gfx::Vector3dF orientation(orientation_x_values_[k],
-                                 orientation_y_values_[k],
-                                 orientation_z_values_[k]);
-      gfx::Point3F listener_position(listener_x[k], listener_y[k],
-                                     listener_z[k]);
-      gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
-      gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
+  // Compute the azimuth, elevation, and total gains for each position.
+  for (unsigned k = 0; k < frames_to_process; ++k) {
+    gfx::Point3F panner_position(panner_x_values_[k], panner_y_values_[k],
+                                 panner_z_values_[k]);
+    gfx::Vector3dF orientation(orientation_x_values_[k],
+                               orientation_y_values_[k],
+                               orientation_z_values_[k]);
+    gfx::Point3F listener_position(listener_x[k], listener_y[k], listener_z[k]);
+    gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
+    gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
 
-      CalculateAzimuthElevation(&azimuth_values_[k], &elevation_values_[k],
-                                panner_position, listener_position,
-                                listener_forward, listener_up);
+    CalculateAzimuthElevation(&azimuth_values_[k], &elevation_values_[k],
+                              panner_position, listener_position,
+                              listener_forward, listener_up);
 
-      total_gain_values_[k] = CalculateDistanceConeGain(
-          panner_position, orientation, listener_position);
-    }
-    // Update cached values in case automations end.
-    if (frames_to_process > 0) {
-      cached_azimuth_ = azimuth_values_[frames_to_process - 1];
-      cached_elevation_ = elevation_values_[frames_to_process - 1];
-      cached_distance_cone_gain_ = total_gain_values_[frames_to_process - 1];
-    }
-  });
+    total_gain_values_[k] = CalculateDistanceConeGain(
+        panner_position, orientation, listener_position);
+  }
+  // Update cached values in case automations end.
+  if (frames_to_process > 0) {
+    cached_azimuth_ = azimuth_values_[frames_to_process - 1];
+    cached_elevation_ = elevation_values_[frames_to_process - 1];
+    cached_distance_cone_gain_ = total_gain_values_[frames_to_process - 1];
+  }
+
   panner_->PanWithSampleAccurateValues(
       azimuth_values_.as_span().first(frames_to_process),
       elevation_values_.as_span().first(frames_to_process), source, destination,
