@@ -32,6 +32,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/stack_frame.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -650,7 +651,9 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
   DCHECK(!url_.is_empty() && url_.is_valid());
   cookie_manager->SetCanonicalCookie(
       *cc, url_, options,
-      base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&CookiesSetFunction::SetCanonicalCookieCallback, this),
+          net::CookieAccessResult()));
   cookies_helpers::GetCookieListFromManager(
       cookie_manager, url_,
       net::CookiePartitionKeyCollection(std::move(net_partition_key).value()),
@@ -750,7 +753,9 @@ ExtensionFunction::ResponseAction CookiesRemoveFunction::Run() {
   filter->cookie_name = parsed_args_->details.name;
   cookie_manager->DeleteCookies(
       std::move(filter),
-      base::BindOnce(&CookiesRemoveFunction::RemoveCookieCallback, this));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&CookiesRemoveFunction::RemoveCookieCallback, this),
+          0u));
 
   // Will return asynchronously.
   return RespondLater();

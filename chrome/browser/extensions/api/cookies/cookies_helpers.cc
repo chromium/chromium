@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
@@ -170,13 +171,17 @@ void GetCookieListFromManager(
     const net::CookiePartitionKeyCollection& partition_key_collection,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
-                         partition_key_collection, std::move(callback));
+                         partition_key_collection,
+                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                             std::move(callback), net::CookieAccessResultList(),
+                             net::CookieAccessResultList()));
 }
 
 void GetAllCookiesFromManager(
     network::mojom::CookieManager* manager,
     network::mojom::CookieManager::GetAllCookiesCallback callback) {
-  manager->GetAllCookies(std::move(callback));
+  manager->GetAllCookies(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), net::CookieList()));
 }
 
 GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
