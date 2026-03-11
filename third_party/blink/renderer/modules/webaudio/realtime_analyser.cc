@@ -237,14 +237,15 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
   DCHECK_LE(write_index + frames_to_process, input_buffer_.size());
 
   // Perform real-time analysis
-  float* dest = UNSAFE_TODO(input_buffer_.Data() + write_index);
 
   // Clear the bus and downmix the input according to the down mixing rules.
   // Then save the result in the m_inputBuffer at the appropriate place.
   down_mix_bus_->Zero();
   down_mix_bus_->SumFrom(*bus);
-  UNSAFE_TODO(memcpy(dest, down_mix_bus_->Channel(0)->Data(),
-                     frames_to_process * sizeof(*dest)));
+
+  input_buffer_.as_span()
+      .subspan(write_index, frames_to_process)
+      .copy_from(down_mix_bus_->Channel(0)->Span().first(frames_to_process));
 
   write_index += frames_to_process;
   if (write_index >= kInputBufferSize) {

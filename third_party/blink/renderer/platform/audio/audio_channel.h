@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -84,6 +85,25 @@ class PLATFORM_EXPORT AudioChannel final {
 
   const float* Data() const {
     return raw_pointer_ ? raw_pointer_.get() : mem_buffer_->Data();
+  }
+
+  // Span-based access to PCM sample data. Non-const accessor clears silent
+  // flag.
+  base::span<float> MutableSpan() {
+    ClearSilentFlag();
+    if (mem_buffer_) {
+      return mem_buffer_->as_span();
+    }
+    // TODO(crbug.com/375449662): Spanify `raw_pointer_`.
+    return UNSAFE_TODO(base::span<float>(raw_pointer_.get(), length_));
+  }
+
+  base::span<const float> Span() const {
+    if (mem_buffer_) {
+      return mem_buffer_->as_span();
+    }
+    // TODO(crbug.com/375449662): Spanify `raw_pointer_`.
+    return UNSAFE_TODO(base::span<const float>(raw_pointer_.get(), length_));
   }
 
   // Zeroes out all sample values in buffer.
