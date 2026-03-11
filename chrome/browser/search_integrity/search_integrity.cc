@@ -50,8 +50,10 @@ bool IsNameMatch(std::u16string_view candidate_name,
     for (auto piece : base::SplitStringPiece(text, base::kWhitespaceUTF16,
                                              base::TRIM_WHITESPACE,
                                              base::SPLIT_WANT_NONEMPTY)) {
-      if (piece.length() >= kMinWordLength) {
-        words.push_back(base::i18n::ToLower(piece));
+      std::u16string cleaned_piece;
+      base::RemoveChars(piece, u".,!?:;\"'()[]{}<>-", &cleaned_piece);
+      if (cleaned_piece.length() >= kMinWordLength) {
+        words.push_back(base::i18n::ToLower(cleaned_piece));
       }
     }
     return words;
