@@ -48,7 +48,7 @@ interface ShadowRoot : DocumentFragment {
     // cloned by DOM cloning operations.
     readonly attribute boolean clonable;
 
-    [RuntimeEnabled=DocumentPatching] readonly attribute FrozenArray<DOMString> marker;
+    [RuntimeEnabled=DocumentPatching] readonly attribute DOMString marker;
 
     // The referenceTarget attribute is the ID of an element in the shadow tree.
     // When the host element is the target of an IDREF attribute like

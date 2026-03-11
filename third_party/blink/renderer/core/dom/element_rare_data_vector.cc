@@ -370,13 +370,6 @@ DOMTokenList* ElementRareDataVector::GetPart() const {
   return static_cast<DOMTokenList*>(GetField(FieldId::kPart));
 }
 
-ElementRareDataVector* ElementRareDataVector::SetMarker(DOMTokenList* marker) {
-  return SetField(FieldId::kMarker, marker);
-}
-DOMTokenList* ElementRareDataVector::GetMarker() const {
-  return static_cast<DOMTokenList*>(GetField(FieldId::kMarker));
-}
-
 ElementRareDataVector* ElementRareDataVector::SetPartNamesMap(
     const AtomicString part_names) {
   auto [names_map, vec] = EnsureField<NamesMap>(FieldId::kPartNamesMap);

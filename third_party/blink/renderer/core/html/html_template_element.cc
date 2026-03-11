@@ -150,21 +150,18 @@ std::optional<PatchResult> BeginPatchInternal(ContainerNode* scope,
   ContainerNode* host = nullptr;
 
   if (ShadowRoot* as_shadow = DynamicTo<ShadowRoot>(scope)) {
-    if (as_shadow->marker().Contains(host_name)) {
+    if (as_shadow->marker() == host_name) {
       host = as_shadow;
     }
   }
 
   if (!host) {
     for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*scope)) {
-      Element* element = DynamicTo<Element>(descendant);
-      if (!element) {
-        continue;
-      }
-      DOMTokenList* marker_attribute = element->GetMarker();
-      if (marker_attribute && marker_attribute->contains(host_name)) {
-        host = element;
-        break;
+      if (Element* element = DynamicTo<Element>(descendant)) {
+        if (element->marker() == host_name) {
+          host = element;
+          break;
+        }
       }
     }
   }

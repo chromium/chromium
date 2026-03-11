@@ -97,7 +97,7 @@ struct SameSizeAsShadowRoot : public DocumentFragment,
                               public ElementRareDataField {
   Member<void*> member[2];
   unsigned flags[1];
-  Vector<AtomicString> markers;
+  AtomicString marker;
 };
 
 ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
@@ -105,10 +105,10 @@ ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 ShadowRoot::ShadowRoot(Document& document,
                        ShadowRootMode mode,
                        SlotAssignmentMode assignment_mode,
-                       const Vector<AtomicString>& initial_markers)
+                       const AtomicString& marker)
     : DocumentFragment(nullptr, kCreateShadowRoot),
       TreeScope(*this, document),
-      markers_(initial_markers),
+      marker_(marker),
       child_shadow_root_count_(0),
       mode_(static_cast<unsigned>(mode)),
       registered_with_parent_shadow_root_(false),

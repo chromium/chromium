@@ -121,12 +121,13 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, TrustedParserOptions options);
 
     // https://github.com/whatwg/html/issues/2142
-    // https://github.com/whatwg/html/issues/11542
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamHTML(optional (SetHTMLOptions or TrustedParserOptions) options = {});
-    [SameObject, PutForwards=value, RuntimeEnabled=DocumentPatching] readonly attribute DOMTokenList marker;
+
+    // https://github.com/whatwg/html/issues/11542
+    [RuntimeEnabled=DocumentPatching] attribute DOMString marker;
 
     // https://github.com/whatwg/html/issues/11669
     [RuntimeEnabled=DocumentPatching, RaisesException] void appendHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});

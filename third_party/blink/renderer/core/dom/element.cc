@@ -3814,8 +3814,6 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   } else if (name == html_names::kPartAttr) {
     part().DidUpdateAttributeValue(params.old_value, params.new_value);
     GetDocument().GetStyleEngine().PartChangedForElement(*this);
-  } else if (name == html_names::kMarkerAttr) {
-    marker().DidUpdateAttributeValue(params.old_value, params.new_value);
   } else if (name == html_names::kExportpartsAttr) {
     data_ = EnsureRareData().SetPartNamesMap(params.new_value);
     GetDocument().GetStyleEngine().ExportpartsChangedForElement(*this);
@@ -6478,10 +6476,9 @@ void Element::UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal) {
   }
 }
 
-ShadowRoot& Element::CreateAndAttachShadowRoot(
-    ShadowRootMode type,
-    SlotAssignmentMode mode,
-    const Vector<AtomicString>& markers) {
+ShadowRoot& Element::CreateAndAttachShadowRoot(ShadowRootMode type,
+                                               SlotAssignmentMode mode,
+                                               const AtomicString& marker) {
 #if DCHECK_IS_ON()
   NestingLevelIncrementer slot_assignment_recalc_forbidden_scope(
       GetDocument().SlotAssignmentRecalcForbiddenRecursionDepth());
@@ -6493,7 +6490,7 @@ ShadowRoot& Element::CreateAndAttachShadowRoot(
   DCHECK(!GetShadowRoot());
 
   auto* shadow_root =
-      MakeGarbageCollected<ShadowRoot>(GetDocument(), type, mode, markers);
+      MakeGarbageCollected<ShadowRoot>(GetDocument(), type, mode, marker);
 
   if (InActiveDocument()) {
     // We need to call child.RemovedFromFlatTree() before setting a shadow
@@ -7422,14 +7419,10 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
           ? AtomicString(shadow_root_init_dict->referenceTarget())
           : g_null_atom;
 
-  Vector<AtomicString> marker_list;
+  AtomicString marker = g_null_atom;
   if (shadow_root_init_dict->hasMarker()) {
     CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-    const auto& marker_from_dict = shadow_root_init_dict->marker();
-    marker_list.ReserveInitialCapacity(marker_from_dict.size());
-    for (const auto& marker_string : marker_from_dict) {
-      marker_list.push_back(AtomicString(marker_string));
-    }
+    marker = AtomicString(shadow_root_init_dict->marker());
   }
 
   // 1. Let registry be this's custom element registry.
@@ -7485,7 +7478,7 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target, marker_list);
+      reference_target, marker);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -7504,7 +7497,7 @@ bool Element::AttachDeclarativeShadowRoot(
     const AtomicString& adopted_stylesheets,
     const AtomicString& reference_target,
     const bool waiting_for_scoped_registry,
-    const Vector<AtomicString>& markers) {
+    const AtomicString& marker) {
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
   // host element, mode equal to declarative shadow mode, and delegates focus
   // equal to declarative shadow delegates focus. If an exception was thrown by
@@ -7534,7 +7527,7 @@ bool Element::AttachDeclarativeShadowRoot(
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target, markers);
+      reference_target, marker);
   // 10.8.5. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -7558,7 +7551,7 @@ ShadowRoot& Element::CreateUserAgentShadowRoot(SlotAssignmentMode mode) {
   DCHECK(!GetShadowRoot());
   GetDocument().SetContainsShadowRoot();
   return CreateAndAttachShadowRoot(ShadowRootMode::kUserAgent, mode,
-                                   Vector<AtomicString>());
+                                   g_null_atom);
 }
 
 ShadowRoot& Element::AttachShadowRootInternal(
@@ -7569,7 +7562,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
     bool serializable,
     bool clonable,
     const AtomicString& reference_target,
-    const Vector<AtomicString>& markers) {
+    const AtomicString& marker) {
   // SVG <use> is a special case for using this API to create a closed shadow
   // root.
   DCHECK(CanAttachShadowRoot() || IsA<SVGUseElement>(*this));
@@ -7594,7 +7587,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // 5. Let shadow be a new shadow root whose node document is this’s node
   // document, host is this, and mode is init’s mode.
   ShadowRoot& shadow_root =
-      CreateAndAttachShadowRoot(type, slot_assignment_mode, markers);
+      CreateAndAttachShadowRoot(type, slot_assignment_mode, marker);
   // 6. Set shadow’s delegates focus to init’s delegatesFocus.
   shadow_root.SetDelegatesFocus(focus_delegation ==
                                 FocusDelegation::kDelegateFocus);
@@ -7630,7 +7623,7 @@ ShadowRoot& Element::AttachShadowRootForTesting(ShadowRootMode type) {
                                   /*serializable*/ false,
                                   /*clonable*/ false,
                                   /*reference_target*/ g_null_atom,
-                                  /*markers*/ Vector<AtomicString>());
+                                  /*marker*/ g_null_atom);
 }
 
 ShadowRoot* Element::OpenShadowRoot() const {
@@ -12207,26 +12200,6 @@ DOMTokenList& Element::part() {
     data_ = rare_data.SetPart(part);
   }
   return *part;
-}
-
-DOMTokenList* Element::GetMarker() const {
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    return nullptr;
-  }
-  if (const ElementRareDataVector* data = RareData()) {
-    return data->GetMarker();
-  }
-  return nullptr;
-}
-
-DOMTokenList& Element::marker() {
-  ElementRareDataVector& rare_data = EnsureRareData();
-  DOMTokenList* marker = rare_data.GetMarker();
-  if (!marker) {
-    marker = MakeGarbageCollected<DOMTokenList>(*this, html_names::kMarkerAttr);
-    data_ = rare_data.SetMarker(marker);
-  }
-  return *marker;
 }
 
 bool Element::HasPartNamesMap() const {
