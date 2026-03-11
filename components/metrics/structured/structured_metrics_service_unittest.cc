@@ -108,7 +108,7 @@ class StructuredMetricsServiceTest : public testing::Test {
     service_ = std::make_unique<StructuredMetricsService>(&client_, &prefs_,
                                                           std::move(recorder));
     // Register the profile with the key data provider.
-    test_key_data_provider->OnProfileAdded(temp_dir_.GetPath());
+    test_key_data_provider->OnProfileAdded(ProfileKeyFilePath());
     Wait();
   }
 
@@ -202,6 +202,7 @@ class StructuredMetricsServiceTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple prefs_;
 
+ protected:
   // The TaskEnvironment is the manager for the test's threads and tasks. It
   // must be declared after the resources that its tasks may access. Its
   // destructor will block and flush all tasks, ensuring they can safely use
@@ -216,7 +217,6 @@ class StructuredMetricsServiceTest : public testing::Test {
   // SetUp/TearDown.
   TestRecorder test_recorder_;
 
- protected:
   // The service holds a raw pointer to this client, so `client_` must be
   // destroyed after `service_`.
   metrics::TestMetricsServiceClient client_;
@@ -386,6 +386,72 @@ TEST_F(StructuredMetricsServiceTest, FlushWithNoEvents) {
   Wait();
 
   EXPECT_THAT(GetPersistedLogCount(), 0);
+}
+
+TEST_F(StructuredMetricsServiceTest, TimerRestartsAfterEmptyRotation) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  // 1. Advance clock by 1 minute (initial delay) to trigger the first rotation
+  // (empty).
+  task_environment_.FastForwardBy(base::Minutes(1));
+  Wait();
+
+  // 2. Record an event.
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+
+  // Verify event reached storage.
+  ASSERT_TRUE(service_->recorder()->event_storage()->HasEvents());
+
+  // 3. Advance clock far enough to trigger the second rotation.
+  // Delay is 10 minutes. We already spent 1 minute for the initial delay.
+  // Let's advance another 15 minutes to be safe.
+  task_environment_.FastForwardBy(base::Minutes(15));
+  Wait();
+
+  // 4. The second rotation should have happened and stored the log even though
+  // the first rotation was empty.
+  service_->reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
+  EXPECT_EQ(GetPersistedLogCount(), 1);
+}
+
+TEST_F(StructuredMetricsServiceTest, RotateLogsWithUnsentLogsExtractsEvents) {
+  Init();
+  EnableRecording();
+  EnableReporting();
+  Wait();
+  ASSERT_TRUE(service_->recorder()->CanProvideMetrics());
+
+  // 1. Manually add a log to the store by recording and flushing.
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(1)));
+  Wait();
+  ASSERT_TRUE(service_->recorder()->event_storage()->HasEvents());
+
+  service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  Wait();
+  ASSERT_EQ(GetPersistedLogCount(), 1);
+  ASSERT_FALSE(service_->recorder()->event_storage()->HasEvents());
+
+  // 2. Record a SECOND event.
+  StructuredMetricsClient::Record(
+      std::move(TestEventOne().SetTestMetricTwo(2)));
+  Wait();
+  ASSERT_TRUE(service_->recorder()->event_storage()->HasEvents());
+
+  // 3. Call RotateLogsAndSend directly (as if triggered by timer).
+  service_->RotateLogsAndSend();
+  Wait();
+
+  // 4. We should now have 2 logs because the second event was extracted even
+  // though the store already had a log.
+  service_->reporting_service_->log_store()->TrimAndPersistUnsentLogs(true);
+  EXPECT_EQ(GetPersistedLogCount(), 2);
 }
 
 }  // namespace metrics::structured

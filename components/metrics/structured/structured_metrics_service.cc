@@ -62,8 +62,9 @@ StructuredMetricsService::StructuredMetricsService(
 
   // Setup the log rotation scheduler.
   base::RepeatingClosure rotate_callback = base::BindRepeating(
-      &StructuredMetricsService::RotateLogsAndSend, weak_factory_.GetWeakPtr());
-  base::RepeatingCallback<base::TimeDelta(void)> get_upload_interval_callback =
+      &StructuredMetricsService::RotateLogsAndSend, weak_factory_.GetWeakPtr(),
+      /*notify_scheduler=*/true);
+  base::RepeatingCallback<base::TimeDelta()> get_upload_interval_callback =
       base::BindRepeating(&StructuredMetricsService::GetUploadTimeInterval,
                           base::Unretained(this));
 
@@ -157,33 +158,16 @@ base::TimeDelta StructuredMetricsService::GetUploadTimeInterval() {
   return kUploadInterval;
 }
 
-void StructuredMetricsService::RotateLogsAndSend() {
+void StructuredMetricsService::RotateLogsAndSend(bool notify_scheduler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Verify that the recorder has been initialized and can be providing metrics.
-  // And if it is, then see if there are any events ready to be uploaded.
-  if (!recorder_->CanProvideMetrics() ||
-      !recorder_->event_storage()->HasEvents()) {
-    return;
-  }
-
-  // If we do not have any logs then nothing to do.
-  if (!reporting_service_->log_store()->has_unsent_logs()) {
-    CreateLogs(metrics::MetricsLogsEventManager::CreateReason::kPeriodic,
-               /*notify_scheduler=*/true);
-    return;
-  }
-
-  // If we already have a completed log then we can upload here.
-  reporting_service_->Start();
-  scheduler_->RotationFinished();
+  CreateLogs(metrics::MetricsLogsEventManager::CreateReason::kPeriodic,
+             notify_scheduler);
 }
 
 void StructuredMetricsService::CreateLogs(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   recorder_->ProvideEventMetrics(
       base::BindOnce(&StructuredMetricsService::StoreLogAndStartUpload,
                      weak_factory_.GetWeakPtr(), reason, notify_scheduler));
@@ -192,6 +176,8 @@ void StructuredMetricsService::CreateLogs(
 void StructuredMetricsService::StoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason,
     StructuredDataProto structured_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (structured_data.events_size() == 0) {
     // If there are no events then we do not need to create a log.
     return;
@@ -199,7 +185,6 @@ void StructuredMetricsService::StoreLog(
 
   ChromeUserMetricsExtension uma_proto;
   InitializeUmaProto(uma_proto);
-
   uma_proto.mutable_structured_data()->Swap(&structured_data);
 
   const std::string serialized_log = SerializeLog(uma_proto);
@@ -212,15 +197,19 @@ void StructuredMetricsService::StoreLogAndStartUpload(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler,
     StructuredDataProto structured_data) {
-  ChromeUserMetricsExtension uma_proto;
-  InitializeUmaProto(uma_proto);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  uma_proto.mutable_structured_data()->Swap(&structured_data);
+  if (!structured_data.events().empty()) {
+    ChromeUserMetricsExtension uma_proto;
+    InitializeUmaProto(uma_proto);
 
-  const std::string serialized_log = SerializeLog(uma_proto);
-  reporting_service_->StoreLog(serialized_log, reason);
+    uma_proto.mutable_structured_data()->Swap(&structured_data);
 
-  log_creation_time_ = base::TimeTicks::Now();
+    const std::string serialized_log = SerializeLog(uma_proto);
+    reporting_service_->StoreLog(serialized_log, reason);
+
+    log_creation_time_ = base::TimeTicks::Now();
+  }
 
   // If this callback is set, then run it and return.
   // It will only be set from tests where we do not want to upload.

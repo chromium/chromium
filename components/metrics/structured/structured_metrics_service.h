@@ -98,8 +98,11 @@ class StructuredMetricsService final {
 #endif
   friend class metrics::StructuredMetricsServiceTestBase;
 
-  FRIEND_TEST_ALL_PREFIXES(metrics::structured::StructuredMetricsServiceTest,
-                           RotateLogs);
+  FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
+  FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest,
+                           TimerRestartsAfterEmptyRotation);
+  FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest,
+                           RotateLogsWithUnsentLogsExtractsEvents);
   FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsService, CreateLogs);
   FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
                            ValidStateWhenDisabled);
@@ -110,10 +113,12 @@ class StructuredMetricsService final {
   // Callback function to get the upload interval.
   base::TimeDelta GetUploadTimeInterval();
 
-  // Creates a new log and sends any currently stages logs.
-  void RotateLogsAndSend();
+  // Creates a new log and sends any currently stages logs. If
+  // `notify_scheduler` is true, then the scheduler will be notified that the
+  // rotation has finished.
+  void RotateLogsAndSend(bool notify_scheduler = false);
 
-  // Populates an UMA proto with data that must be accessed form the UI
+  // Populates an UMA proto with data that must be accessed from the UI
   // sequence. A task to collect events is posted which updates the created UMA
   // proto. On Windows, Mac, and Linux logs are built synchronously.
   //
