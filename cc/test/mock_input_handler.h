@@ -51,7 +51,7 @@ class MockInputHandler : public InputHandler {
                ScrollStatus(ScrollState*, ui::ScrollInputType type));
   MOCK_METHOD2(ScrollUpdate,
                InputHandlerScrollResult(ScrollState, base::TimeDelta));
-  MOCK_METHOD1(ScrollEnd, void(bool));
+  MOCK_METHOD2(ScrollEnd, void(bool, std::optional<ScrollVector> scroll_state));
   MOCK_METHOD2(RecordScrollBegin,
                void(ui::ScrollInputType type, ScrollBeginThreadState state));
   MOCK_METHOD1(RecordScrollEnd, void(ui::ScrollInputType type));

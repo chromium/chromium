@@ -5163,8 +5163,9 @@ void LayerTreeHostImpl::ScrollBegin() const {
   return browser_controls_offset_manager_->ScrollBegin();
 }
 
-void LayerTreeHostImpl::ScrollEnd() const {
-  return browser_controls_offset_manager_->ScrollEnd();
+void LayerTreeHostImpl::ScrollEnd(
+    const gfx::Vector2dF& compensated_scroll_delta) const {
+  return browser_controls_offset_manager_->ScrollEnd(compensated_scroll_delta);
 }
 
 void LayerTreeHostImpl::StartScrollSequence(

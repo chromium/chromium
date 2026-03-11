@@ -204,6 +204,10 @@ bool StructTraits<blink::mojom::EventDataView,
               gesture_data->scroll_data->inertial_phase;
           gesture_event->data.scroll_end.synthetic =
               gesture_data->scroll_data->synthetic;
+          gesture_event->data.scroll_end.delta_x_compensated =
+              gesture_data->scroll_data->delta_x;
+          gesture_event->data.scroll_end.delta_y_compensated =
+              gesture_data->scroll_data->delta_y;
           break;
         case blink::WebInputEvent::Type::kGestureScrollUpdate:
           gesture_event->data.scroll_update.delta_x =
@@ -499,7 +503,9 @@ StructTraits<blink::mojom::EventDataView,
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd:
       gesture_data->scroll_data = blink::mojom::ScrollData::New(
-          0, 0, gesture_event->data.scroll_end.delta_units, false,
+          gesture_event->data.scroll_end.delta_x_compensated,
+          gesture_event->data.scroll_end.delta_y_compensated,
+          gesture_event->data.scroll_end.delta_units, false,
           gesture_event->data.scroll_end.inertial_phase,
           gesture_event->data.scroll_end.synthetic, 0, false);
       break;

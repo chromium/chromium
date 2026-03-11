@@ -128,6 +128,10 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     } scroll_update;
 
     struct {
+      // The scroll delta that is compensated for latency i.e. the scroll delta
+      // that was not sent to the renderer as scroll updates.
+      float delta_x_compensated;
+      float delta_y_compensated;
       // The original delta units the ScrollBegin and ScrollUpdates
       // were sent as.
       ui::ScrollGranularity delta_units;

@@ -1482,7 +1482,7 @@ TEST_F(GestureScrollUpdatesCompensatedTest, GestureScrollUpdatesCompensated) {
   base::TimeTicks ack = base::TimeTicks::Now();
   auto timestamp_override = SetAckTimestamp(ack);
 
-  const std::array<uint32_t, 4> touch_event_id = {
+  const std::array<uint32_t, 5> touch_event_id = {
       SendPacket(PressTouchPoint(), Gestures(EventType::kGestureBegin)),
       // The first touch move is created more than the acceptable latency from
       // when it is acknowledged.
@@ -1498,7 +1498,11 @@ TEST_F(GestureScrollUpdatesCompensatedTest, GestureScrollUpdatesCompensated) {
       // The third touch move is created less than expected latency from when
       // the first touch move is acknowledged.
       SendTouchGestures(MoveTouchPoint(ack - expected_latency / 2),
-                        CreatePacket({CreateGestureScrollUpdate(20.f, 20.f)}))};
+                        CreatePacket({CreateGestureScrollUpdate(20.f, 20.f)})),
+      // Intentionally skip kGestureEnd to test contents of kGestureScrollEnd.
+      SendTouchGestures(
+          ReleaseTouchPoint(),
+          CreatePacket({CreateGesture(EventType::kGestureScrollEnd)}))};
 
   SendTouchNotConsumedAck(touch_event_id[0]);
   EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureBegin),
@@ -1528,6 +1532,15 @@ TEST_F(GestureScrollUpdatesCompensatedTest, GestureScrollUpdatesCompensated) {
   EXPECT_EQ(last_sent_gesture().details.scroll_x(), 20.f);
   EXPECT_EQ(last_sent_gesture().details.scroll_y(), 20.f);
   EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+                            GetAndResetSentGestures()));
+
+  // The gesture scroll end should contain the total compensated scroll delta.
+  SendTouchNotConsumedAck(touch_event_id[4]);
+  EXPECT_GT(last_sent_gesture().details.scroll_x_compensated(), 0.f);
+  EXPECT_LT(last_sent_gesture().details.scroll_x_compensated(), 40.f);
+  EXPECT_GT(last_sent_gesture().details.scroll_y_compensated(), 0.f);
+  EXPECT_LT(last_sent_gesture().details.scroll_y_compensated(), 40.f);
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollEnd),
                             GetAndResetSentGestures()));
 }
 

@@ -134,7 +134,8 @@ class CompositorDelegateForInput {
   virtual void ScrollAnimationAbort(ElementId element_id) const = 0;
   virtual float GetBrowserControlsTopOffset() const = 0;
   virtual void ScrollBegin() const = 0;
-  virtual void ScrollEnd() const = 0;
+  virtual void ScrollEnd(
+      const gfx::Vector2dF& compensated_scroll_delta) const = 0;
   virtual void StartScrollSequence(
       FrameSequenceTrackerType type,
       FrameInfo::SmoothEffectDrivingThread scrolling_thread) = 0;

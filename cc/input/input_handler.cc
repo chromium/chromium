@@ -571,16 +571,28 @@ void InputHandler::InsertPendingScrollendContainer(
   }
 }
 
-void InputHandler::ScrollEnd(bool should_snap) {
-  ScrollEnd(nullptr, should_snap);
+void InputHandler::ScrollEnd(
+    bool should_snap,
+    std::optional<ScrollVector> compensated_scroll_delta) {
+  ScrollEnd(nullptr, should_snap, compensated_scroll_delta);
 }
 
-void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
+void InputHandler::ScrollEnd(
+    ScrollNode* scroll_node,
+    bool should_snap,
+    std::optional<ScrollVector> compensated_scroll_delta) {
   ScrollNode* latched_node = CurrentlyScrollingNode();
 
-  auto end_of_scroll_cleanup = [&](ElementId current_scroller_id) {
-    compositor_delegate_->ScrollEnd();
-    deferred_scroll_ends_.erase(current_scroller_id);
+  auto end_of_scroll_cleanup = [&](const ScrollNode& cleanup_node) {
+    gfx::Vector2dF compensated_scroll_delta_pixels;
+    if (compensated_scroll_delta.has_value()) {
+      compensated_scroll_delta_pixels = ResolveScrollGranularityToPixels(
+          cleanup_node, compensated_scroll_delta->scroll_delta,
+          compensated_scroll_delta->granularity);
+    }
+
+    compositor_delegate_->ScrollEnd(compensated_scroll_delta_pixels);
+    deferred_scroll_ends_.erase(cleanup_node.element_id);
     snap_fling_state_ = kNoFling;
     snap_strategy_.reset();
     has_received_scroll_update_for_sequence_ = false;
@@ -601,7 +613,7 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
     // else.
     if (!latched_node) {
       scrollbar_controller_->ResetState();
-      end_of_scroll_cleanup(scroll_node->element_id);
+      end_of_scroll_cleanup(*scroll_node);
     }
     snap_animation_data_map_.erase(scroll_node->element_id);
   } else if (latched_node) {
@@ -649,7 +661,7 @@ void InputHandler::ScrollEnd(ScrollNode* scroll_node, bool should_snap) {
       InsertPendingScrollendContainer(latched_node->element_id);
     }
 
-    end_of_scroll_cleanup(latched_node->element_id);
+    end_of_scroll_cleanup(*latched_node);
     snap_animation_data_map_.erase(latched_node->element_id);
     ClearCurrentlyScrollingNode();
   } else {

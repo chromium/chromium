@@ -161,12 +161,17 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
         const GestureEventDataPacket& packet,
         const GestureEventData& gesture);
 
-    void SetReferenceTimestamp(base::TimeTicks reference_timestamp);
+    GestureEventData GetCompensatedGestureScrollEnd(
+        const GestureEventDataPacket& packet,
+        const GestureEventData& gesture);
+
+    void Reset(base::TimeTicks reference_timestamp);
 
    private:
     const base::TimeDelta expected_latency_;
     const base::TimeDelta acceptable_latency_;
     base::TimeTicks reference_timestamp_;
+    gfx::Vector2dF total_compensated_scroll_update_;
   };
 
   std::optional<ScrollUpdateCompensator> scroll_update_compensator_;

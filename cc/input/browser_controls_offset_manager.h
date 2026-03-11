@@ -146,7 +146,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   void ScrollBegin();
   gfx::Vector2dF ScrollBy(const gfx::Vector2dF& pending_delta);
-  void ScrollEnd();
+  void ScrollEnd(
+      const gfx::Vector2dF& compensated_scroll_delta = gfx::Vector2dF());
 
   // The caller should ensure that |Pinch{Begin,End}| are called within
   // the scope of |Scroll{Begin,End}|.

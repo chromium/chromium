@@ -109,6 +109,21 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
     return data_.scroll_update.delta_units;
   }
 
+  float scroll_x_compensated() const {
+    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    return data_.scroll_end.x_compensated;
+  }
+
+  float scroll_y_compensated() const {
+    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    return data_.scroll_end.y_compensated;
+  }
+
+  ui::ScrollGranularity scroll_end_units() const {
+    DCHECK_EQ(EventType::kGestureScrollEnd, type_);
+    return data_.scroll_end.delta_units;
+  }
+
   float velocity_x() const {
     DCHECK_EQ(EventType::kScrollFlingStart, type_);
     return data_.fling_velocity.x;
@@ -245,6 +260,14 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
       // Whether any previous scroll update in the current scroll sequence was
       // suppressed because the underlying touch was consumed.
     } scroll_update;
+
+    struct {
+      // The scroll delta that is compensated for latency i.e. the scroll delta
+      // that was not sent to the renderer as scroll updates.
+      float x_compensated;
+      float y_compensated;
+      ui::ScrollGranularity delta_units;
+    } scroll_end;
 
     struct {  // PINCH details.
       float scale;

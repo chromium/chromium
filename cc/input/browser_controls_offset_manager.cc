@@ -798,7 +798,8 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   did_animate_this_scroll_ = true;
 }
 
-void BrowserControlsOffsetManager::ScrollEnd() {
+void BrowserControlsOffsetManager::ScrollEnd(
+    const gfx::Vector2dF& compensated_scroll_delta) {
   if (pinch_gesture_active_)
     return;
 
@@ -806,6 +807,32 @@ void BrowserControlsOffsetManager::ScrollEnd() {
     scroll_velocity_tracker_.Reset();
     did_animate_this_scroll_ = false;
     return;
+  }
+
+  // If the user scrolled up but scroll delta was compensated for latency, the
+  // controls should still be shown when the scroll completes if it would have
+  // been shown otherwise. Both top and bottom controls' animation is triggered
+  // when scroll delta is negative (i.e. scrolling up), with the only difference
+  // being the specific height and ratio values.
+  float compensated_scroll_delta_y = compensated_scroll_delta.y();
+  if (!show_controls_when_scroll_completes_ &&
+      compensated_scroll_delta_y < 0.f) {
+    float controls_height =
+        TopControlsHeight() ? TopControlsHeight() : BottomControlsHeight();
+    float controls_shown_ratio = TopControlsHeight()
+                                     ? TopControlsShownRatio()
+                                     : BottomControlsShownRatio();
+    float controls_min_shown_ratio = TopControlsHeight()
+                                         ? TopControlsMinShownRatio()
+                                         : BottomControlsMinShownRatio();
+
+    float normalized_shown_ratio_after_compensation = NormalizeShownRatio(
+        controls_shown_ratio +
+            std::abs(compensated_scroll_delta_y) / controls_height,
+        controls_min_shown_ratio);
+    if (normalized_shown_ratio_after_compensation >= controls_show_threshold_) {
+      show_controls_when_scroll_completes_ = true;
+    }
   }
 
   // See if we should animate the top bar in, in case there was a race between

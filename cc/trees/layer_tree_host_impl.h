@@ -277,7 +277,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ScrollAnimationAbort(ElementId element_id) const override;
   float GetBrowserControlsTopOffset() const override;
   void ScrollBegin() const override;
-  void ScrollEnd() const override;
+  void ScrollEnd(const gfx::Vector2dF& compensated_scroll_delta) const override;
   void StartScrollSequence(
       FrameSequenceTrackerType type,
       FrameInfo::SmoothEffectDrivingThread scrolling_thread) override;

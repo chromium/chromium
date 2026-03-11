@@ -1178,7 +1178,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     // to RecordScrollEnd.
     input_handler_->RecordScrollEnd(
         GestureScrollInputType(*currently_active_gesture_device_));
-    InputHandlerScrollEnd();
+    InputHandlerScrollEnd(std::nullopt);
   }
 
   cc::ScrollState scroll_state(CreateScrollStateDataForGesture(gesture_event));
@@ -1363,7 +1363,14 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
        gesture_event.SourceDevice()))
     return DROP_EVENT;
 
-  InputHandlerScrollEnd();
+  cc::InputHandler::ScrollVector scroll_delta_vector{
+      .scroll_delta =
+          gfx::Vector2dF(-gesture_event.data.scroll_end.delta_x_compensated,
+                         -gesture_event.data.scroll_end.delta_y_compensated),
+      .granularity = gesture_event.data.scroll_end.delta_units,
+  };
+  InputHandlerScrollEnd(scroll_delta_vector);
+
   if (elastic_overscroll_controller_) {
     HandleScrollElasticityOverscroll(
         gesture_event, cc::InputHandlerScrollResult(), latched_element_id);
@@ -1372,8 +1379,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollEnd(
   return DID_HANDLE;
 }
 
-void InputHandlerProxy::InputHandlerScrollEnd() {
-  input_handler_->ScrollEnd(/*should_snap=*/true);
+void InputHandlerProxy::InputHandlerScrollEnd(
+    std::optional<cc::InputHandler::ScrollVector> scroll_state) {
+  input_handler_->ScrollEnd(/*should_snap=*/true, scroll_state);
   handling_gesture_on_impl_thread_ = false;
 
   DCHECK(!gesture_pinch_in_progress_);
@@ -2015,7 +2023,7 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
     if (handling_gesture_on_impl_thread_) {
       input_handler_->RecordScrollEnd(
           GestureScrollInputType(*currently_active_gesture_device_));
-      InputHandlerScrollEnd();
+      InputHandlerScrollEnd(std::nullopt);
     }
   }
 

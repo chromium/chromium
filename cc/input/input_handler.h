@@ -324,11 +324,21 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
       ScrollState scroll_state,
       base::TimeDelta delayed_by = base::TimeDelta());
 
+  struct ScrollVector {
+    gfx::Vector2dF scroll_delta;
+    ui::ScrollGranularity granularity;
+  };
+
   // Stop scrolling the selected layer. Must be called only if ScrollBegin()
   // returned SCROLL_STARTED. No-op if ScrollBegin wasn't called or didn't
   // result in a successful scroll latch. Snap to a snap position if
   // |should_snap| is true.
-  virtual void ScrollEnd(bool should_snap = false);
+  virtual void ScrollEnd(bool should_snap,
+                         std::optional<ScrollVector> compensated_scroll_delta);
+
+  void ScrollEnd(bool should_snap = false) {
+    ScrollEnd(should_snap, std::nullopt);
+  }
 
   // Called to notify every time scroll-begin/end is attempted by an input
   // event.
@@ -750,7 +760,9 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // |scroll_node| is not null, we assume it is the ScrollNode for which the
   // scroll has ended. Otherwise, we assume the scroll has ended for
   // |CurrentlyScrollingNode()|.
-  void ScrollEnd(ScrollNode* scroll_node, bool should_snap = false);
+  void ScrollEnd(ScrollNode* scroll_node,
+                 bool should_snap = false,
+                 std::optional<ScrollVector> scroll_state = std::nullopt);
 
   void LimitDeltaToScrollerSize(const ScrollState& scroll_state,
                                 const ScrollNode& scroll_node,

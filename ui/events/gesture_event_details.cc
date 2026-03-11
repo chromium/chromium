@@ -58,6 +58,12 @@ GestureEventDetails::GestureEventDetails(ui::EventType type,
       data_.scroll_update.delta_units = units;
       break;
 
+    case ui::EventType::kGestureScrollEnd:
+      data_.scroll_end.x_compensated = delta_x;
+      data_.scroll_end.y_compensated = delta_y;
+      data_.scroll_end.delta_units = units;
+      break;
+
     case ui::EventType::kScrollFlingStart:
       data_.fling_velocity.x = delta_x;
       data_.fling_velocity.y = delta_y;

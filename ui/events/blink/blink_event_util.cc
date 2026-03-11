@@ -423,6 +423,11 @@ WebGestureEvent CreateWebGestureEvent(const GestureEventDetails& details,
       break;
     case EventType::kGestureScrollEnd:
       gesture.SetType(WebInputEvent::Type::kGestureScrollEnd);
+      gesture.data.scroll_end.delta_x_compensated =
+          IfNanUseMaxFloat(details.scroll_x_compensated());
+      gesture.data.scroll_end.delta_y_compensated =
+          IfNanUseMaxFloat(details.scroll_y_compensated());
+      gesture.data.scroll_end.delta_units = details.scroll_end_units();
       gesture.data.scroll_end.inertial_phase =
           WebGestureEvent::InertialPhaseState::kNonMomentum;
       break;

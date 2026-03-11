@@ -317,7 +317,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
       EventWithCallback* event_with_callback,
       const gfx::PointF& position);
 
-  void InputHandlerScrollEnd();
+  void InputHandlerScrollEnd(
+      std::optional<cc::InputHandler::ScrollVector> scroll_state);
 
   // Request a frame of animation from the InputHandler or
   // SynchronousInputHandler. They can provide that by calling Animate().

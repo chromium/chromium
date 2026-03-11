@@ -1676,6 +1676,39 @@ TEST(BrowserControlsOffsetManagerTest, SmoothScrollPreventsInstantJump) {
   manager->ScrollEnd();
 }
 
+TEST(BrowserControlsOffsetManagerTest, ScrollWithLatencyCompensation) {
+  constexpr float kControlsHeight = 100.f;
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/kControlsHeight,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  manager->ScrollBegin();
+  manager->ScrollBy(gfx::Vector2dF(0.f, kControlsHeight));
+  manager->ScrollEnd();
+  EXPECT_FLOAT_EQ(manager->TopControlsShownRatio(), 0.f);
+
+  manager->ScrollBegin();
+
+  // Scroll by a small amount that is not enough to show controls.
+  manager->ScrollBy(gfx::Vector2dF(0.f, -kControlsHeight * 0.01f));
+  EXPECT_LT(manager->TopControlsShownRatio(), 1.f);
+
+  // ScrollEnd with latency compensation should show the controls if the
+  // compensated delta is enough to show the controls.
+  EXPECT_FALSE(manager->HasAnimation());
+  manager->ScrollEnd(gfx::Vector2dF(0.f, -kControlsHeight * 0.5f));
+  EXPECT_TRUE(manager->HasAnimation());
+  base::TimeTicks time = base::TimeTicks::Now();
+  while (manager->HasAnimation()) {
+    time = base::Milliseconds(100) + time;
+    manager->Animate(time);
+  }
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(manager->TopControlsShownRatio(), 1.f);
+}
+
 class BrowserControlsOffsetManagerCancelAnimationTest : public testing::Test {
  public:
   BrowserControlsOffsetManagerCancelAnimationTest()
