@@ -8,6 +8,8 @@
 #include <optional>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gfx {
@@ -18,6 +20,7 @@ namespace glic {
 
 class GlicWidget;
 class GlicWindowAnimator;
+class GlicInstanceCoordinatorBrowserTest;
 
 // Observes mouse and touch events on the provided Glic widget to handle
 // dragging.
@@ -28,10 +31,11 @@ class GlicWindowEventObserver {
     virtual ~Delegate() = default;
     virtual GlicWindowAnimator* window_animator() = 0;
     virtual void OnDragComplete() = 0;
+    virtual base::WeakPtr<Delegate> GetDelegateWeakPtr() = 0;
   };
 
   GlicWindowEventObserver(base::WeakPtr<GlicWidget> glic_widget,
-                          Delegate* delegate);
+                          base::WeakPtr<Delegate> delegate);
   ~GlicWindowEventObserver();
 
   void SetDraggingAreasAndWatchForMouseEvents();
@@ -39,16 +43,26 @@ class GlicWindowEventObserver {
 
   bool IsDragging() { return in_move_loop_; }
 
- private:
-  class WindowEventObserverImpl;
+  base::WeakPtr<GlicWindowEventObserver> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ protected:
+  FRIEND_TEST_ALL_PREFIXES(GlicInstanceCoordinatorBrowserTest,
+                           WidgetClosedDuringDragDoesNotCrash);
 
   void HandleWindowDragWithOffset(const gfx::Vector2d& mouse_offset);
 
+ private:
+  class WindowEventObserverImpl;
+
   // The widget that this animator is responsible for.
   base::WeakPtr<GlicWidget> widget_;
-  raw_ptr<Delegate> delegate_;
+  base::WeakPtr<Delegate> delegate_;
   std::unique_ptr<WindowEventObserverImpl> window_event_observer_impl_;
   bool in_move_loop_ = false;
+
+  base::WeakPtrFactory<GlicWindowEventObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

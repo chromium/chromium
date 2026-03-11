@@ -260,6 +260,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Test support.
 #if !BUILDFLAG(IS_ANDROID)
   views::View* GetActiveEmbedderGlicViewForTesting();
+  class GlicFloatingUi* GetFloatingUiForTesting();
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();

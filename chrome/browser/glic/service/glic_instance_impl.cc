@@ -1348,6 +1348,17 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   }
   return embedder->GetView().get();
 }
+
+GlicFloatingUi* GlicInstanceImpl::GetFloatingUiForTesting() {
+  if (!IsDetached()) {
+    return nullptr;
+  }
+  auto* embedder = GetActiveEmbedder();
+  if (!embedder) {
+    return nullptr;
+  }
+  return static_cast<GlicFloatingUi*>(embedder);
+}
 #endif
 
 void GlicInstanceImpl::OnTabAddedToTask(

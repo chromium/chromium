@@ -22,6 +22,8 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
+#include "chrome/browser/glic/widget/glic_floating_ui.h"
+#include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1075,5 +1077,40 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // the order of destruction. The user expects it to cause instance deletion.
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInstanceDestroyed);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       WidgetClosedDuringDragDoesNotCrash) {
+  // Open floaty
+  coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
+                       mojom::InvocationSource::kTopChromeButton,
+                       /*deprecated_prompt_suggestion=*/std::nullopt,
+                       /*deprecated_auto_send=*/false,
+                       /*deprecated_conversation_id=*/std::nullopt);
+  GlicInstanceImpl* instance =
+      static_cast<GlicInstanceImpl*>(coordinator().GetActiveInstance());
+  ASSERT_TRUE(instance);
+  ASSERT_TRUE(instance->IsDetached());
+  ASSERT_TRUE(WaitForGlicOpen());
+
+  // Post a task to close the instance
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](GlicInstanceCoordinator* coordinator) {
+                       coordinator->Close(CloseOptions());
+                     },
+                     base::Unretained(&coordinator())));
+
+  // Trigger the drag via the window event observer
+  auto* floating_ui = instance->GetFloatingUiForTesting();
+  ASSERT_TRUE(floating_ui);
+  floating_ui->GetWindowEventObserverForTesting()->HandleWindowDragWithOffset(
+      gfx::Vector2d(10, 10));
+
+  // Verify it closed without crashing
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return coordinator().GetActiveInstance() == nullptr; }));
+}
+#endif
 
 }  // namespace glic
