@@ -32,6 +32,7 @@
 
 #include <cstddef>
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -108,105 +110,141 @@ void HTMLTemplateElement::Trace(Visitor* visitor) const {
   HTMLElement::Trace(visitor);
 }
 
-bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    return false;
+namespace {
+struct PatchResult {
+  STACK_ALLOCATED();
+
+ public:
+  ContainerNode* host = nullptr;
+  ProcessingInstruction* start_marker = nullptr;
+  ProcessingInstruction* end_marker = nullptr;
+};
+
+// TODO(nrosenthal): move this from HTMLTemplateElement to the parser.
+std::optional<PatchResult> BeginPatchInternal(ContainerNode* scope,
+                                              const AtomicString& for_attr) {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() || for_attr.IsNull() ||
+      for_attr.empty()) {
+    return std::nullopt;
   }
 
-  const AtomicString& for_attr = FastGetAttribute(html_names::kForAttr);
-  if (for_attr.IsNull() || for_attr.empty()) {
-    return false;
+  AtomicString host_name = for_attr;
+  AtomicString marker_name = g_empty_atom;
+
+  auto index_of_hash = for_attr.find('#');
+  if (index_of_hash != AtomicString::npos) {
+    const String as_string = for_attr.GetString();
+    host_name = AtomicString(as_string.Left(index_of_hash));
+    marker_name = AtomicString(as_string.Substring(index_of_hash + 1));
   }
 
-  ContainerNode* root = &node;
+  Document& document = scope->GetDocument();
 
-  if (auto* parent_template = DynamicTo<HTMLTemplateElement>(node)) {
-    root = parent_template->InsertionTarget();
+  if (auto* parent_template = DynamicTo<HTMLTemplateElement>(scope)) {
+    // TODO(nrosenthal): <template for> inside <template for>.
+    scope = parent_template->InsertionTarget();
+  } else if (scope == document.body()) {
+    scope = document.documentElement();
   }
 
-  if (root == GetDocument().body()) {
-    root = GetDocument().documentElement();
-  }
+  ContainerNode* host = nullptr;
 
-  ContainerNode* marker_host = nullptr;
-
-  if (ShadowRoot* as_shadow = DynamicTo<ShadowRoot>(root)) {
-    if (as_shadow->marker().Contains(for_attr)) {
-      marker_host = as_shadow;
+  if (ShadowRoot* as_shadow = DynamicTo<ShadowRoot>(scope)) {
+    if (as_shadow->marker().Contains(host_name)) {
+      host = as_shadow;
     }
   }
 
-  if (!marker_host) {
-    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*root)) {
+  if (!host) {
+    for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*scope)) {
       Element* element = DynamicTo<Element>(descendant);
       if (!element) {
         continue;
       }
       DOMTokenList* marker_attribute = element->GetMarker();
-      if (marker_attribute && marker_attribute->contains(for_attr)) {
-        marker_host = element;
+      if (marker_attribute && marker_attribute->contains(host_name)) {
+        host = element;
         break;
       }
     }
   }
 
-  if (!marker_host) {
-    return false;
+  if (!host) {
+    return std::nullopt;
   }
 
-  CHECK(!insertion_start_marker_);
-  CHECK(!insertion_end_marker_);
-
-  DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
-
-  for (Node* child = marker_host->firstChild(); child;
-       child = child->nextSibling()) {
-    if (!child->IsProcessingInstruction()) {
-      continue;
-    }
-    ProcessingInstruction* processing_instruction =
-        To<ProcessingInstruction>(child);
-    if (processing_instruction->GetAttributeValue(kNamePseudoAttr) !=
-        for_attr) {
+  int marker_depth = 0;
+  ProcessingInstruction* start_marker = nullptr;
+  ProcessingInstruction* end_marker = nullptr;
+  for (Node& child : NodeTraversal::ChildrenOf(*host)) {
+    auto* processing_instruction = DynamicTo<ProcessingInstruction>(child);
+    if (!processing_instruction) {
       continue;
     }
 
-    const String& current_target = processing_instruction->target();
-    if (EqualIgnoringAsciiCase(current_target, "marker")) {
-      override_insertion_target_ = marker_host;
-      insertion_start_marker_ = processing_instruction;
-      insertion_end_marker_ = processing_instruction;
-      return true;
+    AtomicString current_target(processing_instruction->target().LowerASCII());
+    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
+    DEFINE_STATIC_LOCAL(AtomicString, kStart, ("start"));
+    DEFINE_STATIC_LOCAL(AtomicString, kEnd, ("end"));
+    DEFINE_STATIC_LOCAL(AtomicString, kMarker, ("marker"));
+
+    auto is_name_matching = [&]() {
+      return processing_instruction->GetAttributeValue(
+                 kNamePseudoAttr, g_empty_atom) == marker_name;
+    };
+
+    if (current_target == kMarker && !start_marker && is_name_matching()) {
+      return {{.host = host,
+               .start_marker = processing_instruction,
+               .end_marker = processing_instruction}};
     }
 
-    if (EqualIgnoringAsciiCase(current_target, "end") &&
-        insertion_start_marker_) {
-      CHECK(override_insertion_target_);
-      CHECK(!insertion_end_marker_);
-      insertion_end_marker_ = processing_instruction;
-      break;
-    }
-
-    if (EqualIgnoringAsciiCase(current_target, "start") &&
-        !insertion_start_marker_) {
-      CHECK(!override_insertion_target_);
-      override_insertion_target_ = marker_host;
-      insertion_start_marker_ = processing_instruction;
+    if (current_target == kStart) {
+      if (start_marker) {
+        marker_depth++;
+      } else if (is_name_matching()) {
+        start_marker = processing_instruction;
+      }
+    } else if (current_target == kEnd && start_marker) {
+      if (marker_depth == 0) {
+        end_marker = processing_instruction;
+        break;
+      }
+      marker_depth--;
     }
   }
 
-  if (!override_insertion_target_) {
+  if (!start_marker) {
+    return std::nullopt;
+  }
+
+  DCHECK(EqualIgnoringAsciiCase(start_marker->target(), "start"));
+  DCHECK(!end_marker || EqualIgnoringAsciiCase(end_marker->target(), "end"));
+
+  for (Node* child = start_marker->nextSibling();
+       child && (child != end_marker); child = start_marker->nextSibling()) {
+    host->RemoveChild(child);
+  }
+
+  return {
+      {.host = host, .start_marker = start_marker, .end_marker = end_marker}};
+}
+}  // namespace
+
+bool HTMLTemplateElement::BeginPatch(ContainerNode& scope) {
+  auto result =
+      BeginPatchInternal(&scope, FastGetAttribute(html_names::kForAttr));
+  if (!result) {
     return false;
   }
 
-  CHECK(insertion_start_marker_);
+  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  CHECK(result->host);
+  CHECK(result->start_marker);
 
-  for (Node* child = insertion_start_marker_->nextSibling();
-       child && (child != insertion_end_marker_);
-       child = insertion_start_marker_->nextSibling()) {
-    marker_host->RemoveChild(child);
-  }
-
+  override_insertion_target_ = result->host;
+  insertion_start_marker_ = result->start_marker;
+  insertion_end_marker_ = result->end_marker;
   return true;
 }
 
