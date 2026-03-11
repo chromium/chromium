@@ -842,14 +842,6 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.enableNativeZeroStateSuggestions_ = enable;
   }
 
-  setIsInBasicModeForTesting(isInBasicMode: boolean) {
-    this.isInBasicMode_ = isInBasicMode;
-  }
-
-  getForcedComposeboxBoundsForTesting(): Rect|null {
-    return this.forcedComposeboxBounds_;
-  }
-
   // Conditionally update the provided thread URL so it restores an existing
   // thread. If the thread URL already contains the params for loading a
   // specific thread, this will return the same URL that was provided.
