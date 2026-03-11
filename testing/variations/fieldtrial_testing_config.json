@@ -7864,21 +7864,6 @@
             ]
         }
     ],
-    "D3D11Vp9kSVCHWDecoding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "D3D11Vp9kSVCHWDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "D3D12VideoEncodeAccelerator": [
         {
             "platforms": [
