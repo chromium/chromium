@@ -254,12 +254,8 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
-  auto foreign_session_handler =
-      std::make_unique<browser_sync::ForeignSessionHandler>();
-  browser_sync::ForeignSessionHandler* foreign_session_handler_ptr =
-      foreign_session_handler.get();
-  web_ui->AddMessageHandler(std::move(foreign_session_handler));
-  foreign_session_handler_ptr->InitializeForeignSessions();
+  web_ui->AddMessageHandler(
+      std::make_unique<browser_sync::ForeignSessionHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<HistoryLoginHandler>(base::BindRepeating(
           &HistoryUI::UpdateDataSource, base::Unretained(this))));

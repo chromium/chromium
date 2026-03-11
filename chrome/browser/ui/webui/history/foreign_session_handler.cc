@@ -209,11 +209,6 @@ void ForeignSessionHandler::RegisterMessages() {
 }
 
 void ForeignSessionHandler::OnJavascriptAllowed() {
-  // This can happen if the page is refreshed.
-  if (!initial_session_list_) {
-    initial_session_list_ = GetForeignSessions();
-  }
-
   Profile* profile = Profile::FromWebUI(web_ui());
 
   sync_sessions::SessionSyncService* service =
@@ -242,10 +237,6 @@ void ForeignSessionHandler::OnForeignSessionUpdated() {
                     std::move(GetForeignSessions()));
 }
 
-void ForeignSessionHandler::InitializeForeignSessions() {
-  initial_session_list_ = GetForeignSessions();
-}
-
 std::u16string ForeignSessionHandler::FormatSessionTime(
     const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
@@ -259,13 +250,8 @@ std::u16string ForeignSessionHandler::FormatSessionTime(
 void ForeignSessionHandler::HandleGetForeignSessions(
     const base::ListValue& args) {
   AllowJavascript();
-  CHECK(initial_session_list_);
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, *initial_session_list_);
-
-  // Clear the initial list so that it will be reset in AllowJavascript if the
-  // page is refreshed.
-  initial_session_list_ = std::nullopt;
+  ResolveJavascriptCallback(callback_id, GetForeignSessions());
 }
 
 base::ListValue ForeignSessionHandler::GetForeignSessions() {

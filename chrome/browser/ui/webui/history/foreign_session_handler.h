@@ -60,8 +60,6 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   ~ForeignSessionHandler() override;
 
-  void InitializeForeignSessions();
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static void OpenForeignSessionTab(content::WebUI* web_ui,
@@ -111,8 +109,6 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   void HandleDeleteForeignSession(const base::ListValue& args);
 
   void HandleSetForeignSessionCollapsed(const base::ListValue& args);
-
-  std::optional<base::ListValue> initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };
