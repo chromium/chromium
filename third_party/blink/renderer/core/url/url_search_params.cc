@@ -61,7 +61,7 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
     case URLSearchParamsInit::ContentType::kUSVString: {
       const String& query_string = init->GetAsUSVString();
       if (query_string.starts_with('?')) {
-        return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
+        return MakeGarbageCollected<URLSearchParams>(query_string.substr(1));
       }
       return MakeGarbageCollected<URLSearchParams>(query_string);
     }
@@ -155,10 +155,10 @@ void URLSearchParams::SetInputWithoutUpdate(const String& query_string) {
       if (end_of_name == kNotFound || end_of_name > name_value_end)
         end_of_name = name_value_end;
       String name = DecodeString(
-          query_string.Substring(name_start, end_of_name - name_start));
+          query_string.substr(name_start, end_of_name - name_start));
       String value;
       if (end_of_name != name_value_end)
-        value = DecodeString(query_string.Substring(
+        value = DecodeString(query_string.substr(
             end_of_name + 1, name_value_end - end_of_name - 1));
       if (value.IsNull())
         value = "";

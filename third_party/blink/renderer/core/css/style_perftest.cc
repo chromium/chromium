@@ -55,14 +55,14 @@ static String StripStyleTags(const String& html) {
     wtf_size_t style_start = html.DeprecatedFindIgnoringCase("<style", pos);
     if (style_start == kNotFound) {
       // No more <style> tags, so append the rest of the string.
-      stripped_html.Append(html.Substring(pos, html.length() - pos));
+      stripped_html.Append(html.subview(pos, html.length() - pos));
       break;
     }
     // Bail out if it's not “<style>” or “<style ”; it's probably
     // a false positive then.
     if (style_start + 6 >= html.length() ||
         (html[style_start + 6] != ' ' && html[style_start + 6] != '>')) {
-      stripped_html.Append(html.Substring(pos, style_start - pos));
+      stripped_html.Append(html.subview(pos, style_start - pos));
       pos = style_start + 6;
       continue;
     }
@@ -71,7 +71,7 @@ static String StripStyleTags(const String& html) {
     if (style_end == kNotFound) {
       LOG(FATAL) << "Mismatched <style> tag";
     }
-    stripped_html.Append(html.Substring(pos, style_start - pos));
+    stripped_html.Append(html.subview(pos, style_start - pos));
     pos = style_end + 8;
   }
   return stripped_html.ToString();

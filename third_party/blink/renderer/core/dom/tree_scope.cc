@@ -204,7 +204,7 @@ HTMLMapElement* TreeScope::GetImageMap(const String& url) const {
   wtf_size_t hash_pos = url.find('#');
   if (hash_pos == kNotFound)
     return nullptr;
-  String name = url.Substring(hash_pos + 1);
+  String name = url.substr(hash_pos + 1);
   if (name.empty()) {
     return nullptr;
   }

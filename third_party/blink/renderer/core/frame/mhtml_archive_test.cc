@@ -133,7 +133,7 @@ class MHTMLArchiveTest : public testing::Test {
       if (pos == kNotFound)
         continue;
       String key = line.substr(0, pos);
-      String value = line.Substring(pos + 2);
+      String value = line.substr(pos + 2);
       mhtml_headers.insert(key, value);
 
       line = next_line;

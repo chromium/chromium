@@ -677,7 +677,7 @@ void TypingCommand::InsertTextInternal(const String& text,
   while ((newline = text.find('\n', offset)) != kNotFound) {
     if (newline > offset) {
       const wtf_size_t insertion_length = newline - offset;
-      InsertTextRunWithoutNewlines(text.Substring(offset, insertion_length),
+      InsertTextRunWithoutNewlines(text.substr(offset, insertion_length),
                                    editing_state);
       if (editing_state->IsAborted())
         return;
@@ -698,7 +698,7 @@ void TypingCommand::InsertTextInternal(const String& text,
 
   if (text.length() > offset) {
     const wtf_size_t insertion_length = text.length() - offset;
-    InsertTextRunWithoutNewlines(text.Substring(offset, insertion_length),
+    InsertTextRunWithoutNewlines(text.substr(offset, insertion_length),
                                  editing_state);
     if (editing_state->IsAborted())
       return;

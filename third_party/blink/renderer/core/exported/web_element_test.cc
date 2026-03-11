@@ -238,7 +238,7 @@ TEST_F(WebElementTest, PasteTextIntoTextArea) {
   element->Focus();
   element->setSelectionStart(5);
   element->setSelectionEnd(15);
-  ASSERT_EQ(element->Value().Substring(
+  ASSERT_EQ(element->Value().substr(
                 element->selectionStart(),
                 element->selectionEnd() - element->selectionStart()),
             String("plain text"));

@@ -227,7 +227,7 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
 
   String name = property_string.Left(colon_index).StripWhiteSpace();
   String value =
-      property_string.Substring(colon_index + 1, property_string.length())
+      property_string.substr(colon_index + 1, property_string.length())
           .StripWhiteSpace();
   current_rule_data_stack_.back()->property_data.push_back(
       CSSPropertySourceData(name, value, is_important, false, is_parsed,
@@ -267,7 +267,7 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
     return;
   }
   comment_text =
-      comment_text.Substring(0, comment_text.length() - 2).StripWhiteSpace();
+      comment_text.substr(0, comment_text.length() - 2).StripWhiteSpace();
   if (comment_text.empty()) {
     return;
   }

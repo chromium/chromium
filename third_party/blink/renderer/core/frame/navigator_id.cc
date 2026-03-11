@@ -55,7 +55,7 @@ String NavigatorID::appName() {
 String NavigatorID::appVersion() {
   // Version is everything in the user agent string past the "Mozilla/" prefix.
   const String& agent = userAgent();
-  return agent.Substring(agent.find('/') + 1);
+  return agent.substr(agent.find('/') + 1);
 }
 
 String NavigatorID::platform() const {

@@ -1025,7 +1025,7 @@ InspectorStyle::LonghandProperties(
   DCHECK(style_);
   String property_value = property_entry.value;
   if (property_entry.important) {
-    property_value = property_value.Substring(
+    property_value = property_value.substr(
         0, property_value.length() - 10 /* length of "!important" */);
   }
   CSSParserTokenStream stream(property_value);

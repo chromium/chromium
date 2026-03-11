@@ -207,7 +207,7 @@ TEST(BufferedLineReaderTest, BufferSizes) {
     BufferedLineReader reader;
     wtf_size_t block_size = kBlockSizes[k];
     for (wtf_size_t i = 0; i < data.length(); i += block_size) {
-      reader.Append(data.Substring(i, block_size));
+      reader.Append(data.substr(i, block_size));
 
       String line;
       while (reader.GetLine(line)) {
@@ -235,7 +235,7 @@ TEST(BufferedLineReaderTest, BufferSizesMixedEndings) {
     BufferedLineReader reader;
     wtf_size_t block_size = kBlockSizes[k];
     for (wtf_size_t i = 0; i < data.length(); i += block_size) {
-      reader.Append(data.Substring(i, block_size));
+      reader.Append(data.substr(i, block_size));
 
       String line;
       while (reader.GetLine(line)) {

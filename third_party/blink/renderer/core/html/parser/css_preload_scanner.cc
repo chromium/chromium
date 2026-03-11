@@ -277,7 +277,7 @@ static String ParseCSSStringOrURL(const String& string) {
     reduced_length -= 2;
   }
 
-  return string.Substring(offset, reduced_length);
+  return string.substr(offset, reduced_length);
 }
 
 bool CSSPreloadScanner::CanPreloadImportRule() const {

@@ -944,7 +944,7 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
 
     if (i > start) {
       fragment->AppendChild(
-          Text::Create(GetDocument(), text.Substring(start, i - start)),
+          Text::Create(GetDocument(), text.substr(start, i - start)),
           exception_state);
       if (exception_state.HadException())
         return nullptr;

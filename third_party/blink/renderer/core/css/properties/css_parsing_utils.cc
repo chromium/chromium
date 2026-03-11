@@ -6405,7 +6405,7 @@ CSSValue* ParseFontLanguageOverrideString(CSSParserTokenStream& stream) {
   while (end >= 0 && IsCSSSpace(language_override[end])) {
     --end;
   }
-  language_override = language_override.Substring(0, end + 1);
+  language_override = language_override.substr(0, end + 1);
 
   // "All tags are four-character strings composed of a limited set of ASCII
   // characters" per

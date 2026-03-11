@@ -360,17 +360,17 @@ void CollectInlinesInternal(ItemsBuilder* builder,
           } else {
             // The text must be in the following form:
             // Symbol, separator, symbol, separator, symbol, ...
-            builder->AppendText(text.Substring(0, 1), counter);
+            builder->AppendText(text.substr(0, 1), counter);
             builder->SetIsSymbolMarker();
             const AtomicString& separator = counter->Separator();
             for (wtf_size_t i = 1; i < text.length();) {
               if (separator.length() > 0) {
-                DCHECK_EQ(separator, text.Substring(i, separator.length()));
+                DCHECK_EQ(separator, text.substr(i, separator.length()));
                 builder->AppendText(separator, counter);
                 i += separator.length();
                 DCHECK_LT(i, text.length());
               }
-              builder->AppendText(text.Substring(i, 1), counter);
+              builder->AppendText(text.substr(i, 1), counter);
               builder->SetIsSymbolMarker();
               ++i;
             }
@@ -558,7 +558,7 @@ bool FirstLineNeedsReshape(const ComputedStyle& first_line_style,
 // appending space characters if shorter.
 void TruncateOrPadText(String* text, unsigned length) {
   if (text->length() > length) {
-    *text = text->Substring(0, length);
+    *text = text->substr(0, length);
   } else if (text->length() < length) {
     StringBuilder builder;
     builder.ReserveCapacity(length);

@@ -22,7 +22,7 @@ Vector<AtomicString> FindUrlPrefixes(AtomicString specifier) {
   size_t position = specifier.find(slash);
   while (position != kNotFound) {
     ++position;
-    result.emplace_back(specifier.GetString().Substring(0, position));
+    result.emplace_back(specifier.GetString().substr(0, position));
     position = specifier.find(slash, position);
   }
   return result;

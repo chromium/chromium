@@ -122,10 +122,10 @@ class LayoutTextTest : public RenderingTest {
       if (item.GetLayoutObject() == layout_text) {
         stream << "*";
       }
-      stream << "{'"
-             << data.text_content.Substring(item.StartOffset(), item.Length())
-                    .Utf8()
-             << "'";
+      stream
+          << "{'"
+          << data.text_content.substr(item.StartOffset(), item.Length()).Utf8()
+          << "'";
       if (const auto* shape_result = item.TextShapeResult()) {
         stream << ", ShapeResult=" << shape_result->StartIndex() << "+"
                << shape_result->NumCharacters();

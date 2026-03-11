@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 String Substring(String text, SourceRange range) {
-  return text.Substring(range.start, range.length());
+  return text.substr(range.start, range.length());
 }
 
 }  // namespace

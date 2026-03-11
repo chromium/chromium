@@ -172,7 +172,7 @@ TEST_F(WebFrameSerializerTest, FromUrlWithMinusMinus) {
   String actual_html =
       SerializeFile("http://www.test.com?--x--", "text_only_page.html", false);
   EXPECT_EQ("<!-- saved from url=(0030)http://www.test.com/?-%2Dx-%2D -->",
-            actual_html.Substring(1, 60));
+            actual_html.substr(1, 60));
 }
 
 TEST_F(WebFrameSerializerTest, WithoutFrameUrl) {

@@ -72,7 +72,7 @@ String CharacterData::substringData(unsigned offset,
     return String();
   }
 
-  return data().Substring(offset, count);
+  return data().substr(offset, count);
 }
 
 void CharacterData::ParserAppendData(const String& data) {

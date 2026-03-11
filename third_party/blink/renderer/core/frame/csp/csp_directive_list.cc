@@ -425,7 +425,7 @@ bool CheckEvalAndReportViolation(
     policy->LogToConsole(suffix_console_message);
   }
   String content_for_sample =
-      content.Substring(0, ContentSecurityPolicy::kMaxSampleLength);
+      content.substr(0, ContentSecurityPolicy::kMaxSampleLength);
   ReportEvalViolation(
       csp, policy, raw_directive, CSPDirectiveName::ScriptSrc,
       StrCat({console_message, "\"", raw_directive, "\".", suffix, "\n"}),

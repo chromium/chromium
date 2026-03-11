@@ -31,7 +31,7 @@ String RemoveFragmentDirectives(const String& url_fragment) {
   if (directive_delimiter_ix == kNotFound)
     return url_fragment;
 
-  return url_fragment.Substring(0, directive_delimiter_ix);
+  return url_fragment.substr(0, directive_delimiter_ix);
 }
 
 }  // namespace

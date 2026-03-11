@@ -380,7 +380,7 @@ void ProcessingInstruction::ProcessStylesheet(const String& href,
                                               const String& charset) {
   CHECK(IsXMLStylesheet());
   if (IsLocalSheet(href)) {
-    local_href_ = href.Substring(1);
+    local_href_ = href.substr(1);
     // We need to make a synthetic XSLStyleSheet that is embedded.
     // It needs to be able to kick off import/include loads that
     // can hang off some parent sheet.

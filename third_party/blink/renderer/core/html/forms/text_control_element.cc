@@ -1239,7 +1239,7 @@ void TextControlElement::SetAutofillValue(const String& value,
                                           WebAutofillState autofill_state) {
   // Set the value trimmed to the max length of the field and dispatch the input
   // and change events.
-  SetValue(value.Substring(0, maxLength()),
+  SetValue(value.substr(0, maxLength()),
            TextFieldEventBehavior::kDispatchInputAndChangeEvent,
            TextControlSetValueSelection::kSetSelectionToEnd,
            value.empty() ? WebAutofillState::kNotFilled : autofill_state);
@@ -1248,7 +1248,7 @@ void TextControlElement::SetAutofillValue(const String& value,
 void TextControlElement::SetSuggestedValue(const String& value) {
   // Avoid calling maxLength() if possible as it's non-trivial.
   const String new_suggested_value =
-      value.empty() ? value : value.Substring(0, maxLength());
+      value.empty() ? value : value.substr(0, maxLength());
   if (new_suggested_value == suggested_value_) {
     return;
   }

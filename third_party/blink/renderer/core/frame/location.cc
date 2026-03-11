@@ -218,7 +218,7 @@ void Location::setHash(v8::Isolate* isolate,
   String old_fragment_identifier = url.FragmentIdentifier().ToString();
   String new_fragment_identifier = hash;
   if (hash[0] == '#')
-    new_fragment_identifier = hash.Substring(1);
+    new_fragment_identifier = hash.substr(1);
   url.SetFragmentIdentifier(new_fragment_identifier);
   // Note that by parsing the URL and *then* comparing fragments, we are
   // comparing fragments post-canonicalization, and so this handles the

@@ -194,7 +194,7 @@ Token Parser::LexString() {
 
   for (next_pos_ = start_pos; next_pos_ < data_.length(); ++next_pos_) {
     if (data_[next_pos_] == delimiter) {
-      String value = data_.Substring(start_pos, next_pos_ - start_pos);
+      String value = data_.substr(start_pos, next_pos_ - start_pos);
       if (value.IsNull())
         value = "";
       ++next_pos_;  // Consume the char.
@@ -242,7 +242,7 @@ bool Parser::LexNCName(String& name) {
       break;
   }
 
-  name = data_.Substring(start_pos, next_pos_ - start_pos);
+  name = data_.substr(start_pos, next_pos_ - start_pos);
   return true;
 }
 
@@ -487,7 +487,7 @@ bool Parser::ExpandQName(const String& q_name,
     if (uri.IsNull())
       return false;
     namespace_uri = AtomicString(uri);
-    local_name = AtomicString(q_name.Substring(colon + 1));
+    local_name = AtomicString(q_name.subview(colon + 1));
   } else {
     local_name = AtomicString(q_name);
   }

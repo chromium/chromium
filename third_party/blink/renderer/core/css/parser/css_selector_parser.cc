@@ -2161,7 +2161,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
   } else if (token.GetType() == kIdentToken) {
     if (token.Value()[0] == '-') {
       result.first = -1;
-      n_string = token.Value().ToString().Substring(1);
+      n_string = token.Value().ToString().substr(1);
     } else {
       result.first = 1;
       n_string = token.Value().ToString();
@@ -2178,7 +2178,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
   }
 
   if (n_string.length() > 2) {
-    auto parsed = StringToIntStrict(n_string.Substring(1));
+    auto parsed = StringToIntStrict(n_string.subview(1));
     result.second = parsed.value_or(0);
     return parsed.has_value();
   }

@@ -411,7 +411,7 @@ void V8Initializer::ExceptionPropagationCallback(
        property_name.starts_with("get ")) ||
       (context_type == v8::ExceptionContext::kAttributeSet &&
        property_name.starts_with("set "))) {
-    property_name = property_name.Substring(4);
+    property_name = property_name.substr(4);
   }
   if (property_name == "[Symbol.toPrimitive]") {
     property_name = String();

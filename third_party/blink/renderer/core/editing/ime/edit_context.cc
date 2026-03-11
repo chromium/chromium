@@ -365,7 +365,7 @@ void EditContext::updateText(uint32_t start,
     }
   }
 
-  text_ = StrCat({text_.Substring(0, start), new_text, text_.Substring(end)});
+  text_ = StrCat({text_.subview(0, start), new_text, text_.Substring(end)});
 
   if (RuntimeEnabledFeatures::
           EditContextHandleTextOrSelectionUpdateDuringCompositionEnabled()) {
@@ -459,7 +459,7 @@ bool EditContext::SetComposition(
 
   // Update the selection and buffer if the composition range has changed.
   String update_text(text);
-  text_ = StrCat({text_.Substring(0, actual_replacement_range.StartOffset()),
+  text_ = StrCat({text_.subview(0, actual_replacement_range.StartOffset()),
                   update_text,
                   text_.Substring(actual_replacement_range.EndOffset())});
 
@@ -532,7 +532,7 @@ bool EditContext::SetCompositionFromExistingText(
       std::min(composition_start, static_cast<int>(text_.length()));
   composition_end = std::min(composition_end, static_cast<int>(text_.length()));
   String update_text(
-      text_.Substring(composition_start, composition_end - composition_start));
+      text_.substr(composition_start, composition_end - composition_start));
   if (composition_range_start_ == 0 && composition_range_end_ == 0) {
     composition_range_start_ = composition_start;
     composition_range_end_ = composition_end;
@@ -565,7 +565,7 @@ void EditContext::OnCancelComposition() {
   DCHECK(has_composition_);
 
   // Delete the text in the composition range
-  text_ = StrCat({text_.Substring(0, composition_range_start_),
+  text_ = StrCat({text_.subview(0, composition_range_start_),
                   text_.Substring(composition_range_end_)});
 
   // Place the selection where the deleted composition had been
@@ -583,7 +583,7 @@ bool EditContext::InsertText(const WebString& text) {
   TRACE_EVENT1("ime", "EditContext::InsertText", "text", text.Utf8());
 
   String update_text(text);
-  text_ = StrCat({text_.Substring(0, OrderedSelectionStart()), update_text,
+  text_ = StrCat({text_.subview(0, OrderedSelectionStart()), update_text,
                   text_.Substring(OrderedSelectionEnd())});
   uint32_t update_range_start = OrderedSelectionStart();
   uint32_t update_range_end = OrderedSelectionEnd();
@@ -704,7 +704,7 @@ bool EditContext::CommitText(const WebString& text,
     }
   }
 
-  text_ = StrCat({text_.Substring(0, actual_replacement_range.StartOffset()),
+  text_ = StrCat({text_.subview(0, actual_replacement_range.StartOffset()),
                   update_text,
                   text_.Substring(actual_replacement_range.EndOffset())});
   SetSelection(actual_replacement_range.StartOffset() + update_text.length(),
@@ -757,7 +757,7 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
                std::to_string(before) + ", " + std::to_string(after));
   before = std::min(before, static_cast<int>(OrderedSelectionStart()));
   after = std::min(after, static_cast<int>(text_.length()));
-  text_ = StrCat({text_.Substring(0, OrderedSelectionStart() - before),
+  text_ = StrCat({text_.subview(0, OrderedSelectionStart() - before),
                   text_.Substring(OrderedSelectionEnd() + after)});
   const uint32_t update_range_start = OrderedSelectionStart() - before;
   const uint32_t update_range_end = OrderedSelectionEnd() + after;
@@ -780,7 +780,7 @@ void EditContext::DeleteSurroundingText(int before, int after) {
       OrderedSelectionEnd() - (OrderedSelectionStart() - update_range_start));
   CHECK_GE(selection_end_, selection_start_);
   text_ = StrCat(
-      {text_.Substring(0, update_range_start),
+      {text_.subview(0, update_range_start),
        text_.Substring(selection_start_, selection_end_ - selection_start_),
        text_.Substring(update_range_end)});
   String update_event_text(

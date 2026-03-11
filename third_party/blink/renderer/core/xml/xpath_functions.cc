@@ -538,7 +538,7 @@ Value FunSubstringAfter::Evaluate(EvaluationContext& context) const {
   if (i == kNotFound)
     return "";
 
-  return s1.Substring(i + s2.length());
+  return s1.substr(i + s2.length());
 }
 
 // Computes the 1-based start and end (exclusive) string indices for

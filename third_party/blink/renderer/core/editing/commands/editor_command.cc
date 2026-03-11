@@ -671,8 +671,8 @@ static bool ExecuteFormatBlock(LocalFrame& frame,
                                EditorCommandSource,
                                const String& value) {
   String tag_name = value.DeprecatedLower();
-  if (tag_name[0] == '<' && tag_name[tag_name.length() - 1] == '>') {
-    tag_name = tag_name.Substring(1, tag_name.length() - 2);
+  if (tag_name.starts_with('<') && tag_name.ends_with('>')) {
+    tag_name = tag_name.substr(1, tag_name.length() - 2);
   }
 
   AtomicString local_name, prefix;

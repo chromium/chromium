@@ -435,7 +435,7 @@ std::optional<LayoutUnit> ApplyJustificationInternal(
                  // Cut text_content at end_offset because
                  // ShapeResult::ApplyExpansion() calls ShapeResultSpacing with
                  // an index over end_offset.
-                 : text_content.Substring(0, end_offset))
+                 : text_content.substr(0, end_offset))
           : BuildJustificationText(text_content, line_info.Results(),
                                    line_text_start_offset, end_offset,
                                    line_info.MayHaveTextCombineOrRubyItem());

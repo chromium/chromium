@@ -33,7 +33,7 @@ class TextOffsetMappingTest : public EditingTestBase {
     StringBuilder builder;
     builder.Append(text.Left(offset));
     builder.Append('|');
-    builder.Append(text.Substring(offset));
+    builder.Append(text.subview(offset));
     return builder.ToString().Utf8();
   }
 

@@ -65,8 +65,8 @@ String StripLeadingAndTrailingHTMLSpaces(const String& string) {
     if (!(num_leading_spaces | num_trailing_spaces))
       return string;
 
-    return string.Substring(num_leading_spaces, length - (num_leading_spaces +
-                                                          num_trailing_spaces));
+    return string.substr(num_leading_spaces,
+                         length - (num_leading_spaces + num_trailing_spaces));
   });
 }
 
@@ -92,7 +92,7 @@ Vector<String> SplitOnASCIIWhitespace(const String& input) {
     while (cursor < chars.size()) {
       const wtf_size_t token_start = static_cast<wtf_size_t>(cursor);
       cursor = SkipUntil<CharacterType, IsHTMLSpace>(chars, cursor);
-      output.push_back(input.Substring(
+      output.push_back(input.substr(
           token_start, static_cast<wtf_size_t>(cursor - token_start)));
       cursor = SkipWhile<CharacterType, IsHTMLSpace>(chars, cursor);
     }
@@ -379,7 +379,7 @@ String ExtractCharset(const String& value) {
     if (quote_mark && (end == length))
       break;  // Close quote not found.
 
-    return value.Substring(pos, end - pos);
+    return value.substr(pos, end - pos);
   }
 
   return "";

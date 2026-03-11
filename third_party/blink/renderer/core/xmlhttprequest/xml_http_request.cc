@@ -172,7 +172,7 @@ String ExtractCharsetFromMediaType(const String& media_type) {
   unsigned pos = 0;
   unsigned len = 0;
   FindCharsetInMediaType(media_type, pos, len);
-  return media_type.Substring(pos, len);
+  return media_type.substr(pos, len);
 }
 
 void ReplaceCharsetInMediaType(String& media_type,

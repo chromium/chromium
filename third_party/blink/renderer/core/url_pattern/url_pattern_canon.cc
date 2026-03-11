@@ -21,14 +21,14 @@ namespace {
 
 String MaybeStripPrefix(const String& value, StringView prefix) {
   if (value.starts_with(prefix)) {
-    return value.Substring(1, value.length() - 1);
+    return value.substr(1, value.length() - 1);
   }
   return value;
 }
 
 String MaybeStripSuffix(const String& value, StringView suffix) {
   if (value.ends_with(suffix)) {
-    return value.Substring(0, value.length() - 1);
+    return value.substr(0, value.length() - 1);
   }
   return value;
 }

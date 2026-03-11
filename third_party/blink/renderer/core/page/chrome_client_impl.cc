@@ -164,7 +164,7 @@ String TruncateDialogMessage(const String& message) {
 
   // 10k ought to be enough for anyone.
   const wtf_size_t kMaxMessageSize = 10 * 1024;
-  return message.Substring(0, kMaxMessageSize);
+  return message.substr(0, kMaxMessageSize);
 }
 
 bool DisplayModeIsBorderless(LocalFrame& frame) {

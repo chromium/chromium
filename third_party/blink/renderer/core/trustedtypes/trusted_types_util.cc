@@ -252,7 +252,7 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
   bool allow = execution_context->GetContentSecurityPolicy()
                    ->AllowTrustedTypeAssignmentFailure(
-                       GetMessage(kind), strip ? value.Substring(strip) : value,
+                       GetMessage(kind), strip ? value.substr(strip) : value,
                        prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function

@@ -53,7 +53,7 @@ static String StripLeadingWhiteSpace(const String& string) {
     }
   }
 
-  return string.Substring(i, length - i);
+  return string.substr(i, length - i);
 }
 
 int TypeAhead::HandleEvent(const KeyboardEvent& event,

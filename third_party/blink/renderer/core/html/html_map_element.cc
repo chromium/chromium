@@ -90,7 +90,7 @@ void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {
       GetTreeScope().RemoveImageMap(*this);
     String map_name = params.new_value;
     if (map_name[0] == '#')
-      map_name = map_name.Substring(1);
+      map_name = map_name.substr(1);
     // name_ is the parsed name attribute value that is not empty.
     if (!map_name.empty() && params.name == html_names::kNameAttr) {
       name_ = AtomicString(map_name);
