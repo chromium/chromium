@@ -23,6 +23,10 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_tab_helper.h"
+#endif
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
@@ -55,16 +59,19 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
@@ -501,15 +508,65 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_TURN_ON_SYNC));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
+class BrowserCommandControllerBrowserTestShowSigninWhenPaused
+    : public BrowserCommandControllerBrowserTestRefreshOnly,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserCommandControllerBrowserTestShowSigninWhenPaused() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowserCommandControllerBrowserTestShowSigninWhenPaused,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "ReplaceSyncPromosEnabled"
+                        : "ReplaceSyncPromosDisabled";
+    });
+
+IN_PROC_BROWSER_TEST_P(BrowserCommandControllerBrowserTestShowSigninWhenPaused,
                        ExecuteShowSigninWhenPaused) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
-                                      signin::ConsentLevel::kSync);
+  signin::MakePrimaryAccountAvailable(
+      identity_manager, "user@example.com",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
   signin::SetRefreshTokenForPrimaryAccount(identity_manager);
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  EXPECT_TRUE(
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin)));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN_WHEN_PAUSED));
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_SHOW_SIGNIN_WHEN_PAUSED));
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_TRUE(tab_helper->IsChromeSigninPage());
+  EXPECT_EQ(active_contents->GetVisibleURL().host(),
+            GaiaUrls::GetInstance()->gaia_url().host());
+  EXPECT_EQ(signin_metrics::AccessPoint::kMenu,
+            tab_helper->signin_access_point());
+  EXPECT_EQ(signin_metrics::Reason::kReauthentication,
+            tab_helper->signin_reason());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestRefreshOnly,
