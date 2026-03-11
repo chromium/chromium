@@ -251,23 +251,15 @@
     },
     'assistive': {
       'filepath': 'ash/ambient/'\
-                  '|ash/app_list/views/assistant/'\
-                  '|ash/assistant/'\
                   '|ash/public/cpp/ambient/'\
-                  '|ash/public/cpp/assistant/'\
                   '|ash/public/cpp/wallpaper/'\
                   '|ash/wallpaper/'\
                   '|ash/webui/personalization_app/'\
-                  '|chromeos/ash/components/assistant/'\
-                  '|chromeos/ash/services/assistant/'\
-                  '|chromeos/ash/services/libassistant/'\
-                  '|chromeos/services/assistant/'\
                   '|chrome/browser/ash/ambient/'\
                   '|chrome/browser/ash/wallpaper_handlers/'\
                   '|chrome/browser/ash/system_web_apps/apps/personalization_app/'\
                   '|chrome/browser/resources/ash/settings/ambient_mode_page/'\
                   '|chrome/browser/ui/ash/.*wallpaper.*/'\
-                  '|chrome/browser/ui/ash/assistant/'\
                   '|chrome/browser/ui/webui/settings/ash/ambient_mode_handler'\
     },
     'attribution_reporting': {
