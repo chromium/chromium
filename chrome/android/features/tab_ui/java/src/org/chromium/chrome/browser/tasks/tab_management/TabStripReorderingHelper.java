@@ -4,11 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-
 import android.app.Activity;
 
 import androidx.annotation.LayoutRes;
@@ -18,13 +13,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,32 +96,25 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
      * @param moveLeftString The string for moving an item of this type to the left. Note: this is
      *     truly left, not "start", so it is still left in RTL.
      * @param moveRightString The string for moving an item of this type to the right.
+     * @param isIncognito Whether this tab strip item is in an incognito model.
      * @return A list of menu list items for reordering the item with id {@param id}.
      */
     protected List<ListItem> createReorderItems(
-            T id, String moveLeftString, String moveRightString) {
+            T id, String moveLeftString, String moveRightString, boolean isIncognito) {
         if (!isGesturesEnabled()) return List.of();
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         ListItem moveTowardsStartItem =
-                new ListItem(
-                        MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE, isRtl ? moveRightString : moveLeftString)
-                                .with(ENABLED, true)
-                                .with(
-                                        CLICK_LISTENER,
-                                        v -> mReorderFunction.accept(id, /* toLeft= */ !isRtl))
-                                .build());
+                new ListItemBuilder()
+                        .withTitle(isRtl ? moveRightString : moveLeftString)
+                        .withClickListener(v -> mReorderFunction.accept(id, /* toLeft= */ !isRtl))
+                        .withIsIncognito(isIncognito)
+                        .build();
         ListItem moveTowardsEndItem =
-                new ListItem(
-                        MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE, isRtl ? moveLeftString : moveRightString)
-                                .with(ENABLED, true)
-                                .with(
-                                        CLICK_LISTENER,
-                                        v -> mReorderFunction.accept(id, /* toLeft= */ isRtl))
-                                .build());
+                new ListItemBuilder()
+                        .withTitle(isRtl ? moveLeftString : moveRightString)
+                        .withClickListener(v -> mReorderFunction.accept(id, /* toLeft= */ isRtl))
+                        .withIsIncognito(isIncognito)
+                        .build();
 
         List<ListItem> result = new ArrayList<>();
         if (canItemMoveTowardStart(id)) {

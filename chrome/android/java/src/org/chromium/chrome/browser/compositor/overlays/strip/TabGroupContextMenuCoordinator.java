@@ -391,7 +391,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 createReorderItems(
                         id,
                         assumeNonNull(mContext).getString(R.string.move_tab_group_left),
-                        mContext.getString(R.string.move_tab_group_right));
+                        mContext.getString(R.string.move_tab_group_right),
+                        isIncognito);
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
 

@@ -991,6 +991,52 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Group Context Menu")
     @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveGroupItems_incognito() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        setUpReorderingMocks();
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // Indices in incognito:
+        // Index 0: Divider
+        // Index 1: Open new tab in group
+        // Index 2: Ungroup tab
+        // Index 3: Close tab group
+        // Index 4: Move to window (submenu)
+        // Index 5: Move left
+        // Index 6: Move right
+
+        ListItem moveLeftItem = modelList.get(5);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveLeftItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveLeftItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+
+        ListItem moveRightItem = modelList.get(6);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveRightItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveRightItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveGroupLeft_itemToLeftIsPinned() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
         setUpReorderingMocks();
@@ -1037,7 +1083,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     private List<Tab> setUpReorderingMocks() {
         mTabGroupContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
-        when(mTabModel.isIncognitoBranded()).thenReturn(false);
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(null);
         List<Tab> tabsInGroup = setUpTabGroupModelFilter();
         when(mTabModel.getCount()).thenReturn(5);

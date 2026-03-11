@@ -2136,6 +2136,53 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moveTabItems_incognito() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(3);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // Move items are at index 2 and 3.
+        // Item 0: Add to new group
+        // Item 1: Divider
+        // Item 2: Move left
+        // Item 3: Move right
+
+        ListItem moveStartItem = modelList.get(2);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveStartItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveStartItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+
+        ListItem moveEndItem = modelList.get(3);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                moveEndItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                "Expected icon tint to be set to R.color.default_icon_color_light_tint_list in"
+                        + " incognito",
+                R.color.default_icon_color_light_tint_list,
+                moveEndItem.model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testMoveTabStart_RTL() {
         LocalizationUtils.setRtlForTesting(true);
         mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);

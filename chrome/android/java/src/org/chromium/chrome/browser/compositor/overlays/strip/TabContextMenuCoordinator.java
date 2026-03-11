@@ -384,7 +384,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (shouldShowMoveToWindowItem(tabs, anchorInfo)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
-        List<ListItem> reorderItems = createReorderItems(anchorInfo);
+        List<ListItem> reorderItems = createReorderItems(anchorInfo, isIncognito);
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
@@ -414,7 +414,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (shouldShowMoveToWindowItem(tabs, anchorInfo)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
-        List<ListItem> reorderItems = createReorderItems(anchorInfo);
+        List<ListItem> reorderItems = createReorderItems(anchorInfo, isIncognito);
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuDuplicateTabs.isEnabled()) {
@@ -807,7 +807,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
     }
 
-    private List<ListItem> createReorderItems(AnchorInfo anchorInfo) {
+    private List<ListItem> createReorderItems(AnchorInfo anchorInfo, boolean isIncognito) {
         return createReorderItems(
                 anchorInfo,
                 mActivity
@@ -817,7 +817,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 mActivity
                         .getResources()
                         .getQuantityString(
-                                R.plurals.move_tabs_right, anchorInfo.getAllTabIds().size()));
+                                R.plurals.move_tabs_right, anchorInfo.getAllTabIds().size()),
+                isIncognito);
     }
 
     /** Ungroups any tabs in {@param tabs} which are currently in a group. */
