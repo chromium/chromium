@@ -35,6 +35,10 @@ void ShowAndRecordErrorPage(mojo::Remote<contextual_tasks::mojom::Page>& page,
 // Records the error page shown metric for the given source.
 void RecordErrorPageShown(contextual_search::ContextualSearchSource source);
 
+// Records the HTTP response code of the inner frame contents.
+void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
+                                              bool is_zero_state);
+
 }  // namespace contextual_tasks
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_

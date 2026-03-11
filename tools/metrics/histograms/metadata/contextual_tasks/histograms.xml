@@ -232,6 +232,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.InnerFrameContents.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2026-09-05">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the contextual tasks framework navigates the top level
+    of the inner frame contents. Records the HTTP status code of the response
+    when the navigation finishes.
+  </summary>
+</histogram>
+
+<histogram
+    name="ContextualTasks.InnerFrameContents.HttpResponseCode.ExcludeZeroStateLoads"
+    enum="HttpResponseCode" expires_after="2026-09-05">
+  <owner>juanmojica@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the contextual tasks framework navigates the top level
+    of the inner frame contents, excluding zero state loads. Records the HTTP
+    status code of the response when the navigation finishes.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Session.Completed" enum="Boolean"
     expires_after="2026-06-28">
   <owner>sophiechang@chromium.org</owner>
