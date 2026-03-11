@@ -445,17 +445,18 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  static const bool enable_web_gl_image_chromium =
+  static const bool using_delegating_compositing =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources);
+  return using_delegating_compositing;
 #elif BUILDFLAG(IS_CHROMEOS)
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
-#else
-  static const bool enable_web_gl_image_chromium = false;
-#endif
   return enable_web_gl_image_chromium;
+#else
+  return false;
+#endif
 }
 
 void SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(bool enable) {
