@@ -936,15 +936,9 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
   ASSERT_EQ(30u, engine->GetCharCount(0));
   ASSERT_EQ(30u, engine->GetCharCount(1));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRect1{32, 186, 12, 22};
-  constexpr gfx::Rect kExpectedRect2{67, 186, 5, 22};
-  constexpr gfx::Rect kExpectedRect3{43, 466, 8, 22};
-#else
   constexpr gfx::Rect kExpectedRect1{32, 188, 12, 19};
   constexpr gfx::Rect kExpectedRect2{67, 188, 5, 19};
   constexpr gfx::Rect kExpectedRect3{43, 468, 8, 19};
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}),
               ElementsAre(kExpectedRect1));
   EXPECT_THAT(engine->GetScreenRectsForCaret({0, 5}),
@@ -3670,7 +3664,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
   engine->PluginSizeUpdated({200, 400});
 
   EXPECT_CALL(client, ScrollToX(424, /*force_smooth_scroll=*/true));
-  EXPECT_CALL(client, ScrollToY(749, /*force_smooth_scroll=*/true));
+  EXPECT_CALL(client, ScrollToY(750, /*force_smooth_scroll=*/true));
 
   engine->FindAndHighlightTextFragments({"difficult to implement"});
   engine->ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
