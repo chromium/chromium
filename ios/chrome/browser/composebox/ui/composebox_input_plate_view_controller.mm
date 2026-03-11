@@ -1120,9 +1120,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       [_theme aimButtonBackgroundColorWithAIMEnabled:_AIModeEnabled];
   config.baseForegroundColor =
       [_theme aimButtonTextColorWithAIMEnabled:_AIModeEnabled];
-  _aimButton.layer.borderWidth = _AIModeEnabled ? 0 : 1;
-  _aimButton.layer.borderColor =
-      [_theme aimButtonBorderColorWithAIMEnabled:_AIModeEnabled].CGColor;
+  config.background.strokeWidth = _AIModeEnabled ? 0 : 1;
+  config.background.strokeColor =
+      [_theme aimButtonBorderColorWithAIMEnabled:_AIModeEnabled];
+
   _aimButton.accessibilityLabel = l10n_util::GetNSString(
       _AIModeEnabled
           ? IDS_IOS_COMPOSEBOX_AIM_BUTTON_DISABLE_ACTION_ACCESSIBILITY_LABEL
@@ -1218,7 +1219,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [button addTarget:self
                 action:@selector(aimButtonTapped)
       forControlEvents:UIControlEventTouchUpInside];
-  button.layer.borderWidth = 0;
   button.accessibilityTraits = UIAccessibilityTraitButton;
   button.accessibilityIdentifier = kComposeboxAIMButtonAccessibilityIdentifier;
 
