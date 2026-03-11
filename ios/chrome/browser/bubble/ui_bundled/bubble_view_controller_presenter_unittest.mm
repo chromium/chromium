@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter+Testing.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -34,11 +35,13 @@ class BubbleViewControllerPresenterTest : public PlatformTest {
               run_loop_.Quit();
             }]),
         window_([[UIWindow alloc]
-            initWithFrame:CGRectMake(0.0, 0.0, 500.0, 500.0)]),
+            initWithWindowScene:chrome_test_util::GetAnyWindowScene()]),
         parent_view_controller_([[UIViewController alloc] init]),
         anchor_point_(CGPointMake(250.0, 250.0)),
         dismissal_callback_count_(0) {
-    parent_view_controller_.view.frame = CGRectMake(0.0, 0.0, 500.0, 500.0);
+    CGRect frame = CGRectMake(0.0, 0.0, 500.0, 500.0);
+    parent_view_controller_.view.frame = frame;
+    window_.frame = frame;
     [window_ addSubview:parent_view_controller_.view];
   }
 

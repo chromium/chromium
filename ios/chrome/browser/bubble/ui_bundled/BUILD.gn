@@ -121,6 +121,7 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/app:test_support",
     "//testing/gtest",
   ]
   frameworks = [ "CoreGraphics.framework" ]
