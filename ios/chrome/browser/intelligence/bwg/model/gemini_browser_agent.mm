@@ -441,6 +441,7 @@ void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
   ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
+  is_floaty_temporarily_hidden_ = false;
 }
 
 bool GeminiBrowserAgent::ShouldShowFloatyForSource(
@@ -805,11 +806,11 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
 void GeminiBrowserAgent::ShowFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
+  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/false);
+
   if (!is_floaty_invoked_ || !ShouldShowFloatyForSource(source)) {
     return;
   }
-
-  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/false);
 
   // `HideFloatyIfInvoked()` may be called when a view controller
   // dismisses. If a view controller dismisses as part of presenting another
