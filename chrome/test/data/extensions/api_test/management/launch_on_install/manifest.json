@@ -1,10 +1,9 @@
 {
   "name": "Launch App on Install (test extension)",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": ["management"],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   }
 }

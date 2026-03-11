@@ -1,6 +1,12 @@
 {
   "name": "permissions",
   "version": "0.1",
-  "manifest_version": 2,
-  "permissions": ["unlimitedStorage", "notifications", "http://*/*"]
+  "manifest_version": 3,
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://*/*"
+  ]
 }

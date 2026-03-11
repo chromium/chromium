@@ -1,7 +1,7 @@
 {
   "name": "enabled_extension",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "128": "icon_128.png",
     "48": "icon_48.png",
