@@ -4,7 +4,9 @@
 
 #include "media/parsers/vp9_uncompressed_header_parser.h"
 
-#include "base/compiler_specific.h"
+#include <type_traits>
+
+#include "base/containers/span.h"
 #include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,11 +59,9 @@ TEST_F(Vp9UncompressedHeaderParserTest, SetupPastIndependence) {
   EXPECT_TRUE(frame_header.frame_context.IsValid());
 
   static_assert(std::is_trivial<Vp9FrameContext>::value,
-                "Vp9FrameContext is not POD, rewrite the next EXPECT_TRUE");
-  UNSAFE_TODO(EXPECT_TRUE(
-      std::memcmp(&frame_header.frame_context,
-                  &GetVp9DefaultFrameContextForTesting(),
-                  sizeof(GetVp9DefaultFrameContextForTesting())) == 0));
+                "Vp9FrameContext is not POD, rewrite the next EXPECT_EQ");
+  EXPECT_EQ(base::byte_span_from_ref(frame_header.frame_context),
+            base::byte_span_from_ref(GetVp9DefaultFrameContextForTesting()));
 }
 
 }  // namespace media
