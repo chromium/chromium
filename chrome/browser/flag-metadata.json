@@ -6720,12 +6720,12 @@
   {
     "name": "mobile-promo-on-desktop-force-promo-type",
     "owners": [ "hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com" ],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "mobile-promo-on-desktop-with-qr-code",
     "owners": ["hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "mobile-promo-on-desktop-with-qr-code-wave-1",
@@ -6735,7 +6735,7 @@
   {
     "name": "mobile-promo-on-desktop-with-reminder",
     "owners": ["hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 148
+    "expiry_milestone": 152
   },
   {
     "name": "mobile-promo-on-desktop-with-reminder-wave-1",
