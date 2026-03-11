@@ -51,7 +51,7 @@ TEST(LiteralBufferTest, AppendLiteral) {
   buf.AppendLiteral(lit);
 
   EXPECT_EQ(6ul, buf.size());
-  UNSAFE_TODO(EXPECT_EQ(memcmp(buf.data(), u"defabc", buf.size()), 0));
+  EXPECT_EQ(String(base::span(buf)), u"defabc");
 }
 
 TEST(LiteralBufferTest, Copy) {
