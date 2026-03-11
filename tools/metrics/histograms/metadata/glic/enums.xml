@@ -559,6 +559,7 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Automatically opened for a PDF"/>
   <int value="20" label="From capture region hotkey"/>
   <int value="21" label="In-product help"/>
+  <int value="22" label="User clicked an anchored contextual cue chip"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -753,6 +754,10 @@ chromium-metrics-reviews@google.com.
   <int value="86" label="IPH, attached, audio mode."/>
   <int value="87" label="IPH, detached, text mode."/>
   <int value="88" label="IPH, detached, audio mode."/>
+  <int value="89" label="Anchored contextual cue, attached, text mode."/>
+  <int value="90" label="Anchored contextual cue, attached, audio mode."/>
+  <int value="91" label="Anchored contextual cue, detached, text mode."/>
+  <int value="92" label="Anchored contextual cue, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

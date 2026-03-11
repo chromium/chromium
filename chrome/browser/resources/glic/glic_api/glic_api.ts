@@ -2760,6 +2760,8 @@ export enum InvocationSource {
   CAPTURE_REGION_HOTKEY = 20,
   // From the in-product-help (IPH) entrypoint.
   IPH = 21,
+  // User clicked an anchored contextual cue chip.
+  ANCHORED_CONTEXTUAL_CUE = 22,
 }
 
 ///////////////////////////////////////////////
