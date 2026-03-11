@@ -36,7 +36,7 @@ struct DOMAIN_RELIABILITY_EXPORT DomainReliabilityBeacon {
     // Evicted to make room for newer beacons.
     kEvicted = 3,
     // Deleted for user clearing browsing data.
-    kCleared = 5,
+    kCleared = 4,
     // Beacon was deleted upon context shutdown.
     kContextShutDown = 5,
 
