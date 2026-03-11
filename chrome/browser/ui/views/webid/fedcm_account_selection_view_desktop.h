@@ -79,11 +79,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // middle of the browser overlapping the line of death. The user can switch
     // tabs but cannot interact with web contents.
     MODAL,
+
+    // FedCM is shown as a page action (omnibox chip) and does not have an
+    // associated widget.
+    AMBIENT,
   };
 
   FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
                             tabs::TabInterface* tab);
   ~FedCmAccountSelectionView() override;
+
+  // Triggered when the user clicks on the page action while it is in the
+  // passive state.
+
+  void OnPageActionClicked() override;
 
   // AccountSelectionView:
   bool Show(
@@ -409,6 +418,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Hides the dialog widget and notifies the input protector.
   void HideDialogWidget();
 
+  // Shows the page action (omnibox chip) for Ambient UI.
+  bool ShowPageAction(const std::vector<IdentityProviderDataPtr>& idp_list,
+                      const std::vector<IdentityRequestAccountPtr>& accounts);
+
   // Shows the multi account picker and updates the internal state.
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
@@ -478,8 +491,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // are multiple accounts, but it is size 0 when there are no new accounts.
   std::vector<IdentityRequestAccountPtr> new_accounts_;
 
-  // The RP icon to be displayed in the UI when needed.
-  gfx::Image rp_icon_;
+  // The RP data for the current request. Set when any of the Show*() methods
+  // are called. This is used to re-show the dialog if the user clicks on the
+  // page action.
+  std::optional<content::RelyingPartyData> rp_data_;
 
   State state_{State::MULTI_ACCOUNT_PICKER};
 
@@ -582,6 +597,27 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // together and destroyed together. `dialog_widget_` owns
   // `account_selection_view_` as a View attached to the root of the Widget.
   raw_ptr<AccountSelectionViewBase> account_selection_view_ = nullptr;
+
+  // The ScopedUnownedUserData is used to make the FedCmAccountSelectionView
+  // accessible to the PageAction framework without requiring the framework to
+  // take ownership of the view. This allows the omnibox chip to "reach back"
+  // into this class when it is clicked. The pointer is automatically nulled out
+  // in the tab when this object is destroyed.
+  // Being std::optional decouples the FedCM request's lifetime from its UI
+  // presence in the tab to allow us to explicitly unregister the view from the
+  // TabInterface's PageAction framework (via reset()) during Close().
+  // For example:
+  // 1. Immediately hide the omnibox chip and anchored messages (which have
+  //    explicit close icons) upon user dismissal, even if this object persists
+  //    to handle remaining mojom request cleanup or notification logic.
+  // 2. Prevent the chip from incorrectly persisting in the background when the
+  //    tab is "parked" or when the user switches between tabs, ensuring a
+  //    clean hand-off to other page actions.
+  // 3. Ensure the PageAction framework cannot "reach back" into this view
+  //    once the UI flow is logically finished, providing a strict boundary
+  //    between the UI state and the request lifecycle.
+  std::optional<ui::ScopedUnownedUserData<AccountSelectionView>>
+      scoped_user_data_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

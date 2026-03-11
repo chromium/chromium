@@ -8,11 +8,13 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -32,10 +35,13 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/common/content_features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_utils.h"
@@ -72,7 +78,8 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
     tabs::TabInterface* tab)
     : AccountSelectionView(delegate),
       content::WebContentsObserver(delegate->GetWebContents()),
-      tab_(tab) {
+      tab_(tab),
+      scoped_user_data_(std::in_place, tab->GetUnownedUserDataHost(), *this) {
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&FedCmAccountSelectionView::TabForegrounded,
                           weak_ptr_factory_.GetWeakPtr())));
@@ -88,6 +95,43 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
 
 FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   Close(/*notify_delegate=*/false, /*hide_widget=*/false);
+}
+
+void FedCmAccountSelectionView::OnPageActionClicked() {
+  if (tab_) {
+    if (auto* features = tab_->GetTabFeatures()) {
+      if (auto* controller = features->page_action_controller()) {
+        controller->Hide(kActionFederation);
+        controller->HideSuggestionChip(kActionFederation);
+      }
+    }
+  }
+
+  // Passing false to hide_dialog_widget_after_idp_login_popup_ to ensure the
+  // widget is shown.
+  hide_dialog_widget_after_idp_login_popup_ = false;
+
+  if (!delegate_ || idp_list_.empty() || accounts_.empty() || !rp_data_) {
+    return;
+  }
+
+  bool is_returning = accounts_.size() == 1u &&
+                      accounts_[0]->browser_trusted_login_state ==
+                          content::IdentityRequestAccount::LoginState::kSignIn;
+
+  if (is_returning) {
+    // For sign-in users with only one account logged in we show an anchored
+    // message. When that anchored message is selected, we immediately notify
+    // the delegate of the account selection without showing any further account
+    //  selection dialog (since there is a single account).
+    state_ = State::VERIFYING;
+    NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
+  } else {
+    // For sign-up users, we show a full modal dialog that gathers the necessary
+    // permission from the user (e.g. privacy policies and terms of services).
+    Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kActive,
+         new_accounts_);
+  }
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
@@ -170,7 +214,7 @@ bool FedCmAccountSelectionView::Show(
   idp_list_ = idp_list;
   accounts_ = accounts;
   new_accounts_ = new_accounts;
-  rp_icon_ = rp_data.rp_icon;
+  rp_data_ = rp_data;
 
   size_t accounts_or_mismatches_size = accounts.size();
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
@@ -181,10 +225,26 @@ bool FedCmAccountSelectionView::Show(
     if (identity_provider->has_login_status_mismatch) {
       ++accounts_or_mismatches_size;
     }
-
     // TODO(crbug.com/40252518): Decide what we should display if the IdPs use
     // different contexts here.
     rp_context = identity_provider->rp_context;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kFedCmAmbientUI)) {
+    if (rp_mode == blink::mojom::RpMode::kPassive) {
+      if (ShowPageAction(idp_list, accounts)) {
+        dialog_type_ = DialogType::AMBIENT;
+        return true;
+      }
+    }
+
+    if (tab_) {
+      if (auto* features = tab_->GetTabFeatures()) {
+        if (auto* controller = features->page_action_controller()) {
+          controller->Hide(kActionFederation);
+        }
+      }
+    }
   }
 
   bool has_filtered_out_accounts = false;
@@ -258,7 +318,7 @@ bool FedCmAccountSelectionView::Show(
         // with most recently signed in accounts at the top to reduce the
         // exposure of extra UI surfaces and to work around the account picker
         // not having a back button.
-        ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
+        ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
                                /*show_back_button=*/false);
       }
     } else {
@@ -274,7 +334,8 @@ bool FedCmAccountSelectionView::Show(
                 supports_add_account);
       } else {
         ShowMultiAccountPicker(
-            new_accounts_, {new_accounts_[0]->identity_provider}, rp_icon_,
+            new_accounts_, {new_accounts_[0]->identity_provider},
+            rp_data_->rp_icon,
             /*show_back_button=*/accounts_or_mismatches_size >
                 new_accounts_.size());
         // Override the state to NEWLY_LOGGED_IN_ACCOUNT_PICKER so the back
@@ -286,7 +347,7 @@ bool FedCmAccountSelectionView::Show(
     if (dialog_type_ == DialogType::BUBBLE && has_filtered_out_accounts) {
       // The logic to support add account is in ShowMultiAccountPicker for the
       // bubble dialog.
-      ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
+      ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
                              /*show_back_button=*/false);
     } else {
       state_ = State::SINGLE_ACCOUNT_PICKER;
@@ -295,7 +356,7 @@ bool FedCmAccountSelectionView::Show(
           /*show_back_button=*/false);
     }
   } else {
-    ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
+    ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
                            /*show_back_button=*/false);
   }
   UpdateDialogVisibilityAndPosition();
@@ -644,7 +705,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     UpdateDialogPosition();
     return;
   }
-  ShowMultiAccountPicker(accounts_, idp_list_, rp_icon_,
+  ShowMultiAccountPicker(accounts_, idp_list_, rp_data_->rp_icon,
                          /*show_back_button=*/false);
   UpdateDialogPosition();
 }
@@ -943,8 +1004,25 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
 }
 
 void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
+  scoped_user_data_.reset();
+  if (base::FeatureList::IsEnabled(features::kFedCmAmbientUI) && tab_) {
+    if (auto* features = tab_->GetTabFeatures()) {
+      if (auto* controller = features->page_action_controller()) {
+        controller->Hide(kActionFederation);
+        controller->HideSuggestionChip(kActionFederation);
+        controller->HideAnchoredMessage(kActionFederation);
+      }
+    }
+  }
+
   if (!GetDialogWidget()) {
     CHECK(!account_selection_view_);
+    // When the UI is in the AMBIENT state (omnibox chip), there is no widget
+    // to trigger the standard destruction sequence. We must notify the delegate
+    // here to ensure the request is properly terminated.
+    if (dialog_type_ == DialogType::AMBIENT && notify_delegate) {
+      delegate_->OnDismiss(DismissReason::kOther);
+    }
     return;
   }
 
@@ -1313,6 +1391,67 @@ void FedCmAccountSelectionView::ShouldShowDialog(bool& should_show) {
       should_show = false;
     }
   }
+}
+
+bool FedCmAccountSelectionView::ShowPageAction(
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (!tab_) {
+    return false;
+  }
+
+  auto* features = tab_->GetTabFeatures();
+  if (!features) {
+    return false;
+  }
+
+  auto* controller = features->page_action_controller();
+  if (!controller) {
+    return false;
+  }
+
+  // We currently only support showing the page action when there is exactly one
+  // account. If there are multiple accounts, we fall back to the standard UI.
+  if (accounts.size() != 1u) {
+    return false;
+  }
+
+  // If the account picture hasn't been decoded yet, we can't show the page
+  // action icon.
+  if (accounts[0]->decoded_picture.IsEmpty()) {
+    return false;
+  }
+
+  bool is_returning = accounts[0]->browser_trusted_login_state ==
+                      content::IdentityRequestAccount::LoginState::kSignIn;
+
+  std::u16string idp_name = base::UTF8ToUTF16(idp_list[0]->idp_for_display);
+  if (is_returning) {
+    controller->SetAnchoredMessageText(kActionFederation,
+                                       base::UTF8ToUTF16(accounts[0]->email));
+    controller->ShouldShowAnchoredMessageCloseIcon(kActionFederation, true);
+    controller->OverrideText(
+        kActionFederation,
+        l10n_util::GetStringFUTF16(IDS_FEDERATION_SIGN_IN_TITLE, idp_name));
+  } else {
+    controller->OverrideText(
+        kActionFederation,
+        l10n_util::GetStringFUTF16(IDS_FEDERATION_SIGN_UP_TITLE, idp_name));
+  }
+
+  gfx::ImageSkia avatar = webid::ComputeAccountCircleCroppedPicture(
+      *accounts[0], ui::SimpleMenuModel::kDefaultIconSize,
+      /*idp_image=*/std::nullopt, 1.0f);
+  controller->OverrideImage(kActionFederation,
+                            ui::ImageModel::FromImageSkia(avatar));
+
+  controller->Show(kActionFederation);
+  if (is_returning) {
+    controller->ShowAnchoredMessage(kActionFederation);
+  } else {
+    controller->ShowSuggestionChip(kActionFederation);
+  }
+  return true;
 }
 
 }  // namespace webid

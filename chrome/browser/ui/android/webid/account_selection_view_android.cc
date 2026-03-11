@@ -261,6 +261,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
   }
 }
 
+void AccountSelectionViewAndroid::OnPageActionClicked() {}
+
 bool AccountSelectionViewAndroid::Show(
     const content::RelyingPartyData& rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,

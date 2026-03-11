@@ -25,6 +25,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   ~AccountSelectionViewAndroid() override;
 
   // AccountSelectionView:
+  void OnPageActionClicked() override;
   bool Show(
       const content::RelyingPartyData& rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,

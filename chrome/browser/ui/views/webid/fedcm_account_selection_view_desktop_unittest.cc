@@ -207,6 +207,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
   void SetIsActivated(bool active);
   bool IsActivated() const override { return is_activated_; }
   bool CanShowModalUI() const override { return true; }
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override { return host_; }
 
  private:
   using DidActivateCallbackList =
@@ -219,6 +220,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
 
   raw_ptr<content::WebContents> contents_;
   bool is_activated_ = true;
+  ui::UnownedUserDataHost host_;
 };
 
 void FakeTabInterface::SetIsActivated(bool active) {

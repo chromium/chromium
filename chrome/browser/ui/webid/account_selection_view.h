@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/gfx/native_ui_types.h"
 
 using Account = content::IdentityRequestAccount;
@@ -23,6 +24,7 @@ using TokenError = content::IdentityCredentialTokenError;
 // identity dialog controller with the Android frontend.
 class AccountSelectionView {
  public:
+  DECLARE_USER_DATA(AccountSelectionView);
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -63,6 +65,11 @@ class AccountSelectionView {
   AccountSelectionView(const AccountSelectionView&) = delete;
   AccountSelectionView& operator=(const AccountSelectionView&) = delete;
   virtual ~AccountSelectionView() = default;
+
+  // Triggered when the user clicks on the page action while it is in the
+  // passive state. Called when the user clicks the page action (omnibox chip)
+  // in passive mode.
+  virtual void OnPageActionClicked() = 0;
 
   // Instructs the view to show the provided accounts to the user.
   // `rp_data` is the relying party's data, such as the display name and icon.

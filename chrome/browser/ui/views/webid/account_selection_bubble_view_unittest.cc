@@ -74,9 +74,11 @@ class FakeTabInterface : public tabs::MockTabInterface {
   content::WebContents* GetContents() const override { return contents_; }
   bool IsActivated() const override { return true; }
   bool CanShowModalUI() const override { return true; }
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override { return host_; }
 
  private:
   raw_ptr<content::WebContents> contents_;
+  ui::UnownedUserDataHost host_;
 };
 
 class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {

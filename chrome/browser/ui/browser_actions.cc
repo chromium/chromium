@@ -98,6 +98,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/record_replay/record_replay_features.h"
@@ -405,15 +406,17 @@ void BrowserActions::InitializeBrowserActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                // TODO(crbug.com/393246237): Show FedCM bubble on click.
+                if (!bwi) {
+                  return;
+                }
+                if (auto* fedcm_view = AccountSelectionView::Get(
+                        bwi->GetActiveTabInterface()
+                            ->GetUnownedUserDataHost())) {
+                  fedcm_view->OnPageActionClicked();
+                }
               },
               bwi))
           .SetActionId(kActionFederation)
-          .SetTooltipText(
-              l10n_util::GetStringUTF16(IDS_FEDERATION_TITLE_STATIC))
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              vector_icons::kAccountCircleChromeRefreshIcon, ui::kColorIcon,
-              ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
           .Build());
 

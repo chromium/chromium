@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 
 source_set("webid") {
   sources = [
+    "account_selection_view.cc",
     "account_selection_view.h",
     "identity_dialog_controller.cc",
     "identity_dialog_controller.h",
@@ -20,6 +21,7 @@ source_set("webid") {
     "//chrome/browser/webid:fedcm_clickthrough_rate_metadata_proto",
     "//components/segmentation_platform/public",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//ui/gfx",
   ]
 

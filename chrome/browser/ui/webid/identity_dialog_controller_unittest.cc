@@ -66,6 +66,8 @@ class MockAccountSelectionView : public AccountSelectionView {
   MockAccountSelectionView(const MockAccountSelectionView&) = delete;
   MockAccountSelectionView& operator=(const MockAccountSelectionView&) = delete;
 
+  MOCK_METHOD(void, OnPageActionClicked, (), (override));
+
   MOCK_METHOD(
       bool,
       Show,
