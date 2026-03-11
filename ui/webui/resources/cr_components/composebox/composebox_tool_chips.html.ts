@@ -9,8 +9,9 @@ import type {ComposeboxElement} from './composebox.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
+  // TODO(crbug.com/491669968): Clean up redundant `activeToolMode_`.
   return html`
-${this.activeToolMode_ === ComposeboxToolMode.kDeepSearch ? html`
+${this.inputState_?.activeTool === ComposeboxToolMode.kDeepSearch ? html`
   <cr-composebox-tool-chip
       id="deepSearchChip"
       exportparts="tool-chip-label"
@@ -24,7 +25,7 @@ ${this.activeToolMode_ === ComposeboxToolMode.kDeepSearch ? html`
       @click="${this.onDeepSearchClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
-${this.activeToolMode_ === ComposeboxToolMode.kImageGen ? html`
+${this.inputState_?.activeTool === ComposeboxToolMode.kImageGen ? html`
   <cr-composebox-tool-chip
       id="nanoBananaChip"
       exportparts="tool-chip-label"
@@ -38,7 +39,7 @@ ${this.activeToolMode_ === ComposeboxToolMode.kImageGen ? html`
       @click="${this.onCreateImageClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
-${this.activeToolMode_ === ComposeboxToolMode.kCanvas ? html`
+${this.inputState_?.activeTool === ComposeboxToolMode.kCanvas ? html`
   <cr-composebox-tool-chip
       id="canvasChip"
       exportparts="tool-chip-label"
