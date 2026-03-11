@@ -143,24 +143,6 @@
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 8f3f76d9
-    <activity  # DIFF-ANCHOR: 3d32d400
-        android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Settings"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-    </activity>  # DIFF-ANCHOR: 3d32d400
-    <activity  # DIFF-ANCHOR: 98c8c9be
-        android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Settings"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-      <intent-filter>  # DIFF-ANCHOR: 0bc48fdf
-        <action android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity.ACTIVATE"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-      </intent-filter>  # DIFF-ANCHOR: 0bc48fdf
-    </activity>  # DIFF-ANCHOR: 98c8c9be
     <activity  # DIFF-ANCHOR: 50c7105b
         android:name="org.chromium.chrome.browser.app.reengagement.ReengagementActivity"
         android:excludeFromRecents="true"
