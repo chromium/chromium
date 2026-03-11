@@ -67,6 +67,9 @@ and Linux (although Linux symbol diffs have issues, as noted below).
 # Build and diff trichrome_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD -v
 
+# Build and diff using jj.
+tools/binary_size/diagnose_bloat.py @ --jj -v
+
 # Build and diff trichrome_google_bundle HEAD^ and HEAD.
 tools/binary_size/diagnose_bloat.py HEAD --enable-chrome-android-internal -v
 
