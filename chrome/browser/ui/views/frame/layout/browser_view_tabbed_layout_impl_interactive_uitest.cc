@@ -60,7 +60,10 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   static constexpr char kBaselineCl[] = "7635098";
 
   explicit BrowserViewTabbedLayoutImplUiTest(bool disable_animations = true)
-      : disable_animations_(disable_animations) {}
+      : render_mode_resetter_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            disable_animations
+                ? gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED
+                : gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
 
   ~BrowserViewTabbedLayoutImplUiTest() override = default;
 
@@ -70,7 +73,6 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures(
         {tabs::kVerticalTabs, features::kSidePanelFlyoverAnimation}, {});
     set_open_about_blank_on_browser_launch(true);
-    gfx::Animation::SetPrefersReducedMotionForTesting(disable_animations_);
     InteractiveBrowserTest::SetUp();
   }
 
@@ -84,7 +86,9 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
     chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   }
 
-  auto ReplaceAndShowSidePanel(SidePanelEntry::PanelType type) {
+  auto ReplaceAndShowSidePanel(
+      SidePanelEntry::PanelType type,
+      std::optional<int> force_preferred_width = std::nullopt) {
     return Steps(
         Do([this, type]() {
           // Note: there is a registry at browser level and one per tab; we want
@@ -111,8 +115,71 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
               SidePanelEntry::Id::kCustomizeChrome);
         }),
         WaitForShow(kSidePanelElementId),
+        If(
+            [force_preferred_width] {
+              return force_preferred_width.has_value();
+            },
+            Then(WithView(kSidePanelElementId,
+                          [force_preferred_width](SidePanel* side_panel) {
+                            side_panel->SetPanelWidth(*force_preferred_width);
+                            side_panel->InvalidateLayout();
+                          }),
+                 Do([this] { RunScheduledLayouts(); }))),
         // Wait for the indicator to show.
-        WaitForShow(kSidePanelTestElement));
+        WaitForShow(kSidePanelTestElement),
+        // Ensure that the browser gets a full layout.
+        Do([this] { RunScheduledLayouts(); }));
+  }
+
+  using Bounds = base::RefCountedData<gfx::Rect>;
+
+  auto VerifyLayout() {
+    auto browser_bounds = base::MakeRefCounted<Bounds>();
+    auto side_panel_bounds = base::MakeRefCounted<Bounds>();
+    auto content_bounds = base::MakeRefCounted<Bounds>();
+    auto toolbar_bounds = base::MakeRefCounted<Bounds>();
+    return Steps(
+        WithElement(kBrowserViewElementId,
+                    [browser_bounds](ui::TrackedElement* el) {
+                      browser_bounds->data = el->GetScreenBounds();
+                    }),
+        WithElement(kSidePanelElementId,
+                    [side_panel_bounds](ui::TrackedElement* el) {
+                      side_panel_bounds->data = el->GetScreenBounds();
+                    }),
+        WithElement(kMultiContentsViewElementId,
+                    [content_bounds](ui::TrackedElement* el) {
+                      content_bounds->data = el->GetScreenBounds();
+                    }),
+        WithElement(ToolbarView::kToolbarElementId,
+                    [toolbar_bounds](ui::TrackedElement* el) {
+                      toolbar_bounds->data = el->GetScreenBounds();
+                    }),
+        Check(
+            [=] {
+              return browser_bounds->data.Contains(side_panel_bounds->data);
+            },
+            "Side Panel in browser"),
+        Check(
+            [=] {
+              return !side_panel_bounds->data.Intersects(toolbar_bounds->data);
+            },
+            "Side Panel does not overlap Toolbar"),
+        Check(
+            [=] { return browser_bounds->data.Contains(toolbar_bounds->data); },
+            "Toolbar in browser"),
+        Check(
+            [=] { return browser_bounds->data.Contains(content_bounds->data); },
+            "Content in browser"),
+        CheckView(
+            ToolbarView::kToolbarElementId,
+            [=](ToolbarView* toolbar) {
+              LOG(INFO) << "Toolbar minimum size is "
+                        << toolbar->GetMinimumSize().ToString();
+              return toolbar_bounds->data.width() >=
+                     toolbar->GetMinimumSize().width();
+            },
+            "Toolbar is at least minimum size"));
   }
 
   auto CloseSidePanel() {
@@ -124,8 +191,6 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
   static int GetCornerScreenshotSize() {
     return GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
   }
-
-  using Bounds = base::RefCountedData<gfx::Rect>;
 
   template <typename F>
   auto ScreenshotSubregion(ui::ElementSpecifier spec,
@@ -253,9 +318,22 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
     });
   }
 
+  auto ResizeToMinimumWidth() {
+    auto steps = Steps(
+        WithView(kBrowserViewElementId,
+                 [=](BrowserView* browser_view) {
+                   auto* const widget = browser_view->GetWidget();
+                   widget->SetSize(gfx::Size(widget->GetMinimumSize().width(),
+                                             widget->GetSize().height()));
+                 }),
+        Do([this]() { RunScheduledLayouts(); }));
+    AddDescriptionPrefix(steps, "ResizeToMinimumWidth");
+    return steps;
+  }
+
  private:
-  const bool disable_animations_;
   base::test::ScopedFeatureList feature_list_;
+  const gfx::AnimationTestApi::RenderModeResetter render_mode_resetter_;
 };
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BrowserViewTabbedLayoutImplUiTest,
@@ -428,6 +506,84 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
           "main_lower_leading", 3),
       ScreenshotTop(kSidePanelElementId, "side_panel_top", 8),
       ScreenshotBottom(kSidePanelElementId, "side_panel_bottom", 8));
+}
+
+// Regression tests to ensure that when the side panel is open and the browser
+// is at its minimum size, it doesn't go into content-height mode.
+// Content-height mode is only for cases where the browser is already too small
+// when the side panel is opened.
+//
+// See https://crbug.com/491484034 for rationale.
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
+                       OpenSidePanelAtSmallWidthCollapsesLayout) {
+  gfx::Rect toolbar_bounds_in_screen;
+  RunTestSequence(ResizeToMinimumWidth(), SelectTab(kBrowserViewElementId, 0),
+                  ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar),
+                  WithView(ToolbarView::kToolbarElementId,
+                           [&](views::View* toolbar) {
+                             toolbar_bounds_in_screen =
+                                 toolbar->GetBoundsInScreen();
+                           }),
+                  CheckView(kSidePanelElementId, [&](views::View* side_panel) {
+                    return side_panel->GetBoundsInScreen().y() >
+                           toolbar_bounds_in_screen.bottom();
+                  }));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
+                       TestMinimumWindowSizeWhenSidePanelIsOpen) {
+  gfx::Rect toolbar_bounds_in_screen;
+  RunTestSequence(SelectTab(kBrowserViewElementId, 0),
+                  ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar),
+                  ResizeToMinimumWidth(),
+                  WithView(ToolbarView::kToolbarElementId,
+                           [&](views::View* toolbar) {
+                             toolbar_bounds_in_screen =
+                                 toolbar->GetBoundsInScreen();
+                           }),
+                  CheckView(kSidePanelElementId, [&](views::View* side_panel) {
+                    return side_panel->GetBoundsInScreen().y() <
+                           toolbar_bounds_in_screen.bottom();
+                  }));
+}
+
+// Regression tests for cases where preferred width for side panel is
+// unreasonably large or small.
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest, NormalSidePanelSize) {
+  RunScheduledLayouts();
+  RunTestSequence(SelectTab(kBrowserViewElementId, 0),
+                  ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar),
+                  VerifyLayout());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest, SmallSidePanelSize) {
+  RunScheduledLayouts();
+  RunTestSequence(
+      SelectTab(kBrowserViewElementId, 0),
+      ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar, 100),
+      VerifyLayout());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
+                       LargeSidePanelPreferredSize) {
+  RunScheduledLayouts();
+  const int large_width = browser()->GetBrowserView().width() - 20;
+  RunTestSequence(
+      SelectTab(kBrowserViewElementId, 0),
+      ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar, large_width),
+      VerifyLayout());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
+                       VeryLargeSidePanelPreferredSize) {
+  RunScheduledLayouts();
+  const int large_width = browser()->GetBrowserView().width() + 100;
+  RunTestSequence(
+      SelectTab(kBrowserViewElementId, 0),
+      ReplaceAndShowSidePanel(SidePanelEntry::PanelType::kToolbar, large_width),
+      VerifyLayout());
 }
 
 // Regression test for limiting the amount of WebContents resizing when the
