@@ -75,6 +75,7 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "bottomLeftSliderAriaLabel",
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddBoolean("enableMultiRegionSelection", true);
 
   // TODO(b/489801993): Refactor shared resources into a common directory to
   // avoid manual path concatenation for Lens and the Glic selection overlay.
