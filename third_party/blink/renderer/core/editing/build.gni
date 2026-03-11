@@ -316,6 +316,8 @@ blink_core_sources_editing = [
   "spellcheck/idle_spell_check_controller.h",
   "spellcheck/spell_check_requester.cc",
   "spellcheck/spell_check_requester.h",
+  "spellcheck/spell_check_requester_helper.cc",
+  "spellcheck/spell_check_requester_helper.h",
   "spellcheck/spell_checker.cc",
   "spellcheck/spell_checker.h",
   "spellcheck/text_checking.h",

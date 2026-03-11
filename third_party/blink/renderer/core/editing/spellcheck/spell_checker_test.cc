@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -12,6 +15,7 @@
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
+#include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester_helper.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -21,15 +25,35 @@
 
 namespace blink {
 
-class SpellCheckerTest : public SpellCheckTestBase {
+class SpellCheckerTest : public SpellCheckTestBase,
+                         public testing::WithParamInterface<bool> {
  protected:
+  void SetUp() override {
+    SpellCheckTestBase::SetUp();
+    if (GetParam()) {
+#if BUILDFLAG(IS_ANDROID)
+      feature_list_
+          .InitWithFeatures(/*enabled_features=*/
+                            {blink::features::kAndroidSpellcheckFullApiBlink},
+                            /*disabled_features=*/{});
+#endif
+    }
+  }
+
   unsigned LayoutCount() const {
     return Page().GetFrameView().LayoutCountForTesting();
   }
   DummyPageHolder& Page() const { return GetDummyPageHolder(); }
 
   void ForceLayout();
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+// testing::Bool() enables / disables the kAndroidSpellcheckFullApiBlink flag
+// accordingly.
+INSTANTIATE_TEST_SUITE_P(All, SpellCheckerTest, testing::Bool());
 
 void SpellCheckerTest::ForceLayout() {
   LocalFrameView& frame_view = Page().GetFrameView();
@@ -40,7 +64,7 @@ void SpellCheckerTest::ForceLayout() {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 }
 
-TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
+TEST_P(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
   SetBodyContent("<input placeholder='placeholder'>abc");
   UpdateAllLifecyclePhasesForTest();
   QuerySelector("input")->Focus();
@@ -49,7 +73,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithEmptyInputNoCrash) {
 }
 
 // Regression test for crbug.com/701309
-TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
+TEST_P(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
   SetBodyContent(
       "<div contenteditable>"
       "<table><tr><td>"
@@ -65,7 +89,7 @@ TEST_F(SpellCheckerTest, AdvanceToNextMisspellingWithImageInTableNoCrash) {
 }
 
 // Regression test for crbug.com/728801
-TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
+TEST_P(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   SetBodyContent("<div contenteditable>  zz zz zz  </div>");
 
   Element* div = QuerySelector("div");
@@ -79,7 +103,7 @@ TEST_F(SpellCheckerTest, AdvancedToNextMisspellingWrapSearchNoCrash) {
   GetSpellChecker().AdvanceToNextMisspelling(false);
 }
 
-TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
+TEST_P(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   SetBodyContent("<input>");
   auto* input = To<HTMLInputElement>(QuerySelector("input"));
   input->Focus();
@@ -99,7 +123,7 @@ TEST_F(SpellCheckerTest, SpellCheckDoesNotCauseUpdateLayout) {
   EXPECT_EQ(start_count, LayoutCount());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        MarkerContainsHideSuggestionWindowAttributeFalseByDefault) {
   SetBodyContent(
       "<div contenteditable>"
@@ -111,8 +135,8 @@ TEST_F(SpellCheckerTest,
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*spelling_markers=*/{},
-      /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check,
+      /*request_number=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -128,7 +152,7 @@ TEST_F(SpellCheckerTest,
                    ->ShouldHideSuggestionMenu());
 }
 
-TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
+TEST_P(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
   SetBodyContent(
       "<div contenteditable>"
       "spllchck"
@@ -139,8 +163,8 @@ TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*spelling_markers=*/{},
-      /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check,
+      /*request_number=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -157,7 +181,7 @@ TEST_F(SpellCheckerTest, MarkerContainsHideSuggestionWindowAttribute) {
                   ->ShouldHideSuggestionMenu());
 }
 
-TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
+TEST_P(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
   SetBodyContent(
       "<div contenteditable>"
       "spllchck"
@@ -168,8 +192,8 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
       EphemeralRange(Position(text, 0), Position(text, 8));
 
   SpellCheckRequest* request = SpellCheckRequest::Create(
-      range_to_check, /*spelling_markers=*/{},
-      /*num_request=*/0, /*should_force_refresh=*/false);
+      range_to_check,
+      /*request_number=*/0, /*should_force_refresh=*/false);
 
   TextCheckingResult result;
   result.decoration = TextDecorationType::kTextDecorationTypeSpelling;
@@ -189,7 +213,7 @@ TEST_F(SpellCheckerTest, MarkAndReplaceForHandlesMultipleReplacements) {
                 ->Description());
 }
 
-TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_FirstCharSelected) {
+TEST_P(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_FirstCharSelected) {
   SetBodyContent(
       "<div contenteditable>"
       "spllchck"
@@ -217,7 +241,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_FirstCharSelected) {
   EXPECT_EQ(8u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_LastCharSelected) {
+TEST_P(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_LastCharSelected) {
   SetBodyContent(
       "<div contenteditable>"
       "spllchck"
@@ -245,7 +269,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_LastCharSelected) {
   EXPECT_EQ(8u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_SingleCharWordSelected) {
   SetBodyContent(
       "<div contenteditable>"
@@ -274,7 +298,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(1u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretLeftOfSingleCharWord) {
   SetBodyContent(
       "<div contenteditable>"
@@ -303,7 +327,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(1u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretRightOfSingleCharWord) {
   SetBodyContent(
       "<div contenteditable>"
@@ -332,7 +356,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(1u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretLeftOfMultiCharWord) {
   SetBodyContent(
       "<div contenteditable>"
@@ -361,7 +385,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(8u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretRightOfMultiCharWord) {
   SetBodyContent(
       "<div contenteditable>"
@@ -390,7 +414,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(8u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_CaretMiddleOfWord) {
+TEST_P(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_CaretMiddleOfWord) {
   SetBodyContent(
       "<div contenteditable>"
       "spllchck"
@@ -418,7 +442,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_CaretMiddleOfWord) {
   EXPECT_EQ(8u, marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretOneCharLeftOfMisspelling) {
   SetBodyContent(
       "<div contenteditable>"
@@ -443,7 +467,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(nullptr, result);
 }
 
-TEST_F(SpellCheckerTest,
+TEST_P(SpellCheckerTest,
        GetSpellCheckMarkerUnderSelection_CaretOneCharRightOfMisspelling) {
   SetBodyContent(
       "<div contenteditable>"
@@ -468,7 +492,7 @@ TEST_F(SpellCheckerTest,
   EXPECT_EQ(nullptr, result);
 }
 
-TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
+TEST_P(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
   SetBodyContent(
       "<div contenteditable>"
       "spl<b>lc</b>hck"
@@ -509,7 +533,7 @@ TEST_F(SpellCheckerTest, GetSpellCheckMarkerUnderSelection_MultiNodeMisspell) {
   EXPECT_EQ(3u, third_marker->EndOffset());
 }
 
-TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
+TEST_P(SpellCheckerTest, PasswordFieldsAreIgnored) {
   // Check that spellchecking is enabled for an input type="text".
   SetBodyContent("<input type=\"text\">");
   auto* input = To<HTMLInputElement>(QuerySelector("input"));
@@ -533,6 +557,39 @@ TEST_F(SpellCheckerTest, PasswordFieldsAreIgnored) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   EXPECT_FALSE(SpellChecker::IsSpellCheckingEnabledAt(
       Position(input->InnerEditorElement()->firstChild(), 0)));
+}
+
+TEST_P(SpellCheckerTest, GetSpellingMarkers) {
+  SetBodyContent("<div contenteditable>wellcome home</div>");
+  Element* div = QuerySelector("div");
+  Node* text = div->firstChild();
+
+  // Add a spelling marker for "wellcome"
+  GetDocument().Markers().AddSpellingMarker(
+      EphemeralRange(Position(text, 0), Position(text, 8)));
+
+  SpellCheckRequest* request = SpellCheckRequest::Create(
+      EphemeralRange(Position(text, 0), Position(text, 13)), 0, false);
+
+#if BUILDFLAG(IS_ANDROID)
+  auto markers = request->GetSpellingMarkers();
+  if (GetParam()) {
+    ASSERT_TRUE(ShouldSendSpellingMarkersInfo());
+    ASSERT_EQ(1u, markers.size());
+
+    EXPECT_EQ(0u, markers[0]->StartOffset());
+    EXPECT_EQ(8u, markers[0]->EndOffset());
+    EXPECT_EQ(DocumentMarker::MarkerType::kSpelling, markers[0]->GetType());
+  } else {
+    ASSERT_FALSE(ShouldSendSpellingMarkersInfo());
+
+    EXPECT_EQ(0u, markers.size());
+  }
+#else
+  ASSERT_FALSE(ShouldSendSpellingMarkersInfo());
+
+  EXPECT_EQ(0u, request->GetSpellingMarkers().size());
+#endif
 }
 
 }  // namespace blink

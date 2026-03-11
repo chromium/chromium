@@ -267,28 +267,6 @@ namespace blink {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-blink::DocumentMarkerVector ExtractSpellingMarkersFromDocumentMarkerVector(
-    const blink::DocumentMarkerVector& markers) {
-  blink::DocumentMarkerVector spelling_markers;
-  for (auto& marker : markers) {
-    if (marker->GetType() == DocumentMarker::MarkerType::kSpelling ||
-        marker->GetType() == DocumentMarker::MarkerType::kGrammar) {
-      spelling_markers.push_back(marker);
-    }
-
-    if (const auto* suggestion_marker =
-            DynamicTo<SuggestionMarker>(marker.Get())) {
-      if (suggestion_marker->IsMisspelling() ||
-          suggestion_marker->IsGrammarError()) {
-        spelling_markers.push_back(marker);
-      }
-    }
-  }
-  return spelling_markers;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Max size in bytes of the Vector used in ForceSynchronousDocumentInstall to
 // buffer data before sending it to the HTML parser.
 constexpr unsigned kMaxDocumentChunkSize = 1000000;
@@ -4297,10 +4275,7 @@ void LocalFrame::PerformFullContentSpellCheck() {
                              Position::LastPositionInNode(*container_node));
 
   GetSpellChecker().GetSpellCheckRequester().RequestCheckingFor(
-      range,
-      ExtractSpellingMarkersFromDocumentMarkerVector(
-          GetDocument()->Markers().Markers()),
-      /*request_num=*/0, /*should_force_refresh=*/false);
+      range, /*request_num=*/0, /*should_force_refresh=*/false);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
