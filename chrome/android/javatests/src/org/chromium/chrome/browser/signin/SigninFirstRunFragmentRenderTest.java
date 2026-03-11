@@ -50,6 +50,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -330,6 +331,31 @@ public class SigninFirstRunFragmentRenderTest {
         mRenderTestRule.render(
                 mActivityTestRule.getActivity().findViewById(android.R.id.content),
                 "signin_first_run_fragment_with_account_managed");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
+    public void testFragmentWithAccountOnManagedDevice_signinForcedByPolicy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        // TODO(crbug.com/481972235): Replace this by The {@link @Policies.Add} annotation.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = LocalStatePrefs.get();
+                    prefService.setBoolean(Pref.FORCE_BROWSER_SIGNIN, true);
+                });
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_signin_forced_by_policy");
     }
 
     @Test

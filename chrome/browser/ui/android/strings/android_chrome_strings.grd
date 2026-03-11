@@ -3660,6 +3660,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SIGNIN_FRE_SUBTITLE_WITHOUT_SYNC" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in (access to bookmarks, passwords, history, settings, etc.). However, we introduce a caveat, because the user has a managed account (such as Enterprise); this means that, depending on their organization's settings, the user might not be able to save all types of data in their Google Account. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
         Sign in to get the most out of Chrome
       </message>
+      <message name="IDS_SIGNIN_FRE_TITLE_SIGNIN_FORCED_BY_POLICY" meaning="Title" desc="Title of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy.">
+        Sign in to Chrome
+      </message>
+      <message name="IDS_SIGNIN_FRE_SUBTITLE_SIGNIN_FORCED_BY_POLICY" desc="Subtitle of a dialog to sign in to Chrome when sign-in is required because of an enterprise policy.">
+        Your organization requires you to sign in to use Chrome.
+      </message>
       <message name="IDS_FRE_SIGNING_IN" desc="Text to show below a progress spinner in the signin FRE to notify the user that signing in is in progress.">
         Signing in\u2026
       </message>

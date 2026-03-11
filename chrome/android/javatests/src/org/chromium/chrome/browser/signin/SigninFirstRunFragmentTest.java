@@ -227,7 +227,7 @@ public class SigninFirstRunFragmentTest {
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
 
         // Disable animations by default.
-        FullscreenSigninMediator.setAnimationsEnabledForTesting(false);
+        FullscreenSigninMediator.disableAnimationsForTesting();
     }
 
     @After
@@ -1507,21 +1507,28 @@ public class SigninFirstRunFragmentTest {
 
     private void checkFragmentWhenSigninIsDisabledByPolicy() {
         ViewFinder.waitForNoView(withId(R.id.signin_fre_selected_account));
+        ViewFinder.waitForNoView(withId(R.id.signin_fre_dismiss_button));
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
         ViewUtils.waitForVisibleView(withId(R.id.fre_browser_managed_by));
         ViewUtils.waitForVisibleView(withText(R.string.continue_button));
         ViewUtils.waitForVisibleView(withId(R.id.signin_fre_footer));
-        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     private void checkFragmentWhenSigninIsForcedByPolicy(String continueButtonText) {
         waitForDisabledSelectedAccountView();
         verify(mFirstRunPageDelegateMock)
                 .recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
-        onView(allOf(withId(R.id.title), withText(R.string.signin_fre_title)))
+        onView(
+                        allOf(
+                                withId(R.id.title),
+                                withText(R.string.signin_fre_title_signin_forced_by_policy)))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.subtitle)).check(matches(not(isDisplayed())));
+        onView(
+                        allOf(
+                                withId(R.id.subtitle),
+                                withText(R.string.signin_fre_subtitle_signin_forced_by_policy)))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));

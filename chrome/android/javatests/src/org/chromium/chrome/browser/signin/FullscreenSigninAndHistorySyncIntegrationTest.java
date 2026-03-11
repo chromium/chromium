@@ -136,7 +136,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
         DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
-        FullscreenSigninMediator.setAnimationsEnabledForTesting(false);
+        FullscreenSigninMediator.disableAnimationsForTesting();
         // Simulate the real HistorySyncHelper's interaction with SyncService to ensure
         // UserSelectableType.HISTORY and UserSelectableType.TABS are correctly set.
         lenient()

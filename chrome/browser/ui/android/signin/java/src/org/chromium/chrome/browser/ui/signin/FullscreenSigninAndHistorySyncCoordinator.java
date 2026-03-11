@@ -308,8 +308,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public boolean shouldDisplayManagementNoticeOnManagedDevices() {
-        // Management notice shouldn't be shown in the Upgrade promo flow, even on managed devices.
-        return false;
+        // Management notice shouldn't be shown in the Upgrade promo flow, even on managed devices,
+        // unless the policy is forcing sign-in.
+        return isSigninForced();
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */

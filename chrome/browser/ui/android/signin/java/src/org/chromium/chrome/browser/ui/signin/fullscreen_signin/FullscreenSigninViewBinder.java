@@ -35,13 +35,11 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.ON_DISMISS_CLICKED) {
             view.getDismissButtonView()
                     .setOnClickListener(model.get(FullscreenSigninProperties.ON_DISMISS_CLICKED));
-        } else if (propertyKey
-                == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT) {
+        } else if ((propertyKey == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER)
+                || (propertyKey
+                        == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)) {
             updateVisibilityOnButtonClick(view, model);
-            updateBottomGroupVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER) {
-            updateVisibilityOnButtonClick(view, model);
-            updateBottomGroupVisibility(view, model);
+            updateTopAndBottomGroupVisibilities(view, model);
         } else if (propertyKey == FullscreenSigninProperties.ON_SELECTED_ACCOUNT_CLICKED) {
             view.getSelectedAccountView()
                     .setOnClickListener(
@@ -62,14 +60,18 @@ class FullscreenSigninViewBinder {
                 TransitionManager.beginDelayedTransition(view);
                 initialLoadProgressSpinner.setVisibility(View.GONE);
             }
-            updateBottomGroupVisibility(view, model);
+            updateTopAndBottomGroupVisibilities(view, model);
             updateBrowserManagedHeaderView(view, model);
         } else if ((propertyKey == FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE)
                 || (propertyKey == FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE)) {
+            updateTitleAndSubtitleVisibility(view, model);
             updateBrowserManagedHeaderView(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_FORCED) {
-            final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
-            view.getSelectedAccountView().setEnabled(!isSigninForced);
+        } else if (propertyKey == FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON) {
+            final boolean shouldHideDismissButton =
+                    model.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON);
+            // TODO(crbug.com/467707243): Support selecting from multiple accounts when signin is
+            // forced by policy.
+            view.getSelectedAccountView().setEnabled(!shouldHideDismissButton);
 
             updateBottomGroupVisibility(view, model);
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
@@ -112,12 +114,11 @@ class FullscreenSigninViewBinder {
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
             String text = model.get(FullscreenSigninProperties.TITLE_STRING);
             view.getTitle().setText(text);
+            updateTitleAndSubtitleVisibility(view, model);
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.SUBTITLE_STRING)) {
             String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
-            if (text != null) {
-                view.getSubtitle().setText(text);
-            }
-            updateBottomGroupVisibility(view, model);
+            view.getSubtitle().setText(text);
+            updateTitleAndSubtitleVisibility(view, model);
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.DISMISS_BUTTON_STRING)) {
             String text = model.get(FullscreenSigninProperties.DISMISS_BUTTON_STRING);
             view.getDismissButtonView().setText(text);
@@ -181,6 +182,32 @@ class FullscreenSigninViewBinder {
         }
     }
 
+    private static void updateTopAndBottomGroupVisibilities(
+            FullscreenSigninView view, PropertyModel model) {
+        updateTitleAndSubtitleVisibility(view, model);
+        updateBottomGroupVisibility(view, model);
+    }
+
+    private static void updateTitleAndSubtitleVisibility(
+            FullscreenSigninView view, PropertyModel model) {
+        final boolean showSigninProgressSpinner =
+                model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
+                        || model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
+        if (showSigninProgressSpinner) {
+            // Don't update the UI when sign-in progress spinner is being shown.
+            return;
+        }
+
+        final boolean showInitialLoadProgressSpinner =
+                model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
+        view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
+
+        final String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
+        view.getSubtitle()
+                .setVisibility(
+                        showInitialLoadProgressSpinner || text == null ? View.GONE : View.VISIBLE);
+    }
+
     private static void updateBottomGroupVisibility(
             FullscreenSigninView view, PropertyModel model) {
         // TODO(crbug.com/349973162): Add a regression test that updates profile data after continue
@@ -189,28 +216,12 @@ class FullscreenSigninViewBinder {
                 model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
                         || model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
         if (showSigninProgressSpinner) {
-            // Don't update the bottom group when sign-in progress spinner is being shown.
+            // Don't update the UI when sign-in progress spinner is being shown.
             return;
         }
 
         final boolean showInitialLoadProgressSpinner =
                 model.get(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER);
-        final boolean showAccountSupervisionNotice =
-                model.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE);
-        final boolean showManagementNotice =
-                model.get(FullscreenSigninProperties.SHOW_ENTERPRISE_MANAGEMENT_NOTICE);
-        final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
-        final String text = model.get(FullscreenSigninProperties.SUBTITLE_STRING);
-        view.getTitle().setVisibility(showInitialLoadProgressSpinner ? View.GONE : View.VISIBLE);
-        view.getSubtitle()
-                .setVisibility(
-                        !showInitialLoadProgressSpinner
-                                        && !showAccountSupervisionNotice
-                                        && !showManagementNotice
-                                        && text != null
-                                ? View.VISIBLE
-                                : View.GONE);
-
         final int selectedAccountVisibility =
                 !showInitialLoadProgressSpinner
                                 && model.get(FullscreenSigninProperties.SELECTED_ACCOUNT_DATA)
@@ -219,17 +230,22 @@ class FullscreenSigninViewBinder {
                         ? View.VISIBLE
                         : View.GONE;
         view.getSelectedAccountView().setVisibility(selectedAccountVisibility);
+
+        // TODO(crbug.com/467707243): Support selecting from multiple accounts when signin is forced
+        // by policy.
+        final boolean shouldHideDismissButton =
+                model.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON);
         view.getExpandIconView()
                 .setVisibility(
-                        selectedAccountVisibility == View.VISIBLE && isSigninForced
+                        selectedAccountVisibility == View.VISIBLE && shouldHideDismissButton
                                 ? View.INVISIBLE
                                 : View.VISIBLE);
         final int dismissButtonVisibility =
-                !showInitialLoadProgressSpinner
-                                && model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)
-                                && !isSigninForced
-                        ? View.VISIBLE
-                        : View.GONE;
+                showInitialLoadProgressSpinner
+                                || shouldHideDismissButton
+                                || !model.get(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED)
+                        ? View.GONE
+                        : View.VISIBLE;
         view.getDismissButtonView().setVisibility(dismissButtonVisibility);
 
         final int otherElementsVisibility =
@@ -245,7 +261,8 @@ class FullscreenSigninViewBinder {
         final boolean showSigninProgressSpinner =
                 model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
                         || model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);
-        final boolean isSigninForced = model.get(FullscreenSigninProperties.IS_SIGNIN_FORCED);
+        final boolean shouldHideDismissButton =
+                model.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON);
         final boolean showSigningInText =
                 model.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT);
 
@@ -256,7 +273,7 @@ class FullscreenSigninViewBinder {
         }
         final int bottomGroupVisibility = showSigninProgressSpinner ? View.INVISIBLE : View.VISIBLE;
         view.getSelectedAccountView().setVisibility(bottomGroupVisibility);
-        if (!isSigninForced) {
+        if (!shouldHideDismissButton) {
             // Only adjust dismiss button visibility if it's not already removed.
             view.getDismissButtonView().setVisibility(bottomGroupVisibility);
         }
