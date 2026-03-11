@@ -1192,9 +1192,8 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->width = last_frame->visible_rect().width();
     frame_metadata->height = last_frame->visible_rect().height();
     frame_metadata->media_time = last_frame->timestamp();
+    frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
   }
-
-  frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
 
   return frame_metadata;
 }
