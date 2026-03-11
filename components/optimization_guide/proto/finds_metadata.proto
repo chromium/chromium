@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "FindsMetadataProto";
+
+package optimization_guide.proto;
+
+// Keep in-sync with finds.proto in google3.
+message FindsMetadata {
+  enum ThemeType {
+    UNKNOWN = 0;
+    EVENTS_AND_ACTIVITIES = 1;
+    FOOD_AND_DINING = 2;
+    ENTERTAINMENT = 3;
+    SHOPPING = 4;
+    TRAVEL = 5;
+  }
+  optional ThemeType theme_type = 1;
+}

@@ -402,6 +402,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FedCmClickthroughRate"
       summary="Provides information about FedCM API clickthrough rate
                aggregated across all users on the page."/>
+  <variant name="FindsPageTheme"
+      summary="Provides information about the page theme for Finds."/>
   <variant name="FormsAnnotations"
       summary="Provides information about whether a URL is eligible for
                generating user annotations derived from forms."/>

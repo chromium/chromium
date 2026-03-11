@@ -141,7 +141,7 @@ message GetHintsResponse {
 // OptimizationType enum at http://shortn/_t8G1sv8yAS (Google-internal link).
 // Additionally, these values must be synchronized with the OptimizationType
 // enum in enums.xml and optimization/histograms.xml for metric recording.
-// Next ID: 120
+// Next ID: 123
 enum OptimizationType {
   // Values for obsolete optimizations.
   reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
@@ -396,6 +396,8 @@ enum OptimizationType {
   // Note: this enumerator name doesn't currently match the Google internal
   // repository, but will be renamed to match later on.
   INDIGO = 121;
+  // Provides information about the page theme for Finds.
+  FINDS_PAGE_THEME = 122;
 }
 
 // Presents semantics for how page load URLs should be matched.

@@ -56,6 +56,7 @@ proto_library("optimization_guide_proto") {
     "features/writing_assistance_api.proto",
     "features/zero_state_suggestions.proto",
     "fieldwise_parser_config.proto",
+    "finds_metadata.proto",
     "hint_cache.proto",
     "hints.proto",
     "history_query_intent_model_metadata.proto",
