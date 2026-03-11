@@ -27,8 +27,13 @@ class ReaderModeModel : public ContextualPanelModel, public KeyedService {
       FetchConfigurationForWebStateCallback callback) override;
 
  private:
+  void DelayedFetchConfigurationForWebState(
+      base::WeakPtr<web::WebState> web_state,
+      FetchConfigurationForWebStateCallback callback);
   raw_ptr<ProfileIOS> profile_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ReaderModeModel> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_H_
