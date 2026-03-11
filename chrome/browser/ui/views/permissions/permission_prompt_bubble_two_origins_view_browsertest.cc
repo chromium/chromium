@@ -78,6 +78,8 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
   void SwitchToLoudPrompt() override {}
 
+  bool ShouldShowLocationPrecisionSelector() const override { return false; }
+
   bool WasCurrentRequestAlreadyDisplayed() override { return false; }
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
     return false;

@@ -935,6 +935,12 @@ PermissionRequestManager::GetInitialGeolocationAccuracySelection() const {
   }
 }
 
+bool PermissionRequestManager::ShouldShowLocationPrecisionSelector() const {
+  CHECK_EQ(requests_.size(), 1u);
+  return requests_[0]->GetGeolocationPromptType() ==
+         GeolocationPromptType::kApproximateOrPrecise;
+}
+
 bool PermissionRequestManager::
     IsCurrentRequestEmbeddedPermissionElementInitiated() const {
   return IsRequestInProgress() &&

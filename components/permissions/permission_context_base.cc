@@ -256,6 +256,9 @@ void PermissionContextBase::RequestPermission(
       if (GeolocationSetting* geolocation_setting =
               std::get_if<GeolocationSetting>(
                   &result.retrieved_permission_setting.value())) {
+        // TODO(crbug.com/417894145): Show an upgrade prompt if approximate was
+        // previously granted and the site requests precise location (only for
+        // <geolocation> element).
         prompt_options = GeolocationPromptOptions{
             .selected_accuracy =
                 geolocation_setting->precise == PermissionOption::kAllowed
@@ -273,6 +276,18 @@ void PermissionContextBase::RequestPermission(
             .prompt_options = prompt_options,
             .is_final = true});
     return;
+  }
+  // Status is either {ASK} or it's {GRANT/DENY and ignorable}.
+  if (content_settings_type_ == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    if (request_data->requested_geolocation_accuracy.has_value() &&
+        *request_data->requested_geolocation_accuracy ==
+            GeolocationAccuracy::kApproximate) {
+      request_data->WithGeolocationPromptType(
+          GeolocationPromptType::kApproximateOnly);
+    } else {
+      request_data->WithGeolocationPromptType(
+          GeolocationPromptType::kApproximateOrPrecise);
+    }
   }
   PermissionUmaUtil::RecordPermissionRequestedFromFrame(content_settings_type_,
                                                         rfh);

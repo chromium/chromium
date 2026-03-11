@@ -178,6 +178,11 @@ class PermissionRequest {
   // prompt. Returns false otherwise.
   bool ShouldUseTwoOriginPrompt() const;
 
+  // Returns the type of geolocation prompt that should be shown for this
+  // request. Returns std::nullopt if the request is not for geolocation or if
+  // kApproximateGeolocationPermission is disabled.
+  std::optional<GeolocationPromptType> GetGeolocationPromptType() const;
+
   // Called when the user has granted the requested permission.
   // If |is_one_time| is true the permission will last until all tabs of
   // |origin| are closed or navigated away from, and then the permission will

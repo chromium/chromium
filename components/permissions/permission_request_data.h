@@ -26,6 +26,12 @@ namespace permissions {
 
 class PermissionContextBase;
 
+enum class GeolocationPromptType {
+  kApproximateOrPrecise,
+  kApproximateOnly,
+  kUpgradeToPrecise
+};
+
 // Holds information about `permissions::PermissionRequest`
 struct PermissionRequestData {
   PermissionRequestData(
@@ -64,6 +70,11 @@ struct PermissionRequestData {
 
   PermissionRequestData& WithEmbeddingOrigin(const GURL& origin) {
     embedding_origin = origin;
+    return *this;
+  }
+
+  PermissionRequestData& WithGeolocationPromptType(GeolocationPromptType type) {
+    geolocation_prompt_type = type;
     return *this;
   }
 
@@ -129,6 +140,9 @@ struct PermissionRequestData {
 
   std::vector<std::string> requested_audio_capture_device_ids;
   std::vector<std::string> requested_video_capture_device_ids;
+
+  std::optional<GeolocationPromptType> geolocation_prompt_type;
+  std::optional<GeolocationAccuracy> requested_geolocation_accuracy;
 };
 
 }  // namespace permissions

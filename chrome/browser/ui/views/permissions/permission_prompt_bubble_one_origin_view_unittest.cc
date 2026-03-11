@@ -96,6 +96,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override {
     NOTREACHED();
   }
+  bool ShouldShowLocationPrecisionSelector() const override { return false; }
   void FinalizeCurrentRequests() override {}
   void OpenHelpCenterLink(const ui::Event& event) override {}
   void PreIgnoreQuietPrompt() override {}

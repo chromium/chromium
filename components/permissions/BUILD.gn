@@ -343,6 +343,7 @@ source_set("unit_tests") {
     "contexts/nfc_permission_context_unittest.cc",
     "contexts/wake_lock_permission_context_unittest.cc",
     "permission_indicators_tab_data_unittest.cc",
+    "permission_request_data_unittest.cc",
     "permission_request_queue_unittest.cc",
     "resolvers/geolocation_permission_resolver_unittest.cc",
   ]

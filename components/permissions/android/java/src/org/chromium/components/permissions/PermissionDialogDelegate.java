@@ -125,6 +125,11 @@ public class PermissionDialogDelegate {
         return mEmbeddedPromptVariant != EmbeddedPromptVariant.UNINITIALIZED;
     }
 
+    public boolean shouldShowLocationPrecisionSelector() {
+        return PermissionDialogDelegateJni.get()
+                .shouldShowLocationPrecisionSelector(mNativeDelegatePtr);
+    }
+
     public boolean isTablet() {
         return DeviceFormFactor.isWindowOnTablet(getWindow());
     }
@@ -352,5 +357,7 @@ public class PermissionDialogDelegate {
 
         @LocationAccuracy
         int getInitialGeolocationAccuracySelection(long nativePermissionDialogDelegate);
+
+        boolean shouldShowLocationPrecisionSelector(long nativePermissionDialogDelegate);
     }
 }

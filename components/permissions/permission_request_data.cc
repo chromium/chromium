@@ -30,6 +30,12 @@ PermissionRequestData::PermissionRequestData(
           request_description.requested_audio_capture_device_ids),
       requested_video_capture_device_ids(
           request_description.requested_video_capture_device_ids) {
+  if (request_description.permissions.size() == 1 &&
+      request_description.permissions[0]->name ==
+          blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE) {
+    requested_geolocation_accuracy = GeolocationAccuracy::kApproximate;
+  }
+
   resolver = context->CreatePermissionResolver(
       request_description.permissions[request_description_permission_index]);
 }

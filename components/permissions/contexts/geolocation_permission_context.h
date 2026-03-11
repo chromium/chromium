@@ -96,7 +96,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
       const override;
 
  private:
-  friend class GeolocationPermissionContextTests;
+  friend class GeolocationPermissionContextTestsBase;
 
   void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;

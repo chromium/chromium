@@ -308,6 +308,15 @@ int32_t PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
       permission_prompt_->GetInitialGeolocationAccuracySelection());
 }
 
+bool PermissionDialogDelegate::ShouldShowLocationPrecisionSelector(
+    JNIEnv* env) const {
+  CHECK(permission_prompt_);
+  CHECK_EQ(permission_prompt_->PermissionCount(), 1u);
+  return permission_prompt_->GetContentSettingType(0) ==
+             ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
+         permission_prompt_->ShouldShowLocationPrecisionSelector();
+}
+
 }  // namespace permissions
 
 DEFINE_JNI(PermissionDialogDelegate)

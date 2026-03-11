@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_util.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/device/public/cpp/device_features.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
@@ -103,9 +105,28 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kHandTracking:
       message_id = IDS_HAND_TRACKING_INFOBAR_TEXT;
       break;
-    case RequestType::kGeolocation:
+    case RequestType::kGeolocation: {
       message_id = IDS_GEOLOCATION_INFOBAR_TEXT;
+      if (base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)) {
+        std::optional<GeolocationPromptType> type = GetGeolocationPromptType();
+        CHECK(type.has_value());
+        switch (*type) {
+          case GeolocationPromptType::kApproximateOrPrecise:
+            message_id = IDS_GEOLOCATION_INFOBAR_TEXT;
+            break;
+          case GeolocationPromptType::kApproximateOnly:
+            message_id = IDS_GEOLOCATION_APPROXIMATE_INFOBAR_TEXT;
+            break;
+          // TODO(crbug.com/417894145): Add support for the upgrade to precise
+          // prompt.
+          case GeolocationPromptType::kUpgradeToPrecise:
+          default:
+            NOTREACHED();
+        }
+      }
       break;
+    }
     case RequestType::kIdleDetection:
       message_id = IDS_IDLE_DETECTION_INFOBAR_TEXT;
       break;
@@ -482,6 +503,11 @@ std::optional<std::u16string> PermissionRequest::GetBlockText() const {
 
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess;
+}
+
+std::optional<GeolocationPromptType>
+PermissionRequest::GetGeolocationPromptType() const {
+  return data_->geolocation_prompt_type;
 }
 
 void PermissionRequest::PermissionGranted(const PromptOptions& prompt_options,

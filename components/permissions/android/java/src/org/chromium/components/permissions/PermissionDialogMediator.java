@@ -106,7 +106,8 @@ public class PermissionDialogMediator
 
         if (isGeolocationContentSetting
                 && isApproximateGeolocationEnabled
-                && locationPrecisionContainer != null) {
+                && locationPrecisionContainer != null
+                && mDialogDelegate.shouldShowLocationPrecisionSelector()) {
 
             mLocationPrecisionChooserController =
                     new LocationPrecisionChooserController(

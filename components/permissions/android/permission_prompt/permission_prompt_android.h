@@ -105,6 +105,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const;
 
+  bool ShouldShowLocationPrecisionSelector() const;
+
  protected:
   Delegate* delegate() const { return delegate_; }
 

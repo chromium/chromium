@@ -63,6 +63,7 @@ class TestPermissionBubbleViewDelegate
   const permissions::PermissionPrompt* GetCurrentPrompt() const override;
   content::WebContents* GetAssociatedWebContents() override;
 
+  bool ShouldShowLocationPrecisionSelector() const override;
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override;
 
   void set_requests(

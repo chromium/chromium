@@ -56,6 +56,11 @@ TestPermissionBubbleViewDelegate::GetAssociatedWebContents() {
   return nullptr;
 }
 
+bool TestPermissionBubbleViewDelegate::ShouldShowLocationPrecisionSelector()
+    const {
+  return false;
+}
+
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
 TestPermissionBubbleViewDelegate::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

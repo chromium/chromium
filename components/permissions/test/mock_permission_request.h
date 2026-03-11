@@ -55,6 +55,12 @@ class MockPermissionRequest : public PermissionRequest {
   MockPermissionRequest(
       const GURL& requesting_origin,
       RequestType request_type,
+      PermissionRequestGestureType gesture_type,
+      std::optional<GeolocationPromptType> geolocation_prompt_type,
+      base::WeakPtr<MockPermissionRequestState> request_state = nullptr);
+  MockPermissionRequest(
+      const GURL& requesting_origin,
+      RequestType request_type,
       bool embedded_permission_element_initiated,
       base::WeakPtr<MockPermissionRequestState> request_state = nullptr);
   MockPermissionRequest(
@@ -67,6 +73,10 @@ class MockPermissionRequest : public PermissionRequest {
   ~MockPermissionRequest() override;
 
   void RegisterOnPermissionDecidedCallback(base::OnceClosure callback);
+
+  explicit MockPermissionRequest(
+      std::unique_ptr<PermissionRequestData> request_data,
+      base::WeakPtr<MockPermissionRequestState> request_state = nullptr);
 
   void PermissionDecided(
       const permissions::PermissionPromptDecision& decision,

@@ -53,6 +53,7 @@ class MockPermissionPromptDelegate : public PermissionPrompt::Delegate {
               ShouldDropCurrentRequestIfCannotShowQuietly,
               (),
               (const, override));
+  MOCK_METHOD(bool, ShouldShowLocationPrecisionSelector, (), (const, override));
   MOCK_METHOD(bool, WasCurrentRequestAlreadyDisplayed, (), (override));
   MOCK_METHOD(void, SetDismissOnTabClose, (), (override));
   MOCK_METHOD(void, SetPromptShown, (), (override));
