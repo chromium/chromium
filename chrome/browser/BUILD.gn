@@ -531,6 +531,8 @@ static_library("browser") {
     "manta/manta_service_factory.h",
     "media/audio_service_util.cc",
     "media/audio_service_util.h",
+    "media/autoplay_policy_status_observer.cc",
+    "media/autoplay_policy_status_observer.h",
     "media/chrome_media_session_client.cc",
     "media/chrome_media_session_client.h",
     "media/media_engagement_contents_observer.cc",

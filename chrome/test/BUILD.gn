@@ -6675,6 +6675,7 @@ test("unit_tests") {
     "../browser/login_detection/login_detection_prefs_unittest.cc",
     "../browser/login_detection/login_detection_tab_helper_unittest.cc",
     "../browser/login_detection/oauth_login_detector_unittest.cc",
+    "../browser/media/autoplay_policy_status_observer_unittest.cc",
     "../browser/media/media_engagement_contents_observer_unittest.cc",
     "../browser/media/media_engagement_preloaded_list_unittest.cc",
     "../browser/media/media_engagement_score_unittest.cc",

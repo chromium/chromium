@@ -95,6 +95,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/loader/keep_alive_request_tracker.h"
 #include "chrome/browser/media/audio_service_util.h"
+#include "chrome/browser/media/autoplay_policy_status_observer.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
@@ -893,11 +894,17 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
 blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
     content::WebContents* web_contents,
     blink::mojom::AutoplayPolicy current_policy) {
+  using PolicyStatus = AutoplayPolicyStatusObserver::PolicyStatus;
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
 
+  AutoplayPolicyStatusObserver* observer =
+      AutoplayPolicyStatusObserver::GetOrCreateForWebContents(web_contents);
+
   if (IsAutoplayAllowedByPolicy(web_contents, prefs)) {
+    observer->SetPolicyStatus(PolicyStatus::kAllowedByEnterprisePolicy);
     return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
 
@@ -906,9 +913,13 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
   if (base::FeatureList::IsEnabled(media::kAutoplayDisableSettings) &&
       current_policy ==
           blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired) {
-    return UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
-               ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
-               : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+    if (UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)) {
+      observer->SetPolicyStatus(PolicyStatus::kBlockedByUserPreference);
+      return blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired;
+    } else {
+      observer->SetPolicyStatus(PolicyStatus::kAllowedByUserPreference);
+      return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+    }
   }
 
   // If the domain policy allows autoplay and has delegated that to an iframe,
@@ -916,6 +927,8 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
   if (web_contents->GetPrimaryMainFrame()->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kAutoplay) &&
       IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(), prefs)) {
+    observer->SetPolicyStatus(
+        PolicyStatus::kAllowedByDelegatedEnterprisePolicy);
     return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
 
@@ -933,6 +946,7 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
         content_settings->GetContentSetting(
             url, url, ContentSettingsType::MEDIASTREAM_CAMERA) ==
             CONTENT_SETTING_ALLOW) {
+      observer->SetPolicyStatus(PolicyStatus::kAllowedByMicCameraPermission);
       return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
     }
   }
@@ -942,12 +956,14 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
   if (base::FeatureList::IsEnabled(features::kAllowUnmutedAutoplayForTWA)) {
     if (auto* delegate = TabAndroid::FromWebContents(web_contents)) {
       if (delegate->IsTrustedWebActivity()) {
+        observer->SetPolicyStatus(PolicyStatus::kAllowedByTWA);
         return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
       }
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  observer->SetPolicyStatus(PolicyStatus::kDefaultPolicyApplied);
   return current_policy;
 }
 

@@ -2809,6 +2809,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Autoplay.EnterprisePolicyOverride" enum="Boolean"
+    expires_after="2027-03-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether an enterprise policy override allowed media autoplay.
+    Recorded when media begins playing in a WebContents, based on the cached
+    policy decision.
+  </summary>
+</histogram>
+
+<histogram name="Media.Autoplay.PolicyStatus" enum="AutoplayPolicyStatus"
+    expires_after="2027-03-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the policy status that governed autoplay. Recorded when media begins
+    playing in a WebContents, based on the cached policy decision.
+  </summary>
+</histogram>
+
 <histogram name="Media.AVDA.FrameInformation" enum="AVDAFrameInformation"
     expires_after="2020-09-05">
   <owner>liberato@chromium.org</owner>
