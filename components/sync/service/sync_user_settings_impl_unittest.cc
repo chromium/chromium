@@ -160,16 +160,9 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
 
-  // TODO(crbug.com/445841720): In CL #3, delete (AI_THREAD is now mapped to a
-  // selectable type.
-  expected_types.Remove(AI_THREAD);
   // TODO(crbug.com/445840788): In CL #3, delete (CONTEXTUAL_TASK is now mapped
   // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
-
-  // TODO(crbug.com/476335087): In CL #3, delete (GEMINI_THREAD is now mapped to
-  // a selectable type.
-  expected_types.Remove(GEMINI_THREAD);
 
   // TODO(crbug.com/486879778): In CL #3, delete (ACCESSIBILITY_ANNOTATION is
   // now mapped to a selectable type.
@@ -349,13 +342,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   expected_types.RemoveAll({WEB_APKS});
   // TODO(crbug.com/397767033): In CL #3, delete (AI_THREAD is now mapped to a
   // selectable type.
-  expected_types.Remove(AI_THREAD);
-  // TODO(crbug.com/397767033): In CL #3, delete (CONTEXTUAL_TASK is now mapped
-  // to a selectable type.
   expected_types.Remove(CONTEXTUAL_TASK);
-  // TODO(crbug.com/476335087): In CL #3, delete (GEMINI_THREAD is now mapped to
-  // a selectable type.
-  expected_types.Remove(GEMINI_THREAD);
 
   // TODO(crbug.com/486879778): In CL #3, delete (ACCESSIBILITY_ANNOTATION is
   // now mapped to a selectable type.
