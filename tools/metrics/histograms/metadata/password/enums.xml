@@ -1703,6 +1703,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="(obsolete) GMSCoreOutdatedSavingPossible"/>
   <int value="7" label="EmptySecurityDomain"/>
   <int value="8" label="IrretrievableSecurityDomain"/>
+  <int value="9" label="NeedsPassphrase"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

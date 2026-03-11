@@ -34,7 +34,10 @@ enum class ActionableError {
   // The user may be signed in but their trusted vault is locked.
   kTrustedVaultKeyNeeded = 5,
 
-  kMaxValue = kTrustedVaultKeyNeeded,
+  // The user needs to enter a passphrase to continue.
+  kNeedsPassphrase = 6,
+
+  kMaxValue = kNeedsPassphrase,
 };
 
 }  // namespace password_manager

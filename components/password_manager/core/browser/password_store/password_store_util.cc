@@ -57,6 +57,8 @@ ActionableError BackendErrorToActionableError(
       return ActionableError::kTrustedVaultKeyNeeded;
     case PasswordStoreBackendErrorType::kKeychainError:
       return ActionableError::kKeychainError;
+    case PasswordStoreBackendErrorType::kNeedsPassphrase:
+      return ActionableError::kNeedsPassphrase;
   }
 }
 
@@ -68,6 +70,7 @@ bool IsAbleToSavePasswords(ActionableError error) {
     case ActionableError::kInactionable:
     case ActionableError::kSignInNeeded:
     case ActionableError::kKeychainError:
+    case ActionableError::kNeedsPassphrase:
     case ActionableError::kTrustedVaultKeyNeeded:
       return false;
   }

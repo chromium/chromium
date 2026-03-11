@@ -35,12 +35,16 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/mock_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::ElementsAre;
 using testing::ElementsAreArray;
+using testing::Field;
 using testing::Optional;
+using testing::Property;
+using testing::Return;
 using testing::UnorderedElementsAreArray;
 using testing::VariantWith;
 
@@ -196,7 +200,7 @@ class PasswordStoreBuiltInBackendTest
         /*is_sync_for_unittests=*/true);
   }
 
-  PasswordStoreBackend* CreateBackend(
+  PasswordStoreBuiltInBackend* CreateBackend(
       std::unique_ptr<LoginDatabase> database = nullptr) {
     if (!database) {
       database = std::make_unique<LoginDatabase>(
@@ -220,9 +224,139 @@ class PasswordStoreBuiltInBackendTest
     RunUntilIdle();
   }
 
+  void InitializeBackendWithSync(
+      PasswordStoreBackend* backend,
+      PasswordStoreBackend::RemoteChangesReceived remote_changes_callback,
+      base::RepeatingClosure sync_enabled_or_disabled_cb,
+      syncer::MockSyncService& sync_service) {
+    EXPECT_CALL(
+        sync_service,
+        AddObserver(static_cast<PasswordStoreBuiltInBackend*>(backend)));
+    backend->InitBackend(
+        /*affiliated_match_helper=*/nullptr, std::move(remote_changes_callback),
+        std::move(sync_enabled_or_disabled_cb),
+        /*completion=*/base::DoNothing());
+    backend->OnSyncServiceInitialized(&sync_service);
+    RunUntilIdle();
+  }
+
  private:
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
+
+TEST_P(PasswordStoreBuiltInBackendTest,
+       SyncServiceObservationUpdatesErrorState_NoErrorByDefault) {
+  syncer::MockSyncService mock_sync_service;
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      mock_remote_changes_callback;
+  base::MockCallback<base::RepeatingClosure> mock_sync_enabled_or_disabled_cb;
+  PasswordStoreBuiltInBackend* built_in_backend = CreateBackend();
+  // Shorthands to expose overrides without casts:
+  PasswordStoreBackend* as_backend = built_in_backend;
+  syncer::SyncServiceObserver* as_sync_observer = built_in_backend;
+  InitializeBackendWithSync(as_backend, mock_remote_changes_callback.Get(),
+                            mock_sync_enabled_or_disabled_cb.Get(),
+                            mock_sync_service);
+
+  // Initial state: no error.
+  EXPECT_CALL(mock_sync_service, GetUserActionableError())
+      .WillOnce(Return(syncer::SyncService::UserActionableError::kNone));
+  EXPECT_EQ(as_backend->GetError(), ActionableError::kNoError);
+
+  // Cleans up the observer before mock_sync_service is destroyed.
+  EXPECT_CALL(mock_sync_service, RemoveObserver(as_sync_observer));
+  built_in_backend->OnSyncShutdown(&mock_sync_service);
+}
+
+TEST_P(PasswordStoreBuiltInBackendTest,
+       SyncServiceObservationUpdatesErrorState_SignInNeeded) {
+  syncer::MockSyncService mock_sync_service;
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      mock_remote_changes_callback;
+  base::MockCallback<base::RepeatingClosure> mock_sync_enabled_or_disabled_cb;
+  PasswordStoreBuiltInBackend* built_in_backend = CreateBackend();
+  // Shorthands to expose overrides without casts:
+  PasswordStoreBackend* as_backend = built_in_backend;
+  syncer::SyncServiceObserver* as_sync_observer = built_in_backend;
+  InitializeBackendWithSync(as_backend, mock_remote_changes_callback.Get(),
+                            mock_sync_enabled_or_disabled_cb.Get(),
+                            mock_sync_service);
+  // Change state to error: kSignInNeedsUpdate.
+  EXPECT_CALL(mock_sync_service, GetUserActionableError())
+      .WillRepeatedly(
+          Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
+
+  EXPECT_CALL(mock_remote_changes_callback,
+              Run(VariantWith<PasswordStoreBackendError>(
+                  Field(&PasswordStoreBackendError::type,
+                        PasswordStoreBackendErrorType::kAuthErrorResolvable))));
+  EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
+  built_in_backend->OnStateChanged(&mock_sync_service);
+  EXPECT_EQ(as_backend->GetError(), ActionableError::kSignInNeeded);
+
+  EXPECT_CALL(mock_sync_service, RemoveObserver(as_sync_observer));
+  built_in_backend->OnSyncShutdown(&mock_sync_service);
+}
+
+TEST_P(PasswordStoreBuiltInBackendTest,
+       SyncServiceObservationUpdatesErrorState_NeedsPassphrase) {
+  syncer::MockSyncService mock_sync_service;
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      mock_remote_changes_callback;
+  base::MockCallback<base::RepeatingClosure> mock_sync_enabled_or_disabled_cb;
+  PasswordStoreBuiltInBackend* built_in_backend = CreateBackend();
+  // Shorthands to expose overrides without casts:
+  PasswordStoreBackend* as_backend = built_in_backend;
+  syncer::SyncServiceObserver* as_sync_observer = built_in_backend;
+  InitializeBackendWithSync(as_backend, mock_remote_changes_callback.Get(),
+                            mock_sync_enabled_or_disabled_cb.Get(),
+                            mock_sync_service);
+  EXPECT_CALL(mock_sync_service, GetUserActionableError())
+      .WillRepeatedly(
+          Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
+
+  EXPECT_CALL(mock_remote_changes_callback,
+              Run(VariantWith<PasswordStoreBackendError>(
+                  Field(&PasswordStoreBackendError::type,
+                        PasswordStoreBackendErrorType::kNeedsPassphrase))));
+  EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
+  built_in_backend->OnStateChanged(&mock_sync_service);
+
+  EXPECT_EQ(as_backend->GetError(), ActionableError::kNeedsPassphrase);
+
+  EXPECT_CALL(mock_sync_service, RemoveObserver(as_sync_observer));
+  built_in_backend->OnSyncShutdown(&mock_sync_service);
+}
+
+TEST_P(PasswordStoreBuiltInBackendTest,
+       SyncServiceObservationUpdatesErrorState_NeedsTrustedVaultKey) {
+  syncer::MockSyncService mock_sync_service;
+  base::MockCallback<PasswordStoreBackend::RemoteChangesReceived>
+      mock_remote_changes_callback;
+  base::MockCallback<base::RepeatingClosure> mock_sync_enabled_or_disabled_cb;
+  PasswordStoreBuiltInBackend* built_in_backend = CreateBackend();
+  // Shorthands to expose overrides without casts:
+  PasswordStoreBackend* as_backend = built_in_backend;
+  syncer::SyncServiceObserver* as_sync_observer = built_in_backend;
+  InitializeBackendWithSync(as_backend, mock_remote_changes_callback.Get(),
+                            mock_sync_enabled_or_disabled_cb.Get(),
+                            mock_sync_service);
+  EXPECT_CALL(mock_sync_service, GetUserActionableError())
+      .WillRepeatedly(Return(syncer::SyncService::UserActionableError::
+                                 kNeedsTrustedVaultKeyForPasswords));
+
+  EXPECT_CALL(mock_remote_changes_callback,
+              Run(VariantWith<PasswordStoreBackendError>(Field(
+                  &PasswordStoreBackendError::type,
+                  PasswordStoreBackendErrorType::kKeyRetrievalRequired))));
+  EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
+  built_in_backend->OnStateChanged(&mock_sync_service);
+
+  EXPECT_EQ(as_backend->GetError(), ActionableError::kTrustedVaultKeyNeeded);
+
+  EXPECT_CALL(mock_sync_service, RemoveObserver(as_sync_observer));
+  built_in_backend->OnSyncShutdown(&mock_sync_service);
+}
 
 TEST_P(PasswordStoreBuiltInBackendTest, NonASCIIData) {
   PasswordStoreBackend* backend = CreateBackend();

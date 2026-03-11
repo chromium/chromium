@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
+#include "components/sync/service/sync_service.h"
 
 namespace password_manager {
 
@@ -74,6 +75,91 @@ PasswordChangesOrError MaybeRecordPasswordDeletionViaSync(
         password_manager::IsAccountStore(is_account_store));
   }
   return password_store_change_list;
+}
+
+bool ShouldForwardSyncErrorToStore(
+    syncer::SyncService::UserActionableError error) {
+  using SyncError = syncer::SyncService::UserActionableError;
+  switch (error) {
+    case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
+    case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
+    case SyncError::kBookmarksLimitExceeded:
+      return false;  // These errors aren't directly actionable (yet).
+    case SyncError::kNone:
+    case SyncError::kNeedsPassphrase:
+    case SyncError::kSignInNeedsUpdate:
+    case SyncError::kNeedsTrustedVaultKeyForPasswords:
+    case SyncError::kNeedsTrustedVaultKeyForEverything:
+#if !BUILDFLAG(IS_IOS)
+    case SyncError::kNeedsSettingsConfirmation:
+    case SyncError::kUnrecoverableError:
+#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    case SyncError::kNeedsUPMBackendUpgrade:
+#endif  // BUILDFLAG(IS_ANDROID)
+    case SyncError::kNeedsClientUpgrade:
+      // Errors that aren't categorized will block saving.
+      return true;
+  }
+}
+
+PasswordChangesOrError SyncErrorToBackendError(
+    syncer::SyncService::UserActionableError error) {
+  using SyncError = syncer::SyncService::UserActionableError;
+  using BackendError = PasswordStoreBackendErrorType;
+  switch (error) {
+    case SyncError::kNone:
+    case SyncError::kBookmarksLimitExceeded:
+    case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
+    case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
+      return std::nullopt;  // These errors aren't directly actionable (yet).
+    case SyncError::kNeedsPassphrase:
+      return PasswordStoreBackendError(BackendError::kNeedsPassphrase);
+    case SyncError::kSignInNeedsUpdate:
+      return PasswordStoreBackendError(BackendError::kAuthErrorResolvable);
+    case SyncError::kNeedsTrustedVaultKeyForPasswords:
+    case SyncError::kNeedsTrustedVaultKeyForEverything:
+      return PasswordStoreBackendError(BackendError::kKeyRetrievalRequired);
+#if !BUILDFLAG(IS_IOS)
+    case SyncError::kNeedsSettingsConfirmation:
+    case SyncError::kUnrecoverableError:
+#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    case SyncError::kNeedsUPMBackendUpgrade:
+#endif
+    case SyncError::kNeedsClientUpgrade:
+      // Errors that aren't categorized will block saving.
+      return PasswordStoreBackendError(BackendError::kUncategorized);
+  }
+}
+
+ActionableError SyncErrorToActionableError(
+    syncer::SyncService::UserActionableError error) {
+  using SyncError = syncer::SyncService::UserActionableError;
+  switch (error) {
+    case SyncError::kNone:
+      return ActionableError::kNoError;
+    case SyncError::kSignInNeedsUpdate:
+      return ActionableError::kSignInNeeded;
+    case SyncError::kNeedsPassphrase:
+      return ActionableError::kNeedsPassphrase;
+    case SyncError::kNeedsTrustedVaultKeyForPasswords:
+    case SyncError::kNeedsTrustedVaultKeyForEverything:
+      return ActionableError::kTrustedVaultKeyNeeded;
+    case SyncError::kTrustedVaultRecoverabilityDegradedForPasswords:
+    case SyncError::kTrustedVaultRecoverabilityDegradedForEverything:
+      return ActionableError::kNoError;
+#if !BUILDFLAG(IS_IOS)
+    case SyncError::kNeedsSettingsConfirmation:
+    case SyncError::kUnrecoverableError:
+#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    case SyncError::kNeedsUPMBackendUpgrade:
+#endif
+    case SyncError::kNeedsClientUpgrade:
+    case SyncError::kBookmarksLimitExceeded:
+      return ActionableError::kInactionable;
+  }
 }
 
 }  // namespace
@@ -133,6 +219,7 @@ void PasswordStoreBuiltInBackend::Shutdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   weak_ptr_factory_.InvalidateWeakPtrs();
   affiliated_match_helper_ = nullptr;
+  sync_observation_.Reset();
   if (helper_) {
     background_task_runner_->DeleteSoon(FROM_HERE, std::move(helper_));
     std::move(shutdown_completed).Run();
@@ -140,8 +227,13 @@ void PasswordStoreBuiltInBackend::Shutdown(
 }
 
 ActionableError PasswordStoreBuiltInBackend::GetError() {
-  return is_database_initialized_successfully_ ? ActionableError::kNoError
-                                               : ActionableError::kInactionable;
+  if (!is_database_initialized_successfully_) {
+    return ActionableError::kInactionable;
+  }
+  return sync_observation_.IsObserving()
+             ? SyncErrorToActionableError(
+                   sync_observation_.GetSource()->GetUserActionableError())
+             : ActionableError::kNoError;
 }
 
 void PasswordStoreBuiltInBackend::InitBackend(
@@ -152,6 +244,8 @@ void PasswordStoreBuiltInBackend::InitBackend(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
   affiliated_match_helper_ = affiliated_match_helper;
+  remote_form_changes_received_callback_ = remote_form_changes_received;
+  sync_enabled_or_disabled_cb_ = sync_enabled_or_disabled_cb;
 
   // To ensure that groups of the kClearUndecryptablePasswords will stay
   // balanced, after the cleanup is done an additional flag check is needed.
@@ -348,7 +442,37 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
 }
 
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
-    syncer::SyncService* sync_service) {}
+    syncer::SyncService* sync_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_observation_.Reset();
+  if (sync_service) {
+    sync_observation_.Observe(sync_service);
+  }
+}
+
+void PasswordStoreBuiltInBackend::OnStateChanged(syncer::SyncService* sync) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(sync_observation_.IsObservingSource(sync));
+  if (!base::FeatureList::IsEnabled(
+          features::kPasswordStorePropagatesActionableErrors)) {
+    return;
+  }
+  if (remote_form_changes_received_callback_) {
+    if (ShouldForwardSyncErrorToStore(sync->GetUserActionableError())) {
+      remote_form_changes_received_callback_.Run(
+          SyncErrorToBackendError(sync->GetUserActionableError()));
+    }
+  }
+  if (sync_enabled_or_disabled_cb_) {
+    sync_enabled_or_disabled_cb_.Run();
+  }
+}
+
+void PasswordStoreBuiltInBackend::OnSyncShutdown(syncer::SyncService* sync) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(sync_observation_.IsObservingSource(sync));
+  sync_observation_.Reset();
+}
 
 base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
