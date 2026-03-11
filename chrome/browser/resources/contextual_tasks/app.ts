@@ -795,14 +795,31 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     // If the forced composebox bounds are set, use those since its cheaper
     // than calling getBoundingClientRect();
-    const composeboxBounds =
-        this.forcedComposeboxBounds_ ?? composebox.getBoundingClientRect();
+    const composeboxBounds = this.forcedComposeboxBounds_ ??
+        this.getComposeboxBoundsRelativeToThreadFrame_();
 
     // If occluders are present, set the clip path and a z-index that ensures
     // the thread frame is above the occluders.
     return getNonOccludedClipPath(
                composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX) +
         'z-index: 100;';
+  }
+
+  protected getComposeboxBoundsRelativeToThreadFrame_() {
+    const composebox = this.composebox_;
+    if (!composebox) {
+      return null;
+    }
+    const frameRect = this.$.threadFrame.getBoundingClientRect();
+    const composeboxRect = composebox.getBoundingClientRect();
+    return {
+      top: composeboxRect.top - frameRect.top,
+      left: composeboxRect.left - frameRect.left,
+      width: composeboxRect.width,
+      height: composeboxRect.height,
+      right: composeboxRect.right - frameRect.left,
+      bottom: composeboxRect.bottom - frameRect.top,
+    };
   }
 
   protected async onNewThreadClick_() {
