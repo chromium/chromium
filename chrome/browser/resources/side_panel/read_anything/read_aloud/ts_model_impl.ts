@@ -95,7 +95,12 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       // If there are no text nodes, set the initialization state to prevent
       // indeterminate states. This can happen when there are invisible elements
       // that are being ignored by read aloud.
-      this.initialized_ = true;
+      // Do not set this if the context node is a DocumentFragment, which
+      // happens when Readability is enabled and the fragment has just been
+      // appended to the DOM (and therefore emptied).
+      if (context.domNode()?.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) {
+        this.initialized_ = true;
+      }
       return;
     }
 

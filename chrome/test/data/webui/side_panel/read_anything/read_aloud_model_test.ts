@@ -2148,4 +2148,17 @@ suite('ReadAloudModel', () => {
     assertFalse(getReadAloudModel().isInitialized());
     assertEquals('', getReadAloudModel().getCurrentTextContent());
   });
+
+
+  test('init does not initialize on empty DocumentFragment', () => {
+    const fragment = document.createDocumentFragment();
+    getReadAloudModel().init(ReadAloudNode.create(fragment)!);
+    assertFalse(getReadAloudModel().isInitialized());
+  });
+
+  test('init initializes on empty regular element', () => {
+    const div = document.createElement('div');
+    getReadAloudModel().init(ReadAloudNode.create(div)!);
+    assertTrue(getReadAloudModel().isInitialized());
+  });
 });
