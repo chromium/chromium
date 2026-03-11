@@ -36,7 +36,9 @@ namespace mp4 {
 // Size in bytes needed to store largest IV.
 const int kInitializationVectorSize = 16;
 
-enum TrackType { kInvalid = 0, kVideo, kAudio, kText, kHint };
+enum TrackType { kInvalid = 0, kVideo, kAudio, kMetadata, kText, kHint };
+
+MEDIA_EXPORT const char* TrackTypeName(TrackType);
 
 enum SampleFlags {
   kSampleIsNonSyncSample = 0x10000

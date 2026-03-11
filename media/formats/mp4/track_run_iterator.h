@@ -80,9 +80,9 @@ class MEDIA_EXPORT TrackRunIterator {
   int64_t aux_info_offset() const;
   int aux_info_size() const;
   bool is_encrypted() const;
-  bool is_audio() const;
-  // Only one is valid, based on the value of is_audio().
+  // This will CHECK if the current track is not audio.
   const AudioSampleEntry& audio_description() const;
+  // This will CHECK if the current track is not video.
   const VideoSampleEntry& video_description() const;
 
   // Properties of the current sample. Only valid if IsSampleValid().
@@ -118,9 +118,9 @@ class MEDIA_EXPORT TrackRunIterator {
   std::vector<TrackRunInfo>::const_iterator run_itr_;
   std::vector<SampleInfo>::const_iterator sample_itr_;
 
-  int64_t sample_dts_;
-  int64_t sample_cts_;
-  int64_t sample_offset_;
+  int64_t sample_dts_ = 0;
+  int64_t sample_cts_ = 0;
+  int64_t sample_offset_ = 0;
 };
 
 }  // namespace mp4

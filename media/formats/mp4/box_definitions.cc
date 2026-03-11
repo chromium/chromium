@@ -157,6 +157,23 @@ gfx::HdrMetadataSmpteSt2086 ConvertMdcvToColorVolumeMetadata(
 
 }  // namespace
 
+const char* TrackTypeName(TrackType track_type) {
+  switch (track_type) {
+    case kInvalid:
+      return "invalid";
+    case kVideo:
+      return "video";
+    case kAudio:
+      return "audio";
+    case kMetadata:
+      return "metadata";
+    case kText:
+      return "text";
+    case kHint:
+      return "hint";
+  }
+}
+
 FileType::FileType() = default;
 FileType::FileType(const FileType& other) = default;
 FileType::~FileType() = default;

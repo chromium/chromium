@@ -729,11 +729,11 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           MediaTrack::Label(track->media.handler.name),
           MediaTrack::Language(track->media.header.language()));
       continue;
-    }
-
-    if (track->media.handler.type == kVideo) {
+    } else if (track->media.handler.type == kVideo) {
       detected_video_track_count++;
 
+      // It is not uncommon to find otherwise-valid files with incorrect sample
+      // description indices, so we fail gracefully in that case.
       RCHECK(!samp_descr.video_entries.empty());
       if (desc_idx >= samp_descr.video_entries.size())
         desc_idx = 0;
@@ -968,15 +968,18 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     return ParseResult::kNeedMoreData;
   }
 
-  bool audio =
-      audio_track_ids_.find(runs_->track_id()) != audio_track_ids_.end();
-  bool video =
-      video_track_ids_.find(runs_->track_id()) != video_track_ids_.end();
+  DemuxerStream::Type buffer_type = DemuxerStream::UNKNOWN;
+  if (audio_track_ids_.count(runs_->track_id())) {
+    buffer_type = DemuxerStream::AUDIO;
+  } else if (video_track_ids_.count(runs_->track_id())) {
+    buffer_type = DemuxerStream::VIDEO;
+  }
 
   // Skip this entire track if it's not one we're interested in
-  if (!audio && !video) {
-    if (!runs_->AdvanceRun())
+  if (buffer_type == DemuxerStream::UNKNOWN) {
+    if (!runs_->AdvanceRun()) {
       return ParseResult::kError;
+    }
     return ParseResult::kOk;
   }
 
@@ -1044,7 +1047,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   // being put in a StreamParserBuffer. Prefer `heap_frame_buf` where possible.
   std::vector<uint8_t> frame_buf;
   base::HeapArray<uint8_t> heap_frame_buf;
-  if (video) {
+  if (buffer_type == DemuxerStream::VIDEO) {
     if (runs_->video_description().video_info.codec == VideoCodec::kH264 ||
         runs_->video_description().video_info.codec == VideoCodec::kHEVC ||
         (runs_->video_description().video_info.codec ==
@@ -1096,9 +1099,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
         is_keyframe = analysis.is_keyframe.value();
       }
     }
-  }
-
-  if (audio) {
+  } else if (buffer_type == DemuxerStream::AUDIO) {
     if (ESDescriptor::IsAAC(runs_->audio_description().esds.object_type)) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
       heap_frame_buf = PrepareAACBuffer(runs_->audio_description().esds.aac,
@@ -1140,7 +1141,6 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   // Either both buffers should be empty or only one should be filled.
   CHECK(frame_buf.empty() || heap_frame_buf.empty());
 
-  const auto buffer_type = audio ? DemuxerStream::AUDIO : DemuxerStream::VIDEO;
   scoped_refptr<StreamParserBuffer> stream_buf;
 
   if (auto* media_client = GetMediaClient()) {
@@ -1196,7 +1196,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     return ParseResult::kError;
   }
 
-  DVLOG(3) << "Emit " << (audio ? "audio" : "video") << " frame: "
+  DVLOG(3) << "Emit " << DemuxerStream::GetTypeName(buffer_type) << " frame: "
            << " track_id=" << runs_->track_id() << ", key=" << is_keyframe
            << ", dur=" << runs_->duration().InMilliseconds()
            << ", dts=" << runs_->dts().InMilliseconds()
