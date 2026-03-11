@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/features.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/android_buildflags.h"
@@ -66,5 +67,7 @@ BASE_FEATURE(kUseManagementServiceForSensitivePolicies,
 // chrome:// URLs such as chrome://ntp, chrome://bookmarks, etc.
 BASE_FEATURE(kBypassURLBlocklistWildcardForInternalChromeUrls,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPolicyPageMojoMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace policy::features

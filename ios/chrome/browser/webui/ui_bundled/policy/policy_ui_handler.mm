@@ -59,14 +59,24 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/webui/web_ui_util.h"
 
-PolicyUIHandler::PolicyUIHandler() = default;
+PolicyUIHandler::PolicyUIHandler()
+    : receiver_(this), client_(mojo::NullRemote()) {}
+
+PolicyUIHandler::PolicyUIHandler(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
+    mojo::PendingRemote<policy::mojom::PolicyPageClient> client)
+    : receiver_(this, std::move(receiver)), client_(std::move(client)) {}
 
 PolicyUIHandler::~PolicyUIHandler() {
-  GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
-  policy::SchemaRegistry* registry = ProfileIOS::FromWebUIIOS(web_ui())
-                                         ->GetPolicyConnector()
-                                         ->GetSchemaRegistry();
-  registry->RemoveObserver(this);
+  // TODO: crbug.com/40897784 - Make this unconditional once mojo version also
+  // adds observers.
+  if (!receiver_.is_bound()) {
+    GetPolicyService()->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    policy::SchemaRegistry* registry = ProfileIOS::FromWebUIIOS(web_ui())
+                                           ->GetPolicyConnector()
+                                           ->GetSchemaRegistry();
+    registry->RemoveObserver(this);
+  }
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     /*export_to_json_count=*/0,
                                     copy_to_json_count_, upload_report_count_);
@@ -474,4 +484,8 @@ void PolicyUIHandler::OnRefreshPoliciesDone() {
 policy::PolicyService* PolicyUIHandler::GetPolicyService() const {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   return profile->GetPolicyConnector()->GetPolicyService();
+}
+
+void PolicyUIHandler::GetDebugString(GetDebugStringCallback callback) {
+  std::move(callback).Run("Migrating chrome://policy to mojo (on iOS)!");
 }

@@ -69,6 +69,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kUseManagementServiceForSensitivePolicies);
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kBypassURLBlocklistWildcardForInternalChromeUrls);
 
+// Enables the mojo version of the page handler for chrome://policy.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyPageMojoMigration);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

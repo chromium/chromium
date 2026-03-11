@@ -25,7 +25,9 @@
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
+#include "components/policy/core/common/features.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
@@ -141,6 +143,12 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   RegisterWebUIControllerInterfaceBinder<
       webnn_internals::mojom::WebNNInternalsHandlerFactory, WebNNInternalsUI>(
       map);
+
+  if (base::FeatureList::IsEnabled(
+          policy::features::kPolicyPageMojoMigration)) {
+    RegisterWebUIControllerInterfaceBinder<
+        policy::mojom::PolicyPageHandlerFactory, PolicyUI>(map);
+  }
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.

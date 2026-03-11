@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -41,6 +42,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -179,24 +181,33 @@ std::vector<std::string> PopulateExpectedPolicy(
 }
 }  // namespace
 
-class PolicyUITest : public PlatformBrowserTest {
+class PolicyUITestBase : public PlatformBrowserTest {
  public:
-  PolicyUITest();
+  PolicyUITestBase() = default;
 
-  PolicyUITest(const PolicyUITest&) = delete;
-  PolicyUITest& operator=(const PolicyUITest&) = delete;
+  PolicyUITestBase(const PolicyUITestBase&) = delete;
+  PolicyUITestBase& operator=(const PolicyUITestBase&) = delete;
 
-  ~PolicyUITest() override;
+  ~PolicyUITestBase() override = default;
 
  protected:
   // PlatformBrowserTest implementation.
-  void SetUpInProcessBrowserTestFixture() override;
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+    policy::PushProfilePolicyConnectorProviderForTesting(&provider_);
+  }
 
   // Uses the |MockConfiguratonPolicyProvider| installed for testing to publish
   // |policy| for |policy_namespace|.
   void UpdateProviderPolicyForNamespace(
       const policy::PolicyNamespace& policy_namespace,
-      const policy::PolicyMap& policy);
+      const policy::PolicyMap& policy) {
+    policy::PolicyBundle bundle;
+    bundle.Get(policy_namespace) = policy.Clone();
+    provider_.UpdatePolicy(std::move(bundle));
+  }
 
   void VerifyPolicies(const std::vector<std::vector<std::string>>& expected);
 
@@ -209,26 +220,7 @@ class PolicyUITest : public PlatformBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
-PolicyUITest::PolicyUITest() = default;
-
-PolicyUITest::~PolicyUITest() = default;
-
-void PolicyUITest::SetUpInProcessBrowserTestFixture() {
-  provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
-                              /*is_first_policy_load_complete_return=*/true);
-  policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
-  policy::PushProfilePolicyConnectorProviderForTesting(&provider_);
-}
-
-void PolicyUITest::UpdateProviderPolicyForNamespace(
-    const policy::PolicyNamespace& policy_namespace,
-    const policy::PolicyMap& policy) {
-  policy::PolicyBundle bundle;
-  bundle.Get(policy_namespace) = policy.Clone();
-  provider_.UpdatePolicy(std::move(bundle));
-}
-
-void PolicyUITest::VerifyPolicies(
+void PolicyUITestBase::VerifyPolicies(
     const std::vector<std::vector<std::string>>& expected_policies) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
@@ -274,7 +266,7 @@ void PolicyUITest::VerifyPolicies(
   }
 }
 
-void PolicyUITest::VerifyReportButton(bool visible) {
+void PolicyUITestBase::VerifyReportButton(bool visible) {
   const std::string kJavaScript = "getReportButtonVisibility();";
   std::string ret =
       content::EvalJs(web_contents(), kJavaScript).ExtractString();
@@ -285,6 +277,16 @@ void PolicyUITest::VerifyReportButton(bool visible) {
   EXPECT_FALSE(ret != "none");
 #endif
 }
+
+class PolicyUITest : public base::test::WithFeatureOverride,
+                     public PolicyUITestBase {
+ public:
+  PolicyUITest()
+      : base::test::WithFeatureOverride(
+            policy::features::kPolicyPageMojoMigration) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolicyUITest);
 
 #if BUILDFLAG(IS_CHROMEOS)
 class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
@@ -520,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyNames) {
   // Verifies that the names of known policies are sent to the UI and processed
   // there correctly by checking that the policy table contains all policies in
   // the correct order.
@@ -556,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
 #else
 #define MAYBE_SendPolicyValues SendPolicyValues
 #endif
-IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_SendPolicyValues) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, MAYBE_SendPolicyValues) {
   // Verifies that policy values are sent to the UI and processed there
   // correctly by setting the values of four known and one unknown policy and
   // checking that the policy table contains the policy names, values and
@@ -646,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, MAYBE_SendPolicyValues) {
   VerifyPolicies(expected_policies);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButton) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButton) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
 
@@ -669,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButton) {
   VerifyReportButton(/*visible=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButtonWithProfileReporting) {
+IN_PROC_BROWSER_TEST_P(PolicyUITest, ReportButtonWithProfileReporting) {
   ASSERT_TRUE(
       content::NavigateToURL(web_contents(), GURL(chrome::kChromeUIPolicyURL)));
 
@@ -694,12 +696,18 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, ReportButtonWithProfileReporting) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class PolicyPrecedenceUITest
-    : public PolicyUITest,
+    : public PolicyUITestBase,
       public ::testing::WithParamInterface<std::tuple<
           /*cloud_policy_overrides_platform_policy=*/bool,
           /*cloud_user_policy_overrides_cloud_machine_policy=*/bool,
-          /*is_user_affiliated=*/bool>> {
+          /*is_user_affiliated=*/bool,
+          /*is_mojo_enabled=*/bool>> {
  public:
+  PolicyPrecedenceUITest() {
+    feature_list_.InitWithFeatureState(
+        policy::features::kPolicyPageMojoMigration, std::get<3>(GetParam()));
+  }
+
   bool CloudPolicyOverridesPlatformPolicy() { return std::get<0>(GetParam()); }
 
   bool CloudUserPolicyOverridesCloudMachinePolicy() {
@@ -734,6 +742,9 @@ class PolicyPrecedenceUITest
   const std::string kJavaScript =
       "var precedence_row = getPrecedenceRowValue();"
       "precedence_row.textContent;";
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verify that the precedence order displayed in the Policy Precedence table is
@@ -772,20 +783,25 @@ IN_PROC_BROWSER_TEST_P(PolicyPrecedenceUITest, PrecedenceOrder) {
 
 INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
                          PolicyPrecedenceUITest,
-                         testing::Combine(testing::Values(false, true),
-                                          testing::Values(false, true),
-                                          testing::Values(false, true)));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
-class ExtensionPolicyUITest : public PolicyUITest,
-                              public ::testing::WithParamInterface<bool> {
+class ExtensionPolicyUITest
+    : public PolicyUITestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  ExtensionPolicyUITest() = default;
+  ExtensionPolicyUITest() {
+    feature_list_.InitWithFeatureState(
+        policy::features::kPolicyPageMojoMigration, std::get<1>(GetParam()));
+  }
 
-  bool UseSigninProfile() const { return GetParam(); }
+  bool UseSigninProfile() const { return std::get<0>(GetParam()); }
 
   Profile* extension_profile() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -795,6 +811,9 @@ class ExtensionPolicyUITest : public PolicyUITest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
     return chrome_test_utils::GetProfile(this);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/41429868) Flaky time outs on Linux Chromium OS ASan
@@ -995,11 +1014,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ExtensionPolicyUITest,
+                         testing::Combine(
 #if BUILDFLAG(IS_CHROMEOS)
-                         ::testing::Values(false, true)
-#else   // BUILDFLAG(IS_CHROMEOS)
-                         ::testing::Values(false)
-#endif  // BUILDFLAG(IS_CHROMEOS)
-);
+                             testing::Values(false, true),
+#else
+                             testing::Values(false),
+#endif
+                             testing::Bool()));
 
 #endif  // !BUILDFLAG(IS_ANDROID)

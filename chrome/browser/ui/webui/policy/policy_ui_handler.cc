@@ -88,6 +88,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -128,6 +129,11 @@ BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
 }  // namespace features
 
 PolicyUIHandler::PolicyUIHandler() = default;
+
+PolicyUIHandler::PolicyUIHandler(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
+    mojo::PendingRemote<policy::mojom::PolicyPageClient> client)
+    : receiver_(this, std::move(receiver)), client_(std::move(client)) {}
 
 PolicyUIHandler::~PolicyUIHandler() {
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
@@ -527,9 +533,8 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::ListValue& args) {
   bool feature_enabled =
       base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner);
 
-  promotion_eligibility_checker_ =
-      policy::CreatePromotionEligibilityChecker(
-          profile, dismissed_banner_pref, feature_enabled);
+  promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
+      profile, dismissed_banner_pref, feature_enabled);
   if (!promotion_eligibility_checker_) {
     OnPromotionEligibilityFetched(
         callback_id,
@@ -624,6 +629,10 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       /*params=*/
       policy::GetChromeMetadataParams(
           /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
+}
+
+void PolicyUIHandler::GetDebugString(GetDebugStringCallback callback) {
+  std::move(callback).Run("Migrating chrome://policy to mojo!");
 }
 
 // LINT.ThenChange(//ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.mm)

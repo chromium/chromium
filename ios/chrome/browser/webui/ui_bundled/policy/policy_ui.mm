@@ -8,10 +8,13 @@
 #import <optional>
 #import <string>
 
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
 #import "components/policy/core/browser/policy_conversions.h"
+#import "components/policy/core/common/features.h"
 #import "components/policy/core/common/policy_loader_common.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_utils.h"
@@ -29,6 +32,7 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
@@ -233,6 +237,11 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
 
   source->SetDefaultResource(IDR_POLICY_POLICY_HTML);
   source->EnableReplaceI18nInJS();
+
+  source->AddBoolean(
+      "policyPageMojoMigrationEnabled",
+      base::FeatureList::IsEnabled(policy::features::kPolicyPageMojoMigration));
+
   return source;
 }
 
@@ -243,6 +252,13 @@ PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
   web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
   web::WebUIIOSDataSource::Add(profile, CreatePolicyUIHtmlSource(profile));
+
+  if (base::FeatureList::IsEnabled(
+          policy::features::kPolicyPageMojoMigration)) {
+    web_ui->GetWebState()->GetInterfaceBinderForMainFrame()->AddInterface(
+        base::BindRepeating(&PolicyUI::BindInterface,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 // static
@@ -285,4 +301,24 @@ base::Value PolicyUI::GetSchema(ProfileIOS* profile) {
   return base::Value(std::move(dict));
 }
 
-PolicyUI::~PolicyUI() {}
+void PolicyUI::BindInterface(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandlerFactory> receiver) {
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+  }
+  receiver_.Bind(std::move(receiver));
+}
+
+void PolicyUI::CreateHandler(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandler> handler,
+    mojo::PendingRemote<policy::mojom::PolicyPageClient> client) {
+  handler_ =
+      std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client));
+}
+
+PolicyUI::~PolicyUI() {
+  if (receiver_.is_bound()) {
+    web_ui()->GetWebState()->GetInterfaceBinderForMainFrame()->RemoveInterface(
+        policy::mojom::PolicyPageHandlerFactory::Name_);
+  }
+}

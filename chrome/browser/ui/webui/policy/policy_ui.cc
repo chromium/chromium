@@ -40,6 +40,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -239,16 +241,36 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);
+
+  source->AddBoolean(
+      "policyPageMojoMigrationEnabled",
+      base::FeatureList::IsEnabled(policy::features::kPolicyPageMojoMigration));
 }
 
 }  // namespace
 
-PolicyUI::PolicyUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+PolicyUI::PolicyUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
   CreateAndAddPolicyUIHtmlSource(Profile::FromWebUI(web_ui));
 }
 
 PolicyUI::~PolicyUI() = default;
+
+void PolicyUI::BindInterface(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandlerFactory> receiver) {
+  factory_receiver_.reset();
+  factory_receiver_.Bind(std::move(receiver));
+}
+
+void PolicyUI::CreateHandler(
+    mojo::PendingReceiver<policy::mojom::PolicyPageHandler> handler,
+    mojo::PendingRemote<policy::mojom::PolicyPageClient> client) {
+  page_handler_ =
+      std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(PolicyUI)
 
 // static
 void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {

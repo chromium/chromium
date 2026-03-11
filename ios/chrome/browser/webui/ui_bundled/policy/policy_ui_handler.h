@@ -16,10 +16,16 @@
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "ios/chrome/browser/policy/model/status_provider/user_cloud_policy_status_provider.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace policy {
 class PolicyMap;
@@ -28,12 +34,20 @@ struct PolicyNamespace;
 
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public web::WebUIIOSMessageHandler,
+                        public policy::mojom::PolicyPageHandler,
                         public UserCloudPolicyStatusProvider::Delegate,
                         public policy::PolicyService::Observer,
                         public policy::PolicyStatusProvider::Observer,
                         public policy::SchemaRegistry::Observer {
  public:
+  // Constructs legacy web::WebUIIOSMessageHandler.
   PolicyUIHandler();
+
+  // Constructs in-migration policy::mojom::PolicyPageHandler.
+  PolicyUIHandler(
+      mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
+      mojo::PendingRemote<policy::mojom::PolicyPageClient> client);
+
   ~PolicyUIHandler() override;
   PolicyUIHandler(const PolicyUIHandler&) = delete;
   PolicyUIHandler& operator=(const PolicyUIHandler&) = delete;
@@ -57,6 +71,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
 
   // policy::SchemaRegistry::Observer.
   void OnSchemaRegistryUpdated(bool has_new_schemas) override;
+
+  // policy::mojom::PolicyPageHandler implementation.
+  void GetDebugString(GetDebugStringCallback callback) override;
 
  private:
   // UserCloudPolicyStatusProvider::Delegate.
@@ -150,6 +167,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   uint32_t reload_policies_count_ = 0;
   uint32_t copy_to_json_count_ = 0;
   uint32_t upload_report_count_ = 0;
+
+  mojo::Receiver<policy::mojom::PolicyPageHandler> receiver_;
+  mojo::Remote<policy::mojom::PolicyPageClient> client_;
 
   // Vends WeakPtrs for this object.
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};

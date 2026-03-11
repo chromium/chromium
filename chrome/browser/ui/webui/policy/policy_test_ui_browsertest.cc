@@ -8,6 +8,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -26,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -688,9 +690,12 @@ const char kExtensionSchemaJson[] = R"({
   }
 })";
 
-class PolicyTestUITest : public PlatformBrowserTest {
+class PolicyTestUITest : public base::test::WithFeatureOverride,
+                         public PlatformBrowserTest {
  public:
-  PolicyTestUITest() = default;
+  PolicyTestUITest()
+      : base::test::WithFeatureOverride(
+            policy::features::kPolicyPageMojoMigration) {}
   PolicyTestUITest(const PolicyTestUITest&) = delete;
   PolicyTestUITest& operator=(const PolicyTestUITest&) = delete;
 
@@ -779,7 +784,9 @@ class PolicyTestUITest : public PlatformBrowserTest {
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowAddedWhenAddPolicyClicked) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolicyTestUITest);
+
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestRowAddedWhenAddPolicyClicked) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -791,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowAddedWhenAddPolicyClicked) {
   EXPECT_EQ(GetNumberOfRows(), 2);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowDeletedWhenRemoveClicked) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestRowDeletedWhenRemoveClicked) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -813,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestRowDeletedWhenRemoveClicked) {
   EXPECT_EQ(GetNumberOfRows(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPresetAutofill) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestPresetAutofill) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -867,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPresetAutofill) {
   EXPECT_EQ(content::EvalJs(web_contents(), getSourceValueJs), "sourceCloud");
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, GetSchema) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, GetSchema) {
   base::Value schema = PolicyUI::GetSchema(GetProfile());
   ASSERT_NE(nullptr, schema.GetDict().FindDict(kExtensionId));
   // The extension's schema should exclude "sensitive_number", because it's
@@ -878,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, GetSchema) {
             *schema.GetDict().FindDict(kExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestExtensionPoliciesIncluded) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestExtensionPoliciesIncluded) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -953,7 +960,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestExtensionPoliciesIncluded) {
   EXPECT_EQ(extension_policy_names, policy_names2);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestSchemaChangeReflected) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestSchemaChangeReflected) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -999,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestSchemaChangeReflected) {
             content::EvalJs(web_contents(), getNamespacesFromSelect));
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPolicyNameChangesInputType) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestPolicyNameChangesInputType) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -1036,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestPolicyNameChangesInputType) {
   EXPECT_EQ(content::EvalJs(web_contents(), getValueInputType), "number");
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -1083,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
             false);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
@@ -1161,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
   EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestClearPoliciesButton) {
+IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestClearPoliciesButton) {
   if (!policy::utils::IsPolicyTestingEnabled(/*pref_service=*/nullptr,
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";

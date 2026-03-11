@@ -32,8 +32,14 @@ build_webui("build") {
     "logs/types.ts",
     "policy.ts",
     "policy_base.ts",
+    "browser_proxy.ts",
     "test/policy_test.ts",
     "test/policy_test_browser_proxy.ts",
+  ]
+
+  mojo_files = [ "$root_gen_dir/components/policy/resources/webui/mojom/policy.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//components/policy/resources/webui/mojom:mojo_bindings_ts__generator",
   ]
 
   ts_composite = true
@@ -43,6 +49,7 @@ build_webui("build") {
   ts_deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   webui_context_type = "trusted"

@@ -19,9 +19,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
@@ -49,10 +53,17 @@ class PolicyPromotionObserver : public base::CheckedObserver {
 
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
+                        public policy::mojom::PolicyPageHandler,
                         public policy::PolicyValueAndStatusAggregator::Observer,
                         public policy::SchemaRegistry::Observer {
  public:
+  // Constructs legacy WebUIMessageHandler.
   PolicyUIHandler();
+
+  // Constructs mojo handler.
+  PolicyUIHandler(
+      mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
+      mojo::PendingRemote<policy::mojom::PolicyPageClient> client);
 
   PolicyUIHandler(const PolicyUIHandler&) = delete;
   PolicyUIHandler& operator=(const PolicyUIHandler&) = delete;
@@ -77,6 +88,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void RemovePolicyPromotionObserver(PolicyPromotionObserver* observer);
 
   bool HasPromotionBeenChecked() const { return promotion_checked_; }
+
+  // policy::mojom::PolicyPageHandler implementation.
+  void GetDebugString(GetDebugStringCallback callback) override;
 
  private:
   void HandleExportPoliciesJson(const base::ListValue& args);
@@ -154,6 +168,10 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   base::ObserverList<PolicyPromotionObserver> promotion_eligibility_observers_;
 
   bool promotion_checked_ = false;
+
+  const mojo::Receiver<policy::mojom::PolicyPageHandler> receiver_{this};
+  const mojo::Remote<policy::mojom::PolicyPageClient> client_{
+      mojo::NullRemote()};
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

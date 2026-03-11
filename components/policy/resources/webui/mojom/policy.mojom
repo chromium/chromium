@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module policy.mojom;
+
+// Messages sent from the renderer WebUI TS to the browser process C++.
+interface PolicyPageHandler {
+  // Test function to verify the mojo interface works.
+  // TODO: crbug.com/40897784 - clean this up once the migration is complete.
+  GetDebugString() => (string message);
+};
+
+// Messages sent from the browser process C++ to the renderer WebUI TS.
+interface PolicyPageClient {
+  // TODO: crbug.com/40897784 - populate with messages sent
+  // from the PolicyUIHandler to the WebUI.
+};
+
+// The factory interface used to bootstrap the connection between the
+// chrome://policy WebUI and the browser process.
+interface PolicyPageHandlerFactory {
+  // Called by the renderer to initialize the communication channel.
+  // `handler` is used to send commands from TypeScript to C++.
+  // `client` is used to send spontaneous updates from C++ to TypeScript.
+  CreateHandler(
+      pending_receiver<PolicyPageHandler> handler,
+      pending_remote<PolicyPageClient> client);
+};

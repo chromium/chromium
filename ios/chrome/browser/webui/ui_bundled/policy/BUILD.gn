@@ -18,6 +18,7 @@ source_set("policy") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/resources/webui:resources",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -34,7 +35,10 @@ source_set("policy") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/webui",
+    "//mojo/public/js:bindings",
     "//ui/base",
   ]
 }

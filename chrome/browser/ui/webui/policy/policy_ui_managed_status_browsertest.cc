@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -53,6 +54,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/schema.h"
@@ -137,8 +139,9 @@ class ScopedLocaleSetter {
   std::string locale_;
 };
 
-class PolicyUIManagedStatusTest : public PlatformBrowserTest,
-                                  public ::testing::WithParamInterface<bool> {
+class PolicyUIManagedStatusTest
+    : public PlatformBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   PolicyUIManagedStatusTest()
       : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {
@@ -153,16 +156,33 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
             base::Unretained(this))));
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
-    scoped_feature_list_.InitWithFeatureState(
-        features::kEnablePolicyPromotionBanner, GetParam());
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (is_promotion_feature_enabled()) {
+      enabled_features.push_back(features::kEnablePolicyPromotionBanner);
+    } else {
+      disabled_features.push_back(features::kEnablePolicyPromotionBanner);
+    }
+
+    if (is_mojo_feature_enabled()) {
+      enabled_features.push_back(policy::features::kPolicyPageMojoMigration);
+    } else {
+      disabled_features.push_back(policy::features::kPolicyPageMojoMigration);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
+
   PolicyUIManagedStatusTest(const PolicyUIManagedStatusTest&) = delete;
   PolicyUIManagedStatusTest& operator=(const PolicyUIManagedStatusTest&) =
       delete;
 
   ~PolicyUIManagedStatusTest() override = default;
 
-  bool is_feature_enabled() { return GetParam(); }
+  bool is_promotion_feature_enabled() const { return std::get<0>(GetParam()); }
+  bool is_mojo_feature_enabled() const { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
@@ -314,7 +334,7 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
     const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
-    if (is_feature_enabled() &&
+    if (is_promotion_feature_enabled() &&
         g_browser_process->GetApplicationLocale() == kValidLocale &&
         !is_dismissed && !handler->HasPromotionBeenChecked()) {
       // Check if the promotion has already been checked before waiting for the
@@ -346,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
-  if (is_feature_enabled()) {
+  if (is_promotion_feature_enabled()) {
     EXPECT_EQ(result, kBannerVisible);
   } else {
     EXPECT_EQ(result, kBannerHidden);
@@ -418,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  const bool expected_bucket = is_feature_enabled() ? true : false;
+  const bool expected_bucket = is_promotion_feature_enabled() ? true : false;
   histogram_tester.ExpectBucketCount(
       "Enterprise.PolicyPromotionBannerDisplayed", expected_bucket, 1);
 }
@@ -442,4 +462,4 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
 
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
                          PolicyUIManagedStatusTest,
-                         ::testing::Values(false, true));
+                         ::testing::Combine(testing::Bool(), testing::Bool()));
