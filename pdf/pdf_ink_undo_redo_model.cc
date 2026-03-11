@@ -84,7 +84,7 @@ PdfInkUndoRedoModel::StartErase() {
   return StartImpl<EraseCommands>();
 }
 
-bool PdfInkUndoRedoModel::EraseStroke(InkStrokeId id) {
+bool PdfInkUndoRedoModel::Erase(IdType id) {
   CHECK(!commands_stack_.empty());
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
@@ -92,27 +92,13 @@ bool PdfInkUndoRedoModel::EraseStroke(InkStrokeId id) {
     // erasing.
     return false;
   }
-  if (!HasIdInDrawCommands(id)) {
+
+  if (HasIdInEraseCommands(id)) {
+    return false;  // Failed invariant 5.
+  }
+
+  if (std::holds_alternative<InkStrokeId>(id) && !HasIdInDrawCommands(id)) {
     return false;  // Failed invariant 6.
-  }
-  if (HasIdInEraseCommands(id)) {
-    return false;  // Failed invariant 5.
-  }
-
-  GetModifiableEraseCommands(commands_stack_.back())->insert(id);
-  return true;
-}
-
-bool PdfInkUndoRedoModel::EraseShape(InkModeledShapeId id) {
-  CHECK(!commands_stack_.empty());
-
-  if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kErase)) {
-    // Can only erase at top of the stack, and the entry there must be for
-    // erasing.
-    return false;
-  }
-  if (HasIdInEraseCommands(id)) {
-    return false;  // Failed invariant 5.
   }
 
   GetModifiableEraseCommands(commands_stack_.back())->insert(id);

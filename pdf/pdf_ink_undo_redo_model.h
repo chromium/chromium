@@ -82,22 +82,17 @@ class PdfInkUndoRedoModel {
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
-  // Must be called before EraseStroke() and EraseShape().
+  // Must be called before Erase().
   // Must not be called while another draw/erase has been started.
   [[nodiscard]] std::optional<DiscardedDrawCommands> StartErase();
-  // Records erasing a stroke identified by `id`.
-  // Must be called between StartErase() and FinishErase().
-  // `id` must be in a `DrawCommands` on the commands stack.
-  // `id` must not be in any `EraseCommands` on the commands stack.
-  [[nodiscard]] bool EraseStroke(InkStrokeId id);
-  // Records erasing a shape identified by `id`.
+  // Records erasing an annotation identified by `id`.
   // Must be called between StartErase() and FinishErase().
   // `id` must not be in any `EraseCommands` on the commands stack.
-  // Unlike EraseStroke(), EraseShape() has no corresponding draw method, so it
-  // relies on the caller to pass in valid `id` values. If the caller passes in
-  // invalid values, `PdfInkUndoRedoModel` will faithfully give them back during
-  // undo/redo operations.
-  [[nodiscard]] bool EraseShape(InkModeledShapeId id);
+  // If `id` is for a stroke, it must be in a `DrawCommands` on the commands
+  // stack.
+  // If the caller passes in invalid values, `PdfInkUndoRedoModel` will
+  // faithfully give them back during undo/redo operations.
+  [[nodiscard]] bool Erase(IdType id);
   // Finishes recording erase commands and pushes a new element onto the stack.
   // Must be called after StartErase().
   [[nodiscard]] bool FinishErase();
