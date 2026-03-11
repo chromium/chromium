@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -78,12 +79,20 @@ IndigoPageActionController* IndigoPageActionController::From(
 void IndigoPageActionController::InvokeAction() {
   base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
 
-  // TODO: b/482792874 - Analyze the page and act on it, instead of just opening
-  // a tab based on a fixed input.
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
     return;
   }
+
+  if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())
+          ->Invoke()) {
+    return;
+  }
+
+  // TODO: b/482792874 - Analyze the page and act on it, instead of just opening
+  // a tab based on a fixed input.
+  LOG(WARNING) << "IndigoAgentHost doesn't expect to be able to load. "
+               << "Directly invoking generate RPC (for prototyping).";
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile) {
