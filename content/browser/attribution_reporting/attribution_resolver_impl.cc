@@ -1290,7 +1290,7 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
           report_with_min_priority,
       storage_.GetReportWithMinPriority(source.source_id(),
                                         report.initial_report_time()),
-      [](AttributionStorageSql::Error) { return ReplaceReportError(); });
+      [](std::monostate) { return ReplaceReportError(); });
 
   // Deactivate the source at event-level as a new report will never be
   // generated in the future.

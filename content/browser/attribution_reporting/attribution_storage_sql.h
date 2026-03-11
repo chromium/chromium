@@ -110,8 +110,6 @@ class CONTENT_EXPORT AttributionStorageSql {
     sql::Transaction transaction_;
   };
 
-  struct Error {};
-
   // If `user_data_directory` is empty, the DB is created in memory and no data
   // is persisted to disk.
   AttributionStorageSql(const base::FilePath& user_data_directory,
@@ -405,7 +403,7 @@ class CONTENT_EXPORT AttributionStorageSql {
     int64_t priority;
   };
 
-  base::expected<std::optional<ReportIdAndPriority>, Error>
+  base::expected<std::optional<ReportIdAndPriority>, std::monostate>
   GetReportWithMinPriority(StoredSource::Id, base::Time report_time);
 
   [[nodiscard]] bool DeactivateSourceAtEventLevel(StoredSource::Id);

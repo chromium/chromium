@@ -775,7 +775,7 @@ std::optional<StoredSource> AttributionStorageSql::InsertSource(
 }
 
 base::expected<std::optional<AttributionStorageSql::ReportIdAndPriority>,
-               AttributionStorageSql::Error>
+               std::monostate>
 AttributionStorageSql::GetReportWithMinPriority(StoredSource::Id source_id,
                                                 base::Time report_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -816,7 +816,7 @@ AttributionStorageSql::GetReportWithMinPriority(StoredSource::Id source_id,
   }
 
   if (!min_priority_statement.Succeeded()) {
-    return base::unexpected(Error());
+    return base::unexpected(std::monostate());
   }
 
   if (!conversion_id_with_min_priority.has_value()) {
