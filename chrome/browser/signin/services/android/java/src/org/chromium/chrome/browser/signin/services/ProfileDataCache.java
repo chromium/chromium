@@ -77,6 +77,12 @@ public class ProfileDataCache implements IdentityManager.Observer {
     private final AccountManagerFacade mAccountManagerFacade;
     private final AccountManagerAccountsChangeObserver mAccountManagerAccountsChangeObserver;
     private final IdentityManager mIdentityManager;
+
+    // TODO(crbug.com/485773785) Remove when flag usage will be added
+    @SuppressWarnings("UnusedVariable")
+    private final @Nullable IdentityManagerAccountsChangeObserver
+            mIdentityManagerAccountsChangeObserver = null;
+
     private final int mImageSize;
     // The badge for a given account is selected as follows:
     // * If there is a config for that specific account, use that
@@ -446,6 +452,31 @@ public class ProfileDataCache implements IdentityManager.Observer {
         @Override
         public void onCoreAccountInfosChanged() {
             updateCache(mAccountManagerFacade.getAccounts().getResult());
+        }
+    }
+
+    private class IdentityManagerAccountsChangeObserver implements IdentityManager.Observer {
+
+        /** Implements {@link IdentityManager.Observer}. */
+        @Override
+        public void onRefreshTokensLoaded() {
+            updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+        }
+
+        /** Implements {@link IdentityManager.Observer}. */
+        @Override
+        public void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
+            if (mIdentityManager.areRefreshTokensLoaded()) {
+                updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+            }
+        }
+
+        /** Implements {@link IdentityManager.Observer}. */
+        @Override
+        public void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
+            if (mIdentityManager.areRefreshTokensLoaded()) {
+                updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
+            }
         }
     }
 
