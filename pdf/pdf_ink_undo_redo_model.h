@@ -44,6 +44,8 @@ class PdfInkUndoRedoModel {
 
   // Set of IDs used for drawing to discard. This does not use `IdType`, because
   // model shapes are pre-existing and cannot be discarded.
+  // TODO(crbug.com/408976048): Use a different ID type to support text
+  // annotations.
   using DiscardedAddCommands = std::set<InkStrokeId>;
 
   PdfInkUndoRedoModel();
@@ -68,10 +70,11 @@ class PdfInkUndoRedoModel {
   // Must be called before Add().
   // Must not be called while another add/remove has been started.
   [[nodiscard]] std::optional<DiscardedAddCommands> StartAdd();
-  // Records adding a stroke identified by `id`.
+  // Records adding an annotation identified by `id`.
   // Must be called between StartAdd() and FinishAdd().
   // `id` must not be on the commands stack.
-  [[nodiscard]] bool Add(InkStrokeId id);
+  // `id` must not be an `InkModeledShapeId`.
+  [[nodiscard]] bool Add(IdType id);
   // Finishes recording add commands and pushes a new element onto the stack.
   // Must be called after StartAdd().
   [[nodiscard]] bool FinishAdd();

@@ -86,6 +86,13 @@ TEST(PdfInkUndoRedoModelTest, BadActionSpuriousFinishAdd) {
   ASSERT_FALSE(undo_redo.FinishAdd());
 }
 
+TEST(PdfInkUndoRedoModelTest, BadActionAddModeledShape) {
+  PdfInkUndoRedoModel undo_redo;
+  std::optional<DiscardedAddCommands> discards = undo_redo.StartAdd();
+  ASSERT_THAT(discards, Optional(DiscardedAddCommands()));
+  ASSERT_FALSE(undo_redo.Add(InkModeledShapeId(1)));
+}
+
 TEST(PdfInkUndoRedoModelTest, BadActionRemoveWhileAdding) {
   PdfInkUndoRedoModel undo_redo;
   std::optional<DiscardedAddCommands> discards = undo_redo.StartAdd();

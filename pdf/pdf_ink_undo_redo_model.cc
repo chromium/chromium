@@ -41,8 +41,12 @@ PdfInkUndoRedoModel::StartAdd() {
   return StartImpl<AddCommands>();
 }
 
-bool PdfInkUndoRedoModel::Add(InkStrokeId id) {
+bool PdfInkUndoRedoModel::Add(IdType id) {
   CHECK(!commands_stack_.empty());
+
+  if (!std::holds_alternative<InkStrokeId>(id)) {
+    return false;  // Failed invariant 7.
+  }
 
   if (!IsAtTopOfStackWithGivenCommandType(CommandsType::kAdd)) {
     // Can only add at top of the stack, and the entry there must be for adding.
