@@ -320,7 +320,8 @@ class OmniboxAimWebUiInteractiveTest
   OmniboxAimWebUiInteractiveTest() {
     feature_list_.InitWithFeaturesAndParameters(
         GetEnabledFeatures(/*enable_aim_popup=*/true),
-        {omnibox::kAimServerEligibilityEnabled});
+        {omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
@@ -416,7 +417,8 @@ class OmniboxAimNoAutoSubmitVoiceTest
     feature_list_.InitWithFeaturesAndParameters(
         GetEnabledFeatures(/*enable_aim_popup=*/true,
                            /*auto_submit_voice=*/false),
-        {omnibox::kAimServerEligibilityEnabled});
+        {omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
  private:
@@ -488,7 +490,8 @@ class OmniboxAimSearchFulfillmentTest
     feature_list_.InitWithFeaturesAndParameters(
         GetEnabledFeatures(/*enable_aim_popup=*/true,
                            /*auto_submit_voice=*/GetParam().auto_submit_voice),
-        {omnibox::kAimServerEligibilityEnabled});
+        {omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
  private:
