@@ -104,6 +104,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/google_api_keys.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/features.h"
@@ -137,15 +138,16 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/devtools_page_handler.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 using content::BrowserThread;
 
@@ -2679,7 +2681,7 @@ void DevToolsUIBindings::OnPermissionDialogResult(
 }
 
 void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_->GetOriginalProfile());
   if (!registry) {
@@ -2749,7 +2751,7 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
                    base::Value(std::move(forbidden_origins)));
   CallClientMethod("DevToolsAPI", "addExtensions",
                    base::Value(std::move(results)));
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 void DevToolsUIBindings::RegisterExtensionsAPI(const std::string& origin,

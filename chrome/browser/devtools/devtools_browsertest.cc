@@ -148,31 +148,35 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/unpacked_installer.h"
+#include "extensions/common/extension_set.h"
+#include "extensions/test/test_extension_dir.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
-#include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using content::DevToolsAgentHost;
@@ -198,8 +202,12 @@ const char kSlowTestPage[] =
 const char kEmptyTestPage[] = "/devtools/empty.html";
 // Arbitrary page that returns a 200 response, for tests that don't care about
 // more than that.
-#if !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 const char kArbitraryPage[] = "/title1.html";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if !BUILDFLAG(IS_ANDROID)
 const char kDispatchKeyEventShowsAutoFill[] =
     "/devtools/dispatch_key_event_shows_auto_fill.html";
 const char kEmulateNetworkConditionsPage[] =
@@ -555,11 +563,16 @@ class DevToolsBeforeUnloadTest : public DevToolsTest {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+
 constexpr char kPublicKey[] =
     "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
     "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
     "kDuI7caxEGUucpP7GJRRHnm8Sx+"
     "y0ury28n8jbN0PnInKKWcxpIXXmNQyC19HBuO3QIeUq9Dqc+7YFQIDAQAB";
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Base class for DevTools tests that test devtools functionality for
 // extensions and content scripts.
@@ -581,20 +594,21 @@ class DevToolsExtensionTest : public DevToolsTest {
   const Extension* LoadExtensionFromPath(const base::FilePath& path,
                                          bool allow_file_access = false) {
     extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(browser()->profile());
+        extensions::ExtensionRegistry::Get(GetProfile());
     extensions::TestExtensionRegistryObserver observer(registry);
-    auto installer =
-        extensions::UnpackedInstaller::Create(browser()->profile());
+    auto installer = extensions::UnpackedInstaller::Create(GetProfile());
     installer->set_allow_file_access(allow_file_access);
     installer->Load(path);
     observer.WaitForExtensionLoaded();
 
     // Wait for any additional extension views to load.
-    extensions::ChromeExtensionTestNotificationObserver(browser()->profile())
+    extensions::ChromeExtensionTestNotificationObserver(GetProfile())
         .WaitForExtensionViewsToLoad();
 
     return GetExtensionByPath(registry->enabled_extensions(), path);
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::DictValue BuildExtensionManifest(const std::string& name,
                                          const std::string& devtools_page = "",
@@ -726,6 +740,8 @@ class DevToolsExtensionTest : public DevToolsTest {
     return extension_id;
   }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   const base::FilePath test_extensions_dir_;
 
  private:
@@ -749,6 +765,10 @@ class DevToolsExtensionTest : public DevToolsTest {
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
  public:
@@ -1084,12 +1104,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowRecorderTab) {
   RunTest("testShowRecorderTab", kDebuggerTestPage);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 // Tests that chrome.devtools extension is correctly exposed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   LoadExtension("devtools_extension");
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DevtoolsPanelForceUpdateTest : public DevToolsExtensionTest,
                                      public testing::WithParamInterface<bool> {
@@ -4717,5 +4742,3 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-
