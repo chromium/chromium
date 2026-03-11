@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreator;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
@@ -120,6 +122,7 @@ public class TabPersistentStoreFactory {
             AccumulatingTabCreator regularShadowTabCreator,
             AccumulatingTabCreator incognitoShadowTabCreator,
             TabModelSelector selector,
+            RecordingTabCreatorManager recordingTabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
@@ -132,6 +135,7 @@ public class TabPersistentStoreFactory {
                 migrationManager,
                 shadowTabCreatorManager,
                 selector,
+                recordingTabCreatorManager,
                 tabPersistencePolicy,
                 authoritativeStore,
                 windowTag,
@@ -168,6 +172,7 @@ public class TabPersistentStoreFactory {
             @Nullable PersistentStoreMigrationManager migrationManager,
             AccumulatingTabCreator regularShadowTabCreator,
             TabModelSelector selector,
+            RecordingTabCreatorManager recordingTabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
@@ -182,6 +187,7 @@ public class TabPersistentStoreFactory {
                 migrationManager,
                 shadowTabCreatorManager,
                 selector,
+                recordingTabCreatorManager,
                 tabPersistencePolicy,
                 authoritativeStore,
                 windowTag,
@@ -195,6 +201,7 @@ public class TabPersistentStoreFactory {
             @Nullable PersistentStoreMigrationManager migrationManager,
             TabCreatorManager shadowTabCreatorManager,
             TabModelSelector selector,
+            RecordingTabCreatorManager recordingTabCreatorManager,
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
@@ -227,10 +234,14 @@ public class TabPersistentStoreFactory {
                         ActiveTabCache::new,
                         /* isAuthoritative= */ false);
 
+        RecordingTabCreator recordingTabCreator =
+                recordingTabCreatorManager.getRecorder(/* incognito= */ false);
+        assert recordingTabCreator != null;
+
         new ShadowTabStoreValidator(
                 authoritativeStore,
                 shadowTabPersistentStore,
-                selector.getModel(/* incognito= */ false),
+                recordingTabCreator,
                 regularShadowTabCreator,
                 migrationManager,
                 orchestratorTag);

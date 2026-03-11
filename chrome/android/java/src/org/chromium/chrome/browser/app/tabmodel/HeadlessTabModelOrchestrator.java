@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.HeadlessTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -62,6 +63,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         HeadlessTabCreator tabCreator = new HeadlessTabCreator(profile);
         HeadlessTabCreator incogTabCreator = new HeadlessTabCreator(profile);
         TabCreatorManager tabCreatorManager = (incog) -> incog ? tabCreator : incogTabCreator;
+        RecordingTabCreatorManager recordingTabCreatorManager =
+                new RecordingTabCreatorManager(tabCreatorManager);
 
         mTabModelSelector = new HeadlessTabModelSelectorImpl(profile, tabCreatorManager);
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
@@ -75,7 +78,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         migrationManager,
                         policy,
                         mTabModelSelector,
-                        tabCreatorManager,
+                        recordingTabCreatorManager,
                         tabWindowManager,
                         windowTag,
                         sCipherInstance,
@@ -97,6 +100,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         regularShadowTabCreator,
                         incognitoShadowTabCreator,
                         mTabModelSelector,
+                        recordingTabCreatorManager,
                         policy,
                         mTabPersistentStore,
                         windowTag,

@@ -5,18 +5,21 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator.CreateFrozenTabArguments;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreator;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreator.TabCreationData;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+
+import java.util.List;
 
 /**
  * Verifies the integrity of a shadow {@link TabPersistentStore} against an authoritative one.
@@ -35,7 +38,7 @@ public class ShadowTabStoreValidator {
 
     private final TabPersistentStore mAuthoritativeStore;
     private final TabPersistentStore mShadowStore;
-    private final TabModel mTabModel;
+    private final RecordingTabCreator mAuthoritativeTabCreator;
     private final AccumulatingTabCreator mShadowTabCreator;
     private final PersistentStoreMigrationManager mPersistentStoreMigrationManager;
     private final StoreMetricsObserver mAuthoritativeObserver;
@@ -46,7 +49,8 @@ public class ShadowTabStoreValidator {
     /**
      * @param authoritativeStore The primary store whose timing is used as the baseline.
      * @param shadowStore The alternative store being compared against the authoritative one.
-     * @param tabModel The {@link TabModel} associated with the authoritative store.
+     * @param authoritativeTabCreator The {@link RecordingTabCreator} used by the authoritative
+     *     store.
      * @param shadowTabCreator The {@link AccumulatingTabCreator} used by the shadow store.
      * @param persistentStoreMigrationManager The {@link PersistentStoreMigrationManager} for
      *     migration.
@@ -55,13 +59,13 @@ public class ShadowTabStoreValidator {
     public ShadowTabStoreValidator(
             TabPersistentStore authoritativeStore,
             TabPersistentStore shadowStore,
-            TabModel tabModel,
+            RecordingTabCreator authoritativeTabCreator,
             AccumulatingTabCreator shadowTabCreator,
             PersistentStoreMigrationManager persistentStoreMigrationManager,
             String orchestratorTag) {
         mAuthoritativeStore = authoritativeStore;
         mShadowStore = shadowStore;
-        mTabModel = tabModel;
+        mAuthoritativeTabCreator = authoritativeTabCreator;
         mShadowTabCreator = shadowTabCreator;
         mPersistentStoreMigrationManager = persistentStoreMigrationManager;
         mSuffix = "." + orchestratorTag;
@@ -77,6 +81,7 @@ public class ShadowTabStoreValidator {
 
         if (!isTabStateStoreShadowing()) {
             shadowTabCreator.stopRecording();
+            authoritativeTabCreator.stopRecording();
         }
     }
 
@@ -98,6 +103,9 @@ public class ShadowTabStoreValidator {
         mShadowTabCreator.createNewTabArgumentsList.clear();
         mShadowTabCreator.createFrozenTabArgumentsList.clear();
 
+        mAuthoritativeTabCreator.getFrozenTabCreationData().clear();
+        mAuthoritativeTabCreator.getNewTabCreationData().clear();
+
         mAuthoritativeStore.removeObserver(mAuthoritativeObserver);
         mShadowStore.removeObserver(mShadowObserver);
     }
@@ -105,8 +113,17 @@ public class ShadowTabStoreValidator {
     private void recordDiffMetrics() {
         if (!mShadowStoreCaughtUp || !isTabStateStoreShadowing()) return;
 
+        List<TabCreationData> authoritativeFrozenData =
+                mAuthoritativeTabCreator.getFrozenTabCreationData();
+
+        List<TabCreationData> authoritativeNewTabData =
+                mAuthoritativeTabCreator.getNewTabCreationData();
+
         int tabCountDelta =
-                mTabModel.getCount() - mShadowTabCreator.createFrozenTabArgumentsList.size();
+                (authoritativeNewTabData.size() + authoritativeFrozenData.size())
+                        - (mShadowTabCreator.createFrozenTabArgumentsList.size()
+                                + mShadowTabCreator.createNewTabArgumentsList.size());
+
         if (tabCountDelta > 0) {
             recordCountHistogram(
                     "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher", tabCountDelta);
@@ -116,15 +133,22 @@ public class ShadowTabStoreValidator {
             recordEqualTabCountHistogram();
         }
 
-        for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
-            Tab tab = mTabModel.getTabById(arguments.id);
-            if (tab == null || arguments.state.url == null) continue;
+        SparseArray<TabCreationData> authoritativeDataMap =
+                new SparseArray<>(authoritativeFrozenData.size());
+        for (TabCreationData data : authoritativeFrozenData) {
+            authoritativeDataMap.put(data.id, data);
+        }
 
-            String authUrl = tab.getUrl().getSpec();
+        for (CreateFrozenTabArguments arguments : mShadowTabCreator.createFrozenTabArgumentsList) {
+            TabCreationData authoritativeData = authoritativeDataMap.get(arguments.id);
+            if (authoritativeData == null || arguments.state.url == null) continue;
+
+            String authUrl = authoritativeData.url;
             String shadowUrl = arguments.state.url.getSpec();
 
             if (!TextUtils.equals(authUrl, shadowUrl)) {
-                long timeDelta = tab.getTimestampMillis() - arguments.state.timestampMillis;
+                long timeDelta =
+                        authoritativeData.timestampMillis - arguments.state.timestampMillis;
                 if (timeDelta > 0) {
                     recordTimesHistogram(
                             "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer", timeDelta);

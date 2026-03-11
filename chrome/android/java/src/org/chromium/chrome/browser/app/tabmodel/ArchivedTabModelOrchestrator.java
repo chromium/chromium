@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorHolder;
 import org.chromium.chrome.browser.tabmodel.ArchivedTabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
+import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -145,6 +146,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     // really be using this at a time and it makes things like undo messy if it is supported in
     // multiple places simultaneously.
     private final TabCreatorManager mArchivedTabCreatorManager;
+    private final RecordingTabCreatorManager mRecordingTabCreatorManager;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final ObserverList<Observer> mArchivedModelObservers = new ObserverList<>();
     private final TabWindowManager mTabWindowManager;
@@ -220,6 +222,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         return mArchivedTabCreator;
                     }
                 };
+        mRecordingTabCreatorManager = new RecordingTabCreatorManager(mArchivedTabCreatorManager);
         mAsyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
         mTabWindowManager = TabWindowManagerSingleton.getInstance();
         // TODO(crbug.com/359875260): This is a temporary solution to get the
@@ -419,7 +422,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                         mMigrationManager,
                         mTabPersistencePolicy,
                         mTabModelSelector,
-                        mArchivedTabCreatorManager,
+                        mRecordingTabCreatorManager,
                         mTabWindowManager,
                         ARCHIVED_WINDOW_TAG,
                         cipherFactory,
@@ -570,6 +573,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                             mMigrationManager,
                             mShadowTabCreator,
                             mTabModelSelector,
+                            mRecordingTabCreatorManager,
                             mTabPersistencePolicy,
                             mTabPersistentStore,
                             ARCHIVED_WINDOW_TAG,
