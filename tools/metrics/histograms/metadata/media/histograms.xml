@@ -5660,16 +5660,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.MediaLauncherActivityStarted"
-    enum="MediaLauncherActivityEnabledReason" expires_after="2026-06-01">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Recorded when the MediaLauncherActivity starts up. Records the reaosn that
-    MediaLauncherActivity is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Media.MediaPlaybackWhileNotVisible.InterruptionType"
     enum="MediaPlaybackInterruptionType" expires_after="2026-06-21">
   <owner>dalecurtis@chromium.org</owner>
@@ -8778,6 +8768,16 @@ chromium-metrics-reviews@google.com.
     <variant name="VaapiVideoEncodeAccelerator" summary=""/>
     <variant name="VaapiVideoEncodeAccelerator.Vpp" summary=""/>
   </token>
+</histogram>
+
+<histogram name="MediaLauncherActivityStarted"
+    enum="MediaLauncherActivityEnabledReason" expires_after="2026-06-01">
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the MediaLauncherActivity starts up. Records the reaosn that
+    MediaLauncherActivity is enabled.
+  </summary>
 </histogram>
 
 <histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Camera.NumDevices"
