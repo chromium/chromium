@@ -34,6 +34,7 @@ fuzzer_test("apdu_fuzzer") {
   deps = [
     ":apdu",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   libfuzzer_options = [ "max_len=65535" ]
 }
