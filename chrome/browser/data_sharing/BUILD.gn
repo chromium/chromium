@@ -460,6 +460,132 @@ if (is_android) {
 }
 
 source_set("data_sharing") {
-  sources = [ "data_sharing_service_factory.h" ]
-  public_deps = [ "//chrome/browser/profiles:profile" ]
+  sources = [
+    "data_sharing_navigation_throttle.h",
+    "data_sharing_navigation_utils.h",
+    "data_sharing_service_factory.h",
+    "migration/migratable_sync_service_coordinator_factory.h",
+    "personal_collaboration_data/personal_collaboration_data_service_factory.h",
+  ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/collaboration/public",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/data_sharing_ui_delegate_android.h",
+      "data_sharing_service_factory_bridge.h",
+    ]
+  } else {
+    sources += [
+      "desktop/data_sharing_conversion_utils.h",
+      "desktop/data_sharing_sdk_delegate_desktop.h",
+      "desktop/data_sharing_ui_delegate_desktop.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/ui/webui/data_sharing",
+      "//components/data_sharing/public/protocol:mojo_bindings",
+    ]
+  }
+}
+
+# The reason why `impl` target can't be merged into `data_sharing` target
+# above is that data_sharing_ui_delegate_desktop.cc includes headers from
+# //c/b/ui:ui that are not componentized yet, namely:
+#
+# - c/b/ui/webui/data_sharing/data_sharing_page_handler.h
+# - c/b/ui/views/data_sharing/collaboration_controller_delegate_desktop.h
+# - c/b/ui/browser_finder.h
+#
+# Hence, depending on //c/b/ui:ui isn't itself a problem. However, in this case,
+# if `data_sharing` depends on it, there will be non-trivial circular dependency errors.
+source_set("impl") {
+  sources = [
+    "data_sharing_navigation_throttle.cc",
+    "data_sharing_navigation_utils.cc",
+    "data_sharing_service_factory.cc",
+    "migration/migratable_sync_service_coordinator_factory.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_factory.cc",
+  ]
+  deps = [
+    ":data_sharing",
+    "//chrome/browser/collaboration",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/common:channel_info",
+    "//components/data_sharing/internal",
+    "//components/data_sharing/internal:personal_collaboration_data_internal",
+    "//components/data_sharing/migration/internal",
+    "//components/data_sharing/public:personal_collaboration_data",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/data_sharing_service_factory_android.cc",
+      "android/data_sharing_ui_delegate_android.cc",
+      "data_sharing_service_factory_bridge.cc",
+    ]
+    deps += [ ":jni_headers" ]
+  } else {
+    sources += [
+      "desktop/data_sharing_conversion_utils.cc",
+      "desktop/data_sharing_sdk_delegate_desktop.cc",
+      "desktop/data_sharing_ui_delegate_desktop.cc",
+    ]
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "data_sharing_navigation_throttle_unittest.cc",
+    "data_sharing_service_factory_unittest.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_factory_unittest.cc",
+  ]
+  deps = [
+    ":data_sharing",
+    "//base/test:test_support",
+    "//chrome/browser/collaboration",
+    "//chrome/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/data_sharing/internal",
+    "//components/data_sharing/public:personal_collaboration_data",
+    "//content/test:test_support",
+  ]
+
+  if (!is_android) {
+    sources += [ "desktop/data_sharing_conversion_utils_unittest.cc" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "desktop/data_sharing_sdk_delegate_desktop_browsertest.cc",
+      "desktop/data_sharing_service_browsertest.cc",
+    ]
+    deps = [
+      ":data_sharing",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//chrome/test:test_support_ui",
+      "//components/data_sharing/public",
+    ]
+  }
 }
