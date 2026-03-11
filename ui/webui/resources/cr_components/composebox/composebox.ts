@@ -716,6 +716,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.files_.size > 0;
   }
 
+  isExpanded(): boolean {
+    return this.expanding_;
+  }
+
   getSelectedMatchIndexForTesting() {
     return this.selectedMatchIndex_;
   }
