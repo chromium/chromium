@@ -447,7 +447,7 @@ class PdfInkModule {
                                    bool should_draw);
 
   void ApplyUndoRedoDiscards(
-      const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
+      const PdfInkUndoRedoModel::DiscardedAddCommands& discards);
 
   // Sets the cursor to a drawing/erasing brush cursor when necessary.
   void MaybeSetCursor();

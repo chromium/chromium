@@ -451,7 +451,7 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
     client_->StrokeStarted();
     current_tool_state_.emplace<TextHighlightState>();
     text_highlight_state().initiated_by_keyboard = true;
-    std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+    std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
         undo_redo_model_.StartAdd();
     CHECK(discards.has_value());
     ApplyUndoRedoDiscards(discards.value());
@@ -782,7 +782,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // Invalidate area around this one point.
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
-  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
       undo_redo_model_.StartAdd();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
@@ -954,7 +954,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   CHECK(!state.erasing);
   state.erasing = true;
 
-  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
       undo_redo_model_.StartRemove();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
@@ -1140,7 +1140,7 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
     ApplyUndoRedoCommands(undo_redo_model_.Undo());
   }
 
-  std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands> discards =
+  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
       undo_redo_model_.StartAdd();
   CHECK(discards.has_value());
   ApplyUndoRedoDiscards(discards.value());
@@ -1642,9 +1642,9 @@ void PdfInkModule::ApplyUndoRedoCommands(
     case PdfInkUndoRedoModel::CommandsType::kNone: {
       return;
     }
-    case PdfInkUndoRedoModel::CommandsType::kDraw: {
+    case PdfInkUndoRedoModel::CommandsType::kAdd: {
       ApplyUndoRedoCommandsHelper(
-          PdfInkUndoRedoModel::GetDrawCommands(commands).value(),
+          PdfInkUndoRedoModel::GetAddCommands(commands).value(),
           /*should_draw=*/true);
       return;
     }
@@ -1775,7 +1775,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
 }
 
 void PdfInkModule::ApplyUndoRedoDiscards(
-    const PdfInkUndoRedoModel::DiscardedDrawCommands& discards) {
+    const PdfInkUndoRedoModel::DiscardedAddCommands& discards) {
   if (discards.empty()) {
     return;
   }

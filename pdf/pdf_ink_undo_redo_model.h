@@ -26,7 +26,7 @@ class PdfInkUndoRedoModel {
  public:
   enum class CommandsType {
     kNone,
-    kDraw,
+    kAdd,
     kErase,
   };
 
@@ -36,16 +36,15 @@ class PdfInkUndoRedoModel {
   // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
   //   be removed.
   using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
-  using DrawCommands =
-      base::StrongAlias<class DrawCommandsTag, std::set<IdType>>;
+  using AddCommands = base::StrongAlias<class AddCommandsTag, std::set<IdType>>;
   using EraseCommands =
       base::StrongAlias<class EraseCommandsTag, std::set<IdType>>;
 
-  using Commands = std::variant<std::monostate, DrawCommands, EraseCommands>;
+  using Commands = std::variant<std::monostate, AddCommands, EraseCommands>;
 
   // Set of IDs used for drawing to discard. This does not use `IdType`, because
   // model shapes are pre-existing and cannot be discarded.
-  using DiscardedDrawCommands = std::set<InkStrokeId>;
+  using DiscardedAddCommands = std::set<InkStrokeId>;
 
   PdfInkUndoRedoModel();
   PdfInkUndoRedoModel(const PdfInkUndoRedoModel&) = delete;
@@ -68,7 +67,7 @@ class PdfInkUndoRedoModel {
   // entries with IDs that match the returned values.
   // Must be called before Add().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] std::optional<DiscardedDrawCommands> StartAdd();
+  [[nodiscard]] std::optional<DiscardedAddCommands> StartAdd();
   // Records adding a stroke identified by `id`.
   // Must be called between StartAdd() and FinishAdd().
   // `id` must not be on the commands stack.
@@ -83,11 +82,11 @@ class PdfInkUndoRedoModel {
   // entries with IDs that match the returned values.
   // Must be called before Remove().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] std::optional<DiscardedDrawCommands> StartRemove();
+  [[nodiscard]] std::optional<DiscardedAddCommands> StartRemove();
   // Records erasing an annotation identified by `id`.
   // Must be called between StartRemove() and FinishRemove().
   // `id` must not be in any `EraseCommands` on the commands stack.
-  // If `id` is for a stroke, it must be in a `DrawCommands` on the commands
+  // If `id` is for a stroke, it must be in a `AddCommands` on the commands
   // stack.
   // If the caller passes in invalid values, `PdfInkUndoRedoModel` will
   // faithfully give them back during undo/redo operations.
@@ -103,29 +102,29 @@ class PdfInkUndoRedoModel {
   Commands Redo();
 
   static CommandsType GetCommandsType(const Commands& commands);
-  static const DrawCommands& GetDrawCommands(const Commands& commands);
+  static const AddCommands& GetAddCommands(const Commands& commands);
   static const EraseCommands& GetEraseCommands(const Commands& commands);
 
  private:
   template <typename T>
-  std::optional<DiscardedDrawCommands> StartImpl();
+  std::optional<DiscardedAddCommands> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
-  bool HasIdInDrawCommands(IdType id) const;
+  bool HasIdInAddCommands(IdType id) const;
   bool HasIdInEraseCommands(IdType id) const;
 
   // Invariants:
   // (1) Never empty.
   // (2) The last element and only the last element can be `std::monostate`.
-  // (3) IDs used in `DrawCommands` elements are unique among all `DrawCommands`
+  // (3) IDs used in `AddCommands` elements are unique among all `AddCommands`
   //     elements.
-  // (4) IDs added to a `DrawCommands` must not exist in any `EraseCommands`.
+  // (4) IDs added to a `AddCommands` must not exist in any `EraseCommands`.
   // (5) IDs used in `EraseCommands` elements are unique among all
   //     `EraseCommands` elements.
-  // (6) IDs added to a `EraseCommands` must exist in some `DrawCommands`
+  // (6) IDs added to a `EraseCommands` must exist in some `AddCommands`
   //     element.
-  // (7) `DrawCommands` only contains `InkStrokeId` elements here. The reason
-  //     `DrawCommands` can hold `InkModeledShapeId` is to undo an
+  // (7) `AddCommands` only contains `InkStrokeId` elements here. The reason
+  //     `AddCommands` can hold `InkModeledShapeId` is to undo an
   //     `InkModeledShapeId` removal, where the caller needs to know they need
   //     to draw the shape.
   std::vector<Commands> commands_stack_ = {std::monostate()};
