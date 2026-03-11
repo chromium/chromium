@@ -354,13 +354,6 @@ bool GoogleServiceAuthError::IsDeviceManagementErrorUserActionable() const {
   return dmerror->details->IsUserActionable();
 }
 
-const DeviceManagementErrorDetails&
-GoogleServiceAuthError::GetDeviceManagementErrorDetails() const {
-  const auto* dmerror = std::get_if<DeviceManagementError>(&details_);
-  CHECK(dmerror);
-  return *dmerror->details;
-}
-
 GoogleServiceAuthError::GoogleServiceAuthError(Details details)
     : details_(std::move(details)) {}
 
