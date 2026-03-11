@@ -2576,10 +2576,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Gemini.EntryPoint.Available" enum="IOSGeminiEntryPoint"
+    expires_after="2027-03-10">
+  <owner>yasamans@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <summary>
+    Records the availability of an entry point source from which Gemini could be
+    triggered. Recorded when the entry point is available to the user.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Gemini.EntryPointImpression" enum="IOSGeminiEntryPoint"
     expires_after="2027-03-05">
   <owner>yasamans@google.com</owner>
-  <owner>bling-alchemy@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the entry point source from which Gemini was impressed. Recorded
     when an entry point is shown.

@@ -27277,6 +27277,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiEntryPointAvailable">
+  <owner>yasamans@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when the Gemini entry point is available. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointImpression">
   <owner>kanouche@google.com</owner>
   <description>
