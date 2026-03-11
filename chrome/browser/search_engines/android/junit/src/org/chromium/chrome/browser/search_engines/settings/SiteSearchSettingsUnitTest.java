@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.search_engines.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -40,7 +41,6 @@ public class SiteSearchSettingsUnitTest {
 
     @Before
     public void setUp() {
-        // Search engine section
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
@@ -56,5 +56,14 @@ public class SiteSearchSettingsUnitTest {
         assertEquals(
                 mActivity.getString(R.string.manage_search_engines_and_site_search),
                 mFragment.getPageTitle().get());
+    }
+
+    @Test
+    public void testPreferencesCreated() {
+        assertNotNull(mFragment.findPreference("keyboard_shortcut_radio_group"));
+        assertNotNull(mFragment.findPreference("custom_search_engine_item_list"));
+        assertNotNull(mFragment.findPreference("custom_site_search_item_list"));
+        assertNotNull(mFragment.findPreference("inactive_shortcut_list"));
+        assertNotNull(mFragment.findPreference("extension_item_list"));
     }
 }
