@@ -1023,10 +1023,9 @@ std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
 InspectorStyle::LonghandProperties(
     const CSSPropertySourceData& property_entry) {
   DCHECK(style_);
-  String property_value = property_entry.value;
+  StringView property_value = property_entry.value;
   if (property_entry.important) {
-    property_value = property_value.substr(
-        0, property_value.length() - 10 /* length of "!important" */);
+    property_value.remove_suffix(10 /* length of "!important" */);
   }
   CSSParserTokenStream stream(property_value);
   stream.EnsureLookAhead();  // Several parsers expect this.
