@@ -253,6 +253,7 @@ src/webgpu/api/validation/createSampler.spec.ts
 src/webgpu/api/validation/createTexture.spec.ts
 src/webgpu/api/validation/createView.spec.ts
 src/webgpu/api/validation/debugMarker.spec.ts
+src/webgpu/api/validation/dispatch.spec.ts
 src/webgpu/api/validation/error_scope.spec.ts
 src/webgpu/api/validation/getBindGroupLayout.spec.ts
 src/webgpu/util/color_space_conversion.ts
