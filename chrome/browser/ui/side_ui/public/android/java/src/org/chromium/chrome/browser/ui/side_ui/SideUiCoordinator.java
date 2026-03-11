@@ -51,16 +51,16 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * to SideUiStateProvider.
      */
     final class SideUiSpecs {
-        /** A {@link SideUiSpecs} with a startX and endX of 0. */
+        /** A {@link SideUiSpecs} with a startContainerWidth and endContainerWidth of 0. */
         public static final SideUiSpecs EMPTY_SIDE_UI_SPECS =
-                new SideUiSpecs(/* startX= */ 0, /* endX= */ 0);
+                new SideUiSpecs(/* startContainerWidth= */ 0, /* endContainerWidth= */ 0);
 
         public final @Px int mStartContainerWidth;
         public final @Px int mEndContainerWidth;
 
-        public SideUiSpecs(@Px int startX, @Px int endX) {
-            mStartContainerWidth = startX;
-            mEndContainerWidth = endX;
+        public SideUiSpecs(@Px int startContainerWidth, @Px int endContainerWidth) {
+            mStartContainerWidth = startContainerWidth;
+            mEndContainerWidth = endContainerWidth;
         }
 
         @Override

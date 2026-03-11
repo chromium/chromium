@@ -70,9 +70,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         @AnchorSide int anchorSide = properties.mAnchorSide;
         SideUiSpecs newSideUiSpecs = SideUiSpecs.EMPTY_SIDE_UI_SPECS;
         if (anchorSide == AnchorSide.START) {
-            newSideUiSpecs = new SideUiSpecs(requestedWidth, /* endX= */ 0);
+            newSideUiSpecs = new SideUiSpecs(requestedWidth, /* endContainerWidth= */ 0);
         } else if (anchorSide == AnchorSide.END) {
-            newSideUiSpecs = new SideUiSpecs(/* startX= */ 0, requestedWidth);
+            newSideUiSpecs = new SideUiSpecs(/* startContainerWidth= */ 0, requestedWidth);
         } else {
             assert false : "SideUiContainer requested an unknown AnchorSide.";
         }

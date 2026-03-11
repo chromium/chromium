@@ -97,10 +97,10 @@ public class SideUiCoordinatorImplTest {
         doReturn(startAnchorContainerSpy).when(startAnchorContainerSpyStub).inflate();
         doReturn(endAnchorContainerSpy).when(endAnchorContainerSpyStub).inflate();
 
-        int startX = 25;
-        int endX = 75;
-        doReturn(startX).when(startAnchorContainerSpy).getMeasuredWidth();
-        doReturn(endX).when(endAnchorContainerSpy).getMeasuredWidth();
+        int startContainerWidth = 25;
+        int endContainerWidth = 75;
+        doReturn(startContainerWidth).when(startAnchorContainerSpy).getMeasuredWidth();
+        doReturn(endContainerWidth).when(endAnchorContainerSpy).getMeasuredWidth();
 
         mCoordinator =
                 new SideUiCoordinatorImpl(startAnchorContainerSpyStub, endAnchorContainerSpyStub);
@@ -109,7 +109,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.addObserver(mSideUiObserver);
 
         // Verify the observer is still notified.
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(startX, endX);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
         verify(mSideUiObserver).onSideUiSpecsChanged(expectedSideUiSpecs);
     }
 
@@ -133,7 +133,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(new SideUiContainerProperties(AnchorSide.START, width));
 
         // Verify observers notified.
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(width, /* endX= */ 0);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(width, /* endContainerWidth= */ 0);
         verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
 
         // Verify view attached to start container.
@@ -151,7 +151,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(new SideUiContainerProperties(AnchorSide.END, width));
 
         // Verify observers notified.
-        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(/* startX= */ 0, width);
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(/* startContainerWidth= */ 0, width);
         verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
 
         // Verify view attached to end container.
