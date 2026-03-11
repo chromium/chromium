@@ -343,8 +343,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private recordCountMetricsOnNextUpdate_: boolean = false;
   declare private updatedElementIds_: string[];
   declare private bookmarksTreeViewEnabled_: boolean;
-  private isBookmarksInTransportModeEnabled: boolean =
-      loadTimeData.getBoolean('isBookmarksInTransportModeEnabled');
   private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
 
   constructor() {
@@ -1265,7 +1263,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private showEditDialog_(bookmarks: BookmarksTreeNode[], moveOnly: boolean) {
-    if (!this.isBookmarksInTransportModeEnabled) {
+    if (!loadTimeData.getBoolean('isBookmarksMigrationUiChanges')) {
       this.$.editDialog.showDialog(
           this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
           bookmarks, moveOnly);

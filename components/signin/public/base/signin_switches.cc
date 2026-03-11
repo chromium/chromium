@@ -638,6 +638,13 @@ BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
+BASE_FEATURE(kBookmarksMigrateUiChanges,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // When enabled, Chrome will always use the /IssueToken endpoint to fetch access

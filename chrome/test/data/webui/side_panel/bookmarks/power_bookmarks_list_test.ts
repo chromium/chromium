@@ -143,7 +143,7 @@ suite('General', () => {
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
       bookmarksTreeViewEnabled: false,
-      isBookmarksInTransportModeEnabled: false,
+      isBookmarksMigrationUiChanges: false,
     });
 
     powerBookmarksList = await initializeUi(bookmarksApi);
@@ -947,7 +947,7 @@ suite('General', () => {
     });
 
 
-    test('EditBookmarkWithBookmarksInTransportModeDisabled', async () => {
+    test('EditBookmarks', async () => {
       const bookmark = getBookmarkWithId(powerBookmarksList, '3')!;
       const contextMenu = powerBookmarksList.$.contextMenu;
       const editClicked = eventToPromise('edit-clicked', contextMenu);
@@ -978,7 +978,7 @@ suite('General', () => {
       assertEquals(bookmark.url, editDialog.$.urlInput.inputElement.value);
     });
 
-    test('MoveBookmarksWithBookmarksInTransportModeDisabled', async () => {
+    test('MoveBookmarks', async () => {
       const bookmarks = [
         getBookmarkWithId(powerBookmarksList, '3')!,
         getBookmarkWithId(powerBookmarksList, '5')!,

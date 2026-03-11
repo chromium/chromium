@@ -174,8 +174,7 @@ RecentlyUsedFoldersComboModel::GetDropdownForegroundColorIdAt(
 
 ui::ComboboxModel::ItemCheckmarkConfig
 RecentlyUsedFoldersComboModel::GetCheckmarkConfig() const {
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncEnableBookmarksInTransportMode)) {
+  if (base::FeatureList::IsEnabled(switches::kBookmarksMigrateUiChanges)) {
     // Explicitly enable checkmarks for all folder entries to visually
     // distinguish them from titles.
     return ItemCheckmarkConfig::kEnabled;

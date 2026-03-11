@@ -69,9 +69,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General2) {
       "runMochaSuite('General Part2');");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TransportMode) {
-  RunTest("side_panel/bookmarks/power_bookmarks_list_transport_mode_test.js",
-          "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, BookmarksMigrateUiChanges) {
+  RunTest(
+      "side_panel/bookmarks/"
+      "power_bookmarks_list_migrate_ui_changes_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TreeView) {

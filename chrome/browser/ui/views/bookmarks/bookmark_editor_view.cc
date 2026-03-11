@@ -566,8 +566,7 @@ void BookmarkEditorView::ExpandAndSelect() {
   // Only expand tracked nodes if the feature flag is disabled. With the flag
   // enabled, only the nodes leading up to the selected node's parent should be
   // expanded.
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncEnableBookmarksInTransportMode)) {
+  if (!base::FeatureList::IsEnabled(switches::kBookmarksMigrateUiChanges)) {
     BookmarkExpandedStateTracker::Nodes expanded_nodes =
         expanded_state_tracker_->GetExpandedNodes();
     for (const BookmarkNode* node : expanded_nodes) {

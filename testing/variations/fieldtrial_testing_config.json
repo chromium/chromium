@@ -4263,6 +4263,21 @@
             ]
         }
     ],
+    "BookmarksMigrateUiChanges": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BookmarksMigrateUiChanges"
+                    ]
+                }
+            ]
+        }
+    ],
     "BookmarksTreeView": [
         {
             "platforms": [
