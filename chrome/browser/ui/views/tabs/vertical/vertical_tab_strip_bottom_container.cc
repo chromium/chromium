@@ -69,7 +69,7 @@ TabStripFlatEdgeButton* VerticalTabStripBottomContainer::AddChildButtonFor(
       gfx::Size(raw_container_button_size, raw_container_button_size));
 
   raw_container_button->SetIconSize(
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonIconSize));
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
 
   return raw_container_button;
 }

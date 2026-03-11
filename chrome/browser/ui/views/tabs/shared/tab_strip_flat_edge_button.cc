@@ -70,7 +70,7 @@ TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
       this, kColorTabStripControlButtonInkDrop,
       kColorTabStripControlButtonInkDropRipple);
   SetIconSize(
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripBottomButtonIconSize));
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
   SetInsets(gfx::Insets());
 }
 
@@ -204,6 +204,12 @@ void TabStripFlatEdgeButton::SetIconSize(int icon_size) {
     return;
   }
   icon_size_ = icon_size;
+
+  const std::optional<ui::ImageModel>& model =
+      GetImageModel(views::Button::STATE_NORMAL);
+  if (model && model->IsVectorIcon()) {
+    UpdateIcon(*model);
+  }
 }
 
 void TabStripFlatEdgeButton::AddedToWidget() {
