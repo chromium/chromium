@@ -16,8 +16,8 @@ mojo_files = [
 ]
 
 ts_files = [
-  "untrusted_projector_browser_proxy.ts",
   "launch.ts",
+  "untrusted_projector_browser_proxy.ts",
 ]
 
 preprocess_if_expr("copy_mojo_ts") {
@@ -34,7 +34,7 @@ preprocess_if_expr("copy_mojo_ts") {
 preprocess_if_expr("copy_ts") {
   visibility = [ ":build_ts" ]
   in_folder = "."
-  in_files = ts_files
+  in_files = ts_files + [ "app_api.d.ts" ]
   out_folder = "$target_gen_dir/preprocessed"
 }
 
@@ -44,6 +44,7 @@ webui_ts_library("build_ts") {
 
   in_files = mojo_files + ts_files
   composite = true
+  definitions = [ "$target_gen_dir/preprocessed/app_api.d.ts" ]
 
   deps = [ "//ui/webui/resources/mojo:build_ts" ]
   extra_deps = [
@@ -68,8 +69,8 @@ generate_grd("ts_grdp") {
   out_grd = "$target_gen_dir/ts_resources.grdp"
   deps = [ ":build_ts" ]
   input_files = [
-    "untrusted_projector_browser_proxy.js",
     "launch.js",
+    "untrusted_projector_browser_proxy.js",
   ]
   input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {XhrResponseResult} from './app_api.js';
 import {UntrustedProjectorPageCallbackRouter, UntrustedProjectorPageHandlerFactory, UntrustedProjectorPageHandlerRemote} from './ash/webui/projector_app/mojom/untrusted_projector.mojom-webui.js';
 import {Account, JsNetErrorCode, NewScreencastPrecondition, PendingScreencast, PrefsThatProjectorCanAskFor, RequestType, VideoInfo, XhrResponseCode} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
 
@@ -68,13 +69,6 @@ const errorCodeMap = new Map<XhrResponseCode, string>([
     'INVALID_ACCOUNT_EMAIL',
   ],
 ]);
-
-export interface XhrResponseResult {
-  success: boolean;
-  response?: string;
-  error?: string;
-  errorCode: JsNetErrorCode;
-}
 
 export class UntrustedProjectorBrowserProxyImpl {
   private pageHandlerRemote: UntrustedProjectorPageHandlerRemote;
