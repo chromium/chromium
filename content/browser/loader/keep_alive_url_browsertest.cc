@@ -57,6 +57,7 @@ namespace content {
 namespace {
 
 using testing::Contains;
+using testing::Not;
 using testing::Pair;
 
 constexpr char16_t kPromiseResolvedPageTitle[] = u"Resolved";
@@ -1482,5 +1483,122 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest, RetryOptionsSet) {
 }
 
 // TODO(crbug.com/417930271): test unload, redirects, timeout, attribution.
+
+// Regression test for crbug.com/489744805: when the renderer is disconnected
+// (page unloaded), the browser-side EndReceiveRedirect() must strip the
+// Authorization header on cross-origin redirect per Fetch spec Step 13.
+//
+// Authorization is stripped before the redirect, so no CORS preflight is
+// needed (Authorization is a non-safelisted header).
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       CrossOriginRedirectStripsAuthorizationAfterUnload) {
+  const std::string method = GetParam();
+  const char redirect_target[] = "/beacon-redirected";
+  auto request_handlers =
+      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
+  ASSERT_TRUE(server()->Start());
+
+  // Navigate to a.test and send a keepalive fetch with Authorization header.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            server()->GetURL(kPrimaryHost, "/title1.html")));
+  const auto cross_origin_target =
+      server()->GetURL(kSecondaryHost, redirect_target);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    fetch($1, {
+      keepalive: true,
+      method: $2,
+      headers: {'Authorization': 'Bearer SECRET_TOKEN'},
+    });
+  )",
+                               kKeepAliveEndpoint, method),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the initial same-origin request.
+  request_handlers[0]->WaitForRequest();
+  EXPECT_THAT(request_handlers[0]->http_request()->headers,
+              Contains(Pair(net::HttpRequestHeaders::kAuthorization,
+                            "Bearer SECRET_TOKEN")));
+
+  // Navigate away to disconnect the renderer.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GURL("about:blank")));
+
+  // Send the cross-origin redirect. The browser handles this via
+  // EndReceiveRedirect() since the renderer is disconnected.
+  request_handlers[0]->Send(
+      base::StringPrintf(k301Response, cross_origin_target.spec().c_str()));
+  request_handlers[0]->Done();
+
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+
+  // Wait for the redirected request. Authorization was stripped, so no CORS
+  // preflight is needed.
+  request_handlers[1]->WaitForRequest();
+  EXPECT_NE(request_handlers[1]->http_request()->method_string, "OPTIONS");
+
+  // The Authorization header must be stripped on cross-origin redirect.
+  EXPECT_THAT(
+      request_handlers[1]->http_request()->headers,
+      Not(Contains(Pair(net::HttpRequestHeaders::kAuthorization, testing::_))));
+  request_handlers[1]->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Access-Control-Allow-Origin: *\r\n"
+      "Content-Type: text/plain\r\n"
+      "\r\n"
+      "OK");
+  request_handlers[1]->Done();
+}
+
+// Verify that Authorization header is preserved on same-origin redirect
+// when the browser handles it after page unload.
+IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
+                       SameOriginRedirectPreservesAuthorizationAfterUnload) {
+  const std::string method = GetParam();
+  const char redirect_target[] = "/beacon-redirected";
+  auto request_handlers =
+      RegisterRequestHandlers({kKeepAliveEndpoint, redirect_target});
+  ASSERT_TRUE(server()->Start());
+
+  // Navigate to a.test and send a keepalive fetch with Authorization header.
+  ASSERT_TRUE(NavigateToURL(web_contents(),
+                            server()->GetURL(kPrimaryHost, "/title1.html")));
+  const auto same_origin_target =
+      server()->GetURL(kPrimaryHost, redirect_target);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     JsReplace(R"(
+    fetch($1, {
+      keepalive: true,
+      method: $2,
+      headers: {'Authorization': 'Bearer SECRET_TOKEN'},
+    });
+  )",
+                               kKeepAliveEndpoint, method),
+                     content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the initial same-origin request.
+  request_handlers[0]->WaitForRequest();
+  EXPECT_THAT(request_handlers[0]->http_request()->headers,
+              Contains(Pair(net::HttpRequestHeaders::kAuthorization,
+                            "Bearer SECRET_TOKEN")));
+
+  // Navigate away to disconnect the renderer.
+  ASSERT_TRUE(NavigateToURL(web_contents(), GURL("about:blank")));
+
+  // Send the same-origin redirect.
+  request_handlers[0]->Send(
+      base::StringPrintf(k301Response, same_origin_target.spec().c_str()));
+  request_handlers[0]->Done();
+
+  loaders_observer().WaitForTotalOnReceiveRedirectProcessed(1);
+
+  // Wait for the redirected request on a.test (same-origin, no preflight).
+  request_handlers[1]->WaitForRequest();
+  // The Authorization header must be preserved on same-origin redirect.
+  EXPECT_THAT(request_handlers[1]->http_request()->headers,
+              Contains(Pair(net::HttpRequestHeaders::kAuthorization,
+                            "Bearer SECRET_TOKEN")));
+  request_handlers[1]->Send(k200TextResponse);
+  request_handlers[1]->Done();
+}
 
 }  // namespace content
