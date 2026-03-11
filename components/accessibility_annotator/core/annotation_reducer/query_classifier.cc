@@ -12,6 +12,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -32,12 +33,18 @@ bool ContainsSequence(base::span<const std::u16string> words,
   return !result.empty();
 }
 
-}  // namespace
+QueryIntentType CompositeClassify(std::vector<QueryClassifier> classifiers,
+                                  std::u16string_view query) {
+  for (const auto& classifier : classifiers) {
+    QueryIntentType intent = classifier.Run(query);
+    if (intent != QueryIntentType::kUnknown) {
+      return intent;
+    }
+  }
+  return QueryIntentType::kUnknown;
+}
 
-QueryClassifier::QueryClassifier() = default;
-QueryClassifier::~QueryClassifier() = default;
-
-QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
+QueryIntentType RegExpQueryClassify(std::u16string_view query) {
   // Hardcoded list of stop words.
   // TODO(crbug.com/485682510): Load stopwords from a single JSON.
   static constexpr auto kStopWords =
@@ -298,5 +305,31 @@ QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
 
   return QueryIntentType::kUnknown;
 }
+
+QueryIntentType GeminiClassify(std::u16string_view query) {
+  // TODO(crbug.com/490211801): Implement Gemini model call within MES.
+  return QueryIntentType::kUnknown;
+}
+
+}  // namespace
+
+QueryClassifier CreateQueryClassifier() {
+  std::vector<QueryClassifier> classifiers = {
+      internal::CreateRegExpQueryClassifier(),
+      internal::CreateGeminiClassifier()};
+  return base::BindRepeating(&CompositeClassify, std::move(classifiers));
+}
+
+namespace internal {
+
+QueryClassifier CreateRegExpQueryClassifier() {
+  return base::BindRepeating(&RegExpQueryClassify);
+}
+
+QueryClassifier CreateGeminiClassifier() {
+  return base::BindRepeating(&GeminiClassify);
+}
+
+}  // namespace internal
 
 }  // namespace accessibility_annotator

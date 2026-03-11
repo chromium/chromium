@@ -7,15 +7,16 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace accessibility_annotator {
 
 class AutofillDataProvider;
-class QueryClassifier;
 
 // Service for querying @memory suggestions.
 class AccessibilityQueryService : public KeyedService {
@@ -31,11 +32,11 @@ class AccessibilityQueryService : public KeyedService {
   void Shutdown() override;
 
   // Executes a query and returns suggestions.
-  virtual std::vector<MemorySearchResult> Query(const std::u16string& query);
+  virtual std::vector<MemorySearchResult> Query(std::u16string_view query);
 
  private:
   std::unique_ptr<AutofillDataProvider> data_provider_;
-  std::unique_ptr<QueryClassifier> classifier_;
+  QueryClassifier classifier_;
 };
 
 }  // namespace accessibility_annotator

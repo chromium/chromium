@@ -5,25 +5,32 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
 
-#include <string>
-#include <vector>
+#include <string_view>
 
+#include "base/functional/callback.h"
 #include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
 namespace accessibility_annotator {
 
-class QueryClassifier {
- public:
-  QueryClassifier();
-  QueryClassifier(const QueryClassifier&) = delete;
-  QueryClassifier& operator=(const QueryClassifier&) = delete;
-  ~QueryClassifier();
+// A callback that classifies the intent of a given query.
+using QueryClassifier =
+    base::RepeatingCallback<QueryIntentType(std::u16string_view)>;
 
-  QueryIntentType Classify(const std::u16string& query);
+// Creates a default instance of the query classifier, which orchestrates
+// multiple underlying classifiers.
+QueryClassifier CreateQueryClassifier();
 
- private:
-  void InitializeStopWords();
-};
+namespace internal {
+
+// Creates a query classifier that uses keyword matching with regular
+// expressions.
+QueryClassifier CreateRegExpQueryClassifier();
+
+// Creates a query classifier that uses Gemini within Model Execution
+// Service.
+QueryClassifier CreateGeminiClassifier();
+
+}  // namespace internal
 
 }  // namespace accessibility_annotator
 
