@@ -5,14 +5,25 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_FIELD_TRIALS_H_
 
-#include <vector>
-
 #include "base/feature_list.h"
 #include "components/variations/platform_field_trials.h"
 
-// Responsible for setting up field trials specific to WebView. Used to provide
-// WebView-specific defaults that are used over the state coming from the
-// base::Feature when there is no other (e.g. server-side) override.
+// Responsible for setting up feature overrides specific to WebView.
+//
+// Both Chrome and WebView share the IS_ANDROID build flag, which, in absence of
+// an IS_WEBVIEW build flag, creates a difficulty for features whose default
+// enabled state should be different between them. RegisterFeatureOverrides()
+// provides a solution for this, where a different state can be configured
+// specifically for WebView.
+//
+// These feature overrides only apply to the default base::Feature states, but
+// are by no means final. The feature state resolution steps are:
+//
+// 1. The base::Feature's default state
+// 2. The WebView-specific default state set in RegisterFeatureOverrides()
+// 3. Any changes imposed by experimentation in active Finch studies
+// 4. Any changes imposed by user configuration in the WebView DevUI
+//
 // Lifetime: Singleton
 class AwFieldTrials : public variations::PlatformFieldTrials {
  public:
