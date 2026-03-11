@@ -657,6 +657,11 @@
       <message name="IDS_IOS_AUTOFILL_NICKNAME" desc="Title of the field representing the user defined nickname of a credit card. [Length: 15em] [iOS only]">
         Card nickname
       </message>
+      <message name="IDS_IOS_AUTOFILL_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of options available to the user above the keyboard in relation to enhanced autofill. This announcement is triggered when the user enters edit mode in an autocomplete-related form field and has options available in the keyboard accessory for autofill purposes. According to the number of available options, the string goes from singular to plural. [iOS only]">
+        {count, plural,
+           =1 {{count} autofill option available above your keyboard.}
+           other {{count} autofill options available above your keyboard.}}
+      </message>
       <message name="IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA" desc="The accessible name for the button in the keyboard accessory shown when filling out forms used to open the expanded view to see password autofill data. This is spoken by VoiceOver. [Length: unlimited] [iOS only]">
         Passwords
       </message>

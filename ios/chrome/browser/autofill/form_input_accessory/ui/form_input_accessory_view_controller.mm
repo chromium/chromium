@@ -543,14 +543,15 @@ UIImage* GetManualFillSymbol() {
             suggestionCount);
         break;
       case FillingProduct::kAutofillAi:
-        // TODO(crbug.com/480933607): Reusing the Autocomplete announcement for
-        // AutofillAi. Add an AutofillAi specific accessibility announcement.
         if (!base::FeatureList::IsEnabled(
                 autofill::features::kAutofillAiWithDataSchema)) {
           // Only allow kAutofillAi if the associated feature is enabled.
           NOTREACHED();
         }
-        [[fallthrough]];
+        mainFillingProductString = l10n_util::GetPluralStringFUTF16(
+            IDS_IOS_AUTOFILL_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            suggestionCount);
+        break;
       case FillingProduct::kAutocomplete:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
             IDS_IOS_AUTOFILL_AUTOCOMPLETE_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
