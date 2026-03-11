@@ -69,6 +69,7 @@ chromium-metrics-reviews@google.com.
   <variant name="LocalTraces" summary="LocalTraces"/>
   <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
   <variant name="MediaLicense" summary="MediaLicense"/>
+  <variant name="MultistepFilter" summary="MultistepFilter"/>
   <variant name="OfflinePageMetadata" summary="OfflinePageMetadata"/>
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
   <variant name="PageContentStore" summary="Page Content Store"/>

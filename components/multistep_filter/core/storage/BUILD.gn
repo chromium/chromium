@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("storage") {
+  sources = [
+    "filter_annotation_table.cc",
+    "filter_annotation_table.h",
+    "filter_store.cc",
+    "filter_store.h",
+    "filter_store_backend.cc",
+    "filter_store_backend.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/multistep_filter/core/data_models",
+    "//sql",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "filter_annotation_table_unittest.cc",
+    "filter_store_unittest.cc",
+  ]
+
+  deps = [
+    ":storage",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//testing/gtest",
+    "//url",
+  ]
+}

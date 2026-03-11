@@ -10,7 +10,6 @@
 
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "url/gurl.h"
 
 namespace multistep_filter {
 
@@ -24,11 +23,11 @@ namespace multistep_filter {
 struct FilterAttribute {
   // The standardized, human-readable name for this attribute. (e.g., "color"
   // instead of a raw URL param like "c").
-  std::string normalized_key;
+  std::string key;
   // The processed and cleaned value (e.g., "red").
-  std::string normalized_value;
+  std::string value;
 
-  FilterAttribute(std::string normalized_key, std::string normalized_value);
+  FilterAttribute(std::string key, std::string value);
 
   FilterAttribute(const FilterAttribute&) = default;
   FilterAttribute(FilterAttribute&&) = default;
@@ -53,8 +52,6 @@ struct FilterAnnotation {
   std::string task_type;
   // The eTLD+1 domain of the source URL.
   std::string source_domain;
-  // The full path URL where the annotation was generated.
-  GURL source_url;
   // The timestamp when the annotation was generated.
   base::Time creation_timestamp;
   // Set of attributes generated from the source URL.
@@ -63,7 +60,6 @@ struct FilterAnnotation {
   FilterAnnotation(base::Uuid id,
                    std::string task_type,
                    std::string source_domain,
-                   GURL source_url,
                    base::Time creation_timestamp,
                    std::vector<FilterAttribute> attributes);
 

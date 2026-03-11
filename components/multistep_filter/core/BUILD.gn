@@ -36,6 +36,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/multistep_filter/core/data_models:unit_tests",
     "//components/multistep_filter/core/extraction:unit_tests",
+    "//components/multistep_filter/core/storage:unit_tests",
     "//components/multistep_filter/core/suggestion",
     "//components/multistep_filter/core/suggestion:unit_tests",
     "//components/signin/public/identity_manager:test_support",
