@@ -573,9 +573,7 @@
 
   // What's New promo handler.
   _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
-      [[WhatsNewPromoDisplayHandler alloc]
-          initWithPromosManager:PromosManagerFactory::GetForProfile(
-                                    self.profile)];
+      [[WhatsNewPromoDisplayHandler alloc] init];
 
   // Credentials provider promo handler.
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =

@@ -7,17 +7,9 @@
 
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 
-class PromosManager;
-
 // Handler for displaying What's New. This handler is called by the Promos
 // Manager once on the 6th day or 6th launch after the FRE.
 @interface WhatsNewPromoDisplayHandler : NSObject <StandardPromoDisplayHandler>
-
-- (instancetype)init NS_UNAVAILABLE;
-
-// Promos Manager to alert if the user uses What's New.
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-    NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - PromoProtocol
 
