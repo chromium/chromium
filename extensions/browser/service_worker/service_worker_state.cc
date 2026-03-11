@@ -181,9 +181,6 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
   }
 
   if (renderer_state() != RendererState::kNotActive) {
-    // If the new token is different from the preexisting token, and it's still
-    // live, we are in an unexpected situation in which the content layer is
-    // tracking two different service workers.
     auto renderer_state_debug = renderer_state_;
     base::debug::Alias(&renderer_state_debug);
     CHECK(worker_id_.has_value());
@@ -194,13 +191,18 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     base::debug::Alias(&preexisting_version_id);
     base::debug::Alias(&new_version_id);
     if (preexisting_token != new_token &&
+        preexisting_version_id >= new_version_id &&
         service_worker_context_->IsLiveServiceWorkerWithToken(
             preexisting_version_id, preexisting_token)) {
+      // We received an initialization signal for an older (or equal) worker
+      // version with a different token, while the worker we are currently
+      // tracking is still live. Record a crash dump for investigation and drop
+      // the stale IPC to prevent overwriting the current worker's state.
       base::debug::DumpWithoutCrashing();
       return;
     }
-    // However, if the preexisting instance is actually not running anymore,
-    // then we should set a new `worker_id` here.
+    // TODO(andreaorru): if the preexisting version_id / service worker token is
+    // not valid anymore, should we untrack it from ProcessManager here?
   }
 
   SetWorkerId(worker_id);
