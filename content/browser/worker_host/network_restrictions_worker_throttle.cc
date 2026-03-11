@@ -50,6 +50,9 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
   if (response_url.SchemeIsLocal()) {
     policies.connection_allowlists = creator_policies_.connection_allowlists;
   } else {
+    if (!response_head || !response_head->parsed_headers) {
+      return;
+    }
     policies.connection_allowlists =
         response_head->parsed_headers->connection_allowlists;
   }
