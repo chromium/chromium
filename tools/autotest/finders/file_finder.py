@@ -246,6 +246,8 @@ def FindMatchingTestFiles(target: str,
       print('Failed to find remote candidates; searching recursively')
       exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
   else:
+    print(f'Warning: Doing a slow local search for {target}. '
+          f'Consider installing `cs` or using -r.')
     exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
 
   if const.DEBUG:
@@ -278,7 +280,7 @@ def FindMatchingTestFiles(target: str,
   return test_files
 
 
-def GetChangedTestFiles() -> list[str]:
+def GetTestFilesFromChanges() -> list[str]:
   # Find both committed and uncommitted changes.
   merge_base_command: list[str] = ['git', 'merge-base', 'origin/main', 'HEAD']
   merge_base: str = command.RunCommand(merge_base_command).strip()
@@ -291,4 +293,12 @@ def GetChangedTestFiles() -> list[str]:
   for f in changed_files:
     if IsTestFile(f) is const.TestValidity.VALID_TEST:
       test_files.append(f)
+    else:
+      mapped_file = _FindTestForFile(f)
+      if mapped_file and mapped_file != f:
+        test_files.append(mapped_file)
+      elif f.endswith('.java'):
+        root, _ = os.path.splitext(f)
+        test_name = os.path.basename(root) + 'Test.java'
+        test_files.append(test_name)
   return test_files

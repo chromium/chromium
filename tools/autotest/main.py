@@ -127,7 +127,8 @@ def main(ctx, **kwargs) -> int:
     files_to_test.extend(found_files)
 
   if config.run_changed:
-    files_to_test.extend(file_finder.GetChangedTestFiles())
+    files_to_test.extend(file_finder.GetTestFilesFromChanges())
+    # Remove duplicates.
     files_to_test = list(set(files_to_test))
 
   filenames: list[str] = []
