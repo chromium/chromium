@@ -1,6 +1,9 @@
 # Mac stuff
 file://ui/base/cocoa/OWNERS
 
+# For Android
+file://ui/android/OWNERS
+
 # Clipboard
 per-file test_clipboard*=dcheng@chromium.org
 
