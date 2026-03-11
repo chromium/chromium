@@ -242,6 +242,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
     return !!addressAutofillEnabled.extensionId &&
         !addressAutofillEnabled.value;
   }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {

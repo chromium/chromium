@@ -246,6 +246,11 @@ export class SettingsIdentityDocsPageElement extends
     return !!addressAutofillEnabled.extensionId &&
         !addressAutofillEnabled.value;
   }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
 }
 
 declare global {
