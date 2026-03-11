@@ -110,7 +110,8 @@ void RecordMediaPlaybackInterruptionType(AudioContextInterruptionType type) {
       "WebAudio.AudioContext.MediaPlaybackWhileNotVisible.InterruptionType",
       type);
 }
-const char* LatencyCategoryToString(
+
+StringView LatencyCategoryToString(
     WebAudioLatencyHint::AudioContextLatencyCategory category) {
   switch (category) {
     case WebAudioLatencyHint::kCategoryInteractive:
@@ -123,14 +124,17 @@ const char* LatencyCategoryToString(
       return "exact";
     case WebAudioLatencyHint::kLastValue:
       return "invalid";
+    default:
+      NOTREACHED();
   }
 }
 
 String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
                                 std::optional<float> sample_rate) {
   StringBuilder builder;
-  UNSAFE_TODO(builder.AppendFormat(
-      "({latency_hint=%s}", LatencyCategoryToString(latency_hint.Category())));
+  builder.Append("({latency_hint=");
+  builder.Append(LatencyCategoryToString(latency_hint.Category()));
+  builder.Append("}");
   if (latency_hint.Category() == WebAudioLatencyHint::kCategoryExact) {
     builder.AppendFormat(", {seconds=%.3f}", latency_hint.Seconds());
   }
