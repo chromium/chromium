@@ -19,10 +19,6 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//rlz/buildflags/buildflags.gni")
 
 declare_args() {
-  # Controls whether fast_app_terminate_buildflags is enabled
-  # (see crbug.com/1328891 for details).
-  fast_app_terminate_enabled = -1
-
   # Path to a PrivacyInfo.xcprivacy file to be included in the application.
   ios_chrome_privacy_manifest = ""
 
@@ -30,21 +26,9 @@ declare_args() {
   ios_chrome_orderfile = ""
 }
 
-# If fast_app_terminate_enabled is not enabled, default to true,
-# except in debug mode (as this makes it difficult to debug the
-# app termination crashes).
-if (fast_app_terminate_enabled == -1) {
-  fast_app_terminate_enabled = !is_debug
-}
-
 buildflag_header("background_mode_buildflags") {
   header = "background_mode_buildflags.h"
   flags = [ "IOS_BACKGROUND_MODE_ENABLED=$ios_enable_background_mode" ]
-}
-
-buildflag_header("fast_app_terminate_buildflags") {
-  header = "fast_app_terminate_buildflags.h"
-  flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
 }
 
 buildflag_header("ios_force_build_chrome_framework_buildflags") {
@@ -524,7 +508,6 @@ source_set("app_internal") {
     ":change_profile_commands",
     ":change_profile_continuation",
     ":enterprise_app_agent",
-    ":fast_app_terminate_buildflags",
     ":launch_screen_ui",
     ":mode",
     ":safe_mode_app_state_agent",

@@ -56,7 +56,6 @@
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
-#import "ios/chrome/app/fast_app_terminate_buildflags.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
 #import "ios/chrome/app/memory_monitor.h"
 #import "ios/chrome/app/profile/profile_controller.h"
@@ -172,11 +171,6 @@
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 
 namespace {
-
-#if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
-// Skip chromeMain.reset() on shutdown, see crbug.com/1328891 for details.
-BASE_FEATURE(kFastApplicationWillTerminate, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 // Constants for deferring memory debugging tools startup.
 NSString* const kMemoryDebuggingToolsStartup = @"MemoryDebuggingToolsStartup";
@@ -1230,68 +1224,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // down, so there is no point in running them).
   [_appState.deferredRunner cancelAllBlocks];
 
-#if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
-  // _chromeMain.reset() is a blocking call that regularly causes
-  // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
-  // this shutdown call. See: crbug.com/1328891
-  if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
-    // Expected number of time the `closure` defined below needs to
-    // be called before it signal the semaphore. This corresponds to the
-    // number of services that needs to be waited for.
-    uint32_t expectedCount = 0;
-
-    // MetricsService doesn't depend on a profile.
-    metrics::MetricsService* metrics =
-        GetApplicationContext()->GetMetricsService();
-    if (metrics) {
-      expectedCount += 1;
-    }
-
-    const std::vector<ProfileIOS*> loadedProfiles =
-        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-    for (ProfileIOS* profile : loadedProfiles) {
-      expectedCount += 1;
-      if (profile->HasOffTheRecordProfile()) {
-        expectedCount += 1;
-      }
-    }
-
-    // `dispatch_semaphore_signal` is called only once when `closure` is called
-    // `expectedCount` times.
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    base::RepeatingClosure closure =
-        base::BarrierClosure(expectedCount, base::BindOnce(^{
-                               dispatch_semaphore_signal(semaphore);
-                             }));
-
-    for (ProfileIOS* profile : loadedProfiles) {
-      SessionRestorationServiceFactory::GetForProfile(profile)
-          ->InvokeClosureWhenBackgroundProcessingDone(closure);
-
-      if (profile->HasOffTheRecordProfile()) {
-        ProfileIOS* otrBrowserState = profile->GetOffTheRecordProfile();
-        SessionRestorationServiceFactory::GetForProfile(otrBrowserState)
-            ->InvokeClosureWhenBackgroundProcessingDone(closure);
-      }
-    }
-
-    if (metrics) {
-      metrics->Stop();
-      // MetricsService::Stop() depends on a committed local state, and does
-      // so asynchronously. To avoid losing metrics, this minimum wait is
-      // required. This will introduce a wait that will likely be the source
-      // of a number of watchdog kills, but it should still be fewer than the
-      // number of kills `_chromeMain.reset()` is responsible for.
-      GetApplicationContext()->GetLocalState()->CommitPendingWrite({}, closure);
-    }
-
-    dispatch_time_t dispatchTime =
-        dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
-    dispatch_semaphore_wait(semaphore, dispatchTime);
-
-    return;
-  }
-#endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
 #if BUILDFLAG(ENABLE_RLZ)
   if (_rlzTrackerInitialized) {
