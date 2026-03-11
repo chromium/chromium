@@ -437,6 +437,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                     [weakSelf updateCarouselFade];
                     [weakSelf updateSendButtonStateIfNeeded];
                     [weakSelf scrollToLast];
+                    [weakSelf updatePreferredContentSize];
                   }];
 }
 
@@ -789,6 +790,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _modelOption = modelOption;
   [self updatePlusButtonItems];
   [self updateCreateImageTitle];
+}
+
+- (void)updatePreferredContentSizeForNewTextFieldHeight {
+  // Trigger -viewDidLayoutSubviews that will call -updatePreferredContentSize.
+  [_omniboxContainer layoutIfNeeded];
 }
 
 #pragma mark - Actions

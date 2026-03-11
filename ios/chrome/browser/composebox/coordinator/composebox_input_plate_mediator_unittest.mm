@@ -124,6 +124,9 @@
   return (_visibleControls & controls) != ComposeboxInputPlateControls::kNone;
 }
 
+- (void)updatePreferredContentSizeForNewTextFieldHeight {
+}
+
 @end
 
 namespace {
