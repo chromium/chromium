@@ -103,7 +103,7 @@ bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
   return supported_issuers.contains(issuer_id);
 }
 
-void BnplManager::OnDidAcceptBnplSuggestion(
+void BnplManager::OnUserDecisionToUseBnpl(
     std::optional<int64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
@@ -174,12 +174,12 @@ void BnplManager::OnDidAcceptBnplSuggestion(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableAiBasedAmountExtraction)) {
     if (HasSeenAmountExtractionAiTerms()) {
-      // On BNPL suggestion acceptance, if the user has seen the AI terms,
+      // On user decision to use BNPL, if the user has seen the AI terms,
       // server-side amount extraction call should be made directly.
       browser_autofill_manager_->GetAmountExtractionManager()
           .TriggerCheckoutAmountExtractionWithAi();
     } else {
-      // On BNPL suggestion acceptance, if the user has not seen the AI
+      // On user decision to use BNPL, if the user has not seen the AI
       // terms, record the user has seen the AI terms after the dialog has
       // been shown.
       payments_autofill_client()
@@ -189,7 +189,7 @@ void BnplManager::OnDidAcceptBnplSuggestion(
   }
 
   browser_autofill_manager_->GetCreditCardFormEventLogger()
-      .OnDidAcceptBnplSuggestion();
+      .OnUserDecisionToUseBnpl();
 }
 
 void BnplManager::NotifyOfSuggestionGeneration(

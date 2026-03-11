@@ -93,20 +93,20 @@ class CreditCardFormEventLoggerTest : public AutofillMetricsBaseTest,
 };
 
 // Tests that the `kBnplSuggestionAccepted` event is logged once when
-// `OnDidAcceptBnplSuggestion()` is called.
+// `OnUserDecisionToUseBnpl()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
-       OnDidAcceptBnplSuggestion_SuggestionAcceptedLogged) {
+       OnUserDecisionToUseBnpl_SuggestionAcceptedLogged) {
   base::HistogramTester histogram_tester;
 
-  autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
+  autofill_manager().GetCreditCardFormEventLogger().OnUserDecisionToUseBnpl();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
 
   // Test that `kBnplSuggestionAccepted` is logged only once even if
-  // `OnDidAcceptBnplSuggestion()` is called more than once on the same page.
-  autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
+  // `OnUserDecisionToUseBnpl()` is called more than once on the same page.
+  autofill_manager().GetCreditCardFormEventLogger().OnUserDecisionToUseBnpl();
   histogram_tester.ExpectUniqueSample(
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
@@ -121,7 +121,7 @@ TEST_F(CreditCardFormEventLoggerTest,
   autofill_manager().AddSeenForm(form, field_types);
 
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
-  autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
+  autofill_manager().GetCreditCardFormEventLogger().OnUserDecisionToUseBnpl();
 
   {
     using Ukm = UkmBnplSuggestionShownType;
@@ -243,7 +243,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 // Tests that `filled_credit_card_` is initialized when
 // `OnDidFillFormFillingSuggestion()` is called with a BNPL issuer VCN.
 TEST_F(CreditCardFormEventLoggerTest,
-       OnDidAcceptBnplSuggestion_FilledCreditCardInitialized) {
+       OnUserDecisionToUseBnpl_FilledCreditCardInitialized) {
   base::HistogramTester histogram_tester;
 
   FormStructure form =
@@ -291,7 +291,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 // Tests that `filled_credit_card_` is reset with the new card information when
 // `OnDidFillFormFillingSuggestion()` is called again.
 TEST_F(CreditCardFormEventLoggerTest,
-       OnDidAcceptBnplSuggestion_FilledCreditCardReset) {
+       OnUserDecisionToUseBnpl_FilledCreditCardReset) {
   base::HistogramTester histogram_tester;
 
   FormStructure form =

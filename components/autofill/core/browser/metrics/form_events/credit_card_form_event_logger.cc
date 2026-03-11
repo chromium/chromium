@@ -537,7 +537,7 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
   current_authentication_flow_ = flow;
 }
 
-void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
+void CreditCardFormEventLogger::OnUserDecisionToUseBnpl() {
   if (!has_logged_bnpl_suggestion_accepted_) {
     LogBnplSuggestionAccepted(driver().GetPageUkmSourceId());
     has_logged_bnpl_suggestion_accepted_ = true;

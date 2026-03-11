@@ -53,12 +53,12 @@ class BnplManager {
   // website before filling the form, if the flow succeeds.
   // `final_checkout_amount` is the checkout amount extracted from the page (in
   // micros). It is present if amount extraction completed successfully before
-  // the user accepted the BNPL suggestion, and is empty if the user accepted
-  // the suggestion before amount extraction finished running.
+  // the user accepted the BNPL suggestion, and is empty if the user decided to
+  // use BNPL before amount extraction finished running.
   // `on_bnpl_vcn_fetched_callback` is the callback that should be run if the
   // flow is completed successfully, to fill the form with the VCN that will
   // facilitate the BNPL transaction.
-  virtual void OnDidAcceptBnplSuggestion(
+  virtual void OnUserDecisionToUseBnpl(
       std::optional<int64_t> final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
