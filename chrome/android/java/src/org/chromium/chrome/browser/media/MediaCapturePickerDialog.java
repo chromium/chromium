@@ -218,10 +218,7 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                     assumeNonNull(mDelegate);
                     switch (action) {
                         case CaptureAction.CAPTURE_CANCELLED:
-                            mDelegate.onCancel();
-                            MediaCapturePickerManager.recordResult(
-                                    MediaCapturePickerManager.Result.CANCELLED);
-                            break;
+                            return;
                         case CaptureAction.CAPTURE_WINDOW:
                             mDelegate.onPickWindow();
                             MediaCapturePickerManager.recordResult(
