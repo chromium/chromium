@@ -20,9 +20,6 @@ option optimize_for = LITE_RUNTIME;
 // http://go/chrome-mqls-onboarding (Google-internal link), and then changes will
 // be synced with Chrome automatically.
 
-// This API should eventually converge with go/unified-browser-control-api.
-// Please check with erikchen@ before making modifications.
-
 // The target of an action.
 // Next ID: 4
 message ActionTarget {
@@ -396,6 +393,7 @@ message PauseMediaAction {
 // non-negative.
 // Next ID: 3
 message SeekMediaAction {
+  // TODO(crbug.com/490195093): Remove this field.
   int64 seek_time_microseconds = 1 [
     deprecated = true,
     features = { field_presence: EXPLICIT }

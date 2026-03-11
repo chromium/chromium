@@ -408,6 +408,7 @@ message Geometry {
 
   // Whether the content node is fixed or sticky position. This may suggest
   // that the node is a header, footer, or sidebar.
+  // TODO(crbug.com/490195093): Remove this field.
   bool is_fixed_or_sticky_position = 3 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -438,6 +439,7 @@ message InteractionInfo {
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
 
   // Whether the content node is selectable.
+  // TODO(crbug.com/490195093): Remove this field.
   bool is_selectable = 3 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -446,6 +448,7 @@ message InteractionInfo {
   // Whether the content node is editable; i.e. whether the user can type into
   // it. This refers to the text actually being editable, not whether the
   // content node is a text field.
+  // TODO(crbug.com/490195093): Remove this field.
   bool is_editable = 4 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -453,6 +456,7 @@ message InteractionInfo {
 
   // Whether the content node can be resized. This is relevant for scroll
   // containers and iframes which have the CSS resize behavior.
+  // TODO(crbug.com/490195093): Remove these fields.
   bool can_resize_horizontal = 5 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -467,6 +471,7 @@ message InteractionInfo {
   bool is_focusable = 7 [features = { field_presence: EXPLICIT }];
 
   // Whether the content node is draggable.
+  // TODO(crbug.com/490195093): Remove this field.
   bool is_draggable = 9 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -475,6 +480,7 @@ message InteractionInfo {
   // Whether the content node is clickable. This checks for whether the node is
   // a clickable control (e.g. form control elements) or has activation
   // behavior. It also checks for whether the node has a click handler.
+  // TODO(crbug.com/490195093): Remove this field.
   bool is_clickable = 10 [
     deprecated = true,
     features = { field_presence: EXPLICIT }
@@ -495,6 +501,7 @@ message InteractionInfo {
   // caused that.
   // Note: This may not capture all the reasons.
   // Deprecated: Use clickability_reasons instead.
+  // TODO(crbug.com/490195093): Remove this field.
   repeated ClickabilityReason debug_clickability_reasons = 14 [deprecated = true];
 
   // Provides signals which indicate whether the node is actionable. The action
@@ -2067,7 +2074,7 @@ enum AnnotatedPageContentVersion {
   ANNOTATED_PAGE_CONTENT_VERSION_1_0 = 1;
 
   // DEPRECATED: Use AnnotatedPageContentMode mode instead.
-  // TODO(khushalsagar): Maintain both on the client until all users have been
+  // TODO(crbug.com/490195093): Maintain both on the client until all users have been
   // switched over.
   ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0 = 2 [deprecated = true];
 }
@@ -2154,6 +2161,7 @@ enum ClickabilityReason {
   // The node has mouse event handlers like mouseup, mousedown, mouseover and
   // mouseenter. Deprecated in favor of
   // CLICKABILITY_REASON_MOUSE_CLICK and CLICKABILITY_REASON_MOUSE_HOVER.
+  // TODO(crbug.com/490195093): Remove this value.
   CLICKABILITY_REASON_MOUSE_EVENTS = 2 [deprecated = true];
 
   // The node has keyboard event handlers like keydown, keypress, keyup.
