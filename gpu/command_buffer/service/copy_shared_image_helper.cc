@@ -101,7 +101,7 @@ sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
   GrGLTextureInfo texture_info;
   texture_info.fID = texture_id;
   texture_info.fTarget = target;
-  // Get the surface color format similar to that in VideoFrameYUVConverter.
+  // Get the surface color format similar to that in PaintCanvasVideoRenderer.
   texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
   auto backend_texture = GrBackendTextures::MakeGL(
       width, height, skgpu::Mipmapped::kNo, texture_info);

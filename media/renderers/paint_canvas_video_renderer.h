@@ -223,8 +223,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       VideoFrameSharedImageCache* yuv_shared_image_cache = nullptr);
 
   // Check whether video frame can be uploaded through
-  // CopyVideoFrameToSharedImage(). The limitation comes from
-  // VideoFrameYUVConverter.
+  // CopyVideoFrameToSharedImage().
   bool CanUseCopyVideoFrameToSharedImage(const VideoFrame& video_frame);
 
   // In general, We hold the most recently painted frame to increase the
