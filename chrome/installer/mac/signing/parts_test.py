@@ -83,10 +83,6 @@ class TestGetParts(unittest.TestCase):
             | model.CodeSignOptions.HARDENED_RUNTIME,
             all_parts['helper-gpu-app'].options)
         self.assertEqual(
-            model.CodeSignOptions.RESTRICT | model.CodeSignOptions.KILL
-            | model.CodeSignOptions.HARDENED_RUNTIME,
-            all_parts['helper-plugin-app'].options)
-        self.assertEqual(
             model.CodeSignOptions.RESTRICT
             | model.CodeSignOptions.LIBRARY_VALIDATION
             | model.CodeSignOptions.KILL

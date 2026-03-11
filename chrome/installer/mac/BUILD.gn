@@ -96,7 +96,6 @@ copy("copies") {
     "$root_out_dir/dmg_tool",
     "$root_out_dir/hfs_tool",
     "//chrome/app/helper-gpu-entitlements.plist",
-    "//chrome/app/helper-plugin-entitlements.plist",
     "//chrome/app/helper-renderer-entitlements.plist",
     "pkg-dmg",
     "pkg_postinstall.in",

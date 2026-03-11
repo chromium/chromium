@@ -45,18 +45,4 @@ content_mac_helpers = [
     "",
     " (GPU)",
   ],
-
-  # A helper that does not perform library validation, allowing code not signed
-  # by either Apple or the signing identity to be loaded, and that can execute
-  # unsigned memory.
-  #
-  # This helper historically hosted PPAPI plugins. Even after PPAPI deprecation,
-  # it still hosts other kinds of third-party binary components; see
-  # https://crbug.com/40231117 for context. This is deprecated and being
-  # removed; see https://crbug.com/461717105.
-  [
-    "plugin",
-    ".plugin",
-    " (Plugin)",
-  ],
 ]

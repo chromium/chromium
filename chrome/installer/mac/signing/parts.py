@@ -89,18 +89,6 @@ def get_parts(config):
                 | CodeSignOptions.HARDENED_RUNTIME,
                 entitlements='helper-gpu-entitlements.plist',
                 verify_options=verify_options),
-        'helper-plugin-app':
-            CodeSignedProduct(
-                '{0.framework_dir}/Helpers/{0.product} Helper (Plugin).app'
-                .format(config),
-                '{}.helper.plugin'.format(uncustomized_bundle_id),
-                # Do not use |CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS|
-                # because library validation is incompatible with the
-                # disable-library-validation entitlement.
-                options=CodeSignOptions.RESTRICT | CodeSignOptions.KILL
-                | CodeSignOptions.HARDENED_RUNTIME,
-                entitlements='helper-plugin-entitlements.plist',
-                verify_options=verify_options),
         'helper-alerts':
             CodeSignedProduct(
                 '{0.framework_dir}/Helpers/{0.product} Helper (Alerts).app'

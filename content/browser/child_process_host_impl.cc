@@ -39,9 +39,7 @@
 #include "base/linux_util.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
-#include "base/feature_list.h"
 #include "content/browser/mac_helpers.h"
-#include "content/common/features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
@@ -78,14 +76,6 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
 #if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
 
-  // An emergency override switch to re-allow third-party plugins;
-  // TODO(https://crbug.com/461717105): remove this.
-  if (base::FeatureList::IsEnabled(
-          features::kBlockThirdPartyInProcessPlugins) &&
-      flags == CHILD_PLUGIN) {
-    flags = CHILD_NORMAL;
-  }
-
   if (flags != CHILD_NORMAL && base::apple::AmIBundled()) {
     // This is a specialized helper, with the |child_path| at
     // ../Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/
@@ -97,8 +87,6 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
       child_base_name += kMacHelperSuffix_renderer;
     } else if (flags == CHILD_GPU) {
       child_base_name += kMacHelperSuffix_gpu;
-    } else if (flags == CHILD_PLUGIN) {
-      child_base_name += kMacHelperSuffix_plugin;
     } else if (flags > CHILD_EMBEDDER_FIRST) {
       child_base_name +=
           GetContentClient()->browser()->GetChildProcessSuffix(flags);

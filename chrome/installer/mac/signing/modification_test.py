@@ -31,7 +31,6 @@ def plist_read(*args):
         },
         '/$W/helper-renderer-entitlements.plist': {},
         '/$W/helper-gpu-entitlements.plist': {},
-        '/$W/helper-plugin-entitlements.plist': {},
         '/$W/App Product Canary.app/Contents/Resources/test.signing.bundle_id.canary.manifest/Contents/Resources/test.signing.bundle_id.canary.manifest':
             {
                 'pfm_domain': bundle_id
@@ -101,14 +100,12 @@ class TestModification(unittest.TestCase):
                 'KSChannelID-full': '-full'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -137,14 +134,12 @@ class TestModification(unittest.TestCase):
                 'KSChannelID-full': 'arm64-full'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -171,14 +166,12 @@ class TestModification(unittest.TestCase):
                 'KSChannelID-full': '-full'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -204,14 +197,12 @@ class TestModification(unittest.TestCase):
                 'KSChannelID-full': 'dev-full'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -241,14 +232,12 @@ class TestModification(unittest.TestCase):
                 'KSChannelID-full': 'arm64-dev-full'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -275,14 +264,12 @@ class TestModification(unittest.TestCase):
                 'CrProductDirName': 'Farmland/Cows'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -309,14 +296,12 @@ class TestModification(unittest.TestCase):
                 'CFBundleSignature': 'Mooo'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -343,14 +328,12 @@ class TestModification(unittest.TestCase):
                 'KSBrandID': 'RAWR'
             }, '/$W/App Product.app/Contents/Info.plist', 'xml1')
 
-        self.assertEqual(4, kwargs['copy_files'].call_count)
+        self.assertEqual(3, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -385,14 +368,12 @@ class TestModification(unittest.TestCase):
             ),
         ])
 
-        self.assertEqual(8, kwargs['copy_files'].call_count)
+        self.assertEqual(7, kwargs['copy_files'].call_count)
         kwargs['copy_files'].assert_has_calls([
             mock.call('/$I/Product Packaging/app-entitlements.plist',
                       '/$W/app-entitlements.plist'),
             mock.call('/$I/Product Packaging/helper-gpu-entitlements.plist',
                       '/$W/helper-gpu-entitlements.plist'),
-            mock.call('/$I/Product Packaging/helper-plugin-entitlements.plist',
-                      '/$W/helper-plugin-entitlements.plist'),
             mock.call(
                 '/$I/Product Packaging/helper-renderer-entitlements.plist',
                 '/$W/helper-renderer-entitlements.plist'),
@@ -413,7 +394,7 @@ class TestModification(unittest.TestCase):
         kwargs['write_file'].assert_called_once_with(
             '/$W/App Product Canary.app/Contents/PkgInfo', 'APPLMooo')
 
-        self.assertEqual(8, kwargs['write_plist'].call_count)
+        self.assertEqual(7, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
             mock.call(
                 {
@@ -444,7 +425,6 @@ class TestModification(unittest.TestCase):
                         'test.signing.bundle_id.canary'
                 }, '/$W/app-entitlements.plist', 'xml1'),
             mock.call({}, '/$W/helper-gpu-entitlements.plist', 'xml1'),
-            mock.call({}, '/$W/helper-plugin-entitlements.plist', 'xml1'),
             mock.call({}, '/$W/helper-renderer-entitlements.plist', 'xml1'),
             mock.call({
                 'pfm_domain': 'test.signing.bundle_id.canary'
@@ -461,7 +441,7 @@ class TestModification(unittest.TestCase):
 
         modification.customize_distribution(self.paths, dist, config)
 
-        self.assertEqual(5, kwargs['write_plist'].call_count)
+        self.assertEqual(4, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
             mock.call(
                 {
@@ -479,8 +459,6 @@ class TestModification(unittest.TestCase):
             mock.call({'com.apple.security.get-task-allow': True},
                       '/$W/helper-gpu-entitlements.plist', 'xml1'),
             mock.call({'com.apple.security.get-task-allow': True},
-                      '/$W/helper-plugin-entitlements.plist', 'xml1'),
-            mock.call({'com.apple.security.get-task-allow': True},
                       '/$W/helper-renderer-entitlements.plist', 'xml1'),
         ])
 
@@ -496,7 +474,7 @@ class TestModification(unittest.TestCase):
 
         modification.customize_distribution(self.paths, dist, config)
 
-        self.assertEqual(8, kwargs['write_plist'].call_count)
+        self.assertEqual(7, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
             mock.call(
                 {
@@ -530,8 +508,6 @@ class TestModification(unittest.TestCase):
                 }, '/$W/app-entitlements.plist', 'xml1'),
             mock.call({'com.apple.security.get-task-allow': True},
                       '/$W/helper-gpu-entitlements.plist', 'xml1'),
-            mock.call({'com.apple.security.get-task-allow': True},
-                      '/$W/helper-plugin-entitlements.plist', 'xml1'),
             mock.call({'com.apple.security.get-task-allow': True},
                       '/$W/helper-renderer-entitlements.plist', 'xml1'),
             mock.call({

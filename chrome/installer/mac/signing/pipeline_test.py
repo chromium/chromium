@@ -295,9 +295,6 @@ class TestPipelineHelpers(unittest.TestCase):
                 '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Renderer).app'
             ),
             mock.call(
-                '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Plugin).app'
-            ),
-            mock.call(
                 '/$W/App Product.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
             ),
             mock.call(
@@ -324,9 +321,6 @@ class TestPipelineHelpers(unittest.TestCase):
             ),
             mock.call(
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Renderer).app'
-            ),
-            mock.call(
-                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Plugin).app'
             ),
             mock.call(
                 '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (GPU).app'
