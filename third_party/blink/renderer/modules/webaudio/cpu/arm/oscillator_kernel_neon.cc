@@ -39,7 +39,7 @@ ALWAYS_INLINE double WrapVirtualIndex(double virtual_index,
 
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,
-    float* dest_p,
+    base::span<float> destination,
     double virtual_read_index,
     float frequency,
     float rate_scale) const {
@@ -72,24 +72,24 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 
   // Temporary arrsys to hold the read indices so we can access them
   // individually to get the samples needed for interpolation.
-  uint32_t r0[4] __attribute__((aligned(16)));
-  uint32_t r1[4] __attribute__((aligned(16)));
+  alignas(16) std::array<uint32_t, 4> r0;
+  alignas(16) std::array<uint32_t, 4> r1;
 
   // Temporary arrays where we can gather up the wave data we need for
   // interpolation.  Align these for best efficiency on older CPUs where aligned
   // access is much faster than unaliged.  TODO(rtoy): Is there a faster way to
   // do this?
-  float sample1_lower[4] __attribute__((aligned(16)));
-  float sample2_lower[4] __attribute__((aligned(16)));
-  float sample1_higher[4] __attribute__((aligned(16)));
-  float sample2_higher[4] __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> sample1_lower;
+  alignas(16) std::array<float, 4> sample2_lower;
+  alignas(16) std::array<float, 4> sample1_higher;
+  alignas(16) std::array<float, 4> sample2_higher;
 
   // It's possible that adding the incr above exceeded the bounds, so wrap them
   // if needed.
   v_virt_index =
       WrapVirtualIndexVector(v_virt_index, v_wave_size, v_inv_wave_size);
 
-  int k = 0;
+  size_t k = 0;
   int n_loops = n / 4;
 
   for (int loop = 0; loop < n_loops; ++loop, k += 4) {
@@ -101,20 +101,20 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 
     // Extract the components of the indices so we can get the samples
     // associated with the lower and higher wave data.
-    vst1q_u32(r0, read_index_0);
-    vst1q_u32(r1, read_index_1);
+    vst1q_u32(r0.data(), read_index_0);
+    vst1q_u32(r1.data(), read_index_1);
 
     for (int m = 0; m < 4; ++m) {
-      UNSAFE_TODO(sample1_lower[m]) = lower_wave_data[UNSAFE_TODO(r0[m])];
-      UNSAFE_TODO(sample2_lower[m]) = lower_wave_data[UNSAFE_TODO(r1[m])];
-      UNSAFE_TODO(sample1_higher[m]) = higher_wave_data[UNSAFE_TODO(r0[m])];
-      UNSAFE_TODO(sample2_higher[m]) = higher_wave_data[UNSAFE_TODO(r1[m])];
+      sample1_lower[m] = lower_wave_data[r0[m]];
+      sample2_lower[m] = lower_wave_data[r1[m]];
+      sample1_higher[m] = higher_wave_data[r0[m]];
+      sample2_higher[m] = higher_wave_data[r1[m]];
     }
 
-    const float32x4_t s1_low = vld1q_f32(sample1_lower);
-    const float32x4_t s2_low = vld1q_f32(sample2_lower);
-    const float32x4_t s1_high = vld1q_f32(sample1_higher);
-    const float32x4_t s2_high = vld1q_f32(sample2_higher);
+    const float32x4_t s1_low = vld1q_f32(sample1_lower.data());
+    const float32x4_t s2_low = vld1q_f32(sample2_lower.data());
+    const float32x4_t s1_high = vld1q_f32(sample1_higher.data());
+    const float32x4_t s2_high = vld1q_f32(sample2_higher.data());
 
     const float32x4_t interpolation_factor =
         vsubq_f32(v_virt_index, vcvtq_f32_u32(read_index_0));
@@ -126,7 +126,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
         sample_higher,
         vmulq_f32(v_table_factor, vsubq_f32(sample_lower, sample_higher)));
 
-    UNSAFE_TODO(vst1q_f32(dest_p + k, sample));
+    vst1q_f32(destination.subspan(k, 4u).data(), sample);
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -146,7 +146,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 }
 
 double OscillatorHandler::ProcessARateVectorKernel(
-    float* destination,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<const float> phase_increments,
     unsigned periodic_wave_size,
@@ -195,40 +195,42 @@ double OscillatorHandler::ProcessARateVectorKernel(
   const uint32x4_t v_read1 = vandq_u32(vaddq_u32(v_read0, vdupq_n_u32(1)),
                                        vdupq_n_u32(read_index_mask));
 
-  float sample1_lower[4] __attribute__((aligned(16)));
-  float sample2_lower[4] __attribute__((aligned(16)));
-  float sample1_higher[4] __attribute__((aligned(16)));
-  float sample2_higher[4] __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> sample1_lower;
+  alignas(16) std::array<float, 4> sample2_lower;
+  alignas(16) std::array<float, 4> sample1_higher;
+  alignas(16) std::array<float, 4> sample2_higher;
 
-  uint32_t read0[4] __attribute__((aligned(16)));
-  uint32_t read1[4] __attribute__((aligned(16)));
+  alignas(16) std::array<uint32_t, 4> read0;
+  alignas(16) std::array<uint32_t, 4> read1;
 
-  vst1q_u32(read0, v_read0);
-  vst1q_u32(read1, v_read1);
+  vst1q_u32(read0.data(), v_read0);
+  vst1q_u32(read1.data(), v_read1);
 
   // Read the samples from the wave tables
   for (int m = 0; m < 4; ++m) {
-    UNSAFE_TODO(DCHECK_LT(read0[m], periodic_wave_size));
-    UNSAFE_TODO(DCHECK_LT(read1[m], periodic_wave_size));
+    DCHECK_LT(read0[m], periodic_wave_size);
+    DCHECK_LT(read1[m], periodic_wave_size);
 
-    UNSAFE_TODO(sample1_lower[m]) = lower_wave_data[m][UNSAFE_TODO(read0[m])];
-    UNSAFE_TODO(sample2_lower[m]) = lower_wave_data[m][UNSAFE_TODO(read1[m])];
-    UNSAFE_TODO(sample1_higher[m]) = higher_wave_data[m][UNSAFE_TODO(read0[m])];
-    UNSAFE_TODO(sample2_higher[m]) = higher_wave_data[m][UNSAFE_TODO(read1[m])];
+    sample1_lower[m] = lower_wave_data[m][read0[m]];
+    sample2_lower[m] = lower_wave_data[m][read1[m]];
+    sample1_higher[m] = higher_wave_data[m][read0[m]];
+    sample2_higher[m] = higher_wave_data[m][read1[m]];
   }
 
   // Compute factor for linear interpolation within a wave table.
   const float32x4_t v_factor = vsubq_f32(v_virt_index, vcvtq_f32_u32(v_read0));
 
   // Linearly interpolate between samples from the higher wave table.
-  const float32x4_t sample_higher = vmlaq_f32(
-      vld1q_f32(sample1_higher), v_factor,
-      vsubq_f32(vld1q_f32(sample2_higher), vld1q_f32(sample1_higher)));
+  const float32x4_t sample_higher =
+      vmlaq_f32(vld1q_f32(sample1_higher.data()), v_factor,
+                vsubq_f32(vld1q_f32(sample2_higher.data()),
+                          vld1q_f32(sample1_higher.data())));
 
   // Linearly interpolate between samples from the lower wave table.
   const float32x4_t sample_lower =
-      vmlaq_f32(vld1q_f32(sample1_lower), v_factor,
-                vsubq_f32(vld1q_f32(sample2_lower), vld1q_f32(sample1_lower)));
+      vmlaq_f32(vld1q_f32(sample1_lower.data()), v_factor,
+                vsubq_f32(vld1q_f32(sample2_lower.data()),
+                          vld1q_f32(sample1_lower.data())));
 
   // Linearly interpolate between wave tables to get the desired
   // output samples.
@@ -236,7 +238,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
       vmlaq_f32(sample_higher, vld1q_f32(table_interpolation_factor.data()),
                 vsubq_f32(sample_lower, sample_higher));
 
-  vst1q_f32(destination, sample);
+  vst1q_f32(destination.data(), sample);
 
   // Update the virtual_read_index appropriately and return it for the
   // next call.

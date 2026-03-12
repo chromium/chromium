@@ -354,7 +354,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 // virtual_read_index.  The scalar version will do the necessary processing.
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,
-    float* dest_p,
+    base::span<float> destination,
     double virtual_read_index,
     float frequency,
     float rate_scale) const {
@@ -365,7 +365,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 
 #if !(defined(ARCH_CPU_X86_FAMILY) || defined(CPU_ARM_NEON))
 double OscillatorHandler::ProcessARateVectorKernel(
-    float* dest_p,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<const float> phase_increments,
     unsigned periodic_wave_size,
@@ -409,7 +409,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
     float sample = sample_higher + table_interpolation_factor[m] *
                                        (sample_lower - sample_higher);
 
-    dest_p[m] = sample;
+    destination[m] = sample;
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -424,7 +424,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
 
 double OscillatorHandler::ProcessKRateScalar(int start,
                                              int n,
-                                             float* dest_p,
+                                             base::span<float> destination,
                                              double virtual_read_index,
                                              float frequency,
                                              float rate_scale) const {
@@ -467,7 +467,7 @@ double OscillatorHandler::ProcessKRateScalar(int start,
     const float sample = sample_higher + table_interpolation_factor *
                                              (sample_lower - sample_higher);
 
-    UNSAFE_TODO(dest_p[k]) = sample;
+    destination[k] = sample;
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -480,7 +480,7 @@ double OscillatorHandler::ProcessKRateScalar(int start,
 }
 
 double OscillatorHandler::ProcessKRate(int n,
-                                       float* dest_p,
+                                       base::span<float> destination,
                                        double virtual_read_index) const {
   const unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
   const double inv_periodic_wave_size = 1.0 / periodic_wave_size;
@@ -505,13 +505,13 @@ double OscillatorHandler::ProcessKRate(int n,
     double v_index = virtual_read_index;
 
     std::tie(k, v_index) =
-        ProcessKRateVector(n, dest_p, v_index, frequency, rate_scale);
+        ProcessKRateVector(n, destination, v_index, frequency, rate_scale);
 
     if (k < n) {
       // In typical cases, this won't be run because the number of frames is 128
       // so the vector version will process all the samples.
       v_index =
-          ProcessKRateScalar(k, n, dest_p, v_index, frequency, rate_scale);
+          ProcessKRateScalar(k, n, destination, v_index, frequency, rate_scale);
     }
 
     // Recompute to reduce round-off introduced when processing the samples
@@ -525,7 +525,7 @@ double OscillatorHandler::ProcessKRate(int n,
           virtual_read_index, fabs(incr), read_index_mask,
           table_interpolation_factor, lower_wave_data, higher_wave_data);
 
-      *UNSAFE_TODO(dest_p++) = sample;
+      destination[k] = sample;
 
       // Increment virtual read index and wrap virtualReadIndex into the range
       // 0 -> periodicWaveSize.
@@ -540,7 +540,7 @@ double OscillatorHandler::ProcessKRate(int n,
 
 std::tuple<int, double> OscillatorHandler::ProcessARateVector(
     int n,
-    float* destination,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<const float> phase_increments) const {
   float rate_scale = periodic_wave_->RateScale();
@@ -576,7 +576,7 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
     // to call DoInterpolation to handle it correctly.
     if (is_big_increment) {
       virtual_read_index = ProcessARateVectorKernel(
-          UNSAFE_TODO(destination + k), virtual_read_index,
+          destination.subspan(k), virtual_read_index,
           phase_increments.subspan(k), periodic_wave_size, lower_wave_data,
           higher_wave_data, table_interpolation_factor);
     } else {
@@ -586,7 +586,7 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
                             read_index_mask, table_interpolation_factor[m],
                             lower_wave_data[m], higher_wave_data[m]);
 
-        UNSAFE_TODO(destination[k + m]) = sample;
+        destination[k + m] = sample;
 
         // Increment virtual read index and wrap virtualReadIndex into the range
         // 0 -> periodicWaveSize.
@@ -604,7 +604,7 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
 double OscillatorHandler::ProcessARateScalar(
     int k,
     int n,
-    float* destination,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<const float> phase_increments) const {
   float rate_scale = periodic_wave_->RateScale();
@@ -629,7 +629,7 @@ double OscillatorHandler::ProcessARateScalar(
                                    read_index_mask, table_interpolation_factor,
                                    lower_wave_data, higher_wave_data);
 
-    UNSAFE_TODO(destination[m]) = sample;
+    destination[m] = sample;
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -643,7 +643,7 @@ double OscillatorHandler::ProcessARateScalar(
 
 double OscillatorHandler::ProcessARate(
     int n,
-    float* destination,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<float> phase_increments) const {
   int frames_processed = 0;
@@ -704,8 +704,6 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
 
   unsigned periodic_wave_size = periodic_wave_->PeriodicWaveSize();
 
-  float* dest_p = output_bus->Channel(0)->MutableData();
-
   DCHECK_LE(quantum_frame_offset, frames_to_process);
 
   // We keep virtualReadIndex double-precision since we're accumulating values.
@@ -734,15 +732,15 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   auto phase_increments = phase_increments_.as_span();
 
   // Start rendering at the correct offset.
-  UNSAFE_TODO(dest_p += quantum_frame_offset);
-  int n = non_silent_frames_to_process;
+  size_t destination_index = quantum_frame_offset;
+  unsigned n = non_silent_frames_to_process;
 
   // If startFrameOffset is not 0, that means the oscillator doesn't actually
   // start at quantumFrameOffset, but just past that time.  Adjust destP and n
   // to reflect that, and adjust virtualReadIndex to start the value at
   // startFrameOffset.
   if (start_frame_offset > 0) {
-    UNSAFE_TODO(++dest_p);
+    ++destination_index;
     --n;
     virtual_read_index += (1 - start_frame_offset) * frequency * rate_scale;
     DCHECK(virtual_read_index < periodic_wave_size);
@@ -751,10 +749,13 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   }
 
   if (has_sample_accurate_values) {
-    virtual_read_index =
-        ProcessARate(n, dest_p, virtual_read_index, phase_increments);
+    virtual_read_index = ProcessARate(
+        n, output_bus->Channel(0)->MutableSpan().subspan(destination_index, n),
+        virtual_read_index, phase_increments);
   } else {
-    virtual_read_index = ProcessKRate(n, dest_p, virtual_read_index);
+    virtual_read_index = ProcessKRate(
+        n, output_bus->Channel(0)->MutableSpan().subspan(destination_index, n),
+        virtual_read_index);
   }
 
   virtual_read_index_ = virtual_read_index;

@@ -74,13 +74,15 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   base::WeakPtr<AudioScheduledSourceHandler> AsWeakPtr() override;
 
   // Compute the output for k-rate AudioParams
-  double ProcessKRate(int n, float* dest_p, double virtual_read_index) const;
+  double ProcessKRate(int n,
+                      base::span<float> destination,
+                      double virtual_read_index) const;
 
   // Scalar version for the main loop in ProcessKRate().  Returns the updated
   // virtual_read_index.
   double ProcessKRateScalar(int start_index,
                             int n,
-                            float* dest_p,
+                            base::span<float> destination,
                             double virtual_read_index,
                             float frequency,
                             float rate_scale) const;
@@ -89,14 +91,14 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   // Returns the number of elements processed and the updated
   // virtual_read_index.
   std::tuple<int, double> ProcessKRateVector(int n,
-                                             float* dest_p,
+                                             base::span<float> destination,
                                              double virtual_read_index,
                                              float frequency,
                                              float rate_scale) const;
 
   // Compute the output for a-rate AudioParams
   double ProcessARate(int n,
-                      float* dest_p,
+                      base::span<float> destination,
                       double virtual_read_index,
                       base::span<float> phase_increments) const;
 
@@ -117,7 +119,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   // Returns the updated virtual_read_index.
   double ProcessARateScalar(int k,
                             int n,
-                            float* destination,
+                            base::span<float> destination,
                             double virtual_read_index,
                             base::span<const float> phase_increments) const;
 
@@ -125,7 +127,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   // and the update virtual_read_index.
   std::tuple<int, double> ProcessARateVector(
       int n,
-      float* destination,
+      base::span<float> destination,
       double virtual_read_index,
       base::span<const float> phase_increments) const;
 
@@ -149,7 +151,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
   //
   // Returns the updated virtual_read_index
   double ProcessARateVectorKernel(
-      float* destination,
+      base::span<float> destination,
       double virtual_read_index,
       base::span<const float> phase_increments,
       unsigned periodic_wave_size,

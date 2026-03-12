@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
@@ -82,7 +83,7 @@ __m128d WrapVirtualIndexVectorPd(__m128d x,
 
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,
-    float* dest_p,
+    base::span<float> destination,
     double virtual_read_index,
     float frequency,
     float rate_scale) const {
@@ -126,12 +127,12 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
   // Temporary arrays where we can gather up the wave data we need for
   // interpolation.  Align these for best efficiency on older CPUs where aligned
   // access is much faster than unaliged.
-  std::array<float, 4> sample1_lower __attribute__((aligned(16)));
-  std::array<float, 4> sample2_lower __attribute__((aligned(16)));
-  std::array<float, 4> sample1_higher __attribute__((aligned(16)));
-  std::array<float, 4> sample2_higher __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> sample1_lower;
+  alignas(16) std::array<float, 4> sample2_lower;
+  alignas(16) std::array<float, 4> sample1_higher;
+  alignas(16) std::array<float, 4> sample2_higher;
 
-  int k = 0;
+  size_t k = 0;
   int n_loops = n / 4;
 
   for (int loop = 0; loop < n_loops; ++loop, k += 4) {
@@ -144,16 +145,18 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 
     // Extract the components of the indices so we can get the samples
     // associated with the lower and higher wave data.
-    const uint32_t* r0 = reinterpret_cast<const uint32_t*>(&read_index_0);
-    const uint32_t* r1 = reinterpret_cast<const uint32_t*>(&read_index_1);
+    const std::array<uint32_t, 4> r0 =
+        base::bit_cast<std::array<uint32_t, 4>>(read_index_0);
+    const std::array<uint32_t, 4> r1 =
+        base::bit_cast<std::array<uint32_t, 4>>(read_index_1);
 
     // Get the samples from the wave tables and save them in work arrays so we
     // can load them into simd registers.
     for (int m = 0; m < 4; ++m) {
-      sample1_lower[m] = lower_wave_data[UNSAFE_TODO(r0[m])];
-      sample2_lower[m] = lower_wave_data[UNSAFE_TODO(r1[m])];
-      sample1_higher[m] = higher_wave_data[UNSAFE_TODO(r0[m])];
-      sample2_higher[m] = higher_wave_data[UNSAFE_TODO(r1[m])];
+      sample1_lower[m] = lower_wave_data[r0[m]];
+      sample2_lower[m] = lower_wave_data[r1[m]];
+      sample1_higher[m] = higher_wave_data[r0[m]];
+      sample2_higher[m] = higher_wave_data[r1[m]];
     }
 
     const __m128 s1_low = _mm_load_ps(sample1_lower.data());
@@ -175,8 +178,8 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
         sample_higher,
         _mm_mul_ps(v_table_factor, _mm_sub_ps(sample_lower, sample_higher)));
 
-    // WARNING: dest_p may not be aligned!
-    _mm_storeu_ps(UNSAFE_TODO(dest_p + k), sample);
+    // WARNING: destination may not be aligned!
+    _mm_storeu_ps(destination.subspan(k, 4u).data(), sample);
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -195,7 +198,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 }
 
 double OscillatorHandler::ProcessARateVectorKernel(
-    float* dest_p,
+    base::span<float> destination,
     double virtual_read_index,
     base::span<const float> phase_increments,
     unsigned periodic_wave_size,
@@ -247,22 +250,24 @@ double OscillatorHandler::ProcessARateVectorKernel(
     v_read1 = _mm_and_si128(v_read1, v_mask);
   }
 
-  std::array<float, 4> sample1_lower __attribute__((aligned(16)));
-  std::array<float, 4> sample2_lower __attribute__((aligned(16)));
-  std::array<float, 4> sample1_higher __attribute__((aligned(16)));
-  std::array<float, 4> sample2_higher __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> sample1_lower;
+  alignas(16) std::array<float, 4> sample2_lower;
+  alignas(16) std::array<float, 4> sample1_higher;
+  alignas(16) std::array<float, 4> sample2_higher;
 
-  const uint32_t* read0 = reinterpret_cast<const uint32_t*>(&v_read0);
-  const uint32_t* read1 = reinterpret_cast<const uint32_t*>(&v_read1);
+  const std::array<uint32_t, 4> read0 =
+      base::bit_cast<std::array<uint32_t, 4>>(v_read0);
+  const std::array<uint32_t, 4> read1 =
+      base::bit_cast<std::array<uint32_t, 4>>(v_read1);
 
   for (int m = 0; m < 4; ++m) {
-    UNSAFE_TODO(DCHECK_LT(read0[m], periodic_wave_size));
-    UNSAFE_TODO(DCHECK_LT(read1[m], periodic_wave_size));
+    DCHECK_LT(read0[m], periodic_wave_size);
+    DCHECK_LT(read1[m], periodic_wave_size);
 
-    sample1_lower[m] = lower_wave_data[m][UNSAFE_TODO(read0[m])];
-    sample2_lower[m] = lower_wave_data[m][UNSAFE_TODO(read1[m])];
-    sample1_higher[m] = higher_wave_data[m][UNSAFE_TODO(read0[m])];
-    sample2_higher[m] = higher_wave_data[m][UNSAFE_TODO(read1[m])];
+    sample1_lower[m] = lower_wave_data[m][read0[m]];
+    sample2_lower[m] = lower_wave_data[m][read1[m]];
+    sample1_higher[m] = higher_wave_data[m][read0[m]];
+    sample2_higher[m] = higher_wave_data[m][read1[m]];
   }
 
   const __m128 v_factor =
@@ -281,7 +286,7 @@ double OscillatorHandler::ProcessARateVectorKernel(
       sample_higher, _mm_mul_ps(_mm_load_ps(table_interpolation_factor.data()),
                                 _mm_sub_ps(sample_lower, sample_higher)));
 
-  _mm_storeu_ps(dest_p, sample);
+  _mm_storeu_ps(destination.first(4u).data(), sample);
 
   virtual_read_index += incr_sum[3];
   virtual_read_index -=
