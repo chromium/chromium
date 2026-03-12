@@ -101,21 +101,23 @@ struct FlexItem {
   const float flex_grow;
   const float flex_shrink;
 
-  // `base_content_size` include the scrollbar, but not border/padding.
+  // Base size including the scrollbar, but not border/padding.
   const LayoutUnit base_content_size;
+
   const LayoutUnit hypothetical_content_size;
 
-  // `main_axis_min_max_sizes` is the resolved min/max size properties, and also
-  // does not include border/padding.
+  // Resolved min/max size properties, not including border/padding.
   const MinMaxSizes main_axis_min_max_sizes;
+
   const LayoutUnit main_axis_border_padding;
 
   const std::optional<LayoutUnit> max_content_contribution;
 
-  // `initial_margins` are the margins with auto-margins applied.
-  // `initial_scrollbars` is the scrollbar state at the beginning of running
-  // flex layout, so it can be compared to the final state.
+  // Margins without auto-margins applied.
   const PhysicalBoxStrut initial_margins;
+
+  // Scrollbar state at the beginning of running flex layout, so it can be
+  // compared to the final state.
   const BoxStrut initial_scrollbars;
 
   const uint8_t main_axis_auto_margin_count;
