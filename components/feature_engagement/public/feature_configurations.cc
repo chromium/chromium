@@ -1053,6 +1053,42 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 3), 90, 360));
     return config;
   }
+
+  if (kIPHAdaptiveButtonInTopToolbarCustomizationGlicFeature.name ==
+      feature->name) {
+    // A config that allows measuring the usage of non-Glic buttons in the
+    // adaptive toolbar.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.trigger = EventConfig("adaptive_toolbar_glic_iph_trigger",
+                                 Comparator(ANY, 0), 90, 360);
+    config.used = EventConfig("adaptive_toolbar_customization_glic_clicked",
+                              Comparator(ANY, 0), 90, 360);
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_new_tab_opened",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_open_in_browser_opened",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_share_opened",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_voice_search_opened",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_translate_opened",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_read_aloud_clicked",
+                    Comparator(ANY, 0), 90, 360));
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_customization_add_to_bookmarks_opened",
+                    Comparator(ANY, 0), 90, 360));
+    return config;
+  }
   if (kIPHMenuAddToGroup.name == feature->name) {
     // Allows an IPH for the main app menu 'Add to Group' entry:
     // * Only once per year.

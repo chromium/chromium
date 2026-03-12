@@ -27,6 +27,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationTranslateFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
+    &kIPHAdaptiveButtonInTopToolbarCustomizationGlicFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature,
     &kIPHPageSummaryWebMenuFeature,

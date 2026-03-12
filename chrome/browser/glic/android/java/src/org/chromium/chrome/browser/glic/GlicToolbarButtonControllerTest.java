@@ -16,21 +16,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.components.feature_engagement.Tracker;
 
-/** Unit tests for {@link GlicToolbarButtonController} */
+/** Unit tests for {@link GlicToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class GlicToolbarButtonControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Tab mTab;
     @Mock private Runnable mToggleGlicCallback;
+    @Mock private Tracker mTracker;
 
     private Context mContext;
 
@@ -42,7 +42,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testButtonData() {
         GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(mContext, () -> mTab, mToggleGlicCallback);
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
         ButtonData buttonData = controller.get(mTab);
 
         Assert.assertTrue(buttonData.canShow());
@@ -56,7 +57,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testOnClick() {
         GlicToolbarButtonController controller =
-                new GlicToolbarButtonController(mContext, () -> mTab, mToggleGlicCallback);
+                new GlicToolbarButtonController(
+                        mContext, () -> mTab, mToggleGlicCallback, () -> mTracker);
 
         controller.onClick(null);
 

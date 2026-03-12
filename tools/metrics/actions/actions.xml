@@ -184,6 +184,8 @@ should be able to be added at any place in this file.
   <variant name="_AdaptiveButtonInTopToolbarCustomization_AddToBookmarks"
       summary="For AdaptiveButtonInTopToolbarCustomization add to bookmarks
                feature."/>
+  <variant name="_AdaptiveButtonInTopToolbarCustomization_Glic"
+      summary="For AdaptiveButtonInTopToolbarCustomization glic feature"/>
   <variant name="_AdaptiveButtonInTopToolbarCustomization_NewTab"
       summary="For AdaptiveButtonInTopToolbarCustomization new tab feature."/>
   <variant name="_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf"

@@ -129,7 +129,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             controller.addButtonVariant(
                     AdaptiveToolbarButtonVariant.GLIC,
                     new GlicToolbarButtonController(
-                            mContext, mActivityTabProvider, mToggleGlicCallback));
+                            mContext, mActivityTabProvider, mToggleGlicCallback, trackerSupplier));
         }
 
         mRegisterVoiceSearchRunnable.run();
