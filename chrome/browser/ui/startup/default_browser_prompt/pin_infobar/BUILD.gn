@@ -64,6 +64,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "pin_infobar_controller_crash_unittest.cc",
     "pin_infobar_controller_unittest.cc",
     "pin_infobar_delegate_unittest.cc",
     "pin_infobar_prefs_unittest.cc",
