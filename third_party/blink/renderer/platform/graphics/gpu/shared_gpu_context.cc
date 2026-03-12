@@ -444,11 +444,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_APPLE)
-  if (IsDelegatedCompositingEnabled()) {
-    return true;
-  }
-#elif BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
@@ -457,6 +453,11 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
   }
 #endif
 
+  // NOTE: crbug.com/41435781 would need to be resolved in order to support
+  // low-latency usage on Mac (currently setting the desynchronized attribute
+  // on a canvas is a no-op on Mac). If/once that bug is resolved, determine
+  // whether this method can then return true on Apple if
+  // IsDelegatedCompositingEnabled() holds.
   return base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
 }
 
