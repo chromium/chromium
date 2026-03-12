@@ -223,4 +223,12 @@ SharedImageBackingType GLTextureImageBackingFactory::GetBackingType() {
   return SharedImageBackingType::kGLTexture;
 }
 
+bool GLTextureImageBackingFactory::IsSupportedForAccessStream(
+    SharedImageAccessStream stream,
+    const AccessParams* params) const {
+  AccessParams default_params;
+  return GLTextureImageBacking::CheckSupportForAccessStream(
+      stream, params ? *params : default_params);
+}
+
 }  // namespace gpu

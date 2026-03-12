@@ -93,6 +93,12 @@ bool SharedImageBackingFactory::CanCreateSharedImage(
                      gr_context_type, pixel_data);
 }
 
+bool SharedImageBackingFactory::IsSupportedForAccessStream(
+    SharedImageAccessStream stream,
+    const AccessParams* params) const {
+  return true;
+}
+
 void SharedImageBackingFactory::InvalidateWeakPtrsForTesting() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }

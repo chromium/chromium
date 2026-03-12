@@ -369,8 +369,10 @@ bool SharedImageFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     std::optional<SharedImagePoolId> pool_id) {
-  auto* factory = GetFactoryByUsage(usage, format, size,
-                                    /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+  auto* factory =
+      GetFactoryByUsage(usage, format, size,
+                        /*pixel_data=*/{}, gfx::EMPTY_BUFFER,
+                        /*stream=*/std::nullopt, /*params=*/nullptr);
   if (!factory) {
     LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, size, debug_label);
     return false;
@@ -496,7 +498,9 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 
   if (native_buffer_supported) {
     auto* factory = GetFactoryByUsage(usage, format, size,
-                                      /*pixel_data=*/{}, GetNativeBufferType());
+                                      /*pixel_data=*/{}, GetNativeBufferType(),
+                                      /*stream=*/std::nullopt,
+                                      /*params=*/nullptr);
     if (!factory) {
       LogGetFactoryFailed(usage, format, GetNativeBufferType(), size,
                           debug_label);
@@ -529,7 +533,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       }
       auto* factory =
           GetFactoryByUsage(usage, format, size,
-                            /*pixel_data=*/{}, gfx::SHARED_MEMORY_BUFFER);
+                            /*pixel_data=*/{}, gfx::SHARED_MEMORY_BUFFER,
+                            /*stream=*/std::nullopt, /*params=*/nullptr);
 
       bool use_compound = false;
       if (!factory && !IsSharedBetweenThreads(usage)) {
@@ -585,7 +590,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
 
   SharedImageBackingFactory* const factory =
-      GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER);
+      GetFactoryByUsage(usage, format, size, data, gfx::EMPTY_BUFFER,
+                        /*stream=*/std::nullopt, /*params=*/nullptr);
   if (!factory) {
     LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, size, debug_label);
     return false;
@@ -633,7 +639,9 @@ bool SharedImageFactory::CreateSharedImage(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   if (!factory) {
-    factory = GetFactoryByUsage(usage, format, size, {}, gmb_type);
+    factory = GetFactoryByUsage(usage, format, size, /*pixel_data=*/{},
+                                gmb_type, /*stream=*/std::nullopt,
+                                /*params=*/nullptr);
   }
   if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER &&
       !IsSharedBetweenThreads(usage)) {
@@ -974,7 +982,9 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     viz::SharedImageFormat format,
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
-    gfx::GpuMemoryBufferType gmb_type) {
+    gfx::GpuMemoryBufferType gmb_type,
+    std::optional<SharedImageAccessStream> stream,
+    const AccessParams* params) {
   if (backing_factory_for_testing_)
     return backing_factory_for_testing_;
 
@@ -983,6 +993,13 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     if (factory->CanCreateSharedImage(SharedImageUsageSet(usage), format, size,
                                       share_between_threads, gmb_type,
                                       gr_context_type_, pixel_data)) {
+      // If a specific stream is being requested (for dynamic allocation),
+      // perform an additional check using the factory's
+      // `IsSupportedForAccessStream`.
+      if (stream.has_value() &&
+          !factory->IsSupportedForAccessStream(*stream, params)) {
+        continue;
+      }
       return factory.get();
     }
   }

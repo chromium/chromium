@@ -39,6 +39,8 @@ class GPU_GLES2_EXPORT DawnImageBackingFactory
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
   SharedImageBackingType GetBackingType() override;
+  bool IsSupportedForAccessStream(SharedImageAccessStream stream,
+                                  const AccessParams* params) const override;
 };
 
 }  // namespace gpu

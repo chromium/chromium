@@ -37,6 +37,10 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       gl::ProgressReporter* progress_reporter,
       bool framebuffer_attachment_angle);
 
+  // Determines if access for a given stream and parameters is supported.
+  static bool CheckSupportForAccessStream(SharedImageAccessStream stream,
+                                          const AccessParams& params);
+
  private:
   // SharedImageBacking:
   bool SupportsAccess(SharedImageAccessStream stream,

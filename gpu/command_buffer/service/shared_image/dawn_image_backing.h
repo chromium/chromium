@@ -29,6 +29,11 @@ class GPU_GLES2_EXPORT DawnImageBacking : public SharedImageBacking {
 
   void InitializeForTesting(const wgpu::Device& device);
 
+  // Determines if access for a given stream and parameters is supported.
+  static bool CheckSupportForAccessStream(SharedImageAccessStream stream,
+                                          const AccessParams& params,
+                                          const wgpu::Device& backing_device);
+
  private:
   // SharedImageBacking:
   bool SupportsAccess(SharedImageAccessStream stream,

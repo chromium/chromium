@@ -18,7 +18,6 @@
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -295,8 +294,9 @@ GLTextureImageBacking::~GLTextureImageBacking() {
   }
 }
 
-bool GLTextureImageBacking::SupportsAccess(SharedImageAccessStream stream,
-                                           const AccessParams& params) const {
+bool GLTextureImageBacking::CheckSupportForAccessStream(
+    SharedImageAccessStream stream,
+    const AccessParams& params) {
   // `params.context_state` is not always available for all access streams. In
   // such cases, we default to allowing access, assuming the context is
   // compatible. When a context is provided, we explicitly check if it's a GL
@@ -315,6 +315,11 @@ bool GLTextureImageBacking::SupportsAccess(SharedImageAccessStream stream,
     return false;
   }
   return true;
+}
+
+bool GLTextureImageBacking::SupportsAccess(SharedImageAccessStream stream,
+                                           const AccessParams& params) const {
+  return CheckSupportForAccessStream(stream, params);
 }
 
 SharedImageBackingType GLTextureImageBacking::GetType() const {

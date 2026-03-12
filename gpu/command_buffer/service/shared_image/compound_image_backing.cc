@@ -735,7 +735,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
   auto* gpu_backing_factory = shared_image_factory->GetFactoryByUsage(
       GetGpuSharedImageUsage(SharedImageUsageSet(usage)), format, size,
-      /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+      /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
+      /*params=*/nullptr);
   if (!gpu_backing_factory) {
     return nullptr;
   }
@@ -775,7 +776,8 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
 
   auto* gpu_backing_factory = shared_image_factory->GetFactoryByUsage(
       GetGpuSharedImageUsage(SharedImageUsageSet(usage)), format, size,
-      /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+      /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
+      /*params=*/nullptr);
   if (!gpu_backing_factory) {
     return nullptr;
   }
@@ -1637,7 +1639,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     SharedImageUsageSet usage = GetUsageFromAccessStream(stream);
     auto* gpu_backing_factory = shared_image_factory_->GetFactoryByUsage(
         usage, format(), size(),
-        /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
+        /*pixel_data=*/{}, gfx::EMPTY_BUFFER, stream, &params);
 
     if (gpu_backing_factory) {
       ElementHolder element;

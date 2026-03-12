@@ -105,6 +105,11 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                             GrContextType gr_context_type,
                             base::span<const uint8_t> pixel_data);
 
+  // Returns true if the backing created by this factory will support the given
+  // access stream.
+  virtual bool IsSupportedForAccessStream(SharedImageAccessStream stream,
+                                          const AccessParams* params) const;
+
   // Return BackingType of the implementation. This value isn't guaranteed to
   // be precise, use it for logging/tracing only.
   virtual SharedImageBackingType GetBackingType() = 0;

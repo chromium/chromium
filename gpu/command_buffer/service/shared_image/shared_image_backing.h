@@ -85,6 +85,8 @@ enum class SharedImageAccessStream;
 // can support a given access request.
 struct AccessParams {
   AccessParams();
+  AccessParams(const AccessParams&);
+  AccessParams& operator=(const AccessParams&);
   ~AccessParams();
 
   scoped_refptr<SharedContextState> context_state = nullptr;

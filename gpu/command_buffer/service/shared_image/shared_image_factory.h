@@ -177,12 +177,19 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   SharedImageRepresentationFactoryRef* GetFactoryRef(
       const Mailbox& mailbox) const;
 
+  // Returns the first factory that can create a shared image with the given
+  // params. `stream` and `params` are optional and are used to further
+  // filter the factories based on the access stream requirements. This is
+  // currently used for dynamic allocation of backings for
+  // CompoundImageBacking.
   SharedImageBackingFactory* GetFactoryByUsage(
       SharedImageUsageSet usage,
       viz::SharedImageFormat format,
       const gfx::Size& size,
       base::span<const uint8_t> pixel_data,
-      gfx::GpuMemoryBufferType gmb_type);
+      gfx::GpuMemoryBufferType gmb_type,
+      std::optional<SharedImageAccessStream> stream,
+      const AccessParams* params);
   void LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                            viz::SharedImageFormat format,
                            gfx::GpuMemoryBufferType gmb_type,
