@@ -350,7 +350,7 @@ class LensOverlayQueryController {
     kClusterInfoExpired = 6,
     // Permissions have not yet been granted, and a new query flow needs to be
     // started after they are granted.
-    kWaitingForPermissions = 6,
+    kWaitingForPermissions = 7,
   };
 
   // Data class for constructing a fetch request to the Lens servers.
