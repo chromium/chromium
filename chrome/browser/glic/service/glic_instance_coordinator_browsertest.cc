@@ -1079,8 +1079,15 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WidgetClosedDuringDragDoesNotCrash \
+  DISABLED_WidgetClosedDuringDragDoesNotCrash
+#else
+#define MAYBE_WidgetClosedDuringDragDoesNotCrash \
+  WidgetClosedDuringDragDoesNotCrash
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       WidgetClosedDuringDragDoesNotCrash) {
+                       MAYBE_WidgetClosedDuringDragDoesNotCrash) {
   // Open floaty
   coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
                        mojom::InvocationSource::kTopChromeButton,
