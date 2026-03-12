@@ -619,6 +619,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         verify(mMultiInstanceManager)
                 .moveTabGroupToOtherWindow(
                         any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     @Test
@@ -676,6 +677,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         verify(mMultiInstanceManager, times(1))
                 .moveTabGroupToOtherWindow(
                         any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     @Test
@@ -697,6 +699,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         eq(INSTANCE_ID_2),
                         any(TabGroupMetadata.class),
                         eq(TabList.INVALID_TAB_INDEX));
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     private List<Tab> setUpTabGroupModelFilter() {

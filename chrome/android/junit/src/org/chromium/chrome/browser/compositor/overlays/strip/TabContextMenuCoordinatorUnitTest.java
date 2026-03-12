@@ -1400,6 +1400,7 @@ public class TabContextMenuCoordinatorUnitTest {
         verify(mMultiInstanceManager)
                 .moveTabsToOtherWindow(
                         Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     @Test
@@ -1430,6 +1431,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         Collections.singletonList(mTabOutsideOfGroup),
                         /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
                         /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 
     @Test

@@ -500,6 +500,18 @@ public abstract class TabOverflowMenuCoordinator<T>
                 .build();
     }
 
+    /**
+     * Runs a move action and cleans up the source window if it becomes empty.
+     *
+     * @param multiInstanceManager The {@link MultiInstanceManager}.
+     * @param moveAction The action to perform the move.
+     */
+    protected static void moveAndCleanupSource(
+            MultiInstanceManager multiInstanceManager, Runnable moveAction) {
+        moveAction.run();
+        multiInstanceManager.closeChromeWindowIfEmpty(multiInstanceManager.getCurrentInstanceId());
+    }
+
     /** Creates a new window and moves item with ID {@param id} to it. */
     @RequiresNonNull("mMultiInstanceManager")
     protected void moveToNewWindow(T id) {}

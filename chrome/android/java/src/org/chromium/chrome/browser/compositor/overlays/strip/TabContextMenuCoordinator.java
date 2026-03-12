@@ -252,7 +252,11 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         .getTabUngrouper()
                         .ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ true);
             } else if (menuId == R.id.move_to_other_window_menu_id) {
-                multiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
+                moveAndCleanupSource(
+                        multiInstanceManager,
+                        () ->
+                                multiInstanceManager.moveTabsToOtherWindow(
+                                        tabs, NewWindowAppSource.MENU));
             } else if (menuId == R.id.share_tab) {
                 assert tabs.size() == 1 : "Share is only available for single tab selection.";
                 ShareDelegate shareDelegate = shareDelegateSupplier.get();
@@ -786,8 +790,12 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
-        assumeNonNull(mMultiInstanceManager)
-                .moveTabsToNewWindow(tabs, /* finalizeCallback= */ null, NewWindowAppSource.MENU);
+        MultiInstanceManager multiInstanceManager = assumeNonNull(mMultiInstanceManager);
+        moveAndCleanupSource(
+                multiInstanceManager,
+                () ->
+                        multiInstanceManager.moveTabsToNewWindow(
+                                tabs, /* finalizeCallback= */ null, NewWindowAppSource.MENU));
     }
 
     @Override
@@ -799,12 +807,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
-        assumeNonNull(mMultiInstanceManager)
-                .moveTabsToWindowByIdChecked(
-                        instanceInfo.instanceId,
-                        tabs,
-                        /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+        MultiInstanceManager multiInstanceManager = assumeNonNull(mMultiInstanceManager);
+        moveAndCleanupSource(
+                multiInstanceManager,
+                () ->
+                        multiInstanceManager.moveTabsToWindowByIdChecked(
+                                instanceInfo.instanceId,
+                                tabs,
+                                /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
+                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
     }
 
     private List<ListItem> createReorderItems(AnchorInfo anchorInfo, boolean isIncognito) {

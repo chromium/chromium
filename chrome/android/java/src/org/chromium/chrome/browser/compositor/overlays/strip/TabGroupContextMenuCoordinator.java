@@ -268,8 +268,11 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                                 assumeNonNull(tabModel.getTabAt(tabModel.index())).getId(),
                                 TabShareUtils.isCollaborationIdValid(collaborationId));
                 if (tabGroupMetadata != null) {
-                    multiInstanceManager.moveTabGroupToOtherWindow(
-                            tabGroupMetadata, NewWindowAppSource.MENU);
+                    moveAndCleanupSource(
+                            multiInstanceManager,
+                            () ->
+                                    multiInstanceManager.moveTabGroupToOtherWindow(
+                                            tabGroupMetadata, NewWindowAppSource.MENU));
                 }
             } else if (menuId == R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
@@ -536,7 +539,11 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         @Nullable TabGroupMetadata tabGroupMetadata = getTabGroupMetadata(groupId);
         if (tabGroupMetadata == null) return;
         RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToNewWindow");
-        mMultiInstanceManager.moveTabGroupToNewWindow(tabGroupMetadata, NewWindowAppSource.MENU);
+        moveAndCleanupSource(
+                mMultiInstanceManager,
+                () ->
+                        mMultiInstanceManager.moveTabGroupToNewWindow(
+                                tabGroupMetadata, NewWindowAppSource.MENU));
     }
 
     @Override
@@ -545,8 +552,13 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         @Nullable TabGroupMetadata tabGroupMetadata = getTabGroupMetadata(groupId);
         if (tabGroupMetadata == null) return;
         RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToAnotherWindow");
-        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                instanceInfo.instanceId, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
+        moveAndCleanupSource(
+                mMultiInstanceManager,
+                () ->
+                        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                                instanceInfo.instanceId,
+                                tabGroupMetadata,
+                                TabList.INVALID_TAB_INDEX));
     }
 
     @Override
