@@ -24,25 +24,27 @@ namespace blink {
 
 const PermissionsPolicyNameToFeatureMap&
 GetPermissionsPolicyNameToFeatureMap() {
-  static const PermissionsPolicyNameToFeatureMap default_feature_name_map = {
+  static const base::NoDestructor<PermissionsPolicyNameToFeatureMap>
+      default_feature_name_map({
     {% for feature in permissions_policy_features %}
     {"{{feature.permissions_policy_name}}",
         network::mojom::PermissionsPolicyFeature::k{{feature.name}}},
     {% endfor %}
-  };
+  });
 
-  return default_feature_name_map;
+  return *default_feature_name_map;
 }
 
 const PermissionsPolicyFeatureToNameMap&
 GetPermissionsPolicyFeatureToNameMap() {
-  static const PermissionsPolicyFeatureToNameMap default_feature_to_name_map = {
+  static const base::NoDestructor<PermissionsPolicyFeatureToNameMap>
+      default_feature_to_name_map({
     {% for feature in permissions_policy_features %}
     {network::mojom::PermissionsPolicyFeature::k{{feature.name}},
         "{{feature.permissions_policy_name}}"},
     {% endfor %}
-  };
-  return default_feature_to_name_map;
+  });
+  return *default_feature_to_name_map;
 }
 
 }  // namespace blink
