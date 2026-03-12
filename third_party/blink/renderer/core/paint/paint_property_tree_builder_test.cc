@@ -7640,4 +7640,15 @@ TEST_P(PaintPropertyTreeBuilderTest, ClipPathWithMaskDoNotCreateExpandedRect) {
   EXPECT_EQ(mask_clip->LayoutClipRect(), mask_clip->PreciseLayoutClipRect());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, OverscrollContainerOnInlineDoesNotCrash) {
+  SetBodyInnerHTML(
+      R"HTML(<div id="target" style="display:inline">text</div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  target->setAttribute(QualifiedName(AtomicString("overscrollcontainer")),
+                       AtomicString(""));
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
