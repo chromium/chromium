@@ -25,9 +25,14 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
     return;
   }
 
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+
   // TODO(crbug.com/40883407): Validate final mappings for ChromeRefresh23
   // color.
   ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorDetachedTabBackgroundActiveFrameActive] = {
+      dark_mode ? ui::kColorSysSurfaceVariant : ui::kColorSysBase};
   mixer[kColorTabBackgroundActiveFrameActive] = {ui::kColorSysBase};
   mixer[kColorTabBackgroundActiveFrameInactive] = {
       kColorTabBackgroundActiveFrameActive};
