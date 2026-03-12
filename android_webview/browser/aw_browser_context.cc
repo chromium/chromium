@@ -42,6 +42,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -787,11 +788,9 @@ AwBrowserContext::GetOriginMatchedHeaders() {
 
 void AwBrowserContext::AddQuicHints(JNIEnv* env,
                                     const std::vector<GURL>& origins) {
-  std::vector<url::SchemeHostPort> scheme_host_ports(origins.size());
-  for (const GURL& origin : origins) {
-    scheme_host_ports.emplace_back(origin);
-  }
-
+  auto scheme_host_ports = base::ToVector(origins, [](const GURL& origin) {
+    return url::SchemeHostPort(origin);
+  });
   GetDefaultStoragePartition()->GetNetworkContext()->AddQuicHints(
       scheme_host_ports, net::NetworkAnonymizationKey());
 }
