@@ -109,7 +109,8 @@ void PerformanceLongAnimationFrameTiming::BuildJSONValue(
   builder.AddNumber("styleAndLayoutStart", style_and_layout_start_);
   builder.AddNumber("firstUIEventTimestamp", first_ui_event_timestamp_);
   builder.AddNumber("blockingDuration", blocking_duration_);
-  if (RuntimeEnabledFeatures::LongAnimationFrameStyleDurationEnabled()) {
+  if (RuntimeEnabledFeatures::LongAnimationFrameStyleDurationEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
     builder.AddNumber("styleDuration", style_duration_);
     builder.AddNumber("layoutDuration", layout_duration_);
   }

@@ -3517,6 +3517,7 @@
       // PerformanceLongAnimationFrameTiming and forcedStyleDuration and
       // forcedLayoutDuration to PerformanceScriptTiming
       name: "LongAnimationFrameStyleDuration",
+      origin_trial_feature_name: "LongAnimationFrameStyleDuration",
       status: "experimental",
     },
     {
@@ -6654,3 +6655,4 @@
     },
   ],
 }
+
