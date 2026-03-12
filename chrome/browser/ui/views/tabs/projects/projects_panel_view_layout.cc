@@ -65,6 +65,18 @@ views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
     y += height;
   };
 
+  // The container views (tab groups and threads) are given the full width of
+  // the panel to account for their scroll bars appearing slightly outset from
+  // their content. This discrepancy is accounted for in their margins.
+  auto place_container_child = [&](views::View* child, int height) {
+    if (!child || !child->GetVisible()) {
+      return;
+    }
+    layout.child_layouts.emplace_back(child, child->GetVisible(),
+                                      gfx::Rect(0, y, host_width, height));
+    y += height;
+  };
+
   // Place the controls view.
   if (controls_view_ && controls_view_->GetVisible()) {
     place_child(controls_view_, controls_view_->GetPreferredSize().height());
@@ -121,7 +133,7 @@ views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
   }
 
   // Place the tab groups section.
-  place_child(tab_groups_container_, tg_height);
+  place_container_child(tab_groups_container_, tg_height);
 
   // Place the separator.
   if (separator_view_ && separator_view_->GetVisible()) {
@@ -131,7 +143,7 @@ views::ProposedLayout ProjectsPanelViewLayout::CalculateProposedLayout(
   }
 
   // Place the threads section.
-  place_child(threads_container_, th_height);
+  place_container_child(threads_container_, th_height);
 
   return layout;
 }

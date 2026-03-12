@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
+#include "chrome/browser/ui/views/tabs/shared/rounded_scroll_bar.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/url_constants.h"
@@ -81,11 +82,32 @@ enum ThreadsActivityMenuCommandId {
 constexpr int kClipRectMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kShadowElevation = 2;
-constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(8, 8);
+constexpr gfx::Insets kListHeaderMargins = gfx::Insets::TLBR(
+    8,
+    8 + projects_panel::kProjectsPanelRegionInteriorMargins.left(),
+    8,
+    8 + projects_panel::kProjectsPanelRegionInteriorMargins.right());
 constexpr int kListHeaderHeight = 28;
 constexpr int kCreateNewTabGroupIconSize = 20;
 constexpr gfx::Insets kCreateNewTabGroupIconMargins =
     gfx::Insets::TLBR(0, 2, 0, 2);
+
+// Border insets applied to the tab groups and threads list to reserve space for
+// their scroll bar.
+constexpr gfx::Insets kListsInsideBorderInsets = gfx::Insets::TLBR(
+    0,
+    0,
+    0,
+    projects_panel::kProjectsPanelRegionInteriorMargins.right());
+
+// Insets containing only the horizontal margins of the panel region. Used by
+// the ProjectsPanelNewTabGroupButton and ProjectsPanelRecentThreadsExpandButton
+// to account for their containers taking the full width of the panel.
+constexpr gfx::Insets kProjectsPanelRegionHorizontalMargins = gfx::Insets::TLBR(
+    0,
+    projects_panel::kProjectsPanelRegionInteriorMargins.left(),
+    0,
+    projects_panel::kProjectsPanelRegionInteriorMargins.right());
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
@@ -131,6 +153,11 @@ class ProjectsPanelNewTabGroupButton : public views::Button {
                                  views::MinimumFlexSizeRule::kScaleToMinimum,
                                  views::MaximumFlexSizeRule::kUnbounded));
 
+    // This view is inside the tab groups container view, which is given the
+    // full width of the panel to account for its scroll bar. These margins are
+    // applied to properly distance it from the edges of the panel.
+    SetProperty(views::kMarginsKey, kProjectsPanelRegionHorizontalMargins);
+
     projects_panel::ConfigureInkDropForButton(this);
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP));
@@ -161,10 +188,19 @@ void SetScrollViewProperties(views::ScrollView& scroll_view) {
   scroll_view.SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view.SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+      views::ScrollView::ScrollBarMode::kEnabled);
+  scroll_view.SetVerticalScrollBar(std::make_unique<tabs::RoundedScrollBar>());
   scroll_view.SetOverflowGradientMask(
       views::ScrollView::GradientDirection::kVertical);
   scroll_view.SetUseContentsPreferredSize(true);
+  // The tab groups and threads containers are given the full width of the panel
+  // to account for their scroll bars. The left panel margin is applied here
+  // while the right margin is applied to the contents view, so the scroll bar
+  // appears beside the content instead of overlapping.
+  scroll_view.SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(
+          0, projects_panel::kProjectsPanelRegionInteriorMargins.left(), 0, 0));
   scroll_view.SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -269,6 +305,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
                               base::Unretained(this)),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupDragExited,
                               base::Unretained(this))));
+  tab_groups_view_->SetInsideBorderInsets(kListsInsideBorderInsets);
   SetScrollViewProperties(*tab_groups_scroll_view_);
   if (disable_animations_for_testing_) {
     tab_groups_view_->disable_animations_for_testing();  // IN-TEST
@@ -331,15 +368,18 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
         std::make_unique<ProjectsPanelRecentThreadsView>(base::BindRepeating(
             &ProjectsPanelView::OnThreadButtonPressed, base::Unretained(this)));
     threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
+    threads_view_->SetInsideBorderInsets(kListsInsideBorderInsets);
+    SetScrollViewProperties(*threads_scroll_view);
     if (disable_animations_for_testing_) {
       threads_view_->disable_animations_for_testing();  // IN-TEST
     }
-    SetScrollViewProperties(*threads_scroll_view);
 
     threads_expand_button_ = threads_container_->AddChildView(
         std::make_unique<ProjectsPanelRecentThreadsExpandButton>(
             base::BindRepeating(&ProjectsPanelView::OnThreadExpandButtonPressed,
                                 base::Unretained(this))));
+    threads_expand_button_->SetProperty(views::kMarginsKey,
+                                        kProjectsPanelRegionHorizontalMargins);
 
     threads_activity_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
     threads_activity_menu_model_->AddItemWithIcon(

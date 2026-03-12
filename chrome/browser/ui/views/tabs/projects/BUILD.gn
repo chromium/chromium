@@ -64,6 +64,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs/projects:impl",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/tabs/vertical",
     "//chrome/browser/ui/views/toolbar",
     "//components/contextual_tasks/public",
