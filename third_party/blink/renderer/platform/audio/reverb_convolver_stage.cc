@@ -180,8 +180,9 @@ void ReverbConvolverStage::Process(base::span<const float> source) {
       direct_convolver_->Process(pre_delayed_source,
                                  temporary_buffer.first(frames_to_process));
     } else {
-      fft_convolver_->Process(fft_kernel_.get(), pre_delayed_source.data(),
-                              temporary_buffer.data(), frames_to_process);
+      fft_convolver_->Process(fft_kernel_.get(),
+                              pre_delayed_source.first(frames_to_process),
+                              temporary_buffer.first(frames_to_process));
     }
 
     // Now accumulate into reverb's accumulation buffer.

@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -41,9 +40,11 @@ FFTConvolver::FFTConvolver(unsigned fft_size)
       last_overlap_buffer_(fft_size / 2) {}
 
 void FFTConvolver::Process(const FFTFrame* fft_kernel,
-                           const float* source_p,
-                           float* dest_p,
-                           uint32_t frames_to_process) {
+                           base::span<const float> source,
+                           base::span<float> dest) {
+  const size_t frames_to_process = source.size();
+  DCHECK_EQ(source.size(), dest.size());
+
   unsigned half_size = FftSize() / 2;
 
   // framesToProcess must be an exact multiple of halfSize,
@@ -58,28 +59,24 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
   size_t division_size =
       number_of_divisions == 1 ? frames_to_process : half_size;
 
-  for (size_t i = 0; i < number_of_divisions; ++i,
-              UNSAFE_TODO(source_p += division_size),
-              UNSAFE_TODO(dest_p += division_size)) {
-    // Copy samples to input buffer (note contraint above!)
-    float* input_p = input_buffer_.Data();
+  base::span<float> input_buffer_span = input_buffer_.as_span();
+  base::span<float> output_buffer_span = output_buffer_.as_span();
 
-    DCHECK(source_p);
-    DCHECK(input_p);
+  for (size_t i = 0; i < number_of_divisions; ++i) {
+    base::span<const float> source_segment = source.take_first(division_size);
+    base::span<float> dest_segment = dest.take_first(division_size);
+
+    // Copy samples to input buffer (note constraint above!)
     DCHECK_LE(read_write_index_ + division_size, input_buffer_.size());
 
-    UNSAFE_TODO(memcpy(input_p + read_write_index_, source_p,
-                       sizeof(float) * division_size));
+    input_buffer_span.subspan(read_write_index_, division_size)
+        .copy_from(source_segment);
 
     // Copy samples from output buffer
-    float* output_p = output_buffer_.Data();
-
-    DCHECK(dest_p);
-    DCHECK(output_p);
     DCHECK_LE(read_write_index_ + division_size, output_buffer_.size());
 
-    UNSAFE_TODO(memcpy(dest_p, output_p + read_write_index_,
-                       sizeof(float) * division_size));
+    dest_segment.copy_from(
+        output_buffer_span.subspan(read_write_index_, division_size));
     read_write_index_ += division_size;
 
     // Check if it's time to perform the next FFT
@@ -97,9 +94,8 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
       DCHECK_EQ(output_buffer_.size(), 2 * half_size);
       DCHECK_EQ(last_overlap_buffer_.size(), half_size);
 
-      UNSAFE_TODO(memcpy(last_overlap_buffer_.Data(),
-                         output_buffer_.Data() + half_size,
-                         sizeof(float) * half_size));
+      last_overlap_buffer_.as_span().copy_from(
+          output_buffer_span.subspan(half_size, half_size));
 
       // Reset index back to start for next time
       read_write_index_ = 0;
