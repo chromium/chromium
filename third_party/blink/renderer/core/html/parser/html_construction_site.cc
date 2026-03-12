@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_reentry_permit.h"
 #include "third_party/blink/renderer/core/html/parser/html_stack_item.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
+#include "third_party/blink/renderer/core/html/parser/patch.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
@@ -215,8 +216,11 @@ static inline void Insert(HTMLConstructionSiteTask& task) {
   // instead be inside the template element's template contents, after its last
   // child (if any).
   if (auto* template_element = DynamicTo<HTMLTemplateElement>(*task.parent)) {
-    task.parent = template_element->InsertionTarget();
-    task.next_child = template_element->InsertionNextChild();
+    if (auto* patch = template_element->GetPatch()) {
+      patch->Apply(task);
+    } else {
+      task.parent = template_element->InsertionTarget();
+    }
     // If the Document was detached in the middle of parsing, The template
     // element won't be able to initialize its contents, so bail out.
     if (!task.parent)
@@ -992,10 +996,14 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
 
-  if (should_attach_template &&
-      template_element->BeginPatch(*open_elements_.TopStackItem()->GetNode())) {
-    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-    should_attach_template = false;
+  if (should_attach_template) {
+    if (auto* patch = Patch::Prepare(
+            open_elements_.TopStackItem()->GetNode(),
+            template_element->FastGetAttribute(html_names::kForAttr))) {
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      template_element->SetPatch(patch);
+      should_attach_template = false;
+    }
   }
 
   if (should_attach_template) {
@@ -1091,9 +1099,10 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
           DynamicTo<HTMLTemplateElement>(*dummy_task.parent)) {
     // If the Document was detached in the middle of parsing, the template
     // element won't be able to initialize its contents.
-    if (auto* insertion_target = template_element->InsertionTarget()) {
-      dummy_task.parent = insertion_target;
-      dummy_task.next_child = template_element->InsertionNextChild();
+    if (auto* patch = template_element->GetPatch()) {
+      patch->Apply(dummy_task);
+    } else {
+      dummy_task.parent = template_element->InsertionTarget();
     }
   }
 

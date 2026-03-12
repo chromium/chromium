@@ -657,6 +657,8 @@ blink_core_hot_sources_html = [
   "parser/markup_tokenizer_inlines.h",
   "parser/parser_scripting_flag_policy.h",
   "parser/parser_synchronization_policy.h",
+  "parser/patch.cc",
+  "parser/patch.h",
   "parser/preload_request.cc",
   "parser/preload_request.h",
   "parser/resource_preloader.cc",
