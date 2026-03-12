@@ -10977,6 +10977,17 @@ should be able to be added at any place in this file.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </action>
 
+<action
+    name="ContextualSearch.UserAction.SubmitVoiceQuery.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when a query is submitted through a voice query from
+    {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
 <action name="ContextualSearch.ViewLessThanOneSecond">
   <owner>donnd@chromium.org</owner>
   <description>

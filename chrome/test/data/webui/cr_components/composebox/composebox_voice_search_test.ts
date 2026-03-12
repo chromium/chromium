@@ -16,6 +16,8 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -88,6 +90,7 @@ suite('ComposeboxVoiceSearch', () => {
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let windowProxy: TestMock<WindowProxy>;
+  let metrics: MetricsTracker;
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
@@ -100,6 +103,7 @@ suite('ComposeboxVoiceSearch', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metrics = fakeMetricsPrivate();
     handler = installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
@@ -327,6 +331,11 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test('idle timeout with final result submits query', async () => {
+    loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    document.body.appendChild(composeboxElement);
+
     const voiceSearchButton = getVoiceSearchButton(composeboxElement);
     voiceSearchButton!.click();
     await microtasksFinished();
@@ -355,6 +364,11 @@ suite('ComposeboxVoiceSearch', () => {
     await voiceSearchElement.updateComplete;
     // Assert.
     assertEquals(searchboxHandler.getCallCount('submitQuery'), 1);
+
+    const metricName =
+        'ContextualSearch.UserAction.SubmitVoiceQuery.NewTabPage';
+    assertEquals(1, metrics.count(metricName, 0));
+    assertEquals(1, metrics.count(metricName, true));
 
     assertStyle(composeboxElement.$.composebox, 'display', 'flex');
     assertStyle(voiceSearchElement, 'display', 'none');
