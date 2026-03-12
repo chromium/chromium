@@ -521,7 +521,7 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "host/context/glic_sharing_utils_unittest.cc" ]
   if (!is_android) {
     sources += [
       "common/glic_panel_hotkey_delegate_unittest.cc",

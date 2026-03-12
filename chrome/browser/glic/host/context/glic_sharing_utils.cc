@@ -36,6 +36,9 @@ bool IsTabValidForSharing(content::WebContents* web_contents) {
       {GURL(), GURL(url::kAboutBlankURL),
        GURL(chrome::kChromeUINewTabPageThirdPartyURL),
        GURL(chrome::kChromeUINewTabPageURL), GURL(chrome::kChromeUINewTabURL),
+#if BUILDFLAG(IS_ANDROID)
+       GURL(chrome::kChromeUINativeNewTabURL),
+#endif
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
        // NEEDS_ANDROID_IMPL: what's new page
        // "What's New" does not exist in the form of a tab on ChromeOS.
