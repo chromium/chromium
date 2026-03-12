@@ -12,7 +12,7 @@ namespace autofill {
 // A strong alias for a boolean that indicates whether compose suggestion should
 // be shown.
 using ComposeAvailability =
-    base::StrongAlias<class ComnposeAvailabilityTag, bool>;
+    base::StrongAlias<class ComposeAvailabilityTag, bool>;
 
 }  // namespace autofill
 
