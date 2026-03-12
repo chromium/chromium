@@ -86,8 +86,8 @@ public class NewTabPageCoordinator {
 
     private final NewTabPageManager mManager;
     private final Activity mActivity;
-    private final NtpLayout mNtpLayout;
-    private final NtpLayout.Delegate mLayoutDelegate;
+    private final NewTabPageLayout mNewTabPageLayout;
+    private final NewTabPageLayout.Delegate mLayoutDelegate;
     private LogoCoordinator mLogoCoordinator;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private @Nullable MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
@@ -175,13 +175,13 @@ public class NewTabPageCoordinator {
      * @param manager NewTabPageManager used to perform various actions when the user interacts with
      *     the page.
      * @param activity The activity that currently owns the new tab page
-     * @param ntpLayout The new tab page layout.
+     * @param newTabPageLayout The new tab page layout.
      */
     public NewTabPageCoordinator(
-            NewTabPageManager manager, Activity activity, NtpLayout ntpLayout) {
+            NewTabPageManager manager, Activity activity, NewTabPageLayout newTabPageLayout) {
         mManager = manager;
         mActivity = activity;
-        mNtpLayout = ntpLayout;
+        mNewTabPageLayout = newTabPageLayout;
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -192,7 +192,7 @@ public class NewTabPageCoordinator {
         mEnableLogs = ChromeFeatureList.sNewTabPageCustomizationV2EnableLogs.getValue();
 
         mLayoutDelegate =
-                new NtpLayout.Delegate() {
+                new NewTabPageLayout.Delegate() {
                     @Override
                     public void onMeasure(int width) {
                         NewTabPageCoordinator.this.onMeasure(width);
@@ -208,7 +208,7 @@ public class NewTabPageCoordinator {
                         NewTabPageCoordinator.this.updateActionButtonVisibility();
                     }
                 };
-        mNtpLayout.setDelegate(mLayoutDelegate);
+        mNewTabPageLayout.setDelegate(mLayoutDelegate);
     }
 
     /**
@@ -276,7 +276,7 @@ public class NewTabPageCoordinator {
             mUiConfig.updateDisplayStyle();
         }
 
-        mSearchBoxCoordinator = new SearchBoxCoordinator(mActivity, mNtpLayout, mIsTablet);
+        mSearchBoxCoordinator = new SearchBoxCoordinator(mActivity, mNewTabPageLayout, mIsTablet);
         mSearchBoxCoordinator.initialize(
                 lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
 
@@ -450,7 +450,8 @@ public class NewTabPageCoordinator {
         boolean shouldApplyWhiteBackgroundOnSearchBox =
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
 
-        ViewStub composeplateViewStub = mNtpLayout.findViewById(R.id.composeplate_view_v2_stub);
+        ViewStub composeplateViewStub =
+                mNewTabPageLayout.findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
         if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             // TODO(https://crbug.com/423579377): Moves the layout parameters to
@@ -498,7 +499,7 @@ public class NewTabPageCoordinator {
     private void initializeLayoutChangeListener() {
         TraceEvent.begin(TAG + ".initializeLayoutChangeListener()");
         mOnLayoutChangeListener = this::onLayoutChanged;
-        mNtpLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
+        mNewTabPageLayout.addOnLayoutChangeListener(mOnLayoutChangeListener);
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
     }
 
@@ -550,7 +551,7 @@ public class NewTabPageCoordinator {
                 new LogoCoordinator(
                         mActivity,
                         logoClickedCallback,
-                        mNtpLayout,
+                        mNewTabPageLayout,
                         mOnLogoAvailableCallback,
                         /* visibilityObserver= */ null,
                         () -> MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity));
@@ -562,7 +563,7 @@ public class NewTabPageCoordinator {
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TileGroup.Delegate tileGroupDelegate,
             TouchEnabledDelegate touchEnabledDelegate) {
-        View mvTilesContainerLayout = mNtpLayout.findViewById(R.id.mv_tiles_container);
+        View mvTilesContainerLayout = mNewTabPageLayout.findViewById(R.id.mv_tiles_container);
         assert mvTilesContainerLayout != null;
 
         mMostVisitedTilesCoordinator =
@@ -585,7 +586,7 @@ public class NewTabPageCoordinator {
 
     private void initializeSigninPromoCoordinator() {
         ViewStub signinPromoViewContainerStub =
-                mNtpLayout.findViewById(R.id.signin_promo_view_container_stub);
+                mNewTabPageLayout.findViewById(R.id.signin_promo_view_container_stub);
         mSigninPromoCoordinator =
                 new NtpSigninPromoCoordinator(
                         mWindowAndroid,
@@ -791,7 +792,8 @@ public class NewTabPageCoordinator {
         if (mDisableUrlFocusChangeAnimations || mIsTablet) return;
 
         // Translate so that the search box is at the top, but only upwards.
-        int basePosition = mScrollDelegate.getVerticalScrollOffset() + mNtpLayout.getPaddingTop();
+        int basePosition =
+                mScrollDelegate.getVerticalScrollOffset() + mNewTabPageLayout.getPaddingTop();
         int target =
                 Math.max(
                         basePosition,
@@ -809,8 +811,8 @@ public class NewTabPageCoordinator {
      * reduce the number of visual elements in motion.
      */
     private void setTranslationYOfFakeboxAndAbove(float translationY) {
-        for (int i = 0; i < mNtpLayout.getChildCount(); i++) {
-            View view = mNtpLayout.getChildAt(i);
+        for (int i = 0; i < mNewTabPageLayout.getChildCount(); i++) {
+            View view = mNewTabPageLayout.getChildAt(i);
             view.setTranslationY(translationY);
             if (view.getId() == R.id.search_box) return;
         }
@@ -1040,9 +1042,9 @@ public class NewTabPageCoordinator {
             mSearchEngineUtils = null;
         }
 
-        mNtpLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
+        mNewTabPageLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
         mOnLayoutChangeListener = null;
-        mNtpLayout.setDelegate(null);
+        mNewTabPageLayout.setDelegate(null);
 
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.destroy();
@@ -1127,11 +1129,11 @@ public class NewTabPageCoordinator {
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         // Top padding is applied to the NTP layout, ensuring all UI components remain in their
         // original positions after Status bar is hidden.
-        mNtpLayout.setPaddingRelative(
-                mNtpLayout.getPaddingStart(),
+        mNewTabPageLayout.setPaddingRelative(
+                mNewTabPageLayout.getPaddingStart(),
                 toolbarHeightNoShadow + mTopInset,
-                mNtpLayout.getPaddingEnd(),
-                mNtpLayout.getPaddingBottom());
+                mNewTabPageLayout.getPaddingEnd(),
+                mNewTabPageLayout.getPaddingBottom());
 
         if (mEnableLogs) {
             Log.i(TAG, "The top padding to add on the NTP is %d.", mTopInset);
@@ -1197,7 +1199,7 @@ public class NewTabPageCoordinator {
         return mSearchBoxBoundsVerticalInset;
     }
 
-    NtpLayout getNewTabPageLayout() {
-        return mNtpLayout;
+    NewTabPageLayout getNewTabPageLayout() {
+        return mNewTabPageLayout;
     }
 }

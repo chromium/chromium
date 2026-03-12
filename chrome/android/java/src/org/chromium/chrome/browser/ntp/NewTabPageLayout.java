@@ -19,10 +19,9 @@ import org.chromium.chrome.R;
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
  * There are no separate phone and tablet UIs; this layout adapts based on the available space.
- * TODO(https://crbug.com/487641528): Rename to NewTabPageLayout.
  */
 @NullMarked
-public class NtpLayout extends LinearLayout {
+public class NewTabPageLayout extends LinearLayout {
     /** Delegate to handle layout-related events. */
     public interface Delegate {
         /**
@@ -44,7 +43,7 @@ public class NtpLayout extends LinearLayout {
     private @Nullable Delegate mDelegate;
 
     /** Constructor for inflating from XML. */
-    public NtpLayout(Context context, AttributeSet attrs) {
+    public NewTabPageLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

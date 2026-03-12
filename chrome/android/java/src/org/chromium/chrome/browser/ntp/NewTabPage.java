@@ -173,7 +173,7 @@ public class NewTabPage
     private final WindowAndroid mWindowAndroid;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
-    private NtpLayout mNewTabPageLayout;
+    private NewTabPageLayout mNewTabPageLayout;
     private NewTabPageCoordinator mNewTabPageCoordinator;
     private @Nullable TabObserver mTabObserver;
     private @Nullable LifecycleObserver mLifecycleObserver;
@@ -659,7 +659,7 @@ public class NewTabPage
         LayoutInflater inflater = LayoutInflater.from(activity);
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout inflate");
-        mNewTabPageLayout = (NtpLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
+        mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
         mNewTabPageCoordinator =
                 new NewTabPageCoordinator(mNewTabPageManager, activity, mNewTabPageLayout);
 
@@ -1413,7 +1413,7 @@ public class NewTabPage
      */
     @EnsuresNonNull({"mHomeModulesContainer", "mHomeModulesCoordinator"})
     private void initializeMagicStack() {
-        NtpLayout newTabPageLayout = mNewTabPageCoordinator.getNewTabPageLayout();
+        NewTabPageLayout newTabPageLayout = mNewTabPageCoordinator.getNewTabPageLayout();
         mHomeModulesContainer =
                 (ViewGroup)
                         ((ViewStub)
