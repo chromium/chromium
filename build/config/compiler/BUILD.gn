@@ -531,6 +531,18 @@ config("compiler") {
     # linker_driver.py script runs dsymutil itself, which is set to be the
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
+
+    if (use_thin_lto) {
+      # These passes were recently added to the mach-o lld thintlo link step,
+      # but cause timeouts in certain build configs. Disable them until that's
+      # fixed (crbug.com/489711936).
+      ldflags += [
+        "-Wl,-mllvm",
+        "-Wl,-vectorize-loops=false",
+        "-Wl,-mllvm",
+        "-Wl,-vectorize-slp=false",
+      ]
+    }
   }
 
   # Linux/Android/Fuchsia common flags setup.
