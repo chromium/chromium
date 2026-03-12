@@ -191,6 +191,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
                         @Override
                         public void onServiceStatusChanged(int status) {
+                            // If the cross-device pref tracker is still not ready, keep listening
+                            // for a future status change.
+                            if (NOT_READY_YET_STATES.contains(status)) return;
                             onCrossDevicePrefTrackerReady(
                                     crossDevicePrefTracker,
                                     status,
