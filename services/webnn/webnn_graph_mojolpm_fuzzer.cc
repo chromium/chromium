@@ -168,23 +168,23 @@ class WebnnGraphLPMFuzzer {
     auto graph_info = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(graph_info_proto, graph_info);
 
+    size_t total_tensor_length = 0;
     for (uint32_t id = 0; id < graph_info->operands.size(); ++id) {
       const auto& operand = graph_info->operands[id];
-      if (operand->kind == webnn::mojom::Operand::Kind::kConstant) {
-        size_t tensor_length = operand->descriptor.PackedByteLength();
-        if (tensor_length > base::GiB(3).InBytes()) {
-          // Serialization of this Mojo call will fail if the tensor data is
-          // too big. We intentionally don't use ValidateTensor to ensure that
-          // the checks in the implementation of CreatePendingConstant are
-          // still exercised. The value is chosen to be larger than most
-          // context implementations support.
-          //
-          // This check can be removed if streaming constant uploads are
-          // implemented as the value will no longer be sent in a single
-          // message.
-          return;
-        }
 
+      // Limit the total size of tensors in the graph to avoid running out of
+      // memory or timing out from computing extremely large graphs. Ideally we
+      // would be able to exercise larger graphs but the tradeoff is that the
+      // fuzzer will not explore as many graphs when it spends too much time
+      // with these large examples.
+      constexpr size_t kMaxTensorBytes = base::GiB(1).InBytes();
+      const size_t tensor_length = operand->descriptor.PackedByteLength();
+      if (kMaxTensorBytes - total_tensor_length < tensor_length) {
+        return;
+      }
+      total_tensor_length += tensor_length;
+
+      if (operand->kind == webnn::mojom::Operand::Kind::kConstant) {
         const blink::WebNNPendingConstantToken token;
         webnn_graph_builder_remote->CreatePendingConstant(
             token, operand->descriptor.data_type(),
