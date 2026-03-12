@@ -244,6 +244,23 @@ class SendTabToSelfUrlDeletedChecker
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
+// Class that allows waiting until an element with `element_id` is within the
+// viewport of `web_contents`.
+class SendTabToSelfScrollChecker : public StatusChangeChecker {
+ public:
+  SendTabToSelfScrollChecker(content::WebContents* web_contents,
+                             const std::string& element_id);
+  ~SendTabToSelfScrollChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const raw_ptr<content::WebContents> web_contents_;
+  const std::string element_id_;
+  base::RepeatingTimer timer_;
+};
+
 // Class that allows waiting until Autofill has seen (cached) the expected
 // forms in `web_contents` and their expected values.
 class AutofillFieldsSeenChecker : public StatusChangeChecker,

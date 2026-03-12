@@ -93,7 +93,9 @@ source_set("sync_integration_tests_impl") {
     # but android_sync_integration_tests do not.
   ]
   data = [
+    "//chrome/test/data/empty.html",
     "//chrome/test/data/autofill/",
+    "//chrome/test/data/send_tab_to_self/",
     "//chrome/test/data/sync/",
   ]
 
@@ -258,6 +260,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/views/send_tab_to_self",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:web_applications_test_support",

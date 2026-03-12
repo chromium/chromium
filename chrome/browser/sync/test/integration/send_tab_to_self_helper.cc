@@ -338,6 +338,35 @@ void SendTabToSelfUrlDeletedChecker::EntriesRemovedRemotely(
   CheckExitCondition();
 }
 
+SendTabToSelfScrollChecker::SendTabToSelfScrollChecker(
+    content::WebContents* web_contents,
+    const std::string& element_id)
+    : web_contents_(web_contents), element_id_(element_id) {
+  timer_.Start(
+      FROM_HERE, base::Milliseconds(100),
+      base::BindRepeating(&SendTabToSelfScrollChecker::CheckExitCondition,
+                          base::Unretained(this)));
+}
+
+SendTabToSelfScrollChecker::~SendTabToSelfScrollChecker() = default;
+
+bool SendTabToSelfScrollChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for element '" << element_id_ << "' to be in viewport.";
+  // We check if any part of the element is vertically within the viewport.
+  content::EvalJsResult result =
+      content::EvalJs(web_contents_, content::JsReplace(R"(
+    (() => {
+      const target = document.getElementById($1);
+      if (!target) return false;
+      const rect = target.getBoundingClientRect();
+      return rect.top < window.innerHeight && rect.bottom >= 0;
+    })()
+  )",
+                                                        element_id_));
+
+  return result.is_ok() && result.ExtractBool();
+}
+
 AutofillFieldsSeenChecker::AutofillFieldsSeenChecker(
     content::WebContents* web_contents,
     std::map<std::string, std::string> expected_fields)
