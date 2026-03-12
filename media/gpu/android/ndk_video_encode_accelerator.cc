@@ -475,6 +475,15 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
         GetOptimalLayeringSchema(log, codec_name, num_temporal_layers);
     AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_TEMPORAL_LAYERING,
                            svc_layer_config.c_str());
+
+    // Signal that we want to receive the temporal layer ID in the output
+    // format.
+    if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+      AMediaFormat_setInt32(
+          result.get(),
+          NdkVideoEncodeAcceleratorSvcApi::AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
+          0);
+    }
   }
 
   return result;
@@ -1567,25 +1576,59 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
       input_since_keyframe_count_ = 0;
     }
 
-    TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
-    if (!svc_parser_->ParseChunk(out_buffer_data, input_since_keyframe_count_,
-                                 bits_md)) {
-      NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
-                         "Parse bitstream failed"});
+    int32_t temporal_id = -1;
+    if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+      // For supported Android versions, retrieve the temporal layer ID
+      // natively from the output buffer format.
+      MediaFormatPtr buffer_format(AMediaCodec_getBufferFormat(
+          media_codec_->codec(), output_buffer.buffer_index));
+      if (buffer_format) {
+        AMediaFormat_getInt32(
+            buffer_format.get(),
+            NdkVideoEncodeAcceleratorSvcApi::AMEDIAFORMAT_KEY_TEMPORAL_LAYER_ID,
+            &temporal_id);
+      }
+    }
+
+    if (temporal_id < 0 && VideoCodecProfileToVideoCodec(
+                               config_.output_profile) == VideoCodec::kH264) {
+      // For H.264, if native retrieval is not supported or failed,
+      // fallback to parsing the bitstream.
+      TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
+      if (!svc_parser_->ParseChunk(out_buffer_data, input_since_keyframe_count_,
+                                   bits_md)) {
+        NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                           "Parse bitstream failed"});
+        return;
+      }
+      temporal_id = bits_md.temporal_id;
+    }
+
+    if (temporal_id < 0 &&
+        NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+      // If native retrieval was expected but failed, treat it as a hardware
+      // error. For AV1/VP9 on older Android versions, we don't error out
+      // because these codecs follow standard scalability modes
+      // (follow_svc_spec = true), where layer information is available in the
+      // bitstream itself.
+      NotifyErrorStatus(
+          {EncoderStatus::Codes::kEncoderHardwareDriverError,
+           "Failed to retrieve temporal layer ID for SVC stream"});
       return;
     }
 
     switch (VideoCodecProfileToVideoCodec(config_.output_profile)) {
       case VideoCodec::kH264:
-        metadata.h264.emplace().temporal_idx = bits_md.temporal_id;
+        metadata.h264.emplace().temporal_idx = temporal_id;
         break;
       case VideoCodec::kAV1:
       case VideoCodec::kVP9:
-        // TODO(b/432558680): We should query for this from the new temporal
-        // layer encoding API once it's available. Currently, the only encoders
-        // on Android that implement AV1 and VP9 temporal layer encoding are the
-        // cros-codecs ones, which we know to support SVC spec.
         metadata.svc_generic.emplace().follow_svc_spec = true;
+        if (NdkVideoEncodeAcceleratorSvcApi::IsTemporalLayerIdSupported()) {
+          // Native temporal ID is only expected for AV1/VP9 when supported
+          // by the platform.
+          metadata.svc_generic->temporal_idx = temporal_id;
+        }
         break;
       default:
         NOTIMPLEMENTED() << "SVC is only supported for AV1, H.264, and VP9.";

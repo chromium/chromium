@@ -1123,6 +1123,10 @@ BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
 BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows native temporal layer ID retrieval for NdkVideoEncodeAccelerator.
+BASE_FEATURE(kNdkVideoEncodeAcceleratorNativeSvc,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
