@@ -959,6 +959,8 @@ void NewTabPageUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
   registry->RegisterIntegerPref(ntp_prefs::kNtpContextMenuClickCount, 0);
+  registry->RegisterBooleanPref(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
+  registry->RegisterBooleanPref(ntp_prefs::kNtpDoodleMuralsEnabled, true);
 }
 
 // static
@@ -977,6 +979,8 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   prefs->SetDict(ntp_prefs::kNtpModulesAutoRemovalDisabledDict,
                  base::DictValue());
   prefs->SetInteger(ntp_prefs::kNtpContextMenuClickCount, 0);
+  prefs->SetBoolean(ntp_prefs::kNtpAnimatedDoodlesEnabled, true);
+  prefs->SetBoolean(ntp_prefs::kNtpDoodleMuralsEnabled, true);
 }
 
 // static
