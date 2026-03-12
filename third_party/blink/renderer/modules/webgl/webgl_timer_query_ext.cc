@@ -17,11 +17,12 @@ WebGLTimerQueryEXT::WebGLTimerQueryEXT(WebGLContextObjectSupport* ctx)
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),
-      query_result_(0),
-      task_runner_(ctx->GetContextTaskRunner()) {
+      query_result_(0) {
   if (!ctx || ctx->IsLost()) {
     return;
   }
+
+  task_runner_ = ctx->GetContextTaskRunner();
 
   GLuint query = 0;
   ctx->ContextGL()->GenQueriesEXT(1, &query);
