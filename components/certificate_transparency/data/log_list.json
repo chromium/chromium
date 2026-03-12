@@ -1,6 +1,6 @@
 {
-  "version": "84.11",
-  "log_list_timestamp": "2026-02-23T12:53:44Z",
+  "version": "85.13",
+  "log_list_timestamp": "2026-03-12T13:34:56Z",
   "operators": [
     {
       "name": "Google",
@@ -515,12 +515,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h1/",
           "mmd": 86400,
           "state": {
-            "readonly": {
-              "timestamp": "2025-12-12T22:30:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "deSRNfTNPgd9wfzoXIznvi+QUTxuK0R+daC6JGKGK3Q=",
-                "tree_size": 598614696
-              }
+            "retired": {
+              "timestamp": "2026-02-28T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -535,12 +531,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h2/",
           "mmd": 86400,
           "state": {
-            "readonly": {
-              "timestamp": "2025-12-12T22:30:00Z",
-              "final_tree_head": {
-                "sha256_root_hash": "uTgg1k3DUbSFFdXewyyxbsQuCc9RupplMphTwtXqvf4=",
-                "tree_size": 130815692
-              }
+            "retired": {
+              "timestamp": "2026-02-28T00:00:00Z"
             }
           },
           "temporal_interval": {
