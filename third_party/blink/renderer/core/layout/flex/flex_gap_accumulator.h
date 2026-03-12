@@ -206,7 +206,8 @@ class CORE_EXPORT FlexGapAccumulator {
                                bool is_last_line,
                                LayoutUnit line_cross_start,
                                LayoutUnit line_cross_end,
-                               LayoutUnit container_main_end);
+                               LayoutUnit container_main_end,
+                               bool in_fragmentation = false);
 
   void PopulateMainGapForFirstItem(LayoutUnit cross_end);
 

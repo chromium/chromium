@@ -67,16 +67,16 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
   return gap_geometry;
 }
 
-void FlexGapAccumulator::BuildGapsForCurrentItem(
-    const FlexLine& flex_line,
-    wtf_size_t flex_line_index,
-    LogicalOffset item_offset,
-    bool is_first_item,
-    bool is_last_item,
-    bool is_last_line,
-    LayoutUnit line_cross_start,
-    LayoutUnit line_cross_end,
-    LayoutUnit container_main_end) {
+void FlexGapAccumulator::BuildGapsForCurrentItem(const FlexLine& flex_line,
+                                                 wtf_size_t flex_line_index,
+                                                 LogicalOffset item_offset,
+                                                 bool is_first_item,
+                                                 bool is_last_item,
+                                                 bool is_last_line,
+                                                 LayoutUnit line_cross_start,
+                                                 LayoutUnit line_cross_end,
+                                                 LayoutUnit container_main_end,
+                                                 bool in_fragmentation) {
   if (first_flex_line_processed_index_ == kNotFound) {
     first_flex_line_processed_index_ = flex_line_index;
   }
@@ -84,14 +84,10 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   wtf_size_t fragment_relative_line_index =
       flex_line_index - first_flex_line_processed_index_;
 
-  // TODO(490343456): There is a bug in the flex layout
-  // algorithm that can cause the size of a line to be 0. In such cases we make
-  // sure to not create a main gap, while the underlying bug and behaviur is
-  // being investigated.
   const bool need_to_add_main_gap =
       (main_gaps_.empty() ||
        main_gaps_.size() - 1 < fragment_relative_line_index) &&
-      !is_last_line && line_cross_start != line_cross_end;
+      !is_last_line;
   const bool is_first_line = fragment_relative_line_index == 0;
   const bool single_line = is_first_line && is_last_line;
 
@@ -115,17 +111,35 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
     }
   }
 
-  // Track the per-line effective gap size (one entry per line, indexed by
-  // fragment-relative line index). We push back on the second item (the first
-  // time we know the effective gap), or on the only item for single-item
-  // lines. Single-item lines will have `effective_gap_between_items` == 0
-  // since it's never set, but that's fine since they don't produce
-  // `CrossGap`s — the entry only exists to keep the vector properly indexed.
-  const bool should_add_cross_gap_size =
-      (!is_first_item || is_last_item) &&
-      cross_gap_sizes_.size() <= fragment_relative_line_index;
-  if (should_add_cross_gap_size) {
-    cross_gap_sizes_.push_back(flex_line.effective_gap_between_items);
+  // TODO(490343456): There is a bug in the flex layout
+  // algorithm that can cause the size of a line to be 0. In such cases we make
+  // sure to not create a main gap, while the underlying bug and behavior is
+  // being investigated. However, there are also legitimate cases where we can
+  // have a line of size 0.
+  //
+  // We need to make sure we populate the `cross_gap_sizes_` for all lines.
+  // In fragmentation scenarios, we may have some lines where we are not
+  // processing the first item or the last item in the flex line (e.g. the nth
+  // item in a line gets fragmented and finished in a separate fragment, but its
+  // the only item in that line that got fragmented). In such cases we simply
+  // need to populate the `cross_gap_sizes_` whenever we don't yet have an entry
+  // for that line. This suffices for all other cases as well, since in
+  // fragmentation scenarios, the flex line already has
+  // `effective_gap_between_items` computed.
+  if (in_fragmentation) {
+    if (cross_gap_sizes_.size() == fragment_relative_line_index) {
+      cross_gap_sizes_.push_back(flex_line.effective_gap_between_items);
+    }
+  } else {
+    // For non-fragmentation scenarios, we need to wait to populate the
+    // `cross_gap_sizes_` until we see the second item in a line, by which the
+    // flex line would have the `effective_gap_between_items` computed. We need
+    // the `is_last_item` check to handle the case where we have a single item
+    // in a line.
+    if ((!is_first_item || is_last_item) &&
+        cross_gap_sizes_.size() == fragment_relative_line_index) {
+      cross_gap_sizes_.push_back(flex_line.effective_gap_between_items);
+    }
   }
 
   // The first item in any line doesn't have any `CrossGap` associated with

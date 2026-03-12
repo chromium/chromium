@@ -6680,8 +6680,6 @@ crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-098.ht
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html [ Failure ]
 crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Failure ]
 
-crbug.com/487338359 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-012.html [ Crash Failure ]
-
 crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
 crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-005.html [ Failure ]
 crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-006.html [ Failure ]

@@ -2588,7 +2588,8 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       gap_accumulator->BuildGapsForCurrentItem(
           (*flex_lines)[flex_line_idx], flex_line_idx, offset,
           is_first_item_in_line, is_last_item_in_line, is_last_line,
-          line_cross_start, line_cross_end, container_main_end);
+          line_cross_start, line_cross_end, container_main_end,
+          /*in_fragmentation=*/true);
 
       if (!is_column_ && is_last_item_in_line &&
           has_inflow_child_break_inside_line[flex_line_idx] && !is_last_line) {
