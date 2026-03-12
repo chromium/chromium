@@ -10,4 +10,7 @@ specific_include_rules = {
   "reduce_accept_language_browsertest.cc" : [
     "+third_party/blink/public/common"
   ],
+  "content_language_browsertest.cc" : [
+    "+third_party/blink/public/common"
+  ],
 }

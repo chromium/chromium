@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -57,27 +58,23 @@ const char kLargeLanguages[] =
 // As translate agent reports the metrics can be later than
 // MergeHistogramDeltasForTesting, retries fetching |histogram_name| until it
 // contains at least |count| samples.
-int RetryForHistogramUntilCountReached(
+void RetryForHistogramUntilCountReached(
     const base::HistogramTester* histogram_tester,
     const std::string& histogram_name,
     int count) {
-  while (true) {
+  ASSERT_TRUE(base::test::RunUntil([&]() {
     base::ThreadPoolInstance::Get()->FlushForTesting();
-    base::RunLoop().RunUntilIdle();
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
     std::vector<base::Bucket> buckets =
         histogram_tester->GetAllSamples(histogram_name);
     int total = 0;
-    for (const auto& bucket : buckets)
+    for (const auto& bucket : buckets) {
       total += bucket.count;
-
-    if (total >= count)
-      return total;
-
-    content::FetchHistogramsFromChildProcesses();
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-    base::RunLoop().RunUntilIdle();
-  }
+    }
+    return total >= count;
+  }));
 }
 
 }  // namespace
@@ -194,8 +191,9 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   // URLLoaderInterceptor callback
   bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
     if (expected_request_urls_.find(params->url_request.url) ==
-        expected_request_urls_.end())
+        expected_request_urls_.end()) {
       return false;
+    }
 
     std::string path = "chrome/test/data/content_language";
     path.append(static_cast<std::string>(params->url_request.url.path()));
