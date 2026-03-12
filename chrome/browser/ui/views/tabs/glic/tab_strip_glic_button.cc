@@ -30,6 +30,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -968,6 +969,20 @@ void TabStripGlicButton::SetLabelMargins() {
   label()->SetProperty(
       views::kMarginsKey,
       gfx::Insets().set_right(kLabelRightMargin).set_bottom(bottom));
+}
+
+// TODO(crbug.com/485257764): Remove once TabStripGlicButton inherits from
+// GlicButton<T>
+bool TabStripGlicButton::GetVisible() {
+  return TabStripNudgeButton::GetVisible();
+}
+
+float TabStripGlicButton::GetWidthFactor() const {
+  return TabStripNudgeButton::GetWidthFactor();
+}
+
+ui::PropertyHandler* TabStripGlicButton::GetPropertyHandler() {
+  return this;
 }
 
 BEGIN_METADATA(TabStripGlicButton)

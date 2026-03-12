@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -50,7 +51,6 @@
 class BrowserWindowInterface;
 class Profile;
 class TabStripNudgeButton;
-class ToolbarButton;
 
 namespace views {
 class MenuModelAdapter;
@@ -73,7 +73,8 @@ inline constexpr ui::ColorId kForegroundOnAltBackground =
 inline constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 
 inline constexpr int kCollapsedWidth = 41;
-inline constexpr int kSplitButtonFlatEdgeRadius = 2;
+inline constexpr int kSplitFlatEdgetRadius = 2;
+inline constexpr int kSplitRoundedEdgeRadius = 10;
 
 template <typename T>
   requires std::derived_from<T, views::LabelButton>
@@ -221,6 +222,7 @@ class GlicButton : public GlicBaseShim<T>,
 
     start_width_ = PreferredSize().width();
     end_width_ = kCollapsedWidth;
+
     width_animation_controller_->Start(old_width_state, width_state_);
 
     this->label()->SetPaintToLayer();
@@ -317,7 +319,9 @@ class GlicButton : public GlicBaseShim<T>,
     this->PreferredSizeChanged();
   }
 
-  bool GetIsShowingNudge() const { return width_state_ == WidthState::kNudge; }
+  bool GetIsShowingNudge() const override {
+    return width_state_ == WidthState::kNudge;
+  }
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
@@ -486,13 +490,10 @@ class GlicButton : public GlicBaseShim<T>,
   // Show or hide the split button styling, used when the task indicator is
   // present.
   void SetSplitButtonCornerStyling() {
-    SetLeftRightCornerRadii(kSplitButtonFlatEdgeRadius,
-                            kSplitButtonFlatEdgeRadius);
+    SetLeftRightCornerRadii(GetSplitRoundedEdgeRadius(), kSplitFlatEdgetRadius);
   }
 
-  void ResetSplitButtonCornerStyling() {
-    SetLeftRightCornerRadii(T::GetCornerRadius(), T::GetCornerRadius());
-  }
+  virtual void ResetSplitButtonCornerStyling() = 0;
 
   void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi) {
     UpdateInkdropHoverColor(true);
@@ -509,7 +510,9 @@ class GlicButton : public GlicBaseShim<T>,
     UpdateColors();
   }
 
-  float GetWidthFactor() const { return width_factor_; }
+  float GetWidthFactor() const override { return width_factor_; }
+
+  virtual int GetSplitRoundedEdgeRadius() { return kSplitRoundedEdgeRadius; }
 
   void SetWidthFactor(float factor) {
     width_factor_ = factor;
@@ -664,13 +667,7 @@ class GlicButton : public GlicBaseShim<T>,
  private:
   // views::LabelButton:
   void SetText(std::u16string_view text) override {
-    if constexpr (std::is_same_v<T, ToolbarButton>) {
-      // SetText is private in ToolbarButton and prefers to use SetHighlight.
-      std::u16string highlight_text(text);
-      this->SetHighlight(highlight_text, kTextOnHighlight);
-    } else {
-      this->SetText(text);
-    }
+    T::SetText(text);
 
     // Setting label text seems to clear the margin. Set it again.
     this->label()->SetProperty(views::kMarginsKey,
