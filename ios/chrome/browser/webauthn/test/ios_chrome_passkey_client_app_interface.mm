@@ -7,11 +7,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
-#import "ios/chrome/browser/webauthn/public/scoped_passkey_reauth_module_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 
 namespace {
 
@@ -57,8 +59,6 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
 @interface IOSChromePasskeyClientAppInterface () {
   std::unique_ptr<ScopedPasskeyKeychainProviderBridgeOverride>
       _scopedPasskeyKeychainProviderBridgeOverride;
-  std::unique_ptr<ScopedPasskeyReauthModuleOverride>
-      _scopedPasskeyReauthModuleOverride;
 }
 
 @end
@@ -80,12 +80,6 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
       ->_scopedPasskeyKeychainProviderBridgeOverride;
 }
 
-+ (std::unique_ptr<ScopedPasskeyReauthModuleOverride>&)
-    scopedPasskeyReauthModuleOverride {
-  return [IOSChromePasskeyClientAppInterface sharedInstance]
-      ->_scopedPasskeyReauthModuleOverride;
-}
-
 + (void)setUpFakePasskeyKeychainProviderBridge {
   PasskeyKeychainProviderBridge* bridge = [[PasskeyKeychainProviderBridge alloc]
       initWithPasskeyKeychainProvider:std::make_unique<
@@ -95,25 +89,12 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
       ScopedPasskeyKeychainProviderBridgeOverride::MakeAndArmForTesting(bridge);
 }
 
-+ (void)setUpMockReauthenticationModule {
-  MockReauthenticationModule* mockModule =
-      [[MockReauthenticationModule alloc] init];
-  [mockModule setExpectedResult:ReauthenticationResult::kSuccess];
-  [IOSChromePasskeyClientAppInterface scopedPasskeyReauthModuleOverride] =
-      ScopedPasskeyReauthModuleOverride::MakeAndArmForTesting(mockModule);
-}
-
-+ (void)removeMockReauthenticationModule {
-  [IOSChromePasskeyClientAppInterface scopedPasskeyReauthModuleOverride] =
-      nullptr;
-}
-
 + (void)setMockReauthenticationResult:(ReauthenticationResult)result {
-  MockReauthenticationModule* module =
-      base::apple::ObjCCastStrict<MockReauthenticationModule>(
-          [IOSChromePasskeyClientAppInterface scopedPasskeyReauthModuleOverride]
-              ->Get());
-  [module setExpectedResult:result];
+  MockReauthenticationModule* mockReauthModule =
+      ReauthenticationServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile())
+          ->GetReauthModule();
+  [mockReauthModule setExpectedResult:result];
 }
 
 @end

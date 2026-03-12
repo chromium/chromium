@@ -13,11 +13,13 @@ source_set("eg_app_support+eg2") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_chrome",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+    "//ios/chrome/test/app:test_support",
     "//testing/gmock",
   ]
 }

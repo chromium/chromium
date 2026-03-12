@@ -64,9 +64,6 @@ id<GREYMatcher> IncognitoInterstitialView() {
   // Make sure the fake passkey keychain provider bridge is set.
   [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 
-  // Make sure the mock reauthentication module is set and will return success.
-  [IOSChromePasskeyClientAppInterface setUpMockReauthenticationModule];
-
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
 
@@ -74,11 +71,6 @@ id<GREYMatcher> IncognitoInterstitialView() {
 
   // Sign in.
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-}
-
-- (void)tearDownHelper {
-  [IOSChromePasskeyClientAppInterface removeMockReauthenticationModule];
-  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

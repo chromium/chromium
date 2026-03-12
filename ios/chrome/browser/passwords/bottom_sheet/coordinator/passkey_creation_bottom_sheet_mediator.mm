@@ -41,7 +41,7 @@
   NSString* _accountForSaving;
 
   // Module containing the reauthentication mechanism.
-  __weak id<ReauthenticationProtocol> _reauthModule;
+  id<ReauthenticationProtocol> _reauthModule;
 
   // URL of the current page the bottom sheet is being displayed on.
   GURL _URL;

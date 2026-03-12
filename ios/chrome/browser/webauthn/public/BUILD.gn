@@ -8,8 +8,6 @@ source_set("public") {
     "passkey_welcome_screen_util.mm",
     "scoped_passkey_keychain_provider_override.h",
     "scoped_passkey_keychain_provider_override.mm",
-    "scoped_passkey_reauth_module_override.h",
-    "scoped_passkey_reauth_module_override.mm",
   ]
   deps = [
     "//base",
@@ -20,7 +18,6 @@ source_set("public") {
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
     "//ios/chrome/common/credential_provider/ui",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
-    "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
 }
