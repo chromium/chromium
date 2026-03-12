@@ -123,13 +123,10 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
   }
 }
 
-using ContextType = browser_test_util::ContextType;
-
-class OmniboxApiTestBase : public ExtensionApiTest {
+class OmniboxApiTest : public ExtensionApiTest {
  public:
-  explicit OmniboxApiTestBase(ContextType context_type = ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
-  ~OmniboxApiTestBase() override = default;
+  OmniboxApiTest() = default;
+  ~OmniboxApiTest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -172,30 +169,6 @@ class OmniboxApiTestBase : public ExtensionApiTest {
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
-class OmniboxApiTest : public OmniboxApiTestBase,
-                       public testing::WithParamInterface<ContextType> {
- public:
-  OmniboxApiTest() : OmniboxApiTestBase(GetParam()) {}
-  ~OmniboxApiTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         OmniboxApiTest,
-                         testing::Values(ContextType::kServiceWorker));
-
-// Desktop Android only supports service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         OmniboxApiTest,
-                         testing::Values(ContextType::kPersistentBackground));
-
-using OmniboxApiBackgroundPageTest = OmniboxApiTest;
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OmniboxApiBackgroundPageTest,
-                         testing::Values(ContextType::kNone));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 // TODO(crbug.com/326903502): Flaky on TSan.
@@ -204,14 +177,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 #else
 #define MAYBE_SendSuggestions SendSuggestions
 #endif
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_SendSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   constexpr char kBackground[] =
       R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
@@ -329,14 +302,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SendSuggestions) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/405219624): Port these tests to desktop Android. Most require
 // access to the Views location bar, which is not available on Android.
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   // This extension will collect input entered into the omnibox and pass it
   // to the browser when instructed.
@@ -388,15 +361,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
 // Tests receiving suggestions from and sending input to the incognito context
 // of an incognito split mode extension.
 // Regression test for https://crbug.com/40100987.
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, IncognitoSplitMode) {
   static constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
            "incognito": "split",
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   static constexpr char kBackground[] =
       R"(let suggestionSuffix =
@@ -506,7 +479,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
 // Tests that the autocomplete popup doesn't reopen after accepting input for
 // a given query.
 // http://crbug.com/88552
-IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
 
   LocationBar* location_bar = GetLocationBar(browser());
@@ -550,14 +523,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
 #else
 #define MAYBE_DeleteOmniboxSuggestionResult DeleteOmniboxSuggestionResult
 #endif
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   static constexpr char kBackground[] =
       R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
@@ -659,15 +632,15 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 // Tests that if the user hits "backspace" (leaving the extension keyword mode),
 // the extension suggestions are not sent.
 // TODO(crbug.com/40839815): Flaky.
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest,
                        DISABLED_ExtensionSuggestionsOnlyInKeywordMode) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "kw" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   static constexpr char kBackground[] =
       R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
@@ -751,14 +724,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SetDefaultSuggestionFailures) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "word" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   constexpr char kBackground[] =
       R"(chrome.test.runTests([
@@ -820,14 +793,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
 #else
 #define MAYBE_SetDefaultSuggestion SetDefaultSuggestion
 #endif
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
   constexpr char kManifest[] =
       R"({
            "name": "SetDefaultSuggestion",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "word" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   constexpr char kBackground[] =
       R"(chrome.test.runTests([
@@ -888,14 +861,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
 #else
 #define MAYBE_PassEmptySuggestions PassEmptySuggestions
 #endif
-IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
   static constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true }
+           "background": { "service_worker": "background.js" }
          })";
   // Register a listener that passes back empty suggestions if there is no
   // text content.
@@ -965,7 +938,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
+class UnscopedOmniboxApiTest : public OmniboxApiTest {
  public:
   UnscopedOmniboxApiTest() {
     // TODO(crbug.com/441102004): Update UnscopedExtensionZeroSuggest to support
@@ -983,7 +956,7 @@ class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
 
  private:
   void SetUpOnMainThread() override {
-    OmniboxApiTestBase::SetUpOnMainThread();
+    OmniboxApiTest::SetUpOnMainThread();
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
     SetStopTimerDuration(base::Seconds(30));
