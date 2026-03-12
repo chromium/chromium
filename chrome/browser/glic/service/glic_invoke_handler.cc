@@ -63,7 +63,7 @@ void GlicInvokeHandler::Invoke() {
   host_observation_.Observe(&instance_->host());
 }
 
-void GlicInvokeHandler::ClientReadyToShow(const mojom::OpenPanelInfo&) {
+void GlicInvokeHandler::WebClientConnected() {
   host_observation_.Reset();
   SendToClient();
 }

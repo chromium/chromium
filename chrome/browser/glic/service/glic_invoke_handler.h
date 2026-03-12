@@ -50,8 +50,8 @@ class GlicInvokeHandler : public Host::Observer {
   // May delete this.
   void OnError(GlicInvokeError error);
 
-  // Host::Observer:
-  void ClientReadyToShow(const mojom::OpenPanelInfo&) override;
+  // glic::Host::Observer
+  void WebClientConnected() override;
 
  private:
   void SendToClient();
