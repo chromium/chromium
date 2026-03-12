@@ -1336,12 +1336,14 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
 
   // Clear some of the suggestions based on the ablation study.
   if (autofill_field &&
+      all_suggestion_data.contains(SuggestionDataSource::kAddress) &&
       !all_suggestion_data[SuggestionDataSource::kAddress].empty() &&
       EvaluateAblationStudy(*autofill_field, FillingProduct::kAddress,
                             /*has_suggestions=*/true)) {
     all_suggestion_data[SuggestionDataSource::kAddress].clear();
   }
   if (autofill_field &&
+      all_suggestion_data.contains(SuggestionDataSource::kCreditCard) &&
       !all_suggestion_data[SuggestionDataSource::kCreditCard].empty() &&
       EvaluateAblationStudy(*autofill_field, FillingProduct::kCreditCard,
                             /*has_suggestions=*/true)) {
@@ -1355,7 +1357,8 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   const DenseSet<SuggestionDataSource>* supported_mergeable_sources;
   for (SuggestionDataSource source :
        SuggestionGenerator::kOrderedPrioritizedSources) {
-    if (all_suggestion_data[source].empty()) {
+    if (!all_suggestion_data.contains(source) ||
+        all_suggestion_data[source].empty()) {
       continue;
     }
     if (!highest_priority_source.has_value()) {
@@ -1367,7 +1370,7 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
     }
     if (!supported_mergeable_sources ||
         !supported_mergeable_sources->contains(source)) {
-      all_suggestion_data[source].clear();
+      all_suggestion_data.erase(source);
     }
   }
 
