@@ -924,7 +924,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
-    expires_after="2024-12-01">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -932,12 +933,14 @@ chromium-metrics-reviews@google.com.
     for a password since last Chrome foregrounding. Reported when Chrome is put
     in foreground. Note: events where the count is zero were removed in M91.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
-    units="count" expires_after="2024-12-01">
+    units="count" expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -945,12 +948,14 @@ chromium-metrics-reviews@google.com.
     nil argument since last Chrome foregrounding. Reported when Chrome is put in
     foreground. Note: events where the count is zero were removed in M91.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.IsEnabled.Startup" enum="Boolean"
     expires_after="2026-08-30">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -960,7 +965,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
-    units="count" expires_after="2024-12-01">
+    units="count" expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -968,13 +974,15 @@ chromium-metrics-reviews@google.com.
     newly-generated password into the system Keychain since last Chrome
     foregrounding. Reported when Chrome is put in foreground.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.NewCredentialUsername"
     enum="IOSCredentialProviderNewCredentialUsername"
-    expires_after="2024-12-01">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -982,7 +990,8 @@ chromium-metrics-reviews@google.com.
     extension and tracks the username state of the new credential. Reported when
     Chrome is put in the foreground.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
@@ -1007,52 +1016,64 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordCreated"
-    enum="IOSCredentialProviderPasswordCreated" expires_after="2024-12-01">
+    enum="IOSCredentialProviderPasswordCreated" expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     Recorded when a new password is created via the Credential Provider
     extension. Reported when Chrome is put in the foreground.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2025-12-14">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     The number of times the Credential Extension user selected for a Password
     since last Chrome foregrounding. Reported when Chrome is put in foreground.
     Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2025-12 to 2026-03. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasskeyUseCount" units="count"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     The number of times the Credential Extension authenticated with a passkey,
     without user intervention (except OS-provided UI) since last Chrome
     foregrounding. Reported when Chrome is put in foreground.
+
+    Note: this was briefly expired in 2026-03. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2025-12-14">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     The number of times the Credential Extension selected a Password without
     user intervention since last Chrome foregrounding. Reported when Chrome is
     put in foreground. Note: events where the count is zero were removed in M91.
+
+    Note: this was expired from 2025-12 to 2026-03. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SaveCredentialFailureCount"
-    units="count" expires_after="2024-12-01">
+    units="count" expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -1060,35 +1081,43 @@ chromium-metrics-reviews@google.com.
     newly-generated credential to disk since last Chrome foregrounding. Reported
     when Chrome is put in foreground.
 
-    Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+    Note: this was expired from 2023-06 to 2023-12 and from 2024-12 to 2026-03.
+    Data may be missing.
   </summary>
 </histogram>
 
 <histogram
     name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
     enum="iOSCredentialIdentityStoreErrorForReporting"
-    expires_after="2024-12-01">
+    expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     Recorded when a request to replace identities in ASCredentialIdentityStore
     fails.
+
+    Note: this was expired from 2024-12 to 2026-03. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.StatusDidChangeTo.Startup"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
     Logged once per app launch if the status did changed. Logs the new status
     value (enabled/disabled) of the credential provider in the user's iOS
     settings on startup.
+
+    Note: this was expired from 2025-08 to 2026-03. Data may be missing.
   </summary>
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
-    expires_after="2026-05-17">
+    expires_after="2026-09-17">
+  <owner>rgod@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
