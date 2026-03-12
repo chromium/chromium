@@ -490,6 +490,9 @@ export class ComposeboxElement extends I18nMixinLit
   private setupResizeObservers_() {
     const composeboxResizeObserver = new ResizeObserver(debounce(this, () => {
       this.fire('composebox-resize', {height: this.offsetHeight});
+      if (!this.disableCaretColorAnimation) {
+        this.updateCaret_();
+      }
     }, DEBOUNCE_TIMEOUT_MS));
     this.resizeObservers_.push(composeboxResizeObserver);
     composeboxResizeObserver.observe(this);
