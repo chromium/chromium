@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
@@ -55,6 +56,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -89,7 +91,8 @@ using ::testing::UnorderedElementsAre;
 
 class ChromeNavigationBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeNavigationBrowserTest() {
+  ChromeNavigationBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmFeature);
   }
 
@@ -112,6 +115,7 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
+    https_server_.StartAcceptingConnections();
   }
 
   void PreRunTestOnMainThread() override {
@@ -124,11 +128,23 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  void SetUp() override {
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.SetCertHostnames({"saved.com", "saved2.com", "foo.com",
+                                    "coop1.com", "coop2.com", "coop3.com",
+                                    "coop4.com"});
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+    InProcessBrowserTest::SetUp();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
   void ExpectHideAndRestoreSadTabWhenNavigationCancels(bool cross_site);
   void ExpectHideSadTabWhenNavigationCompletes(bool cross_site);
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2970,9 +2986,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest, RedirectFlow) {
 // sites in user prefs, which requires the //chrome layer.
 class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
  public:
-  // Use an HTTP server, since the COOP header is only populated for HTTPS.
-  SiteIsolationForCOOPBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  SiteIsolationForCOOPBrowserTest() {
     // Enable COOP isolation with a max of 3 stored sites.
     const std::vector<base::test::FeatureRefAndParams> kEnabledFeatures = {
         {::features::kSiteIsolationForCrossOriginOpenerPolicy,
@@ -2996,26 +3010,8 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
     return sites;
   }
 
- protected:
-  void SetUp() override {
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    https_server_.SetCertHostnames({"saved.com", "saved2.com", "foo.com",
-                                    "coop1.com", "coop2.com", "coop3.com",
-                                    "coop4.com"});
-    ASSERT_TRUE(https_server_.InitializeAndListen());
-    ChromeNavigationBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    https_server_.StartAcceptingConnections();
-    ChromeNavigationBrowserTest::SetUpOnMainThread();
-  }
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_;
 };
 
 // Verifies that sites isolated due to COOP headers are persisted across
@@ -3256,4 +3252,50 @@ IN_PROC_BROWSER_TEST_F(FencedFrameNavigationBrowserTest,
       browser()->tab_strip_model()->GetWebContentsAt(index_of_new_tab);
   EXPECT_TRUE(WaitForLoadStop(new_web_contents));
   EXPECT_TRUE(new_web_contents->GetLastCommittedURL().is_empty());
+}
+
+// This is a regression test for crbug.com/456473704. It tests that navigating
+// to a top-level data URL that inherits DocumentIsolationPolicy from the
+// context the navigation started in does not crash. In order for the top-level
+// navigation to succeed, we have it start from the context menu action "Open
+// link in a new tab". Otherwise, the top-level navigation would be blocked.
+// This is why this test is located in the Chrome layer and not in the
+// DocumentIsolationPolicy browsertests in content/.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       TopLevelDataURLNavigationWithDocumentIsolationPolicy) {
+  ContextMenuNotificationObserver menu_observer(
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  // First, navigate to a page with DocumentIsolationPolicy and a data URL link.
+  const GURL kDocumentIsolationPolicyURL(
+      https_server()->GetURL("/set-header-with-file/chrome/test/data/"
+                             "data_url_link.html?document-isolation-policy: "
+                             "isolate-and-require-corp"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kDocumentIsolationPolicyURL));
+
+  // Open a context menu.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  gfx::Rect offset = tab->GetContainerBounds();
+  mouse_event.SetPositionInScreen(15 + offset.x(), 15 + offset.y());
+  mouse_event.click_count = 1;
+  tab->GetPrimaryMainFrame()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetPrimaryMainFrame()->GetRenderWidgetHost()->ForwardMouseEvent(
+      mouse_event);
+
+  // The menu_observer will select "Open link in new tab". Wait for the new tab
+  // to be added.
+  content::WebContents* new_tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(new_tab));
+
+  EXPECT_TRUE(new_tab->GetLastCommittedURL().SchemeIs(url::kDataScheme));
 }

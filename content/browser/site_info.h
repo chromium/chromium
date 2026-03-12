@@ -439,6 +439,27 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
       const UrlInfo& url_info,
       std::optional<GURL> effective_url);
 
+  // The following functions are helpers for GetAgentClusterKeyForURL that
+  // covers the various fetch and local schemes.
+  static AgentClusterKey GetAgentClusterKeyForNonOpaqueOrigin(
+      const IsolationContext& isolation_context,
+      const UrlInfo& url_info,
+      const url::Origin origin,
+      AgentClusterKey::OACStatus oac_status,
+      bool requires_origin_keyed_process,
+      bool is_origin_isolated_sandboxed_data_iframe);
+  static AgentClusterKey GetAgentClusterKeyForSchemeOnlyOrigin(
+      const UrlInfo& url_info,
+      const url::Origin& origin,
+      AgentClusterKey::OACStatus oac_status);
+  static AgentClusterKey GetAgentClusterKeyForDataURL(
+      const UrlInfo& url_info,
+      const url::Origin& origin,
+      AgentClusterKey::OACStatus oac_status);
+  static AgentClusterKey GetAgentClusterKeyForBlobURL(
+      const GURL& url,
+      AgentClusterKey::OACStatus oac_status);
+
   // Helper function for ProcessLockCompareTo(). Returns a std::tie of the
   // SiteInfo elements required for doing a ProcessLock comparison.
   auto MakeProcessLockComparisonKey() const;

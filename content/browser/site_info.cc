@@ -874,7 +874,8 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   // Sandboxed data: subframes should be in the process of their
   // precursor origin. Replace their URL and origin by the precursor URL and
   // precursor origin so that they are appropriately taken into account by the
-  // OAC code below.
+  // OAC code below. They will then be handled in
+  // GetAgentClusterKeyForNonOpaqueOrigin.
   url::Origin origin = GetPossiblyOverriddenOriginFromUrl(url, url_info.origin);
   if (is_origin_isolated_sandboxed_data_iframe && origin.opaque() &&
       url.SchemeIs(url::kDataScheme)) {
@@ -914,15 +915,6 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   AgentClusterKey::OACStatus oac_status =
       oac_isolation_state.process_isolation_oac_status();
 
-  // Now compute the correct AgentClusterKey for the SiteInfo.
-
-  // Cross-origin isolated contexts should always be given an origin-keyed
-  // AgentClusterKey with a CrossOriginIsolationKey.
-  if (url_info.cross_origin_isolation_key.has_value()) {
-    return AgentClusterKey::CreateWithCrossOriginIsolationKey(
-        origin, url_info.cross_origin_isolation_key.value(), oac_status);
-  }
-
   bool requires_origin_keyed_process =
       oac_status == AgentClusterKey::OACStatus::kOriginKeyedByHeader ||
       oac_status == AgentClusterKey::OACStatus::kOriginKeyedByDefault;
@@ -933,71 +925,17 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   CHECK(!requires_origin_keyed_process ||
         SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
 
-  if (requires_origin_keyed_process) {
-    return AgentClusterKey::CreateOriginKeyed(origin, oac_status);
-  }
+  // Now compute the correct AgentClusterKey for the SiteInfo.
 
   // If the url has a host, then determine the AgentClusterKey. Skip file URLs
   // to avoid a situation where site URL of file://localhost/ would mismatch
   // Blink's origin (which ignores the hostname in this case - see
   // https://crbug.com/776160).
   if (!origin.host().empty() && origin.scheme() != url::kFileScheme) {
-    // For Strict Origin Isolation, use the full origin instead of site for all
-    // HTTP/HTTPS URLs.
-    // TODO(crbug.com/433443082): This should return an origin-keyed
-    // AgentClusterKey instead of a site-keyed one.
-    if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
-        origin.GetURL().SchemeIsHTTPOrHTTPS()) {
-      return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
-    }
-
-    // For isolated sandboxed iframes in per-origin mode we just return a
-    // site-keyed AgentClusterKey with a site URL that is the origin, as we
-    // should be using the full origin for the SiteInstance, but we don't need
-    // to track the origin like we do for OriginAgentCluster. Note that the
-    // origin is actually the precursor origin of the data URL, as it was
-    // rewritten at the beginning of this function.
-    // TODO(crbug.com/433443082): This should return an origin-keyed
-    // AgentClusterKey instead of a site-keyed one.
-    if (is_origin_isolated_sandboxed_data_iframe) {
-      return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
-    }
-
-    // Isolated origins should use the full origin as their site URL. For the
-    // non-OAC isolated origins mechanism in
-    // ChildProcessSecurityPolicy::AddFutureIsolatedOrigins(), a subdomain of an
-    // isolated origin should also use that isolated origin's site URL.
-    // Note: Here we check that the OAC status computed for the navigation is
-    // false. It might be different from the state requested in the UrlInfo.
-    // This is the case for example when a navigation requests OAC 1? in a
-    // BrowsingInstance that already has a site-keyed SiteInfo for this origin.
-    // In this case, the OAC request is not granted. There are similar cases
-    // with OriginIsolationByDefault involving opt-outs, such as a regular
-    // navigation in an origin that already opted out or the computation of the
-    // expected process lock in
-    // ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks (which is
-    // always created from an UrlInfo with default OAC status but picks up the
-    // correct OAC status from the OAC status stored in the BrowsingInstance).
-    // In any case, it is still safe to pass |requests_origin_keyed_process| =
-    // false in GetMatchingProcessIsolatedOrigin because we have already
-    // computed that the appropriate OAC status for this SiteInfo is site-keyed,
-    // regardless of what the UrlInfo was asking for.
-    CHECK(!requires_origin_keyed_process);
-    url::Origin isolated_origin;
-    GURL site_url = GetSiteForOrigin(origin);
-    if (policy->GetMatchingProcessIsolatedOrigin(
-            isolation_context, origin, /*requests_origin_keyed_process=*/false,
-            site_url, &isolated_origin)) {
-      return AgentClusterKey::CreateSiteKeyed(isolated_origin.GetURL(),
-                                              oac_status);
-    }
-
-    // All other cases where the origin has a host should get a site-keyed
-    // AgentClusterKey based on the Site URL for the origin.
-    // TODO(crbug.com/342366372): Return an origin-keyed AgentClusterKey by
-    // default once SiteInstanceGroup has shipped and different SiteInstances
-    // can share the same process.
-    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+    return GetAgentClusterKeyForNonOpaqueOrigin(
+        isolation_context, url_info, origin, oac_status,
+        requires_origin_keyed_process,
+        is_origin_isolated_sandboxed_data_iframe);
   }
 
   // If there is no host but there is a scheme, return a site-keyed
@@ -1007,58 +945,206 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
     // Prefer to use the scheme of |origin| rather than |url|, to correctly
     // cover blob:file: and filesystem:file: URIs (see also
     // https://crbug.com/697111).
-    DCHECK(!origin.scheme().empty());
-    GURL site_url = GURL(origin.scheme() + ":");
-    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+    return GetAgentClusterKeyForSchemeOnlyOrigin(url_info, origin, oac_status);
   }
 
   if (url.SchemeIs(url::kDataScheme)) {
+    // Origin isolated sandboxed data iframes had their origin rewritten to the
+    // precursor origin at the beginning of this function and are handled by
+    // GetAgentClusterKeyForNonOpaqueOrigin.
     CHECK(!is_origin_isolated_sandboxed_data_iframe);
-    // We get here for browser-initiated navigations to data URLs, as sandboxed
-    // data iframes have their origin rewritten to their precursor origin before
-    // determining their Origin-Agent-Cluster status, and should already have
-    // been handled above.
-    //
-    // We do not want to use the complete data URL as a site URL, because it
-    // contains the entire body of the data: URL. At the same time, this data
-    // URL does not have a precursor origin because it's a browser-initiated
-    // navigation to a data URL. So the only practical way to have a site URL in
-    // this case is to serialize the nonce of the opaque origin provided to the
-    // data URL. In addition, using the entire data URL as a site URL wouldn't
-    // distinguish between two instances of the same data URL in two independent
-    // tabs. However nonces do distinguish between these two instances. Since
-    // each browser-initiated data: URL is given a different opaque origin with
-    // a different nonce, this means each browser-initiated data: URL will get
-    // its own process. See https://crbug.com/863069.
-    // TODO(crbug.com/433443082): This should return an origin-keyed
-    // AgentClusterKey instead of a site-keyed one.
-    GURL site_url = GetOriginBasedSiteURLForDataURL(origin);
-    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+    return GetAgentClusterKeyForDataURL(url_info, origin, oac_status);
   }
 
   if (url.SchemeIsBlob()) {
-    // In some cases, it is not safe to use just the scheme as a site URL,
-    // as that might allow two URLs created by different sites to share a
-    // process. See https://crbug.com/863623.
-    //
-    // TODO(alexmos,creis): This should eventually be expanded to certain
-    // other schemes, such as file:.
-    // We get here for blob URLs of form blob:null/guid.  Use the full URL
-    // with the GUID in that case, which isolates all blob URLs with unique
-    // origins from each other.  Remove hash from the URL since
-    // same-document navigations shouldn't use a different site URL.
-    GURL site_url = url;
-    if (url.has_ref()) {
-      GURL::Replacements replacements;
-      replacements.ClearRef();
-      site_url = url.ReplaceComponents(replacements);
-    }
-    return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+    return GetAgentClusterKeyForBlobURL(url, oac_status);
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
   DCHECK(!url.GetScheme().empty());
   GURL site_url = GURL(url.GetScheme() + ":");
+  return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+}
+
+// static
+AgentClusterKey SiteInfo::GetAgentClusterKeyForNonOpaqueOrigin(
+    const IsolationContext& isolation_context,
+    const UrlInfo& url_info,
+    const url::Origin origin,
+    AgentClusterKey::OACStatus oac_status,
+    bool requires_origin_keyed_process,
+    bool is_origin_isolated_sandboxed_data_iframe) {
+  CHECK(!origin.host().empty() && origin.scheme() != url::kFileScheme);
+  CHECK(!origin.opaque());
+  // Cross-origin isolated contexts should always be given an origin-keyed
+  // AgentClusterKey with a CrossOriginIsolationKey.
+  if (url_info.cross_origin_isolation_key.has_value()) {
+    return AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        origin, url_info.cross_origin_isolation_key.value(), oac_status);
+  }
+
+  // If an origin-keyed process was required, return an origin-keyed
+  // AgentClusterKey.
+  if (requires_origin_keyed_process) {
+    return AgentClusterKey::CreateOriginKeyed(origin, oac_status);
+  }
+
+  // For Strict Origin Isolation, use the full origin instead of site for all
+  // HTTP/HTTPS URLs.
+  // TODO(crbug.com/433443082): This should return an origin-keyed
+  // AgentClusterKey instead of a site-keyed one.
+  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() &&
+      origin.GetURL().SchemeIsHTTPOrHTTPS()) {
+    return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
+  }
+
+  // For isolated sandboxed iframes in per-origin mode we just return a
+  // site-keyed AgentClusterKey with a site URL that is the origin, as we
+  // should be using the full origin for the SiteInstance, but we don't need
+  // to track the origin like we do for OriginAgentCluster. Note that the
+  // origin is actually the precursor origin of the data URL, as it was
+  // rewritten at the beginning of this function.
+  // TODO(crbug.com/433443082): This should return an origin-keyed
+  // AgentClusterKey instead of a site-keyed one.
+  if (is_origin_isolated_sandboxed_data_iframe) {
+    return AgentClusterKey::CreateSiteKeyed(origin.GetURL(), oac_status);
+  }
+
+  // Isolated origins should use the full origin as their site URL. For the
+  // non-OAC isolated origins mechanism in
+  // ChildProcessSecurityPolicy::AddFutureIsolatedOrigins(), a subdomain of an
+  // isolated origin should also use that isolated origin's site URL.
+  // Note: Here we check that the OAC status computed for the navigation is
+  // false. It might be different from the state requested in the UrlInfo.
+  // This is the case for example when a navigation requests OAC 1? in a
+  // BrowsingInstance that already has a site-keyed SiteInfo for this origin.
+  // In this case, the OAC request is not granted. There are similar cases
+  // with OriginIsolationByDefault involving opt-outs, such as a regular
+  // navigation in an origin that already opted out or the computation of the
+  // expected process lock in
+  // ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks (which is
+  // always created from an UrlInfo with default OAC status but picks up the
+  // correct OAC status from the OAC status stored in the BrowsingInstance).
+  // In any case, it is still safe to pass |requests_origin_keyed_process| =
+  // false in GetMatchingProcessIsolatedOrigin because we have already
+  // computed that the appropriate OAC status for this SiteInfo is site-keyed,
+  // regardless of what the UrlInfo was asking for.
+  CHECK(!requires_origin_keyed_process);
+  url::Origin isolated_origin;
+  GURL site_url = GetSiteForOrigin(origin);
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (policy->GetMatchingProcessIsolatedOrigin(
+          isolation_context, origin, /*requests_origin_keyed_process=*/false,
+          site_url, &isolated_origin)) {
+    return AgentClusterKey::CreateSiteKeyed(isolated_origin.GetURL(),
+                                            oac_status);
+  }
+
+  // All other cases where the origin has a host should get a site-keyed
+  // AgentClusterKey based on the Site URL for the origin.
+  // TODO(crbug.com/342366372): Return an origin-keyed AgentClusterKey by
+  // default once SiteInstanceGroup has shipped and different SiteInstances
+  // can share the same process.
+  return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+}
+
+// static
+AgentClusterKey SiteInfo::GetAgentClusterKeyForSchemeOnlyOrigin(
+    const UrlInfo& url_info,
+    const url::Origin& origin,
+    AgentClusterKey::OACStatus oac_status) {
+  CHECK(!origin.opaque());
+  // Cross-origin isolated contexts should always be given an origin-keyed
+  // AgentClusterKey with a CrossOriginIsolationKey.
+  if (url_info.cross_origin_isolation_key.has_value()) {
+    return AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        origin, url_info.cross_origin_isolation_key.value(), oac_status);
+  }
+
+  // TODO(crbug.com/433443082): Since all file URLs should have an origin of
+  // "file:", consider returning an origin-keyed AgentClusterKey here.
+  DCHECK(!origin.scheme().empty());
+  GURL site_url = GURL(origin.scheme() + ":");
+  return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+}
+
+// static
+AgentClusterKey SiteInfo::GetAgentClusterKeyForDataURL(
+    const UrlInfo& url_info,
+    const url::Origin& origin,
+    AgentClusterKey::OACStatus oac_status) {
+  // Data URLs created by a precursor URL might have inherited cross-origin
+  // isolation from their creator. In this case, give them a cross-origin
+  // isolated AgentClusterKey based on their precursor origin.
+  // TODO(crbug.com/489701673): This puts the data URL in the same SiteInstance
+  // as its precursor origin, which we would like to avoid. Instead, it should
+  // be put in a different SiteInstance but be part of the same
+  // SiteInstanceGroup. Add additional data to SiteInfo so that this happens.
+  if (url_info.cross_origin_isolation_key.has_value() &&
+      origin.GetTupleOrPrecursorTupleIfOpaque().IsValid()) {
+    GURL precursor_url = origin.GetTupleOrPrecursorTupleIfOpaque().GetURL();
+    url::Origin precursor_origin = url::Origin::Create(precursor_url);
+    CHECK(!precursor_origin.opaque());
+    return AgentClusterKey::CreateWithCrossOriginIsolationKey(
+        precursor_origin, url_info.cross_origin_isolation_key.value(),
+        oac_status);
+  }
+
+  // We get here for browser-initiated navigations to data URLs, as sandboxed
+  // data iframes have their origin rewritten to their precursor origin before
+  // determining their Origin-Agent-Cluster status, and should already have
+  // been handled in GetAgentClusterKeyForURL before getting here.
+  //
+  // We do not want to use the complete data URL as a site URL, because it
+  // contains the entire body of the data: URL. At the same time, this data
+  // URL does not have a precursor origin because it's a browser-initiated
+  // navigation to a data URL. So the only practical way to have a site URL in
+  // this case is to serialize the nonce of the opaque origin provided to the
+  // data URL. In addition, using the entire data URL as a site URL wouldn't
+  // distinguish between two instances of the same data URL in two independent
+  // tabs. However nonces do distinguish between these two instances. Since
+  // each browser-initiated data: URL is given a different opaque origin with
+  // a different nonce, this means each browser-initiated data: URL will get
+  // its own process. See https://crbug.com/863069.
+  // TODO(crbug.com/489701673): This is incorrect as this code is hit for
+  // navigations to non sandboxed iframe data URLs. We should change this so
+  // that they are rewritten to their precursor origins and add an additional
+  // boolean to SiteInfo and ProcessLock to ensure they get a different
+  // SiteInstance from the regular documents of the origin (in the same
+  // SiteInstanceGroup). Then only data URLs without a precursor origin will get
+  // the nonce based site URL below.
+  // TODO(crbug.com/433443082): This should return an origin-keyed
+  // AgentClusterKey instead of a site-keyed one.
+  GURL site_url = GetOriginBasedSiteURLForDataURL(origin);
+  return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
+}
+
+// static
+AgentClusterKey SiteInfo::GetAgentClusterKeyForBlobURL(
+    const GURL& url,
+    AgentClusterKey::OACStatus oac_status) {
+  // In some cases, it is not safe to use just the scheme as a site URL,
+  // as that might allow two URLs created by different sites to share a
+  // process. See https://crbug.com/863623.
+  //
+  // TODO(alexmos,creis): This should eventually be expanded to certain
+  // other schemes, such as file:.
+  // We get here for blob URLs of form blob:null/guid.  Use the full URL
+  // with the GUID in that case, which isolates all blob URLs with unique
+  // origins from each other.  Remove hash from the URL since
+  // same-document navigations shouldn't use a different site URL.
+  //
+  // TODO(crbug.com/489701673): If the navigation has a CrossOriginIoslationKey,
+  // cross-origin isolation status has been inherited from the creator of the
+  // blob URL. We should return a cross-origin isolated AgentClusterKey in that
+  // case, provided we can compute an appropriate non-opaque origin in that
+  // case.
+  GURL site_url = url;
+  if (url.has_ref()) {
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    site_url = url.ReplaceComponents(replacements);
+  }
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
 
