@@ -2513,13 +2513,14 @@ TEST_F(TcpConnectJobTest, TwoConnectorsSixIps) {
 }
 
 // Test the case where there are two Connectors, and all the IPv6 IPs come in
-// and fail and only then do the IPv4 ones come in. both Connectors should try
-// both IPv4 and IPv6 IPs. There's only a single ServiceEndpoint in this test,
-// though it's updated half-way through.
+// and fail and only then do the IPv4 ones come in. Only the primary connector
+// should try IPv6, and only the secondary IPv4, since the DNS lookup doesn't
+// complete until we're trying the last IPv4 endpoint. There's only a single
+// ServiceEndpoint in this test, though it's updated half-way through.
 TEST_F(TcpConnectJobTest, TwoConnectorsIPv6ThenIpv4) {
-  const auto service_endpoint = CreateServiceEndpoint(
-      {kIpV6Endpoint1, kIpV6Endpoint2, kIpV6Endpoint3, kIpV6Endpoint4,
-       kIpV4Endpoint1, kIpV4Endpoint2, kIpV4Endpoint3, kIpV4Endpoint4});
+  const auto service_endpoint =
+      CreateServiceEndpoint({kIpV6Endpoint1, kIpV6Endpoint2, kIpV6Endpoint3,
+                             kIpV4Endpoint1, kIpV4Endpoint2, kIpV4Endpoint3});
 
   base::Time start_time = base::Time::Now();
 
@@ -2529,69 +2530,65 @@ TEST_F(TcpConnectJobTest, TwoConnectorsIPv6ThenIpv4) {
   AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
   AddConnect(MockConnect(&connect_completers[1]), kIpV6Endpoint2);
   AddConnect(MockConnect(&connect_completers[2]), kIpV6Endpoint3);
-  AddConnect(MockConnect(&connect_completers[3]), kIpV6Endpoint4);
-  AddConnect(MockConnect(&connect_completers[4]), kIpV4Endpoint1);
-  AddConnect(MockConnect(&connect_completers[5]), kIpV4Endpoint2);
-  AddConnect(MockConnect(&connect_completers[6]), kIpV4Endpoint3);
-  AddConnect(MockConnect(&connect_completers[7]), kIpV4Endpoint4);
+  AddConnect(MockConnect(&connect_completers[3]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[4]), kIpV4Endpoint2);
+  AddConnect(MockConnect(&connect_completers[5]), kIpV4Endpoint3);
 
   EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
   // Temporary endpoint that only includes AAAA results.
   request
       ->add_endpoint(CreateServiceEndpoint(
-          {kIpV6Endpoint1, kIpV6Endpoint2, kIpV6Endpoint3, kIpV6Endpoint4}))
+          {kIpV6Endpoint1, kIpV6Endpoint2, kIpV6Endpoint3}))
       .CallOnServiceEndpointsUpdated();
 
   connect_completers[0].WaitForConnect();
   EXPECT_FALSE(connect_job_->has_two_connectors_for_testing());
   EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
 
-  // Wait for the second Connector to start, which should mean the fallback time
-  // has passed.
-  connect_completers[1].WaitForConnect();
+  // Wait for the IPv4 job to start.
+  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
   EXPECT_TRUE(connect_job_->has_two_connectors_for_testing());
-  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+  // Since only IPv6 IPs are available, it should not connect.
+  EXPECT_FALSE(connect_completers[1].is_connecting());
 
-  // kIpV6Endpoint2 fails. The IPv4 Connector should try kIpV6Endpoint3.
+  // The IPv6 endpoints fail one at a time. The primary connector should advance
+  // through them, while the IPv4 connector is still stalled.
+  connect_completers[0].Complete(ERR_FAILED);
+  connect_completers[1].WaitForConnect();
+  EXPECT_FALSE(connect_completers[2].is_connecting());
   connect_completers[1].Complete(ERR_FAILED);
   connect_completers[2].WaitForConnect();
+  EXPECT_FALSE(connect_completers[3].is_connecting());
+  connect_completers[2].Complete(ERR_FAILED);
+  EXPECT_FALSE(connect_completers[3].is_connecting());
 
-  // kIpV6Endpoint1 fails. The primary Connector should try kIpV6Endpoint4,
-  // which also fails.
-  connect_completers[0].Complete(ERR_FAILED);
-  connect_completers[3].WaitForConnectAndComplete(ERR_UNEXPECTED);
+  // At this point, we're stalled waiting for more IPs.
 
-  // kIpV6Endpoint3 fails.
-  connect_completers[2].Complete(ERR_UNEXPECTED);
+  // IPv4 IPs come in, but DNS does not yet complete.
+  request->set_endpoints({service_endpoint}).CallOnServiceEndpointsUpdated();
 
-  // IPv4 IPs come in, and DNS completes.
-  request->set_endpoints({service_endpoint})
-      .CallOnServiceEndpointRequestFinished(OK);
-
-  // Both connectors now try IPv4 IPs. Use a similar completion pattern as
-  // before, though flipping the order so the first one fails first, and failing
-  // with ERR_UNEXPECTED before ERR_FAILED. Again, each Connector should try two
-  // IPs. One IP succeeds, this time.
+  // Now the IPv4 connector tries the IPv4 IPs one-at-a-time.
+  connect_completers[3].WaitForConnect();
+  EXPECT_FALSE(connect_completers[4].is_connecting());
+  connect_completers[3].Complete(ERR_UNEXPECTED);
   connect_completers[4].WaitForConnect();
-  connect_completers[5].WaitForConnect();
-
+  EXPECT_FALSE(connect_completers[5].is_connecting());
   connect_completers[4].Complete(ERR_UNEXPECTED);
-  connect_completers[6].WaitForConnect();
 
-  connect_completers[5].Complete(ERR_UNEXPECTED);
-  connect_completers[7].WaitForConnectAndComplete(ERR_FAILED);
+  // The final connector completes.
+  connect_completers[5].WaitForConnectAndComplete(OK);
+  EXPECT_FALSE(test_delegate_->has_result());
 
-  connect_completers[6].Complete(OK);
+  // The DNS lookup completes, which should complete the request.
+  request->CallOnServiceEndpointRequestFinished(OK);
 
   WaitForSuccess(kIpV4Endpoint3, service_endpoint,
                  /*expected_connection_attempts=*/
-                 {{kIpV6Endpoint2, ERR_FAILED},
-                  {kIpV6Endpoint1, ERR_FAILED},
-                  {kIpV6Endpoint4, ERR_UNEXPECTED},
-                  {kIpV6Endpoint3, ERR_UNEXPECTED},
+                 {{kIpV6Endpoint1, ERR_FAILED},
+                  {kIpV6Endpoint2, ERR_FAILED},
+                  {kIpV6Endpoint3, ERR_FAILED},
                   {kIpV4Endpoint1, ERR_UNEXPECTED},
-                  {kIpV4Endpoint2, ERR_UNEXPECTED},
-                  {kIpV4Endpoint4, ERR_FAILED}});
+                  {kIpV4Endpoint2, ERR_UNEXPECTED}});
   // No more time should have passed since the slow job was started, since time
   // wasn't simulated advancing, and there should have been no other timed delay
   // by TcpConnectJob.
@@ -2807,6 +2804,166 @@ TEST_F(TcpConnectJobTest, TwoConnectorsEndpointIndexBackwards) {
                 {kIpV4Endpoint1, ERR_FAILED},
                 {kIpV4Endpoint2, ERR_FAILED},
                 {kIpV6Endpoint2, ERR_FAILED}});
+}
+
+// Test the case where there are two connectors with multiple ServiceEndpoints,
+// and each connector blocks waiting for the other to complete, when the other
+// connector has IPs that the blocked on cannot try.
+TEST_F(TcpConnectJobTest, TwoConnectorsBlockedOnOtherConnector) {
+  const auto service_endpoint1 =
+      CreateServiceEndpoint({kIpV6Endpoint1, kIpV6Endpoint2});
+  const auto service_endpoint2 =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV4Endpoint2});
+  const auto service_endpoint3 =
+      CreateServiceEndpoint({kIpV6Endpoint3, kIpV4Endpoint3});
+
+  base::Time start_time = base::Time::Now();
+
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 8> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV6Endpoint2);
+  AddConnect(MockConnect(&connect_completers[2]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[3]), kIpV4Endpoint2);
+  AddConnect(MockConnect(&connect_completers[4]), kIpV4Endpoint3);
+  AddConnect(MockConnect(&connect_completers[5]), kIpV6Endpoint3);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  // Add all endpoints, but the DNS lookup does not complete.
+  request
+      ->set_endpoints({service_endpoint1, service_endpoint2, service_endpoint3})
+      .CallOnServiceEndpointsUpdated();
+
+  connect_completers[0].WaitForConnect();
+  EXPECT_FALSE(connect_job_->has_two_connectors_for_testing());
+  EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
+
+  // Wait for the IPv4 job to start.
+  FastForwardBy(TcpConnectJob::kIPv6FallbackTime);
+  EXPECT_TRUE(connect_job_->has_two_connectors_for_testing());
+  // Since only IPv6 IPs are available, it should not connect.
+  EXPECT_FALSE(connect_completers[1].is_connecting());
+
+  // The first two IPv6 endpoints fail one at a time. Only the primary connector
+  // should be connecting.
+  connect_completers[0].Complete(ERR_FAILED);
+  connect_completers[1].WaitForConnect();
+  EXPECT_FALSE(connect_completers[2].is_connecting());
+  connect_completers[1].Complete(ERR_UNEXPECTED);
+
+  // After the last IPv6 IP from `service_endpoint1` fails, we switch to
+  // `service_endpoint2`, and now only the IPv4 connector tries to connect.
+  connect_completers[2].WaitForConnect();
+  EXPECT_FALSE(connect_completers[3].is_connecting());
+  connect_completers[2].Complete(ERR_FAILED);
+  connect_completers[3].WaitForConnect();
+  EXPECT_FALSE(connect_completers[4].is_connecting());
+  EXPECT_FALSE(connect_completers[5].is_connecting());
+  connect_completers[3].Complete(ERR_UNEXPECTED);
+
+  // Now that both endpoints in `service_endpoint2` have failed, we advance to
+  // `service_endpoint3`. Both connectors can now try endpoints, since both an
+  // IPv4 and IPv6 endpoint is available.
+  connect_completers[4].WaitForConnect();
+  connect_completers[5].WaitForConnect();
+
+  // The DNS lookup completes, as does one of the connectors, which should
+  // complete the job.
+  request->CallOnServiceEndpointRequestFinished(OK);
+  connect_completers[5].Complete(OK);
+
+  WaitForSuccess(kIpV6Endpoint3, service_endpoint3,
+                 /*expected_connection_attempts=*/
+                 {{kIpV6Endpoint1, ERR_FAILED},
+                  {kIpV6Endpoint2, ERR_UNEXPECTED},
+                  {kIpV4Endpoint1, ERR_FAILED},
+                  {kIpV4Endpoint2, ERR_UNEXPECTED}});
+  // No more time should have passed since the second connector was started,
+  // since time wasn't simulated advancing, and there should have been no other
+  // timed delay by TcpConnectJob.
+  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+}
+
+// Just like the above test, but the DNS request completes immediately, rather
+// than being stalled after returning endpoints, so both jobs can connect to
+// IPv4/IPv6 destinations, if there are no destinations of the matching type
+// available.
+TEST_F(TcpConnectJobTest, TwoConnectorsNotBlockedOnOtherConnector) {
+  const auto service_endpoint1 =
+      CreateServiceEndpoint({kIpV6Endpoint1, kIpV6Endpoint2});
+  const auto service_endpoint2 =
+      CreateServiceEndpoint({kIpV4Endpoint1, kIpV4Endpoint2});
+  const auto service_endpoint3 =
+      CreateServiceEndpoint({kIpV6Endpoint3, kIpV4Endpoint3});
+
+  base::Time start_time = base::Time::Now();
+
+  auto request = host_resolver_.AddFakeRequest();
+
+  std::array<MockConnectCompleter, 8> connect_completers;
+  AddConnect(MockConnect(&connect_completers[0]), kIpV6Endpoint1);
+  AddConnect(MockConnect(&connect_completers[1]), kIpV6Endpoint2);
+  AddConnect(MockConnect(&connect_completers[2]), kIpV4Endpoint1);
+  AddConnect(MockConnect(&connect_completers[3]), kIpV4Endpoint2);
+  AddConnect(MockConnect(&connect_completers[4]), kIpV6Endpoint3);
+  AddConnect(MockConnect(&connect_completers[5]), kIpV4Endpoint3);
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+  // Add all endpoints, but the DNS lookup does not complete.
+  request
+      ->set_endpoints({service_endpoint1, service_endpoint2, service_endpoint3})
+      .CallOnServiceEndpointRequestFinished(OK);
+
+  connect_completers[0].WaitForConnect();
+  EXPECT_FALSE(connect_completers[1].is_connecting());
+  EXPECT_FALSE(connect_job_->has_two_connectors_for_testing());
+  EXPECT_EQ(base::Time::Now() - start_time, base::TimeDelta());
+
+  // Wait for the IPv4 connector to start.
+  connect_completers[1].WaitForConnect();
+  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
+
+  // The first IPv6 destination fails. Primary connector should stall, waiting
+  // for the "IPv4" connector to fail before advancing to the next
+  // ServiceEndpoint.
+  connect_completers[0].Complete(ERR_FAILED);
+  EXPECT_FALSE(connect_completers[2].is_connecting());
+  EXPECT_FALSE(connect_completers[3].is_connecting());
+
+  // Second IPv6 destination fails. Both connectors should start connecting to
+  // `service_endpoint2` IPs.
+  connect_completers[1].Complete(ERR_UNEXPECTED);
+  connect_completers[2].WaitForConnect();
+  connect_completers[3].WaitForConnect();
+
+  // The first IPv4 destination fails. One connector (the IPv4 one) should
+  // stall, waiting for the other connector to fail before advancing to the next
+  // ServiceEndpoint.
+  connect_completers[2].Complete(ERR_FAILED);
+  EXPECT_FALSE(connect_completers[4].is_connecting());
+  EXPECT_FALSE(connect_completers[5].is_connecting());
+
+  // Second IPv4 destination fails. Both connectors should start connecting to
+  // `service_endpoint3` IPs. The IPv6 one gets the IPv6 IP first, but that's
+  // not a major detail.
+  connect_completers[3].Complete(ERR_UNEXPECTED);
+  connect_completers[4].WaitForConnect();
+  connect_completers[5].WaitForConnect();
+
+  // One connector completes successfully, ending the job.
+  connect_completers[5].Complete(OK);
+
+  WaitForSuccess(kIpV4Endpoint3, service_endpoint3,
+                 /*expected_connection_attempts=*/
+                 {{kIpV6Endpoint1, ERR_FAILED},
+                  {kIpV6Endpoint2, ERR_UNEXPECTED},
+                  {kIpV4Endpoint1, ERR_FAILED},
+                  {kIpV4Endpoint2, ERR_UNEXPECTED}});
+  // No more time should have passed since the second connector was started,
+  // since time wasn't simulated advancing, and there should have been no other
+  // timed delay by TcpConnectJob.
+  EXPECT_EQ(base::Time::Now() - start_time, TcpConnectJob::kIPv6FallbackTime);
 }
 
 ////////////////////////

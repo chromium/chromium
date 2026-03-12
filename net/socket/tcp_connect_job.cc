@@ -5,12 +5,16 @@
 #include "net/socket/tcp_connect_job.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -389,15 +393,48 @@ TcpConnectJob::IPEndPointInfo TcpConnectJob::GetNextIPEndPoint(
     prefer_ipv6 = (primary_connector_.get() == &connector);
   }
 
+  // If there are two jobs and DNS has not completed yet, only try to connect to
+  // IPv4 destinations with `ipv4_connector_` and IPv6 destinations with
+  // `primary_connector_`. Otherwise, only prefer preferred IP types.
+  bool only_preferred = other_job && !dns_request_complete_;
+
   bool posted_resume_task = false;
 
   while (current_service_endpoint_index_ < service_endpoints.size()) {
     const auto& service_endpoint =
         service_endpoints[current_service_endpoint_index_];
     if (IsEndpointResultUsable(service_endpoint)) {
-      for (bool ip_v6 : {prefer_ipv6, !prefer_ipv6}) {
-        const auto& ip_endpoints = ip_v6 ? service_endpoint.ipv6_endpoints
-                                         : service_endpoint.ipv4_endpoints;
+      base::span<const IPEndPoint> preferred_endpoints(
+          prefer_ipv6 ? service_endpoint.ipv6_endpoints
+                      : service_endpoint.ipv4_endpoints);
+      // The endpoints that are not preferred. The connector may or may not be
+      // allowed to use them, depending on `only_preferred`.
+      base::span<const IPEndPoint> other_endpoints(
+          prefer_ipv6 ? service_endpoint.ipv4_endpoints
+                      : service_endpoint.ipv6_endpoints);
+
+      // This will contain endpoints that connector may connect to. It will
+      // always have the preferred endpoints, and depending on `only_preferred`
+      // may or may not contain the others as well.
+      std::vector<base::span<const IPEndPoint>> allowed_endpoints{
+          preferred_endpoints};
+
+      // These are endpoints that we may not connect to. It's only populated if
+      // `only_preferred` is true. It's still needed so that we can check if the
+      // other connector still has endpoints to try, even if it's currently
+      // idle.
+      std::optional<base::span<const IPEndPoint>> disallowed_endpoints;
+
+      // Add `other_endpoints` where appropriate.
+      if (only_preferred) {
+        disallowed_endpoints.emplace(other_endpoints);
+      } else {
+        allowed_endpoints.emplace_back(other_endpoints);
+      }
+
+      // Walk through allowed endpoints, returning first one that hasn't yet
+      // been tried if there is one, and adding it to `attempted_addresses_`.
+      for (const auto& ip_endpoints : allowed_endpoints) {
         for (const auto& ip_endpoint : ip_endpoints) {
           // If `ip_endpoint` hasn't been tried yet, add it to
           // `attempted_addresses_` and we will return it.
@@ -407,21 +444,40 @@ TcpConnectJob::IPEndPointInfo TcpConnectJob::GetNextIPEndPoint(
           }
         }
       }
-    }
 
-    // Only move on to the next endpoint if either there's no other connector,
-    // or the other connector is waiting to receive an endpoint. Since new
-    // results may come in out of order, this isn't perfect - e.g., could
-    // still be connecting to a AAAA record when HTTPS records come in. Then
-    // the AAAA connection attempt could block connection attempts to the
-    // second ServiceEndpoint entry (and could block the second job from
-    // trying the next A/AAAA entry as well, if the HTTPS record connection
-    // attempts fail quickly). Could throw away the AAAA attempt in that case,
-    // or have logic to detect it, but this seems a reasonable balance of
-    // accuracy, complexity, and performance.
-    if (other_job && !other_job->is_waiting_for_endpoint()) {
-      // Need to wait for other jobs to complete.
-      return base::unexpected(ERR_IO_PENDING);
+      if (other_job) {
+        // Only move on to the next endpoint if either there's no other
+        // connector, or the other connector is waiting to receive an endpoint.
+        // Since new results may come in out of order, this isn't perfect -
+        // e.g., could still be connecting to a AAAA record when HTTPS records
+        // come in. Then the AAAA connection attempt could block connection
+        // attempts to the second ServiceEndpoint entry (and could block the
+        // second job from trying the next A/AAAA entry as well, if the HTTPS
+        // record connection attempts fail quickly). Could throw away the AAAA
+        // attempt in that case, or have logic to detect it, but this seems a
+        // reasonable balance of accuracy, complexity, and performance.
+        if (!other_job->is_waiting_for_endpoint()) {
+          // Need to wait for other jobs to complete.
+          return base::unexpected(ERR_IO_PENDING);
+        }
+
+        // If there are disallowed endpoints, then it's possible that there's no
+        // available endpoint for this connector, and the other connector is
+        // waiting for an endpoint, but we have yet to inform it that there are
+        // new endpoints available. To detect that case, look for any disallowed
+        // endpoints
+        if (disallowed_endpoints) {
+          // Walk through the endpoints in reverse order looking for one that
+          // hasn't been tried yet, which should tend to find any untried
+          // addresses sooner.
+          for (const auto& disallowed_endpoint :
+               base::Reversed(*disallowed_endpoints)) {
+            if (!attempted_addresses_.contains(disallowed_endpoint)) {
+              return base::unexpected(ERR_IO_PENDING);
+            }
+          }
+        }
+      }
     }
 
     ++current_service_endpoint_index_;
