@@ -85,8 +85,6 @@ namespace {
 const int kInputFrameFillY = 12;
 const int kInputFrameFillU = 23;
 const int kInputFrameFillV = 34;
-// 360p is a valid HW resolution (unless `kForcingSoftwareIncludes360` is
-// enabled).
 const uint16_t kInputFrameWidth = 480;
 const uint16_t kInputFrameHeight = 360;
 const uint16_t kStartBitrate = 100;
