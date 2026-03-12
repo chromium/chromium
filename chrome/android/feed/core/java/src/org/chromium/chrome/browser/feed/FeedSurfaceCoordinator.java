@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,11 +46,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
-import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
-import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
-import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
-import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -92,11 +86,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.ui.modelutil.ListModelChangeProcessor;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyListModel;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +98,6 @@ public class FeedSurfaceCoordinator
                 FeedBubbleDelegate,
                 SwipeRefreshLayout.OnRefreshListener,
                 SurfaceCoordinator,
-                HasContentListener,
                 FeedContentFirstLoadWatcher {
     @Nullable ImageView getRecyclerViewSnapshotOverlayForTesting() {
         return mRecyclerViewSnapshotOverlay;
@@ -152,15 +140,7 @@ public class FeedSurfaceCoordinator
     private final Profile mProfile;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     private @Nullable View mSigninPromoView;
-    // Feed header fields.
-    private @Nullable PropertyModel mSectionHeaderModel;
     private final @Nullable ViewGroup mViewportView;
-    private @Nullable
-            ListModelChangeProcessor<
-                    PropertyListModel<PropertyModel, PropertyKey>, SectionHeaderView, PropertyKey>
-            mSectionHeaderListModelChangeProcessor;
-    private @Nullable PropertyModelChangeProcessor<PropertyModel, SectionHeaderView, PropertyKey>
-            mSectionHeaderModelChangeProcessor;
     // Feed RecyclerView/xSurface fields.
     private FeedListContentManager mContentManager;
     private final RecyclerView mRecyclerView;
@@ -181,8 +161,6 @@ public class FeedSurfaceCoordinator
     private final Supplier<Toolbar> mToolbarSupplier;
 
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
-
-    private boolean mWebFeedHasContent;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
 
@@ -376,15 +354,6 @@ public class FeedSurfaceCoordinator
         private int mPrevState = -1;
     }
 
-    private class Scroller implements Runnable {
-        @Override
-        public void run() {
-            // The feed header may not be visible for smaller screens or landscape mode. Scroll
-            // to show the header after showing the IPH.
-            mMediator.scrollToViewIfNecessary(getHeaderPosition());
-        }
-    }
-
     // Returns the index of the header if it is visible. Otherwise returns the index after the
     // invisible header.
     int getHeaderPosition() {
@@ -464,7 +433,6 @@ public class FeedSurfaceCoordinator
         mViewportView = viewportView;
         mActionDelegate = createActionDelegate.createActionDelegate();
         mEmbeddingSurfaceCreatedTimeNs = embeddingSurfaceCreatedTimeNs;
-        mWebFeedHasContent = false;
         mHeaderIndex = 0;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
@@ -567,55 +535,10 @@ public class FeedSurfaceCoordinator
         mHandler = new Handler(Looper.getMainLooper());
 
         // MVC setup for feed header.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_HEADER_REMOVAL)) {
-            String treatment =
-                    ChromeFeatureList.getFieldTrialParamByFeature(
-                            ChromeFeatureList.FEED_HEADER_REMOVAL, "treatment");
-            mHeaderView =
-                    LayoutInflater.from(mActivity)
-                            .inflate(R.layout.new_tab_page_feed_header, null, false);
-            mHeaderView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-            if (!treatment.equals("label")) {
-                mHeaderView.setVisibility(View.GONE);
-            }
-        } else {
-            if (WebFeedBridge.isWebFeedEnabled()) {
-                mHeaderView =
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.new_tab_page_multi_feed_header, null, false);
-            } else {
-                mHeaderView =
-                        LayoutInflater.from(mActivity)
-                                .inflate(
-                                        R.layout.new_tab_page_feed_v2_expandable_header,
-                                        null,
-                                        false);
-            }
-        }
-
-        FeedOptionsCoordinator optionsCoordinator = new FeedOptionsCoordinator(mActivity);
-
-        if (mHeaderView != null && mHeaderView instanceof SectionHeaderView) {
-            mSectionHeaderModel = SectionHeaderListProperties.create(toolbarHeight);
-
-            SectionHeaderViewBinder binder = new SectionHeaderViewBinder();
-            mSectionHeaderModelChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            mSectionHeaderModel, (SectionHeaderView) mHeaderView, binder);
-            mSectionHeaderListModelChangeProcessor =
-                    new ListModelChangeProcessor<>(
-                            mSectionHeaderModel.get(
-                                    SectionHeaderListProperties.SECTION_HEADERS_KEY),
-                            (SectionHeaderView) mHeaderView,
-                            binder);
-            mSectionHeaderModel
-                    .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                    .addObserver(mSectionHeaderListModelChangeProcessor);
-
-            mSectionHeaderModel.set(
-                    SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
-                    optionsCoordinator.getView());
-        }
+        mHeaderView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.new_tab_page_feed_header, null, false);
+        mHeaderView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
 
         if (mNtpHeader != null && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
             int bottomPadding =
@@ -630,18 +553,9 @@ public class FeedSurfaceCoordinator
         }
 
         // Mediator should be created before any Stream changes.
-        boolean useUiConfig = ntpHeader != null && mUseStaggeredLayout;
         mMediator =
                 new FeedSurfaceMediator(
-                        this,
-                        mActivity,
-                        snapScrollHelper,
-                        mSectionHeaderModel,
-                        getTabIdFromLaunchOrigin(launchOrigin),
-                        mActionDelegate,
-                        optionsCoordinator,
-                        useUiConfig ? mUiConfig : null,
-                        profile);
+                        this, mActivity, snapScrollHelper, mActionDelegate, profile);
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
@@ -782,13 +696,6 @@ public class FeedSurfaceCoordinator
         RecordUserAction.record("MobileNewTabPageNtpCustomization");
     }
 
-    @Override
-    public void hasContentChanged(@StreamKind int kind, boolean hasContent) {
-        if (kind == StreamKind.FOLLOWING) {
-            mWebFeedHasContent = hasContent;
-        }
-    }
-
     private void stopScrollTracking() {
         if (mScrollableContainerDelegate != null) {
             if (mDependencyProvider != null) {
@@ -798,27 +705,9 @@ public class FeedSurfaceCoordinator
         }
     }
 
-    public void maybeShowWebFeedAwarenessIph() {
-        if (mHeaderView != null
-                && mHeaderView instanceof SectionHeaderView
-                && mWebFeedHasContent
-                && FeedFeatures.shouldUseWebFeedAwarenessIph()
-                && !FeedFeatures.isFeedFollowUiUpdateEnabled()) {
-            UserEducationHelper helper = new UserEducationHelper(mActivity, mProfile, mHandler);
-            ((SectionHeaderView) mHeaderView)
-                    .showWebFeedAwarenessIph(helper, StreamTabId.FOLLOWING, new Scroller());
-        }
-    }
-
+    // TODO(crbug.com/407797637): Removes the FeedContentFirstLoadWatcher interface.
     @Override
-    public void nonNativeContentLoaded(@StreamKind int kind) {
-        // We want to show the web feed IPH on the first load of the FOR_YOU feed.
-        if (kind == StreamKind.FOR_YOU) {
-            // After the web feed content has loaded, we will know if we have any content, and
-            // it is safe to show the IPH.
-            maybeShowWebFeedAwarenessIph();
-        }
-    }
+    public void nonNativeContentLoaded(@StreamKind int kind) {}
 
     @Override
     @SuppressWarnings("NullAway")
@@ -836,12 +725,6 @@ public class FeedSurfaceCoordinator
         if (mFeedSurfaceLifecycleManager != null) mFeedSurfaceLifecycleManager.destroy();
         mFeedSurfaceLifecycleManager = null;
         stopScrollTracking();
-        if (mSectionHeaderModelChangeProcessor != null) {
-            mSectionHeaderModelChangeProcessor.destroy();
-            mSectionHeaderModel
-                    .get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                    .removeObserver(mSectionHeaderListModelChangeProcessor);
-        }
 
         // Destroy mediator after all other related controller/processors are destroyed.
         mMediator.destroy();
@@ -1006,19 +889,6 @@ public class FeedSurfaceCoordinator
     @Override
     public void restoreInstanceState(@Nullable String state) {
         mMediator.restoreSavedInstanceState(state);
-    }
-
-    /**
-     * Gets the appropriate {@link StreamTabId} for the given {@link NewTabPageLaunchOrigin}.
-     *
-     * <p>If coming from a Web Feed button, open the following tab, otherwise open the for you tab.
-     */
-    @VisibleForTesting
-    @StreamTabId
-    int getTabIdFromLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
-        return launchOrigin == NewTabPageLaunchOrigin.WEB_FEED
-                ? StreamTabId.FOLLOWING
-                : StreamTabId.DEFAULT;
     }
 
     @Initializer
@@ -1252,13 +1122,6 @@ public class FeedSurfaceCoordinator
         // The section header is the last header to be added, excluding sign-in promo, save its
         // index.
         mHeaderIndex = headerViews.size() - (hasSigninPromoView ? 2 : 1);
-    }
-
-    /**
-     * @return The {@link SectionHeaderListProperties} model for the Feed section header.
-     */
-    @Nullable PropertyModel getSectionHeaderModelForTest() {
-        return mSectionHeaderModel;
     }
 
     /** Update header views in the Feed. */
