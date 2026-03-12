@@ -8,7 +8,6 @@
 #import <memory>
 
 #import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/public/scoped_credential_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 
 @class MockReauthenticationModule;
@@ -20,12 +19,6 @@ namespace chrome_test_util {
 // reauthentication module.
 std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
 SetUpAndReturnMockReauthenticationModuleForPasswordManager();
-
-// Replaces the reauthentication module in Credential Suggestion Bottom Sheet
-// with a fake one to avoid being blocked with a reauth prompt, and return the
-// fake reauthentication module.
-std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
-SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet();
 
 // Replaces the reauthentication module in Form Input Accessory with
 // a fake one to avoid being blocked with a reauth prompt, and return the fake

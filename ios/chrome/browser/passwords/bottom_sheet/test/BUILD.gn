@@ -50,7 +50,7 @@ source_set("eg_app_support+eg2") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/passwords/bottom_sheet/public",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common/ui/reauthentication",

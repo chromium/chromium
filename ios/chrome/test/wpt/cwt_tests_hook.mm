@@ -171,4 +171,8 @@ void InjectFakeTabsInBrowser(Browser* browser) {
   // No-op for CWT tests.
 }
 
+id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
+  return nil;
+}
+
 }  // namespace tests_hook

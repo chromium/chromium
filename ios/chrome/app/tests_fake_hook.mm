@@ -179,4 +179,8 @@ void InjectFakeTabsInBrowser(Browser* browser) {
 #endif
 }
 
+id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
+  return nil;
+}
+
 }  // namespace tests_hook

@@ -72,6 +72,7 @@ source_set("hooks") {
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:eg_app_support+eg2",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/providers/signin:trusted_vault",
     "//ui/base:test_support",

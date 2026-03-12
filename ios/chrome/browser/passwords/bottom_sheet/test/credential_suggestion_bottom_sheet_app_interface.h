@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_TEST_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_APP_INTERFACE_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_TEST_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_APP_INTERFACE_H_
 
+#import <Foundation/Foundation.h>
+
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 // CredentialSuggestionBottomSheetAppInterface contains the app-side
@@ -14,10 +16,8 @@
 
 // Sets a re-authentication mock (i.e. what asks user for fingerprint to
 // view password) and its options for next test.
-+ (void)setUpMockReauthenticationModule;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
-+ (void)removeMockReauthenticationModule;
 
 // Sets the pref recording the number of times the bottom sheet was dismissed.
 // Used to either suppress or force the bottom sheet to appear in tests.

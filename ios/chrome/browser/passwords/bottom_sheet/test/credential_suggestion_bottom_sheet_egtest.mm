@@ -226,7 +226,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   // Set up reauth module.
-  [CredentialSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [CredentialSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
                                                    kSuccess];
@@ -240,8 +239,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
                  @"Clearing credentials wasn't done.");
   [PasswordSettingsAppInterface clearPasskeyStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
-  [CredentialSuggestionBottomSheetAppInterface
-      removeMockReauthenticationModule];
 
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   chrome_test_util::GREYAssertErrorNil(

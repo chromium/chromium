@@ -7,52 +7,23 @@
 #import "base/apple/foundation_util.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/public/scoped_credential_suggestion_bottom_sheet_reauth_module_override.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/password_test_util.h"
 
-using chrome_test_util::
-    SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet;
-
-@implementation CredentialSuggestionBottomSheetAppInterface {
-  std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
-      _scopedReauthOverride;
-}
-
-+ (instancetype)sharedInstance {
-  static CredentialSuggestionBottomSheetAppInterface* sharedInstance = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    sharedInstance = [[CredentialSuggestionBottomSheetAppInterface alloc] init];
-  });
-  return sharedInstance;
-}
-
-+ (void)setUpMockReauthenticationModule {
-  CredentialSuggestionBottomSheetAppInterface* shared =
-      [CredentialSuggestionBottomSheetAppInterface sharedInstance];
-  shared->_scopedReauthOverride =
-      SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet();
-}
+@implementation CredentialSuggestionBottomSheetAppInterface
 
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult {
-  CredentialSuggestionBottomSheetAppInterface* shared =
-      [CredentialSuggestionBottomSheetAppInterface sharedInstance];
-  CHECK(shared->_scopedReauthOverride);
   MockReauthenticationModule* mockModule =
       base::apple::ObjCCastStrict<MockReauthenticationModule>(
-          shared->_scopedReauthOverride->module);
+          ReauthenticationServiceFactory::GetForProfile(
+              chrome_test_util::GetOriginalProfile())
+              ->GetReauthModule());
   mockModule.expectedResult = expectedResult;
-}
-
-+ (void)removeMockReauthenticationModule {
-  CredentialSuggestionBottomSheetAppInterface* shared =
-      [CredentialSuggestionBottomSheetAppInterface sharedInstance];
-  shared->_scopedReauthOverride = nullptr;
 }
 
 + (void)setDismissCount:(int)dismissCount {

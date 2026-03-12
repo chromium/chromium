@@ -21,6 +21,7 @@ class TabGroupService;
 class TrustedVaultClientBackend;
 @class UIImage;
 @class UIWindow;
+@protocol ReauthenticationProtocol;
 
 namespace contextual_search {
 class ContextualSearchService;
@@ -256,6 +257,9 @@ CreateContextualSearchService(ProfileIOS* profile);
 
 // Injects fake tabs into the given browser.
 void InjectFakeTabsInBrowser(Browser* browser);
+
+// Returns a fake reauthentication module to be used in tests.
+id<ReauthenticationProtocol> GetFakeReauthenticationModule();
 
 }  // namespace tests_hook
 

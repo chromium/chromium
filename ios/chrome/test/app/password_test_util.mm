@@ -17,14 +17,6 @@ SetUpAndReturnMockReauthenticationModuleForPasswordManager() {
       mock_reauthentication_module);
 }
 
-std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
-SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet() {
-  MockReauthenticationModule* mock_reauthentication_module =
-      [[MockReauthenticationModule alloc] init];
-  return ScopedCredentialSuggestionBottomSheetReauthModuleOverride::
-      MakeAndArmForTesting(mock_reauthentication_module);
-}
-
 std::unique_ptr<ScopedFormInputAccessoryReauthModuleOverride>
 SetUpAndReturnMockReauthenticationModuleForFormInputAccessory() {
   MockReauthenticationModule* mock_reauthentication_module =

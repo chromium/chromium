@@ -14,13 +14,14 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/password_suggestion_bottom_sheet_exit_reason.h"
-#import "ios/chrome/browser/passwords/bottom_sheet/public/scoped_credential_suggestion_bottom_sheet_reauth_module_override.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -49,9 +50,6 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Currently in the process of dismissing the bottom sheet.
   bool _dismissing;
-
-  // Module handling reauthentication before accessing sensitive data.
-  id<ReauthenticationProtocol> _reauthModule;
 
   // This mediator is used to fetch data related to the bottom sheet.
   CredentialSuggestionBottomSheetMediatorBase* _mediator;
@@ -121,11 +119,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
       IOSChromeAccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
 
-  _reauthModule =
-      ScopedCredentialSuggestionBottomSheetReauthModuleOverride::Get();
-  if (!_reauthModule) {
-    _reauthModule = [[ReauthenticationModule alloc] init];
-  }
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile)->GetReauthModule();
 
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
@@ -141,7 +136,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                  faviconLoader:faviconLoader
                    prefService:prefService
                         params:*_params
-                  reauthModule:_reauthModule
+                  reauthModule:reauthModule
           profilePasswordStore:profilePasswordStore
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:sharedURLLoaderFactory

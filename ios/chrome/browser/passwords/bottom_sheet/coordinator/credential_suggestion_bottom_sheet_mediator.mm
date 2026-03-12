@@ -213,7 +213,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   raw_ptr<PrefService> _prefService;
 
   // Module containing the reauthentication mechanism.
-  __weak id<ReauthenticationProtocol> _reauthenticationModule;
+  id<ReauthenticationProtocol> _reauthenticationModule;
 
   // Fetches profile pictures.
   std::unique_ptr<image_fetcher::ImageFetcher> _imageFetcher;
