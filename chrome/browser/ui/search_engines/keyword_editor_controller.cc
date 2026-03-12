@@ -100,10 +100,7 @@ bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
 
 bool KeywordEditorController::ShouldConfirmDeletion(
     const TemplateURL* url) const {
-  // Currently, only built-in search engines and non default search engines
-  // created by policy require confirmation before deletion.
-  return url->prepopulate_id() != 0 ||
-         url->CreatedByNonDefaultSearchProviderPolicy();
+  return url->RequiresDeletionConfirmation();
 }
 
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {

@@ -2195,6 +2195,10 @@ bool TemplateURL::CreatedByRegulatoryProgram() const {
   return data().CreatedByRegulatoryProgram();
 }
 
+bool TemplateURL::RequiresDeletionConfirmation() const {
+  return prepopulate_id() != 0 || CreatedByNonDefaultSearchProviderPolicy();
+}
+
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
   return data().regulatory_origin;
 }

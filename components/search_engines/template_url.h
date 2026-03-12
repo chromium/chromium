@@ -1022,6 +1022,11 @@ class TemplateURL {
   // Returns whether this search engine was created by a regulatory program.
   bool CreatedByRegulatoryProgram() const;
 
+  // Returns true if the user should be asked to confirm before deleting this
+  // engine. Currently, only built-in search engines and non default search
+  // engines created by policy require confirmation before deletion.
+  bool RequiresDeletionConfirmation() const;
+
   void SetURL(const std::string& url);
   void SetPrepopulateId(int id);
 

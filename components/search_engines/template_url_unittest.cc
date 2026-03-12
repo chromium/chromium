@@ -3382,3 +3382,39 @@ TEST_P(TemplateURLIsBetterThanEngineTest, Compare) {
   EXPECT_TRUE(better.IsBetterThanConflictingEngine(&worse));
   EXPECT_FALSE(worse.IsBetterThanConflictingEngine(&better));
 }
+
+TEST_F(TemplateURLTest, RequiresDeletionConfirmation) {
+  {
+    TemplateURLData data;
+    data.prepopulate_id = 1;
+    TemplateURL url(data);
+    EXPECT_TRUE(url.RequiresDeletionConfirmation());
+  }
+  {
+    TemplateURLData data;
+    data.prepopulate_id = 0;
+    TemplateURL url(data);
+    EXPECT_FALSE(url.RequiresDeletionConfirmation());
+  }
+  {
+    TemplateURLData data;
+    data.prepopulate_id = 0;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kSiteSearch;
+    TemplateURL url(data);
+    EXPECT_TRUE(url.RequiresDeletionConfirmation());
+  }
+  {
+    TemplateURLData data;
+    data.prepopulate_id = 0;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+    TemplateURL url(data);
+    EXPECT_FALSE(url.RequiresDeletionConfirmation());
+  }
+  {
+    TemplateURLData data;
+    data.prepopulate_id = 0;
+    data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+    TemplateURL url(data);
+    EXPECT_TRUE(url.RequiresDeletionConfirmation());
+  }
+}
