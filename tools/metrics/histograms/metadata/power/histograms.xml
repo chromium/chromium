@@ -1886,7 +1886,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxVoltageHPBCharger" units="V"
-    expires_after="2026-04-10">
+    expires_after="2027-04-10">
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-power-team@google.com</owner>
   <summary>
