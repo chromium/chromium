@@ -45,7 +45,8 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
-import org.chromium.chrome.browser.ntp.cards.SignInPromo;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.NtpSigninPromoDelegate;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
@@ -211,6 +213,32 @@ public class FeedSurfaceMediator
         private void initializePromoView() {
             mPromoView = mSigninPromoCoordinator.buildPromoView((ViewGroup) mCoordinator.getView());
             mSigninPromoCoordinator.setView(mPromoView);
+        }
+
+        /**
+         * @return Whether the {@link FeedSignInPromo} should be created.
+         */
+        public static boolean shouldCreatePromo() {
+            NtpSigninPromoDelegate.resetNtpSyncPromoLimitsIfHiddenForTooLong();
+            return !ChromeSharedPreferences.getInstance()
+                            .readBoolean(
+                                    ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, false)
+                    && !getSuppressionStatus();
+        }
+
+        private static boolean getSuppressionStatus() {
+            long suppressedFrom =
+                    SigninPreferencesManager.getInstance()
+                            .getNewTabPageSigninPromoSuppressionPeriodStart();
+            if (suppressedFrom == 0) return false;
+            long currentTime = System.currentTimeMillis();
+            long suppressedTo = suppressedFrom + NtpSigninPromoDelegate.getSuppressionPeriodMs();
+            if (suppressedFrom <= currentTime && currentTime < suppressedTo) {
+                return true;
+            }
+            SigninPreferencesManager.getInstance()
+                    .clearNewTabPageSigninPromoSuppressionPeriodStart();
+            return false;
         }
     }
 
@@ -920,15 +948,13 @@ public class FeedSurfaceMediator
     /**
      * Determines whether a signin promo should be shown.
      *
-     * @return Whether the SignPromo should be visible.
+     * @return Whether the FeedSigninPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             return false;
         }
-        // TODO(crbug.com/352735671): Move SignInPromo.shouldCreatePromo inside FeedSigninPromo
-        //  after phase 2 follow-up launch.§
-        boolean shouldCreatePromo = SignInPromo.shouldCreatePromo();
+        boolean shouldCreatePromo = FeedSigninPromo.shouldCreatePromo();
         if (!shouldCreatePromo) {
             return false;
         }
