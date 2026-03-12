@@ -33,6 +33,12 @@ public class AccessibilityTestHelperService extends Service {
                     Log.i(TAG, "performActionOnNode called in HelperService");
                     return AccessibilityTestService.tryPerformActionOnNode(className, text, action);
                 }
+
+                @Override
+                public String dumpWebContentsAccessibilityTree() {
+                    Log.i(TAG, "dumpWebContentsAccessibilityTree called in HelperService");
+                    return AccessibilityTestService.dumpWebContentsAccessibilityTree();
+                }
             };
 
     @Override

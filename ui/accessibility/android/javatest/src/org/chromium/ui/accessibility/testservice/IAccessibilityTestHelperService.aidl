@@ -24,4 +24,11 @@ interface IAccessibilityTestHelperService {
      * @return true if the action was performed successfully.
      */
     boolean performActionOnNode(String className, String text, int action);
+
+    /**
+     * Dumps the accessibility tree to a String.
+     *
+     * @return The accessibility tree as a String.
+     */
+    String dumpWebContentsAccessibilityTree();
 }

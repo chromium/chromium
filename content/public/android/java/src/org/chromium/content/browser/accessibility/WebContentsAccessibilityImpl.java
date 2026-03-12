@@ -489,8 +489,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     /**
-     * Called after the native a11y part is initialized. Overridable by subclasses
-     * to do initialization that is not required until the native is set up.
+     * Called after the native a11y part is initialized. Overridable by subclasses to do
+     * initialization that is not required until the native is set up.
      */
     protected void onNativeInit() {
         TraceEvent.begin("WebContentsAccessibilityImpl.onNativeInit");
@@ -499,6 +499,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mLastAccessibilityFocusId = View.NO_ID;
         mIsHovering = false;
         mCurrentRootId = View.NO_ID;
+        mDidSendAnyEvent = false;
 
         mSupportedHtmlElementTypes =
                 WebContentsAccessibilityImplJni.get().getSupportedHtmlElementTypes(mNativeObj);
@@ -532,6 +533,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         // Send state values set by embedders to native-side objects.
         refreshNativeState();
+
+        // Finally, also see if we need to fire a load complete event.
+        handleInitialLoadComplete(mPendingLoadCompleteId);
 
         TraceEvent.end("WebContentsAccessibilityImpl.onNativeInit");
     }
@@ -1741,16 +1745,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // ready and listed as the child of the container view.
         sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
 
+        // Also, notify the web contents possibly on load.
+        handleInitialLoadComplete(mPendingLoadCompleteId);
+
         // (Re-) focus focused element, since we weren't able to create an
         // AccessibilityNodeInfoCompat for this element before.
         if (!mShouldFocusOnPageLoad) return;
         if (mAccessibilityFocusId != View.NO_ID) {
             moveAccessibilityFocusToId(mAccessibilityFocusId);
-        }
-
-        if (mPendingLoadCompleteId != View.NO_ID) {
-            handleInitialLoadComplete(mPendingLoadCompleteId);
-            mPendingLoadCompleteId = View.NO_ID;
         }
     }
 
@@ -2255,15 +2257,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleInitialLoadComplete(int rootId) {
-        if (mDidSendAnyEvent || sSuppressLoadCompleteEventForTesting) return;
+        if (mDidSendAnyEvent || sSuppressLoadCompleteEventForTesting || rootId == View.NO_ID) {
+            return;
+        }
 
         if (!isNativeInitialized() || !mNotifyFrameInfoInitializedCalled) {
             mPendingLoadCompleteId = rootId;
+            return;
         }
 
-        if (rootId != View.NO_ID) {
-            handleContentChanged(rootId, true);
-        }
+        handleContentChanged(rootId, true);
+        mPendingLoadCompleteId = View.NO_ID;
     }
 
     @CalledByNative
