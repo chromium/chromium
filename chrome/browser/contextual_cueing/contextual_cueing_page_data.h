@@ -30,10 +30,20 @@ struct CueingResult {
     bool auto_send_eligible = false;
   };
 
+  CueingResult();
+  CueingResult(const CueingResult&);
+  CueingResult& operator=(const CueingResult&);
+  CueingResult(CueingResult&&);
+  CueingResult& operator=(CueingResult&&);
+  ~CueingResult();
+
   // The cue text to show to user.
   std::string cue_label;
   // Suggested prompt associated with the cue.
   std::string prompt_suggestion;
+  // The text to show in the anchored message bubble. Populated from
+  // `dynamic_cue_secondary_label` in the proto.
+  std::string anchored_message_text;
   // Whether the cue is contextual to page.
   bool is_dynamic = false;
   // Whether this configuration is eligible for auto-opening the side panel.

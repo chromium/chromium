@@ -285,7 +285,60 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
   EXPECT_TRUE(future.Get().value().is_dynamic);
 }
 
-// Tests for allowed_mime_types filtering.
+TEST_F(ContextualCueingPageDataTestDynamicCue,
+       ReturnsAnchoredMessageTextFromDynamicCue) {
+  base::test::TestFuture<
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("should not use this label");
+  config->set_dynamic_cue_label("dynamic label");
+  config->set_dynamic_cue_secondary_label("anchored message");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("dynamic label", future.Get().value().cue_label);
+  EXPECT_EQ("anchored message", future.Get().value().anchored_message_text);
+  EXPECT_TRUE(future.Get().value().is_dynamic);
+}
+
+TEST_F(ContextualCueingPageDataTestDynamicCue,
+       AnchoredMessageTextEmptyWhenNotSet) {
+  base::test::TestFuture<
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("should not use this label");
+  config->set_dynamic_cue_label("dynamic label");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("dynamic label", future.Get().value().cue_label);
+  EXPECT_TRUE(future.Get().value().anchored_message_text.empty());
+  EXPECT_TRUE(future.Get().value().is_dynamic);
+}
+
+TEST_F(ContextualCueingPageDataTest, StaticCueHasNoAnchoredMessageText) {
+  base::test::TestFuture<
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("basic label");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().value().anchored_message_text.empty());
+  EXPECT_FALSE(future.Get().value().is_dynamic);
+}
 
 TEST_F(ContextualCueingPageDataTest, AllowedMimeTypesEmpty_MatchesAnyType) {
   base::test::TestFuture<

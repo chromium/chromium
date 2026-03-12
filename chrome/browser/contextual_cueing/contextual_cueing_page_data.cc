@@ -66,6 +66,13 @@ void CountWords(const optimization_guide::proto::ContentNode& content_node,
 
 }  // namespace
 
+CueingResult::CueingResult() = default;
+CueingResult::CueingResult(const CueingResult&) = default;
+CueingResult& CueingResult::operator=(const CueingResult&) = default;
+CueingResult::CueingResult(CueingResult&&) = default;
+CueingResult& CueingResult::operator=(CueingResult&&) = default;
+CueingResult::~CueingResult() = default;
+
 ContextualCueingPageData::ContextualCueingPageData(
     content::Page& page,
     optimization_guide::proto::GlicContextualCueingMetadata metadata,
@@ -105,23 +112,24 @@ void ContextualCueingPageData::FindMatchingConfig() {
     auto decision = DidMatchCueingConditions(config);
     if (decision == kAllowed) {
       if (kUseDynamicCues.Get() && config.has_dynamic_cue_label()) {
-        std::move(cueing_decision_callback_)
-            .Run(base::ok(CueingResult{
-                config.dynamic_cue_label(), config.default_text(),
-                /*is_dynamic=*/true, config.auto_open_eligible(),
-                config.has_auto_send_params()
-                    ? std::make_optional(CueingResult::AutoSendParams{
-                          /*auto_send_eligible=*/
-                          config.auto_send_params().auto_send_eligible()})
-                    : std::nullopt}));
+        CueingResult result;
+        result.cue_label = config.dynamic_cue_label();
+        result.prompt_suggestion = config.default_text();
+        result.anchored_message_text = config.dynamic_cue_secondary_label();
+        result.is_dynamic = true;
+        result.auto_open_eligible = config.auto_open_eligible();
+        if (config.has_auto_send_params()) {
+          result.auto_send_params = CueingResult::AutoSendParams{
+              /*auto_send_eligible=*/
+              config.auto_send_params().auto_send_eligible()};
+        }
+        std::move(cueing_decision_callback_).Run(base::ok(std::move(result)));
         return;
       } else if (config.has_cue_label()) {
-        std::move(cueing_decision_callback_)
-            .Run(base::ok(CueingResult{
-                l10n_util::GetStringUTF8(
-                    IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL),
-                /*prompt_suggestion=*/"",
-                /*is_dynamic=*/false, /*auto_open_eligible=*/false}));
+        CueingResult result;
+        result.cue_label = l10n_util::GetStringUTF8(
+            IDS_GLIC_BUTTON_ENTRYPOINT_ASK_ABOUT_THIS_PAGE_LABEL);
+        std::move(cueing_decision_callback_).Run(base::ok(std::move(result)));
         return;
       }
     } else if (decision == kNeedsPdfPageCount) {

@@ -22,6 +22,8 @@ BASE_FEATURE(kZeroStateSuggestionsUsePrivateAi,
 
 BASE_FEATURE(kEnableAutoOpenGlicSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseAnchoredMessage, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsContextualCueingEnabled() {
   // If the feature is overridden (e.g. via server-side config or command-line),
   // use that state.
