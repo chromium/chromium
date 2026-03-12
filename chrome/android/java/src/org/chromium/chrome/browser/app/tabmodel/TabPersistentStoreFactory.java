@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -66,14 +67,18 @@ public class TabPersistentStoreFactory {
 
         @StoreType int storeType = migrationManager.getAuthoritativeStoreType();
         if (storeType == StoreType.LEGACY) {
-            return new TabPersistentStoreImpl(
-                    clientTag,
-                    tabPersistencePolicy,
-                    tabModelSelector,
-                    tabCreatorManager,
-                    tabWindowManager,
-                    cipherFactory,
-                    recordLegacyTabCountMetrics);
+            TabPersistentStoreImpl legacyStore =
+                    new TabPersistentStoreImpl(
+                            clientTag,
+                            tabPersistencePolicy,
+                            tabModelSelector,
+                            tabCreatorManager,
+                            tabWindowManager,
+                            cipherFactory,
+                            /* isAuthoritative= */ true,
+                            recordLegacyTabCountMetrics);
+            buildAuthoritativeLegacyStoreInitTracker(legacyStore, migrationManager);
+            return legacyStore;
         } else if (storeType == StoreType.TAB_STATE_STORE) {
             assert isTabStorageEnabled();
             assert isStorageAuthoritative();
@@ -209,12 +214,12 @@ public class TabPersistentStoreFactory {
             AccumulatingTabCreator regularShadowTabCreator,
             @Nullable AccumulatingTabCreator incognitoShadowTabCreator,
             String orchestratorTag) {
-        if (migrationManager == null) {
-            migrationManager = new DefaultPersistentStoreMigrationManager(windowTag);
-        }
-
         if (incognitoShadowTabCreator != null) {
             incognitoShadowTabCreator.stopRecording();
+        }
+
+        if (migrationManager == null) {
+            migrationManager = new DefaultPersistentStoreMigrationManager(windowTag);
         }
 
         @StoreType int shadowStoreType = migrationManager.getShadowStoreType();
@@ -248,5 +253,17 @@ public class TabPersistentStoreFactory {
 
         migrationManager.onShadowStoreCreated(shadowStoreType);
         return shadowTabPersistentStore;
+    }
+
+    private static void buildAuthoritativeLegacyStoreInitTracker(
+            TabPersistentStore authoritativeStore, PersistentStoreMigrationManager manager) {
+        authoritativeStore.addObserver(
+                new TabPersistentStoreObserver() {
+                    @Override
+                    public void onInitialized(int tabCountAtStartup) {
+                        authoritativeStore.removeObserver(this);
+                        manager.onAuthoritativeStoreInitialized(StoreType.LEGACY);
+                    }
+                });
     }
 }

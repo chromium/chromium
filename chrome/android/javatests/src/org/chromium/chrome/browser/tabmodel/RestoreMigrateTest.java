@@ -138,6 +138,7 @@ public class RestoreMigrateTest {
                             null,
                             TabWindowManagerSingleton.getInstance(),
                             mCipherFactory,
+                            /* isAuthoritative= */ true,
                             /* recordLegacyTabCountMetrics= */ true);
                 });
     }

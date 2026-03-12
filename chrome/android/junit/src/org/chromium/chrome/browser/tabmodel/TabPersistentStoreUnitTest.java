@@ -163,6 +163,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true) {
                     @Override
                     protected void saveNextTab() {
@@ -192,6 +193,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -221,6 +223,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -257,6 +260,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -299,6 +303,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -324,6 +329,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -360,6 +366,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -386,6 +393,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
 
@@ -407,6 +415,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(true);
 
@@ -429,6 +438,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.initializeRestoreVars(false);
         when(mNormalTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mTab);
@@ -632,6 +642,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
         mPersistentStore.onNativeLibraryReady();
@@ -670,6 +681,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
         mPersistentStore.onNativeLibraryReady();
@@ -726,6 +738,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
         mPersistentStore.onNativeLibraryReady();
@@ -764,6 +777,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
         mPersistentStore.onNativeLibraryReady();
@@ -803,6 +817,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
         mPersistentStore.onNativeLibraryReady();
@@ -851,6 +866,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
         mPersistentStore.setSequencedTaskRunnerForTesting(mSequencedTaskRunner);
 
@@ -912,6 +928,7 @@ public class TabPersistentStoreUnitTest {
                         mTabCreatorManager,
                         mTabWindowManager,
                         mCipherFactory,
+                        /* isAuthoritative= */ true,
                         /* recordLegacyTabCountMetrics= */ true);
 
         // Ensure mPrefetchTabListTask completes.

@@ -181,6 +181,7 @@ public class TabPersistentStoreTest {
                                                     getTabCreatorManager(),
                                                     TabWindowManagerSingleton.getInstance(),
                                                     sCipherFactory,
+                                                    /* isAuthoritative= */ true,
                                                     /* recordLegacyTabCountMetrics= */ true);
                                     tabPersistentStore.addObserver(mTabPersistentStoreObserver);
                                     return tabPersistentStore;
@@ -433,6 +434,7 @@ public class TabPersistentStoreTest {
                             creatorManager,
                             TabWindowManagerSingleton.getInstance(),
                             sCipherFactory,
+                            /* isAuthoritative= */ true,
                             /* recordLegacyTabCountMetrics= */ true);
                 });
     }

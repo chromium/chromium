@@ -170,6 +170,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private final TabCreatorManager mTabCreatorManager;
     private final TabWindowManager mTabWindowManager;
     private final CipherFactory mCipherFactory;
+    private final boolean mIsAuthoritative;
     private final boolean mRecordLegacyTabCountMetrics;
     private final ObserverList<TabPersistentStoreObserver> mObservers;
     private final Deque<Tab> mTabsToSave;
@@ -216,6 +217,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      *     creators, or faked out creators if in non-authoritative mode.
      * @param tabWindowManager Used to avoid deleting archived tab state files.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
+     * @param isAuthoritative Whether this store is the authoritative source of tab state for the
+     *     window.
      * @param recordLegacyTabCountMetrics Whether to record legacy tab count metrics.
      */
     public TabPersistentStoreImpl(
@@ -225,6 +228,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             TabCreatorManager tabCreatorManager,
             TabWindowManager tabWindowManager,
             CipherFactory cipherFactory,
+            boolean isAuthoritative,
             boolean recordLegacyTabCountMetrics) {
         mClientTag = clientTag;
         mPersistencePolicy = policy;
@@ -232,6 +236,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mTabCreatorManager = tabCreatorManager;
         mTabWindowManager = tabWindowManager;
         mCipherFactory = cipherFactory;
+        mIsAuthoritative = isAuthoritative;
         mRecordLegacyTabCountMetrics = recordLegacyTabCountMetrics;
 
         mTabsToSave = new ArrayDeque<>();
@@ -505,8 +510,10 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
-            assert mTabModelSelector.getModel(true).getCount() == 0;
-            assert mTabModelSelector.getModel(false).getCount() == 0;
+            if (mIsAuthoritative) {
+                assert mTabModelSelector.getModel(true).getCount() == 0;
+                assert mTabModelSelector.getModel(false).getCount() == 0;
+            }
             checkAndUpdateMaxTabId();
             DataInputStream stream;
             if (mPrefetchTabListTask != null) {
