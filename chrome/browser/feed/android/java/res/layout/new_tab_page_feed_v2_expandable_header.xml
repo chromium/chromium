@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.feed.sections.SectionHeaderView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/snippets_article_header_height"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:layoutDirection="locale" >
+
+    <RelativeLayout
+        tools:ignore="RelativeOverlap"
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2" >
+    <!-- Note: Setting textDirection to "locale" makes sure that a non-translated English word in
+         the title text view is aligned based on the device locale and not the text content.
+    -->
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:textAppearance="@style/TextAppearance.HeaderTitle"
+        android:textDirection="locale" />
+
+    <org.chromium.ui.listmenu.ListMenuButton
+        android:id="@+id/header_menu"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:scaleType="centerInside"
+        android:layout_marginStart="15dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/toolbar_menu_button_ripple"
+        android:src="@drawable/ic_more_vert_24dp"
+        android:contentDescription="@string/accessibility_ntp_feed_menu_button"
+        app:menuMaxWidth="@dimen/feed_header_menu_max_width"
+        app:tint="@color/header_title_text_color_list" />
+    </RelativeLayout>
+</org.chromium.chrome.browser.feed.sections.SectionHeaderView>

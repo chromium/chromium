@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--  Each list item has a name in bold, explanation text beneath in
+      smaller, grayer font, and a ">" at the right edge to bring up the
+      next level of menu. -->
+<org.chromium.chrome.browser.feed.feedmanagement.FeedManagementItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/follow_margin"
+        android:layout_marginVertical="@dimen/follow_item_margin" >
+
+        <TextView
+            android:id="@+id/feed_management_menu_item_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+        <TextView
+            android:id="@+id/feed_management_menu_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_below="@id/feed_management_menu_item_text" />
+
+    </RelativeLayout>
+
+</org.chromium.chrome.browser.feed.feedmanagement.FeedManagementItemView>

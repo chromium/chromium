@@ -19,11 +19,13 @@ public class FeedScrollState {
     private static final String SCROLL_POSITION = "pos";
     private static final String SCROLL_LAST_POSITION = "lpos";
     private static final String SCROLL_OFFSET = "off";
+    private static final String TAB_ID = "tabId";
     private static final String FEED_CONTENT_STATE = "contentState";
 
     public int position;
     public int lastPosition;
     public int offset;
+    public int tabId;
     // Represents the state of Feed content. If it changes,
     // the scroll state should not be retained.
     public String feedContentState = "";
@@ -35,6 +37,7 @@ public class FeedScrollState {
             jsonSavedState.put(SCROLL_POSITION, position);
             jsonSavedState.put(SCROLL_LAST_POSITION, lastPosition);
             jsonSavedState.put(SCROLL_OFFSET, offset);
+            jsonSavedState.put(TAB_ID, tabId);
             jsonSavedState.put(FEED_CONTENT_STATE, feedContentState);
             return jsonSavedState.toString();
         } catch (JSONException e) {
@@ -52,6 +55,7 @@ public class FeedScrollState {
             result.position = jsonSavedState.getInt(SCROLL_POSITION);
             result.lastPosition = jsonSavedState.getInt(SCROLL_LAST_POSITION);
             result.offset = jsonSavedState.getInt(SCROLL_OFFSET);
+            result.tabId = jsonSavedState.getInt(TAB_ID);
             result.feedContentState = jsonSavedState.getString(FEED_CONTENT_STATE);
         } catch (JSONException e) {
             Log.d(TAG, "Unable to parse a JSONObject from a string.");

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layoutDirection="locale">
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/app_bar_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:fitsSystemWindows="true"
+      app:liftOnScroll="true">
+
+      <com.google.android.material.appbar.MaterialToolbar
+          android:id="@+id/action_bar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          style="@style/ManagementActivityNoActionBar"
+          app:title="@string/ntp_manage_feed" />
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <!-- This list gets the management options. -->
+  <ListView
+      android:id="@+id/feed_management_menu"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+</LinearLayout>

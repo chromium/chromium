@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<org.chromium.chrome.browser.feed.sort_ui.FeedOptionsView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/options_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2"
+    android:paddingVertical="@dimen/feed_options_vertical_margins"
+    android:layout_marginBottom="@dimen/feed_options_vertical_margins"
+    android:orientation="vertical"
+    android:visibility="gone"
+    android:background="@macro/toolbar_background_primary"
+    android:clickable="true"
+    android:focusable="true">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:text="@string/sort_by"
+        android:paddingVertical="@dimen/feed_options_vertical_margins"
+        android:focusableInTouchMode="true"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chips_container"
+        android:orientation="horizontal" />
+</org.chromium.chrome.browser.feed.sort_ui.FeedOptionsView>

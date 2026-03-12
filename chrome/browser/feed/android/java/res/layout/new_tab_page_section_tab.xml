@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:duplicateParentState="true" >
+  <TextView
+      android:id="@android:id/text1"
+      android:gravity="center"
+      android:maxLines="1"
+      android:ellipsize="end"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:duplicateParentState="true"
+      android:textAppearance="@style/TextAppearance.TabLayout" />
+  <ImageView
+      android:id="@+id/options_indicator"
+      android:layout_width="@dimen/feed_header_dropdown_size"
+      android:layout_height="@dimen/feed_header_dropdown_size"
+      android:scaleType="centerInside"
+      app:tint="@color/tab_layout_text_color_list"
+      android:visibility="gone"
+      android:src="@drawable/mtrl_ic_arrow_drop_down"
+      android:layout_gravity="center_vertical"
+      android:contentDescription="@string/feed_options_dropdown_description" />
+</LinearLayout>

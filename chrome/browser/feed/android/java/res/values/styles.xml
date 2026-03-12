@@ -27,6 +27,19 @@ found in the LICENSE file.
         <item name="solidColorChip">false</item>
     </style>
 
+    <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
+        <item name="tabTextAppearance">@style/TextAppearance.TabLayout</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabPaddingEnd">7dp</item>
+        <item name="tabPaddingStart">14dp</item>
+        <item name="android:background">@drawable/header_title_section_tab_background_v2</item>
+        <item name="tabIndicatorColor">@android:color/transparent</item>
+    </style>
+
+    <style name="TextAppearance.TabLayout" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/tab_layout_text_color_list</item>
+    </style>
+
     <style name="TextAppearance.ClickableButton" parent="TextAppearance.Button.Text.Filled">
         <item name="android:textColor">@macro/default_text_color_on_accent1</item>
     </style>
@@ -37,6 +50,10 @@ found in the LICENSE file.
 
     <style name="TextAppearance.HeaderTitle" parent="TextAppearance.TextAccentMediumThick">
         <item name="android:textColor">@color/header_title_text_color_list</item>
+    </style>
+
+    <style name="ManagementActivityNoActionBar">
+        <item name="windowActionBar">false</item>
     </style>
 
 </resources>
