@@ -135,6 +135,9 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj);
+  void UpdateBackForwardCacheSettingsKeepForwardEntriesLocked(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& obj);
   void UpdateGeolocationEnabledLocked(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj);
@@ -188,6 +191,7 @@ class AwSettings : public content::WebContentsObserver {
   bool bfcache_enabled_in_java_settings_{false};
   int back_forward_cache_timeout_in_seconds_{0};
   int back_forward_cache_max_pages_in_cache_{0};
+  bool back_forward_cache_keep_forward_entries_{true};
   bool geolocation_enabled_{false};
 
   // Whether the settings that would affect the initial page scale is set to a

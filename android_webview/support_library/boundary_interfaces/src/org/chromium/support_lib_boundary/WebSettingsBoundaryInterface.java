@@ -171,7 +171,12 @@ public interface WebSettingsBoundaryInterface {
 
     void setBackForwardCacheSettingsMaxPagesInCache(int pagesInCache);
 
+    void setBackForwardCacheSettingsKeepForwardEntries(
+            boolean keepForwardEntries);
+
     long getBackForwardCacheSettingsTimeout();
 
     int getBackForwardCacheSettingsMaxPagesInCache();
+
+    boolean getBackForwardCacheSettingsKeepForwardEntries();
 }

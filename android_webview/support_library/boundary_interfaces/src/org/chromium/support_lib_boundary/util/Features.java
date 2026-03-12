@@ -430,6 +430,10 @@ public class Features {
     // V2 was deleted as it didn't get released and we made a major type change in V3.
     public static final String BACK_FORWARD_CACHE_SETTINGS_V3 = "BACK_FORWARD_CACHE_SETTINGS_V3";
 
+    // BackForwardCacheSettings.setKeepForwardEntries
+    // BackForwardCacheSettings.getKeepForwardEntries
+    public static final String BACK_FORWARD_CACHE_SETTINGS_V4 = "BACK_FORWARD_CACHE_SETTINGS_V4";
+
     // Profile.preconnect
     public static final String PRECONNECT = "PRECONNECT";
 
