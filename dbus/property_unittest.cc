@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -398,7 +399,7 @@ TEST(PropertyTestStatic, ReadWriteNetAddressArray) {
   for (auto& item : ip_list.value()) {
     ASSERT_EQ(5U, item.first.size());
     ip_bytes[4] = 0x30 + item_index;
-    UNSAFE_TODO(EXPECT_EQ(0, memcmp(ip_bytes, item.first.data(), 5U)));
+    EXPECT_EQ(base::span(ip_bytes), base::span(item.first));
     EXPECT_EQ(item_index, item.second);
     ++item_index;
   }
@@ -410,10 +411,8 @@ TEST(PropertyTestStatic, SerializeNetAddressArray) {
   auto ip_bytes = std::to_array<uint8_t>({0x54, 0x65, 0x73, 0x74, 0x30});
   for (uint16_t i = 0; i < 5; ++i) {
     ip_bytes[4] = 0x30 + i;
-    std::vector<uint8_t> bytes(
-        ip_bytes.data(),
-        base::span<uint8_t>(ip_bytes).subspan(std::size(ip_bytes)).data());
-    test_list.push_back(make_pair(bytes, 16));
+    std::vector<uint8_t> bytes(ip_bytes.begin(), ip_bytes.end());
+    test_list.emplace_back(std::move(bytes), 16);
   }
 
   std::unique_ptr<Response> message(Response::CreateEmpty());
