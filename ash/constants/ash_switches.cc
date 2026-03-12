@@ -1095,6 +1095,14 @@ const char kMonitoringDestinationID[] = "monitoring-destination-id";
 // testing purposes.
 const char kSystemLogUploadFrequency[] = "system-log-upload-frequency";
 
+// When specified with a url string as parameter, the given url overrides the
+// Android Messages for Web PWA installation and app urls using a base of the
+// given domain with approrpiate suffixes.
+const char kCustomAndroidMessagesDomain[] = "custom-android-messages-domain";
+
+// Enables verbose logging level for Nearby Share.
+const char kNearbyShareVerboseLogging[] = "nearby-share-verbose-logging";
+
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCryptohomeUseAuthSession);

@@ -21,8 +21,6 @@ static_library("android_sms") {
     "android_sms_service.h",
     "android_sms_service_factory.cc",
     "android_sms_service_factory.h",
-    "android_sms_switches.cc",
-    "android_sms_switches.h",
     "android_sms_urls.cc",
     "android_sms_urls.h",
     "connection_establisher.h",

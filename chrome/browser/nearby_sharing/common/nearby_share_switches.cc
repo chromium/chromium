@@ -24,7 +24,4 @@ const char kNearbyShareHTTPHost[] = "nearbysharing-http-host";
 const char kNearbyShareNumPrivateCertificates[] =
     "nearby-share-num-private-certificates";
 
-// Enables verbose logging level for Nearby Share.
-const char kNearbyShareVerboseLogging[] = "nearby-share-verbose-logging";
-
 }  // namespace switches

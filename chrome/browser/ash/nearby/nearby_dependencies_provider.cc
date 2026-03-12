@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -189,7 +190,7 @@ NearbyDependenciesProvider::GetDependencies() {
   dependencies->wifidirect_dependencies = GetWifiDirectDependencies();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kNearbyShareVerboseLogging)) {
+  if (command_line->HasSwitch(ash::switches::kNearbyShareVerboseLogging)) {
     dependencies->min_log_severity =
         ::nearby::api::LogMessage::Severity::kVerbose;
   }

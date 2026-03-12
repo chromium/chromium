@@ -7,9 +7,9 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -31,7 +31,7 @@ const char kStagingInstallUrl[] =
 GURL GetCustomDomain(bool use_install_url) {
   std::string custom_domain =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kCustomAndroidMessagesDomain);
+          ash::switches::kCustomAndroidMessagesDomain);
   if (custom_domain.empty()) {
     return GURL();
   }

@@ -379,6 +379,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppModeAuthCode[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppModeOAuth2Token[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMonitoringDestinationID[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSystemLogUploadFrequency[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCustomAndroidMessagesDomain[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNearbyShareVerboseLogging[];
 
 ////////////////////////////////////////////////////////////////////////////////
 

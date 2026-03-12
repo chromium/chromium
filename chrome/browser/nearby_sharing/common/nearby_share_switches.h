@@ -13,7 +13,6 @@ extern const char kNearbyShareCertificateValidityPeriodHours[];
 extern const char kNearbyShareDeviceID[];
 extern const char kNearbyShareHTTPHost[];
 extern const char kNearbyShareNumPrivateCertificates[];
-extern const char kNearbyShareVerboseLogging[];
 
 }  // namespace switches
 
