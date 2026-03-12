@@ -1105,7 +1105,8 @@ PercentOverlap GlicMetrics::GetPercentOverlapWithBrowser(
   int browser_glic_intersect_area = browser_glic_intersect_bounds.width() *
                                     browser_glic_intersect_bounds.height();
   // Calculate overlap percentage and round to the nearest 10.
-  int percentOverlap = round(10 * browser_glic_intersect_area / glic_area) * 10;
+  int percentOverlap =
+      round(10.0 * browser_glic_intersect_area / glic_area) * 10;
   switch (percentOverlap) {
     case 100:
       return PercentOverlap::k100;
@@ -1132,7 +1133,7 @@ PercentOverlap GlicMetrics::GetPercentOverlapWithBrowser(
       return PercentOverlap::k0;
   }
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void GlicMetrics::OnAttachedToBrowser(AttachChangeReason reason) {
   base::UmaHistogramEnumeration("Glic.AttachedToBrowser", reason);

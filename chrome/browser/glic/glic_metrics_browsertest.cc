@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/glic/glic_metrics.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -13,10 +15,13 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
@@ -127,6 +132,33 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsHotkey, 2);
   histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.OpenSource",
                                       mojom::InvocationSource::kOsHotkey, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, PercentOverlapRounding) {
+  base::HistogramTester histogram_tester;
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+
+  // Ensure browser is visible for the IsBrowserVisible() check.
+  browser()->window()->Show();
+
+  gfx::Rect browser_bounds = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetWidget()
+                                 ->GetWindowBoundsInScreen();
+  gfx::Rect glic_bounds = browser_bounds;
+
+  // Shift the bounds so they overlap by exactly 46%.
+  // Without the fix: 10 * 46 / 100 = 4 (integer division) -> 40%
+  // With the fix: 10.0 * 46 / 100 = 4.6 -> round(4.6) = 5 -> 50%
+  int overlap_height = browser_bounds.height() * 46 / 100;
+  int y_offset = browser_bounds.height() - overlap_height;
+  glic_bounds.Offset(0, y_offset);
+
+  glic_service->metrics()->OnGlicWindowClose(browser(), std::nullopt,
+                                             glic_bounds);
+
+  histogram_tester.ExpectUniqueSample("Glic.PercentOverlapWithBrowser.OnClose",
+                                      PercentOverlap::k50, 1);
 }
 
 }  // namespace
