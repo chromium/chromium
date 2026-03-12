@@ -994,10 +994,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20251208",
+                    "name": "Enabled_20260312",
                     "enable_features": [
-                        "AndroidOpenIncognitoAsWindow",
-                        "TabStripIncognitoMigration"
+                        "AndroidOpenIncognitoAsWindow"
                     ]
                 }
             ]
