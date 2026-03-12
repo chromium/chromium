@@ -203,8 +203,8 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     AppendQuadsCustomSharedData* custom_data) {
   bool has_draw_quad =
       AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
-                 offset_visible_geometry_rect, needs_blending,
-                 nearest_neighbor_, append_quads_data);
+                 offset_visible_geometry_rect, visible_geometry_rect,
+                 needs_blending, nearest_neighbor_, append_quads_data);
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.

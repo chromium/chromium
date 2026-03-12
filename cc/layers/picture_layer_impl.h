@@ -425,6 +425,8 @@ class CC_EXPORT PictureLayerImpl
       float ideal_contents_scale) override;
   void WillProcessReadyToDrawTile(
       const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
+  bool ShouldUpdateApproximatedVisibleContentArea(
+      TileResolution resolution) const override;
   void DidAppendQuad(viz::DrawQuad* quad,
                      const TilingSetCoverageIterator<PictureLayerTiling>& iter,
                      AppendQuadsData* append_quads_data,

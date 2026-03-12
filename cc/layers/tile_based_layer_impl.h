@@ -131,6 +131,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                   viz::SharedQuadState* shared_quad_state,
                   const gfx::Rect& offset_geometry_rect,
                   const gfx::Rect& offset_visible_geometry_rect,
+                  const gfx::Rect& visible_geometry_rect,
                   bool needs_blending,
                   bool nearest_neighbor,
                   AppendQuadsData* append_quads_data);
@@ -139,6 +140,13 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // to perform any subclass-specific side effects.
   virtual void WillProcessReadyToDrawTile(
       const TilingSetCoverageIterator<Tiling>& iter) {}
+
+  // Returns true if the subclass wants to track the approximated visible
+  // content area for the given resolution.
+  virtual bool ShouldUpdateApproximatedVisibleContentArea(
+      TileResolution resolution) const {
+    return false;
+  }
 
   // Invoked after a quad has been appended to allow subclasses to perform any
   // subclass-specific validation or tracking.
@@ -525,6 +533,7 @@ bool TileBasedLayerImpl<Tiling>::AppendQuad(
     viz::SharedQuadState* shared_quad_state,
     const gfx::Rect& offset_geometry_rect,
     const gfx::Rect& offset_visible_geometry_rect,
+    const gfx::Rect& visible_geometry_rect,
     bool needs_blending,
     bool nearest_neighbor,
     AppendQuadsData* append_quads_data) {
@@ -535,25 +544,29 @@ bool TileBasedLayerImpl<Tiling>::AppendQuad(
 
   WillProcessReadyToDrawTile(iter);
 
+  bool tile_produced = false;
   if (auto resource_id = tile->GetResourceId()) {
     gfx::RectF texture_rect = iter.texture_rect();
     AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
                        offset_visible_geometry_rect, needs_blending,
                        *resource_id, texture_rect, nearest_neighbor, iter,
                        append_quads_data);
-    return true;
-  }
-
-  if (auto color = tile->GetSolidColor()) {
+    tile_produced = true;
+  } else if (auto color = tile->GetSolidColor()) {
     AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
                          offset_visible_geometry_rect, *color, iter,
                          append_quads_data);
-    return true;
+    tile_produced = true;
   }
 
-  // If the tile is OOM, or we don't have a resource/color for some other
-  // reason, we should return false to trigger checkerboarding.
-  return false;
+  if (tile_produced) {
+    if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
+      append_quads_data->approximated_visible_content_area +=
+          visible_geometry_rect.size().Area64();
+    }
+  }
+
+  return tile_produced;
 }
 
 template <typename Tiling>

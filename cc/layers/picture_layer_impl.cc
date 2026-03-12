@@ -277,6 +277,11 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   ValidateQuadResources(quad);
 }
 
+bool PictureLayerImpl::ShouldUpdateApproximatedVisibleContentArea(
+    TileResolution resolution) const {
+  return resolution != HIGH_RESOLUTION;
+}
+
 void PictureLayerImpl::DidAppendQuad(
     viz::DrawQuad* quad,
     const TilingSetCoverageIterator<PictureLayerTiling>& iter,
@@ -407,12 +412,11 @@ bool PictureLayerImpl::AppendQuadForTile(
       static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
 
   gfx::Rect geometry_rect = iter.geometry_rect();
-  uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
 
   bool has_draw_quad =
       AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
-                 offset_visible_geometry_rect, needs_blending,
-                 nearest_neighbor_, append_quads_data);
+                 offset_visible_geometry_rect, visible_geometry_rect,
+                 needs_blending, nearest_neighbor_, append_quads_data);
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
@@ -423,11 +427,6 @@ bool PictureLayerImpl::AppendQuadForTile(
     // Only report the tile as missing if it's in the viewport.
     return /*tile_produced=*/!geometry_rect.Intersects(
         shared_data->scaled_viewport_for_tile_priority_);
-  }
-
-  if (iter.resolution() != HIGH_RESOLUTION) {
-    append_quads_data->approximated_visible_content_area +=
-        visible_geometry_area;
   }
 
   produced_tile_last_append_quads_ = true;
