@@ -146,10 +146,10 @@ NationalId ConvertNationalId(
   return national_id;
 }
 
-Flight ConvertFlight(
+FlightReservation ConvertFlight(
     const sync_pb::AccessibilityAnnotationSpecifics::FlightReservation&
         proto_flight) {
-  Flight flight;
+  FlightReservation flight;
   if (proto_flight.has_flight_number()) {
     flight.flight_number = proto_flight.flight_number();
   }

@@ -24,13 +24,13 @@ struct Date {
   int year = 0;
 };
 
-struct Flight {
-  Flight();
-  ~Flight();
-  Flight(const Flight& other);
-  Flight(Flight&& other);
-  Flight& operator=(const Flight& other);
-  Flight& operator=(Flight&& other);
+struct FlightReservation {
+  FlightReservation();
+  FlightReservation(const FlightReservation& other);
+  FlightReservation(FlightReservation&& other);
+  FlightReservation& operator=(const FlightReservation& other);
+  FlightReservation& operator=(FlightReservation&& other);
+  ~FlightReservation();
 
   std::string flight_number;
   std::string ticket_number;
@@ -45,11 +45,11 @@ struct Flight {
 struct Order {
   struct ItemDescription {
     ItemDescription();
-    ~ItemDescription();
     ItemDescription(const ItemDescription& other);
     ItemDescription(ItemDescription&& other);
     ItemDescription& operator=(const ItemDescription& other);
     ItemDescription& operator=(ItemDescription&& other);
+    ~ItemDescription();
 
     std::string name;
     int quantity = 0;
@@ -57,11 +57,11 @@ struct Order {
   };
 
   Order();
-  ~Order();
   Order(const Order& other);
   Order(Order&& other);
   Order& operator=(const Order& other);
   Order& operator=(Order&& other);
+  ~Order();
 
   std::string id;
   std::string account;
@@ -74,11 +74,11 @@ struct Order {
 
 struct Shipment {
   Shipment();
-  ~Shipment();
   Shipment(const Shipment& other);
   Shipment(Shipment&& other);
   Shipment& operator=(const Shipment& other);
   Shipment& operator=(Shipment&& other);
+  ~Shipment();
 
   std::string tracking_number;
   std::string associated_order_id;
@@ -90,11 +90,11 @@ struct Shipment {
 
 struct DriversLicense {
   DriversLicense();
-  ~DriversLicense();
   DriversLicense(const DriversLicense& other);
   DriversLicense(DriversLicense&& other);
   DriversLicense& operator=(const DriversLicense& other);
   DriversLicense& operator=(DriversLicense&& other);
+  ~DriversLicense();
 
   std::string name;
   std::string number;
@@ -105,11 +105,11 @@ struct DriversLicense {
 
 struct Passport {
   Passport();
-  ~Passport();
   Passport(const Passport& other);
   Passport(Passport&& other);
   Passport& operator=(const Passport& other);
   Passport& operator=(Passport&& other);
+  ~Passport();
 
   std::string name;
   std::string number;
@@ -120,11 +120,11 @@ struct Passport {
 
 struct NationalId {
   NationalId();
-  ~NationalId();
   NationalId(const NationalId& other);
   NationalId(NationalId&& other);
   NationalId& operator=(const NationalId& other);
   NationalId& operator=(NationalId&& other);
+  ~NationalId();
 
   std::string name;
   std::string number;
@@ -135,11 +135,11 @@ struct NationalId {
 
 struct Vehicle {
   Vehicle();
-  ~Vehicle();
   Vehicle(const Vehicle& other);
   Vehicle(Vehicle&& other);
   Vehicle& operator=(const Vehicle& other);
   Vehicle& operator=(Vehicle&& other);
+  ~Vehicle();
 
   std::string make;
   std::string model;
@@ -151,7 +151,7 @@ struct Vehicle {
 };
 
 struct Entity {
-  using EntitySpecifics = std::variant<Flight,
+  using EntitySpecifics = std::variant<FlightReservation,
                                        Order,
                                        Shipment,
                                        DriversLicense,
@@ -160,11 +160,11 @@ struct Entity {
                                        Vehicle>;
 
   Entity();
-  ~Entity();
   Entity(const Entity& other);
   Entity(Entity&& other);
   Entity& operator=(const Entity& other);
   Entity& operator=(Entity&& other);
+  ~Entity();
 
   // Returns the type of the entity.
   EntityType GetType() const;

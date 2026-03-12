@@ -10,76 +10,80 @@
 
 namespace accessibility_annotator {
 
-Flight::Flight() = default;
-Flight::~Flight() = default;
-Flight::Flight(const Flight& other) = default;
-Flight::Flight(Flight&& other) = default;
-Flight& Flight::operator=(const Flight& other) = default;
-Flight& Flight::operator=(Flight&& other) = default;
+FlightReservation::FlightReservation() = default;
+FlightReservation::FlightReservation(const FlightReservation& other) = default;
+FlightReservation::FlightReservation(FlightReservation&& other) = default;
+FlightReservation& FlightReservation::operator=(
+    const FlightReservation& other) = default;
+FlightReservation& FlightReservation::operator=(FlightReservation&& other) =
+    default;
+FlightReservation::~FlightReservation() = default;
 
 Order::ItemDescription::ItemDescription() = default;
-Order::ItemDescription::~ItemDescription() = default;
 Order::ItemDescription::ItemDescription(const ItemDescription& other) = default;
 Order::ItemDescription::ItemDescription(ItemDescription&& other) = default;
 Order::ItemDescription& Order::ItemDescription::operator=(
     const ItemDescription& other) = default;
 Order::ItemDescription& Order::ItemDescription::operator=(
     ItemDescription&& other) = default;
+Order::ItemDescription::~ItemDescription() = default;
 
 Order::Order() = default;
-Order::~Order() = default;
 Order::Order(const Order& other) = default;
 Order::Order(Order&& other) = default;
 Order& Order::operator=(const Order& other) = default;
 Order& Order::operator=(Order&& other) = default;
+Order::~Order() = default;
 
 Shipment::Shipment() = default;
-Shipment::~Shipment() = default;
 Shipment::Shipment(const Shipment& other) = default;
 Shipment::Shipment(Shipment&& other) = default;
 Shipment& Shipment::operator=(const Shipment& other) = default;
 Shipment& Shipment::operator=(Shipment&& other) = default;
+Shipment::~Shipment() = default;
 
 DriversLicense::DriversLicense() = default;
-DriversLicense::~DriversLicense() = default;
 DriversLicense::DriversLicense(const DriversLicense& other) = default;
 DriversLicense::DriversLicense(DriversLicense&& other) = default;
 DriversLicense& DriversLicense::operator=(const DriversLicense& other) =
     default;
 DriversLicense& DriversLicense::operator=(DriversLicense&& other) = default;
+DriversLicense::~DriversLicense() = default;
 
 Passport::Passport() = default;
-Passport::~Passport() = default;
 Passport::Passport(const Passport& other) = default;
 Passport::Passport(Passport&& other) = default;
 Passport& Passport::operator=(const Passport& other) = default;
 Passport& Passport::operator=(Passport&& other) = default;
+Passport::~Passport() = default;
 
 NationalId::NationalId() = default;
-NationalId::~NationalId() = default;
 NationalId::NationalId(const NationalId& other) = default;
 NationalId::NationalId(NationalId&& other) = default;
 NationalId& NationalId::operator=(const NationalId& other) = default;
 NationalId& NationalId::operator=(NationalId&& other) = default;
+NationalId::~NationalId() = default;
 
 Vehicle::Vehicle() = default;
-Vehicle::~Vehicle() = default;
 Vehicle::Vehicle(const Vehicle& other) = default;
 Vehicle::Vehicle(Vehicle&& other) = default;
 Vehicle& Vehicle::operator=(const Vehicle& other) = default;
 Vehicle& Vehicle::operator=(Vehicle&& other) = default;
+Vehicle::~Vehicle() = default;
 
 Entity::Entity() = default;
-Entity::~Entity() = default;
 Entity::Entity(const Entity& other) = default;
 Entity::Entity(Entity&& other) = default;
 Entity& Entity::operator=(const Entity& other) = default;
 Entity& Entity::operator=(Entity&& other) = default;
+Entity::~Entity() = default;
 
 EntityType Entity::GetType() const {
   return std::visit(
       absl::Overload(
-          [](const Flight&) { return EntityType::kFlight; },
+          [](const FlightReservation&) {
+            return EntityType::kFlightReservation;
+          },
           [](const Order&) { return EntityType::kOrder; },
           [](const Shipment&) { return EntityType::kShipment; },
           [](const DriversLicense&) { return EntityType::kDriversLicense; },

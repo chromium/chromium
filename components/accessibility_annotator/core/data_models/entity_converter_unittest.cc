@@ -203,9 +203,10 @@ TEST(EntityConverterTest, ConvertFlight) {
   std::optional<Entity> result = CreateEntityFromSpecifics(specifics);
 
   ASSERT_TRUE(result.has_value());
-  ASSERT_TRUE(std::holds_alternative<Flight>(result->specifics));
+  ASSERT_TRUE(std::holds_alternative<FlightReservation>(result->specifics));
 
-  const Flight& entity_flight = std::get<Flight>(result->specifics);
+  const FlightReservation& entity_flight =
+      std::get<FlightReservation>(result->specifics);
   EXPECT_EQ(entity_flight.flight_number, "UA100");
   EXPECT_EQ(entity_flight.ticket_number, "TKT123");
   EXPECT_EQ(entity_flight.confirmation_code, "CONF456");
