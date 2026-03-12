@@ -104,4 +104,49 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
   EXPECT_FALSE(app_source->pending_migration_info().has_value());
 }
 
+TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, PreservesLastIgnoredTime) {
+  auto app_id_source =
+      test::InstallDummyWebApp(profile(), "Source App", GURL(kSourceAppUrl));
+  auto app_id_target =
+      test::InstallDummyWebApp(profile(), "Target App", GURL(kTargetAppUrl));
+
+  base::Time expected_ignored_time = provider()->clock().Now();
+
+  // Set existing pending migration info.
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    WebApp* app_source = update->UpdateApp(app_id_source);
+    PendingMigrationInfo info(webapps::ManifestId(GURL(kTargetAppUrl)),
+                              MigrationBehavior::kSuggest,
+                              expected_ignored_time);
+    app_source->SetPendingMigrationInfo(info);
+  }
+
+  // Set up migration source on target app (could be identical or updated
+  // behavior).
+  {
+    ScopedRegistryUpdate update =
+        provider()->sync_bridge_unsafe().BeginUpdate();
+    WebApp* app_target = update->UpdateApp(app_id_target);
+    std::vector<MigrationSource> sources;
+    sources.emplace_back(
+        GenerateManifestIdFromStartUrlOnly(GURL(kSourceAppUrl)),
+        MigrationBehavior::kForce, std::nullopt);
+    app_target->SetValidatedMigrationSources(std::move(sources));
+  }
+
+  RunCommand();
+
+  const WebApp* app_source =
+      provider()->registrar_unsafe().GetAppById(app_id_source);
+  ASSERT_TRUE(app_source->pending_migration_info().has_value());
+  EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec(),
+            app_source->pending_migration_info()->manifest_id());
+  EXPECT_EQ(MigrationBehavior::kForce,
+            app_source->pending_migration_info()->behavior());
+  EXPECT_EQ(expected_ignored_time,
+            app_source->pending_migration_info()->last_ignored_time());
+}
+
 }  // namespace web_app

@@ -887,6 +887,17 @@ void WebAppCommandScheduler::MarkAppPendingUpdateAsIgnored(
       std::move(done), location);
 }
 
+void WebAppCommandScheduler::MarkAppPendingMigrationAsIgnored(
+    const webapps::AppId& app_id,
+    base::OnceClosure done,
+    const base::Location& location) {
+  ScheduleCallback(
+      "MarkAppPendingMigrationAsIgnored", AppLockDescription(app_id),
+      base::BindOnce(::web_app::SetWebAppPendingMigrationAsIgnored,
+                     base::PassKey<WebAppCommandScheduler>(), app_id),
+      std::move(done), location);
+}
+
 void WebAppCommandScheduler::ScheduleResolveWebAppPendingMigrationInfo(
     base::OnceClosure callback,
     const base::Location& location) {

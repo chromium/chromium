@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "components/webapps/common/web_app_id.h"
@@ -25,8 +26,10 @@ class PendingMigrationInfo;
 // compilation times.
 class PendingMigrationInfo {
  public:
-  PendingMigrationInfo(webapps::ManifestId manifest_id,
-                       MigrationBehavior behavior);
+  PendingMigrationInfo(
+      webapps::ManifestId manifest_id,
+      MigrationBehavior behavior,
+      std::optional<base::Time> last_ignored_time = std::nullopt);
 
   PendingMigrationInfo(const PendingMigrationInfo&) = default;
   PendingMigrationInfo& operator=(const PendingMigrationInfo&) = default;
@@ -48,10 +51,14 @@ class PendingMigrationInfo {
 
   const webapps::ManifestId& manifest_id() const { return manifest_id_; }
   MigrationBehavior behavior() const { return behavior_; }
+  const std::optional<base::Time>& last_ignored_time() const {
+    return last_ignored_time_;
+  }
 
  private:
   webapps::ManifestId manifest_id_;
   MigrationBehavior behavior_;
+  std::optional<base::Time> last_ignored_time_;
 };
 
 }  // namespace web_app

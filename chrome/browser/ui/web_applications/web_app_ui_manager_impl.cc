@@ -611,8 +611,10 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
 }
 
 void WebAppUiManagerImpl::MaybeCreateWebAppBlockedMigrationInfoBar(
-    content::WebContents* web_contents) {
-  WebAppBlockedMigrationInfoBarDelegate::Create(web_contents);
+    content::WebContents* web_contents,
+    base::OnceClosure on_dismiss_callback) {
+  WebAppBlockedMigrationInfoBarDelegate::Create(web_contents,
+                                                std::move(on_dismiss_callback));
 }
 
 void WebAppUiManagerImpl::MaybeRemoveWebAppBlockedMigrationInfoBar(

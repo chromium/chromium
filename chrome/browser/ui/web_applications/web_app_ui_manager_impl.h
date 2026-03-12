@@ -194,7 +194,8 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
       const std::string& launch_name) override;
 
   void MaybeCreateWebAppBlockedMigrationInfoBar(
-      content::WebContents* web_contents) override;
+      content::WebContents* web_contents,
+      base::OnceClosure on_dismiss_callback) override;
 
   void MaybeRemoveWebAppBlockedMigrationInfoBar(
       content::WebContents* web_contents) override;

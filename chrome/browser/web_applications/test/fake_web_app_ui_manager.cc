@@ -270,7 +270,8 @@ void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
     const std::string& launch_name) {}
 
 void FakeWebAppUiManager::MaybeCreateWebAppBlockedMigrationInfoBar(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents,
+    base::OnceClosure on_dismiss_callback) {}
 
 void FakeWebAppUiManager::MaybeRemoveWebAppBlockedMigrationInfoBar(
     content::WebContents* web_contents) {}

@@ -5,19 +5,24 @@
 #include "chrome/browser/ui/views/web_apps/web_app_blocked_migration_infobar_delegate.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -31,6 +36,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
 namespace web_app {
@@ -46,6 +52,47 @@ class WebAppBlockedMigrationInfoBarDelegateBrowserTest
       const WebAppBlockedMigrationInfoBarDelegateBrowserTest&) = delete;
 
   ~WebAppBlockedMigrationInfoBarDelegateBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    WebAppBrowserTestBase::SetUpOnMainThread();
+    test_clock_.SetNow(base::Time::Now());
+    provider().SetClockForTesting(&test_clock_);
+  }
+
+  void TearDownOnMainThread() override {
+    provider().SetClockForTesting(base::DefaultClock::GetInstance());
+    WebAppBrowserTestBase::TearDownOnMainThread();
+  }
+
+  base::SimpleTestClock* clock() { return &test_clock_; }
+
+  void ClickInfoBarAccept(content::WebContents* web_contents) {
+    infobars::InfoBar* infobar =
+        WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents);
+    ASSERT_TRUE(infobar);
+    views::test::ButtonTestApi(
+        static_cast<ConfirmInfoBar*>(infobar)->ok_button_for_testing())
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks(),
+                                    ui::EF_LEFT_MOUSE_BUTTON,
+                                    ui::EF_LEFT_MOUSE_BUTTON));
+  }
+
+  void ClickInfoBarClose(content::WebContents* web_contents) {
+    infobars::InfoBar* infobar =
+        WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents);
+    ASSERT_TRUE(infobar);
+    views::test::ButtonTestApi(
+        static_cast<views::Button*>(
+            static_cast<InfoBarView*>(infobar)->close_button()))
+        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks(),
+                                    ui::EF_LEFT_MOUSE_BUTTON,
+                                    ui::EF_LEFT_MOUSE_BUTTON));
+  }
+
+ private:
+  base::SimpleTestClock test_clock_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
@@ -65,19 +112,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  ASSERT_TRUE(infobar_manager);
-
-  bool found_infobar = false;
-  for (const auto& infobar : infobar_manager->infobars()) {
-    if (infobar->delegate()->GetIdentifier() ==
-        infobars::InfoBarDelegate::WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE) {
-      found_infobar = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(found_infobar);
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
@@ -97,16 +132,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  ASSERT_TRUE(infobar_manager);
-  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 
   // Mock navigates to an out-of-scope URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, GURL("about:blank")));
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
@@ -126,10 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  ASSERT_TRUE(infobar_manager);
-  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 
   // Reparent back to non-app browser
   Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
@@ -137,7 +166,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
       tabbed_browser->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(web_contents, tabbed_web_contents);
 
-  EXPECT_EQ(0u, infobar_manager->infobars().size());
+  EXPECT_FALSE(
+      WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
@@ -158,10 +188,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  ASSERT_TRUE(infobar_manager);
-  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
 
   const GURL no_migration_url = embedded_test_server()->GetURL(
       "/web_apps/migration/migrate_to/no_migration.html");
@@ -178,7 +205,89 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
       *target_app_browser->tab_strip_model()->GetActiveWebContents());
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_EQ(0u, infobar_manager->infobars().size());
+  EXPECT_FALSE(
+      WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       DoNotShowInfoBarIfDismissedRecently) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  ForceInstallWebApp(profile(), target_app_url);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  ClickInfoBarClose(web_contents);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  app_browser = ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  web_contents = app_browser->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(
+      WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       ShowInfoBarIfDismissedMoreThanAWeekAgo) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  ForceInstallWebApp(profile(), target_app_url);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  ClickInfoBarClose(web_contents);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  clock()->Advance(base::Days(8));
+
+  app_browser = ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  web_contents = app_browser->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(WebAppBlockedMigrationInfoBarDelegate::FindInfoBar(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       InfobarDismissalUpdatesRegistry) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  ForceInstallWebApp(profile(), target_app_url);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  ClickInfoBarClose(web_contents);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(app);
+  ASSERT_TRUE(app->pending_migration_info().has_value());
+  EXPECT_TRUE(app->pending_migration_info()->last_ignored_time().has_value());
 }
 
 class WebAppBlockedMigrationInfoBarDelegateUiTest

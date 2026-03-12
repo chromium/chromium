@@ -735,6 +735,13 @@ class WebAppCommandScheduler {
       base::OnceClosure done,
       const base::Location& location = FROM_HERE);
 
+  // Marks that the pending migration available for the app is ignored by the
+  // user, and notifies changes to the WebAppRegistrar.
+  void MarkAppPendingMigrationAsIgnored(
+      const webapps::AppId& app_id,
+      base::OnceClosure done,
+      const base::Location& location = FROM_HERE);
+
   // Schedules the ResolveWebAppPendingMigrationInfoCommand to resolve pending
   // migration info for all apps.
   virtual void ScheduleResolveWebAppPendingMigrationInfo(

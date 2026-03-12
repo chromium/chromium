@@ -73,6 +73,13 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
       std::optional<PendingMigrationInfo> current_info =
           app.pending_migration_info();
 
+      if (current_info && new_info &&
+          current_info->manifest_id() == new_info->manifest_id()) {
+        new_info =
+            PendingMigrationInfo(new_info->manifest_id(), new_info->behavior(),
+                                 current_info->last_ignored_time());
+      }
+
       if (new_info != current_info) {
         debug_updates->Set(
             app.app_id(),

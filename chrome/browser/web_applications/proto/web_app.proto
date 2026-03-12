@@ -233,6 +233,10 @@ message PendingMigrationInfo {
   // The manifest_id of the app that this app should migrate to.
   optional string manifest_id = 1;                // Required.
   optional WebAppMigrationBehavior behavior = 2;  // Required.
+
+  // The time when the user last ignored the migration prompt for this app.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 last_ignored_time = 3;
 }
 
 // Full WebApp object data. See detailed comments in

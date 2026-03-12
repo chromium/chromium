@@ -21,6 +21,15 @@ void SetWebAppPendingUpdateAsIgnored(
     AppLock& lock,
     base::DictValue& debug_value);
 
+// Stores state in the web app depicting that a pending migration surfaced to
+// the user has been ignored, and notifies observers to make state changes if
+// needed.
+void SetWebAppPendingMigrationAsIgnored(
+    base::PassKey<WebAppCommandScheduler> pass_key,
+    const webapps::AppId& app_id,
+    AppLock& lock,
+    base::DictValue& debug_value);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UPDATE_IGNORE_STATE_H_

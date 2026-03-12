@@ -342,7 +342,8 @@ class WebAppUiManager {
 
   // Creates the WebAppBlockedUpdateInfoBar in a Web App window.
   virtual void MaybeCreateWebAppBlockedMigrationInfoBar(
-      content::WebContents* web_contents) = 0;
+      content::WebContents* web_contents,
+      base::OnceClosure on_dismiss_callback) = 0;
 
   // Removes the WebAppBlockedUpdateInfoBar from a Web App window if it exists.
   virtual void MaybeRemoveWebAppBlockedMigrationInfoBar(

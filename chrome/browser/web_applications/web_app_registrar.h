@@ -600,7 +600,8 @@ class WebAppRegistrar {
                                       PendingUpdateInfoChangePassKey);
 
   using PendingMigrationInfoChangePassKey =
-      base::PassKey<ResolveWebAppPendingMigrationInfoCommand>;
+      base::PassKey<ResolveWebAppPendingMigrationInfoCommand,
+                    WebAppCommandScheduler>;
 
   void NotifyWebAppPendingMigrationInfoChanged(
       const webapps::AppId& app_id,

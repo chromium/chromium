@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/update_ignore_state.h"
 
+#include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -60,6 +61,46 @@ void SetWebAppPendingUpdateAsIgnored(
   // not be shown again.
   lock.registrar().NotifyPendingUpdateInfoChanged(
       app_id, /*pending_update_available=*/false, pass_key);
+}
+
+void SetWebAppPendingMigrationAsIgnored(
+    base::PassKey<WebAppCommandScheduler> pass_key,
+    const webapps::AppId& app_id,
+    AppLock& lock,
+    base::DictValue& debug_value) {
+  debug_value.Set("app_id", app_id);
+
+  // Exit early if the app is not installed or the app does not have a pending
+  // migration info.
+  if (!lock.registrar().AppMatches(app_id, WebAppFilter::InstalledInChrome())) {
+    debug_value.Set("result", "App not installed.");
+    return;
+  }
+
+  const WebApp* web_app = lock.registrar().GetAppById(app_id);
+  if (!web_app->pending_migration_info().has_value()) {
+    debug_value.Set("result", "No pending migration info in app");
+    return;
+  }
+
+  // Set the information in the app that the pending migration info was ignored.
+  {
+    ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
+    WebApp* app_to_update = update->UpdateApp(app_id);
+    std::optional<PendingMigrationInfo> update_info =
+        app_to_update->pending_migration_info();
+    update_info =
+        PendingMigrationInfo(update_info->manifest_id(),
+                             update_info->behavior(), lock.clock().Now());
+    debug_value.Set("result", "Pending Info updated");
+    debug_value.Set("updated_pending_info", update_info->AsDebugValue());
+    app_to_update->SetPendingMigrationInfo(std::move(update_info));
+  }
+
+  // Since the pending migration info is being set as ignored, observers should
+  // be notified.
+  lock.registrar().NotifyWebAppPendingMigrationInfoChanged(
+      app_id, /*has_pending_migration=*/true, pass_key);
 }
 
 }  // namespace web_app
