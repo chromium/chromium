@@ -65,7 +65,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void DidFailLoading(const blink::WebURLError& error) override;
 
  private:
-  SurfaceEmbedWebPlugin(content::RenderFrame* render_frame,
+  SurfaceEmbedWebPlugin(const base::UnguessableToken& contents_id,
+                        content::RenderFrame* render_frame,
                         const blink::WebPluginParams& params);
 
   void InitializeSurfaceLayer();
@@ -79,6 +80,11 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
 
   // mojom::SurfaceEmbed implementation:
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
+  void UpdateLocalSurfaceIdFromChild(
+      const ::viz::LocalSurfaceId& local_surface_id) override;
+
+  // The child contents ID parsed from the `data-content-id` attribute.
+  base::UnguessableToken contents_id_;
 
   raw_ptr<blink::WebPluginContainer> container_ = nullptr;
   scoped_refptr<cc::SurfaceLayer> layer_;

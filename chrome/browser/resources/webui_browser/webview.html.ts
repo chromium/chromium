@@ -9,11 +9,11 @@ import type {WebviewElement} from './webview.js';
 export function getHtml(this: WebviewElement) {
   // clang-format off
   return html`
-${this.enableSurfaceEmbed ? html`
+${this.enableSurfaceEmbed ? (this.guestId ? html`
   <embed class="content" type="application/x-chromium-surface-embed"
       data-content-id="${this.guestId}">
   </embed>
-` : html`
+` : html``) : html`
   <iframe class="content"></iframe>
 `}
 `;

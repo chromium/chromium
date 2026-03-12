@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
+#include "components/surface_embed/buildflags/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/invalidate_type.h"
@@ -142,6 +143,10 @@ class PreloadingAttempt;
 #if BUILDFLAG(IS_ANDROID)
 class SelectionPopupDelegate;
 #endif
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+class SurfaceEmbedConnector;
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
 // WebContents is the core class in content/. A WebContents renders web content
 // (usually HTML) in a rectangular area.
@@ -436,6 +441,12 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Gets/Sets the delegate.
   virtual WebContentsDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebContentsDelegate* delegate) = 0;
+
+#if BUILDFLAG(ENABLE_SURFACE_EMBED)
+  // Gets the SurfaceEmbedConnector for this WebContents, or nullptr if this
+  // WebContents is not embedded with SurfaceEmbed.
+  virtual SurfaceEmbedConnector* GetSurfaceEmbedConnector() const = 0;
+#endif  // BUILDFLAG(ENABLE_SURFACE_EMBED)
 
   // Gets the NavigationController for primary frame tree of this WebContents.
   // See comments on NavigationController for more details.

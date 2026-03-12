@@ -5,18 +5,20 @@
 #ifndef COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_
 #define COMPONENTS_SURFACE_EMBED_BROWSER_SURFACE_EMBED_HOST_H_
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "components/surface_embed/browser/dummy_surface_provider.h"
+#include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }
 
 namespace surface_embed {
@@ -27,7 +29,8 @@ class SurfaceEmbedHostCollection;
 // bridges the plugin in the embedder page and the SecureEmbedConnector owned by
 // the child WebContents. It provides the plugin with the surface of the child
 // WebContents and synchronizes visual properties with the connector.
-class SurfaceEmbedHost : public mojom::SurfaceEmbedHost {
+class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
+                         public content::SurfaceEmbedConnector::Delegate {
  public:
   ~SurfaceEmbedHost() override;
 
@@ -43,9 +46,21 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost {
   // mojom::SurfaceEmbedHost implementation:
   void SetSurfaceEmbed(
       mojo::PendingRemote<mojom::SurfaceEmbed> surface_embed) override;
+  void AttachConnector(const base::UnguessableToken& content_id) override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override;
+
+  // content::SurfaceEmbedConnector::Delegate implementation:
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void UpdateLocalSurfaceIdFromChild(
+      const viz::LocalSurfaceId& local_surface_id) override;
+  void DetachedByHost() override;
+  bool IsAttachedForTesting() const override;
+
+  // TODO: Update surface_embed.mojom so that this is an override of a virtual
+  // from mojom::SurfaceEmbedHost.
+  void DetachConnector();
 
   void SetDestructionCallbackForTesting(base::OnceClosure callback);
 
@@ -58,10 +73,14 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost {
 
   void OnMojoDisconnect();
 
+  // May return null.
+  content::SurfaceEmbedConnector* GetConnector() const;
+
   raw_ref<SurfaceEmbedHostCollection> collection_;
-  // TODO(surface-embed): Retrieve the surface from the child WebContents.
-  std::unique_ptr<DummySurfaceProvider> dummy_surface_provider_;
   base::OnceClosure destruction_callback_for_testing_;
+
+  // The WebContents of the child document.
+  base::WeakPtr<content::WebContents> child_contents_ = nullptr;
 
   mojo::Remote<mojom::SurfaceEmbed> surface_embed_;
   mojo::Receiver<mojom::SurfaceEmbedHost> receiver_{this};

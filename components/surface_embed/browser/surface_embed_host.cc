@@ -9,10 +9,12 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "components/surface_embed/browser/dummy_surface_provider.h"
+#include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/surface_embed_connector.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
@@ -75,8 +77,7 @@ SurfaceEmbedHost* SurfaceEmbedHost::Create(
 }
 
 SurfaceEmbedHost::SurfaceEmbedHost(SurfaceEmbedHostCollection* collection)
-    : collection_(*collection),
-      dummy_surface_provider_(std::make_unique<DummySurfaceProvider>()) {}
+    : collection_(*collection) {}
 
 SurfaceEmbedHost::~SurfaceEmbedHost() {
   if (destruction_callback_for_testing_) {
@@ -103,7 +104,74 @@ void SurfaceEmbedHost::SetSurfaceEmbed(
   surface_embed_.Bind(std::move(surface_embed));
   surface_embed_.set_disconnect_handler(base::BindOnce(
       &SurfaceEmbedHost::OnMojoDisconnect, base::Unretained(this)));
-  surface_embed_->SetFrameSinkId(dummy_surface_provider_->frame_sink_id());
+}
+
+void SurfaceEmbedHost::AttachConnector(
+    const base::UnguessableToken& content_id) {
+  // Should never call attach without having a valid SurfaceEmbed remote already
+  // bound.
+  CHECK(surface_embed_);
+
+  if (content_id.is_empty()) {
+    mojo::ReportBadMessage(
+        "Invalid content_id in SurfaceEmbedHost::AttachConnector");
+    return;
+  }
+
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::FromID(content_id);
+  CHECK(guest_handle);
+
+  content::WebContents* web_contents_to_attach = guest_handle->web_contents();
+  CHECK(web_contents_to_attach);
+
+  // If the child WebContents is already attached to a SurfaceEmbedConnector, we
+  // need to detach it first. Since we're detaching some other SurfaceEmbedHost,
+  // we need to notify it of the detachment so the host and
+  // SurfaceEmbedWebPlugin stay in sync.
+  if (auto* connector = web_contents_to_attach->GetSurfaceEmbedConnector()) {
+    connector->GetDelegate()->DetachedByHost();
+    // TODO(surface-embed): Once content::SurfaceEmbedConnector::Detach() is
+    // implemented, call
+    // `CHECK(!web_contents_to_attach->GetSurfaceEmbedConnector());` here to
+    // ensure the detachment was successful.
+  }
+
+  // If this host already has a child attached, we need to detach it first. Note
+  // that this request comes from the parent side, so we don't notify the
+  // SurfaceEmbed as it initiated the detachment.
+  // Note that without a functioning Detach(), reattaching will fail because
+  // WCUD::CreateForWebContents would fail since the WCUD would already exist.
+  DetachConnector();
+
+  child_contents_ = web_contents_to_attach->GetWeakPtr();
+  content::WebContents* parent_web_contents =
+      content::WebContents::FromRenderFrameHost(
+          &collection_->render_frame_host());
+  content::SurfaceEmbedConnector::Attach(web_contents_to_attach,
+                                         parent_web_contents, this);
+
+  if (web_contents_to_attach->IsCrashed()) {
+    // The child process may have crashed before the renderer for the parent
+    // got the chance to attach it.
+    // TODO(surface-embed): Notify the plugin.
+    // surface_embed_->ChildProcessGone();
+    return;
+  }
+
+  auto* connector = GetConnector();
+  CHECK(connector->GetFrameSinkId().is_valid());
+  surface_embed_->SetFrameSinkId(connector->GetFrameSinkId());
+
+  // TODO(surface-embed): If accessibility info was received before the
+  // connector was attached, pass it to the connector now.
+}
+
+void SurfaceEmbedHost::DetachConnector() {
+  // TODO(surface-embed): When available, first call
+  // `content::SurfaceEmbedConnector::Detach(child_contents_.get());`.
+  child_contents_ = nullptr;
+  CHECK(!child_contents_);
 }
 
 void SurfaceEmbedHost::SynchronizeVisualProperties(
@@ -113,10 +181,36 @@ void SurfaceEmbedHost::SynchronizeVisualProperties(
   if (!is_visible) {
     return;
   }
-  dummy_surface_provider_->SubmitCompositorFrame(
-      visual_properties.local_surface_id,
-      visual_properties.screen_infos.current().device_scale_factor,
-      visual_properties.local_frame_size);
+  if (auto* connector = GetConnector()) {
+    connector->OnSynchronizeVisualProperties(visual_properties);
+  }
+}
+
+void SurfaceEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
+  if (surface_embed_) {
+    surface_embed_->SetFrameSinkId(frame_sink_id);
+  }
+}
+
+void SurfaceEmbedHost::UpdateLocalSurfaceIdFromChild(
+    const viz::LocalSurfaceId& local_surface_id) {
+  if (surface_embed_) {
+    surface_embed_->UpdateLocalSurfaceIdFromChild(local_surface_id);
+  }
+}
+
+void SurfaceEmbedHost::DetachedByHost() {
+  // We're being forcibly detached (child being re-attached elsewhere).
+  CHECK(child_contents_);
+
+  // TODO(surface-embed): Notify the renderer's SurfaceEmbedWebPlugin that the
+  // host initiated the detachment.
+
+  DetachConnector();
+}
+
+bool SurfaceEmbedHost::IsAttachedForTesting() const {
+  return child_contents_ != nullptr;
 }
 
 void SurfaceEmbedHost::OnMojoDisconnect() {
@@ -125,6 +219,11 @@ void SurfaceEmbedHost::OnMojoDisconnect() {
   receiver_.reset();
   surface_embed_.reset();
   collection_->RemoveHost(this);
+}
+
+content::SurfaceEmbedConnector* SurfaceEmbedHost::GetConnector() const {
+  return child_contents_ ? child_contents_->GetSurfaceEmbedConnector()
+                         : nullptr;
 }
 
 }  // namespace surface_embed

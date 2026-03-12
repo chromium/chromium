@@ -14,21 +14,47 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
+#include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace surface_embed {
 
+namespace {
+
+base::UnguessableToken DecodeContentId(const std::string& id_string) {
+  if (id_string.empty()) {
+    return base::UnguessableToken();
+  }
+  std::optional<base::UnguessableToken> maybe_id =
+      base::UnguessableToken::DeserializeFromString(id_string);
+  CHECK(maybe_id.has_value());
+  return *maybe_id;
+}
+
+}  // namespace
+
 // static
 SurfaceEmbedWebPlugin* SurfaceEmbedWebPlugin::Create(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params) {
-  return new SurfaceEmbedWebPlugin(render_frame, params);
+  // Read the content ID from the data-content-id attribute
+  base::UnguessableToken contents_id;
+  for (size_t i = 0; i < params.attribute_names.size(); ++i) {
+    if (params.attribute_names[i].Utf8() == "data-content-id") {
+      contents_id = DecodeContentId(params.attribute_values[i].Utf8());
+      break;
+    }
+  }
+
+  return new SurfaceEmbedWebPlugin(contents_id, render_frame, params);
 }
 
 SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
+    const base::UnguessableToken& contents_id,
     content::RenderFrame* render_frame,
-    const blink::WebPluginParams& params) {
+    const blink::WebPluginParams& params)
+    : contents_id_(contents_id) {
   render_frame->GetBrowserInterfaceBroker().GetInterface(
       host_.BindNewPipeAndPassReceiver());
 }
@@ -49,6 +75,11 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
 
   // Set up the SurfaceEmbed interface first.
   host_->SetSurfaceEmbed(std::move(pending_remote));
+
+  // Then attach with the content ID.
+  if (!contents_id_.is_empty()) {
+    host_->AttachConnector(contents_id_);
+  }
 
   return true;
 }
@@ -96,7 +127,6 @@ void SurfaceEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   last_clip_rect_ = clip_rect;
   last_unobscured_rect_ = unobscured_rect;
   last_is_visible_ = is_visible;
-  frame_sink_id_changed_ = false;
 
   if (frame_sink_id_.is_valid()) {
     SynchronizeVisualProperties();
@@ -109,7 +139,12 @@ void SurfaceEmbedWebPlugin::UpdateFocus(bool focused,
 }
 
 void SurfaceEmbedWebPlugin::UpdateVisibility(bool visible) {
-  NOTIMPLEMENTED();
+  bool prev_is_visible = last_is_visible_;
+  last_is_visible_ = visible;
+
+  if (last_is_visible_ != prev_is_visible && frame_sink_id_.is_valid()) {
+    SynchronizeVisualProperties();
+  }
 }
 
 blink::WebInputEventResult SurfaceEmbedWebPlugin::HandleInputEvent(
@@ -201,7 +236,7 @@ void SurfaceEmbedWebPlugin::SynchronizeVisualProperties() {
   pending_visual_properties.cursor_accessibility_scale_factor = 1.0f;
 
   bool synchronized_props_changed =
-      !sent_visual_properties_ ||
+      frame_sink_id_changed_ || !sent_visual_properties_ ||
       sent_visual_properties_->auto_resize_enabled !=
           pending_visual_properties.auto_resize_enabled ||
       sent_visual_properties_->min_size_for_auto_resize !=
@@ -256,6 +291,8 @@ void SurfaceEmbedWebPlugin::SynchronizeVisualProperties() {
     sent_last_is_visible_ = last_is_visible_;
     container_->ScheduleAnimation();
   }
+
+  frame_sink_id_changed_ = false;
 }
 
 void SurfaceEmbedWebPlugin::OnHostDisconnected() {
@@ -281,6 +318,17 @@ void SurfaceEmbedWebPlugin::SetFrameSinkId(
   frame_sink_id_ = frame_sink_id;
   frame_sink_id_changed_ = true;
 
+  SynchronizeVisualProperties();
+}
+
+void SurfaceEmbedWebPlugin::UpdateLocalSurfaceIdFromChild(
+    const ::viz::LocalSurfaceId& local_surface_id) {
+  if (!parent_local_surface_id_allocator_->UpdateFromChild(local_surface_id)) {
+    return;
+  }
+
+  // The viz::LocalSurfaceId has changed so we call SynchronizeVisualProperties
+  // here to embed it.
   SynchronizeVisualProperties();
 }
 

@@ -4,7 +4,9 @@
 
 module surface_embed.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "third_party/blink/public/mojom/frame/frame_visual_properties.mojom";
 
 // Implemented by SurfaceEmbedWebPlugin in the render process.
@@ -13,6 +15,12 @@ import "third_party/blink/public/mojom/frame/frame_visual_properties.mojom";
 interface SurfaceEmbed {
   // Embeds a surface by its FrameSinkId.
   SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
+
+  // Called when the child frame initiates a LocalSurfaceId update.
+  // This typically happens when an auto-resized child frame has a new
+  // intrinsic size. However, this has also been observed on non-auto-resized
+  // frames (e.g., www.nytimes.com) due to an unclear triggering condition.
+  UpdateLocalSurfaceIdFromChild(viz.mojom.LocalSurfaceId local_surface_id);
 };
 
 // Implemented by SurfaceEmbedHost in the browser process.
@@ -23,6 +31,9 @@ interface SurfaceEmbedHost {
   // Sets the SurfaceEmbed interface for communication with the renderer. This
   // must be called before other methods on SurfaceEmbedHost.
   SetSurfaceEmbed(pending_remote<SurfaceEmbed> surface_embed);
+
+  // Attaches the child content identified by `content_id` to the parent.
+  AttachConnector(mojo_base.mojom.UnguessableToken content_id);
 
   // Synchronizes the visual properties of the <embed> element.
   // `is_visible` reports visibility with respect to "visibility:" CSS property;

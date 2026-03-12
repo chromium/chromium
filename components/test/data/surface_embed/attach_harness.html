@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>
+<script>
+  // Create and attach the embed element. Called from the browser test with the
+  // content_id. Optional embedId can be provided to give the embed an ID
+  // attribute for later targeting.
+  function createEmbed(contentId, embedId) {
+    const embed = document.createElement('embed');
+    embed.setAttribute('data-content-id', contentId);
+    embed.setAttribute('type', 'application/x-chromium-surface-embed');
+    embed.style.position = 'absolute';
+    embed.style.left = '10px';
+    embed.style.top = '10px';
+    embed.style.width = '100px';
+    embed.style.height = '100px';
+    if (embedId !== undefined) {
+      embed.id = embedId;
+    }
+    document.body.appendChild(embed);
+  }
+</script>
+</head>
+<body>
+</body>
+</html>

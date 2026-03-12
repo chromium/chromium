@@ -400,6 +400,15 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
 
   EXPECT_TRUE(content::WaitForLoadStop(ui_web_contents));
 
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab_contents);
+
+  // Wait for the connector to be attached to the tab before expecting visual
+  // output.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return tab_contents->GetSurfaceEmbedConnector() != nullptr; }));
+
   // Attempt to capture pixels from the WebContents until we get the expected
   // output color. The test will timeout if that doesn't happen.
   EXPECT_TRUE(base::test::RunUntil([&]() {

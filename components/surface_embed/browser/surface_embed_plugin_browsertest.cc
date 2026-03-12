@@ -9,6 +9,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "components/surface_embed/common/features.h"
 #include "components/surface_embed/common/surface_embed.mojom.h"
@@ -30,7 +31,9 @@
 namespace surface_embed {
 
 namespace {
-constexpr std::string_view kTestUrl = "/surface_embed/embed_tag.html";
+constexpr std::string_view kAttachHarnessUrl =
+    "/surface_embed/attach_harness.html";
+constexpr std::string_view kEmptyUrl = "/surface_embed/empty.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
 
@@ -56,6 +59,16 @@ class SurfaceEmbedHostTracker {
   }
 
   size_t GetHostCount() const { return hosts_.size(); }
+
+  size_t GetAttachedHostCount() const {
+    size_t attached_count = 0;
+    for (auto host : hosts_) {
+      if (host->IsAttachedForTesting()) {
+        ++attached_count;
+      }
+    }
+    return attached_count;
+  }
 
  private:
   std::vector<raw_ptr<SurfaceEmbedHost>> hosts_;
@@ -139,9 +152,80 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
         [&]() { return GetHostCount() == expected_count; }));
   }
 
+  bool WaitForHostAttachment(size_t expected_count) {
+    // After host creation, the attachment happens asynchronously when
+    // SurfaceEmbedHost::AttachConnector() is called. Poll until the expected
+    // number of hosts are attached.
+    return base::test::RunUntil(
+        [&]() { return GetAttachedHostCount() >= expected_count; });
+  }
+
+  void NavigateToAttachHarness() {
+    const GURL harness_url = embedded_test_server()->GetURL(kAttachHarnessUrl);
+    ASSERT_TRUE(NavigateToURL(web_contents(), harness_url));
+  }
+
+  std::unique_ptr<content::WebContents> CreateChildWebContents() {
+    content::WebContents::CreateParams create_params(
+        shell()->web_contents()->GetBrowserContext());
+    std::unique_ptr<content::WebContents> child_contents =
+        content::WebContents::Create(create_params);
+    EXPECT_NE(child_contents, nullptr);
+    return child_contents;
+  }
+
+  // Navigate child WebContents to a URL. Wait for load to complete.
+  void NavigateChildToUrl(content::WebContents* child_contents,
+                          const std::string_view& path) {
+    const GURL child_url = embedded_test_server()->GetURL(path);
+    ASSERT_TRUE(NavigateToURL(child_contents, child_url));
+    ASSERT_TRUE(content::WaitForLoadStop(child_contents));
+  }
+
+  // Setup child with harness navigation and content loading.
+  std::unique_ptr<content::WebContents> SetupHarnessAndChildWithContent(
+      const std::string_view& child_path) {
+    NavigateToAttachHarness();
+    auto child_contents = CreateChildWebContents();
+    NavigateChildToUrl(child_contents.get(), child_path);
+    return child_contents;
+  }
+
+  // Setup child with harness navigation and load a blank html page.
+  std::unique_ptr<content::WebContents> SetupHarnessAndChild() {
+    return SetupHarnessAndChildWithContent(kEmptyUrl);
+  }
+
+  // Attach a child to an embed element and wait for SurfaceEmbedHost creation.
+  void AttachChildToEmbed(content::WebContents* child_contents) {
+    AttachChildToEmbedWithId(child_contents, std::nullopt);
+  }
+
+  // Attach a child to an embed element with an optional ID.
+  void AttachChildToEmbedWithId(content::WebContents* child_contents,
+                                std::optional<std::string> embed_id) {
+    guest_contents::GuestContentsHandle* guest_handle =
+        guest_contents::GuestContentsHandle::CreateForWebContents(
+            child_contents);
+    ASSERT_NE(guest_handle, nullptr);
+    std::string script = "createEmbed('" + guest_handle->id().ToString();
+    if (embed_id.has_value()) {
+      script += "', '" + embed_id.value();
+    }
+    script += "');";
+    size_t expected_attachments = GetAttachedHostCount() + 1;
+    ASSERT_TRUE(content::ExecJs(web_contents(), script));
+    ASSERT_TRUE(WaitForHostAttachment(expected_attachments));
+    EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+  }
+
   SurfaceEmbedHost* GetHost(size_t index) { return tracker_.GetHost(index); }
 
   size_t GetHostCount() const { return tracker_.GetHostCount(); }
+
+  size_t GetAttachedHostCount() const {
+    return tracker_.GetAttachedHostCount();
+  }
 
  protected:
   // Take a screenshot of the given rectangle area of the main web contents.
@@ -177,7 +261,9 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
-  NavigateToTestUrl(kTestUrl);
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
   EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
 
   // Verify that the host is created.
@@ -191,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
-  NavigateToTestUrl(kTestUrl);
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
 
   EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
 
@@ -244,11 +331,18 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        EmbedMultipleTagsCreatesMultiplePlugins) {
-  constexpr char kMultipleEmbedsTestUrl[] =
-      "/surface_embed/multiple_embed_tags.html";
   constexpr size_t kMultipleEmbedCount = 2;
 
-  NavigateToTestUrl(kMultipleEmbedsTestUrl);
+  NavigateToAttachHarness();
+
+  auto child_contents1 = CreateChildWebContents();
+  NavigateChildToUrl(child_contents1.get(), kEmptyUrl);
+  AttachChildToEmbed(child_contents1.get());
+
+  auto child_contents2 = CreateChildWebContents();
+  NavigateChildToUrl(child_contents2.get(), kEmptyUrl);
+  AttachChildToEmbed(child_contents2.get());
+
   EXPECT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
 
   // Verify that the hosts are created.
@@ -265,12 +359,18 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagRemovedDestroysHost) {
-  NavigateToTestUrl(kTestUrl);
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
   EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
 
   // Verify that the host is created.
   WaitForHostCount(kSingleEmbedCount);
   ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+
+  // Destroy the child contents before the host is destroyed to prevent a
+  // dangling pointer in SurfaceEmbedConnectorImpl.
+  child_contents.reset();
 
   // Remove the embed element from the page.
   EXPECT_TRUE(content::ExecJs(web_contents(),
