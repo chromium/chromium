@@ -566,10 +566,16 @@ constexpr int kChromeFrameReporter2Indices[] = {1, 2, 3,  4,  5,  6,  7,
 constexpr MessageInfo kChromeFrameReporter2 = {kChromeFrameReporter2Indices,
                                                nullptr};
 
+// Proto Message: TopControlsOffset
+constexpr int kTopControlsOffsetIndices[] = {1, 2, -1};
+constexpr MessageInfo kTopControlsOffset = {kTopControlsOffsetIndices, nullptr};
+
 // Proto Message: InputTransferHandler
-constexpr int kInputTransferHandlerIndices[] = {1, 2, 3, -1};
-constexpr MessageInfo kInputTransferHandler = {kInputTransferHandlerIndices,
-                                               nullptr};
+constexpr int kInputTransferHandlerIndices[] = {1, 2, 3, 4, -1};
+constexpr MessageInfo const* kInputTransferHandlerComplexMessages[] = {
+    nullptr, nullptr, nullptr, &kTopControlsOffset};
+constexpr MessageInfo kInputTransferHandler = {
+    kInputTransferHandlerIndices, kInputTransferHandlerComplexMessages};
 
 // Proto Message: ResponseInfo
 constexpr int kResponseInfoIndices[] = {1, 2, -1};
