@@ -32,19 +32,15 @@ NonInteractiveGlicTest::~NonInteractiveGlicTest() = default;
 
 void NonInteractiveGlicTest::SetUpOnMainThread() {
   test::InteractiveGlicTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   activation_controller_ =
       std::make_unique<views::test::MockActivationController>();
-#endif
 #endif
 }
 
 void NonInteractiveGlicTest::TearDownOnMainThread() {
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   activation_controller_.reset();
-#endif
 #endif
   test::InteractiveGlicTestMixin<
       InteractiveBrowserTest>::TearDownOnMainThread();

@@ -12,11 +12,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 
 #if defined(TOOLKIT_VIEWS)
-#include "ui/views/buildflags.h"
-
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 #include "ui/views/test/mock_activation_controller.h"
-#endif
 #endif
 
 namespace glic {
@@ -40,10 +36,8 @@ class NonInteractiveGlicTest
 
  private:
   base::test::ScopedFeatureList features_;
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   std::unique_ptr<views::test::MockActivationController> activation_controller_;
-#endif
 #endif
 };
 

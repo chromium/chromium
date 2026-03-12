@@ -10,8 +10,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/widget/widget_activation_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+
+// Only desktop aura platforms or macOS needs the activation emulation.
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#define USE_MOCK_ACTIVATION_CONTROLLER 1
 
 namespace views {
 class Widget;
@@ -62,5 +67,7 @@ class MockActivationController : public views::WidgetObserver,
 
 }  // namespace test
 }  // namespace views
+
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
 #endif  // UI_VIEWS_TEST_MOCK_ACTIVATION_CONTROLLER_H_

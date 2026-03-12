@@ -38,11 +38,7 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
-#include "ui/views/buildflags.h"
-
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 #include "ui/views/test/mock_activation_controller.h"
-#endif
 #endif
 
 namespace glic {
@@ -98,11 +94,9 @@ class GlicBrowserTestMixin : public T {
 
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
     activation_controller_ =
         std::make_unique<views::test::MockActivationController>();
-#endif
 #endif
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
@@ -111,10 +105,8 @@ class GlicBrowserTestMixin : public T {
   }
 
   void TearDownOnMainThread() override {
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
     activation_controller_.reset();
-#endif
 #endif
     T::TearDownOnMainThread();
   }
@@ -264,10 +256,8 @@ class GlicBrowserTestMixin : public T {
  private:
   GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if defined(TOOLKIT_VIEWS)
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   std::unique_ptr<views::test::MockActivationController> activation_controller_;
-#endif
 #endif
 };
 
