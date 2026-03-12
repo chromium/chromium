@@ -189,6 +189,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/metrics/model:bookmark_model_metrics",
     "//ios/chrome/browser/metrics/model:google_groups_updater",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/metrics/model:tab_usage_recorder_service_factory",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/omnibox/model/placeholder_service",
