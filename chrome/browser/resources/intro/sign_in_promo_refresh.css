@@ -19,7 +19,7 @@
   --card-horizontal-padding: 1.5rem;
   --card-horizontal-size:
       calc(var(--card-width) + 2 * var(--card-horizontal-padding));
-  --card-title-font-size: 1rem;
+  --card-title-font-size: 0.94rem;
   --card-top-padding: 1.5rem;
   --card-width: 11.75rem;
   --content-width:
@@ -147,7 +147,6 @@ h2 {
   flex-direction: row;
   justify-content: center;
   gap: var(--gap-between-cards);
-  height: 10rem;
 }
 
 .benefit-card {
