@@ -15,13 +15,26 @@
 
 namespace content {
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SurfaceEmbedConnectorImpl);
+
+// static
+void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
+                                   WebContents* parent_web_contents,
+                                   SurfaceEmbedConnector::Delegate* delegate) {
+  CHECK(child_web_contents);
+  CHECK(parent_web_contents);
+  auto* parent_impl = static_cast<WebContentsImpl*>(parent_web_contents);
+  WebContentsUserData<SurfaceEmbedConnectorImpl>::CreateForWebContents(
+      child_web_contents, parent_impl, delegate);
+}
+
 SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     WebContents* child_web_contents,
     WebContentsImpl* parent_web_contents,
     SurfaceEmbedConnector::Delegate* delegate)
-    : delegate_(delegate),
+    : WebContentsUserData<SurfaceEmbedConnectorImpl>(*child_web_contents),
+      delegate_(delegate),
       parent_web_contents_(parent_web_contents->GetWeakPtr()),
-      child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
       dummy_surface_provider_(std::make_unique<DummySurfaceProvider>()) {}
 
 SurfaceEmbedConnectorImpl::~SurfaceEmbedConnectorImpl() = default;
@@ -65,6 +78,11 @@ void SurfaceEmbedConnectorImpl::OnSynchronizeVisualProperties(
 
 WebContentsImpl* SurfaceEmbedConnectorImpl::parent_web_contents() const {
   return static_cast<WebContentsImpl*>(parent_web_contents_.get());
+}
+
+WebContentsImpl* SurfaceEmbedConnectorImpl::child_web_contents() const {
+  return static_cast<WebContentsImpl*>(
+      const_cast<WebContents*>(&GetWebContents()));
 }
 
 }  // namespace content
