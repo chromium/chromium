@@ -75,16 +75,6 @@ void ShapeResultSpacing::ExpansionSetup::CountOpportunities(TextJustify method,
       justification_context_.CountOpportunity16(method, ch);
 }
 
-void ShapeResultSpacing::SetExpansion(TextJustify method,
-                                      InlineLayoutUnit expansion,
-                                      TextDirection direction,
-                                      bool allows_leading_expansion,
-                                      bool allows_trailing_expansion) {
-  ExpansionSetup setup(expansion, this, allows_leading_expansion,
-                       allows_trailing_expansion);
-  setup.CountOpportunities(method, text_, direction);
-}
-
 void ShapeResultSpacing::SetSpacing(const FontDescription& font_description,
                                     bool normalize_space) {
   if (SetSpacing(font_description)) {

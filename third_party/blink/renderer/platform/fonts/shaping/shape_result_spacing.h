@@ -54,14 +54,6 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // Set letter-spacing, word-spacing for PlainTextPainter.
   void SetSpacing(const FontDescription&, bool normalize_space);
 
-  // Set the expansion for the justification.
-  // This function scans the whole `text_`.
-  void SetExpansion(TextJustify method,
-                    InlineLayoutUnit expansion,
-                    TextDirection,
-                    bool allows_leading_expansion = false,
-                    bool allows_trailing_expansion = false);
-
   // An RAII class to prepare expansion.
   // This is useful when pouring strings manually.
   class PLATFORM_EXPORT ExpansionSetup {

@@ -1858,7 +1858,6 @@
       // crbug.com/40321528
       name: "CssTextJustify",
       status: "stable",
-      depends_on: ["JustifyWithoutLineText"],
     },
     {
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
@@ -3320,10 +3319,6 @@
     },
     {
       name: "JavaScriptSourcePhaseImports",
-    },
-    {
-      name: "JustifyWithoutLineText",
-      status: "stable",
     },
     {
       name: "KeyboardAccessibleTooltip",
