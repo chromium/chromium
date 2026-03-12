@@ -55,7 +55,14 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 17.0;
 }
 
 - (void)setupConstraints {
+  NSLayoutConstraint* attachInputPlateToKeyboard =
+      [_inputViewController.view.bottomAnchor
+          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                         constant:-kInputPlateMargin];
+  attachInputPlateToKeyboard.priority = UILayoutPriorityDefaultHigh;
+
   [NSLayoutConstraint activateConstraints:@[
+    attachInputPlateToKeyboard,
     [_inputViewController.view.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                  constant:-kInputPlateMargin],
