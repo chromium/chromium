@@ -42,6 +42,9 @@ GeolocationAccuracy
 MockPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
   return GeolocationAccuracy::kPrecise;
 }
+bool MockPermissionPromptDelegate::ShouldShowLocationPrecisionSelector() const {
+  return true;
+}
 void MockPermissionPromptDelegate::FinalizeCurrentRequests() {}
 void MockPermissionPromptDelegate::OpenHelpCenterLink(const ui::Event& event) {}
 void MockPermissionPromptDelegate::PreIgnoreQuietPrompt() {}

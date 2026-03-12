@@ -32,6 +32,7 @@ class MockPermissionPromptDelegate : public PermissionPrompt::Delegate {
   void Ignore(const PromptOptions& prompt_options) override;
 
   GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override;
+  bool ShouldShowLocationPrecisionSelector() const override;
   void FinalizeCurrentRequests() override;
   void OpenHelpCenterLink(const ui::Event& event) override;
   void PreIgnoreQuietPrompt() override;
