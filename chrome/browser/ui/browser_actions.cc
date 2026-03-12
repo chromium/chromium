@@ -702,7 +702,8 @@ void BrowserActions::InitializeBrowserActions() {
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
-          .SetImage(ui::ImageModel::FromVectorIcon(kAddIcon, ui::kColorIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kAddIcon,
+                                                   ui::kColorIcon))
           .Build());
 
   root_action_item_->AddChild(
