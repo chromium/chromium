@@ -229,8 +229,11 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
       continue;
     }
 
+    const SubgriddedItemData subgridded_item(
+        grid_item, &layout_data,
+        algorithm.GetConstraintSpace().GetWritingMode());
     const auto space =
-        algorithm.CreateConstraintSpaceForLayout(grid_item, layout_data);
+        algorithm.CreateConstraintSpaceForLayout(subgridded_item);
     const auto fragment_geometry = CalculateInitialFragmentGeometryForSubgrid(
         grid_item, space,
         should_compute_min_max_sizes ? next_subgrid_subtree
@@ -242,10 +245,7 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
         {grid_item.node, fragment_geometry, space});
 
     DCHECK(next_subgrid_subtree);
-    callback_func(
-        subgrid_algorithm, next_subgrid_subtree,
-        SubgriddedItemData(grid_item, &layout_data,
-                           algorithm.GetConstraintSpace().GetWritingMode()));
+    callback_func(subgrid_algorithm, next_subgrid_subtree, subgridded_item);
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }

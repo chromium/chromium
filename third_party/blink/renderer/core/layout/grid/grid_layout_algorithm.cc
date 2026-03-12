@@ -958,7 +958,8 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
     const GridLayoutTree* layout_tree,
     const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
-    SizingConstraint sizing_constraint) const {
+    SizingConstraint sizing_constraint,
+    bool is_track_sizing) const {
   auto& track_collection = sizing_subtree.SizingCollection(track_direction);
 
   if (!track_collection.HasBaselines()) {
@@ -994,20 +995,15 @@ void GridLayoutAlgorithm::ComputeGridItemBaselines(
             : SubgriddedItemData(grid_item, &sizing_subtree.LayoutData(),
                                  writing_mode);
 
-    LayoutUnit inline_offset, block_offset;
-    LogicalSize containing_grid_area_size = {
-        subgridded_item->CalculateAvailableSize(subgridded_item.Columns(),
-                                                &inline_offset),
-        subgridded_item->CalculateAvailableSize(subgridded_item.Rows(),
-                                                &block_offset)};
-
-    // TODO(kschmi) : Add a cache slot parameter to
-    //  `CreateConstraintSpaceForLayout` to avoid variables above.
+    // When we are performing track-sizing use the "measure" space (e.g. only
+    // sets constraints in one axis). When computing the final baselines use
+    // the "layout" space (settings constraints in both axes).
+    // This means the space is consistent for the phase we are in.
     const auto space =
-        CreateConstraintSpace(LayoutResultCacheSlot::kMeasure, *subgridded_item,
-                              containing_grid_area_size,
-                              /* fixed_available_size */ kIndefiniteLogicalSize,
-                              subgrid_layout_subtree);
+        is_track_sizing
+            ? CreateConstraintSpaceForMeasure(subgridded_item, track_direction)
+            : CreateConstraintSpaceForLayout(subgridded_item,
+                                             subgrid_layout_subtree);
 
     // Skip this item if we aren't able to resolve our inline size.
     if (CalculateInitialFragmentGeometry(space, grid_item.node,
@@ -1444,8 +1440,9 @@ void GridLayoutAlgorithm::ComputeBaselineAlignment(
                 track_direction));
           }
         } else {
-          ComputeGridItemBaselines(layout_tree, sizing_subtree, track_direction,
-                                   sizing_constraint);
+          ComputeGridItemBaselines(
+              layout_tree, sizing_subtree, track_direction, sizing_constraint,
+              /*is_track_sizing=*/opt_track_direction.has_value());
         }
       };
 
@@ -1545,19 +1542,21 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpace(
 }
 
 ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
-    const GridItemData& grid_item,
-    const GridLayoutData& layout_data,
+    const SubgriddedItemData& subgridded_item,
     const GridLayoutSubtree* opt_layout_subtree,
     LogicalRect* containing_grid_area,
     LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
     std::optional<LayoutUnit> opt_child_block_offset,
     std::optional<LayoutUnit> opt_fixed_inline_size) const {
-  LayoutUnit inline_offset, block_offset;
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
 
+  LayoutUnit inline_offset, block_offset;
   LogicalSize containing_grid_area_size = {
-      grid_item.CalculateAvailableSize(layout_data.Columns(), &inline_offset),
-      grid_item.CalculateAvailableSize(layout_data.Rows(), &block_offset)};
+      subgridded_item->CalculateAvailableSize(
+          subgridded_item.Columns(writing_mode), &inline_offset),
+      subgridded_item->CalculateAvailableSize(
+          subgridded_item.Rows(writing_mode), &block_offset)};
 
   if (containing_grid_area) {
     containing_grid_area->offset.inline_offset = inline_offset;
@@ -1572,21 +1571,23 @@ ConstraintSpace GridLayoutAlgorithm::CreateConstraintSpaceForLayout(
 
   auto fixed_available_size = kIndefiniteLogicalSize;
 
-  if (grid_item.IsSubgrid()) {
+  if (subgridded_item.IsSubgrid()) {
     const auto [fixed_inline_size, fixed_block_size] = ShrinkLogicalSize(
         containing_grid_area_size,
-        ComputeMarginsFor(grid_item.node.Style(),
+        ComputeMarginsFor(subgridded_item->node.Style(),
                           containing_grid_area_size.inline_size,
                           GetConstraintSpace().GetWritingDirection()));
 
     fixed_available_size = {
-        grid_item.has_subgridded_columns ? fixed_inline_size : kIndefiniteSize,
-        grid_item.has_subgridded_rows ? fixed_block_size : kIndefiniteSize};
+        subgridded_item->has_subgridded_columns ? fixed_inline_size
+                                                : kIndefiniteSize,
+        subgridded_item->has_subgridded_rows ? fixed_block_size
+                                             : kIndefiniteSize};
   }
 
   return CreateConstraintSpace(
-      LayoutResultCacheSlot::kLayout, grid_item, containing_grid_area_size,
-      fixed_available_size, opt_layout_subtree,
+      LayoutResultCacheSlot::kLayout, *subgridded_item,
+      containing_grid_area_size, fixed_available_size, opt_layout_subtree,
       min_block_size_should_encompass_intrinsic_size, opt_child_block_offset);
 }
 
@@ -1904,6 +1905,7 @@ void GridLayoutAlgorithm::PlaceGridItems(
   GridBaselineAccumulator baseline_accumulator(Style().GetFontBaseline());
   const auto container_writing_direction =
       container_space.GetWritingDirection();
+  const auto container_writing_mode = container_space.GetWritingMode();
   auto* next_subgrid_subtree = layout_subtree.FirstChild();
 
   std::optional<GapAccumulator> gap_accumulator;
@@ -1939,7 +1941,8 @@ void GridLayoutAlgorithm::PlaceGridItems(
 
     LogicalRect containing_grid_area;
     const auto space = CreateConstraintSpaceForLayout(
-        grid_item, *layout_data, child_layout_subtree, &containing_grid_area);
+        SubgriddedItemData(grid_item, layout_data, container_writing_mode),
+        child_layout_subtree, &containing_grid_area);
 
     const auto& item_style = grid_item.node.Style();
     const auto margins = ComputeMarginsFor(space, item_style, container_space);
@@ -2080,6 +2083,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   const auto& constraint_space = GetConstraintSpace();
   const auto container_writing_direction =
       constraint_space.GetWritingDirection();
+  const auto container_writing_mode = constraint_space.GetWritingMode();
 
   // The following roughly comes from:
   // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
@@ -2239,8 +2243,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
       LogicalRect grid_area;
       const auto space = CreateConstraintSpaceForLayout(
-          grid_item, layout_data, subgrid_layout_subtree, &grid_area,
-          unavailable_block_size,
+          SubgriddedItemData(grid_item, &layout_data, container_writing_mode),
+          subgrid_layout_subtree, &grid_area, unavailable_block_size,
           min_block_size_should_encompass_intrinsic_size, child_block_offset);
 
       // Make the grid area relative to this fragment.

@@ -751,8 +751,10 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     grid_item.ComputeSetIndices(layout_data->Columns());
     grid_item.ComputeSetIndices(layout_data->Rows());
 
+    const SubgriddedItemData subgridded_item(grid_item, layout_data,
+                                             writing_mode);
     const auto space =
-        algorithm.CreateConstraintSpaceForLayout(grid_item, *layout_data);
+        algorithm.CreateConstraintSpaceForLayout(subgridded_item);
     const auto fragment_geometry =
         CalculateInitialFragmentGeometryForSubgrid(grid_item, space);
 
@@ -761,9 +763,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
         {grid_item.node, fragment_geometry, space});
 
     const auto subgrid_line_resolver = subgrid_algorithm.BuildGridLineResolver(
-        SubgriddedAreaInParent(
-            SubgriddedItemData(grid_item, layout_data, writing_mode)),
-        &line_resolver);
+        SubgriddedAreaInParent(subgridded_item), &line_resolver);
 
     // TODO(almaher): Use the grid lanes algorithm if the subgrid requires it.
     BuildGridSizingSubtree<GridLayoutAlgorithm>(

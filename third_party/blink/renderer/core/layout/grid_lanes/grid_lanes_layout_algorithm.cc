@@ -470,6 +470,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
   const auto border_scrollbar_padding = BorderScrollbarPadding();
   const auto container_writing_direction =
       container_space.GetWritingDirection();
+  const auto container_writing_mode = container_space.GetWritingMode();
   const auto grid_axis_direction = track_collection.Direction();
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const wtf_size_t grid_axis_start_offset =
@@ -514,9 +515,9 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     const ConstraintSpace space =
         is_for_layout
             ? CreateConstraintSpaceForLayout(
-                  grid_lanes_item, *layout_data,
-                  /*opt_layout_subtree=*/GridLayoutSubtree(),
-                  &containing_grid_area,
+                  SubgriddedItemData(grid_lanes_item, layout_data,
+                                     container_writing_mode),
+                  /*opt_layout_subtree=*/nullptr, &containing_grid_area,
                   /*unavailable_block_size=*/LayoutUnit(),
                   /*min_block_size_should_encompass_intrinsic_size=*/false,
                   /*opt_child_block_offset=*/std::nullopt,
@@ -1594,18 +1595,19 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(
 // TODO(almaher): Should we do something with
 // `min_block_size_should_encompass_intrinsic_size`?
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
-    const GridItemData& grid_lanes_item,
-    const GridLayoutData& layout_data,
-    GridLayoutSubtree&& opt_layout_subtree,
+    const SubgriddedItemData& subgridded_item,
+    const GridLayoutSubtree* opt_layout_subtree,
     LogicalRect* containing_grid_area,
     LayoutUnit unavailable_block_size,
     bool min_block_size_should_encompass_intrinsic_size,
     std::optional<LayoutUnit> opt_child_block_offset,
     std::optional<LayoutUnit> opt_fixed_inline_size) const {
+  const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const bool is_for_columns =
       Style().GridLanesTrackSizingDirection() == kForColumns;
-  const auto& track_collection =
-      is_for_columns ? layout_data.Columns() : layout_data.Rows();
+  const auto& track_collection = is_for_columns
+                                     ? subgridded_item.Columns(writing_mode)
+                                     : subgridded_item.Rows(writing_mode);
 
   auto containing_size = grid_lanes_available_size_;
   auto& grid_axis_size =
@@ -1613,7 +1615,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
 
   LayoutUnit start_offset;
   grid_axis_size =
-      grid_lanes_item.CalculateAvailableSize(track_collection, &start_offset);
+      subgridded_item->CalculateAvailableSize(track_collection, &start_offset);
 
   if (containing_grid_area) {
     is_for_columns ? containing_grid_area->offset.inline_offset = start_offset
@@ -1628,9 +1630,8 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
   // layout and overflow of items that we don't get in grid.
   LogicalSize fixed_available_size = kIndefiniteLogicalSize;
   if (opt_fixed_inline_size) {
-    const auto writing_mode = GetConstraintSpace().GetWritingMode();
     const auto item_writing_mode =
-        grid_lanes_item.node.Style().GetWritingMode();
+        subgridded_item->node.Style().GetWritingMode();
     const bool is_parallel =
         IsParallelWritingMode(item_writing_mode, writing_mode);
     const bool used_block_constraint_at_track_sizing =
@@ -1652,7 +1653,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForLayout(
 
   // TODO(almaher): Will likely need special fixed available size handling for
   // subgrid.
-  return CreateConstraintSpace(grid_lanes_item, containing_size,
+  return CreateConstraintSpace(*subgridded_item, containing_size,
                                fixed_available_size,
                                LayoutResultCacheSlot::kLayout);
 }

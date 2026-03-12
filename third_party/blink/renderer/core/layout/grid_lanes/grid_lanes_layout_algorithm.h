@@ -20,6 +20,7 @@ class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
 class GridLanesRunningPositions;
+class SubgriddedItemData;
 enum class GridItemContributionType;
 struct BoxStrut;
 struct GridItemData;
@@ -69,9 +70,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
   ConstraintSpace CreateConstraintSpaceForLayout(
-      const GridItemData& grid_item,
-      const GridLayoutData& layout_data,
-      GridLayoutSubtree&& opt_layout_subtree = GridLayoutSubtree(),
+      const SubgriddedItemData& subgridded_item,
+      const GridLayoutSubtree* opt_layout_subtree = nullptr,
       LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
       bool min_block_size_should_encompass_intrinsic_size = false,

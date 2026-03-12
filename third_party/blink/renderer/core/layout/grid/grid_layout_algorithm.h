@@ -71,8 +71,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   // `opt_fixed_inline_size` isn't used here, but is needed to maintain the same
   // method signature as grid lanes for common use.
   ConstraintSpace CreateConstraintSpaceForLayout(
-      const GridItemData& grid_item,
-      const GridLayoutData& layout_data,
+      const SubgriddedItemData& subgridded_item,
       const GridLayoutSubtree* opt_layout_subtree = nullptr,
       LogicalRect* containing_grid_area = nullptr,
       LayoutUnit unavailable_block_size = LayoutUnit(),
@@ -117,7 +116,8 @@ class CORE_EXPORT GridLayoutAlgorithm
   void ComputeGridItemBaselines(const GridLayoutTree* layout_tree,
                                 const GridSizingSubtree& sizing_subtree,
                                 GridTrackSizingDirection track_direction,
-                                SizingConstraint sizing_constraint) const;
+                                SizingConstraint sizing_constraint,
+                                bool is_track_sizing) const;
 
   // Initializes the track sizes of a grid sizing subtree.
   void InitializeTrackSizes(
