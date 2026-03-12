@@ -300,5 +300,6 @@ def GetTestFilesFromChanges() -> list[str]:
       elif f.endswith('.java'):
         root, _ = os.path.splitext(f)
         test_name = os.path.basename(root) + 'Test.java'
-        test_files.append(test_name)
+        if os.path.isfile(test_name):
+          test_files.append(test_name)
   return test_files
