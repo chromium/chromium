@@ -1499,4 +1499,40 @@ IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionBrowserTest, UseCounter) {
       blink::mojom::WebFeature::kPrerenderActivationByFormSubmission, 1);
 }
 
+// Verifies that HTTP to HTTP, prerender form submission can work as expected
+// without being blocked.
+IN_PROC_BROWSER_TEST_F(PrerenderFormSubmissionBrowserTest, HTTPFormActivation) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  // Trigger prerender with form submission.
+  GURL prerender_url = embedded_test_server()->GetURL("/simple.html?");
+  content::TestActivationManager activation_manager(GetActiveWebContents(),
+                                                    prerender_url);
+  prerender_helper().AddPrerendersAsync(
+      {prerender_url},
+      /*eagerness=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
+      /*target_hint=*/std::string(),
+      /*ruleset_tag=*/std::nullopt,
+      /*world_id=*/content::ISOLATED_WORLD_ID_GLOBAL,
+      /*form_submission=*/true);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetActiveWebContents(), prerender_url);
+
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace(R"(
+    const form = document.createElement('form');
+                    form.action = $1;
+    document.body.appendChild(form);
+    form.submit();
+    )",
+                                                 prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+}
+
 }  // namespace
