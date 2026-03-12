@@ -847,6 +847,7 @@ component("headless_shell_lib") {
     "//content/public/common",
     "//content/public/utility",
     "//printing/buildflags",
+    "//v8",
   ]
 
   if (!is_fuchsia) {

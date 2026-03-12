@@ -71,7 +71,11 @@
 
 #if BUILDFLAG(IS_POSIX)
 #include <signal.h>
+
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if defined(HEADLESS_USE_PREFS)
 #include "components/prefs/pref_service.h"  // nogncheck
@@ -403,6 +407,10 @@ void HeadlessContentMainDelegate::InitCrashReporter(
 #if !BUILDFLAG(IS_WIN)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
 #endif  // !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+    crash_reporter::SetFirstChanceExceptionHandler(
+        v8::TryHandleWebAssemblyTrapPosix);
+#endif
     crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
   }
 #endif  // BUILDFLAG(IS_FUCHSIA)
@@ -488,6 +496,8 @@ void HeadlessContentMainDelegate::ZygoteForked() {
     const std::string process_type =
         command_line.GetSwitchValueASCII(::switches::kProcessType);
     crash_reporter::InitializeCrashpad(false, process_type);
+    crash_reporter::SetFirstChanceExceptionHandler(
+        v8::TryHandleWebAssemblyTrapPosix);
     crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
   }
 }
