@@ -33,7 +33,7 @@ export const COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX =
 export const COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX =
     '--color-new-tab-page-module-tab-groups-dot-';
 
-const ModuleElementBase = I18nMixinLit(CrLitElement);
+const TabGroupsModuleElementBase = I18nMixinLit(CrLitElement);
 
 export function colorIdToString(colorPrefix: string, id: Color): string {
   const colorMap = new Map<Color, string>([
@@ -56,9 +56,9 @@ export function colorIdToString(colorPrefix: string, id: Color): string {
  * The Tab Groups module, which helps users resume journey and discover tab
  * groups.
  */
-export class ModuleElement extends ModuleElementBase {
+export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
   static get is() {
-    return 'ntp-tab-groups';
+    return 'ntp-tab-groups-module';
   }
 
   static override get styles() {
@@ -204,15 +204,17 @@ export class ModuleElement extends ModuleElementBase {
   }
 }
 
+export type ModuleElement = TabGroupsModuleElement;
+
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-tab-groups': ModuleElement;
+    'ntp-tab-groups-module': TabGroupsModuleElement;
   }
 }
 
-customElements.define(ModuleElement.is, ModuleElement);
+customElements.define(TabGroupsModuleElement.is, TabGroupsModuleElement);
 
-async function createElement(): Promise<ModuleElement|null> {
+async function createElement(): Promise<TabGroupsModuleElement|null> {
   const {tabGroups, showZeroState} =
       await TabGroupsProxyImpl.getInstance().handler.getTabGroups();
 
@@ -226,7 +228,7 @@ async function createElement(): Promise<ModuleElement|null> {
     return null;
   }
 
-  const element = new ModuleElement();
+  const element = new TabGroupsModuleElement();
   element.tabGroups = tabGroups;
   element.showZeroState = showZeroState;
   return element;

@@ -53,7 +53,7 @@ export {OutlookCalendarProxyImpl} from './modules/calendar/outlook_calendar_prox
 export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/dummy/module.js';
 // </if>
-export {driveModuleDescriptor, DriveModuleElement as DriveModuleV2Element} from './modules/file_suggestion/drive_module.js';
+export {driveModuleDescriptor, DriveModuleElement} from './modules/file_suggestion/drive_module.js';
 export {FileProxy} from './modules/file_suggestion/file_module_proxy.js';
 export {FileSuggestionElement} from './modules/file_suggestion/file_suggestion.js';
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/file_suggestion/microsoft_files_module.js';
@@ -69,10 +69,10 @@ export {ModuleWrapperElement} from './modules/module_wrapper.js';
 export type {ModuleInstance} from './modules/module_wrapper.js';
 export {ModulesElement, SUPPORTED_MODULE_WIDTHS} from './modules/modules.js';
 export type {DisableModuleEvent, DismissModuleElementEvent, DismissModuleInstanceEvent, NamedWidth} from './modules/modules.js';
-export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/most_relevant_tab_resumption/module.js';
+export {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionModuleElement} from './modules/most_relevant_tab_resumption/module.js';
 export {MostRelevantTabResumptionProxyImpl} from './modules/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.js';
 export {IconContainerElement} from './modules/tab_groups/icon_container.js';
-export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, ModuleElement as TabGroupsModuleElement, tabGroupsDescriptor} from './modules/tab_groups/module.js';
+export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, tabGroupsDescriptor, TabGroupsModuleElement} from './modules/tab_groups/module.js';
 export {TabGroupsProxyImpl} from './modules/tab_groups/tab_groups_proxy.js';
 export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
 export {NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
