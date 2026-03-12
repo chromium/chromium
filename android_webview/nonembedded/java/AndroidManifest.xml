@@ -22,6 +22,8 @@ by a child template that "extends" this file.
                   android:required="false" />
     <uses-feature android:name="android.software.leanback"
                   android:required="false" />
+    <uses-feature android:name="android.hardware.type.automotive"
+                  android:required="false" />
 
     <uses-feature android:glEsVersion="0x00030000" />
 
