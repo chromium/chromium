@@ -30,6 +30,7 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
   int num_enabled_profiles_enabled_for_tiered_rollout = 0;
   int num_enabled_profiles = 0;
   for (auto* profile : profile_list) {
+    GlicEnabling::EnablementForProfile(profile).RecordSteadyStateMetrics();
     if (GlicEnabling::IsEnabledForProfile(profile)) {
       num_enabled_profiles++;
       if (GlicEnabling::IsEligibleForGlicTieredRollout(profile)) {
