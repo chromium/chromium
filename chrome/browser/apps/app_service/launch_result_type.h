@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_
 
-#include <vector>
-
 #include "base/functional/callback_forward.h"
-#include "base/unguessable_token.h"
 
 namespace apps {
 // LaunchResult and LaunchCallback can be used in ChromeOS and other
@@ -24,9 +21,6 @@ struct LaunchResult {
 
   enum class State { kSuccess, kFailed, kFailedDirectoryNotShared };
   explicit LaunchResult(LaunchResult::State state);
-
-  // A single launch event may result in multiple app instances being created.
-  std::vector<base::UnguessableToken> instance_ids;
 
   // Indicates whether the launch attempt was successful or not.
   State state = LaunchResult::State::kFailed;

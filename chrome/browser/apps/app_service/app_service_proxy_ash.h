@@ -69,8 +69,7 @@ struct PauseData {
 //
 // See components/services/app_service/README.md.
 class AppServiceProxyAsh : public AppServiceProxyBase,
-                           public apps::AppRegistryCache::Observer,
-                           public apps::InstanceRegistry::Observer {
+                           public apps::AppRegistryCache::Observer {
  public:
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
   using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
@@ -301,15 +300,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                  const std::string& app_id,
                                  UninstallSource uninstall_source) override;
 
-  // apps::InstanceRegistry::Observer overrides.
-  void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
-  void OnInstanceRegistryWillBeDestroyed(
-      apps::InstanceRegistry* cache) override;
-
-  // Checks if all instance IDs correspond to existing windows.
-  bool CanRunLaunchCallback(
-      const std::vector<base::UnguessableToken>& instance_ids);
-
   // Launches the app if `is_allowed` is set true.
   void LaunchAppWithIntentIfAllowed(const std::string& app_id,
                                     int32_t event_flags,
@@ -392,19 +382,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   std::unique_ptr<apps::AppPlatformMetricsService>
       app_platform_metrics_service_;
 
-  base::ScopedObservation<apps::InstanceRegistry,
-                          apps::InstanceRegistry::Observer>
-      instance_registry_observer_{this};
-
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
-
-  // A list to record outstanding launch callbacks. When the first member
-  // returns true, the second member should be run and the pair can be removed
-  // from the outstanding callback queue.
-  std::list<std::pair<base::RepeatingCallback<bool(void)>, base::OnceClosure>>
-      callback_list_;
 
   std::unique_ptr<apps::AppInstallService> app_install_service_;
 

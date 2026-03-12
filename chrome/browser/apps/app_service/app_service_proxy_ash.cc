@@ -84,7 +84,6 @@ AppServiceProxyAsh::AppServiceProxyAsh(
     : AppServiceProxyBase(profile, publisher_host_factory),
       icon_reader_(profile),
       icon_writer_(profile) {
-  instance_registry_observer_.Observe(&instance_registry_);
 }
 
 AppServiceProxyAsh::~AppServiceProxyAsh() {
@@ -631,17 +630,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
 
 void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
                                     LaunchResult&& launch_result) {
-  base::RepeatingCallback<bool(void)> ready_to_run_callback =
-      base::BindRepeating(&AppServiceProxyAsh::CanRunLaunchCallback,
-                          base::Unretained(this), launch_result.instance_ids);
-  base::OnceClosure launch_callback =
-      base::BindOnce(std::move(callback), std::move(launch_result));
-  if (ready_to_run_callback.Run()) {
-    std::move(launch_callback).Run();
-  } else {
-    callback_list_.emplace_back(
-        std::make_pair(ready_to_run_callback, std::move(launch_callback)));
-  }
+  std::move(callback).Run(std::move(launch_result));
 }
 
 bool AppServiceProxyAsh::ShouldExcludeBrowserTabApps(
@@ -799,41 +788,6 @@ void AppServiceProxyAsh::PerformPostLaunchTasks(
               profile_)) {
     full_restore_service->MaybeCloseNotification();
   }
-}
-
-void AppServiceProxyAsh::OnInstanceUpdate(const apps::InstanceUpdate& update) {
-  if (!update.IsCreation()) {
-    return;
-  }
-
-  callback_list_.remove_if([](std::pair<base::RepeatingCallback<bool(void)>,
-                                        base::OnceClosure>& callbacks) {
-    if (callbacks.first.Run()) {
-      std::move(callbacks.second).Run();
-      return true;
-    }
-    return false;
-  });
-}
-
-void AppServiceProxyAsh::OnInstanceRegistryWillBeDestroyed(
-    apps::InstanceRegistry* cache) {
-  instance_registry_observer_.Reset();
-}
-
-bool AppServiceProxyAsh::CanRunLaunchCallback(
-    const std::vector<base::UnguessableToken>& instance_ids) {
-  for (const base::UnguessableToken& instance_id : instance_ids) {
-    bool exists = false;
-    InstanceRegistry().ForOneInstance(
-        instance_id,
-        [&exists](const apps::InstanceUpdate& update) { exists = true; });
-    if (!exists) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void AppServiceProxyAsh::LaunchAppWithIntentIfAllowed(
