@@ -87,8 +87,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // GlicWindowEventObserver::Delegate:
   GlicWindowAnimator* window_animator() override;
   void OnDragComplete() override;
-  base::WeakPtr<GlicWindowEventObserver::Delegate> GetDelegateWeakPtr()
-      override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;

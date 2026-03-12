@@ -31,11 +31,10 @@ class GlicWindowEventObserver {
     virtual ~Delegate() = default;
     virtual GlicWindowAnimator* window_animator() = 0;
     virtual void OnDragComplete() = 0;
-    virtual base::WeakPtr<Delegate> GetDelegateWeakPtr() = 0;
   };
 
   GlicWindowEventObserver(base::WeakPtr<GlicWidget> glic_widget,
-                          base::WeakPtr<Delegate> delegate);
+                          Delegate* delegate);
   ~GlicWindowEventObserver();
 
   void SetDraggingAreasAndWatchForMouseEvents();
@@ -51,14 +50,17 @@ class GlicWindowEventObserver {
   FRIEND_TEST_ALL_PREFIXES(GlicInstanceCoordinatorBrowserTest,
                            WidgetClosedDuringDragDoesNotCrash);
 
+  // This is a blocking call that will spin a nested message loop.
   void HandleWindowDragWithOffset(const gfx::Vector2d& mouse_offset);
 
  private:
   class WindowEventObserverImpl;
 
+  void OnMoveLoopFinished();
+
   // The widget that this animator is responsible for.
   base::WeakPtr<GlicWidget> widget_;
-  base::WeakPtr<Delegate> delegate_;
+  const raw_ptr<Delegate> delegate_;
   std::unique_ptr<WindowEventObserverImpl> window_event_observer_impl_;
   bool in_move_loop_ = false;
 
