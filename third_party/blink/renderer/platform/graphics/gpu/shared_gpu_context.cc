@@ -467,7 +467,24 @@ bool SharedGpuContext::WebGLImageChromiumEnabled() {
 }
 
 bool SharedGpuContext::UseOverlaysForWebGL() {
-  return MaySupportWebGLImageChromium() && WebGLImageChromiumEnabled();
+  if (!MaySupportWebGLImageChromium()) {
+    return false;
+  }
+
+  if (g_webgl_image_chromium_enabled_for_testing) {
+    return g_webgl_image_chromium_enabled_for_testing.value();
+  }
+
+#if BUILDFLAG(IS_APPLE)
+  return IsDelegatedCompositingEnabled();
+#elif BUILDFLAG(IS_CHROMEOS)
+  static const bool enable_web_gl_image_chromium =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kEnableWebGLImageChromium);
+  return enable_web_gl_image_chromium;
+#else
+  return false;
+#endif
 }
 
 void SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(bool enable) {
