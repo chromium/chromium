@@ -22,7 +22,6 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/local_bookmark_to_account_merger.h"
-#include "components/sync_bookmarks/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
@@ -64,13 +63,10 @@ void BookmarkLocalDataBatchUploader::GetLocalDataDescription(
           local_or_syncable_bookmark_model_view, node.get());
       bookmarked_urls.insert(bookmarked_urls.end(), urls.begin(), urls.end());
 
-      if (base::FeatureList::IsEnabled(
-              switches::kSyncBookmarksBatchUploadSelectedItems)) {
-        // Populate the individual items for Batch Upload (used on
-        // Windows/Mac/Linux) only.
-        local_data_items.push_back(
-            DataItemModelFromNode(node.get(), urls.size()));
-      }
+      // Populate the individual items for Batch Upload (used on
+      // Windows/Mac/Linux) only.
+      local_data_items.push_back(
+          DataItemModelFromNode(node.get(), urls.size()));
     }
   }
 

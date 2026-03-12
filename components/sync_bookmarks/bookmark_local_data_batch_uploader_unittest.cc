@@ -21,7 +21,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/test_matchers.h"
-#include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -162,30 +161,6 @@ TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
                       /*title=*/"Local", /*subtitle=*/IsEmpty())),
                   /*item_count=*/1u, /*domains=*/ElementsAre("local.com"),
                   /*domain_count=*/1u));
-}
-
-TEST_F(BookmarkLocalDataBatchUploaderTest,
-       LocalDescriptionEmptyItemsWhenSelectedItemsFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kSyncBookmarksBatchUploadSelectedItems);
-  bookmark_model()->LoadEmptyForTest();
-  bookmark_model()->CreateAccountPermanentFolders();
-  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
-                           u"Local", GURL("http://local.com/"));
-  bookmark_model()->AddURL(bookmark_model()->account_bookmark_bar_node(),
-                           /*index=*/0, u"Account",
-                           GURL("http://account.com/"));
-  BookmarkLocalDataBatchUploader uploader(bookmark_model(), pref_service());
-  base::test::TestFuture<syncer::LocalDataDescription> description;
-
-  uploader.GetLocalDataDescription(description.GetCallback());
-
-  EXPECT_THAT(description.Get(),
-              MatchesLocalDataDescription(_, /*local_data_models=*/IsEmpty(),
-                                          /*item_count=*/1u,
-                                          /*domains=*/ElementsAre("local.com"),
-                                          /*domain_count=*/1u));
 }
 
 TEST_F(BookmarkLocalDataBatchUploaderTest,
