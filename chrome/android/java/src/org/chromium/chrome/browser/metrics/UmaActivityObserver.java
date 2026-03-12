@@ -140,14 +140,6 @@ public class UmaActivityObserver implements DestroyObserver {
     }
 
     /**
-     * Should be called whenever an Activity is paused, in case the Activity is killed before the
-     * Activity is stopped and the session is ended.
-     */
-    public void flushUmaSession() {
-        mUmaSessionStats.flushSession();
-    }
-
-    /**
      * Call when a android activity has become hidden, with native code loaded.
      *
      * <p>The activity is expected to have previously started with nativve code loaded.
