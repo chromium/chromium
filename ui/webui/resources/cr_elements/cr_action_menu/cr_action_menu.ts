@@ -443,8 +443,8 @@ export class CrActionMenuElement extends CrLitElement {
     }
 
     const offsetWidth = this.$.dialog.offsetWidth;
-    const menuLeft = getStartPointWithAnchor(
-        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!);
+    const menuLeft = Math.round(getStartPointWithAnchor(
+        left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!));
 
     if (rtl) {
       const menuRight =
@@ -454,9 +454,9 @@ export class CrActionMenuElement extends CrLitElement {
       this.$.dialog.style.left = menuLeft + 'px';
     }
 
-    const menuTop = getStartPointWithAnchor(
+    const menuTop = Math.round(getStartPointWithAnchor(
         top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY!, c.minY!,
-        c.maxY!);
+        c.maxY!));
     this.$.dialog.style.top = menuTop + 'px';
   }
 

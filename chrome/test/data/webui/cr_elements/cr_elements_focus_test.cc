@@ -7,6 +7,10 @@
 
 typedef WebUIMochaFocusTest CrElementsFocusTest;
 
+IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrActionMenu) {
+  RunTest("cr_elements/cr_action_menu_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTabs) {
   RunTest("cr_elements/cr_tabs_test.js", "mocha.run()");
 }
@@ -26,10 +30,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrTextarea) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrActionMenu) {
-  RunTest("cr_elements/cr_action_menu_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsFocusTest, CrCheckbox) {
   RunTest("cr_elements/cr_checkbox_test.js", "mocha.run()");
 }
