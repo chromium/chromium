@@ -1329,6 +1329,12 @@ const base::FeatureParam<int> kAndroidDesktopZoomScalingFactor{
 const base::FeatureParam<int> kAndroidMonitorZoomScalingFactor{
     &kAndroidDesktopZoomScaling, "monitor-zoom-scaling-factor", 100};
 
+// Implementation of the DisplayCursor API in RenderWidgetHostViewInput on
+// Android.
+BASE_FEATURE(kAndroidDisplayCursor,
+             "AndroidDisplayCursor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, base::FEATURE_DISABLED_BY_DEFAULT);

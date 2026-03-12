@@ -366,6 +366,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopZoomScaling);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidDesktopZoomScalingFactor;
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDisplayCursor);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidMonitorZoomScalingFactor;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

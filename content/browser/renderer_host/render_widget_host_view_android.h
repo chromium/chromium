@@ -200,6 +200,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   uint32_t GetCaptureSequenceNumber() const override;
   int GetMouseWheelMinimumGranularity() const override;
   void UpdateCursor(const ui::Cursor& cursor) override;
+  void DisplayCursor(const ui::Cursor& cursor) override;
   input::CursorManager* GetCursorManager() override;
   void SetIsLoading(bool is_loading) override;
   void FocusedNodeChanged(bool is_editable_node,

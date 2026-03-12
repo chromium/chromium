@@ -1345,6 +1345,14 @@ void RenderWidgetHostViewAndroid::UpdateCursor(const ui::Cursor& cursor) {
   view_.OnCursorChanged(cursor);
 }
 
+void RenderWidgetHostViewAndroid::DisplayCursor(const ui::Cursor& cursor) {
+  if (base::FeatureList::IsEnabled(features::kAndroidDisplayCursor)) {
+    view_.OnCursorChanged(cursor);
+  } else {
+    RenderWidgetHostViewBase::DisplayCursor(cursor);
+  }
+}
+
 input::CursorManager* RenderWidgetHostViewAndroid::GetCursorManager() {
   return cursor_manager_.get();
 }
