@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -32,7 +31,6 @@
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
 
@@ -425,44 +423,26 @@ void CloudBinaryUploadService::OnIpAddressesFetched(
 
 void CloudBinaryUploadService::OnGetRequestData(
     BinaryUploadRequest::Id request_id,
-    enterprise_connectors::ScanRequestUploadResult result,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
     BinaryUploadRequest::Data data) {
   BinaryUploadRequest* request = GetRequest(request_id);
-  if (!request) {
+  if (!request ||
+      ShouldTerminateRequestEarly(request, get_data_result, data.size)) {
     return;
   }
 
-  if (result != enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    if (!IgnoreErrorResultForResumableUpload(request, result)) {
-      FinishAndCleanupRequest(request, result,
-                              enterprise_connectors::ContentAnalysisResponse());
-      return;
-    }
-
-    // If the file is encrypted, let the service know that the file is
-    // encrypted.
-    if (result ==
-        enterprise_connectors::ScanRequestUploadResult::kFileEncrypted) {
-      request->set_is_content_encrypted(true);
-    }
-    if (result ==
-        enterprise_connectors::ScanRequestUploadResult::kFileTooLarge) {
-      request->set_is_content_too_large(true);
-    }
+  // If the file is encrypted, let the service know that the file is
+  // encrypted.
+  if (get_data_result ==
+      enterprise_connectors::ScanRequestUploadResult::kFileEncrypted) {
+    request->set_is_content_encrypted(true);
   }
-
+  if (get_data_result ==
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge) {
+    request->set_is_content_too_large(true);
+  }
   request->set_should_skip_malware_scan(
       data.size > BinaryUploadService::kMaxUploadSizeBytes);
-
-  if (!request->IsAuthRequest() && data.size == 0) {
-    // A size of 0 implies an edge case like an empty file being uploaded. In
-    // such a case, the file doesn't need to scan so the request can simply
-    // finish early.
-    FinishAndCleanupRequest(
-        request, enterprise_connectors::ScanRequestUploadResult::kSuccess,
-        enterprise_connectors::ContentAnalysisResponse());
-    return;
-  }
 
   std::string metadata;
   request->SerializeToString(&metadata);
@@ -476,77 +456,18 @@ void CloudBinaryUploadService::OnGetRequestData(
       GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
   std::string histogram_suffix =
       IsConsumerScanRequest(*request) ? "ConsumerUpload" : "EnterpriseUpload";
-  auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
-                                 weakptr_factory_.GetWeakPtr(), request_id);
-  auto verdict_received_callback =
-      base::BindOnce(&CloudBinaryUploadService::OnGetContentAnalysisResponse,
-                     weakptr_factory_.GetWeakPtr(), request_id);
-  auto content_uploaded_callback =
-      base::BindOnce(&CloudBinaryUploadService::OnContentUploaded,
-                     weakptr_factory_.GetWeakPtr(), request_id);
-  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest> upload_request;
+
   // The downloaded file will not be available for deep scan upload due to the
   // newly introduced download obfuscation step. We must wait for deobfuscation
   // to complete before uploading, which is guaranteed under the pre-async
   // upload behaviour.
   bool force_sync_upload =
       request->analysis_connector() == enterprise_connectors::FILE_DOWNLOADED;
-  if (request->IsAuthRequest()) {
-    upload_request = MultipartUploadRequest::CreateStringRequest(
-        url_loader_factory_, url, metadata, data.contents, histogram_suffix,
-        std::move(traffic_annotation), std::move(callback),
-        content::GetUIThreadTaskRunner({}));
-  } else if (!data.contents.empty()) {
-    upload_request =
-        (enterprise_connectors::IsResumableUpload(*request) &&
-         base::FeatureList::IsEnabled(
-             enterprise_connectors::kDlpScanPastedImages))
-            ? ResumableUploadRequest::CreateStringRequest(
-                  url_loader_factory_, url, metadata, data.contents,
-                  request->image_paste()
-                      ? enterprise_connectors::ConnectorUploadRequest::IMAGE
-                      : enterprise_connectors::ConnectorUploadRequest::STRING,
-                  histogram_suffix, std::move(traffic_annotation),
-                  std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload,
-                  content::GetUIThreadTaskRunner({}))
-            : MultipartUploadRequest::CreateStringRequest(
-                  url_loader_factory_, url, metadata, data.contents,
-                  histogram_suffix, std::move(traffic_annotation),
-                  std::move(callback), content::GetUIThreadTaskRunner({}));
-  } else if (!data.path.empty()) {
-    upload_request =
-        enterprise_connectors::IsResumableUpload(*request)
-            ? ResumableUploadRequest::CreateFileRequest(
-                  url_loader_factory_, url, metadata, result, data.path,
-                  data.size, data.is_obfuscated, histogram_suffix,
-                  std::move(traffic_annotation),
-                  std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload,
-                  content::GetUIThreadTaskRunner({}))
-            : MultipartUploadRequest::CreateFileRequest(
-                  url_loader_factory_, url, metadata, data.path, data.size,
-                  data.is_obfuscated, histogram_suffix,
-                  std::move(traffic_annotation), std::move(callback),
-                  content::GetUIThreadTaskRunner({}));
 
-  } else if (data.page.IsValid()) {
-    upload_request =
-        enterprise_connectors::IsResumableUpload(*request)
-            ? ResumableUploadRequest::CreatePageRequest(
-                  url_loader_factory_, url, metadata, result,
-                  std::move(data.page), histogram_suffix,
-                  std::move(traffic_annotation),
-                  std::move(verdict_received_callback),
-                  std::move(content_uploaded_callback), force_sync_upload,
-                  content::GetUIThreadTaskRunner({}))
-            : MultipartUploadRequest::CreatePageRequest(
-                  url_loader_factory_, url, metadata, std::move(data.page),
-                  histogram_suffix, std::move(traffic_annotation),
-                  std::move(callback), content::GetUIThreadTaskRunner({}));
-  } else {
-    NOTREACHED();
-  }
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+      upload_request = CreateUploadRequest(
+          request, request_id, url, metadata, histogram_suffix,
+          force_sync_upload, traffic_annotation, data, get_data_result);
   // TODO(b/485578457): Add test validation to check that the
   // `access_token` is indeed set for the `upload_request`.
   upload_request->set_access_token(request->access_token());
@@ -821,6 +742,112 @@ bool CloudBinaryUploadService::ResponseIsComplete(
   }
 
   return true;
+}
+
+bool CloudBinaryUploadService::ShouldTerminateRequestEarly(
+    BinaryUploadRequest* request,
+    enterprise_connectors::ScanRequestUploadResult get_data_result,
+    size_t data_size) {
+  if (get_data_result !=
+          enterprise_connectors::ScanRequestUploadResult::kSuccess &&
+      !IgnoreErrorResultForResumableUpload(request, get_data_result)) {
+    FinishAndCleanupRequest(request, get_data_result,
+                            enterprise_connectors::ContentAnalysisResponse());
+    return true;
+  }
+
+  if (!request->IsAuthRequest() && data_size == 0) {
+    // A size of 0 implies an edge case like an empty file being uploaded. In
+    // such a case, the file doesn't need to scan so the request can simply
+    // finish early.
+    FinishAndCleanupRequest(
+        request, enterprise_connectors::ScanRequestUploadResult::kSuccess,
+        enterprise_connectors::ContentAnalysisResponse());
+    return true;
+  }
+
+  return false;
+}
+
+std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+CloudBinaryUploadService::CreateUploadRequest(
+    BinaryUploadRequest* request,
+    const BinaryUploadRequest::Id& request_id,
+    const GURL& url,
+    const std::string& metadata,
+    const std::string& histogram_suffix,
+    bool force_sync_upload,
+    net::NetworkTrafficAnnotationTag traffic_annotation,
+    BinaryUploadRequest::Data data,
+    enterprise_connectors::ScanRequestUploadResult result) {
+  auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
+                                 weakptr_factory_.GetWeakPtr(), request_id);
+  auto verdict_received_callback =
+      base::BindOnce(&CloudBinaryUploadService::OnGetContentAnalysisResponse,
+                     weakptr_factory_.GetWeakPtr(), request_id);
+  auto content_uploaded_callback =
+      base::BindOnce(&CloudBinaryUploadService::OnContentUploaded,
+                     weakptr_factory_.GetWeakPtr(), request_id);
+
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest> upload_request;
+  if (request->IsAuthRequest()) {
+    upload_request = MultipartUploadRequest::CreateStringRequest(
+        url_loader_factory_, url, metadata, data.contents, histogram_suffix,
+        std::move(traffic_annotation), std::move(callback),
+        content::GetUIThreadTaskRunner({}));
+  } else if (!data.contents.empty()) {
+    upload_request =
+        (enterprise_connectors::IsResumableUpload(*request) &&
+         base::FeatureList::IsEnabled(
+             enterprise_connectors::kDlpScanPastedImages))
+            ? ResumableUploadRequest::CreateStringRequest(
+                  url_loader_factory_, url, metadata, data.contents,
+                  request->image_paste()
+                      ? enterprise_connectors::ConnectorUploadRequest::IMAGE
+                      : enterprise_connectors::ConnectorUploadRequest::STRING,
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
+            : MultipartUploadRequest::CreateStringRequest(
+                  url_loader_factory_, url, metadata, data.contents,
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(callback), content::GetUIThreadTaskRunner({}));
+  } else if (!data.path.empty()) {
+    upload_request =
+        enterprise_connectors::IsResumableUpload(*request)
+            ? ResumableUploadRequest::CreateFileRequest(
+                  url_loader_factory_, url, metadata, result, data.path,
+                  data.size, data.is_obfuscated, histogram_suffix,
+                  std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
+            : MultipartUploadRequest::CreateFileRequest(
+                  url_loader_factory_, url, metadata, data.path, data.size,
+                  data.is_obfuscated, histogram_suffix,
+                  std::move(traffic_annotation), std::move(callback),
+                  content::GetUIThreadTaskRunner({}));
+
+  } else if (data.page.IsValid()) {
+    upload_request =
+        enterprise_connectors::IsResumableUpload(*request)
+            ? ResumableUploadRequest::CreatePageRequest(
+                  url_loader_factory_, url, metadata, result,
+                  std::move(data.page), histogram_suffix,
+                  std::move(traffic_annotation),
+                  std::move(verdict_received_callback),
+                  std::move(content_uploaded_callback), force_sync_upload,
+                  content::GetUIThreadTaskRunner({}))
+            : MultipartUploadRequest::CreatePageRequest(
+                  url_loader_factory_, url, metadata, std::move(data.page),
+                  histogram_suffix, std::move(traffic_annotation),
+                  std::move(callback), content::GetUIThreadTaskRunner({}));
+  } else {
+    NOTREACHED();
+  }
+
+  return upload_request;
 }
 
 BinaryUploadRequest* CloudBinaryUploadService::GetRequest(

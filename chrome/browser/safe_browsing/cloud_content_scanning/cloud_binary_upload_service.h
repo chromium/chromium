@@ -203,6 +203,23 @@ class CloudBinaryUploadService
   bool ResponseIsComplete(
       enterprise_connectors::BinaryUploadRequest::Id request_id);
 
+  bool ShouldTerminateRequestEarly(
+      enterprise_connectors::BinaryUploadRequest* request,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
+      size_t data_size);
+
+  std::unique_ptr<enterprise_connectors::ConnectorUploadRequest>
+  CreateUploadRequest(
+      enterprise_connectors::BinaryUploadRequest* request,
+      const enterprise_connectors::BinaryUploadRequest::Id& request_id,
+      const GURL& url,
+      const std::string& metadata,
+      const std::string& histogram_suffix,
+      bool force_sync_upload,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      enterprise_connectors::BinaryUploadRequest::Data data,
+      enterprise_connectors::ScanRequestUploadResult result);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   const raw_ptr<Profile> profile_;
