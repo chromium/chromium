@@ -240,6 +240,10 @@ PageContentAnnotationsService::PageContentAnnotationsService(
 
 PageContentAnnotationsService::~PageContentAnnotationsService() = default;
 
+void PageContentAnnotationsService::Shutdown() {
+  history_service_observation_.Reset();
+}
+
 void PageContentAnnotationsService::Annotate(const HistoryVisit& visit) {
   if (last_annotated_history_visits_.Peek(visit) !=
       last_annotated_history_visits_.end()) {

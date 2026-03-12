@@ -153,6 +153,9 @@ class PageContentAnnotationsService
   PageContentAnnotationsService& operator=(
       const PageContentAnnotationsService&) = delete;
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   // This is the main entry point for page content annotations by external
   // callers. Callers must call |RequestAndNotifyWhenModelAvailable| as close to
   // session start as possible to allow time for the model file to be
