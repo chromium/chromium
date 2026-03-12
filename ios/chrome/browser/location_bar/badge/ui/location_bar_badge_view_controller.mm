@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
+#import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -248,6 +249,11 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
   [self.visibilityDelegate setContextualPanelCurrentlyAnimating:animating];
+}
+
+- (void)setContextualPanelEntrypointState:
+    (ContextualPanelEntrypointState)state {
+  [self.visibilityDelegate setContextualPanelEntrypointState:state];
 }
 
 #pragma mark - IncognitoBadgeViewVisibilityDelegate
@@ -500,65 +506,21 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 // Sets the proper visual features depending on current infobar badges status
 // and whether the Location Bar Badge is open.
 - (void)refreshEntrypointVisualElements {
-  BOOL shouldAccountForVisibleInfobarBadges =
-      _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
-  BOOL shouldShowMutedColors =
-      shouldAccountForVisibleInfobarBadges || _badgeTapped;
-  BOOL isInUnifiedContainer = [self useMultiBadge];
-
-  // Badge icon tint color.
-  if (isInUnifiedContainer) {
-    _badgeIcon.tintColor = [UIColor colorNamed:kSolidWhiteColor];
-    _label.textColor = [UIColor colorNamed:kSolidWhiteColor];
+  if ([self useMultiBadge]) {
+    [self refreshBadgeForUnifiedContainer];
   } else {
-    _badgeIcon.tintColor = shouldShowMutedColors
-                               ? [UIColor colorNamed:kGrey600Color]
-                               : [self defaultBadgeTintColor];
+    [self refreshBadgeForSingleBadgeContainer];
   }
-
-  // Button container shadow.
-  if (isInUnifiedContainer || shouldShowMutedColors) {
-    _buttonContainer.layer.shadowOpacity = 0;
-  } else {
-    _buttonContainer.layer.shadowOpacity = kBadgeContainerShadowOpacity;
-  }
-
-  // Button container background color.
-  UIColor* buttonContainerBackgroundColor;
-  if (isInUnifiedContainer) {
-    buttonContainerBackgroundColor = [UIColor clearColor];
-  } else {
-    UIColor* untappedBackgroundColor =
-        shouldAccountForVisibleInfobarBadges
-            ? nil
-            : [UIColor colorNamed:kBackgroundColor];
-    buttonContainerBackgroundColor = _badgeTapped
-                                         ? [UIColor colorNamed:kGrey100Color]
-                                         : untappedBackgroundColor;
-  }
-  _buttonContainer.configuration = [self
-      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
-
 }
 
 // Applies the correct color to the badge (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
 - (void)updateBadgeHighlight:(BOOL)highlighted {
-  BOOL isInUnifiedContainer = [self useMultiBadge];
-  UIColor* defaultTintColor = isInUnifiedContainer
-                                  ? [UIColor colorNamed:kSolidWhiteColor]
-                                  : [self defaultBadgeTintColor];
-  _badgeIcon.tintColor =
-      highlighted ? [UIColor colorNamed:kBackgroundColor] : defaultTintColor;
-
-  // Update entrypoint container background.
-  UIColor* defaultBackgroundColor = isInUnifiedContainer
-                                        ? [UIColor clearColor]
-                                        : [UIColor colorNamed:kBackgroundColor];
-  UIColor* buttonContainerBackgroundColor =
-      highlighted ? [UIColor colorNamed:kBlue600Color] : defaultBackgroundColor;
-  _buttonContainer.configuration = [self
-      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+  if ([self useMultiBadge]) {
+    [self updateBadgeHighlightForUnifiedContainer:highlighted];
+  } else {
+    [self updateBadgeHighlightForSingleBadgeContainer:highlighted];
+  }
 }
 
 // Returns the default badge tint color. Ignores applying a tint color in favor
@@ -679,6 +641,12 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
     if (config->accessibility_hint.size() > 0) {
       badgeConfig.accessibilityHint =
           base::SysUTF8ToNSString(config->accessibility_hint);
+    }
+
+    if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
+      PriceInsightsItemConfiguration* priceInsightsConfig =
+          static_cast<PriceInsightsItemConfiguration*>(config);
+      badgeConfig.active = priceInsightsConfig->is_subscribed;
     }
 
     [self setBadgeConfig:badgeConfig];
@@ -947,6 +915,87 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   }
 
   [self updateAccessibilityStatus];
+}
+
+// Helper to determine if the badge is in the Price Insights "Available" state.
+- (BOOL)isAvailablePriceInsights {
+  return _badgeConfig.badgeType == LocationBarBadgeType::kPriceInsights &&
+         !_badgeConfig.isActive;
+}
+
+// Returns the foreground color for the unified container elements (icon and
+// text).
+- (UIColor*)foregroundColorForUnifiedContainer {
+  return [self isAvailablePriceInsights]
+             ? [UIColor colorNamed:kBlue600Color]
+             : [UIColor colorNamed:kSolidWhiteColor];
+}
+
+// Helper to refresh entrypoint visual elements for the unified container.
+- (void)refreshBadgeForUnifiedContainer {
+  ContextualPanelEntrypointState state =
+      [self isAvailablePriceInsights]
+          ? ContextualPanelEntrypointState::kAvailable
+          : ContextualPanelEntrypointState::kActive;
+  [self.visibilityDelegate setContextualPanelEntrypointState:state];
+
+  UIColor* foregroundColor = [self foregroundColorForUnifiedContainer];
+  _badgeIcon.tintColor = foregroundColor;
+  _label.textColor = foregroundColor;
+
+  _buttonContainer.layer.shadowOpacity = 0;
+  _buttonContainer.configuration =
+      [self buttonConfigurationWithBackgroundColor:[UIColor clearColor]];
+}
+
+// Helper to refresh entrypoint visual elements for the single badge container.
+- (void)refreshBadgeForSingleBadgeContainer {
+  BOOL shouldAccountForVisibleInfobarBadges =
+      _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
+  BOOL shouldShowMutedColors =
+      shouldAccountForVisibleInfobarBadges || _badgeTapped;
+
+  _badgeIcon.tintColor = shouldShowMutedColors
+                             ? [UIColor colorNamed:kGrey600Color]
+                             : [self defaultBadgeTintColor];
+
+  _buttonContainer.layer.shadowOpacity =
+      shouldShowMutedColors ? 0 : kBadgeContainerShadowOpacity;
+
+  UIColor* untappedBackgroundColor =
+      shouldAccountForVisibleInfobarBadges
+          ? nil
+          : [UIColor colorNamed:kBackgroundColor];
+  UIColor* buttonContainerBackgroundColor =
+      _badgeTapped ? [UIColor colorNamed:kGrey100Color]
+                   : untappedBackgroundColor;
+  _buttonContainer.configuration = [self
+      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+}
+
+// Helper to update badge highlight for the unified container.
+- (void)updateBadgeHighlightForUnifiedContainer:(BOOL)highlighted {
+  _badgeIcon.tintColor = highlighted
+                             ? [UIColor colorNamed:kBackgroundColor]
+                             : [self foregroundColorForUnifiedContainer];
+
+  // Update entrypoint container background.
+  UIColor* buttonContainerBackgroundColor =
+      highlighted ? [UIColor colorNamed:kBlue600Color] : [UIColor clearColor];
+  _buttonContainer.configuration = [self
+      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+}
+
+// Helper to update badge highlight for the single badge container.
+- (void)updateBadgeHighlightForSingleBadgeContainer:(BOOL)highlighted {
+  _badgeIcon.tintColor = highlighted ? [UIColor colorNamed:kBackgroundColor]
+                                     : [self defaultBadgeTintColor];
+
+  UIColor* buttonContainerBackgroundColor =
+      highlighted ? [UIColor colorNamed:kBlue600Color]
+                  : [UIColor colorNamed:kBackgroundColor];
+  _buttonContainer.configuration = [self
+      buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 }
 
 @end

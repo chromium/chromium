@@ -9,6 +9,14 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 
+// The state of the contextual panel entrypoint.
+enum class ContextualPanelEntrypointState {
+  // The entrypoint is available.
+  kAvailable,
+  // The entrypoint is active.
+  kActive,
+};
+
 // A delegate for the contextual entry point visibility.
 @protocol ContextualPanelEntrypointVisibilityDelegate <NSObject>
 
@@ -21,6 +29,10 @@
 
 // Sets whether the contextual panel entrypoint is currently animating.
 - (void)setContextualPanelCurrentlyAnimating:(BOOL)animating;
+
+// TODO(crbug.com/458307626): Remove when migration is complete.
+// Sets the state of the contextual panel entrypoint.
+- (void)setContextualPanelEntrypointState:(ContextualPanelEntrypointState)state;
 
 @optional
 
