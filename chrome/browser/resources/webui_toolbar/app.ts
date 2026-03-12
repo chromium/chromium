@@ -148,6 +148,15 @@ export class ToolbarAppElement extends CrLitElement {
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
+
+    const entry = performance.getEntriesByType('navigation')[0] as
+        PerformanceNavigationTiming;
+    if (entry) {
+      chrome.histograms.recordTime(
+          'InitialWebUI.Toolbar.ParseFinishedToFirstUpdate',
+          Math.round(performance.now() - entry.domInteractive));
+    }
+
     const promises = [];
     const reload = this.shadowRoot.querySelector<CrLitElement>('#reload');
     if (reload) {

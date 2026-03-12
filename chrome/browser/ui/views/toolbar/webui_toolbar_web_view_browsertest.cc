@@ -10,6 +10,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -39,6 +40,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -1212,6 +1214,23 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   EXPECT_EQ(
       "4px",
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       ParseFinishedToFirstUpdateMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Open a new one to capture the initial metric if it was already recorded.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(new_browser);
+  ASSERT_TRUE(webui_toolbar_view);
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.Toolbar.ParseFinishedToFirstUpdate", 1);
 }
 
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {

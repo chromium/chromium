@@ -52,6 +52,7 @@ build_webui("build") {
   }
 
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",

@@ -702,6 +702,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="InitialWebUI.Toolbar.ParseFinishedToFirstUpdate" units="ms"
+    expires_after="2026-07-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the time elapsed from when the main document finishes parsing and
+    becomes interactive (domInteractive) to when the WebUI toolbar component
+    completes its first rendering update (firstUpdated). This measures the
+    latency introduced by JavaScript execution and the initial Lit component
+    lifecycle.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="InitialWebUI.Toolbar.RenderProcessGone"
     enum="TerminationStatus" expires_after="2026-07-05">
   <owner>leimy@chromium.org</owner>
