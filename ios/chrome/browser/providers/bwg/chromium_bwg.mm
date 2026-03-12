@@ -30,6 +30,9 @@ void ResetGemini() {}
 void UpdatePageAttachmentState(
     GeminiPageContextAttachmentState gemini_attachment_state) {}
 
+void UpdatePromptAction(gemini::EntryPoint entry_point,
+                        NSString* prepopulated_prompt) {}
+
 bool IsProtectedUrl(std::string url) {
   return false;
 }

@@ -24,6 +24,10 @@ typedef NS_ENUM(NSInteger, GeminiSettingsContext);
 
 using BWGEligibilityCallback = void (^)(BOOL eligible);
 
+namespace gemini {
+enum class EntryPoint;
+}
+
 namespace ios::provider {
 
 // Enum representing the location permission state of the Gemini experience.
@@ -157,6 +161,10 @@ void ResetGemini();
 // Updates the page attachment state of the floaty if it's invoked.
 void UpdatePageAttachmentState(
     GeminiPageContextAttachmentState gemini_attachment_state);
+
+// Updates the prompt action of the floaty if it's invoked.
+void UpdatePromptAction(gemini::EntryPoint entry_point,
+                        NSString* prepopulated_prompt);
 
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);
