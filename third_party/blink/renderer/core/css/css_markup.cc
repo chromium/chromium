@@ -88,9 +88,9 @@ void SerializeIdentifier(const String& identifier,
   bool is_first_char_hyphen = false;
   unsigned index = 0;
   while (index < identifier.length()) {
-    UChar32 c = identifier.CharacterStartingAt(index);
+    UChar32 c = identifier.CodePointAtOrZero(index);
     if (c == 0) {
-      // Check for lone surrogate which characterStartingAt does not return.
+      // Check for lone surrogate which CodePointAtOrZero() does not return.
       c = identifier[index];
     }
 
@@ -127,7 +127,7 @@ void SerializeString(const String& string, StringBuilder& append_to) {
 
   unsigned index = 0;
   while (index < string.length()) {
-    UChar32 c = string.CharacterStartingAt(index);
+    UChar32 c = string.CodePointAtOrZero(index);
     index += U16_LENGTH(c);
 
     if (c <= 0x1f || c == 0x7f) {

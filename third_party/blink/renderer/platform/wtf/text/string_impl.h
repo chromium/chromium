@@ -421,7 +421,7 @@ class WTF_EXPORT StringImpl {
       return Characters16()[i];
     });
   }
-  UChar32 CharacterStartingAt(wtf_size_t);
+  UChar32 CodePointAtOrZero(wtf_size_t);
 
   bool ContainsOnlyWhitespaceOrEmpty();
 

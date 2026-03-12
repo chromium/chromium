@@ -95,10 +95,10 @@ String::size_type String::rfind(const StringView& value,
   return impl_ ? impl_->ReverseFind(value, start) : npos;
 }
 
-UChar32 String::CharacterStartingAt(size_type i) const {
+UChar32 String::CodePointAtOrZero(size_type i) const {
   if (!impl_ || i >= impl_->length())
     return 0;
-  return impl_->CharacterStartingAt(i);
+  return impl_->CodePointAtOrZero(i);
 }
 
 CodePointIterator String::begin() const {

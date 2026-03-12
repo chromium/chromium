@@ -73,7 +73,7 @@ bool UnicodeRangeSet::IntersectsWith(const String& text) const {
 
   unsigned index = 0;
   while (index < text.length()) {
-    UChar32 c = text.CharacterStartingAt(index);
+    UChar32 c = text.CodePointAtOrZero(index);
     index += U16_LENGTH(c);
     if (Contains(c))
       return true;

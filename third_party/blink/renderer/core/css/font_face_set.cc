@@ -249,7 +249,7 @@ bool FontFaceSet::check(const String& font_string,
 
   unsigned index = 0;
   while (index < text.length()) {
-    UChar32 c = text.CharacterStartingAt(index);
+    UChar32 c = text.CodePointAtOrZero(index);
     index += U16_LENGTH(c);
 
     for (const FontFamily* f = &font->GetFontDescription().Family(); f;

@@ -122,7 +122,7 @@ bool IsSeparator(UChar32 character) {
 bool ContainsOnlySeparatorsOrEmpty(const String& pattern) {
   unsigned index = 0;
   while (index < pattern.length()) {
-    const UChar32 character = pattern.CharacterStartingAt(index);
+    const UChar32 character = pattern.CodePointAtOrZero(index);
     if (!IsSeparator(character)) {
       return false;
     }

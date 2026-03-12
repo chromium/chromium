@@ -1525,7 +1525,7 @@ EphemeralRange FrameSelection::GetSelectionRangeAroundCaret(
   const EphemeralRange next_range = GetSelectionRangeAroundPosition(
       text_granularity, selection.Start(), kNextWordIfOnBoundary);
   const String next_text = PlainText(next_range);
-  if (!next_text.empty() && !IsSeparator(next_text.CharacterStartingAt(0))) {
+  if (!next_text.empty() && !IsSeparator(next_text.CodePointAtOrZero(0))) {
     return next_range;
   }
 
@@ -1533,7 +1533,7 @@ EphemeralRange FrameSelection::GetSelectionRangeAroundCaret(
       text_granularity, selection.Start(), kPreviousWordIfOnBoundary);
   const String previous_text = PlainText(previous_range);
   if (!previous_text.empty() &&
-      !IsSeparator(previous_text.CharacterStartingAt(0))) {
+      !IsSeparator(previous_text.CodePointAtOrZero(0))) {
     return previous_range;
   }
 

@@ -386,7 +386,7 @@ int CodeUnitCompareIgnoringAsciiCase(const StringView& a, const StringView& b) {
                     : CodeUnitCompareIgnoringAsciiCase(a.Span16(), b.Span16());
 }
 
-UChar32 StringView::CodepointAt(size_type i) const {
+UChar32 StringView::CodePointAt(size_type i) const {
   SECURITY_DCHECK(i < length());
   if (Is8Bit())
     return (*this)[i];

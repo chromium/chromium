@@ -213,7 +213,7 @@ class WTF_EXPORT String {
   // Returns the Unicode code point starting at the specified offset of this
   // string. If the offset points an unpaired surrogate, this function returns
   // 0.
-  UChar32 CharacterStartingAt(size_type) const;
+  UChar32 CodePointAtOrZero(size_type) const;
 
   // [string.modifiers] ---------------------------------------------
 

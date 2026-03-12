@@ -1242,7 +1242,7 @@ static UChar32 CharacterAfterAlgorithm(
   if (offset >= length)
     return 0;
 
-  return text_node->data().CharacterStartingAt(offset);
+  return text_node->data().CodePointAtOrZero(offset);
 }
 
 UChar32 CharacterAfter(const VisiblePosition& visible_position) {

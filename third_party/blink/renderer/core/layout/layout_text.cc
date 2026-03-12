@@ -757,7 +757,7 @@ UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
-      return text.length() ? text.CodepointAt(0) : 0;
+      return text.length() ? text.CodePointAt(0) : 0;
     }
   }
   return 0;
@@ -770,7 +770,7 @@ UChar32 LayoutText::LastCharacterAfterWhitespaceCollapsing() const {
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
-      return text.length() ? text.CodepointAt(text.length() - 1) : 0;
+      return text.length() ? text.CodePointAt(text.length() - 1) : 0;
     }
   }
   return 0;

@@ -398,7 +398,7 @@ scoped_refptr<StringImpl> StringImpl::Substring(wtf_size_t start,
   return Create(Span16().subspan(start, length));
 }
 
-UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
+UChar32 StringImpl::CodePointAtOrZero(wtf_size_t i) {
   if (Is8Bit()) {
     return Span8()[i];
   }
