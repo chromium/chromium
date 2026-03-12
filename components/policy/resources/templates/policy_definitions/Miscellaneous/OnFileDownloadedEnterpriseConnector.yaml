@@ -155,6 +155,7 @@ schema:
 future_on:
 - fuchsia
 - android
+- ios
 supported_on:
 - chrome.*:84-
 - chrome_os:84-

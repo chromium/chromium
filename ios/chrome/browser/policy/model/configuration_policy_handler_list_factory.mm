@@ -321,6 +321,13 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kOnFileDownloadedEnterpriseConnector,
+          enterprise_connectors::kOnFileDownloadedPref,
+          enterprise_connectors::kOnFileDownloadedScopePref, chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           policy::key::kOnSecurityEventEnterpriseConnector,
           enterprise_connectors::kOnSecurityEventPref,
           enterprise_connectors::kOnSecurityEventScopePref, chrome_schema));
