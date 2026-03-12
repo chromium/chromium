@@ -76,8 +76,6 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       bool enable_cluster_info_ttl);
   ~TestComposeboxQueryController() override;
 
-  using ComposeboxQueryController::ClearClusterInfo;
-
   // Mutators.
   void set_fake_cluster_info_response(
       lens::LensOverlayServerClusterInfoResponse response) {

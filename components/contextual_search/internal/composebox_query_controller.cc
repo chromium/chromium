@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/contextual_tasks/public/utils.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -140,36 +139,6 @@ ComposeboxQueryController::CreateClientToAimRequestInfo::
     ~CreateClientToAimRequestInfo() = default;
 
 namespace {
-
-// The maximum number of times to retry fetching cluster info.
-constexpr int kMaxClusterInfoRetries = 3;
-
-// The backoff policy for Contextual Tasks network requests.
-constexpr net::BackoffEntry::Policy kClusterInfoBackoffPolicy = {
-    // Number of initial errors (in sequence) to ignore before applying
-    // exponential back-off rules.
-    1,
-
-    // Initial delay for exponential back-off in ms.
-    500,
-
-    // Factor by which the waiting time will be multiplied.
-    2,
-
-    // Fuzzing percentage. ex: 10% will spread requests randomly
-    // between 90%-100% of the calculated time.
-    0.2,  // 20%
-
-    // Maximum amount of time we are willing to delay our request in ms.
-    10000,  // 10 seconds.
-
-    // Time to keep an entry from being discarded even when it
-    // has no significant state, -1 to never discard.
-    -1,
-
-    // Don't use initial delay unless the last request was an error.
-    false,
-};
 
 // Creates a payload for a contextual data upload request, for webpage contents
 // or for uploaded pdf files.
@@ -326,8 +295,7 @@ ComposeboxQueryController::ComposeboxQueryController(
       channel_(channel),
       locale_(locale),
       template_url_service_(template_url_service),
-      variations_client_(variations_client),
-      cluster_info_backoff_(&kClusterInfoBackoffPolicy) {
+      variations_client_(variations_client) {
   send_lns_surface_ = feature_params->send_lns_surface;
   suppress_lns_surface_param_if_no_image_ =
       feature_params->suppress_lns_surface_param_if_no_image;
@@ -932,30 +900,10 @@ void ComposeboxQueryController::StartFileUploadFlow(
     }
   }
 
+  // Update the file upload status to processing.
   UpdateFileUploadStatus(file_token,
                          contextual_search::ContextUploadStatus::kProcessing,
                          std::nullopt);
-
-  if (query_controller_state_ == QueryControllerState::kClusterInfoInvalid) {
-    // If we've exhausted retries or are still in the backoff period, fail the
-    // context upload immediately.
-    if (cluster_info_retries_ >= kMaxClusterInfoRetries) {
-      UpdateFileUploadStatus(
-          file_token, contextual_search::ContextUploadStatus::kUploadFailed,
-          contextual_search::ContextUploadErrorType::kServerError);
-      return;
-    }
-
-    base::TimeDelta delay = cluster_info_backoff_.GetTimeUntilRelease();
-    if (delay.is_positive()) {
-      UpdateFileUploadStatus(
-          file_token, contextual_search::ContextUploadStatus::kUploadFailed,
-          contextual_search::ContextUploadErrorType::kServerError);
-      return;
-    }
-
-    FetchClusterInfo();
-  }
 
   // If the cluster info is available, update the file upload status to ready
   // for suggest.
@@ -1192,10 +1140,7 @@ void ComposeboxQueryController::ClearClusterInfo() {
   cluster_info_access_token_fetcher_.reset();
   cluster_info_endpoint_fetcher_.reset();
   cluster_info_.reset();
-  cluster_info_retries_ = 0;
-  cluster_info_backoff_.Reset();
   request_id_generator_.ResetRequestId();
-  SetQueryControllerState(QueryControllerState::kOff);
 }
 
 void ComposeboxQueryController::ResetRequestClusterInfoState() {
@@ -1367,37 +1312,13 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
 void ComposeboxQueryController::HandleClusterInfoResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
   cluster_info_endpoint_fetcher_.reset();
-
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
-    ++cluster_info_retries_;
-
-    if (cluster_info_retries_ <= kMaxClusterInfoRetries) {
-      cluster_info_backoff_.InformOfRequest(false);
-    }
-
     SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
-
-    // Fail uploads that are waiting on cluster info.
-    std::vector<base::UnguessableToken> file_tokens_to_fail;
-    for (const auto& [file_token, file_info] : active_files_) {
-      if (file_info->upload_status ==
-          contextual_search::ContextUploadStatus::kProcessing) {
-        file_tokens_to_fail.push_back(file_token);
-      }
-    }
-    for (const auto& file_token : file_tokens_to_fail) {
-      UpdateFileUploadStatus(
-          file_token, contextual_search::ContextUploadStatus::kUploadFailed,
-          contextual_search::ContextUploadErrorType::kServerError);
-    }
-
     if (pending_search_url_request_) {
       std::move(pending_search_url_request_).Run(/*failure=*/false);
     }
     return;
   }
-
-  cluster_info_backoff_.Reset();
 
   lens::LensOverlayServerClusterInfoResponse server_response;
   if (!server_response.ParseFromString(response->response)) {

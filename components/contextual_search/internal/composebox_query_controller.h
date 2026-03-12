@@ -19,7 +19,6 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
-#include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/lens_server_proto/added_inputs.pb.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
@@ -511,9 +510,6 @@ class ComposeboxQueryController
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
 
-  // The number of times fetching cluster info has failed.
-  int cluster_info_retries_ = 0;
-
   // The endpoint fetcher used for the cluster info request.
   std::unique_ptr<endpoint_fetcher::EndpointFetcher>
       cluster_info_endpoint_fetcher_;
@@ -547,9 +543,6 @@ class ComposeboxQueryController
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<variations::VariationsClient> variations_client_;
-
-  // Backoff entry used to control the retry logic for the cluster info request.
-  net::BackoffEntry cluster_info_backoff_;
 
   // Whether or not to send the lns_surface parameter.
   // TODO(crbug.com/430070871): Remove this once the server supports the
