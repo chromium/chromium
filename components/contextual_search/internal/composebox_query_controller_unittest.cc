@@ -1776,6 +1776,8 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
                 .server_address(),
             kTestServerAddress);
   EXPECT_TRUE(controller().last_sent_file_upload_request()->has_lens_intent());
+  EXPECT_TRUE(
+      controller().last_sent_file_upload_request()->process_image_for_aim());
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -1804,6 +1806,8 @@ TEST_F(ComposeboxQueryControllerTest,
 
   // Validate the file upload request payload.
   EXPECT_FALSE(controller().last_sent_file_upload_request()->has_lens_intent());
+  EXPECT_FALSE(
+      controller().last_sent_file_upload_request()->process_image_for_aim());
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
@@ -2166,6 +2170,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(
       file_upload_request->objects_request().payload().content().webpage_url(),
       page_url.spec());
+  EXPECT_TRUE(file_upload_request->process_image_for_aim());
   // Validate the viewport upload request payload.
   EXPECT_EQ(viewport_upload_request->objects_request()
                 .image_data()
@@ -2241,6 +2246,7 @@ TEST_F(ComposeboxQueryControllerTest,
                 .request_id()
                 .media_type(),
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF_AND_IMAGE);
+  EXPECT_TRUE(viewport_upload_request->process_image_for_aim());
 }
 
 TEST_F(ComposeboxQueryControllerTest,
