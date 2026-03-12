@@ -85,13 +85,26 @@ public class NtpCustomizationViewProperties {
             ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER =
                     new PropertyModel.WritableObjectPropertyKey<>();
 
-    /** Whether individual cards' switches should be enabled (true iff "all NTP cards" is on). */
-    public static final PropertyModel.WritableBooleanPropertyKey ARE_CARD_SWITCHES_ENABLED =
+    /** Whether the "all NTP cards" switch is toggled on. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_ALL_NTP_CARDS_SWITCH_CHECKED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    // TODO(crbug.com/458409311): Remove this property after launch.
+    /** Whether the "all NTP cards" switch is visible. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_ALL_NTP_CARDS_SWITCH_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    // TODO(crbug.com/458409311): Remove this property after launch.
+    /** Whether the individual module switches in the list are editable. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_MODULE_LIST_EDITABLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyKey[] NTP_CARD_SETTINGS_KEYS =
             new PropertyKey[] {
-                ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER, ARE_CARD_SWITCHES_ENABLED
+                ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER,
+                IS_ALL_NTP_CARDS_SWITCH_CHECKED,
+                IS_ALL_NTP_CARDS_SWITCH_VISIBLE,
+                IS_MODULE_LIST_EDITABLE,
             };
 
     // Properties specifically for the feed settings bottom sheet:

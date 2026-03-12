@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -111,9 +110,77 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
-    public void testConstructor() {
-        verify(mContainerPropertyModel)
-                .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
+    public void testConstructor_HomeModulePrefRefactorEnabled_AllCardsSwitchChecked() {
+        reset(mNtpCardsPropertyModel);
+        when(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked()).thenReturn(true);
+        new NtpCardsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mNtpCardsPropertyModel,
+                mDelegate,
+                mProfileSupplier,
+                mModuleRegistry);
+
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE), eq(true));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(true));
+    }
+
+    @Test
+    public void testConstructor_HomeModulePrefRefactorEnabled_AllCardsSwitchUnchecked() {
+        reset(mNtpCardsPropertyModel);
+        when(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked()).thenReturn(false);
+        new NtpCardsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mNtpCardsPropertyModel,
+                mDelegate,
+                mProfileSupplier,
+                mModuleRegistry);
+
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE), eq(true));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+    public void testConstructor_HomeModulePrefRefactorDisabled_AllCardsSwitchChecked() {
+        reset(mNtpCardsPropertyModel);
+        when(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked()).thenReturn(true);
+        new NtpCardsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mNtpCardsPropertyModel,
+                mDelegate,
+                mProfileSupplier,
+                mModuleRegistry);
+
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE), eq(false));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(true));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+    public void testConstructor_HomeModulePrefRefactorDisabled_AllCardsSwitchUnchecked() {
+        reset(mNtpCardsPropertyModel);
+        when(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked()).thenReturn(false);
+        new NtpCardsMediator(
+                mContainerPropertyModel,
+                mBottomSheetPropertyModel,
+                mNtpCardsPropertyModel,
+                mDelegate,
+                mProfileSupplier,
+                mModuleRegistry);
+
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE), eq(false));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(true));
     }
 
     @Test
@@ -262,15 +329,30 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
-    public void testOnAllCardsConfigChanged() {
+    public void testOnAllCardsConfigChanged_AllCardsSwitchVisible() {
         reset(mNtpCardsPropertyModel);
         mNtpCardsMediator.onAllCardsConfigChanged(true);
         verify(mNtpCardsPropertyModel)
-                .set(eq(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED), eq(true));
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_CHECKED), eq(true));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(true));
 
         mNtpCardsMediator.onAllCardsConfigChanged(false);
         verify(mNtpCardsPropertyModel)
-                .set(eq(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED), eq(false));
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_CHECKED), eq(false));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+    public void testOnAllCardsConfigChanged_AllCardsSwitchHidden() {
+        reset(mNtpCardsPropertyModel);
+        mNtpCardsMediator.onAllCardsConfigChanged(false);
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_CHECKED), eq(false));
+        verify(mNtpCardsPropertyModel)
+                .set(eq(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE), eq(true));
     }
 
     @Test

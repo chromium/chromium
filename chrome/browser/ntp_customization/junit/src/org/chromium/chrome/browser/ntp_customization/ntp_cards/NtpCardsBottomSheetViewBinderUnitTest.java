@@ -14,6 +14,7 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -43,6 +44,8 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
     @Mock private MaterialSwitchWithText mMaterialSwitch;
     @Mock private OnCheckedChangeListener mListener;
 
+    @Mock private TextView mCardsSectionTitle;
+
     private Context mContext;
     private PropertyModel mPropertyModel;
     private MaterialSwitchWithText mAllCardsSwitch;
@@ -61,6 +64,7 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
         when(mParentView.findViewById(R.id.cards_switch_button)).thenReturn(mAllCardsSwitch);
         when(mParentView.findViewById(R.id.ntp_cards_container))
                 .thenReturn(mMaterialSwitchWithTextListContainerView);
+        when(mParentView.findViewById(R.id.cards_section_title)).thenReturn(mCardsSectionTitle);
         when(mMaterialSwitchWithTextListContainerView.getChildCount()).thenReturn(1);
         when(mMaterialSwitchWithTextListContainerView.getChildAt(0)).thenReturn(mMaterialSwitch);
 
@@ -81,15 +85,33 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindAreCardSwitchesEnabled() {
-        mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, false);
-        verify(mAllCardsSwitch).setChecked(false);
-        verify(mMaterialSwitchWithTextListContainerView).setAllModuleSwitchesEnabled(false);
-        verify(mMaterialSwitch).setEnabled(false);
+    public void testBindIsAllCardsSwitchVisible() {
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE, true);
+        verify(mAllCardsSwitch).setVisibility(View.VISIBLE);
+        verify(mCardsSectionTitle).setVisibility(View.VISIBLE);
 
-        mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, true);
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_VISIBLE, false);
+        verify(mAllCardsSwitch).setVisibility(View.GONE);
+        verify(mCardsSectionTitle).setVisibility(View.GONE);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindIsAllNtpCardsSwitchChecked() {
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_CHECKED, true);
         verify(mAllCardsSwitch).setChecked(true);
+
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_ALL_NTP_CARDS_SWITCH_CHECKED, false);
+        verify(mAllCardsSwitch).setChecked(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindAreAllModuleSwitchesEnabled() {
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE, true);
         verify(mMaterialSwitchWithTextListContainerView).setAllModuleSwitchesEnabled(true);
-        verify(mMaterialSwitch).setEnabled(true);
+
+        mPropertyModel.set(NtpCustomizationViewProperties.IS_MODULE_LIST_EDITABLE, false);
+        verify(mMaterialSwitchWithTextListContainerView).setAllModuleSwitchesEnabled(false);
     }
 }

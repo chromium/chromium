@@ -88,10 +88,8 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      */
     public boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
-        boolean defaultEnabled =
-                !ChromeFeatureList.sNtpSimplification.isEnabled() || !DeviceInfo.isDesktop();
         return mSharedPreferencesManager.readBoolean(
-                getSettingsPreferenceKey(moduleType), defaultEnabled);
+                getSettingsPreferenceKey(moduleType), !isNtpSimplificationDesktop());
     }
 
     /**
@@ -101,14 +99,30 @@ public class HomeModulesConfigManager {
      * @param enabled True is the module type is enabled.
      */
     public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
+        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOME_MODULE_CONFIGURED, true);
         mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
     }
 
-    /** Returns the user preference for whether all cards in the magic stack are enabled. */
-    public boolean getPrefAllCardsEnabled() {
+    /**
+     * Returns the user preference for whether all cards switch in NTP cards bottom sheet is
+     * checked.
+     */
+    public boolean getPrefAllCardsSwitchChecked() {
+        boolean defaultChecked = true;
+        // On Android desktop with NTP simplification, the magic stack is disabled by default,
+        // unless the user has manually configured it.
+        if (isNtpSimplificationDesktop()) {
+            defaultChecked =
+                    mSharedPreferencesManager.readBoolean(
+                            ChromePreferenceKeys.HOME_MODULE_CONFIGURED, false);
+        }
         return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, defaultChecked);
+    }
+
+    private boolean isNtpSimplificationDesktop() {
+        return ChromeFeatureList.sNtpSimplification.isEnabled() && DeviceInfo.isDesktop();
     }
 
     /**

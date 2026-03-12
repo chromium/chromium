@@ -74,10 +74,16 @@ public class HomeModulesConfigManagerUnitTest {
         Assert.assertFalse(
                 mHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE));
 
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.HOME_MODULE_CONFIGURED, false));
         mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, true);
         assertTrue(
                 ChromeSharedPreferences.getInstance().readBoolean(priceChangePreferenceKey, true));
         verify(mListener).onModuleConfigChanged(eq(ModuleType.PRICE_CHANGE), eq(true));
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.HOME_MODULE_CONFIGURED, false));
 
         mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
         Assert.assertFalse(
@@ -160,5 +166,19 @@ public class HomeModulesConfigManagerUnitTest {
 
         mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.SINGLE_TAB, true);
         assertTrue(mHomeModulesConfigManager.getPrefModuleTypeEnabled(ModuleType.SINGLE_TAB));
+    }
+
+    @Test
+    public void testGetPrefAllCardsSwitchCheckedOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CONFIGURED, true);
+        assertTrue(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked());
+
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.HOME_MODULE_CONFIGURED);
+        assertFalse(mHomeModulesConfigManager.getPrefAllCardsSwitchChecked());
     }
 }

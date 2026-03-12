@@ -737,6 +737,12 @@ public final class ChromePreferenceKeys {
     public static final String PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT =
             "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser";
 
+    /**
+     * Track if user ever toggled on/off any magic stack module button inside ntp cards settings
+     * bottom sheet.
+     */
+    public static final String HOME_MODULE_CONFIGURED = "Chrome.HomeModules.Configured";
+
     /** Whether NTP magic stack cards are enabled (if false, no cards can show). */
     public static final String HOME_MODULE_CARDS_ENABLED = "Chrome.HomeModules.Enabled";
 
@@ -1259,6 +1265,7 @@ public final class ChromePreferenceKeys {
                 GLIC_BUTTON_PINNED,
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
                 HOME_MODULE_CARDS_ENABLED,
+                HOME_MODULE_CONFIGURED,
                 HOME_MODULES_MODULE_TYPE.pattern(),
                 HOME_MODULES_FRESHNESS_COUNT.pattern(),
                 HOME_MODULES_FRESHNESS_TIMESTAMP_MS.pattern(),

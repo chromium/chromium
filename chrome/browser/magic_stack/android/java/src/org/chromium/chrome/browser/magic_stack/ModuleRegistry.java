@@ -80,7 +80,7 @@ public class ModuleRegistry {
     public Set<Integer> getEnabledModuleSet() {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
-                && !mHomeModulesConfigManager.getPrefAllCardsEnabled()) {
+                && !mHomeModulesConfigManager.getPrefAllCardsSwitchChecked()) {
             return enabledModuleList;
         }
 

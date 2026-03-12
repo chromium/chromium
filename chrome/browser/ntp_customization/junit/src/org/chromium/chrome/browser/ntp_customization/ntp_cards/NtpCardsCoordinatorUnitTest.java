@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
-import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
@@ -118,24 +115,5 @@ public class NtpCardsCoordinatorUnitTest {
 
         mCoordinator.onAllCardsConfigChanged(false);
         verify(mediator).onAllCardsConfigChanged(false);
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
-    public void testToggleVisibility() {
-        // TODO(crbug.com/458409311): Remove this test.
-        View view = mCoordinator.getViewForTesting();
-        assertEquals(View.GONE, view.findViewById(R.id.cards_switch_button).getVisibility());
-        assertEquals(View.GONE, view.findViewById(R.id.cards_section_title).getVisibility());
-    }
-
-    @Test
-    @SmallTest
-    public void testToggleVisibility_FeatureEnabled() {
-        // TODO(crbug.com/458409311): Remove this test.
-        View view = mCoordinator.getViewForTesting();
-        assertEquals(View.VISIBLE, view.findViewById(R.id.cards_switch_button).getVisibility());
-        assertEquals(View.VISIBLE, view.findViewById(R.id.cards_section_title).getVisibility());
     }
 }

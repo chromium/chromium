@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp_customization.ntp_cards;
 
-import static android.view.View.VISIBLE;
-
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
@@ -45,11 +43,6 @@ public class NtpCardsCoordinator {
                 LayoutInflater.from(context)
                         .inflate(R.layout.ntp_customization_ntp_cards_bottom_sheet, null, false);
         mView = view;
-        // TODO(crbug.com/458409311): Change these views to always be visible in the XML.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
-            view.findViewById(R.id.cards_switch_button).setVisibility(VISIBLE);
-            view.findViewById(R.id.cards_section_title).setVisibility(VISIBLE);
-        }
 
         delegate.registerBottomSheetLayout(NTP_CARDS, view);
 
