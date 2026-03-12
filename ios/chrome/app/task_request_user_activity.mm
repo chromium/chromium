@@ -8,6 +8,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/task_request_private.h"
+#import "ios/chrome/app/unexpected_mode_toast_util.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -51,9 +52,10 @@
       UserActivityBrowserAgent::FromBrowser(browser);
   if (IsIncognitoPolicyApplied(prefs) &&
       !userActivityBrowserAgent->ProceedWithUserActivity(_userActivity)) {
-    // TODO(crbug.com/462018636): Find a centralized solution to handle toasts
-    // for all intent types.
-    userActivityBrowserAgent->ShowToastWhenOpenExternalIntentInUnexpectedMode();
+    ApplicationModeForTabOpening targetMode =
+        IsIncognitoModeForced(prefs) ? ApplicationModeForTabOpening::INCOGNITO
+                                     : ApplicationModeForTabOpening::NORMAL;
+    ShowToastWhenOpenInUnexpectedMode(sceneState, targetMode);
   } else {
     userActivityBrowserAgent->ContinueUserActivity(_userActivity, YES);
   }
