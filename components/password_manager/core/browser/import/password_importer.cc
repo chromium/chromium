@@ -70,18 +70,20 @@ const base::FilePath::CharType kFileExtension[] = FILE_PATH_LITERAL("csv");
 // memory to preview the content of the import in a single run.
 const int32_t kMaxFileSizeBytes = 1000 * 1024;
 
+base::expected<void, ImportResults::Status> ValidateDataSize(int64_t size) {
+  base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2", size);
+  if (size > kMaxFileSizeBytes) {
+    return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
+  }
+  return base::ok();
+}
+
 // Reads and returns a status and the contents of the file at |path| as a
 // optional string. The string will be present if the status is SUCCESS.
 base::expected<std::string, ImportResults::Status> ReadFileToString(
     const base::FilePath& path) {
-  std::optional<int64_t> file_size = base::GetFileSize(path);
-
-  if (file_size.has_value()) {
-    base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2",
-                                file_size.value());
-    if (file_size.value() > kMaxFileSizeBytes) {
-      return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
-    }
+  if (std::optional<int64_t> file_size = base::GetFileSize(path)) {
+    RETURN_IF_ERROR(ValidateDataSize(file_size.value()));
   }
 
   std::string contents;
@@ -94,12 +96,7 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
 
 base::expected<std::string, ImportResults::Status> ValidateString(
     std::string string) {
-  int64_t file_size = string.size();
-  base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2", file_size);
-  if (file_size > kMaxFileSizeBytes) {
-    return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
-  }
-
+  RETURN_IF_ERROR(ValidateDataSize(string.size()));
   return std::move(string);
 }
 
