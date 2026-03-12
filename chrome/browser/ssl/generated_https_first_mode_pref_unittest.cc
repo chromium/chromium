@@ -19,6 +19,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,8 +47,11 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
     AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable(kEmail);
     account_info.is_under_advanced_protection = is_under_advanced_protection;
-    identity_test_env()->SetPrimaryAccount(account_info.email,
-                                           signin::ConsentLevel::kSync);
+    identity_test_env()->SetPrimaryAccount(
+        account_info.email,
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync);
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
 
