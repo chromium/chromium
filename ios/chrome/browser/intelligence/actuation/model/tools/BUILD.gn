@@ -6,11 +6,20 @@ import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("actuation_interface") {
-  sources = [ "actuation_tool.h" ]
+  sources = [
+    "actuation_tool.h",
+    "actuation_tool.mm",
+  ]
 
   public_deps =
       [ "//ios/chrome/browser/intelligence/actuation/model:actuation_error" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/web/public",
+  ]
 }
 
 source_set("navigate_tool") {

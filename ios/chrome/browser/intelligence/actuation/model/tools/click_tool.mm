@@ -8,11 +8,6 @@
 #import "base/types/expected.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool_java_script_feature.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -27,15 +22,9 @@ base::expected<std::unique_ptr<ClickTool>, ActuationError> ClickTool::Create(
         ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
   }
 
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
-  BrowserAndIndex browser_and_index = FindBrowserAndIndex(
-      web::WebStateID::FromSerializedValue(action.tab_id()),
-      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular));
-  Browser* browser = browser_and_index.browser;
-
-  if (browser_and_index.tab_index == WebStateList::kInvalidIndex || !browser) {
-    return base::unexpected(
-        ActuationError{ActuationErrorCode::kCreationTargetTabNotFound});
+  auto resolution_result = ResolveTab(action.tab_id(), profile);
+  if (!resolution_result.has_value()) {
+    return base::unexpected(resolution_result.error());
   }
 
   if (!action.has_click_count() || !action.has_click_type()) {
@@ -52,9 +41,7 @@ base::expected<std::unique_ptr<ClickTool>, ActuationError> ClickTool::Create(
   }
 
   return std::unique_ptr<ClickTool>(
-      new ClickTool(action, browser->GetWebStateList()
-                                ->GetWebStateAt(browser_and_index.tab_index)
-                                ->GetWeakPtr()));
+      new ClickTool(action, resolution_result.value().web_state));
 }
 
 void ClickTool::Execute(ActuationCallback callback) {

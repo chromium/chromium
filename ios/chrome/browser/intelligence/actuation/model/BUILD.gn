@@ -92,7 +92,6 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

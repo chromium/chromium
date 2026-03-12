@@ -9,9 +9,6 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -29,30 +26,15 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
         ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
   }
 
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
-  BrowserAndIndex browser_and_index = FindBrowserAndIndex(
-      web::WebStateID::FromSerializedValue(action.tab_id()),
-      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular));
-  int tab_index = browser_and_index.tab_index;
-  Browser* browser = browser_and_index.browser;
-  if (tab_index == WebStateList::kInvalidIndex || !browser) {
-    return base::unexpected(
-        ActuationError{ActuationErrorCode::kCreationTargetTabNotFound});
+  auto resolution_result = ResolveTab(action.tab_id(), profile);
+  if (!resolution_result.has_value()) {
+    return base::unexpected(resolution_result.error());
   }
 
-  WebStateList* web_state_list = browser->GetWebStateList();
-  if (!web_state_list) {
-    return base::unexpected(
-        ActuationError{ActuationErrorCode::kCreationMissingWebStateList});
-  }
-  web::WebState* web_state = web_state_list->GetWebStateAt(tab_index);
-  if (!web_state) {
-    return base::unexpected(
-        ActuationError{ActuationErrorCode::kCreationMissingWebState});
-  }
-  return std::unique_ptr<NavigateTool>(
-      new NavigateTool(action.url(), web_state->GetWeakPtr(), web_state_list,
-                       UrlLoadingBrowserAgent::FromBrowser(browser)));
+  TabResolutionResult result = resolution_result.value();
+  return std::unique_ptr<NavigateTool>(new NavigateTool(
+      action.url(), result.web_state, result.browser->GetWebStateList(),
+      UrlLoadingBrowserAgent::FromBrowser(result.browser)));
 }
 
 // TODO(crbug.com/474383578): Limit what URLs can be navigated to using the
