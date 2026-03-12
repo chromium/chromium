@@ -645,8 +645,11 @@ AutomationInternalEnableDesktopFunction::Run() {
     return RespondNow(Error("desktop permission must be requested"));
 
   // This gets removed when the extension process dies.
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   AutomationEventRouter::GetInstance()->RegisterListenerWithDesktopPermission(
-      extension_id(), source_process_id(), GetSenderWebContents());
+      extension_id(),
+      content::ChildProcessId::FromUnsafeValue(source_process_id()),
+      GetSenderWebContents());
 
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
@@ -667,8 +670,9 @@ AutomationInternalDisableDesktopFunction::Run() {
   if (!automation_info || !automation_info->desktop)
     return RespondNow(Error("desktop permission must be requested"));
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   AutomationEventRouter::GetInstance()->UnregisterListenerWithDesktopPermission(
-      source_process_id());
+      content::ChildProcessId::FromUnsafeValue(source_process_id()));
   return RespondNow(NoArguments());
 #else
   return RespondNow(Error("getDesktop is unsupported by this platform"));

@@ -54,9 +54,11 @@ void ChromeContentBrowserClientExtensionsPart::
       base::BindRepeating(&ServiceWorkerHost::BindReceiver,
                           service_worker_version_info.process_id));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
       base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                          service_worker_version_info.process_id));
+                          content::ChildProcessId::FromUnsafeValue(
+                              service_worker_version_info.process_id)));
 #endif
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   associated_registry.AddInterface<mojom::EventRouter>(
@@ -73,10 +75,9 @@ void ChromeContentBrowserClientExtensionsPart::
   associated_registry.AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_id));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   associated_registry.AddInterface<mojom::RendererAutomationRegistry>(
       base::BindRepeating(&AutomationEventRouter::BindForRenderer,
-                          render_process_id.GetUnsafeValue()));
+                          render_process_id));
 #endif
   associated_registry.AddInterface<mojom::EventRouter>(
       base::BindRepeating(&EventRouter::BindForRenderer, render_process_id));
