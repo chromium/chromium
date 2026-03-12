@@ -358,34 +358,6 @@ TEST_F(DrawingBufferTest, verifyInsertAndWaitSyncTokenCorrectly) {
   testing::Mock::VerifyAndClearExpectations(gl_);
 }
 
-class DrawingBufferImageChromiumTest : public DrawingBufferTest {
- public:
-  DrawingBufferImageChromiumTest() = default;
-
- protected:
-  void SetUp() override {
-    SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
-    gfx::Size initial_size(kInitialWidth, kInitialHeight);
-    auto gl = std::make_unique<GLES2InterfaceForTests>();
-    auto provider =
-        std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
-
-    GLES2InterfaceForTests* gl_ =
-        static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-    Platform::WebGLContextInfo context_info;
-    context_info.using_gpu_compositing = true;
-    drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_sw=*/nullptr, context_info,
-        gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
-    CHECK(drawing_buffer_);
-    SetAndSaveRestoreState(true);
-    testing::Mock::VerifyAndClearExpectations(gl_);
-  }
-
-  GLuint image_id0_;
-};
-
 TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
@@ -399,8 +371,10 @@ TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
   drawing_buffer_->BeginDestruction();
 }
 
-TEST_F(DrawingBufferImageChromiumTest,
-       TransferableResourcesAreOverlayCandidates) {
+TEST_F(
+    DrawingBufferTest,
+    TransferableResourcesAreOverlayCandidatesWhenWebGLImageChromiumIsEnabled) {
+  SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
@@ -732,8 +706,11 @@ TEST_F(DrawingBufferTest,
   drawing_buffer_->BeginDestruction();
 }
 
-TEST_F(DrawingBufferImageChromiumTest,
-       VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrue) {
+TEST_F(
+    DrawingBufferTest,
+    VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndWebGLImageChromiumIsEnabled) {
+  SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
+
   gfx::Size initial_size(kInitialWidth, kInitialHeight);
   auto gl = std::make_unique<GLES2InterfaceForTests>();
   auto provider =
