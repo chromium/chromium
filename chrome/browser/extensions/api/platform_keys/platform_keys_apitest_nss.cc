@@ -51,8 +51,6 @@ namespace {
 
 constexpr char kExtensionId[] = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
-using ContextType = extensions::browser_test_util::ContextType;
-
 using ::testing::Combine;
 using ::testing::ConvertGenerator;
 using ::testing::Values;
@@ -65,14 +63,12 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   PlatformKeysTest(EnrollmentStatus enrollment_status,
                    UserStatus user_status,
                    bool key_permission_policy,
-                   UserClientCertSlot user_client_cert_slot,
-                   ContextType context_type)
+                   UserClientCertSlot user_client_cert_slot)
       : PlatformKeysTestBase(SystemTokenStatus::EXISTS,
                              enrollment_status,
                              user_status),
         key_permission_policy_(key_permission_policy),
-        user_client_cert_slot_(user_client_cert_slot),
-        context_type_(context_type) {
+        user_client_cert_slot_(user_client_cert_slot) {
     // Most tests require this to be true. Those that don't can reset
     // it to false if necessary. This is always reset in the destructor.
     extensions::PlatformKeysInternalSelectClientCertificatesFunction::
@@ -175,8 +171,8 @@ class PlatformKeysTest : public PlatformKeysTestBase {
     const std::string custom_arg = base::StringPrintf(
         R"({ "testSuiteName": "%s", "systemTokenEnabled": %s })",
         test_suite_name, system_token_availability);
-    return RunExtensionTest("platform_keys", {.custom_arg = custom_arg.c_str()},
-                            {.context_type = context_type_});
+    return RunExtensionTest("platform_keys",
+                            {.custom_arg = custom_arg.c_str()});
   }
 
   void RegisterClient1AsCorporateKey() {
@@ -281,7 +277,6 @@ class PlatformKeysTest : public PlatformKeysTestBase {
   const bool key_permission_policy_;
   const UserClientCertSlot user_client_cert_slot_;
   crypto::ScopedTestNSSDB user_private_slot_db_;
-  const ContextType context_type_;
 };
 
 class TestSelectDelegate
@@ -327,15 +322,12 @@ class TestSelectDelegate
 struct UnmanagedPlatformKeysTestParams {
   UnmanagedPlatformKeysTestParams(
       PlatformKeysTestBase::EnrollmentStatus enrollment_status,
-      PlatformKeysTest::UserClientCertSlot user_client_cert_slot,
-      ContextType context_type)
+      PlatformKeysTest::UserClientCertSlot user_client_cert_slot)
       : enrollment_status(enrollment_status),
-        user_client_cert_slot(user_client_cert_slot),
-        context_type(context_type) {}
+        user_client_cert_slot(user_client_cert_slot) {}
 
   PlatformKeysTestBase::EnrollmentStatus enrollment_status;
   PlatformKeysTest::UserClientCertSlot user_client_cert_slot;
-  ContextType context_type;
 };
 
 class UnmanagedPlatformKeysTest
@@ -346,22 +338,17 @@ class UnmanagedPlatformKeysTest
       : PlatformKeysTest(GetParam().enrollment_status,
                          UserStatus::UNMANAGED,
                          false /* unused */,
-                         GetParam().user_client_cert_slot,
-                         GetParam().context_type) {}
+                         GetParam().user_client_cert_slot) {}
 };
 
 struct ManagedPlatformKeysTestParams {
   ManagedPlatformKeysTestParams(
       PlatformKeysTestBase::EnrollmentStatus enrollment_status,
-      PlatformKeysTestBase::UserStatus user_status,
-      ContextType context_type)
-      : enrollment_status_(enrollment_status),
-        user_status_(user_status),
-        context_type_(context_type) {}
+      PlatformKeysTestBase::UserStatus user_status)
+      : enrollment_status_(enrollment_status), user_status_(user_status) {}
 
   PlatformKeysTestBase::EnrollmentStatus enrollment_status_;
   PlatformKeysTestBase::UserStatus user_status_;
-  ContextType context_type_;
 };
 
 class ManagedWithPermissionPlatformKeysTest
@@ -372,8 +359,7 @@ class ManagedWithPermissionPlatformKeysTest
       : PlatformKeysTest(GetParam().enrollment_status_,
                          GetParam().user_status_,
                          true /* grant the extension key permission */,
-                         UserClientCertSlot::kPrivateSlot,
-                         GetParam().context_type_) {}
+                         UserClientCertSlot::kPrivateSlot) {}
 };
 
 class ManagedWithoutPermissionPlatformKeysTest
@@ -384,8 +370,7 @@ class ManagedWithoutPermissionPlatformKeysTest
       : PlatformKeysTest(GetParam().enrollment_status_,
                          GetParam().user_status_,
                          false /* do not grant key permission */,
-                         UserClientCertSlot::kPrivateSlot,
-                         GetParam().context_type_) {}
+                         UserClientCertSlot::kPrivateSlot) {}
 };
 
 std::unique_ptr<net::test_server::HttpResponse> HandleFileRequest(
@@ -414,17 +399,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFileRequest(
 
 struct UnmanagedVerifyServerCertPlatformKeysTestParams {
   using TupleT = std::tuple<PlatformKeysTestBase::EnrollmentStatus,
-                            PlatformKeysTest::UserClientCertSlot,
-                            ContextType>;
+                            PlatformKeysTest::UserClientCertSlot>;
 
   explicit UnmanagedVerifyServerCertPlatformKeysTestParams(const TupleT& t)
       : enrollment_status(std::get<0>(t)),
-        user_client_cert_slot(std::get<1>(t)),
-        context_type(std::get<2>(t)) {}
+        user_client_cert_slot(std::get<1>(t)) {}
 
   PlatformKeysTestBase::EnrollmentStatus enrollment_status;
   PlatformKeysTest::UserClientCertSlot user_client_cert_slot;
-  ContextType context_type;
 };
 
 class UnmanagedVerifyServerCertPlatformKeysTest
@@ -436,8 +418,7 @@ class UnmanagedVerifyServerCertPlatformKeysTest
       : PlatformKeysTest(GetParam().enrollment_status,
                          UserStatus::UNMANAGED,
                          false /* unused */,
-                         GetParam().user_client_cert_slot,
-                         GetParam().context_type) {}
+                         GetParam().user_client_cert_slot) {}
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -594,44 +575,20 @@ IN_PROC_BROWSER_TEST_P(UnmanagedPlatformKeysTest, Permissions) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
+    All,
     UnmanagedPlatformKeysTest,
     Values(UnmanagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPrivateSlot,
-               ContextType::kPersistentBackground),
+               PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
            UnmanagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPrivateSlot,
-               ContextType::kPersistentBackground),
+               PlatformKeysTest::UserClientCertSlot::kPrivateSlot),
            UnmanagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPublicSlot,
-               ContextType::kPersistentBackground),
+               PlatformKeysTest::UserClientCertSlot::kPublicSlot),
            UnmanagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPublicSlot,
-               ContextType::kPersistentBackground)));
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    UnmanagedPlatformKeysTest,
-    Values(UnmanagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPrivateSlot,
-               ContextType::kServiceWorker),
-           UnmanagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPrivateSlot,
-               ContextType::kServiceWorker),
-           UnmanagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPublicSlot,
-               ContextType::kServiceWorker),
-           UnmanagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTest::UserClientCertSlot::kPublicSlot,
-               ContextType::kServiceWorker)));
+               PlatformKeysTest::UserClientCertSlot::kPublicSlot)));
 
 IN_PROC_BROWSER_TEST_P(ManagedWithoutPermissionPlatformKeysTest,
                        PRE_UserPermissionsBlocked) {
@@ -668,36 +625,17 @@ IN_PROC_BROWSER_TEST_P(ManagedWithoutPermissionPlatformKeysTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
+    All,
     ManagedWithoutPermissionPlatformKeysTest,
     Values(ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kPersistentBackground),
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
            ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground),
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
            ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground)));
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    ManagedWithoutPermissionPlatformKeysTest,
-    Values(ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kServiceWorker),
-           ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker),
-           ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker)));
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)));
 
 IN_PROC_BROWSER_TEST_P(ManagedWithPermissionPlatformKeysTest,
                        PRE_PolicyGrantsAccessToCorporateKey) {
@@ -747,36 +685,17 @@ IN_PROC_BROWSER_TEST_P(ManagedWithPermissionPlatformKeysTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
+    All,
     ManagedWithPermissionPlatformKeysTest,
     Values(ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kPersistentBackground),
+               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN),
            ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground),
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN),
            ManagedPlatformKeysTestParams(
                PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground)));
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    ManagedWithPermissionPlatformKeysTest,
-    Values(ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kServiceWorker),
-           ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker),
-           ManagedPlatformKeysTestParams(
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker)));
+               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN)));
 
 IN_PROC_BROWSER_TEST_P(UnmanagedVerifyServerCertPlatformKeysTest,
                        PRE_VerifyServerCert) {
@@ -796,6 +715,4 @@ INSTANTIATE_TEST_SUITE_P(
         Combine(Values(PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
                        PlatformKeysTestBase::EnrollmentStatus::ENROLLED),
                 Values(PlatformKeysTest::UserClientCertSlot::kPrivateSlot,
-                       PlatformKeysTest::UserClientCertSlot::kPublicSlot),
-                Values(ContextType::kServiceWorker,
-                       ContextType::kPersistentBackground))));
+                       PlatformKeysTest::UserClientCertSlot::kPublicSlot))));
