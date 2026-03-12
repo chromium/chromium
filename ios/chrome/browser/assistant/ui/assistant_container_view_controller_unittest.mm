@@ -18,6 +18,7 @@
 - (void)updateHeightConstraint;
 - (NSInteger)absoluteMaxHeight;
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture;
+- (void)handleDimmingViewTap:(UITapGestureRecognizer*)gesture;
 @end
 
 // Expose accessors for private properties.
@@ -246,6 +247,32 @@ TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
             view_controller_.heightConstraint.constant);
 
   EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
+// Tests that tapping the dimming view when in the large detent dismisses the
+// container back to the minimized detent.
+TEST_F(AssistantContainerViewControllerTest, HandleDimmingViewTap) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kLarge}];
+
+  // Force the container to the large detent to simulate an expanded state.
+  [view_controller_ animateToDetent:AssistantContainerDetent::kLarge
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  // Verify it is at the large detent.
+  EXPECT_EQ([view_controller_ absoluteMaxHeight],
+            view_controller_.heightConstraint.constant);
+
+  // Simulate a tap on the dimming view.
+  UITapGestureRecognizer* dummy_gesture = [[UITapGestureRecognizer alloc] init];
+  [view_controller_ performSelector:@selector(handleDimmingViewTap:)
+                         withObject:dummy_gesture];
+
+  // After the tap, it should have triggered a transition to minimized.
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_EQ(view_controller_.heightConstraint.constant,
+            static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
 }
 
 }  // namespace

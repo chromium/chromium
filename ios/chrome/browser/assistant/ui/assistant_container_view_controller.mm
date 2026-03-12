@@ -341,6 +341,12 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
   _dimmingView.translatesAutoresizingMaskIntoConstraints = NO;
   _dimmingView.backgroundColor = UIColor.blackColor;
   _dimmingView.alpha = 0.0;
+
+  UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(handleDimmingViewTap:)];
+  [_dimmingView addGestureRecognizer:tapGesture];
+
   [self.view addSubview:_dimmingView];
   AddSameConstraints(_dimmingView, self.view);
 }
@@ -458,6 +464,22 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
              gesture.state == UIGestureRecognizerStateCancelled) {
     [self handlePanGestureEnded:gesture];
   }
+}
+
+// Handles the tap gesture on the dimming view.
+- (void)handleDimmingViewTap:(UITapGestureRecognizer*)gesture {
+  if (_activeDetent != AssistantContainerDetent::kLarge) {
+    return;
+  }
+
+  AssistantContainerDetent detent = self.detents.front();
+  if (detent == AssistantContainerDetent::kLarge) {
+    return;
+  }
+
+  [self animateToDetent:detent
+               duration:kSpringDuration
+                  curve:UIViewAnimationCurveEaseInOut];
 }
 
 // Handles the state when the pan gesture begins.
