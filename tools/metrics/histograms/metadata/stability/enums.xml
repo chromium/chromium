@@ -501,6 +501,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="333" label="RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES"/>
   <int value="334" label="RFH_CREATE_NEW_WINDOW_INVALID_DISPOSITION"/>
   <int value="335" label="RFH_CREATE_NEW_WINDOW_FROM_SANDBOXED_FRAME"/>
+  <int value="336" label="RFH_MODAL_DIALOG_FROM_SANDBOXED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

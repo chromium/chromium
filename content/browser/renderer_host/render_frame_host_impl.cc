@@ -7244,6 +7244,16 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
     JavaScriptDialogType dialog_type,
     bool disable_third_party_subframe_suppresion,
     JavaScriptDialogCallback ipc_response_callback) {
+  // Sandboxed frames should only be allowed to show modal dialogs when they
+  // have the "allow-modals" attribute. This should have already been checked
+  // by the renderer process (see LocalDOMWindow::alert/confirm/prompt), and
+  // this browser-side check defends against compromised renderers.
+  if (IsSandboxed(network::mojom::WebSandboxFlags::kModals)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFH_MODAL_DIALOG_FROM_SANDBOXED_FRAME);
+    return;
+  }
+
   // Don't show the dialog if it's triggered on a non-active RenderFrameHost
   // or is contained in a Fenced Frame.
   if (!IsActive() || IsNestedWithinFencedFrame()) {

@@ -3493,6 +3493,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            CreateNewWindowWithInaccessibleFile);
   FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
                            WindowOpenDisallowedFromSandboxedFrame);
+  FRIEND_TEST_ALL_PREFIXES(SecurityExploitBrowserTest,
+                           ModalDialogDisallowedFromSandboxedFrame);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            RenderViewHostIsNotReusedAfterDelayedUnloadACK);
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
