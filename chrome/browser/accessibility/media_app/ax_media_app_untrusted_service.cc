@@ -1260,16 +1260,16 @@ void AXMediaAppUntrustedService::OcrNextDirtyPageIfAny() {
     }
   }
   const std::string dirty_page_id = PopDirtyPage();
-  // TODO(b/289012145): Refactor this code to support things happening
-  // asynchronously - i.e. `RequestBitmap` will be async.
+  // Note that the following code could be refactored to support things
+  // happening asynchronously - i.e. `RequestBitmap` could be async.
   if (media_app_) [[unlikely]] {
     // `media_app_` is only used for testing.
     CHECK_IS_TEST();
     SkBitmap page_bitmap = media_app_->RequestBitmap(dirty_page_id);
-    // TODO - b/289012145: screen_ai_annotator_ is only bound in builds with
-    // the ENABLE_SCREEN_AI_SERVICE buildflag. We should figure out a way to
-    // mock it in tests running on bots without this flag and call
-    // OnBitmapReceived() here.
+    // `screen_ai_annotator_` is only bound in builds with the
+    // ENABLE_SCREEN_AI_SERVICE buildflag. Note that it may be better to mock it
+    // in tests running on bots without this flag and call OnBitmapReceived()
+    // here.
     ocr_->PerformOCR(
         page_bitmap,
         base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
