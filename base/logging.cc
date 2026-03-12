@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cstring>
 #include <ctime>
@@ -188,13 +189,14 @@ void MaybeInitializeVlogInfo() {
   }
 }
 
-const char* const log_severity_names[] = {"INFO", "WARNING", "ERROR", "FATAL"};
+constexpr auto log_severity_names =
+    std::to_array<const char*>({"INFO", "WARNING", "ERROR", "FATAL"});
 static_assert(LOGGING_NUM_SEVERITIES == std::size(log_severity_names),
               "Incorrect number of log_severity_names");
 
 const char* log_severity_name(int severity) {
-  if (severity >= 0 && severity < LOGGING_NUM_SEVERITIES) {
-    return UNSAFE_TODO(log_severity_names[severity]);
+  if (severity >= 0 && static_cast<size_t>(severity) < LOGGING_NUM_SEVERITIES) {
+    return log_severity_names[static_cast<size_t>(severity)];
   }
   return "UNKNOWN";
 }
