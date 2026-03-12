@@ -322,20 +322,22 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (mGestureStateListener != null) {
             GestureListenerManager gestureListenerManager =
                     GestureListenerManager.fromWebContents(webContents);
-            assert gestureListenerManager != null;
-            gestureListenerManager.removeListener(mGestureStateListener);
-            mGestureStateListener = null;
+            // May be null if the WebContents is already destroyed.
+            if (gestureListenerManager != null) {
+                gestureListenerManager.removeListener(mGestureStateListener);
+                mGestureStateListener = null;
 
-            // If we needed to remove our listener, we also need to remove our selection client.
-            if (mSelectionClientManager != null) {
-                SelectionPopupController controller =
-                        SelectionPopupController.fromWebContents(webContents);
-                SelectionClient client =
-                        mSelectionClientManager.removeContextualSearchSelectionClient();
+                // If we needed to remove our listener, we also need to remove our selection client.
+                if (mSelectionClientManager != null) {
+                    SelectionPopupController controller =
+                            SelectionPopupController.fromWebContents(webContents);
+                    SelectionClient client =
+                            mSelectionClientManager.removeContextualSearchSelectionClient();
 
-                if (controller.getSelectionClient()
-                        == mSelectionClientManager.getSelectionClient()) {
-                    controller.setSelectionClient(client);
+                    if (controller.getSelectionClient()
+                            == mSelectionClientManager.getSelectionClient()) {
+                        controller.setSelectionClient(client);
+                    }
                 }
             }
             // Also make sure the UI is hidden if the device is offline.
