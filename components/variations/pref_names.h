@@ -24,6 +24,10 @@ inline constexpr char kVariationsCompressedSeed[] =
 // studies.
 inline constexpr char kVariationsCountry[] = "variations_country";
 
+// The latest administrative area code received by the VariationsService for
+// evaluating studies.
+inline constexpr char kVariationsGeoLevel1[] = "variations_geo_level1";
+
 // The number of times that Chrome has crashed before successfully fetching a
 // new seed. Used to determine whether to fall back to a "safe" seed.
 inline constexpr char kVariationsCrashStreak[] = "variations_crash_streak";

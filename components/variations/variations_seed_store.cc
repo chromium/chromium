@@ -313,6 +313,7 @@ void VariationsSeedStore::StoreSeedData(
     std::string data,
     std::string base64_seed_signature,
     std::string country_code,
+    std::string geo_level1,
     base::Time date_fetched,
     bool is_delta_compressed,
     bool is_gzip_compressed,
@@ -333,6 +334,7 @@ void VariationsSeedStore::StoreSeedData(
   seed_data.data = std::move(data);
   seed_data.base64_seed_signature = std::move(base64_seed_signature);
   seed_data.country_code = std::move(country_code);
+  seed_data.geo_level1 = std::move(geo_level1);
   seed_data.date_fetched = date_fetched;
   seed_data.is_gzip_compressed = is_gzip_compressed;
   seed_data.is_delta_compressed = is_delta_compressed;
@@ -556,6 +558,7 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
   // Regular seed prefs:
   registry->RegisterStringPref(prefs::kVariationsCompressedSeed, std::string());
   registry->RegisterStringPref(prefs::kVariationsCountry, std::string());
+  registry->RegisterStringPref(prefs::kVariationsGeoLevel1, std::string());
   registry->RegisterTimePref(prefs::kVariationsLastFetchTime, base::Time());
   registry->RegisterIntegerPref(prefs::kVariationsSeedMilestone, 0);
   registry->RegisterTimePref(prefs::kVariationsSeedDate, base::Time());
@@ -646,7 +649,8 @@ void VariationsSeedStore::ImportInitialSeed(
       });
   StoreSeedData(std::move(done_callback), std::move(initial_seed->data),
                 std::move(initial_seed->signature),
-                std::move(initial_seed->country), initial_seed->date,
+                std::move(initial_seed->country),
+                std::move(initial_seed->geo_level1), initial_seed->date,
                 /*is_delta_compressed=*/false, initial_seed->is_gzip_compressed,
                 /*require_synchronous=*/true);
 }
@@ -844,7 +848,8 @@ void VariationsSeedStore::OnSeedDataProcessed(
       base::BindOnce(&VariationsSeedStore::StoreValidatedSeed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(done_callback),
                      std::move(result.validated), result.seed_data.country_code,
-                     result.seed_data.date_fetched, require_synchronous);
+                     result.seed_data.geo_level1, result.seed_data.date_fetched,
+                     require_synchronous);
   ReadSeedData(/*done_callback=*/std::move(store_validated_seed_cb),
                SeedType::SAFE, require_synchronous);
 }
@@ -880,6 +885,7 @@ void VariationsSeedStore::StoreValidatedSeed(
     base::OnceCallback<void(bool, VariationsSeed)> done_callback,
     ValidatedSeed seed,
     std::string country_code,
+    std::string geo_level1,
     base::Time date_fetched,
     bool require_synchronous,
     SeedReaderWriter::ReadSeedDataResult safe_seed_read_result) {
@@ -914,6 +920,7 @@ void VariationsSeedStore::StoreValidatedSeed(
           .seed_date = date_fetched,
           .client_fetch_time = base::Time::Now(),
           .session_country_code = country_code,
+          .session_geo_level1 = geo_level1,
       });
   if (result == StoreSeedResult::kSuccess) {
     StoreLatestSerialNumber(seed.parsed.serial_number());

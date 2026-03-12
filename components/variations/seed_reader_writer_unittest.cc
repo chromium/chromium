@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -79,6 +80,7 @@ StoredSeedInfo CreateStoredSeedInfo() {
   stored_seed_info.set_signature("signature");
   stored_seed_info.set_milestone(92);
   stored_seed_info.set_session_country_code("us");
+  stored_seed_info.set_session_geo_level1("us-ny");
   stored_seed_info.set_seed_date(1234);
   return stored_seed_info;
 }
@@ -104,6 +106,9 @@ struct SeedReaderWriterTestParams {
       : SeedReaderWriterTestParams(std::get<0>(t),
                                    std::get<1>(t),
                                    std::get<2>(t)) {}
+  bool HasGeoLevel1Pref() const {
+    return seed_fields_prefs.session_geo_level1 != nullptr;
+  }
 
   SeedFieldsPrefs seed_fields_prefs;
   std::string_view field_trial_group;
@@ -120,6 +125,10 @@ struct ExpectedFieldTrialGroupTestParams {
 
   explicit ExpectedFieldTrialGroupTestParams(const TupleT& t)
       : ExpectedFieldTrialGroupTestParams(std::get<0>(t), std::get<1>(t)) {}
+
+  bool HasGeoLevel1Pref() const {
+    return seed_fields_prefs.session_geo_level1 != nullptr;
+  }
 
   variations::SeedFieldsPrefs seed_fields_prefs;
   version_info::Channel channel;
@@ -293,6 +302,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
       .seed_date = seed_date,
       .client_fetch_time = fetch_time,
       .session_country_code = "us",
+      .session_geo_level1 = "us-ny",
   });
 
   // Force write.
@@ -349,6 +359,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   ASSERT_NE(seed_info.milestone, 0);
   ASSERT_FALSE(seed_info.seed_date.is_null());
   ASSERT_THAT(seed_info.session_country_code, Not(IsEmpty()));
+  ASSERT_THAT(seed_info.session_geo_level1, Not(IsEmpty()));
 
   // Clear seed and force write.
   seed_reader_writer.ClearSeedInfo();
@@ -365,6 +376,8 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   // Session country code is not cleared.
   EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1,
+              Not(IsEmpty()));
 
   // Verify that the seed info in the seed file is cleared.
   StoredSeedInfo cleared_seed_info = ReadStoredSeedInfo();
@@ -375,6 +388,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   EXPECT_EQ(cleared_seed_info.client_fetch_time(), 0);
   // Session country code is not cleared.
   EXPECT_THAT(cleared_seed_info.session_country_code(), Not(IsEmpty()));
+  EXPECT_THAT(cleared_seed_info.session_geo_level1(), Not(IsEmpty()));
 }
 
 // Verifies that session country code is cleared from a seed file for clients in
@@ -384,6 +398,10 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
             GetParam().field_trial_group);
   local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
                          "us");
+  if (GetParam().HasGeoLevel1Pref()) {
+    local_state_.SetString(GetParam().seed_fields_prefs.session_geo_level1,
+                           "us-ny");
+  }
   // Initialize seed_reader_writer with test thread and timer.
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
@@ -393,15 +411,25 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSessionCountryCode) {
 
   ASSERT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
+  if (GetParam().HasGeoLevel1Pref()) {
+    ASSERT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1,
+                Not(IsEmpty()));
+  }
 
   seed_reader_writer.ClearSessionCountry();
 
   // Session country code is cleared.
   EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code, IsEmpty());
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1, IsEmpty());
   // Local state pref should be cleared.
   EXPECT_THAT(
       local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
       IsEmpty());
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_THAT(
+        local_state_.GetString(GetParam().seed_fields_prefs.session_geo_level1),
+        IsEmpty());
+  }
 }
 
 // Verifies clients in SeedFiles group read seeds from the seed file.
@@ -956,6 +984,7 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, WriteSeed) {
       .seed_date = seed_date,
       .client_fetch_time = fetch_time,
       .session_country_code = "us",
+      .session_geo_level1 = "us-ny",
   });
 
   // Ensure there's no pending write.
@@ -1002,6 +1031,11 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
                          "us");
 
+  if (GetParam().HasGeoLevel1Pref()) {
+    local_state_.SetString(GetParam().seed_fields_prefs.session_geo_level1,
+                           "us-ny");
+  }
+
   // Clear seed and force file delete.
   seed_reader_writer.ClearSeedInfo();
   file_writer_thread_.FlushForTesting();
@@ -1017,6 +1051,10 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   // Session country code is not cleared.
   EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_country_code,
               Not(IsEmpty()));
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1,
+                Not(IsEmpty()));
+  }
 
   // Verify seed cleared correctly in Local State prefs and that seed file is
   // deleted.
@@ -1034,6 +1072,12 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSeed) {
   EXPECT_THAT(
       local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
       Not(IsEmpty()));
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_THAT(
+        local_state_.GetString(GetParam().seed_fields_prefs.session_geo_level1),
+        Not(IsEmpty()));
+  }
+
   EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
 }
 
@@ -1052,6 +1096,10 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSessionCountryCode) {
   // Create and store seed.
   local_state_.SetString(GetParam().seed_fields_prefs.session_country_code,
                          "us");
+  if (GetParam().HasGeoLevel1Pref()) {
+    local_state_.SetString(GetParam().seed_fields_prefs.session_geo_level1,
+                           "us-ny");
+  }
 
   // Clear seed and force file delete.
   seed_reader_writer.ClearSessionCountry();
@@ -1061,6 +1109,13 @@ TEST_P(SeedReaderWriterLocalStateGroupsTest, ClearSessionCountryCode) {
   EXPECT_THAT(
       local_state_.GetString(GetParam().seed_fields_prefs.session_country_code),
       IsEmpty());
+
+  EXPECT_THAT(seed_reader_writer.GetSeedInfo().session_geo_level1, IsEmpty());
+  if (GetParam().HasGeoLevel1Pref()) {
+    EXPECT_THAT(
+        local_state_.GetString(GetParam().seed_fields_prefs.session_geo_level1),
+        IsEmpty());
+  }
 }
 
 // Verifies clients using local state to store seeds read seeds from local

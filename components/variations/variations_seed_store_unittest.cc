@@ -260,6 +260,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .seed_date = now - delta * 1,
           .client_fetch_time = now,
           .session_country_code = "us",
+          .session_geo_level1 = "us-ny",
       });
   seed_store.SetSerialNumberForTesting("123");
 
@@ -274,6 +275,7 @@ void SetAllSeedsAndSeedPrefsToNonDefaultValues(
           .seed_date = now - delta * 2,
           .client_fetch_time = now - delta * 3,
           .session_country_code = "gt",
+          .session_geo_level1 = "gt-16",
           .permanent_country_code = "mx",
       });
   prefs->SetString(prefs::kVariationsSafeSeedLocale, "en-MX");
@@ -1472,6 +1474,7 @@ class StoreSeedDataGroupTest
 
   struct Params {
     std::string country_code;
+    std::string geo_level1;
     bool is_delta_compressed;
     bool is_gzip_compressed;
   };
@@ -1488,7 +1491,7 @@ class StoreSeedDataGroupTest
             &StoreSeedDataGroupTest::OnSeedStoreResult, base::Unretained(this),
             run_loop.QuitClosure()),
         seed_data, /*base64_seed_signature=*/std::string(), params.country_code,
-        base::Time::Now(), params.is_delta_compressed,
+        params.geo_level1, base::Time::Now(), params.is_delta_compressed,
         params.is_gzip_compressed, RequireSynchronousStores());
     // If we're testing synchronous stores, we shouldn't issue a Run() call so
     // that the test verifies that the operation completed synchronously.
@@ -1627,6 +1630,33 @@ TEST_P(StoreSeedDataAllGroupsTest, CountryCode) {
   // Test with no country code specified - which should preserve the old value.
   ASSERT_TRUE(StoreSeedData(seed_store, seed));
   EXPECT_EQ("test_country", GetSeedInfo(seed_store).session_country_code);
+}
+
+TEST_P(StoreSeedDataAllGroupsTest, GeoLevelIgnoredWithoutCountry) {
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  std::string seed = SerializeSeed(CreateTestSeed());
+
+  // Test with no country code specified - which should skip the geo level.
+  ASSERT_TRUE(
+      StoreSeedData(seed_store, seed, {.geo_level1 = "test_geo_level1"}));
+  EXPECT_EQ("", GetSeedInfo(seed_store).session_country_code);
+  EXPECT_EQ("", GetSeedInfo(seed_store).session_geo_level1);
+
+  // Test with a valid values.
+  ASSERT_TRUE(StoreSeedData(seed_store, seed,
+                            {
+                                .country_code = "test_country",
+                                .geo_level1 = "test_geo_level1",
+                            }));
+  EXPECT_EQ("test_country", GetSeedInfo(seed_store).session_country_code);
+  EXPECT_EQ("test_geo_level1", GetSeedInfo(seed_store).session_geo_level1);
+
+  // Test with no country code specified - which should preserve the old geo
+  // level.
+  ASSERT_TRUE(
+      StoreSeedData(seed_store, seed, {.geo_level1 = "test_geo_level2"}));
+  EXPECT_EQ("test_country", GetSeedInfo(seed_store).session_country_code);
+  EXPECT_EQ("test_geo_level1", GetSeedInfo(seed_store).session_geo_level1);
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, GzippedSeed) {

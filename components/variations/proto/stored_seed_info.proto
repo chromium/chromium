@@ -10,7 +10,7 @@ package variations;
 
 // Wraps a stored VariationsSeed and other seed-related info.
 //
-// Next tag: 9
+// Next tag: 10
 message StoredSeedInfo {
   // Raw seed data.
   // As a memory optimization, the seed data may be cleared from memory after
@@ -45,4 +45,9 @@ message StoredSeedInfo {
   // Chrome version used for evaluating studies. The version stored at the same
   // time as `permanent_country_code`.
   optional string permanent_version = 8;
+
+  // The administrative area code of the client fetched from the server. Mirrors
+  // the `session_country_code` field, but is not currently used for evaluating
+  // studies.
+  optional string session_geo_level1 = 9;
 }

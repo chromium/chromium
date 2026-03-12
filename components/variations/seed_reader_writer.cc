@@ -267,6 +267,25 @@ bool ShouldCheckMissingSeedFile(version_info::Channel channel) {
          channel == version_info::Channel::BETA;
 }
 
+// Sets the Geo Level1 pref value if its pref name exists.
+void SetGeoLevel1Pref(const SeedFieldsPrefs& prefs,
+                      PrefService& local_state,
+                      std::string_view value) {
+  if (prefs.session_geo_level1) {
+    local_state.SetString(prefs.session_geo_level1, value);
+  }
+}
+
+// Gets the Geo Level1 pref value if its pref name exists. Returns an empty
+// string otherwise.
+std::string GetGeoLevel1Pref(const SeedFieldsPrefs& prefs,
+                             PrefService& local_state) {
+  if (prefs.session_geo_level1) {
+    return local_state.GetString(prefs.session_geo_level1);
+  }
+  return "";
+}
+
 }  // namespace
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
@@ -276,6 +295,7 @@ const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
     .seed_date = prefs::kVariationsSeedDate,
     .client_fetch_time = prefs::kVariationsLastFetchTime,
     .session_country_code = prefs::kVariationsCountry,
+    .session_geo_level1 = prefs::kVariationsGeoLevel1,
     .permanent_country_code_version =
         prefs::kVariationsPermanentConsistencyCountry,
 };
@@ -287,6 +307,7 @@ const SeedFieldsPrefs kSafeSeedFieldsPrefs = {
     .seed_date = prefs::kVariationsSafeSeedDate,
     .client_fetch_time = prefs::kVariationsSafeSeedFetchTime,
     .session_country_code = prefs::kVariationsSafeSeedSessionConsistencyCountry,
+    .session_geo_level1 = nullptr,
     .permanent_country_code_version =
         prefs::kVariationsSafeSeedPermanentConsistencyCountry,
 };
@@ -296,6 +317,7 @@ SeedInfo::SeedInfo(std::string_view signature,
                    base::Time seed_date,
                    base::Time client_fetch_time,
                    std::string_view session_country_code,
+                   std::string_view session_geo_level1,
                    std::string_view permanent_country_code,
                    std::string_view permanent_country_version)
     : signature(signature),
@@ -303,6 +325,7 @@ SeedInfo::SeedInfo(std::string_view signature,
       seed_date(seed_date),
       client_fetch_time(client_fetch_time),
       session_country_code(session_country_code),
+      session_geo_level1(session_geo_level1),
       permanent_country_code(permanent_country_code),
       permanent_country_version(permanent_country_version) {}
 
@@ -397,8 +420,12 @@ void SeedReaderWriter::ClearSessionCountry() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
     stored_seed_info_.clear_session_country_code();
+    stored_seed_info_.clear_session_geo_level1();
   }
   local_state_->ClearPref(fields_prefs_->session_country_code);
+  if (fields_prefs_->session_geo_level1) {
+    local_state_->ClearPref(fields_prefs_->session_geo_level1);
+  }
 }
 
 SeedInfo SeedReaderWriter::GetSeedInfo() const {
@@ -411,6 +438,7 @@ SeedInfo SeedReaderWriter::GetSeedInfo() const {
         /*client_fetch_time=*/
         ProtoTimeToTime(stored_seed_info_.client_fetch_time()),
         /*session_country_code=*/stored_seed_info_.session_country_code(),
+        /*session_geo_level1=*/stored_seed_info_.session_geo_level1(),
         /*permanent_country_code=*/stored_seed_info_.permanent_country_code(),
         /*permanent_country_version=*/stored_seed_info_.permanent_version());
   } else {
@@ -425,6 +453,8 @@ SeedInfo SeedReaderWriter::GetSeedInfo() const {
         local_state_->GetTime(fields_prefs_->client_fetch_time),
         /*session_country_code=*/
         local_state_->GetString(fields_prefs_->session_country_code),
+        /*session_geo_level1=*/
+        GetGeoLevel1Pref(*fields_prefs_, *local_state_),
         /*permanent_country_code=*/permanent_country_version.country,
         /*permanent_country_version=*/permanent_country_version.version);
   }
@@ -667,9 +697,11 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   stored_seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
   stored_seed_info_.set_client_fetch_time(
       TimeToProtoTime(seed_info.client_fetch_time));
-  // Only update the latest country code if it is not empty.
+  // Only update the latest country code and geo level if country code is not
+  // empty.
   if (!seed_info.session_country_code.empty()) {
     stored_seed_info_.set_session_country_code(seed_info.session_country_code);
+    stored_seed_info_.set_session_geo_level1(seed_info.session_geo_level1);
   }
   if (!seed_info.permanent_country_code.empty()) {
     stored_seed_info_.set_permanent_country_code(
@@ -689,10 +721,13 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   // being scheduled.
   seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
   // We still need to update the session country code in local state as it is
-  // used by hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs().
+  // used by hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs() and
+  // for some platform experience features.
   if (!seed_info.session_country_code.empty()) {
     local_state_->SetString(fields_prefs_->session_country_code,
                             stored_seed_info_.session_country_code());
+    SetGeoLevel1Pref(*fields_prefs_, *local_state_,
+                     stored_seed_info_.session_geo_level1());
   }
   return StoreSeedResult::kSuccess;
 }
@@ -794,6 +829,7 @@ void SeedReaderWriter::ReadSeedFile() {
               local_state_->GetTime(fields_prefs_->client_fetch_time),
           .session_country_code =
               local_state_->GetString(fields_prefs_->session_country_code),
+          .session_geo_level1 = GetGeoLevel1Pref(*fields_prefs_, *local_state_),
           .permanent_country_code = permanent_country_version.country,
           .permanent_country_version = permanent_country_version.version,
       });
@@ -887,6 +923,8 @@ StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
   if (!seed_info.session_country_code.empty()) {
     local_state_->SetString(fields_prefs_->session_country_code,
                             seed_info.session_country_code);
+    SetGeoLevel1Pref(*fields_prefs_, *local_state_,
+                     seed_info.session_geo_level1);
   }
   // Version could be empty in case of the SafeSeed.
   if (!seed_info.permanent_country_code.empty()) {

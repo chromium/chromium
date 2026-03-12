@@ -707,6 +707,7 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
 void VariationsService::StoreSeed(std::string seed_data,
                                   std::string seed_signature,
                                   std::string country_code,
+                                  std::string geo_level1,
                                   base::Time date_fetched,
                                   bool is_delta_compressed,
                                   bool is_gzip_compressed) {
@@ -717,8 +718,8 @@ void VariationsService::StoreSeed(std::string seed_data,
                      weak_ptr_factory_.GetWeakPtr(), is_delta_compressed);
   field_trial_creator_.seed_store()->StoreSeedData(
       std::move(done_callback), std::move(seed_data), std::move(seed_signature),
-      std::move(country_code), date_fetched, is_delta_compressed,
-      is_gzip_compressed,
+      std::move(country_code), std::move(geo_level1), date_fetched,
+      is_delta_compressed, is_gzip_compressed,
       /*require_synchronous=*/false);
 }
 
@@ -899,9 +900,11 @@ void VariationsService::OnSimpleLoaderComplete(
   std::string_view signature =
       GetHeaderValue(headers.get(), "X-Seed-Signature");
   std::string_view country_code = GetHeaderValue(headers.get(), "X-Country");
+  std::string_view geo_level1 = GetHeaderValue(headers.get(), "X-Geo-Level-1");
   StoreSeed(std::move(*response_body), std::string(signature),
-            std::string(country_code), response_date.value_or(base::Time()),
-            is_delta_compressed, is_gzip_compressed);
+            std::string(country_code), std::string(geo_level1),
+            response_date.value_or(base::Time()), is_delta_compressed,
+            is_gzip_compressed);
 }
 
 bool VariationsService::MaybeRetryOverHTTP() {

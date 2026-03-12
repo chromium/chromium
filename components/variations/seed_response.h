@@ -21,6 +21,7 @@ struct COMPONENT_EXPORT(VARIATIONS) SeedResponse {
   std::string data;  // "data" is binary, for which protobuf uses strings.
   std::string signature;
   std::string country;
+  std::string geo_level1;
   base::Time date;
   bool is_gzip_compressed = false;
 };

@@ -801,6 +801,7 @@ void VariationsFieldTrialCreator::LoadSeedFromJsonFile(
   }
   seed_store_->StoreSeedData(/*done_callback=*/base::DoNothing(), decoded_seed,
                              seed_signature->GetString(), /*country_code=*/"",
+                             /*geo_level1=*/"",
                              /*date_fetched=*/base::Time(),
                              /*is_delta_compressed=*/false,
                              /*is_gzip_compressed=*/true,

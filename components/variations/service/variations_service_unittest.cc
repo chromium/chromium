@@ -135,14 +135,7 @@ class TestVariationsService : public VariationsService {
       : VariationsService(std::make_unique<TestVariationsServiceClient>(),
                           std::move(test_notifier),
                           local_state,
-                          state_manager),
-        intercepts_fetch_(true),
-        fetch_attempted_(false),
-        latest_serial_number_(""),
-        seed_stores_succeed_(true),
-        seed_stored_(false),
-        delta_compressed_seed_(false),
-        gzip_compressed_seed_(false) {
+                          state_manager) {
     interception_url_ =
         GetVariationsServerURL(use_secure_url ? USE_HTTPS : USE_HTTP);
     set_variations_server_url(interception_url_);
@@ -168,6 +161,7 @@ class TestVariationsService : public VariationsService {
   bool fetch_attempted() const { return fetch_attempted_; }
   bool seed_stored() const { return seed_stored_; }
   const std::string& stored_country() const { return stored_country_; }
+  const std::string& stored_geo_level() const { return stored_geo_level_; }
   bool delta_compressed_seed() const { return delta_compressed_seed_; }
   bool gzip_compressed_seed() const { return gzip_compressed_seed_; }
 
@@ -199,12 +193,14 @@ class TestVariationsService : public VariationsService {
   void StoreSeed(std::string seed_data,
                  std::string seed_signature,
                  std::string country_code,
+                 std::string geo_level1,
                  base::Time date_fetched,
                  bool is_delta_compressed,
                  bool is_gzip_compressed) override {
     seed_stored_ = true;
     stored_seed_data_ = seed_data;
     stored_country_ = country_code;
+    stored_geo_level_ = geo_level1;
     delta_compressed_seed_ = is_delta_compressed;
     gzip_compressed_seed_ = is_gzip_compressed;
     OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,
@@ -222,15 +218,16 @@ class TestVariationsService : public VariationsService {
 
  private:
   GURL interception_url_;
-  bool intercepts_fetch_;
-  bool fetch_attempted_;
+  bool intercepts_fetch_ = true;
+  bool fetch_attempted_ = false;
   std::string latest_serial_number_;
-  bool seed_stores_succeed_;
-  bool seed_stored_;
+  bool seed_stores_succeed_ = true;
+  bool seed_stored_ = false;
   std::string stored_seed_data_;
   std::string stored_country_;
-  bool delta_compressed_seed_;
-  bool gzip_compressed_seed_;
+  std::string stored_geo_level_;
+  bool delta_compressed_seed_ = false;
+  bool gzip_compressed_seed_ = false;
 };
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
@@ -653,6 +650,7 @@ TEST_F(VariationsServiceTest, CountryHeader) {
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
   head->headers->SetHeader("X-Country", "test");
+  head->headers->SetHeader("X-Geo-Level-1", "test-geo-level");
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = serialized_seed.size();
   service.test_url_loader_factory()->AddResponse(
@@ -662,6 +660,7 @@ TEST_F(VariationsServiceTest, CountryHeader) {
 
   EXPECT_TRUE(service.seed_stored());
   EXPECT_EQ("test", service.stored_country());
+  EXPECT_EQ("test-geo-level", service.stored_geo_level());
 }
 
 TEST_F(VariationsServiceTest, Observer) {
