@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallba
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -64,6 +65,14 @@ public class TabGroupListBottomSheetMediator {
                     if (newState != SheetState.HIDDEN) return;
                     onSheetClosed(reason);
                 }
+
+                @Override
+                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                    if (mDelegate.isSameContentView(newContent)
+                            && !mBottomSheetController.hasBottomInset()) {
+                        mDelegate.addPadding();
+                    }
+                }
             };
 
     /**
@@ -108,8 +117,12 @@ public class TabGroupListBottomSheetMediator {
         // Populate the list of tabs before sending the show-content request to the delegate.
         // This allows us to know the height of the bottom sheet.
         populateList(tabs);
-        if (!mDelegate.requestShowContent()) return; // Return early if content didn't actually show
         mBottomSheetController.addObserver(mBottomSheetObserver);
+
+        boolean requestSuccess = mDelegate.requestShowContent();
+        if (!requestSuccess) {
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
     }
 
     /** Hides the bottom sheet. */

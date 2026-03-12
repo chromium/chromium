@@ -85,6 +85,20 @@ public class TabGroupListBottomSheetViewUnitTest {
     }
 
     @Test
+    public void testAddBottomPadding() {
+        RecyclerView recyclerView =
+                mBottomSheetView.getContentView().findViewById(R.id.tab_group_parity_recycler_view);
+
+        mBottomSheetView.addBottomPadding();
+
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();
+        int expectedMargin =
+                mContext.getResources().getDimensionPixelSize(R.dimen.default_list_row_padding);
+        assertEquals(expectedMargin, params.bottomMargin);
+    }
+
+    @Test
     public void testGetSheetContentDescription_withNewGroupRow() {
         String expectedDescription =
                 mContext.getString(

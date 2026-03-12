@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.RowType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -165,7 +167,8 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
 
-        verify(mBottomSheetController, never()).addObserver(any());
+        verify(mBottomSheetController).addObserver(any());
+        verify(mBottomSheetController).removeObserver(any());
     }
 
     @Test
@@ -178,8 +181,8 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         // Verify that model list is populated before requesting show content
         inOrder.verify(mModelList).clear();
         inOrder.verify(mModelList, times(3)).add(any());
-        inOrder.verify(mDelegate).requestShowContent();
         inOrder.verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        inOrder.verify(mDelegate).requestShowContent();
         assertEquals(3, mModelList.size());
         assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
     }
@@ -227,6 +230,54 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         verify(mBottomSheetController).removeObserver(observer);
         assertTrue(mModelList.isEmpty());
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetContentChanged_addsPadding() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        BottomSheetContent mockContent = mock();
+        when(mDelegate.isSameContentView(mockContent)).thenReturn(true);
+        when(mBottomSheetController.hasBottomInset()).thenReturn(false);
+
+        observer.onSheetContentChanged(mockContent);
+        verify(mDelegate).addPadding();
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetContentChanged_doesNotAddPadding_differentContent() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        BottomSheetContent mockContent = mock();
+        when(mDelegate.isSameContentView(mockContent)).thenReturn(false);
+        when(mBottomSheetController.hasBottomInset()).thenReturn(false);
+
+        observer.onSheetContentChanged(mockContent);
+        verify(mDelegate, never()).addPadding();
+    }
+
+    @Test
+    public void testBottomSheetObserver_onSheetContentChanged_doesNotAddPadding_hasBottomInset() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+
+        verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+
+        BottomSheetContent mockContent = mock();
+        when(mDelegate.isSameContentView(mockContent)).thenReturn(true);
+        when(mBottomSheetController.hasBottomInset()).thenReturn(true);
+
+        observer.onSheetContentChanged(mockContent);
+        verify(mDelegate, never()).addPadding();
     }
 
     @Test

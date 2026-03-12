@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -33,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupListBottomSheetCoordinatorDelegate;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.collaboration.CollaborationService;
@@ -130,6 +133,15 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
         verify(mCoordinator).destroy();
+    }
+
+    @Test
+    public void testDelegateIsSameContentView() {
+        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate(false);
+
+        BottomSheetContent mockContent = mock();
+        assertFalse(delegate.isSameContentView(mockContent));
+        assertFalse(delegate.isSameContentView(null));
     }
 
     @Test

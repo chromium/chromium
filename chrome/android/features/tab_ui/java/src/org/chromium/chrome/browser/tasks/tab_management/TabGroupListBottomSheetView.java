@@ -7,21 +7,23 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.View.LAYOUT_DIRECTION_LTR;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -113,7 +115,7 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return mShowNewGroupRow
                 ? context.getString(
                         R.string.tab_group_list_with_add_button_bottom_sheet_content_description)
@@ -133,6 +135,16 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.tab_group_list_bottom_sheet_closed;
+    }
+
+    public void addBottomPadding() {
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) assumeNonNull(mRecyclerView).getLayoutParams();
+
+        Resources resources = mRecyclerView.getContext().getResources();
+        @Px int rowMargin = resources.getDimensionPixelSize(R.dimen.default_list_row_padding);
+        params.bottomMargin = rowMargin;
+        mRecyclerView.setLayoutParams(params);
     }
 
     private float getSheetContentHeight() {

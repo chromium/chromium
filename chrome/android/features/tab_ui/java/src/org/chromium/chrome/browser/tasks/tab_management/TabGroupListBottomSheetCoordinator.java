@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -47,6 +48,17 @@ public class TabGroupListBottomSheetCoordinator {
 
         /** Hides the bottom sheet. */
         void hide(@StateChangeReason int hideReason);
+
+        /** Adds padding to the bottom of the recycler view. */
+        void addPadding();
+
+        /**
+         * Checks to see see whether the bottom sheet content is the same as this bottom sheet's
+         * content view.
+         *
+         * @param content The content to be checked.
+         */
+        boolean isSameContentView(@Nullable BottomSheetContent content);
     }
 
     private final TabGroupListBottomSheetView mView;
@@ -146,6 +158,16 @@ public class TabGroupListBottomSheetCoordinator {
                 if (destroyOnHide) {
                     destroy();
                 }
+            }
+
+            @Override
+            public void addPadding() {
+                mView.addBottomPadding();
+            }
+
+            @Override
+            public boolean isSameContentView(@Nullable BottomSheetContent content) {
+                return content != null && content.getContentView() == mView.getContentView();
             }
         };
     }
