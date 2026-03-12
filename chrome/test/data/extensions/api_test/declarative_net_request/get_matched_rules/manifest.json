@@ -11,7 +11,7 @@
       "enabled": true
     }]
   },
-  "manifest_version": 2,
+  "manifest_version": 3,
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
@@ -19,9 +19,6 @@
   ],
   "version": "1.0",
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"
   }
 }
