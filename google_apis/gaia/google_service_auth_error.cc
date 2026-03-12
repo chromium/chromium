@@ -188,6 +188,16 @@ GoogleServiceAuthError GoogleServiceAuthError::FromDeviceManagementError(
 }
 
 // static
+GoogleServiceAuthError GoogleServiceAuthError::CreateAccountNotFound() {
+  return GoogleServiceAuthError(Details(AccountNotFound()));
+}
+
+// static
+GoogleServiceAuthError GoogleServiceAuthError::CreateRequestCanceled() {
+  return GoogleServiceAuthError(Details(RequestCanceled()));
+}
+
+// static
 bool GoogleServiceAuthError::IsValid(State state) {
   switch (state) {
     case NONE:
