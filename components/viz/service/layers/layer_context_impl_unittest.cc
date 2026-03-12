@@ -4387,8 +4387,7 @@ INSTANTIATE_TEST_SUITE_P(
     LayerContextImplUpdateDisplayTreeInvalidBrowserControlsTest,
     ::testing::Values(std::numeric_limits<float>::infinity(),
                       -std::numeric_limits<float>::infinity(),
-                      std::numeric_limits<float>::quiet_NaN(),
-                      -1.0f),
+                      std::numeric_limits<float>::quiet_NaN()),
     [](const testing::TestParamInfo<
         LayerContextImplUpdateDisplayTreeInvalidBrowserControlsTest::ParamType>&
            info) {
@@ -4398,28 +4397,47 @@ INSTANTIATE_TEST_SUITE_P(
       if (std::isnan(info.param)) {
         return "NaN";
       }
-      if (info.param < 0.0f) {
-        return "Negative";
-      }
       return "Other";
     });
 
-TEST_F(LayerContextImplTest, InvalidMinMaxBrowserControlsHeight) {
+TEST_F(LayerContextImplTest, ClampedMinMaxBrowserControlsHeight) {
   auto update = CreateDefaultUpdate();
   update->browser_controls_params.top_controls_height = 10.f;
   update->browser_controls_params.top_controls_min_height = 20.f;
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Invalid browser controls params");
+  ASSERT_TRUE(result.has_value());
+  const auto& params = layer_context_impl_->host_impl()
+                           ->active_tree()
+                           ->browser_controls_params();
+  EXPECT_EQ(params.top_controls_height, 10.f);
+  EXPECT_EQ(params.top_controls_min_height, 10.f);
 
   update = CreateDefaultUpdate();
   update->browser_controls_params.bottom_controls_height = 10.f;
   update->browser_controls_params.bottom_controls_min_height = 20.f;
 
   result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), "Invalid browser controls params");
+  ASSERT_TRUE(result.has_value());
+  const auto& params2 = layer_context_impl_->host_impl()
+                            ->active_tree()
+                            ->browser_controls_params();
+  EXPECT_EQ(params2.bottom_controls_height, 10.f);
+  EXPECT_EQ(params2.bottom_controls_min_height, 10.f);
+}
+
+TEST_F(LayerContextImplTest, NegativeBrowserControlsHeight) {
+  auto update = CreateDefaultUpdate();
+  update->browser_controls_params.top_controls_height = -10.f;
+  update->browser_controls_params.top_controls_min_height = -5.f;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_TRUE(result.has_value());
+  const auto& params = layer_context_impl_->host_impl()
+                           ->active_tree()
+                           ->browser_controls_params();
+  EXPECT_EQ(params.top_controls_height, 0.f);
+  EXPECT_EQ(params.top_controls_min_height, 0.f);
 }
 
 class LayerContextImplUpdateDisplayTreeInvalidElasticOverscrollTest

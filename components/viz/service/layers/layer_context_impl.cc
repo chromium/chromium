@@ -1979,21 +1979,23 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       !std::isfinite(update->max_safe_area_inset_bottom)) {
     return base::unexpected("Invalid max safe area inset bottom");
   }
-  if (update->browser_controls_params.top_controls_height < 0 ||
-      !std::isfinite(update->browser_controls_params.top_controls_height) ||
-      update->browser_controls_params.top_controls_min_height < 0 ||
+  if (!std::isfinite(update->browser_controls_params.top_controls_height) ||
       !std::isfinite(update->browser_controls_params.top_controls_min_height) ||
-      update->browser_controls_params.bottom_controls_height < 0 ||
       !std::isfinite(update->browser_controls_params.bottom_controls_height) ||
-      update->browser_controls_params.bottom_controls_min_height < 0 ||
       !std::isfinite(
-          update->browser_controls_params.bottom_controls_min_height) ||
-      update->browser_controls_params.top_controls_min_height >
-          update->browser_controls_params.top_controls_height ||
-      update->browser_controls_params.bottom_controls_min_height >
-          update->browser_controls_params.bottom_controls_height) {
+          update->browser_controls_params.bottom_controls_min_height)) {
     return base::unexpected("Invalid browser controls params");
   }
+  update->browser_controls_params.top_controls_height =
+      std::max(0.f, update->browser_controls_params.top_controls_height);
+  update->browser_controls_params.top_controls_min_height =
+      std::clamp(update->browser_controls_params.top_controls_min_height, 0.f,
+                 update->browser_controls_params.top_controls_height);
+  update->browser_controls_params.bottom_controls_height =
+      std::max(0.f, update->browser_controls_params.bottom_controls_height);
+  update->browser_controls_params.bottom_controls_min_height =
+      std::clamp(update->browser_controls_params.bottom_controls_min_height,
+                 0.f, update->browser_controls_params.bottom_controls_height);
   layers.SetBrowserControlsParams(update->browser_controls_params);
   host_impl_->browser_controls_manager()->SetOffsetTagModifications(
       update->browser_controls_offset_tag_modifications);
