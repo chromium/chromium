@@ -1200,7 +1200,6 @@ coverage_builder(
             "release",
             "linux",
             "x64",
-            "no_clang_modules",
         ],
     ),
     builderless = True,
