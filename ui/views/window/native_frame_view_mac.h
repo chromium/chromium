@@ -15,23 +15,11 @@ namespace views {
 
 class Widget;
 
-// A client interface that `NativeFrameViewMac` can use to augment or override
-// its behavior. This allows higher-level modules (Ex: //chrome) to customize
-// the frame view without creating a dependency from //ui.
-class VIEWS_EXPORT NativeFrameViewMacClient {
- public:
-  virtual ~NativeFrameViewMacClient() = default;
-
-  // Returns a hit-test value for the given point, or nullopt to allow default
-  // processing. See FrameView::NonClientHitTest for more details.
-  virtual std::optional<int> NonClientHitTest(const gfx::Point& point) = 0;
-};
-
 class VIEWS_EXPORT NativeFrameViewMac : public NativeFrameView {
   METADATA_HEADER(NativeFrameViewMac, NativeFrameView)
 
  public:
-  NativeFrameViewMac(Widget* widget, NativeFrameViewMacClient* client);
+  explicit NativeFrameViewMac(Widget* widget);
   NativeFrameViewMac(const NativeFrameViewMac&) = delete;
   NativeFrameViewMac& operator=(const NativeFrameViewMac&) = delete;
   ~NativeFrameViewMac() override;
@@ -39,11 +27,6 @@ class VIEWS_EXPORT NativeFrameViewMac : public NativeFrameView {
   // FrameView
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
-  int NonClientHitTest(const gfx::Point& point) override;
-
- private:
-  // A client that can customize behavior.
-  raw_ptr<NativeFrameViewMacClient, DanglingUntriaged> client_;
 };
 
 }  // namespace views

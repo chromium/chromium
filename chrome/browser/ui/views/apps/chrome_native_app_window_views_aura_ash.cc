@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
+#include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -239,6 +240,24 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
 }
 
 std::unique_ptr<views::FrameView>
+ChromeNativeAppWindowViewsAuraAsh::CreateStandardDesktopAppFrame() {
+  auto frame_view = std::make_unique<ash::FrameViewAsh>(widget());
+  window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
+
+  frame_view->GetHeaderView()->set_context_menu_controller(this);
+
+  // Enter immersive mode if the app is opened in tablet mode with the hide
+  // titlebars feature enabled.
+  UpdateImmersiveMode();
+
+  if (HasFrameColor()) {
+    frame_view->SetFrameColors(ActiveFrameColor(), InactiveFrameColor());
+  }
+
+  return frame_view;
+}
+
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
   auto frame = std::make_unique<NativeAppWindowFrameView>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),
@@ -251,6 +270,11 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
                         chromeos::kResizeOutsideBoundsSize,
                         chromeos::kResizeAreaCornerSize);
   return frame;
+}
+
+bool ChromeNativeAppWindowViewsAuraAsh::ShouldCreateNonStandardAppFrame()
+    const {
+  return IsFrameless();
 }
 
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
@@ -370,28 +394,6 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
 
 ///////////////////////////////////////////////////////////////////////////////
 // WidgetDelegate implementation:
-std::unique_ptr<views::FrameView>
-ChromeNativeAppWindowViewsAuraAsh::CreateFrameView(views::Widget* widget) {
-  if (IsFrameless()) {
-    return CreateNonStandardAppFrame();
-  }
-
-  window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
-
-  auto custom_frame_view = std::make_unique<ash::FrameViewAsh>(widget);
-
-  custom_frame_view->GetHeaderView()->set_context_menu_controller(this);
-
-  // Enter immersive mode if the app is opened in tablet mode with the hide
-  // titlebars feature enabled.
-  UpdateImmersiveMode();
-
-  if (HasFrameColor()) {
-    custom_frame_view->SetFrameColors(ActiveFrameColor(), InactiveFrameColor());
-  }
-
-  return custom_frame_view;
-}
 
 views::ClientView* ChromeNativeAppWindowViewsAuraAsh::CreateClientView(
     views::Widget* widget) {

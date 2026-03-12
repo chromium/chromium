@@ -201,11 +201,11 @@ int AppWindowFrameView::NonClientHitTest(const gfx::Point& point) {
   if (frame_component != HTNOWHERE)
     return frame_component;
 
-  // Check for possible draggable region in the client area for the frameless
-  // window.
-  SkRegion* draggable_region = window_->GetDraggableRegion();
-  if (draggable_region && draggable_region->contains(point.x(), point.y()))
-    return HTCAPTION;
+  if (!non_client_hit_test_callback_.is_null()) {
+    if (auto result = non_client_hit_test_callback_.Run(point); result) {
+      return result.value();
+    }
+  }
 
   int client_component = widget_->client_view()->NonClientHitTest(point);
   if (client_component != HTNOWHERE)

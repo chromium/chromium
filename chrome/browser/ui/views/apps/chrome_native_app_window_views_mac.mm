@@ -12,7 +12,6 @@
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/views/apps/app_window_native_widget_mac.h"
-#include "chrome/browser/ui/views/apps/native_app_window_frame_view_mac_client.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/window/frame_view.h"
 #include "ui/views/window/native_frame_view_mac.h"
@@ -201,9 +200,5 @@ void ChromeNativeAppWindowViewsMac::OnWidgetCreated(views::Widget* widget) {
 
 std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateFrameViewImpl() {
-  CHECK(!frame_view_client_);
-  frame_view_client_ =
-      std::make_unique<NativeAppWindowFrameViewMacClient>(widget(), this);
-  return std::make_unique<views::NativeFrameViewMac>(widget(),
-                                                     frame_view_client_.get());
+  return std::make_unique<views::NativeFrameViewMac>(widget());
 }

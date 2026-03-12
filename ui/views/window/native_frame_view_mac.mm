@@ -15,9 +15,8 @@
 
 namespace views {
 
-NativeFrameViewMac::NativeFrameViewMac(Widget* widget,
-                                       NativeFrameViewMacClient* client)
-    : NativeFrameView(widget), client_(client) {}
+NativeFrameViewMac::NativeFrameViewMac(Widget* widget)
+    : NativeFrameView(widget) {}
 
 NativeFrameViewMac::~NativeFrameViewMac() = default;
 
@@ -32,16 +31,6 @@ gfx::Rect NativeFrameViewMac::GetWindowBoundsForClientBounds(
     window_bounds.set_size(gfx::Size(1, 1));
   }
   return window_bounds;
-}
-
-int NativeFrameViewMac::NonClientHitTest(const gfx::Point& point) {
-  if (client_) {
-    if (std::optional<int> result = client_->NonClientHitTest(point)) {
-      return result.value();
-    }
-  }
-
-  return NativeFrameView::NonClientHitTest(point);
 }
 
 BEGIN_METADATA(NativeFrameViewMac)

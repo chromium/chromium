@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/extension_util.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -35,6 +37,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view.h"
 
 using extensions::AppWindow;
 
@@ -213,6 +216,10 @@ ChromeNativeAppWindowViews::CreateStandardDesktopAppFrame() {
   return views::WidgetDelegateView::CreateFrameView(widget());
 }
 
+bool ChromeNativeAppWindowViews::ShouldCreateNonStandardAppFrame() const {
+  return IsFrameless() || has_frame_color_;
+}
+
 bool ChromeNativeAppWindowViews::ShouldRemoveStandardFrame() {
   return IsFrameless() || has_frame_color_;
 }
@@ -288,8 +295,15 @@ ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
 
 std::unique_ptr<views::FrameView> ChromeNativeAppWindowViews::CreateFrameView(
     views::Widget* widget) {
-  return (IsFrameless() || has_frame_color_) ? CreateNonStandardAppFrame()
-                                             : CreateStandardDesktopAppFrame();
+  auto frame_view = ShouldCreateNonStandardAppFrame()
+                        ? CreateNonStandardAppFrame()
+                        : CreateStandardDesktopAppFrame();
+  if (ShouldCreateNonStandardAppFrame()) {
+    frame_view->set_non_client_hit_test_callback(base::BindRepeating(
+        &ChromeNativeAppWindowViews::NonClientHitTest, base::Unretained(this)));
+  }
+
+  return frame_view;
 }
 
 bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
@@ -434,4 +448,18 @@ void ChromeNativeAppWindowViews::OnIconUpdated(
   }
   DCHECK_EQ(app_icon_.get(), icon);
   UpdateWindowIcon();
+}
+
+std::optional<int> ChromeNativeAppWindowViews::NonClientHitTest(
+    const gfx::Point& point) {
+  if (!widget()->IsFullscreen()) {
+    // Check for possible draggable region in the client area for the frameless
+    // window.
+    SkRegion* draggable_region = GetDraggableRegion();
+    if (draggable_region && draggable_region->contains(point.x(), point.y())) {
+      return HTCAPTION;
+    }
+  }
+
+  return std::nullopt;
 }
