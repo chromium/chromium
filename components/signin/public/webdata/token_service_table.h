@@ -87,6 +87,7 @@ class TokenServiceTable : public WebDatabaseTable {
 
  private:
   bool MigrateToVersion130AddBindingKeyColumn();
+  bool MigrateToVersion150AddMtlsTokenBindingColumn();
 };
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_WEBDATA_TOKEN_SERVICE_TABLE_H_

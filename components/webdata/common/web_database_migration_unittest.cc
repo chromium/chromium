@@ -1934,4 +1934,24 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion148ToCurrent) {
   }
 }
 
+TEST_F(WebDatabaseMigrationTest, MigrateVersion149ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_149.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(149, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("token_service", "mtls_token_binding"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("token_service", "mtls_token_binding"));
+  }
+}
+
 }  // anonymous namespace

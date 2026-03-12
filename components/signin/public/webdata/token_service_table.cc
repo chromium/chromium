@@ -99,7 +99,8 @@ bool TokenServiceTable::CreateTablesIfNecessary() {
     if (!db()->Execute("CREATE TABLE token_service ("
                        "service VARCHAR PRIMARY KEY NOT NULL,"
                        "encrypted_token BLOB,"
-                       "binding_key BLOB)")) {
+                       "binding_key BLOB,"
+                       "mtls_token_binding INTEGER)")) {
       DUMP_WILL_BE_NOTREACHED() << "Failed creating token_service table";
       return false;
     }
@@ -112,6 +113,8 @@ bool TokenServiceTable::MigrateToVersion(int version,
   switch (version) {
     case 130:
       return MigrateToVersion130AddBindingKeyColumn();
+    case 150:
+      return MigrateToVersion150AddMtlsTokenBindingColumn();
   }
 
   return true;
@@ -286,5 +289,14 @@ bool TokenServiceTable::MigrateToVersion130AddBindingKeyColumn() {
   return transaction.Begin() &&
          db()->Execute(
              "ALTER TABLE token_service ADD COLUMN binding_key BLOB") &&
+         transaction.Commit();
+}
+
+bool TokenServiceTable::MigrateToVersion150AddMtlsTokenBindingColumn() {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         db()->Execute(
+             "ALTER TABLE token_service ADD COLUMN mtls_token_binding "
+             "INTEGER") &&
          transaction.Commit();
 }
