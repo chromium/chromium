@@ -1406,7 +1406,8 @@ bool HTMLFormElement::HasAnyNamedProperties() const {
   return (elements && !elements->NamedItemsEmpty()) || !PastNamesEmpty();
 }
 
-V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
+V8UnionElementOrRadioNodeList::Ret HTMLFormElement::AnonymousNamedGetter(
+    ScriptState* script_state,
     const AtomicString& name) {
   // Call getNamedElements twice, first time check if it has a value
   // and let HTMLFormElement update its cache.
@@ -1415,7 +1416,7 @@ V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
     HeapVector<Member<Element>> elements;
     GetNamedElements(name, elements);
     if (elements.empty())
-      return nullptr;
+      return {};
   }
 
   // Second call may return different results from the first call,
@@ -1441,10 +1442,10 @@ V8UnionElementOrRadioNodeList* HTMLFormElement::AnonymousNamedGetter(
     }
   }
   if (elements.size() == 1) {
-    return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(elements[0]);
+    return V8UnionElementOrRadioNodeList::Ret(script_state, elements[0]);
   }
-  return MakeGarbageCollected<V8UnionElementOrRadioNodeList>(
-      GetRadioNodeList(name, only_match_img));
+  return V8UnionElementOrRadioNodeList::Ret(
+      script_state, GetRadioNodeList(name, only_match_img));
 }
 
 bool HTMLFormElement::NamedPropertyQuery(const AtomicString& name,

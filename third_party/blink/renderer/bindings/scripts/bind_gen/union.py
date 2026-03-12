@@ -1128,6 +1128,9 @@ def generate_union(union_identifier):
     source_blink_ns.body.append(EmptyNode())
 
     if union.usage & web_idl.idl_type.UnionType.Usage.OUTPUT:
+        class_def.public_section.append(
+            TextNode("using Ret = bindings::OptimizedReturnProxy<{}>;".format(
+                cg_context.class_name)))
         class_def.public_section.append(tov8_func_decls)
         class_def.public_section.append(EmptyNode())
         source_blink_ns.body.append(tov8_func_defs)

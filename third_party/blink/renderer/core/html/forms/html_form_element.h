@@ -145,7 +145,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   const HeapVector<Member<HTMLImageElement>>& ImageElements();
 
-  V8UnionElementOrRadioNodeList* AnonymousNamedGetter(const AtomicString& name);
+  bindings::OptimizedReturnProxy<V8UnionElementOrRadioNodeList>
+  AnonymousNamedGetter(ScriptState* script_state, const AtomicString& name);
   bool NamedPropertyQuery(const AtomicString& name, ExceptionState&);
   bool HasAnyNamedProperties() const;
 

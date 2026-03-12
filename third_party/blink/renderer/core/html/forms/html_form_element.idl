@@ -41,7 +41,7 @@
     readonly attribute long length;
     [ImplementedAs=item] getter Element (unsigned long index);
     // FIXME: This getter should not have [NotEnumerable].
-    [NotEnumerable] getter (RadioNodeList or Element) (DOMString name);
+    [NotEnumerable, CallWith=ScriptState] getter (RadioNodeList or Element) (DOMString name);
 
     [ImplementedAs=submitFromJavaScript] void submit();
     [RaisesException] void requestSubmit(optional HTMLElement? submitter = null);

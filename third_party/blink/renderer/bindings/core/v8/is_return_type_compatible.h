@@ -263,6 +263,15 @@ template <typename IDLType, typename ReturnType>
            std::is_constructible_v<IDLType, ReturnType>)
 inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
 
+// A call that is expected to return a union may also return a special return
+// proxy class for such union, which avoids heap allocs and extra member type
+// dispatch.
+template <typename IDLType, typename ReturnType>
+  requires(std::derived_from<IDLType, UnionBase> &&
+           std::is_same_v<typename IDLType::Ret,
+                          std::remove_pointer_t<ReturnType>>)
+inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
+
 // TODO(caseq): should we restrict KURLs to strings of particular type? Forbid
 // implicit conversion altogether?
 template <typename IDLStringType>

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -819,6 +820,11 @@ struct ToV8Traits<T> {
     DCHECK(value);
     return value->ToV8(script_state);
   }
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      bindings::OptimizedReturnProxy<T> value) {
+    return value.ToV8();
+  }
   template <typename ArgType>
     requires(!std::is_same_v<T*, std::remove_cvref_t<ArgType>> &&
              std::is_constructible_v<T, ArgType>)
@@ -836,6 +842,14 @@ struct ToV8Traits<IDLNullable<T>> {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
+  }
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      bindings::OptimizedReturnProxy<T> value) {
+    if (!value) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return value.ToV8();
   }
   template <typename ArgType>
     requires(!std::is_same_v<T*, std::remove_cvref_t<ArgType>> &&
