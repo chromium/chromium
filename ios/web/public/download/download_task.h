@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -137,6 +138,9 @@ class DownloadTask {
 
   // Suggested name for the downloaded file.
   virtual base::FilePath GenerateFileName() const = 0;
+
+  // Returns a weak pointer to DownloadTask.
+  virtual base::WeakPtr<DownloadTask> GetWeakPtr() = 0;
 
   // Returns true if the last download operation was fully or partially
   // performed while the application was not active.

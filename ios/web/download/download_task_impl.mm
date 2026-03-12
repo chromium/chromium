@@ -327,6 +327,10 @@ const base::FilePath& DownloadTaskImpl::GetResponsePath() const {
   return owns_file_ ? kEmptyPath : path_;
 }
 
+base::WeakPtr<DownloadTask> DownloadTaskImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 std::string DownloadTaskImpl::GetSuggestedName() const {
   return std::string();
 }

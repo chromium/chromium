@@ -137,6 +137,10 @@ base::FilePath FakeDownloadTask::GenerateFileName() const {
   return generated_file_name_;
 }
 
+base::WeakPtr<DownloadTask> FakeDownloadTask::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 bool FakeDownloadTask::HasPerformedBackgroundDownload() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return has_performed_background_download_;

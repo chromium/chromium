@@ -48,6 +48,7 @@ class FakeDownloadTask final : public DownloadTask {
   std::string GetOriginalMimeType() const final;
   std::string GetMimeType() const final;
   base::FilePath GenerateFileName() const final;
+  base::WeakPtr<DownloadTask> GetWeakPtr() final;
   bool HasPerformedBackgroundDownload() const final;
   void AddObserver(DownloadTaskObserver* observer) final;
   void RemoveObserver(DownloadTaskObserver* observer) final;
@@ -95,8 +96,10 @@ class FakeDownloadTask final : public DownloadTask {
   __strong NSString* identifier_ = nil;
   base::FilePath response_path_;
   __strong NSData* response_data_ = nil;
-};
 
+ protected:
+  base::WeakPtrFactory<FakeDownloadTask> weak_factory_{this};
+};
 }  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_TEST_FAKES_FAKE_DOWNLOAD_TASK_H_

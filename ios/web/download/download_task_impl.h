@@ -75,6 +75,7 @@ class DownloadTaskImpl : public DownloadTask {
   void RemoveObserver(DownloadTaskObserver* observer) final;
   void GetResponseData(ResponseDataReadCallback callback) const final;
   const base::FilePath& GetResponsePath() const final;
+  base::WeakPtr<DownloadTask> GetWeakPtr() final;
 
  private:
   // Needs to be overridden by sub-classes to perform the download. When this
