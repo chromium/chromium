@@ -36,7 +36,7 @@ cargo_crate("lib") {
 
   deps = [
     "//third_party/rust/anyhow/v1:lib",
-    "//third_party/rust/itertools/v0_11:lib",
+    "//third_party/rust/itertools/v0_14:lib",
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v2:lib",
