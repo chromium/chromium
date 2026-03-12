@@ -379,6 +379,8 @@ source_set("manifest_broker") {
   sources = [
     "model_execution/manifest_broker/manifest.cc",
     "model_execution/manifest_broker/manifest.h",
+    "model_execution/manifest_broker/manifest_asset_manager.cc",
+    "model_execution/manifest_broker/manifest_asset_manager.h",
   ]
   deps = [
     ":ondevice",
@@ -388,7 +390,7 @@ source_set("manifest_broker") {
   ]
 }
 
-static_library("manifest_broker_test_support") {
+static_library("manifest_broker_dev_support") {
   sources = [
     "model_execution/manifest_broker/test/example_manifest.cc",
     "model_execution/manifest_broker/test/example_manifest.h",
@@ -403,6 +405,21 @@ static_library("manifest_broker_test_support") {
   ]
 }
 
+static_library("manifest_broker_test_support") {
+  testonly = true
+  sources = [
+    "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.cc",
+    "model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h",
+  ]
+  deps = [
+    ":manifest_broker",
+    ":manifest_broker_dev_support",
+    ":model_execution_test_support",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 static_library("core") {
   sources = [
     "noisy_metrics_recorder.cc",
@@ -414,6 +431,7 @@ static_library("core") {
     ":features",
     ":filters",
     ":hints",
+    ":manifest_broker",
     ":model_execution",
     ":ondevice",
     ":prediction",
@@ -769,6 +787,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/aqa_response_parser_unittest.cc",
       "model_execution/fieldwise_response_parser_unittest.cc",
       "model_execution/json_response_parser_unittest.cc",
+      "model_execution/manifest_broker/manifest_asset_manager_unittest.cc",
       "model_execution/manifest_broker/manifest_unittest.cc",
       "model_execution/model_broker_client_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
@@ -797,6 +816,7 @@ source_set("model_execution_unit_tests") {
     ]
     deps += [
       ":manifest_broker",
+      ":manifest_broker_dev_support",
       ":manifest_broker_test_support",
       ":prediction",
       "//components/component_updater",

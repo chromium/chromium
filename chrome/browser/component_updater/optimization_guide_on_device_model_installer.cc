@@ -16,7 +16,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -26,6 +28,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/update_client/crx_update_item.h"
@@ -36,8 +39,6 @@
 
 namespace component_updater {
 namespace {
-
-using ::optimization_guide::OnDeviceModelComponentStateManager;
 
 // Extension id is fklghjjljmnfjoepjmlobpekiapffcja.
 constexpr char kManifestName[] = "Optimization Guide On Device Model";
@@ -62,23 +63,74 @@ static_assert(std::size(kClassifierModelPublicKeySHA256) ==
               crypto::kSHA256Length);
 
 bool IsModelAlreadyInstalled(ComponentUpdateService* cus,
-                             const std::string& extension_id) {
+                             const std::string& extension_id,
+                             const std::string& target_version = "") {
   CrxUpdateItem update_item;
   bool success = cus->GetComponentDetails(extension_id, &update_item);
-  return success && update_item.component.has_value() &&
-         update_item.component->version.IsValid() &&
-         update_item.component->version.CompareToWildcardString("0.0.0.0") > 0;
+  if (!success || !update_item.component.has_value() ||
+      !update_item.component->version.IsValid()) {
+    return false;
+  }
+
+  if (target_version.empty()) {
+    return update_item.component->version.CompareToWildcardString("0.0.0.0") >
+           0;
+  }
+
+  return update_item.component->version.CompareToWildcardString(
+             target_version) == 0;
 }
 
-// Installer policy for the On-Device Base Model.
-class OptimizationGuideOnDeviceBaseModelInstallerPolicy
+// Legacy installer policy for the base and classifier models.
+class OnDeviceModelInstallerPolicy
     : public OptimizationGuideOnDeviceModelInstallerPolicy {
+ public:
+  // `state_manager` has the lifetime till all profiles are closed. It could
+  // slightly vary from lifetime of `this` which runs in separate task runner,
+  // and could get destroyed slightly later than `state_manager`.
+  explicit OnDeviceModelInstallerPolicy(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          state_manager)
+      : state_manager_(state_manager) {}
+  ~OnDeviceModelInstallerPolicy() override = default;
+
+  void OnCustomUninstall() final {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&optimization_guide::OnDeviceModelComponentStateManager::
+                           UninstallComplete,
+                       state_manager_));
+  }
+
+  bool VerifyInstallation(const base::DictValue& manifest,
+                          const base::FilePath& install_dir) const final {
+    return optimization_guide::OnDeviceModelComponentStateManager::
+        VerifyInstallation(install_dir, manifest);
+  }
+
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::DictValue manifest) final {
+    if (state_manager_) {
+      state_manager_->SetReady(version, install_dir, manifest);
+    }
+  }
+
+ protected:
+  // The on-device state manager should be accessed in the UI thread.
+  base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+      state_manager_;
+};
+
+// Legacy Installer policy for the On-Device Base Model.
+class OptimizationGuideOnDeviceBaseModelInstallerPolicy final
+    : public OnDeviceModelInstallerPolicy {
  public:
   explicit OptimizationGuideOnDeviceBaseModelInstallerPolicy(
       base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
           state_manager,
       optimization_guide::OnDeviceModelRegistrationAttributes attributes)
-      : OptimizationGuideOnDeviceModelInstallerPolicy(state_manager),
+      : OnDeviceModelInstallerPolicy(state_manager),
         attributes_(std::move(attributes)) {}
   ~OptimizationGuideOnDeviceBaseModelInstallerPolicy() override = default;
 
@@ -119,14 +171,14 @@ class OptimizationGuideOnDeviceBaseModelInstallerPolicy
   const optimization_guide::OnDeviceModelRegistrationAttributes attributes_;
 };
 
-// Installer policy for the On-Device Classifier Model.
-class OptimizationGuideOnDeviceClassifierModelInstallerPolicy
-    : public OptimizationGuideOnDeviceModelInstallerPolicy {
+// Legacy Installer policy for the On-Device Classifier Model.
+class OptimizationGuideOnDeviceClassifierModelInstallerPolicy final
+    : public OnDeviceModelInstallerPolicy {
  public:
   explicit OptimizationGuideOnDeviceClassifierModelInstallerPolicy(
       base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
           state_manager)
-      : OptimizationGuideOnDeviceModelInstallerPolicy(state_manager) {}
+      : OnDeviceModelInstallerPolicy(state_manager) {}
   ~OptimizationGuideOnDeviceClassifierModelInstallerPolicy() override = default;
 
   base::FilePath GetRelativeInstallDir() const override {
@@ -145,8 +197,8 @@ class OptimizationGuideOnDeviceClassifierModelInstallerPolicy
   }
 };
 
-class OnDeviceModelComponentStateManagerDelegate
-    : public OnDeviceModelComponentStateManager::Delegate {
+class OnDeviceModelComponentStateManagerDelegate final
+    : public optimization_guide::OnDeviceModelComponentStateManager::Delegate {
  public:
   explicit OnDeviceModelComponentStateManagerDelegate(OnDeviceModelType type)
       : type_(type) {}
@@ -186,7 +238,8 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 
   void RegisterInstaller(
-      base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          state_manager,
       optimization_guide::OnDeviceModelRegistrationAttributes attributes)
       override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -195,7 +248,8 @@ class OnDeviceModelComponentStateManagerDelegate
     }
     ComponentUpdateService* cus = g_browser_process->component_updater();
     auto register_callback = base::BindOnce(
-        [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
+        [](base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+               state_manager,
            ComponentUpdateService* cus, const std::string& extension_id) {
           if (state_manager) {
             state_manager->InstallerRegistered(
@@ -208,8 +262,9 @@ class OnDeviceModelComponentStateManagerDelegate
         ->Register(cus, std::move(register_callback));
   }
 
-  void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
-                     state_manager) override {
+  void Uninstall(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          state_manager) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     base::MakeRefCounted<ComponentInstaller>(
         CreateInstallerPolicy(
@@ -240,7 +295,8 @@ class OnDeviceModelComponentStateManagerDelegate
 
  private:
   std::unique_ptr<ComponentInstallerPolicy> CreateInstallerPolicy(
-      base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          state_manager,
       optimization_guide::OnDeviceModelRegistrationAttributes attributes) {
     switch (type_) {
       case OnDeviceModelType::kClassifierModel:
@@ -254,25 +310,156 @@ class OnDeviceModelComponentStateManagerDelegate
     }
   }
 
-  OnDeviceModelType type_;
+  const OnDeviceModelType type_;
+};
+
+// A generic component installer policy for Manifest Component.
+class ManifestComponentsInstallerPolicy final
+    : public OptimizationGuideOnDeviceModelInstallerPolicy {
+ public:
+  // `asset_id` is the key for the on-demand components in the manifest proto's
+  // `Assets.on_demand_components` map.
+  // `asset_manager` has the lifetime till all profiles are closed. It could
+  // slightly vary from lifetime of `this` which runs in separate task runner,
+  // and could get destroyed slightly later than `state_manager`.
+  ManifestComponentsInstallerPolicy(
+      std::string asset_id,
+      std::string public_key_hex,
+      std::string target_version,
+      base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager)
+      : asset_id_(std::move(asset_id)),
+        public_key_hex_(std::move(public_key_hex)),
+        target_version_(std::move(target_version)),
+        asset_manager_(std::move(asset_manager)) {
+    bool success = base::HexStringToBytes(public_key_hex_, &public_key_hash_);
+    if (!success || public_key_hash_.size() != 32) {
+      LOG(ERROR) << "Invalid public key hex: [" << public_key_hex_
+                 << "]  with hash size " << public_key_hash_.size()
+                 << " for asset: " << asset_id_;
+    }
+  }
+
+  ~ManifestComponentsInstallerPolicy() override = default;
+
+  ManifestComponentsInstallerPolicy(const ManifestComponentsInstallerPolicy&) =
+      delete;
+  ManifestComponentsInstallerPolicy& operator=(
+      const ManifestComponentsInstallerPolicy&) = delete;
+
+ private:
+  bool VerifyInstallation(const base::DictValue& manifest,
+                          const base::FilePath& install_dir) const override {
+    return optimization_guide::ManifestAssetManager::VerifyInstallation(
+        install_dir, manifest);
+  }
+
+  void OnCustomUninstall() override {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &optimization_guide::ManifestAssetManager::OnAssetUninstalled,
+            asset_manager_, asset_id_));
+  }
+
+  base::FilePath GetRelativeInstallDir() const override {
+    return base::FilePath(FILE_PATH_LITERAL("OptGuideManifestModel"))
+        .AppendASCII(public_key_hex_);
+  }
+
+  void GetHash(std::vector<uint8_t>* hash) const override {
+    *hash = public_key_hash_;
+  }
+
+  std::string GetName() const override {
+    return "Optimization Guide Manifest Component: " + asset_id_;
+  }
+
+  update_client::InstallerAttributes GetInstallerAttributes() const override {
+    return {{"target_version", target_version_}};
+  }
+
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::DictValue manifest) override {
+    if (asset_manager_) {
+      asset_manager_->OnAssetReady(asset_id_, version, install_dir);
+    }
+  }
+
+  const std::string asset_id_;
+  const std::string public_key_hex_;
+  std::vector<uint8_t> public_key_hash_;
+  const std::string target_version_;
+  // The manifest asset manager should be accessed in the UI thread.
+  base::WeakPtr<optimization_guide::ManifestAssetManager> asset_manager_;
+};
+
+class ManifestAssetManagerDelegateImpl final
+    : public optimization_guide::ManifestAssetManager::Delegate {
+ public:
+  void RegisterOnDemandComponent(
+      const std::string& asset_id,
+      const std::string& public_key_hex,
+      const std::string& target_version,
+      base::WeakPtr<optimization_guide::ManifestAssetManager> manager)
+      override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!g_browser_process) {
+      return;
+    }
+
+    ComponentUpdateService* cus = g_browser_process->component_updater();
+
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ManifestComponentsInstallerPolicy>(
+            asset_id, public_key_hex, target_version, manager));
+
+    auto register_callback = base::BindOnce(
+        [](base::WeakPtr<optimization_guide::ManifestAssetManager> manager,
+           ComponentUpdateService* cus, const std::string& asset_id,
+           const std::string& public_key_hex,
+           const std::string& target_version) {
+          if (manager) {
+            manager->InstallerRegistered(
+                asset_id,
+                IsModelAlreadyInstalled(
+                    cus, crx_file::id_util::GenerateIdFromHex(public_key_hex),
+                    target_version));
+          }
+        },
+        manager, cus, asset_id, public_key_hex, target_version);
+
+    installer->Register(cus, std::move(register_callback));
+  }
+
+  void Uninstall(const std::string& asset_id,
+                 const std::string& public_key_hex,
+                 base::WeakPtr<optimization_guide::ManifestAssetManager>
+                     manager) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ManifestComponentsInstallerPolicy>(
+            asset_id, public_key_hex, /*target_version=*/std::string(),
+            std::move(manager)))
+        ->Uninstall();
+  }
+
+  void RequestUpdate(const std::string& asset_id,
+                     const std::string& public_key_hex,
+                     bool is_background) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!g_browser_process) {
+      return;
+    }
+    OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+        crx_file::id_util::GenerateIdFromHex(public_key_hex),
+        is_background ? OnDemandUpdater::Priority::BACKGROUND
+                      : OnDemandUpdater::Priority::FOREGROUND);
+  }
 };
 
 }  // namespace
-
-OptimizationGuideOnDeviceModelInstallerPolicy::
-    OptimizationGuideOnDeviceModelInstallerPolicy(
-        base::WeakPtr<OnDeviceModelComponentStateManager> state_manager)
-    : state_manager_(state_manager) {}
-
-OptimizationGuideOnDeviceModelInstallerPolicy::
-    ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
-
-bool OptimizationGuideOnDeviceModelInstallerPolicy::VerifyInstallation(
-    const base::DictValue& manifest,
-    const base::FilePath& install_dir) const {
-  return OnDeviceModelComponentStateManager::VerifyInstallation(install_dir,
-                                                                manifest);
-}
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -281,8 +468,6 @@ bool OptimizationGuideOnDeviceModelInstallerPolicy::
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::RequiresNetworkEncryption()
     const {
-  // This installer is only registered for users who use certain features, and
-  // we do not want to expose that they are users of those features.
   return true;
 }
 
@@ -291,22 +476,6 @@ OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomInstall(
     const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
-}
-
-void OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomUninstall() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComplete,
-                     state_manager_));
-}
-
-void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    base::DictValue manifest) {
-  if (state_manager_) {
-    state_manager_->SetReady(version, install_dir, manifest);
-  }
 }
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::AllowCachedCopies() const {
@@ -353,6 +522,11 @@ std::string GetOptimizationGuideOnDeviceModelExtensionId(
       return OptimizationGuideOnDeviceBaseModelInstallerPolicy::
           GetOnDeviceModelExtensionId();
   }
+}
+
+std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>
+CreateManifestAssetManagerDelegate() {
+  return std::make_unique<ManifestAssetManagerDelegateImpl>();
 }
 
 }  // namespace component_updater
