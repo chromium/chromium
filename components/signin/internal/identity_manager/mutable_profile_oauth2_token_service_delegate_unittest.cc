@@ -1056,7 +1056,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Primary account must be kept.
   EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), ElementsAre(account_id));
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
-  EXPECT_EQ(oauth2_service_delegate_->GetRefreshToken(account_id),
+  EXPECT_EQ(oauth2_service_delegate_->GetRefreshTokenForTest(account_id),
             GaiaConstants::kInvalidRefreshToken);
 
   histogram_tester.ExpectUniqueSample(
@@ -1084,8 +1084,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
 
   EXPECT_EQ(1u, oauth2_service_delegate_->GetAccounts().size());
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
-  EXPECT_STREQ(GaiaConstants::kInvalidRefreshToken,
-               oauth2_service_delegate_->GetRefreshToken(account_id).c_str());
+  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
+            oauth2_service_delegate_->GetRefreshTokenForTest(account_id));
 
   // The account is in authentication error.
   EXPECT_EQ(GoogleServiceAuthError(
@@ -1690,9 +1690,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
   EXPECT_FALSE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
-  EXPECT_STREQ(
-      GaiaConstants::kInvalidRefreshToken,
-      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
+            oauth2_service_delegate_->GetRefreshTokenForTest(primary_account));
   EXPECT_EQ(GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                 GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                     CREDENTIALS_REJECTED_BY_CLIENT),
@@ -1713,9 +1712,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
   EXPECT_FALSE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
-  EXPECT_STREQ(
-      GaiaConstants::kInvalidRefreshToken,
-      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
+            oauth2_service_delegate_->GetRefreshTokenForTest(primary_account));
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
 }
 
@@ -2210,7 +2208,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   WaitForRefreshTokensLoaded();
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(kPrimaryAccount));
-  EXPECT_EQ(oauth2_service_delegate_->GetRefreshToken(kPrimaryAccount),
+  EXPECT_EQ(oauth2_service_delegate_->GetRefreshTokenForTest(kPrimaryAccount),
             GaiaConstants::kInvalidRefreshToken);
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(kPrimaryAccount).empty());
@@ -2451,9 +2449,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
-  EXPECT_STREQ(
-      refresh_token_primary,
-      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_EQ(refresh_token_primary,
+            oauth2_service_delegate_->GetRefreshTokenForTest(primary_account));
   EXPECT_EQ(GoogleServiceAuthError::AuthErrorNone(),
             oauth2_service_delegate_->GetAuthError(primary_account));
 
@@ -2472,9 +2469,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
   EXPECT_TRUE(
       oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
-  EXPECT_STREQ(
-      refresh_token_primary,
-      oauth2_service_delegate_->GetRefreshToken(primary_account).c_str());
+  EXPECT_EQ(refresh_token_primary,
+            oauth2_service_delegate_->GetRefreshTokenForTest(primary_account));
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
 }
 

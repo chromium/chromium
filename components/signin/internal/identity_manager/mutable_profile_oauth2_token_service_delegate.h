@@ -159,8 +159,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   static void SetIgnoreNonOfficialApiKeysForTesting();
 
  private:
-  friend class MutableProfileOAuth2TokenServiceDelegateTest;
-
   class RevokeServerRefreshToken;
 
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
