@@ -199,6 +199,7 @@ TEST(EntityConverterTest, ConvertFlight) {
   flight->set_departure_airport("SFO");
   flight->set_arrival_airport("JFK");
   flight->set_departure_date_unix_epoch_seconds(1750000000);
+  flight->set_arrival_date_unix_epoch_seconds(1750000060);
 
   std::optional<Entity> result = CreateEntityFromSpecifics(specifics);
 
@@ -215,6 +216,8 @@ TEST(EntityConverterTest, ConvertFlight) {
   EXPECT_EQ(entity_flight.arrival_airport, "JFK");
   EXPECT_EQ(entity_flight.departure_date,
             base::Time::FromSecondsSinceUnixEpoch(1750000000));
+  EXPECT_EQ(entity_flight.arrival_date,
+            base::Time::FromSecondsSinceUnixEpoch(1750000060));
 }
 
 TEST(EntityConverterTest, ConvertVehicle) {

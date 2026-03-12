@@ -172,6 +172,10 @@ FlightReservation ConvertFlight(
     flight.departure_date = base::Time::FromSecondsSinceUnixEpoch(
         proto_flight.departure_date_unix_epoch_seconds());
   }
+  if (proto_flight.has_arrival_date_unix_epoch_seconds()) {
+    flight.arrival_date = base::Time::FromSecondsSinceUnixEpoch(
+        proto_flight.arrival_date_unix_epoch_seconds());
+  }
   return flight;
 }
 
