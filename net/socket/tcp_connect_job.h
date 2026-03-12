@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
@@ -310,9 +311,13 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   base::OneShotTimer slow_timer_;
 
   // This includes addresses that Connectors are currently attempting to connect
-  // to. No address will ever br tried twice, even if it appears in multiple
+  // to. No address will ever be tried twice, even if it appears in multiple
   // ServiceEndpoints.
-  std::set<IPEndPoint> attempted_addresses_;
+  //
+  // `base::flat_set` is here instead of `absl::flash_hash_map` because this
+  // list is expected to be typically be very short (< 20 entries), though that
+  // also means the performance here doesn't matter much, anyways.
+  base::flat_set<IPEndPoint> attempted_addresses_;
 
   // IPs are only added to this list once connecting to them fails, so this is a
   // strict superset of `attempted_addresses_`, except when there are no usable
