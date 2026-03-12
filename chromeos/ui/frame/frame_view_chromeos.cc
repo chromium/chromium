@@ -113,7 +113,8 @@ gfx::Rect FrameViewChromeOS::GetWindowBoundsForClientBounds(
 }
 
 int FrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
-  return FrameBorderNonClientHitTest(this, point);
+  return FrameBorderNonClientHitTest(this, point,
+                                     non_client_hit_test_callback_);
 }
 
 void FrameViewChromeOS::GetWindowMask(const gfx::Size& size,

@@ -10,14 +10,11 @@
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view.h"
 
 namespace gfx {
 class Point;
 }  // namespace gfx
-
-namespace views {
-class FrameView;
-}  // namespace views
 
 namespace aura {
 class Window;
@@ -27,8 +24,10 @@ namespace chromeos {
 
 // Returns the HitTestCompat for the specified point.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
-int FrameBorderNonClientHitTest(views::FrameView* view,
-                                const gfx::Point& point_in_widget);
+int FrameBorderNonClientHitTest(
+    views::FrameView* view,
+    const gfx::Point& point_in_widget,
+    const views::FrameView::HitTestCallback& non_client_hit_test_callback);
 
 // Resolve the inferred opacity and updates the params.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)

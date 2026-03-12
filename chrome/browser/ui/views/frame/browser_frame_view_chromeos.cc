@@ -419,7 +419,8 @@ gfx::Rect BrowserFrameViewChromeOS::GetWindowBoundsForClientBounds(
 }
 
 int BrowserFrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
-  int hit_test = chromeos::FrameBorderNonClientHitTest(this, point);
+  int hit_test = chromeos::FrameBorderNonClientHitTest(
+      this, point, non_client_hit_test_callback_);
 
   // When the window is restored (and not in tablet split-view mode) we want a
   // large click target above the tabs to drag the window, so redirect clicks in
