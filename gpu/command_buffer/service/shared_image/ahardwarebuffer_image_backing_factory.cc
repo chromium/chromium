@@ -233,6 +233,56 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
   NOTREACHED();
 }
 
+bool IsFormatSupportedForGL(viz::SharedImageFormat format,
+                            const gles2::Validators* validators,
+                            const GLFormatCaps& gl_format_caps) {
+  CHECK(AHardwareBufferSupportedFormat(format));
+
+  // TODO(vikassoni): In future when we use GL_TEXTURE_EXTERNAL_OES target
+  // with AHB, we need to check if oes_egl_image_external is supported or
+  // not.
+  const bool is_egl_image_supported =
+      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;
+  if (!is_egl_image_supported) {
+    return false;
+  }
+
+  if (format.is_multi_plane()) {
+    return true;
+  }
+
+  // Check if AHB backed GL texture can be created using this format and
+  // gather GL related format info.
+  // TODO(vikassoni): Add vulkan related information in future.
+  GLFormatDesc format_desc =
+      gl_format_caps.ToGLFormatDescOverrideHalfFloatType(format,
+                                                         /*plane_index=*/0);
+  GLuint internal_format = format_desc.image_internal_format;
+  GLenum gl_format = format_desc.data_format;
+  GLenum gl_type = format_desc.data_type;
+
+  // AHardwareBufferImageBacking supports internal format GL_RGBA and GL_RGB.
+  if (internal_format != GL_RGBA && internal_format != GL_RGB &&
+      internal_format != GL_RGBA16F) {
+    return false;
+  }
+
+  // kRGBA_F16 is a core part of ES3.
+  const bool at_least_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
+  bool supports_data_type = (gl_type == GL_HALF_FLOAT && at_least_es3) ||
+                            validators->pixel_type.IsValid(gl_type);
+  bool supports_internal_format =
+      (internal_format == GL_RGBA16F && at_least_es3) ||
+      validators->texture_internal_format.IsValid(internal_format);
+
+  // Validate if GL format, type and internal format is supported.
+  if (supports_internal_format &&
+      validators->texture_format.IsValid(gl_format) && supports_data_type) {
+    return true;
+  }
+  return false;
+}
+
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
@@ -753,69 +803,6 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   }
 }
 
-// static
-AHardwareBufferImageBackingFactory::FormatInfo
-AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
-    viz::SharedImageFormat format,
-    const gles2::Validators* validators,
-    const GLFormatCaps& gl_format_caps) {
-  CHECK(AHardwareBufferSupportedFormat(format));
-
-  FormatInfo info;
-  info.ahb_format = AHardwareBufferFormat(format);
-
-  // TODO(vikassoni): In future when we use GL_TEXTURE_EXTERNAL_OES target
-  // with AHB, we need to check if oes_egl_image_external is supported or
-  // not.
-  const bool is_egl_image_supported =
-      gl::g_current_gl_driver->ext.b_GL_OES_EGL_image;
-  if (!is_egl_image_supported) {
-    return info;
-  }
-
-  if (format.is_multi_plane()) {
-    info.gl_supported = true;
-    info.gl_format = 0;
-    info.gl_type = 0;
-    info.internal_format = 0;
-    return info;
-  }
-
-  // Check if AHB backed GL texture can be created using this format and
-  // gather GL related format info.
-  // TODO(vikassoni): Add vulkan related information in future.
-  GLFormatDesc format_desc =
-      gl_format_caps.ToGLFormatDescOverrideHalfFloatType(format,
-                                                         /*plane_index=*/0);
-  GLuint internal_format = format_desc.image_internal_format;
-  GLenum gl_format = format_desc.data_format;
-  GLenum gl_type = format_desc.data_type;
-
-  // AHardwareBufferImageBacking supports internal format GL_RGBA and GL_RGB.
-  if (internal_format != GL_RGBA && internal_format != GL_RGB &&
-      internal_format != GL_RGBA16F) {
-    return info;
-  }
-
-  // kRGBA_F16 is a core part of ES3.
-  const bool at_least_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
-  bool supports_data_type = (gl_type == GL_HALF_FLOAT && at_least_es3) ||
-                            validators->pixel_type.IsValid(gl_type);
-  bool supports_internal_format =
-      (internal_format == GL_RGBA16F && at_least_es3) ||
-      validators->texture_internal_format.IsValid(internal_format);
-
-  // Validate if GL format, type and internal format is supported.
-  if (supports_internal_format &&
-      validators->texture_format.IsValid(gl_format) && supports_data_type) {
-    info.gl_supported = true;
-    info.gl_format = gl_format;
-    info.gl_type = gl_type;
-    info.internal_format = internal_format;
-  }
-  return info;
-}
-
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     const GpuPreferences& gpu_preferences,
@@ -827,8 +814,10 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
 
   // Build the feature info for all the supported formats.
   for (auto format : kSupportedFormats) {
-    format_infos_[format] = FormatInfoForSupportedFormat(
-        format, feature_info->validators(), gl_format_caps_);
+    if (IsFormatSupportedForGL(format, feature_info->validators(),
+                               gl_format_caps_)) {
+      supported_gl_formats_.insert(format);
+    }
   }
 
   // TODO(vikassoni): We are using below GL api calls for now as Vulkan mode
@@ -902,14 +891,12 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     return nullptr;
   }
 
-  const FormatInfo& format_info = GetFormatInfo(format);
-
   // Setup AHardwareBuffer.
   AHardwareBuffer* buffer = nullptr;
   AHardwareBuffer_Desc hwb_desc;
   hwb_desc.width = size.width();
   hwb_desc.height = size.height();
-  hwb_desc.format = format_info.ahb_format;
+  hwb_desc.format = AHardwareBufferFormat(format);
 
   hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
@@ -1065,8 +1052,6 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     return false;
   }
 
-  const FormatInfo& format_info = GetFormatInfo(format);
-
   bool used_by_skia = usage.HasAny(
       SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE);
@@ -1077,7 +1062,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   // do below gl related checks.
   if (used_by_gl) {
     // Check if the GL texture can be created from AHB with this format.
-    if (!format_info.gl_supported) {
+    if (!supported_gl_formats_.contains(format)) {
       LOG(ERROR)
           << "viz::SharedImageFormat " << format.ToString()
           << " can not be used to create a GL texture from AHardwareBuffer.";
@@ -1088,9 +1073,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   return true;
 }
 
-AHardwareBufferImageBackingFactory::FormatInfo::FormatInfo() = default;
 
-AHardwareBufferImageBackingFactory::FormatInfo::~FormatInfo() = default;
 
 std::unique_ptr<SharedImageBacking>
 AHardwareBufferImageBackingFactory::CreateSharedImage(
