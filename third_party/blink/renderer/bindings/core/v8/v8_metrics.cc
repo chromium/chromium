@@ -240,9 +240,16 @@ void ReportHistogramCollectionLimits(
 void ReportV8FullHistograms(
     std::string_view priority,
     const v8::metrics::GarbageCollectionFullCycle& event) {
+  const std::string is_input_handling =
+      event.is_input_handling ? ".IsInputHandling" : ".NotInputHandling";
+
   base::UmaHistogramExactLinear(
       base::StrCat({"V8.GC.Cycle", priority, ".Reason.Full"}), event.reason,
       v8::internal::kGarbageCollectionReasonMaxValue);
+  base::UmaHistogramExactLinear(
+      base::StrCat(
+          {"V8.GC.Cycle", priority, ".Reason.Full", is_input_handling}),
+      event.reason, v8::internal::kGarbageCollectionReasonMaxValue);
 
   // Interval between full cycles can go over 10s. UmaHistogramMediumTimes() can
   // record intervals up to 3m, as opposed to 10s for UmaHistogramMedium().
@@ -256,6 +263,13 @@ void ReportV8FullHistograms(
   ReportHistogramTimesAllGcPhases(
       base::StrCat({"V8.GC.Cycle", priority, ".MainThread.Full"}), "",
       event.main_thread);
+  ReportHistogramTimesAllGcPhases(
+      base::StrCat({"V8.GC.Cycle", priority, ".Full", is_input_handling}), "",
+      event.total);
+  ReportHistogramTimesAllGcPhases(
+      base::StrCat(
+          {"V8.GC.Cycle", priority, ".MainThread.Full", is_input_handling}),
+      "", event.main_thread);
 
   /* Report atomic pause metrics: */
   ReportHistogramTimesAllGcPhases(
