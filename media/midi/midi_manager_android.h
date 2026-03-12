@@ -71,7 +71,6 @@ class MidiManagerAndroid final : public MidiManager,
   // released on the main thread.
   base::Lock lock_;
 
-  std::vector<std::unique_ptr<MidiDeviceAndroid>> devices_;
   // All ports held in |devices_|. Each device has ownership of ports, but we
   // can store pointers here because a device will keep its ports while it is
   // alive.
@@ -85,6 +84,12 @@ class MidiManagerAndroid final : public MidiManager,
   std::vector<raw_ptr<MidiOutputPortAndroid, VectorExperimental>>
       all_output_ports_;
   absl::flat_hash_map<MidiOutputPortAndroid*, size_t> output_port_to_index_;
+
+  // `devices_` must be declared after the port index maps so that it is
+  // destroyed first (in reverse declaration order). This ensures that MidiPorts
+  // are closed and stop receiving callbacks before the maps are destroyed.
+  // See https://crbug.com/490254128.
+  std::vector<std::unique_ptr<MidiDeviceAndroid>> devices_;
 
   base::android::ScopedJavaGlobalRef<jobject> raw_manager_;
 };
