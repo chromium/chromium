@@ -2039,6 +2039,57 @@ TEST_F(TcpConnectJobTest, OnHostResolutionCallbackMayBeDeletedAsyncAndItIs) {
   }
 }
 
+// This tests the case where there are a bunch of OnHostResolutionCallback
+// results of kMayBeDeletedAsync received at once (with one kContinue mixed in).
+// establishing a connection should be delayed until all callbacks have been
+// run. This test doesn't actually check when connection establishment takes
+// place (if it happens too early, we'll just start connecting instead of
+// waiting for a potential deletion), but it does make sure that the ConnectJob
+// doesn't stall indefinitely, or CHECK if that happens.
+TEST_F(TcpConnectJobTest,
+       OnHostResolutionCallbackMultipleMayBeDeletedAsyncCallsInARowButItIsNot) {
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
+
+  bool callback_run = false;
+  EnableHostResolutionCallbacks(
+      {OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kContinue,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+       OnHostResolutionCallbackResult::kMayBeDeletedAsync},
+      base::BindLambdaForTesting([&]() {
+        // The ConnectJob will only continue after another PostTask triggered by
+        // the last `kMayBeDeletedAsync` result has been executed, which should
+        // not have happened yet, since this task should be posted immediately
+        // before the PostTask triggered by the last `kMayBeDeletedAsync`.
+        EXPECT_FALSE(client_socket_factory_.AllDataProvidersUsed());
+        callback_run = true;
+      }));
+
+  EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
+
+  // Add the endpoint, provide a number of CallOnServiceEndpointsUpdated() calls
+  // without modifying the data at all, and then complete the DNS request.
+  request->add_endpoint(service_endpoint).set_aliases(kDnsAliases);
+  for (int i = 0; i < 4; ++i) {
+    request->CallOnServiceEndpointsUpdated();
+  }
+  request->CallOnServiceEndpointRequestFinished(OK);
+
+  WaitForSuccess(kIpV4Endpoint1, service_endpoint);
+  const HostResolutionCallbackInfo expected_host_resolution_info{
+      {service_endpoint}, kDnsAliases};
+  EXPECT_THAT(host_resolution_callback_info_,
+              testing::ElementsAre(
+                  expected_host_resolution_info, expected_host_resolution_info,
+                  expected_host_resolution_info, expected_host_resolution_info,
+                  expected_host_resolution_info));
+  EXPECT_TRUE(callback_run);
+  EXPECT_TRUE(client_socket_factory_.AllDataProvidersUsed());
+}
+
 // This test covers the case where multiple calls return kMayBeDeletedAsync,
 // while a Connector is busy doing different things.
 TEST_F(TcpConnectJobTest, OnHostResolutionCallbackMultipleMayBeDeletedAsync) {

@@ -166,7 +166,13 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // Method that can be posted to asynchronously call
   // DoTryAdvanceWaitingConnectors() and will complete the TcpConnectJob if that
   // returns something other than ERR_IO_PENDING.
-  void TryAdvanceWaitingConnectorsAsync();
+  //
+  // `decrement_waiting_on_possible_async_deletion_count` must be true if the
+  // caller incremented `waiting_on_possible_async_deletion_count_`, which
+  // indicated the task was posted due to the host resolution callback returning
+  // `OnHostResolutionCallbackResult::kMayBeDeletedAsync`.
+  void TryAdvanceWaitingConnectorsAsync(
+      bool decrement_waiting_on_possible_async_deletion_count);
 
   // One of the three principal methods running the the TcpConnectJob's state
   // machine.
@@ -265,6 +271,15 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   void NotifyDelegateIfDone(int result);
 
   const scoped_refptr<TransportSocketParams> params_;
+
+  // The number of tasks posted as a result of the`host_resolution_callback`
+  // returning OnHostResolutionCallbackResult::kMayBeDeletedAsync that we're
+  // waiting to be run. If non-zero, DoTryAdvanceWaitingConnectors() and
+  // GetNextIPEndPoint() will return ERR_IO_PENDING.
+  //
+  // Incremented by DoServiceEndpointsUpdated() and decremented by
+  // TryAdvanceWaitingConnectorsAsync().
+  size_t waiting_on_possible_async_deletion_count_ = 0;
 
   // If populated, will be used instead of making a new ServiceEndpointRequest,
   // and `dns_request_` will be nullptr.

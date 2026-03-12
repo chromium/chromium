@@ -254,10 +254,13 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
     // before this task ends up being executed, so need to be careful of
     // priority inversion and starvation if modifying task priority here.
     if (callback_result == OnHostResolutionCallbackResult::kMayBeDeletedAsync) {
+      ++waiting_on_possible_async_deletion_count_;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&TcpConnectJob::TryAdvanceWaitingConnectorsAsync,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &TcpConnectJob::TryAdvanceWaitingConnectorsAsync,
+              weak_ptr_factory_.GetWeakPtr(),
+              /*decrement_waiting_on_possible_async_deletion_count=*/true));
       return ERR_IO_PENDING;
     }
   }
@@ -265,11 +268,24 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
   return DoTryAdvanceWaitingConnectors();
 }
 
-void TcpConnectJob::TryAdvanceWaitingConnectorsAsync() {
+void TcpConnectJob::TryAdvanceWaitingConnectorsAsync(
+    bool decrement_waiting_on_possible_async_deletion_count) {
+  if (decrement_waiting_on_possible_async_deletion_count) {
+    DCHECK_GT(waiting_on_possible_async_deletion_count_, 0u);
+    --waiting_on_possible_async_deletion_count_;
+  }
   NotifyDelegateIfDone(DoTryAdvanceWaitingConnectors());
 }
 
 int TcpConnectJob::DoTryAdvanceWaitingConnectors() {
+  if (waiting_on_possible_async_deletion_count_) {
+    // We're currently waiting on either `this` to be deleted, or a callback to
+    // TryAdvanceWaitingConnectorsAsync() to be invoked indicating that we're
+    // not going to be deleted. That callback will call this method again, so
+    // can safely defer further work until it's invoked.
+    return ERR_IO_PENDING;
+  }
+
   // SetDone() should cancel all pending activity on completion, so this should
   // not be reachable after completion.
   CHECK(!is_done_);
@@ -369,11 +385,20 @@ void TcpConnectJob::OnSlow() {
     std::swap(primary_connector_, ipv4_connector_);
   }
 
-  TryAdvanceWaitingConnectorsAsync();
+  TryAdvanceWaitingConnectorsAsync(
+      /*decrement_waiting_on_possible_async_deletion_count=*/false);
 }
 
 TcpConnectJob::IPEndPointInfo TcpConnectJob::GetNextIPEndPoint(
     const Connector& connector) {
+  if (waiting_on_possible_async_deletion_count_) {
+    // We're currently waiting on either `this` to be deleted, or a callback to
+    // be invoked indicating that we're not going to be deleted. That callback
+    // will wake up the Connectors, so can safely defer further work until it's
+    // invoked.
+    return base::unexpected(ERR_IO_PENDING);
+  }
+
   const auto& service_endpoints = GetEndpointResults();
   CHECK(!is_done_);
   DCHECK(!connector.is_done());
@@ -488,8 +513,10 @@ TcpConnectJob::IPEndPointInfo TcpConnectJob::GetNextIPEndPoint(
       posted_resume_task = true;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&TcpConnectJob::TryAdvanceWaitingConnectorsAsync,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &TcpConnectJob::TryAdvanceWaitingConnectorsAsync,
+              weak_ptr_factory_.GetWeakPtr(),
+              /*decrement_waiting_on_possible_async_deletion_count=*/false));
     }
   }
 
