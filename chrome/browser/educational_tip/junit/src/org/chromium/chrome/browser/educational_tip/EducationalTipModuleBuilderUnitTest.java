@@ -242,6 +242,37 @@ public class EducationalTipModuleBuilderUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
+    public void testBuild_SetupList_BypassesGlobalKillSwitch() {
+        int setupListModule = ModuleType.DEFAULT_BROWSER_PROMO;
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isSetupListModule(setupListModule)).thenReturn(true);
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(setupListModule, mActionDelegate);
+
+        // Even though the global feature is disabled, it should build because SUL is active.
+        assertTrue(builder.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
+    @DisableFeatures({ChromeFeatureList.EDUCATIONAL_TIP_DEFAULT_BROWSER_PROMO_CARD})
+    public void testBuild_SetupList_BypassesSpecificKillSwitch() {
+        int dbModule = ModuleType.DEFAULT_BROWSER_PROMO;
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isSetupListModule(dbModule)).thenReturn(true);
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(dbModule, mActionDelegate);
+
+        // Even though the DB specific flag is disabled, it should build because SUL is active.
+        assertTrue(builder.build(mModuleDelegate, mBuildCallback));
+        verify(mBuildCallback).onResult(any(ModuleProvider.class));
+    }
+
+    @Test
+    @SmallTest
     public void testGetManualRank_ReturnsRankForSetupListModuleWhenActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.getManualRank(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO)).thenReturn(0);
