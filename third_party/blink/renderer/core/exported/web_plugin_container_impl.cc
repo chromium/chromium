@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -1136,6 +1137,11 @@ void WebPluginContainerImpl::CalculateGeometry(gfx::Rect& window_rect,
     ComputeClipRectsForPlugin(element_, window_rect, clip_rect,
                               unobscured_rect);
   }
+}
+
+mojom::blink::WebFeature WebPluginContainerImpl::SvgFilterPaintedCounter()
+    const {
+  return mojom::blink::WebFeature::kSvgFilterPaintedOnWebPlugin;
 }
 
 }  // namespace blink

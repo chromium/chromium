@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -5469,6 +5470,10 @@ void LocalFrameView::ExecutePendingScrollMarkerSelectionUpdates() {
     }
     pending_scroll_marker_selection_updates_->clear();
   }
+}
+
+mojom::blink::WebFeature LocalFrameView::SvgFilterPaintedCounter() const {
+  return mojom::blink::WebFeature::kSvgFilterPaintedOnLocalFrame;
 }
 
 }  // namespace blink

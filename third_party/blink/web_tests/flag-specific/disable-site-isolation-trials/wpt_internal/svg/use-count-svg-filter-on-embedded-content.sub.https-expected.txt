@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] SVG filter applied to remote frame
+  assert_equals: Outer filter. expected "Local: false, Remote: true, Plugin: false" but got "Local: true, Remote: false, Plugin: false"
+[FAIL] CSS & SVG filter applied to remote frame
+  assert_equals: Outer filter SVG. expected "Local: false, Remote: true, Plugin: false" but got "Local: true, Remote: false, Plugin: false"
+[FAIL] SVG filter applied to nested, but internally unfiltered, remote iframe
+  assert_equals: Filtered load. expected "Local: false, Remote: true, Plugin: false" but got "Local: true, Remote: false, Plugin: false"
+[FAIL] SVG filter applied to nested, internally filtered, local iframe
+  assert_equals: Unfiltered nested load. expected "Local: true, Remote: true, Plugin: true" but got "Local: true, Remote: false, Plugin: true"
+[FAIL] SVG filter applied to nested, internally filtered, remote iframe
+  assert_equals: Unfiltered nested load. expected "Local: true, Remote: true, Plugin: true" but got "Local: true, Remote: false, Plugin: true"
+Harness: the test ran to completion.
+

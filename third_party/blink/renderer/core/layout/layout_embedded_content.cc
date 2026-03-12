@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -352,6 +353,7 @@ void LayoutEmbeddedContent::PaintReplaced(
   NOT_DESTROYED();
   if (ChildPaintBlockedByDisplayLock())
     return;
+  CountSvgFilterPaint();
   EmbeddedContentPainter(*this).PaintReplaced(paint_info, paint_offset);
 }
 
@@ -482,6 +484,26 @@ bool LayoutEmbeddedContent::IsThrottledFrameView() const {
   if (auto* local_frame_view = DynamicTo<LocalFrameView>(ChildFrameView()))
     return local_frame_view->ShouldThrottleRendering();
   return false;
+}
+
+void LayoutEmbeddedContent::CountSvgFilterPaint() const {
+  if (!GetEmbeddedContentView()) {
+    return;
+  }
+  // This is an iteration of all parents on every paint, but embedded content
+  // are rare enough that we do not expect this to be a problem.
+  const LayoutObject* target = this;
+  while (target) {
+    if (target->StyleRef().HasReferenceFilter()) {
+      UseCounter::Count(GetDocument(),
+                        GetEmbeddedContentView()->SvgFilterPaintedCounter());
+      // TODO(crbug.com/476646486): Add a UMA histogram to track more detailed
+      // info about the type of frame (cross-origin, sandbox, plugin, etc.) as
+      // well as the SVG filters applied (blur, color matrix, offset, etc.).
+      return;
+    }
+    target = target->Parent();
+  }
 }
 
 }  // namespace blink

@@ -13,6 +13,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -502,6 +503,10 @@ uint32_t RemoteFrameView::CapturePaintPreview(const gfx::Rect& rect,
 
 void RemoteFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(remote_frame_);
+}
+
+mojom::blink::WebFeature RemoteFrameView::SvgFilterPaintedCounter() const {
+  return mojom::blink::WebFeature::kSvgFilterPaintedOnRemoteFrame;
 }
 
 }  // namespace blink

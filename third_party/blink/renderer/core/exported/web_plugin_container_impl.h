@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -188,6 +189,8 @@ class CORE_EXPORT WebPluginContainerImpl final
   void PropagateFrameRects() override { ReportGeometry(); }
 
   void MaybeLostMouseLock();
+
+  mojom::blink::WebFeature SvgFilterPaintedCounter() const override;
 
  protected:
   void ParentVisibleChanged() override;

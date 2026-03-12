@@ -110,6 +110,8 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
     return To<HTMLFrameOwnerElement>(GetNode());
   }
 
+  void CountSvgFilterPaint() const;
+
  private:
   void WillBeDestroyed() final;
 

@@ -6465,6 +6465,9 @@ Called by update_use_counter_feature_enum.py.-->
       label="HistoryGoBackWouldNotSkipAdDueToSameOriginExclusion"/>
   <int value="5826"
       label="HistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion"/>
+  <int value="5827" label="SvgFilterPaintedOnLocalFrame"/>
+  <int value="5828" label="SvgFilterPaintedOnRemoteFrame"/>
+  <int value="5829" label="SvgFilterPaintedOnWebPlugin"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

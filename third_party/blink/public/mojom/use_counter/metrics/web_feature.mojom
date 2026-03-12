@@ -5141,6 +5141,9 @@ enum WebFeature {
   kHistoryGoForwardWouldSkipAd = 5824,
   kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion = 5825,
   kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion = 5826,
+  kSvgFilterPaintedOnLocalFrame = 5827,
+  kSvgFilterPaintedOnRemoteFrame = 5828,
+  kSvgFilterPaintedOnWebPlugin = 5829,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

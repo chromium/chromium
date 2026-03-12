@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_EMBEDDED_CONTENT_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_EMBEDDED_CONTENT_VIEW_H_
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -74,6 +75,7 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   bool IsParentVisible() const { return parent_visible_; }
   void SetParentVisible(bool);
   bool IsVisible() const { return self_visible_ && parent_visible_; }
+  virtual mojom::blink::WebFeature SvgFilterPaintedCounter() const = 0;
 
  protected:
   // Called when our frame rect changes (or the rect/scroll offset of an
