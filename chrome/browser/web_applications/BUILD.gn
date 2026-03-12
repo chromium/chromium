@@ -1238,6 +1238,7 @@ source_set("web_applications_browser_tests") {
     "commands/update_protocol_handler_approval_command_browsertest.cc",
     "commands/web_app_install_from_migrate_from_field_command_browsertest.cc",
     "commands/web_install_from_url_command_browsertest.cc",
+    "get_installed_related_apps_browsertest.cc",
     "install_element_browsertest.cc",
     "isolated_web_apps/commands/garbage_collect_storage_partitions_command_browsertest.cc",
     "isolated_web_apps/commands/get_isolated_web_app_browsing_data_command_browsertest.cc",
