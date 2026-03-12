@@ -84,6 +84,8 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
       .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
 
   return std::move(mock_aim_eligibility_service);
 }

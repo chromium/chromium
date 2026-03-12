@@ -49,6 +49,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   bool IsServerEligibilityEnabled() const override {
     return server_eligibility_enabled_;
   }
+  bool IsFuseboxEligible() const override { return IsAimEligible(); }
   bool IsAimEligible() const override {
     if (!IsAimLocallyEligible()) {
       return false;
