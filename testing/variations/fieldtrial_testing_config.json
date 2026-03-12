@@ -10836,6 +10836,24 @@
             ]
         }
     ],
+    "GlicToolbarHeightSidePanel": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicUseToolbarHeightSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicTrustFirstOnboarding": [
         {
             "platforms": [

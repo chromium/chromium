@@ -350,9 +350,14 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BorderResize) {
   const int widget_additional_width =
       browser_view.GetWidget()->GetWindowBoundsInScreen().width() -
       browser_view.width();
-  const int minimum_width =
-      browser_view.GetMinimumSize().width() + widget_additional_width;
-  const gfx::Size new_size(minimum_width, 600);
+  const int widget_additional_height =
+      browser_view.GetWidget()->GetWindowBoundsInScreen().height() -
+      browser_view.height();
+  const auto minimum_size = browser_view.browser_widget()->GetMinimumSize();
+  const int minimum_width = minimum_size.width() + widget_additional_width;
+  const int minimum_height =
+      std::max(minimum_size.height() + widget_additional_height, 600);
+  const gfx::Size new_size(minimum_width, minimum_height);
   auto* const browser_window = browser()->window();
   const gfx::Rect new_bounds(browser_window->GetBounds().origin(), new_size);
   EXPECT_NE(browser_window->GetBounds(), new_bounds);
@@ -364,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, BorderResize) {
   }
 
   // Resized correctly.
-  EXPECT_EQ(browser_window->GetBounds(), new_bounds);
+  EXPECT_EQ(browser_window->GetBounds().size(), new_bounds.size());
   EXPECT_EQ(border->GetVisibleBounds(), contents_web_view->GetVisibleBounds());
 }
 
