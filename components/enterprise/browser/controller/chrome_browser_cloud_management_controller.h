@@ -180,6 +180,10 @@ class ChromeBrowserCloudManagementController
     // Returns the platform-specific client data delegate.
     virtual std::unique_ptr<ClientDataDelegate> CreateClientDataDelegate() = 0;
 
+    virtual void StartExtensionInstallPolicyInvalidator();
+
+    virtual bool CanStartExtensionInstallPolicyInvalidator() const;
+
     // Postpones controller initialization until |ReadyToInit()| is true.
     // Implemented in the delegate because the reason why initialization needs
     // to be deferred may vary across platforms.
@@ -249,6 +253,8 @@ class ChromeBrowserCloudManagementController
   void MaybeInit(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  void MaybeStartExtensionInstallPolicyInvalidator();
 
   bool WaitUntilPolicyEnrollmentFinished();
 

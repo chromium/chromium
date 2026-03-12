@@ -92,6 +92,8 @@ class ChromeBrowserCloudManagementControllerDesktop
   void StartInvalidations() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsInvalidationsServiceStarted() const override;
+  void StartExtensionInstallPolicyInvalidator() override;
+  bool CanStartExtensionInstallPolicyInvalidator() const override;
 
  private:
   std::unique_ptr<ChromeBrowserCloudManagementRegisterWatcher>

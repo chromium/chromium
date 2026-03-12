@@ -42,6 +42,13 @@ UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
   DependsOn(UserFmRegistrationTokenUploaderFactory::GetInstance());
 }
 
+// static
+UserCloudPolicyInvalidator* UserCloudPolicyInvalidatorFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<UserCloudPolicyInvalidator*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
 UserCloudPolicyInvalidatorFactory::~UserCloudPolicyInvalidatorFactory() =
     default;
 
