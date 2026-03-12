@@ -566,9 +566,6 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
           web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
           syncer::LocalDataItemModel::DataId(bookmark_node->id()),
           ui::ButtonStyle::kDefault));
-
-      ChromeSigninClient::
-          MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
     }
 #endif
   }

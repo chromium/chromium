@@ -21,7 +21,6 @@ class WaitForNetworkCallbackHelper;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 class ForceSigninVerifier;
 #endif
-class PrefRegistrySimple;
 class Profile;
 
 namespace version_info {
@@ -82,14 +81,6 @@ class ChromeSigninClient : public SigninClient {
   signin::OAuthConsumer GetOAuthConsumerFromId(
       signin::OAuthConsumerId oauth_consumer_id) const override;
 
-  // Adds the users to a synthetic field trial for user that were shown the
-  // Bookmarks Bubble sign in/sync promo. Only adds user that are part of the
-  // experiment associated with `switches::kSyncEnableBookmarksInTransportMode`.
-  // Called when the promo is shown to the user.
-  static void MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
   // Used in tests to override the URLLoaderFactory returned by
   // GetURLLoaderFactory().
   void SetURLLoaderFactoryForTest(
@@ -123,19 +114,6 @@ class ChromeSigninClient : public SigninClient {
   void RecordOpenTabCount(signin_metrics::AccessPoint access_point,
                           signin::ConsentLevel consent_level);
 #endif
-
-  // Adds the user to a synthetic field trial based on the pref that it is
-  // associated with. The pref is then read on startup to ensure stickiness on
-  // session restart. Only adds user that are part of the experiment associated
-  // with `switches::kSyncEnableBookmarksInTransportMode` from which the group
-  // of the Synthetic Field trials are deduced.
-  static void MaybeAddUserToUnoBookmarksSyntheticFieldTrial(
-      std::string_view synthetic_field_trial_group_pref);
-
-  // Reads the group associated with the Synthetic field trial from prefs and
-  // registers it. Only registers the group if it was previously set in the
-  // pref.
-  static void RegisterSyntheticTrialsFromPrefs();
 
   const std::unique_ptr<WaitForNetworkCallbackHelper>
       wait_for_network_callback_helper_;
