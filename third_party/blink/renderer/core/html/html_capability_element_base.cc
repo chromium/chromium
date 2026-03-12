@@ -714,6 +714,13 @@ bool HTMLCapabilityElementBase::MaybeRegisterPageEmbeddedPermissionControl() {
     return false;
   }
 
+  // TODO(crbug.com/490139152): Evaluate <install> support in subframes. If we
+  // continue to block it in all subframes, we should likely create a new issue
+  // type.
+  if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+    return false;
+  }
+
   for (const PermissionDescriptorPtr& descriptor : permission_descriptors_) {
     if (!GetExecutionContext()->IsFeatureEnabled(
             PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
@@ -1210,6 +1217,19 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
     return true;
   }
 
+  if (LocalFrame* frame = GetDocument().GetFrame()) {
+    // TODO(crbug.com/490139152): Evaluate <install> support in subframes.
+    // For now, check this before the registration
+    // check so we don't fall through to SecurityChecksFailed, which DevTools
+    // maps to a misleading "quota exceeded" message.
+    if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+      RecordPermissionElementUserInteractionDeniedReason(
+          TagQName(),
+          UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
+      return false;
+    }
+  }
+
   if (!is_registered_in_browser_process_) {
     AuditsIssue::ReportPermissionElementIssue(
         GetExecutionContext(), GetDomNodeId(),
@@ -1306,6 +1326,11 @@ HTMLCapabilityElementBase::GetClickingEnabledState() const {
               PermissionNameToPermissionsPolicyFeature(descriptor->name))) {
         return {false, AtomicString("illegal_subframe")};
       }
+    }
+
+    // TODO(crbug.com/490139152): Evaluate <install> support in subframes.
+    if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+      return {false, AtomicString("illegal_subframe")};
     }
   }
 
