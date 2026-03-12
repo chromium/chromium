@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.actor;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.res.Configuration;
 import android.util.Rational;
+import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
@@ -15,6 +18,7 @@ import androidx.core.pip.PictureInPictureDelegate;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.function.Supplier;
@@ -30,18 +34,24 @@ public class ActorPictureInPictureController
     private static final String TAG = "ActorPiPController";
     private final ComponentActivity mActivity;
     private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<ViewGroup> mRootViewSupplier;
     private final BasicPictureInPicture mPipDelegate;
     private @Nullable ActorKeyedService mActorService;
     private boolean mInActorPiP;
+    private @Nullable ActorPictureInPictureOverlayCoordinator mPipOverlayCoordinator;
 
     /**
      * @param activity The ComponentActivity.
      * @param profileSupplier The supplier for the current Profile.
+     * @param rootViewSupplier The supplier for the root view.
      */
     public ActorPictureInPictureController(
-            ComponentActivity activity, Supplier<Profile> profileSupplier) {
+            ComponentActivity activity,
+            Supplier<Profile> profileSupplier,
+            Supplier<ViewGroup> rootViewSupplier) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
+        mRootViewSupplier = rootViewSupplier;
         // Initialize the AndroidX PiP delegate.
         // Activity extends ComponentActivity, so this is valid.
         mPipDelegate = new BasicPictureInPicture(activity);
@@ -53,13 +63,13 @@ public class ActorPictureInPictureController
     /** Checks if there are active Actor tasks. */
     public boolean shouldEnterPip() {
         if (mActivity.isFinishing() || mActivity.isDestroyed()) return false;
-        maybeCreateActorService();
-        if (mActorService == null) return false;
-        return mActorService.getActiveTasksCount() > 0;
+        ActorKeyedService service = maybeGetActorService();
+        if (service == null) return false;
+        return service.getActiveTasksCount() > 0;
     }
 
     /** Lazily retrieves the ActorKeyedService and registers this observer. */
-    private @Nullable ActorKeyedService maybeCreateActorService() {
+    private @Nullable ActorKeyedService maybeGetActorService() {
         if (mActorService != null) return mActorService;
         Profile profile = mProfileSupplier.get();
         if (profile == null) return null;
@@ -93,28 +103,30 @@ public class ActorPictureInPictureController
     // ActorKeyedService.Observer implementation
     @Override
     public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
+        // TODO(crbug.com/491976823): Store active task ID and clear on task complete.
         updatePipState();
         checkAndExitPipIfFinished();
-        if (mInActorPiP) {
-            updatePipOverlayDetails(taskId);
+        if (mInActorPiP && mPipOverlayCoordinator != null) {
+            updatePipOverlayStatus(newState);
         }
     }
 
     private void checkAndExitPipIfFinished() {
-        if (mInActorPiP && !shouldEnterPip()) {
-            Log.i(TAG, "No active tasks remaining. Exiting PiP.");
-            mInActorPiP = false;
-            // Standard way to exit PiP programmatically
-            mActivity.moveTaskToBack(true);
-        }
+        if (!mInActorPiP || shouldEnterPip()) return;
+
+        Log.i(TAG, "No active tasks remaining. Exiting PiP.");
+        mInActorPiP = false;
+        hideOverlay();
+        // Standard way to exit PiP programmatically
+        mActivity.moveTaskToBack(true);
     }
 
-    private void updatePipOverlayDetails(int taskId) {
-        maybeCreateActorService();
+    void updatePipOverlayStatus(@ActorTaskState int newState) {
+        if (!mInActorPiP || mPipOverlayCoordinator == null) return;
+
+        maybeGetActorService();
         if (mActorService == null) return;
-        ActorTask task = mActorService.getTask(taskId);
-        if (task == null) return;
-        // TODO(crbug.com/484430394): Update status overlay view.
+        mPipOverlayCoordinator.updateStatus(newState);
         updatePipState();
     }
 
@@ -124,9 +136,11 @@ public class ActorPictureInPictureController
             @NonNull PictureInPictureDelegate.Event event, @Nullable Configuration newConfig) {
         if (event == PictureInPictureDelegate.Event.ENTERED) {
             mInActorPiP = true;
+            showOverlay();
             checkAndExitPipIfFinished();
         } else if (event == PictureInPictureDelegate.Event.EXITED) {
             mInActorPiP = false;
+            hideOverlay();
             updatePipState();
         }
     }
@@ -134,15 +148,51 @@ public class ActorPictureInPictureController
     /** Expose to Activity to guarantee UI reset during framework exits. */
     public void onFrameworkExitedPictureInPicture() {
         mInActorPiP = false;
+        hideOverlay();
         updatePipState();
     }
 
     /** Called when the Activity is destroyed. */
     public void destroy() {
+        if (mPipOverlayCoordinator != null) {
+            mPipOverlayCoordinator.destroy();
+            mPipOverlayCoordinator = null;
+        }
+
         if (mActorService != null) {
             mActorService.removeObserver(this);
             mActorService = null;
         }
         mPipDelegate.setEnabled(false);
+    }
+
+    private void showOverlay() {
+        if (mPipOverlayCoordinator == null) {
+            ViewGroup parent = mRootViewSupplier.get();
+            if (parent == null) return;
+            mPipOverlayCoordinator = new ActorPictureInPictureOverlayCoordinator(mActivity, parent);
+        }
+
+        assumeNonNull(mPipOverlayCoordinator);
+        mPipOverlayCoordinator.setVisibility(true);
+
+        ActorKeyedService service = maybeGetActorService();
+        if (service != null) {
+            ActorTask task = service.getCurrentActiveTask();
+            if (task != null) {
+                mPipOverlayCoordinator.updateTitle(task.getTitle());
+                updatePipOverlayStatus(task.getState());
+            }
+        }
+    }
+
+    private void hideOverlay() {
+        if (mPipOverlayCoordinator != null) {
+            mPipOverlayCoordinator.setVisibility(false);
+        }
+    }
+
+    void setOverlayCoordinatorForTesting(ActorPictureInPictureOverlayCoordinator coordinator) {
+        mPipOverlayCoordinator = coordinator;
     }
 }

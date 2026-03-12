@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Picture-In-Picture -->
+    <dimen name="actor_pip_padding_horizontal">16dp</dimen>
+    <dimen name="actor_pip_title_drawable_padding">4dp</dimen>
+    <dimen name="actor_pip_status_margin_top">4dp</dimen>
+</resources>

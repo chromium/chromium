@@ -1388,7 +1388,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
         if (mActorPipController == null && ChromeFeatureList.sGlic.isEnabled()) {
             mActorPipController =
-                    new ActorPictureInPictureController(this, () -> mTabModelProfileSupplier.get());
+                    new ActorPictureInPictureController(
+                            this,
+                            () -> mTabModelProfileSupplier.get(),
+                            () -> findViewById(android.R.id.content));
         }
         return mActorPipController;
     }

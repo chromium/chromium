@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/actor_pip_overlay_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/actor_pip_padding_horizontal"
+    android:paddingEnd="@dimen/actor_pip_padding_horizontal">
+
+    <TextView
+        android:id="@+id/pip_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:gravity="center_horizontal"
+        android:drawableTop="@drawable/ic_spark_24dp"
+        android:drawablePadding="@dimen/actor_pip_title_drawable_padding"
+        android:drawableTint="?attr/colorOnSurface"/>
+
+    <TextView
+        android:id="@+id/pip_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/actor_pip_status_margin_top"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+        android:gravity="center_horizontal"/>
+
+</org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayView>

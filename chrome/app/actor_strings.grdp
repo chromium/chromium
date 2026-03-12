@@ -58,6 +58,19 @@
       $1<ex>Wikipedia</ex>
     </ph> - Gemini is working on your task...
   </message>
+  <!-- TODO(crbug.com/491585996): Make strings translatable once they are finalized -->
+  <message name="IDS_ACTOR_PIP_WORKING_STATUS" desc="Status text shown in Picture-in-Picture when the actor is actively performing a task." formatter_data="android_java" translateable="false" >
+    Working on your task…
+  </message>
+  <message name="IDS_ACTOR_PIP_PAUSED_STATUS" desc="Status text shown in Picture-in-Picture when the task has been paused by the user." formatter_data="android_java" translateable="false" >
+    Task Paused
+  </message>
+  <message name="IDS_ACTOR_PIP_NEEDS_ATTENTION_STATUS" desc="Status text shown in Picture-in-Picture when the task requires user input to continue." formatter_data="android_java" translateable="false" >
+    Needs your attention
+  </message>
+  <message name="IDS_ACTOR_PIP_COMPLETE_STATUS" desc="Status text shown in Picture-in-Picture when the actor has finished the assigned task." formatter_data="android_java" translateable="false" >
+    Task Complete
+  </message>
 
   <!-- Android specific strings. -->
   <message name="IDS_ACTOR_OVERLAY_SNACKBAR_MESSAGE" desc="Message shown in a snackbar when the user clicks on the actor overlay but they cannot interact with the tab until the task is paused or complete." formatter_data="android_java">

@@ -28,6 +28,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayView.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewBinder.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayMediator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayProperties.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayView.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayViewBinder.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
   ]
 
@@ -40,11 +45,13 @@ android_library("java") {
     "//chrome/app:java_strings_grd",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/glic/android:java_resources",
     "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/theme:java_resources",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/styles/android:java_resources",
@@ -104,6 +111,8 @@ android_resources("java_resources") {
     "java/res/layout/actor_control_layout.xml",
     "java/res/layout/actor_gts_tab_indicator.xml",
     "java/res/layout/actor_overlay.xml",
+    "java/res/layout/actor_picture_in_picture_overlay.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",
@@ -117,6 +126,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorPictureInPictureOverlayCoordinatorTest.java",
   ]
   deps = [
     ":java",
@@ -124,8 +134,10 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/glic/android:java_resources",
     "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -142,6 +154,7 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_resources",
     "//ui/android:ui_java_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.actor.ui"
