@@ -336,6 +336,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/page_image_service",
     "//chrome/browser/page_info",
     "//chrome/browser/passage_embeddings",
+    "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/payments/browser_binding:browser_bound_key_deleter",
     "//chrome/browser/permissions",

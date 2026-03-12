@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -38,6 +39,26 @@
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 namespace settings {
+
+namespace {
+
+base::ListValue ConvertActorLoginPermissionsToList(
+    base::flat_set<password_manager::ActorLoginPermission> all_permissions) {
+  base::ListValue permissions_list;
+  for (const password_manager::ActorLoginPermission& permission :
+       all_permissions) {
+    auto permission_dict =
+        base::DictValue()
+            .Set("signonRealm", permission.domain_info.signon_realm)
+            .Set("username", permission.username)
+            .Set("displayName", permission.domain_info.name)
+            .Set("faviconUrl", permission.favicon_url.spec());
+    permissions_list.Append(std::move(permission_dict));
+  }
+  return permissions_list;
+}
+
+}  // namespace
 
 GlicHandler::GlicHandler() = default;
 GlicHandler::~GlicHandler() = default;
@@ -108,6 +129,8 @@ void GlicHandler::OnJavascriptAllowed() {
   actor_login_permissions_manager_ =
       std::make_unique<actor_login::ActorLoginPermissionsManagerImpl>(
           AffiliationServiceFactory::GetForProfile(profile),
+          actor_login::ActorLoginPermissionServiceFactory::GetForProfile(
+              profile),
           ProfilePasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(
@@ -122,7 +145,14 @@ void GlicHandler::OnJavascriptDisallowed() {
 }
 
 void GlicHandler::OnPermissionsChanged() {
-  FireWebUIListener("actor-login-permissions-changed", GetPermissionsList());
+  RequestPermissionsList(base::BindOnce(&GlicHandler::NotifyPermissionsChanged,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicHandler::NotifyPermissionsChanged(base::ListValue permissions_list) {
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("actor-login-permissions-changed", permissions_list);
+  }
 }
 
 void GlicHandler::SetWebUIForTesting(content::WebUI* web_ui) {
@@ -249,7 +279,16 @@ void GlicHandler::HandleGetActorLoginPermissions(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, GetPermissionsList());
+  RequestPermissionsList(
+      base::BindOnce(&GlicHandler::OnGetActorLoginPermissions,
+                     weak_ptr_factory_.GetWeakPtr(), callback_id.GetString()));
+}
+
+void GlicHandler::OnGetActorLoginPermissions(std::string callback_id_str,
+                                             base::ListValue permissions_list) {
+  if (IsJavascriptAllowed()) {
+    ResolveJavascriptCallback(base::Value(callback_id_str), permissions_list);
+  }
 }
 
 void GlicHandler::HandleRevokeActorLoginPermission(
@@ -261,22 +300,13 @@ void GlicHandler::HandleRevokeActorLoginPermission(
   }
 }
 
-base::ListValue GlicHandler::GetPermissionsList() {
-  base::ListValue permissions_list;
+void GlicHandler::RequestPermissionsList(
+    base::OnceCallback<void(base::ListValue)> callback) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  const base::flat_set<password_manager::ActorLoginPermission>&
-      all_permissions = actor_login_permissions_manager_->GetAllPermissions(
-          SyncServiceFactory::GetForProfile(profile));
-  for (const password_manager::ActorLoginPermission& permission :
-       all_permissions) {
-    base::DictValue permission_dict;
-    permission_dict.Set("signonRealm", permission.domain_info.signon_realm);
-    permission_dict.Set("username", permission.username);
-    permission_dict.Set("displayName", permission.domain_info.name);
-    permission_dict.Set("faviconUrl", permission.favicon_url.spec());
-    permissions_list.Append(std::move(permission_dict));
-  }
-  return permissions_list;
+  actor_login_permissions_manager_->GetAllPermissions(
+      SyncServiceFactory::GetForProfile(profile),
+      base::BindOnce(&ConvertActorLoginPermissionsToList)
+          .Then(std::move(callback)));
 }
 
 }  // namespace settings

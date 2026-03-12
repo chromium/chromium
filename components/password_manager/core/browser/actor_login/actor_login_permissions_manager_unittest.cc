@@ -5,8 +5,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager_impl.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -48,8 +50,11 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
     test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    actor_login_permission_service_ =
+        std::make_unique<ActorLoginPermissionServiceImpl>();
     permissions_manager_ = std::make_unique<ActorLoginPermissionsManagerImpl>(
-        &affiliation_service_, profile_store_, account_store_);
+        &affiliation_service_, actor_login_permission_service_.get(),
+        profile_store_, account_store_);
     WaitForPasswordStore();
   }
 
@@ -75,12 +80,17 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
+  std::unique_ptr<ActorLoginPermissionServiceImpl>
+      actor_login_permission_service_;
   std::unique_ptr<ActorLoginPermissionsManagerImpl> permissions_manager_;
 };
 
 TEST_F(ActorLoginPermissionsManagerTest, InitiallyEmpty) {
-  EXPECT_TRUE(
-      permissions_manager_->GetAllPermissions(GetSyncService()).empty());
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
 }
 
 TEST_F(ActorLoginPermissionsManagerTest, GetAll) {
@@ -98,15 +108,17 @@ TEST_F(ActorLoginPermissionsManagerTest, GetAll) {
 
   run_loop.Run();
 
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
 #if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(permissions_manager_->GetAllPermissions(GetSyncService()).size(),
-            2u);
+  EXPECT_EQ(future.Get().size(), 2u);
 #else
   // Permissions rely on passwords grouper to get credentials and the grouper is
   // not available on Android. We still want to be able to build on Android but
   // the actual support needs to be implemented.
-  EXPECT_THAT(permissions_manager_->GetAllPermissions(GetSyncService()),
-              IsEmpty());
+  EXPECT_THAT(future.Get(), IsEmpty());
 #endif
 }
 
@@ -122,8 +134,11 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
   add_run_loop.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(permissions_manager_->GetAllPermissions(GetSyncService()).size(),
-            1u);
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      add_future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          add_future.GetCallback());
+  ASSERT_EQ(add_future.Get().size(), 1u);
 
   // Wait until the permission is revoked.
   base::RunLoop revoke_run_loop;
@@ -132,14 +147,20 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
   permissions_manager_->RevokePermission("https://example.com/");
   revoke_run_loop.Run();
 
-  EXPECT_THAT(permissions_manager_->GetAllPermissions(GetSyncService()),
-              IsEmpty());
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      revoke_future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          revoke_future.GetCallback());
+  EXPECT_THAT(revoke_future.Get(), IsEmpty());
 #else
   // Permissions rely on passwords grouper to get credentials and the grouper is
   // not available on Android. We still want to be able to build on Android but
   // the actual support needs to be implemented.
-  EXPECT_THAT(permissions_manager_->GetAllPermissions(GetSyncService()),
-              IsEmpty());
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
+  EXPECT_THAT(future.Get(), IsEmpty());
 #endif
 }
 

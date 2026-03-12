@@ -29,6 +29,7 @@ class PasswordStoreInterface;
 }  // namespace password_manager
 
 namespace actor_login {
+class ActorLoginPermissionService;
 
 class ActorLoginPermissionsManagerImpl
     : public ActorLoginPermissionsManager,
@@ -36,6 +37,7 @@ class ActorLoginPermissionsManagerImpl
  public:
   ActorLoginPermissionsManagerImpl(
       affiliations::AffiliationService* affiliation_service,
+      ActorLoginPermissionService* actor_login_permission_service,
       scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
       scoped_refptr<password_manager::PasswordStoreInterface> account_store);
   ~ActorLoginPermissionsManagerImpl() override;
@@ -45,8 +47,8 @@ class ActorLoginPermissionsManagerImpl
   void RemoveObserver(
       ActorLoginPermissionsManager::Observer* observer) override;
   void RevokePermission(const std::string& signon_realm) override;
-  base::flat_set<password_manager::ActorLoginPermission> GetAllPermissions(
-      const syncer::SyncService* sync_service) override;
+  void GetAllPermissions(const syncer::SyncService* sync_service,
+                         GetAllPermissionsResult callback) override;
 
  private:
   // SavedPasswordsPresenter::Observer:
@@ -55,6 +57,8 @@ class ActorLoginPermissionsManagerImpl
 
   password_manager::SavedPasswordsPresenter presenter_;
   base::ObserverList<ActorLoginPermissionsManager::Observer> observers_;
+  raw_ptr<ActorLoginPermissionService> actor_login_permission_service_ =
+      nullptr;
 };
 
 }  // namespace actor_login

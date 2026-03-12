@@ -47,16 +47,40 @@ source_set("delegate") {
   ]
 }
 
+source_set("permission_service_impl") {
+  sources = [
+    "actor_login_permission_service_impl.cc",
+    "actor_login_permission_service_impl.h",
+  ]
+
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser/password_manager/actor_login:*",
+    "//components/password_manager/core/browser/actor_login:*",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser/actor_login:common",
+  ]
+  public_deps = [
+    "//base",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_login_credential_filler_unittest.cc",
     "actor_login_get_credentials_helper_unittest.cc",
     "actor_login_password_credentials_fetcher_unittest.cc",
+    "actor_login_permission_service_impl_unittest.cc",
   ]
 
   deps = [
     ":delegate",
+    ":permission_service_impl",
     "//components/affiliations/core/browser:test_support",
     "//components/device_reauth",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -65,6 +89,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/actor_login/test:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/proto_extras:proto_matchers",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
 
@@ -23,6 +24,9 @@ namespace actor_login {
 // federated credentials).
 class ActorLoginPermissionsManager {
  public:
+  using GetAllPermissionsResult = base::OnceCallback<void(
+      base::flat_set<password_manager::ActorLoginPermission>)>;
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnPermissionsChanged() {}
@@ -37,9 +41,9 @@ class ActorLoginPermissionsManager {
   // credential types.
   virtual void RevokePermission(const std::string& signon_realm) = 0;
 
-  // Returns all actor login permissions.
-  virtual base::flat_set<password_manager::ActorLoginPermission>
-  GetAllPermissions(const syncer::SyncService* sync_service) = 0;
+  // Fetches all actor login permissions and returns them via the callback.
+  virtual void GetAllPermissions(const syncer::SyncService* sync_service,
+                                 GetAllPermissionsResult callback) = 0;
 };
 
 }  // namespace actor_login

@@ -144,6 +144,7 @@
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/factories/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
@@ -693,6 +694,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
   AffiliationServiceFactory::GetInstance();
+  actor_login::ActorLoginPermissionServiceFactory::GetInstance();
   chrome_finds_internals::ChromeFindsAgentFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
   AimEligibilityServiceFactory::GetInstance();
