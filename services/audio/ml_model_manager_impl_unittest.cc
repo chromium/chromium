@@ -39,6 +39,16 @@ base::File CreateTfLiteFile(base::ScopedTempDir& temp_dir,
   return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
+// Same interface as CreateTfLiteFile, but fills the file with invalid content.
+base::File CreateInvalidTfLiteFile(base::ScopedTempDir& temp_dir,
+                                   const std::string_view filename) {
+  base::FilePath path = temp_dir.GetPath().AppendASCII(filename);
+  if (!base::WriteFile(path, "bogus model data")) {
+    return base::File();
+  }
+  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+}
+
 // All tests here follow the same format:
 // - A sequence of API calls:
 //   - Set (SetResidualEchoEstimationModel)
@@ -207,6 +217,17 @@ TEST_F(MlModelManagerImplTest, SetGetStopSetGetReturnsSecondModel) {
   const tflite::FlatBufferModel* model = model_handle->Get();
   EXPECT_NE(model, nullptr);
   EXPECT_EQ(model->GetModel()->description()->str(), "model2.tflite");
+}
+
+TEST_F(MlModelManagerImplTest, SetGetWithInvalidModelReturnsNull) {
+  base::File model_file = CreateInvalidTfLiteFile(temp_dir_, "invalid.tflite");
+  ASSERT_TRUE(model_file.IsValid());
+
+  ml_model_manager_->SetResidualEchoEstimationModel(std::move(model_file));
+  ASSERT_TRUE(RunUntilTasksFinishOrTimeOut());
+
+  // An invalid model is not served.
+  EXPECT_EQ(ml_model_manager_->GetResidualEchoEstimationModel(), nullptr);
 }
 
 }  // namespace

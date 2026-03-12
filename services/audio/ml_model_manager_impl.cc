@@ -49,12 +49,12 @@ std::unique_ptr<ModelWithBuffer> ReadModelContents(base::File model_file) {
     LOG(ERROR) << "Failed to read model file contents.";
     return nullptr;
   }
-  model_with_buffer->model = tflite::FlatBufferModel::BuildFromBuffer(
+  model_with_buffer->model = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
       reinterpret_cast<const char*>(model_with_buffer->buffer.data()),
       model_with_buffer->buffer.size());
 
   if (!model_with_buffer->model) {
-    LOG(ERROR) << "Failed to build FlatBufferModel from buffer.";
+    LOG(ERROR) << "Failed to verify and build FlatBufferModel from buffer.";
     return nullptr;
   }
   return model_with_buffer;
