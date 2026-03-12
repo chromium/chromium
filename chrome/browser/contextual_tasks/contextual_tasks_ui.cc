@@ -478,6 +478,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "useStratusDarkModeColorsAttr",
       contextual_tasks::ShouldUseStratusDarkModeColors() ? "true" : "false");
 
+  source->AddBoolean("smartTabSharingEnabled",
+                     contextual_tasks::GetIsSmartTabSharingEnabled());
+
   AddZeroStateStrings(source, profile);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }

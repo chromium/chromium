@@ -201,6 +201,9 @@ extern std::vector<std::string> GetContextualTasksSignInDomains();
 // Whether the suggestions are enabled for Nextbox.
 extern bool GetIsContextualTasksSuggestionsEnabled();
 
+// Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
+extern bool GetIsSmartTabSharingEnabled();
+
 // Enables tab auto-chip for contextual tasks. When disabled, no suggested
 // chips will be shown in the composebox automatically.
 extern bool GetIsTabAutoSuggestionChipEnabled();

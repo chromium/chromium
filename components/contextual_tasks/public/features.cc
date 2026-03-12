@@ -110,6 +110,11 @@ const base::FeatureParam<double> kContentVisibilityThreshold{
     &kContextualTasksContext,
     "ContextualTasksContextContentVisibilityThreshold", 0.7};
 
+const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing(
+    &kContextualTasksContext,
+    "ContextualTasksContextSmartTabSharing",
+    false);
+
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};
@@ -403,6 +408,11 @@ const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount{
 
 bool GetIsContextualTasksSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
+}
+
+bool GetIsSmartTabSharingEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksContext) &&
+         kContextualTasksContextSmartTabSharing.Get();
 }
 
 bool GetIsTabAutoSuggestionChipEnabled() {
