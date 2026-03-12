@@ -560,6 +560,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ClientSideDetectionEvent{RequestType}"
+    enum="ClientSideDetectionEvent" expires_after="2027-03-12">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the event in Client Side Detection Host class. Record each time the
+    flow hits the event listed in ClientSideDetectionEvent.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
 <histogram name="SBClientPhishing.ClientSideDetectionTypeRequest"
     enum="ClientSideDetectionType" expires_after="2026-08-30">
   <owner>andysjlim@chromium.org</owner>

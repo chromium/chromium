@@ -58,6 +58,26 @@ class VerdictCacheManager;
 
 using HostInnerTextCallback = base::OnceCallback<void(std::string)>;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ClientSideDetectionEvent {
+  kTriggerStartsPreClassification = 0,
+  kPreClassificationCheckComplete = 1,
+  kImageClassificationBegin = 2,
+  kImageClassificationComplete = 3,
+  kVerdictProtoParseComplete = 4,
+  kLocalModelResultComplete = 5,
+  kImageEmbeddingBegin = 6,
+  kImageEmbeddingComplete = 7,
+  kIntelligentScanBegin = 8,
+  kIntelligentScanComplete = 9,
+  kMiscellaneousFieldsAdded = 10,
+  kNetworkRequestSent = 11,
+  kNetworkResponseReceived = 12,
+  kWarningShown = 13,
+  kMaxValue = kWarningShown,
+};
+
 // This class is used to receive the IPC from the renderer which
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
@@ -409,6 +429,10 @@ class ClientSideDetectionHost
       bool is_phishing,
       std::optional<net::HttpStatusCode> response_code,
       std::optional<IntelligentScanVerdict> intelligent_scan_verdict);
+
+  // Logs the ClientSideDetectionEvent event.
+  void LogClientSideDetectionEvent(ClientSideDetectionEvent event,
+                                   ClientSideDetectionType request_type);
 
   // Whether request is forced for |current_url_|. This function also checks
   // whether enhanced protection is enabled.

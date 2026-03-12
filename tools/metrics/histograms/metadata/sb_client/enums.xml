@@ -95,6 +95,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="CSD and high confidence match"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSideDetectionEvent) -->
+
+<enum name="ClientSideDetectionEvent">
+  <int value="0" label="Trigger starts preclassification"/>
+  <int value="1" label="Preclassification check complete"/>
+  <int value="2" label="Image classification begins"/>
+  <int value="3" label="Image classification completes"/>
+  <int value="4" label="Verdict proto parse completes"/>
+  <int value="5" label="Local model result complete"/>
+  <int value="6" label="Image embedding begins"/>
+  <int value="7" label="Image embedding completes"/>
+  <int value="8" label="Intelligent scan begins"/>
+  <int value="9" label="Intelligent scan completes"/>
+  <int value="10" label="Miscellaneous fields added to verdict"/>
+  <int value="11" label="Network request has been sent"/>
+  <int value="12" label="Network response has been received"/>
+  <int value="13" label="Warning shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/content/browser/client_side_detection_host.h:ClientSideDetectionEvent)-->
+
 <!-- LINT.IfChange(ClientSideDetectionType) -->
 
 <enum name="ClientSideDetectionType">
