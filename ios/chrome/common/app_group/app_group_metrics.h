@@ -11,41 +11,6 @@
 
 namespace app_group {
 
-// An app_group key to the number of times Credential Extension was displayed
-// since last Chrome launch.
-extern NSString* const kCredentialExtensionDisplayCount;
-
-// An app_group key to the number of times Credential Extension needed
-// user reauthentication since last Chrome launch.
-extern NSString* const kCredentialExtensionReauthCount;
-
-// An app_group key to the number of times Credential Extension user
-// copied a URL since last Chrome launch.
-extern NSString* const kCredentialExtensionCopyURLCount;
-
-// An app_group key to the number of times Credential Extension user
-// copied a Username since last Chrome launch.
-extern NSString* const kCredentialExtensionCopyUsernameCount;
-
-// An app_group key to the number of times Credential Extension user
-// copied a User Display Name since last Chrome launch.
-extern NSString* const kCredentialExtensionCopyUserDisplayNameCount;
-
-// An app_group key to the number of times Credential Extension user
-// copied a Creation Date since last Chrome launch.
-extern NSString* const kCredentialExtensionCopyCreationDateCount;
-
-// An app_group key to the number of times Credential Extension user
-// copied a Password since last Chrome launch.
-extern NSString* const kCredentialExtensionCopyPasswordCount;
-
-// An app_group key to the number of times Credential Extension user
-// unobfuscated a Password since last Chrome launch.
-extern NSString* const kCredentialExtensionShowPasswordCount;
-
-// An app_group key to the number of times Credential Extension user
-// searched for a Password since last Chrome launch.
-extern NSString* const kCredentialExtensionSearchCount;
 
 // An app_group key to the number of times Credential Extension user
 // selected a Password from the list since last Chrome launch.

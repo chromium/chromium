@@ -301,9 +301,6 @@ UIColor* BackgroundColor() {
 
 - (void)updateSearchResultsForSearchController:
     (UISearchController*)searchController {
-  if (searchController.searchBar.text.length) {
-    UpdateUMACountForKey(app_group::kCredentialExtensionSearchCount);
-  }
   [self.delegate updateResultsWithFilter:searchController.searchBar.text];
 }
 

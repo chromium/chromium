@@ -240,24 +240,6 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
 
   // Dictionary containing the respective metric for each NSUserDefault's key.
   NSDictionary<NSString*, NSString*>* keyMetric = @{
-    app_group::
-    kCredentialExtensionDisplayCount : @"IOS.CredentialExtension.DisplayCount",
-    app_group::
-    kCredentialExtensionReauthCount : @"IOS.CredentialExtension.ReauthCount",
-    app_group::
-    kCredentialExtensionCopyURLCount : @"IOS.CredentialExtension.CopyURLCount",
-    app_group::kCredentialExtensionCopyUsernameCount :
-        @"IOS.CredentialExtension.CopyUsernameCount",
-    app_group::kCredentialExtensionCopyUserDisplayNameCount :
-        @"IOS.CredentialExtension.CopyUserDisplayNameCount",
-    app_group::kCredentialExtensionCopyCreationDateCount :
-        @"IOS.CredentialExtension.CopyCreationDateCount",
-    app_group::kCredentialExtensionCopyPasswordCount :
-        @"IOS.CredentialExtension.CopyPasswordCount",
-    app_group::kCredentialExtensionShowPasswordCount :
-        @"IOS.CredentialExtension.ShowPasswordCount",
-    app_group::
-    kCredentialExtensionSearchCount : @"IOS.CredentialExtension.SearchCount",
     app_group::kCredentialExtensionPasswordUseCount :
         @"IOS.CredentialExtension.PasswordUseCount",
     app_group::kCredentialExtensionPasskeyUseCount :

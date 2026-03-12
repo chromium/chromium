@@ -7,7 +7,6 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -242,28 +241,24 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
 - (void)copyURL {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = self.credential.serviceIdentifier;
-  UpdateUMACountForKey(app_group::kCredentialExtensionCopyURLCount);
 }
 
 // Copy credential Username to clipboard.
 - (void)copyUsername {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = self.credential.username;
-  UpdateUMACountForKey(app_group::kCredentialExtensionCopyUsernameCount);
 }
 
 // Copy credential User Display Name to clipboard.
 - (void)copyUserDisplayName {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = self.credential.userDisplayName;
-  UpdateUMACountForKey(app_group::kCredentialExtensionCopyUserDisplayNameCount);
 }
 
 // Copy creation date to clipboard.
 - (void)copyCreationDate {
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   generalPasteboard.string = [self creationDate];
-  UpdateUMACountForKey(app_group::kCredentialExtensionCopyCreationDateCount);
 }
 
 // Copy password to clipboard.
@@ -273,7 +268,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       [NSDate dateWithTimeIntervalSinceNow:kSecurePasteboardExpiration];
   NSDictionary* options = @{UIPasteboardOptionExpirationDate : expirationDate};
   [[UIPasteboard generalPasteboard] setItems:@[ item ] options:options];
-  UpdateUMACountForKey(app_group::kCredentialExtensionCopyPasswordCount);
 }
 
 // Initiate process to show password unobfuscated.
@@ -369,7 +363,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
     self.clearPassword = nil;
     [self updatePasswordRow];
   } else {
-    UpdateUMACountForKey(app_group::kCredentialExtensionShowPasswordCount);
     [self.delegate unlockPasswordForCredential:self.credential
                              completionHandler:^(NSString* password) {
                                self.clearPassword = password;

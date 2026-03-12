@@ -722,7 +722,6 @@ enum class PasskeyUserVerificationStatus {
 
 - (void)updateSuccessfulReauthTime {
   self.lastSuccessfulReauthTime = [[NSDate alloc] init];
-  UpdateUMACountForKey(app_group::kCredentialExtensionReauthCount);
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -1019,7 +1018,6 @@ enum class PasskeyUserVerificationStatus {
        credentialResponseHandler:self];
   self.listCoordinator.passkeyRequestDetails = _passkeyRequestDetails;
   [self.listCoordinator start];
-  UpdateUMACountForKey(app_group::kCredentialExtensionDisplayCount);
 }
 
 // Convenience wrapper for
