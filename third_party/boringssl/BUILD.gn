@@ -71,16 +71,6 @@ if (enable_rust) {
     visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
   }
 
-  # Macros for internal use.
-  cargo_crate("bssl_macros") {
-    crate_type = "rlib"
-    crate_root = "src/rust/bssl-macros/src/lib.rs"
-    sources = rebase_path(rust_bssl_macros_sources, ".", "src")
-    edition = "2024"
-
-    visibility = [ ":*" ]  # private, should only be exposed through bssl_crypto
-  }
-
   # Low level, bindgen generates system bindings to boringssl
   cargo_crate("bssl_sys") {
     crate_type = "rlib"
@@ -89,7 +79,6 @@ if (enable_rust) {
     edition = "2021"
     deps = [
       ":boringssl",
-      ":bssl_macros",
       ":raw_bssl_sys_bindings_static_fns",
     ]
 
