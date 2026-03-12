@@ -22,25 +22,8 @@
 namespace webid {
 
 using testing::_;
+using testing::InvokeWithoutArgs;
 using testing::NiceMock;
-
-class TestPageActionObserver : public page_actions::PageActionObserver {
- public:
-  explicit TestPageActionObserver(actions::ActionId action_id)
-      : page_actions::PageActionObserver(action_id) {}
-
-  void OnPageActionIconShown(
-      const page_actions::PageActionState& page_action) override {
-    visible_ = true;
-  }
-
-  void OnPageActionIconHidden(
-      const page_actions::PageActionState& page_action) override {
-    visible_ = false;
-  }
-
-  bool visible_ = false;
-};
 
 class MockDelegate : public AccountSelectionView::Delegate {
  public:
@@ -190,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
                          ->GetTabFeatures()
                          ->page_action_controller();
 
-  TestPageActionObserver observer(kActionFederation);
+  page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp);
@@ -198,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
   // Verify chip is showing by checking that we didn't show the dialog widget
   // yet.
   EXPECT_FALSE(view()->GetDialogWidget());
-  EXPECT_TRUE(observer.visible_);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().showing);
 
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
@@ -210,11 +193,11 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
   EXPECT_TRUE(view()->GetDialogWidget()->IsVisible());
 
   // The Page Action icon should still be visible while the modal is shown.
-  EXPECT_TRUE(observer.visible_);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().showing);
 
   // Closing the widget should hide the Page Action icon.
   view()->Close(/*notify_delegate=*/false, /*hide_widget=*/false);
-  EXPECT_FALSE(observer.visible_);
+  EXPECT_FALSE(observer.GetCurrentPageActionState().showing);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
@@ -225,8 +208,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   EXPECT_FALSE(view()->GetDialogWidget());
 
   bool account_selected = false;
-  EXPECT_CALL(*delegate_, OnAccountSelected)
-      .WillOnce(testing::InvokeWithoutArgs([&]() { account_selected = true; }));
+  EXPECT_CALL(*delegate_, OnAccountSelected).WillOnce(InvokeWithoutArgs([&]() {
+    account_selected = true;
+  }));
 
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
@@ -236,6 +220,47 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 
   EXPECT_FALSE(view()->GetDialogWidget());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn);
+
+  // Initially, for sign-in, the anchored message should be showing.
+  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+
+  // We simulate it being collapsed.
+  controller->HideAnchoredMessage(kActionFederation);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  bool account_selected = false;
+  EXPECT_CALL(*delegate_, OnAccountSelected).WillOnce(InvokeWithoutArgs([&]() {
+    account_selected = true;
+  }));
+
+  // Simulate click on the collapsed omnibox chip.
+  view()->OnPageActionClicked();
+
+  // It should NOT have selected the account yet.
+  EXPECT_FALSE(account_selected);
+
+  // Instead, it should have re-shown the anchored message.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  // Click again, now it should select the account.
+  view()->OnPageActionClicked();
+  ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
@@ -281,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, ReloadPage) {
       *delegate_,
       OnDismiss(
           content::IdentityRequestDialogController::DismissReason::kOther))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { dismissed = true; }));
+      .WillOnce(InvokeWithoutArgs([&]() { dismissed = true; }));
 
   // Reload the page.
   content::WebContents* web_contents =

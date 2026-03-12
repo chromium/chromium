@@ -77,7 +77,8 @@ FedCmAccountSelectionView::FedCmAccountSelectionView(
     AccountSelectionView::Delegate* delegate,
     tabs::TabInterface* tab)
     : AccountSelectionView(delegate),
-      content::WebContentsObserver(delegate->GetWebContents()),
+      content::WebContentsObserver(tab->GetContents()),
+      page_actions::PageActionObserver(kActionFederation),
       tab_(tab),
       scoped_user_data_(std::in_place, tab->GetUnownedUserDataHost(), *this) {
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
@@ -98,7 +99,8 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::OnPageActionClicked() {
-  if (!delegate_ || idp_list_.empty() || accounts_.empty() || !rp_data_) {
+  if (!delegate_ || idp_list_.empty() || accounts_.empty() || !rp_data_ ||
+      !tab_) {
     return;
   }
 
@@ -106,23 +108,8 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
                       accounts_[0]->browser_trusted_login_state ==
                           content::IdentityRequestAccount::LoginState::kSignIn;
 
-  if (tab_) {
-    if (auto* features = tab_->GetTabFeatures()) {
-      if (auto* controller = features->page_action_controller()) {
-        if (is_returning) {
-          // For sign-in users, we want to hide the entire page action since we
-          // are immediately logging the user in.
-          controller->Hide(kActionFederation);
-          controller->HideAnchoredMessage(kActionFederation);
-        } else {
-          // For sign-up users, we want to hide the expanded suggestion chip
-          // (showing the "Sign up with idp.com") but keep the page action icon
-          // (with the user's profile picture) in the omnibox.
-          controller->HideSuggestionChip(kActionFederation);
-        }
-      }
-    }
-  }
+  auto* features = tab_->GetTabFeatures();
+  auto* controller = features->page_action_controller();
 
   // Passing false to hide_dialog_widget_after_idp_login_popup_ to ensure the
   // widget is shown.
@@ -132,12 +119,27 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
     // For sign-in users with only one account logged in we show an anchored
     // message. When that anchored message is selected, we immediately notify
     // the delegate of the account selection without showing any further account
-    //  selection dialog (since there is a single account).
+    // selection dialog (since there is a single account).
+    // The anchored message gets hidden and collapsed automatically into a chip
+    // if the user doesn't engage with it, so we re-open it in case it is
+    // not showing.
+    if (!GetCurrentPageActionState().anchored_message_showing) {
+      controller->ShowAnchoredMessage(kActionFederation);
+      return;
+    }
+    // If the anchored message is still showing, we immediately trigger the
+    // account selection.
+    controller->Hide(kActionFederation);
+    controller->HideAnchoredMessage(kActionFederation);
     state_ = State::VERIFYING;
     NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
   } else {
     // For sign-up users, we show a full modal dialog that gathers the necessary
     // permission from the user (e.g. privacy policies and terms of services).
+    // We also hide the expanded suggestion chip (showing the
+    // "Sign up with idp.com") but keep the page action icon (with the user's
+    // profile picture) in the omnibox.
+    controller->HideSuggestionChip(kActionFederation);
     Show(*rp_data_, idp_list_, accounts_, blink::mojom::RpMode::kActive,
          new_accounts_);
   }
@@ -1453,6 +1455,9 @@ bool FedCmAccountSelectionView::ShowPageAction(
   controller->OverrideImage(kActionFederation,
                             ui::ImageModel::FromImageSkia(avatar));
 
+  // Registers this class as an observer of the page action, so that we can
+  // determine the state of the page action when the user clicks on it.
+  RegisterAsPageActionObserver(*controller);
   controller->Show(kActionFederation);
   if (is_returning) {
     controller->ShowAnchoredMessage(kActionFederation);
