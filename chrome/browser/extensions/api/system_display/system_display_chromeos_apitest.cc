@@ -10,13 +10,9 @@
 #include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class SystemDisplayChromeOSApiTest
-    : public extensions::ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
+class SystemDisplayChromeOSApiTest : public extensions::ExtensionApiTest {
  public:
-  SystemDisplayChromeOSApiTest() : ExtensionApiTest(GetParam()) {}
+  SystemDisplayChromeOSApiTest() = default;
   ~SystemDisplayChromeOSApiTest() override = default;
   SystemDisplayChromeOSApiTest(const SystemDisplayChromeOSApiTest&) = delete;
   SystemDisplayChromeOSApiTest& operator=(const SystemDisplayChromeOSApiTest&) =
@@ -28,14 +24,7 @@ class SystemDisplayChromeOSApiTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         SystemDisplayChromeOSApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         SystemDisplayChromeOSApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(SystemDisplayChromeOSApiTest,
+IN_PROC_BROWSER_TEST_F(SystemDisplayChromeOSApiTest,
                        CheckOnDisplayChangedEvent) {
   ExtensionTestMessageListener listener_for_extension_ready("ready");
   ASSERT_TRUE(

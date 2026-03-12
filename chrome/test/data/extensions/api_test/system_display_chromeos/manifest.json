@@ -1,11 +1,10 @@
 {
   "name": "ondisplaychangedevent",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0",
   "description": "Test system.display API",
   "permissions": ["system.display"],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   }
 }
