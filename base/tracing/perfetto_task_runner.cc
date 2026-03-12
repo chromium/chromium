@@ -78,19 +78,21 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
     std::function<void()> callback) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!fd_controllers_.contains(fd));
+  auto [it, inserted] = fd_controllers_.try_emplace(fd);
+  DCHECK(inserted);
   // Set up the |fd| in the map to signal intent to add a watch. We need to
   // PostTask the WatchReadable creation because if we do it in this task we'll
   // race with perfetto setting up the connection on this task and the IO thread
   // setting up epoll on the |fd|. Using a CancelableOnceClosure ensures that
   // the |fd| won't be added for watch if RemoveFileDescriptorWatch is called.
-  fd_controllers_[fd].callback.Reset(base::BindOnce(
+  it->second.callback.Reset(base::BindOnce(
       [](PerfettoTaskRunner* perfetto_runner, int fd,
          std::function<void()> callback) {
         DCHECK(perfetto_runner->task_runner_->RunsTasksInCurrentSequence());
         // When this callback runs, we must not have removed |fd|'s watch.
-        CHECK(perfetto_runner->fd_controllers_.contains(fd));
-        auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
+        auto iter = perfetto_runner->fd_controllers_.find(fd);
+        CHECK(iter != perfetto_runner->fd_controllers_.end());
+        auto& controller_and_cb = iter->second;
         // We should never overwrite an existing watch.
         CHECK(!controller_and_cb.controller);
         controller_and_cb.controller =
@@ -100,7 +102,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
                         std::move(callback)));
       },
       base::Unretained(this), fd, std::move(callback)));
-  task_runner_->PostTask(FROM_HERE, fd_controllers_[fd].callback.callback());
+  task_runner_->PostTask(FROM_HERE, it->second.callback.callback());
 #else   // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -110,10 +112,10 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(fd_controllers_.contains(fd));
   // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
   // it's pending.
-  fd_controllers_.erase(fd);
+  size_t erased = fd_controllers_.erase(fd);
+  DCHECK_GT(erased, 0u);
 #else   // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

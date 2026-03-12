@@ -4,6 +4,8 @@
 
 #include "base/metrics/field_trial_param_associator.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 
@@ -28,14 +30,14 @@ bool FieldTrialParamAssociator::AssociateFieldTrialParams(
   }
 
   AutoLock scoped_lock(lock_);
-  const FieldTrialKey key(trial_name, group_name);
-  if (field_trial_params_.contains(key)) {
+  FieldTrialKey key(trial_name, group_name);
+  auto [it, inserted] = field_trial_params_.try_emplace(std::move(key), params);
+  if (!inserted) {
     DLOG(ERROR) << "You can't override the existing params for field trial: "
                 << trial_name << "." << group_name;
     return false;
   }
 
-  field_trial_params_[key] = params;
   return true;
 }
 
@@ -83,10 +85,7 @@ void FieldTrialParamAssociator::ClearParamsForTesting(
     const std::string& group_name) {
   AutoLock scoped_lock(lock_);
   const FieldTrialRefKey key(trial_name, group_name);
-  auto it = field_trial_params_.find(key);
-  if (it != field_trial_params_.end()) {
-    field_trial_params_.erase(it);
-  }
+  field_trial_params_.erase(key);
 }
 
 void FieldTrialParamAssociator::ClearAllCachedParamsForTesting() {
