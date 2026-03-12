@@ -443,7 +443,7 @@ class PdfInkModule {
                             const blink::WebPointerProperties* properties);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
-  void ApplyUndoRedoCommandsHelper(std::set<PdfInkUndoRedoModel::IdType> ids,
+  void ApplyUndoRedoCommandsHelper(const PdfInkUndoRedoModel::IdSet& ids,
                                    bool should_draw);
 
   void ApplyUndoRedoDiscards(

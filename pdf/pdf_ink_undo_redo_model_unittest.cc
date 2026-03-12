@@ -243,22 +243,26 @@ TEST(PdfInkUndoRedoModelTest, EmptyRemove) {
   EXPECT_EQ(kNone, PdfInkUndoRedoModel::GetCommandsType(commands));
 }
 
-TEST(PdfInkUndoRedoModelTest, AddCannotRepeatId) {
+TEST(PdfInkUndoRedoModelTest, AddEnforcesIncreasingOrder) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo,
                      {InkStrokeId(1), InkStrokeId(2), InkStrokeId(3)});
 
   std::optional<DiscardedAddCommands> discards = undo_redo.StartAdd();
   ASSERT_THAT(discards, Optional(DiscardedAddCommands()));
+
+  // Cannot add ID that is already on the stack.
   ASSERT_FALSE(undo_redo.Add(InkStrokeId(1)));
   ASSERT_FALSE(undo_redo.Add(InkStrokeId(3)));
 
+  // Can add larger IDs.
   ASSERT_TRUE(undo_redo.Add(InkStrokeId(97)));
   ASSERT_TRUE(undo_redo.Add(InkStrokeId(99)));
-  ASSERT_TRUE(undo_redo.Add(InkStrokeId(98)));
 
-  ASSERT_FALSE(undo_redo.Add(InkStrokeId(1)));
+  // Cannot add IDs that are not strictly increasing.
+  ASSERT_FALSE(undo_redo.Add(InkStrokeId(99)));
   ASSERT_FALSE(undo_redo.Add(InkStrokeId(98)));
+  ASSERT_FALSE(undo_redo.Add(InkStrokeId(1)));
 }
 
 TEST(PdfInkUndoRedoModelTest, AddCanRepeatIdAfterUndo) {
@@ -371,16 +375,16 @@ TEST(PdfInkUndoRedoModelTest, AddAddRemoveUndoRedo) {
 TEST(PdfInkUndoRedoModelTest, AddAddUndoRemoveUndo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(5)});
-  DoAddCommandsCycle(undo_redo, {InkStrokeId(4), InkStrokeId(8)});
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(6), InkStrokeId(8)});
 
   PdfInkUndoRedoModel::Commands commands = undo_redo.Undo();
   ASSERT_EQ(kRemove, PdfInkUndoRedoModel::GetCommandsType(commands));
   EXPECT_THAT(PdfInkUndoRedoModel::GetRemoveCommands(commands).value(),
-              ElementsAreArray({InkStrokeId(4), InkStrokeId(8)}));
+              ElementsAreArray({InkStrokeId(6), InkStrokeId(8)}));
 
   std::optional<DiscardedAddCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards,
-              Optional(ElementsAreArray({InkStrokeId(4), InkStrokeId(8)})));
+              Optional(ElementsAreArray({InkStrokeId(6), InkStrokeId(8)})));
   ASSERT_TRUE(undo_redo.Remove(InkStrokeId(5)));
   ASSERT_TRUE(undo_redo.FinishRemove());
 
@@ -412,12 +416,12 @@ TEST(PdfInkUndoRedoModelTest, RemoveShapesUndoRedo) {
 TEST(PdfInkUndoRedoModelTest, AddAddRemoveStrokesAndShapesUndoRedo) {
   PdfInkUndoRedoModel undo_redo;
   DoAddCommandsCycle(undo_redo, {InkStrokeId(5)});
-  DoAddCommandsCycle(undo_redo, {InkStrokeId(4), InkStrokeId(8)});
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(6), InkStrokeId(8)});
 
   std::optional<DiscardedAddCommands> discards = undo_redo.StartRemove();
   ASSERT_THAT(discards, Optional(DiscardedAddCommands()));
   ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(0)));
-  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(4)));
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(6)));
   ASSERT_TRUE(undo_redo.Remove(InkModeledShapeId(1)));
   ASSERT_TRUE(undo_redo.FinishRemove());
 
@@ -425,13 +429,13 @@ TEST(PdfInkUndoRedoModelTest, AddAddRemoveStrokesAndShapesUndoRedo) {
   ASSERT_EQ(kAdd, PdfInkUndoRedoModel::GetCommandsType(commands));
   EXPECT_THAT(
       PdfInkUndoRedoModel::GetAddCommands(commands).value(),
-      ElementsAre(InkStrokeId(4), InkModeledShapeId(0), InkModeledShapeId(1)));
+      ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1), InkStrokeId(6)));
 
   commands = undo_redo.Redo();
   ASSERT_EQ(kRemove, PdfInkUndoRedoModel::GetCommandsType(commands));
   EXPECT_THAT(
       PdfInkUndoRedoModel::GetRemoveCommands(commands).value(),
-      ElementsAre(InkStrokeId(4), InkModeledShapeId(0), InkModeledShapeId(1)));
+      ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1), InkStrokeId(6)));
 }
 
 TEST(PdfInkUndoRedoModelTest, Stress) {

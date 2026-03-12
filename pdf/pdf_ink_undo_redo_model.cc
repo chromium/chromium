@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/notreached.h"
 #include "base/types/strong_alias.h"
 
@@ -52,13 +53,29 @@ bool PdfInkUndoRedoModel::Add(IdType id) {
     // Can only add at top of the stack, and the entry there must be for adding.
     return false;
   }
-  if (HasIdInAddCommands(id)) {
-    return false;  // Failed invariant 3.
+
+  // Check the last AddCommands on the stack to ensure IDs are added in strictly
+  // increasing order.
+  for (const Commands& commands : base::Reversed(commands_stack_)) {
+    if (GetCommandsType(commands) == CommandsType::kAdd) {
+      const IdSet& last_add_set = GetAddCommands(commands).value();
+      if (!last_add_set.empty()) {
+        // Checking the last ID in the set is sufficient because AddCommands
+        // only contains InkStrokeId (Invariant 7), which are added in
+        // strictly increasing order.
+        const IdType& last_id = *last_add_set.rbegin();
+        if (id <= last_id) {
+          return false;
+        }
+        break;
+      }
+    }
   }
 
   // Invariant 4 holds if invariant 6 holds.
   CHECK(!HasIdInRemoveCommands(id));
-  GetModifiableAddCommands(commands_stack_.back())->insert(id);
+  AddCommands& add_commands = GetModifiableAddCommands(commands_stack_.back());
+  add_commands->insert(add_commands->end(), id);
   return true;
 }
 

@@ -36,9 +36,27 @@ class PdfInkUndoRedoModel {
   // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
   //   be removed.
   using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
-  using AddCommands = base::StrongAlias<class AddCommandsTag, std::set<IdType>>;
-  using RemoveCommands =
-      base::StrongAlias<class RemoveCommandsTag, std::set<IdType>>;
+
+  // Used to enforce adding IDs in increasing order.
+  struct IdTypeComparator {
+    bool operator()(const IdType& lhs, const IdType& rhs) const {
+      const size_t lhs_value = GetValue(lhs);
+      const size_t rhs_value = GetValue(rhs);
+      if (lhs_value != rhs_value) {
+        return lhs_value < rhs_value;
+      }
+      return lhs.index() < rhs.index();
+    }
+
+   private:
+    static size_t GetValue(const IdType& id) {
+      return std::visit([](const auto& v) { return v.value(); }, id);
+    }
+  };
+
+  using IdSet = std::set<IdType, IdTypeComparator>;
+  using AddCommands = base::StrongAlias<class AddCommandsTag, IdSet>;
+  using RemoveCommands = base::StrongAlias<class RemoveCommandsTag, IdSet>;
 
   using Commands = std::variant<std::monostate, AddCommands, RemoveCommands>;
 
@@ -72,6 +90,7 @@ class PdfInkUndoRedoModel {
   [[nodiscard]] std::optional<DiscardedAddCommands> StartAdd();
   // Records adding an annotation identified by `id`.
   // Must be called between StartAdd() and FinishAdd().
+  // Callers must ensure that IDs added are in increasing order.
   // `id` must not be on the commands stack.
   // `id` must not be an `InkModeledShapeId`.
   [[nodiscard]] bool Add(IdType id);
