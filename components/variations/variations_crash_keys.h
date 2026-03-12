@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 
 namespace variations {
 
@@ -47,6 +48,11 @@ void UpdateCrashKeysWithSyntheticTrials(
 // Sets the crash key for the variations seed version.
 COMPONENT_EXPORT(VARIATIONS)
 void SetVariationsSeedVersionCrashKey(std::string_view seed_version);
+
+// Wrapper around variations::InitCrashKeys() returning a ScopedClosureRunner
+// that will ensure the global state is cleared when it is destructed.
+COMPONENT_EXPORT(VARIATIONS)
+base::ScopedClosureRunner InitCrashKeysForTesting();
 
 // Clears the internal instance, for testing.
 COMPONENT_EXPORT(VARIATIONS) void ClearCrashKeysInstanceForTesting();

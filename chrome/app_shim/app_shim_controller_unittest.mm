@@ -8,6 +8,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -164,7 +165,8 @@ TEST_F(AppShimControllerTest, FinalizeFeatureState) {
   command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                  kFeatureOffByDefaultName);
   AppShimController::PreInitFeatureState(command_line);
-  variations::InitCrashKeys();
+  base::ScopedClosureRunner reset_crash_keys =
+      variations::InitCrashKeysForTesting();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
@@ -224,7 +226,8 @@ TEST_F(AppShimControllerTest, FinalizeFeatureStateWithFieldTrials) {
       base::StringPrintf("%s.%s:%s/42", kTrialName, kTrialGroup1Name,
                          kParam2Name));
   AppShimController::PreInitFeatureState(command_line);
-  variations::InitCrashKeys();
+  base::ScopedClosureRunner reset_crash_keys =
+      variations::InitCrashKeysForTesting();
 
   base::FeatureList::GetInstance()->AddEarlyAllowedFeatureForTesting(
       kFeatureOffByDefaultName);
