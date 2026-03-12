@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -577,7 +578,11 @@ void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
               if (path.back() != '/') {
                 path += '/';
               }
-              path += thread->server_id;
+              std::string server_id = thread->server_id;
+              if (base::StartsWith(server_id, "c_")) {
+                server_id.erase(0, 2);
+              }
+              path += server_id;
               replacements.SetPathStr(path);
 
               url = url.ReplaceComponents(replacements);
