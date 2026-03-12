@@ -194,7 +194,7 @@ bool MockRenderProcessHost::GetIntersectsViewport() {
 
 #if !BUILDFLAG(IS_ANDROID)
 bool MockRenderProcessHost::IsForInitialWebUI() const {
-  return false;
+  return is_for_initial_web_ui_;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

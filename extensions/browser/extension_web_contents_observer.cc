@@ -5,12 +5,14 @@
 #include "extensions/browser/extension_web_contents_observer.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -30,6 +32,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "url/origin.h"
 
@@ -205,6 +208,22 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+#if !BUILDFLAG(IS_ANDROID)
+  // If the navigation is for the initial WebUI, we can skip extension
+  // initialization for optimization. Otherwise, we ensure the renderer process
+  // is initialized including the non-initial WebUI navigation.
+  content::RenderProcessHost* process =
+      navigation_handle->GetRenderFrameHost()->GetProcess();
+  if (process->IsForInitialWebUI() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kInitialWebUIWithoutExtensions)) {
+    if (!navigation_handle->IsInitialWebUINavigation()) {
+      RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+          ->InitializeProcess(process);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
 
   ScriptInjectionTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);

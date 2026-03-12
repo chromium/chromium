@@ -504,6 +504,7 @@ class CONTENT_EXPORT NavigationRequest
   std::optional<url::Origin> GetOriginToCommit() override;
   bool NeedsUrlLoader() override;
   bool IsInitialWebUISyncNavigation() override;
+  bool IsInitialWebUINavigation() override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:
@@ -1752,11 +1753,6 @@ class CONTENT_EXPORT NavigationRequest
   // Checks whether cookies for the navigation target changed since the
   // navigation started.
   bool DidCookiesChangeAfterStart(bool exclude_http_only) const;
-
-  // Different from `IsInitialWebUISyncNavigation()`, this also returns true if
-  // the navigation doesn't go from start -> commit synchronously (i.e. when the
-  // kInitialWebUISyncNavStartToCommit flag is disabled).
-  bool IsInitialWebUINavigation();
 
   void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
     remove_extra_headers_on_cross_origin_redirect_ = value;

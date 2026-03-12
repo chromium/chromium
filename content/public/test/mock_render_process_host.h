@@ -298,6 +298,10 @@ class MockRenderProcessHost : public RenderProcessHost {
 
   void set_priority(base::Process::Priority priority) { priority_ = priority; }
 
+  void SetIsForInitialWebUI(bool is_for_initial_web_ui) {
+    is_for_initial_web_ui_ = is_for_initial_web_ui;
+  }
+
   void SetProcess(base::Process&& new_process) {
     process = std::move(new_process);
   }
@@ -338,6 +342,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool is_for_guests_only_;
   base::Process::Priority priority_;
   bool is_unused_;
+  bool is_for_initial_web_ui_ = false;
   bool is_ready_ = false;
   base::Process process;
   int pending_view_count_;
