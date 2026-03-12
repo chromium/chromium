@@ -41,7 +41,7 @@ fn parse_leaf_element(
         PackedLeafType::Float32 => Ok(MojomValue::Float32(parse_f32(data)?.into())),
         PackedLeafType::Float64 => Ok(MojomValue::Float64(parse_f64(data)?.into())),
         PackedLeafType::Enum { is_valid } => {
-            let value = parse_u32(data)?;
+            let value = parse_i32(data)?;
             if is_valid.call(value) {
                 Ok(MojomValue::Enum(value))
             } else {
@@ -135,7 +135,7 @@ struct NestedDataInfo<'a> {
     expected_offset: usize,
     /// Tracks whether this pointer was contained in a union, and if so what
     /// its discriminant was, and whether the outer union was nullable.
-    union_discriminant: Option<(u32, bool)>,
+    union_discriminant: Option<(i32, bool)>,
     /// Tracks whether the pointer was nullable (if so, we should wrap the
     /// parsed result in an option.)
     was_nullable: bool,
@@ -283,9 +283,9 @@ fn parse_array(
 fn parse_union<'a>(
     data: &mut ParserData,
     mut enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
-    variants: &'a BTreeMap<u32, MojomWireType>,
+    variants: &'a BTreeMap<i32, MojomWireType>,
     is_nullable: bool,
-) -> ParsingResult<(u32, Option<MojomValue>)> {
+) -> ParsingResult<(i32, Option<MojomValue>)> {
     // Parse the union header
     let size_in_bytes = parse_size(data, false, is_nullable)?;
 
@@ -297,7 +297,7 @@ fn parse_union<'a>(
         return Ok((0, Some(MojomValue::Nullable(None))));
     }
 
-    let tag = parse_u32(data)?;
+    let tag = parse_i32(data)?;
 
     let field_ty = match variants.get(&tag) {
         Some(wire_ty) => wire_ty,

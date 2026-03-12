@@ -71,8 +71,8 @@ pub trait MojomParse:
 // FOR_RELEASE: We could replace this with one of a number of crates. num_enum
 // seems closest, though it doesn't have quite the API we want (we want
 // from_primitive to return an option but respect default values if they exist)
-pub trait PrimitiveEnum: Into<u32> + TryFrom<u32, Error = anyhow::Error> + Sized {
-    fn is_valid(value: u32) -> bool {
+pub trait PrimitiveEnum: Into<i32> + TryFrom<i32, Error = anyhow::Error> + Sized {
+    fn is_valid(value: i32) -> bool {
         Self::try_from(value).is_ok()
     }
 }
@@ -153,7 +153,7 @@ where
     T: PrimitiveEnum + TryFrom<MojomValue, Error = anyhow::Error> + 'static,
 {
     fn mojom_type() -> MojomType {
-        MojomType::Enum { is_valid: Predicate::new::<T>(&(Self::is_valid as fn(u32) -> bool)) }
+        MojomType::Enum { is_valid: Predicate::new::<T>(&(Self::is_valid as fn(i32) -> bool)) }
     }
 }
 

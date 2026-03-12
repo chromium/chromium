@@ -166,7 +166,7 @@ fn pack_struct(fields: &[MojomType], field_names: &[String]) -> PackedStructured
     }
 }
 
-fn pack_union_variants(variants: &BTreeMap<u32, MojomType>) -> BTreeMap<u32, MojomWireType> {
+fn pack_union_variants(variants: &BTreeMap<i32, MojomType>) -> BTreeMap<i32, MojomWireType> {
     variants
         .iter()
         .map(|(tag, ty)| {

@@ -144,8 +144,9 @@ fn derive_mojomparse_union(
 ) -> proc_macro2::TokenStream {
     // Extract/compute just the bits of the variants that we care about:
     // The name, type, and discriminant value
-    let mut next_discriminant: u32 = 0;
-    let variant_info : Vec<(syn::Ident, syn::Type, u32)> = variants.into_iter().map(|variant: syn::Variant| {
+    let mut next_discriminant: i32 = 0;
+    let variant_info : Vec<(syn::Ident, syn::Type, i32)>
+        = variants.into_iter().map(|variant: syn::Variant| {
         let variant_name = variant.ident;
         let mut fields = match variant.fields {
             syn::Fields::Unnamed(syn::FieldsUnnamed { unnamed, .. }) => unnamed,
@@ -186,7 +187,7 @@ fn derive_mojomparse_union(
 
             impl MojomParse for #name {
                 fn mojom_type() -> MojomType {
-                    let variants : BTreeMap<u32, MojomType> = [
+                    let variants : BTreeMap<i32, MojomType> = [
                         #(#mojom_type_fields),*
                     ].into();
                     MojomType::Union { variants }
@@ -231,15 +232,25 @@ fn derive_mojomparse_union(
 // value of `next_discriminant`. In either case, set `next_discriminant` to the
 // computed value + 1
 fn compute_next_discriminant(
-    next_discriminant: &mut u32,
+    next_discriminant: &mut i32,
     discriminant_opt: Option<(syn::Token![=], syn::Expr)>,
-) -> u32 {
+) -> i32 {
     let discriminant = match discriminant_opt {
         Some((_, syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }))) => {
             let discriminant = n
-                .base10_parse::<u32>()
+                .base10_parse::<i32>()
                 .expect("Enum/Union discriminants must be a 32-bit integer literal.");
             discriminant
+        }
+        Some((_, syn::Expr::Unary(syn::ExprUnary { op: syn::UnOp::Neg(_), expr, .. }))) => {
+            if let syn::Expr::Lit(syn::ExprLit { lit: syn::Lit::Int(n), .. }) = *expr {
+                let discriminant = n
+                    .base10_parse::<i32>()
+                    .expect("Enum/Union discriminants must be a 32-bit integer literal.");
+                -discriminant
+            } else {
+                panic!("Enum/Union discriminants must be a 32-bit integer literal.");
+            }
         }
         None => *next_discriminant,
         _ => panic!("Enum/Union discriminants must be a 32-bit integer literal."),
@@ -258,7 +269,7 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
         _ => panic!("No structs or unions allowed!"),
     };
 
-    let mut next_discriminant: u32 = 0;
+    let mut next_discriminant: i32 = 0;
     let mut default_variant: Option<syn::Ident> = None;
     let generate_branch = |variant: syn::Variant| {
         if !variant.fields.is_empty() {
@@ -294,14 +305,14 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
 
             use mojom_value_parser_core::*;
 
-            impl From<#name> for u32 {
-                fn from(value: #name) -> u32 { value as u32 }
+            impl From<#name> for i32 {
+                fn from(value: #name) -> i32 { value as i32 }
             }
 
-            impl TryFrom<u32> for #name {
+            impl TryFrom<i32> for #name {
                 type Error = ::anyhow::Error;
 
-                fn try_from(value : u32) -> ::anyhow::Result<Self> {
+                fn try_from(value : i32) -> ::anyhow::Result<Self> {
                     match value {
                         #(#branches),*
                     }

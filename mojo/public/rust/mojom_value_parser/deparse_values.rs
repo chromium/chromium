@@ -195,9 +195,9 @@ enum NestedData<'a> {
         array_type: &'a PackedArrayType,
     },
     Union {
-        tag: u32,
+        tag: i32,
         value: MojomValue,
-        variants: &'a BTreeMap<u32, MojomWireType>,
+        variants: &'a BTreeMap<i32, MojomWireType>,
     },
     Map {
         values_map: BTreeMap<MojomValue, MojomValue>,
@@ -285,9 +285,9 @@ fn deparse_array(
 fn deparse_union<'a>(
     data: &mut DeparsedData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
-    tag: u32,
+    tag: i32,
     contained_value: MojomValue,
-    variants: &'a BTreeMap<u32, MojomWireType>,
+    variants: &'a BTreeMap<i32, MojomWireType>,
 ) -> Result<()> {
     // Write the union's header
     let expected_wire_type = variants

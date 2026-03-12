@@ -43,8 +43,8 @@ pub enum MojomType {
     Float64,
     String,
     Handle,
-    Enum { is_valid: Predicate<u32> },
-    Union { variants: BTreeMap<u32, MojomType> },
+    Enum { is_valid: Predicate<i32> },
+    Union { variants: BTreeMap<i32, MojomType> },
     // `field_names` is only for debugging; it should have the same
     // length as `fields`
     Struct { field_names: Vec<String>, fields: Vec<MojomType> },
@@ -81,9 +81,9 @@ pub enum MojomValue {
     Float32(OrderedFloat<f32>),
     Float64(OrderedFloat<f64>),
     String(String),
-    Enum(u32),
+    Enum(i32),
     Handle(UntypedHandle),
-    Union(u32, Box<MojomValue>),
+    Union(i32, Box<MojomValue>),
     Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
     Array(Vec<MojomValue>),
@@ -145,7 +145,7 @@ pub enum MojomWireType {
     Pointer { nested_data_type: PackedStructuredType, is_nullable: bool },
     /// A 128-bit value (not a pointer!) which contains a tag and a 64-bit value
     /// (which may be a pointer).
-    Union { variants: BTreeMap<u32, MojomWireType>, is_nullable: bool },
+    Union { variants: BTreeMap<i32, MojomWireType>, is_nullable: bool },
 }
 
 /// This type represents an element in the body of a struct, array, or union.
@@ -196,7 +196,7 @@ pub enum PackedLeafType {
     UInt64,
     Float32,
     Float64,
-    Enum { is_valid: Predicate<u32> },
+    Enum { is_valid: Predicate<i32> },
     Handle,
 }
 
@@ -216,7 +216,7 @@ pub enum PackedStructuredType {
         array_type: PackedArrayType,
     },
     Union {
-        variants: BTreeMap<u32, MojomWireType>,
+        variants: BTreeMap<i32, MojomWireType>,
     },
     Map {
         key_type: Arc<MojomWireType>,

@@ -107,6 +107,12 @@ struct SomeEnums {
   TestEnum2 e2;
 };
 
+enum TestEnumWithNegativeDiscriminants {
+  NegVal = -1,
+  PosVal = 1,
+  ZeroVal = 0,
+};
+
 union BaseUnion {
   int8 n1;
   uint64 u1;

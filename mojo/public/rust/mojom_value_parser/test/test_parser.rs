@@ -402,6 +402,12 @@ fn test_enums() -> anyhow::Result<()> {
     validate_parsing_failure::<SomeEnums>("[u4]24 [u4]0 [u4]5 [u4]42 [u8]98765")?;
     validate_parsing_failure::<SomeEnums>("[u4]24 [u4]0 [u4]7 [u4]99 [u8]98765")?;
 
+    validate_parsing(TestEnumWithNegativeDiscriminants::NegVal, "[s4]-1")?;
+
+    validate_parsing(TestEnumWithNegativeDiscriminants::ZeroVal, "[u4]0")?;
+
+    validate_parsing(TestEnumWithNegativeDiscriminants::PosVal, "[u4]1")?;
+
     Ok(())
 }
 
