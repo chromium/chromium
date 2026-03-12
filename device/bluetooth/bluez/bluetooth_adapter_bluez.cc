@@ -1518,8 +1518,9 @@ void BluetoothAdapterBlueZ::RemoveLocalGattService(
     return;
   }
 
-  if (registered_gatt_services_.count(service->object_path()) != 0) {
-    registered_gatt_services_.erase(service->object_path());
+  if (auto it = registered_gatt_services_.find(service->object_path());
+      it != registered_gatt_services_.end()) {
+    registered_gatt_services_.erase(it);
     UpdateRegisteredApplication(true, base::DoNothing(), base::DoNothing());
   }
 
@@ -1530,7 +1531,7 @@ void BluetoothAdapterBlueZ::RegisterGattService(
     BluetoothLocalGattServiceBlueZ* service,
     base::OnceClosure callback,
     device::BluetoothGattService::ErrorCallback error_callback) {
-  if (registered_gatt_services_.count(service->object_path()) > 0) {
+  if (registered_gatt_services_.contains(service->object_path())) {
     BLUETOOTH_LOG(ERROR)
         << "Re-registering a service that is already registered!";
     std::move(error_callback)
@@ -1555,7 +1556,7 @@ void BluetoothAdapterBlueZ::UnregisterGattService(
     device::BluetoothGattService::ErrorCallback error_callback) {
   DCHECK(bluez::BluezDBusManager::Get());
 
-  if (registered_gatt_services_.count(service->object_path()) == 0) {
+  if (!registered_gatt_services_.contains(service->object_path())) {
     BLUETOOTH_LOG(ERROR)
         << "Unregistering a service that isn't registered! path: "
         << service->object_path().value();
@@ -1571,17 +1572,18 @@ void BluetoothAdapterBlueZ::UnregisterGattService(
 
 bool BluetoothAdapterBlueZ::IsGattServiceRegistered(
     BluetoothLocalGattServiceBlueZ* service) {
-  return registered_gatt_services_.count(service->object_path()) != 0;
+  return registered_gatt_services_.contains(service->object_path());
 }
 
 bool BluetoothAdapterBlueZ::SendValueChanged(
     BluetoothLocalGattCharacteristicBlueZ* characteristic,
     const std::vector<uint8_t>& value) {
-  if (registered_gatt_services_.count(
+  if (!registered_gatt_services_.contains(
           static_cast<BluetoothLocalGattServiceBlueZ*>(
               characteristic->GetService())
-              ->object_path()) == 0)
+              ->object_path())) {
     return false;
+  }
   gatt_application_provider_->SendValueChanged(characteristic->object_path(),
                                                value);
   return true;
